@@ -1,3 +1,7 @@
+_welcome:
+    pattern:  /
+    defaults: { _controller: MBHUserBundle:User:index}
+
 mbh_base:
     resource: "@MBHBaseBundle/Controller/"
     type:     annotation
@@ -6,7 +10,7 @@ mbh_base:
 mbh_user:
     resource: "@MBHUserBundle/Controller/"
     type:     annotation
-    prefix:   /user
+    prefix:   /management/user
  
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"

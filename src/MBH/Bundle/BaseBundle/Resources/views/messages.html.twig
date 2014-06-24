@@ -1,0 +1,8 @@
+{% for key in  app.session.flashbag.keys()%}
+    {% for message in app.session.flashbag.get(key) %}
+        <div class="alert alert-{{key}} alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            {{ message|raw }}
+        </div>
+    {% endfor %}
+{% endfor %}

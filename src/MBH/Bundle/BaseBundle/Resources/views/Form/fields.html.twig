@@ -1,0 +1,85 @@
+{% block form_widget_compound %}
+<div class="well" {{ block('widget_container_attributes') }}>
+    {% if form.parent is empty %}
+        {% if errors|length > 0 %}<div class="alert alert-error global-errors">{{ form_errors(form) }}</div>{% endif %}
+    {% endif %}
+    {% if form.vars.groups is defined %}
+        {% for group,items in form.vars.groups %}
+        <fieldset>
+            <legend>{{ group }}</legend>
+            {% for item in items %}
+                {{ form_row(form[item]) }}
+            {% endfor %}
+        </fieldset>
+        {% endfor %}
+    {% endif %}
+    {{ form_rest(form) }}
+</div>
+{% endblock form_widget_compound %}
+
+{% block form_row %}
+{% spaceless %}   
+    <div class="form-group {% if errors|length > 0 %} has-error{%endif%}">
+        {{ form_label(form) }}
+        
+        <div class="col-md-6">
+            {{ form_widget(form) }}
+            {% if help == null %}
+               <p class="help-block">{{help|raw}}</p>
+            {%endif%}
+        </div>
+        <div class="col-md-4">
+        {% if errors|length > 0 %}
+            <span class="text-danger text-left input-errors">{{ form_errors(form) }}</span>
+            {%endif%}
+        </div>
+    </div>
+{% endspaceless %}
+{% endblock form_row %}
+
+{% block form_label %}
+{% spaceless %}
+    {% if label is not sameas(false) %}
+        {% if not compound %}
+            {% set label_attr = label_attr|merge({'for': id}) %}
+        {% endif %}
+        {% if required %}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+        {% endif %}
+        {% if label is empty %}
+            {% set label = name|humanize %}
+        {% endif %}
+        {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' control-label col-md-2')|trim}) %}
+        
+        <label {% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain) }}{% if required %}&nbsp;<span class="required-star text-danger">*</span>{% endif %}</label>
+    {% endif %}
+{% endspaceless %}
+{% endblock form_label %}
+    
+{% block form_widget_simple %}
+{% spaceless %}
+    {% set type = type|default('text') %}
+        {% set attr = attr|merge({'class': (attr.class|default('') ~ ' form-control input-sm')|trim}) %}
+    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+{% endspaceless %}
+{% endblock form_widget_simple %}
+    
+{% block choice_widget_collapsed %}
+{% spaceless %}
+    {% set attr = attr|merge({'class': (attr.class|default('') ~ ' form-control input-sm')|trim}) %}
+    <select {{ block('widget_attributes') }}{% if multiple %} multiple {% endif %}>
+        {% if empty_value is not none %}
+            <option {% if required %} disabled="disabled"{% if value is empty %} selected="selected"{% endif %}{% else %} value=""{% endif %}>{{ empty_value|trans({}, translation_domain) }}</option>
+        {% endif %}
+        {% if preferred_choices|length > 0 %}
+            {% set options = preferred_choices %}
+            {{ block('choice_widget_options') }}
+            {% if choices|length > 0 and separator is not none %}
+                <option disabled="disabled">{{ separator }}</option>
+            {% endif %}
+        {% endif %}
+        {% set options = choices %}
+        {{ block('choice_widget_options') }}
+    </select>
+{% endspaceless %}
+{% endblock choice_widget_collapsed %}

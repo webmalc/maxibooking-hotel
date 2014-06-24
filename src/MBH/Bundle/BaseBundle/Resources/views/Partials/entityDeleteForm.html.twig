@@ -1,0 +1,21 @@
+{{ form_start(delete_form, {'action': path(route, {'id': entity.id}), 'method': 'DELETE', 'attr': {'id': 'entity-delete-form'}}) }}
+{{ form_widget(delete_form) }}
+{{ form_end(delete_form) }}
+
+<div class="modal fade" id="entity-delete-confirmation" tabindex="-1" role="dialog" aria-labelledby="entity-delete-button" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Подтверждение удаления</h4>
+      </div>
+      <div class="modal-body">
+        Точно удалить эту запись?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban"></i> Отмена</button>
+        <button type="button" id="entity-delete-button" class="btn btn-danger"><i class="fa fa-trash-o"></i> Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>

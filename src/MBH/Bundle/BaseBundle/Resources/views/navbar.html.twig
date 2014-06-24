@@ -1,0 +1,52 @@
+{% if '/management/' in app.request.uri %}
+    {% set management_menu_switch = true %}
+    {% set nav_class = 'inverse' %}
+{% else %}
+    {% set management_menu_switch = false %}
+    {% set nav_class = 'default' %}
+{% endif %}
+
+<div class="navbar navbar-{{ nav_class }} navbar-fixed-top" id="navbar-main-wrapper">
+    <div class="container">
+        <div class="navbar-header dropdown">
+            <a href="{{ path('_welcome')}}" class="navbar-brand"><i class="mb-icon-logo navbar-logo"></i></a>
+
+            {% if selected_hotel() is empty %}
+                <a href="{{ path('_welcome')}}" class="navbar-brand">{{ project_title }}</a>
+            {% else %}
+                <a data-toggle="dropdown" href="#" class="navbar-brand" id="hotel-selector">{{ selected_hotel() }} <i class="fa fa-caret-down"></i></a>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                    {% for hotel in hotels() %}
+                        <li><a href="#">{{ hotel }}</a></li>
+                    {% endfor %}
+                    <li class="divider"></li>
+                    <li><a href="#"><i class="fa fa-plus"></i> Добавить отель</a></li>
+                </ul>
+            {% endif %}
+
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+
+            {% if selected_hotel() is empty %}
+                {% set create_hotel_menu = knp_menu_get('MBHBaseBundle:Builder:createHotelMenu', [], {'management': management_menu_switch}) %}
+                {{ knp_menu_render(create_hotel_menu) }}
+            {% else %}
+                {% set main_menu = knp_menu_get('MBHBaseBundle:Builder:mainMenu', [], {'management': management_menu_switch}) %}
+                {{ knp_menu_render(main_menu) }}
+
+                {% if is_granted('ROLE_ADMIN') %}
+                    {% set management_menu = knp_menu_get('MBHBaseBundle:Builder:managementMenu', [], {'management': management_menu_switch}) %}
+                    {{ knp_menu_render(management_menu) }}
+                {% endif%}
+            {% endif %}
+
+            {% set user_menu = knp_menu_get('MBHBaseBundle:Builder:userMenu', [], {'management': management_menu_switch}) %}
+            {{ knp_menu_render(user_menu) }}
+        </div>
+    </div>
+</div>

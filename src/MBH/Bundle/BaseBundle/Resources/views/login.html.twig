@@ -1,0 +1,13 @@
+{% extends 'MBHBaseBundle::meta.html.twig' %}
+
+{% block body %}
+    {{ parent() }}
+    
+    <div class="container main-container">
+        {% block messages %}
+            {% include 'MBHBaseBundle::messages.html.twig' %}
+        {% endblock %}
+        
+        {% block content %}{% endblock %}
+    </div>
+{% endblock %}

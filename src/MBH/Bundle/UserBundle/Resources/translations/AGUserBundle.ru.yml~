@@ -1,0 +1,7 @@
+# Remind password
+remind_password:
+    message: 'Ваш новый пароль: %password%'
+    success: 'Новый пароль выслан вам'
+    error: 'Что-то неправильно'
+
+ 

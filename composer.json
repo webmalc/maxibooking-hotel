@@ -24,7 +24,8 @@
         "friendsofsymfony/user-bundle": "dev-master",
         "friendsofsymfony/jsrouting-bundle": "dev-master",
         "knplabs/knp-menu": "dev-master",
-        "knplabs/knp-menu-bundle": "dev-master"
+        "knplabs/knp-menu-bundle": "dev-master",
+        "jms/security-extra-bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

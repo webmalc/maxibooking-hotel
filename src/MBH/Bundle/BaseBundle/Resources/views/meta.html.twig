@@ -1,0 +1,83 @@
+{% spaceless %}
+    <!DOCTYPE html>
+    <html lang="ru">
+        <head>
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <meta name="keywords" content="{% block meta_keywords %}{{project_title}}{% endblock %}">
+            <meta name="author" content="webmalc">
+            <meta name="description" content="{% block meta_description %}{{project_title}}{% endblock %}">
+            <title>{% block title %}{{project_title}}{% if title is defined %}: {{ title }}{% endif %}{% endblock %}</title>
+
+            {% block styles %}
+                <!-- Bootstrap -->
+                <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/cerulean/bootstrap.min.css">
+                <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">
+                <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.4.6/select2.min.css">
+                <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.4.6/select2-bootstrap.css">
+                <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.0.0rc/css/bootstrap3/bootstrap-switch.min.css">
+                <link rel="stylesheet" href="//cdn.datatables.net/plug-ins/505bef35b56/integration/bootstrap/3/dataTables.bootstrap.css">
+                <link rel="stylesheet" href="//cdn.datatables.net/fixedheader/2.1.0/css/dataTables.fixedHeader.css">
+                <link rel="stylesheet" href="//cdn.datatables.net/tabletools/2.2.0/css/dataTables.tableTools.css">
+
+                {% stylesheets filter='cssrewrite, uglifycss' 
+                    '@MBHBaseBundle/Resources/public/css/vendor/*'
+                    '@MBHBaseBundle/Resources/public/css/app/*'
+                %}
+                <link rel="stylesheet" href="{{ asset_url }}"/>
+                {% endstylesheets %}
+            {% endblock %}
+
+            <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+            <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+            <![endif]-->
+        </head>
+
+        <body>
+        {% block body %}{% endblock %}
+
+        {% block scripts %}
+            <!-- Scripts -->
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+            <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+            <script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.4.6/select2.min.js"></script>
+            <script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.4.6/select2_locale_ru.js"></script>
+            <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.0.0rc/js/bootstrap-switch.min.js"></script>
+            <script src="//cdn.datatables.net/1.10.0-beta.2/js/jquery.dataTables.js"></script>
+            <script src="//cdn.datatables.net/fixedheader/2.1.0/js/dataTables.fixedHeader.min.js"></script>
+            <script src="//cdn.datatables.net/tabletools/2.2.0/js/dataTables.tableTools.min.js"></script>
+            <script src="//cdn.datatables.net/plug-ins/505bef35b56/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+
+            {% if app.environment == 'dev' %}
+
+                <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+                <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+                {% javascripts filter='uglifyjs2'
+                '@MBHBaseBundle/Resources/public/js/vendor/*'
+                '@MBHBaseBundle/Resources/public/js/app/*'
+                %}
+                <script type="text/javascript" src="{{ asset_url }}"></script>
+                {% endjavascripts %}
+
+            {% else %}
+
+                {% javascripts filter='uglifyjs2'
+                'bundles/fosjsrouting/js/router.js'
+                'js/fos_js_routes.js'
+                '@MBHBaseBundle/Resources/public/js/vendor/*'
+                '@MBHBaseBundle/Resources/public/js/app/*'
+                %}
+                <script type="text/javascript" src="{{ asset_url }}"></script>
+                {% endjavascripts %}
+
+            {% endif %}
+
+        {% endblock %}
+
+    </body>
+</html>
+{% endspaceless %}
+

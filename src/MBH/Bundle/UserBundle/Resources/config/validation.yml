@@ -1,0 +1,28 @@
+MBH\Bundle\UserBundle\Entity\User:
+    constraints:
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity: { fields: email, message: "Пользователь с таким электронным адресом уже существует" }
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity: { fields: username, message: "Пользователь с таким логином уже существует" }
+    properties:
+        plainPassword:
+            - Length:
+                min: 6
+        username:
+            - NotBlank: ~
+            - Length:
+                min: 3
+        email:
+            - NotBlank: ~
+            - Email: ~
+            
+MBH\Bundle\UserBundle\Entity\Group:
+    constraints:
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity: { fields: name, message: "Группа с таким именем уже существует" }
+    properties:
+        name:
+          - NotBlank: ~
+          - Length:
+                min: 3
+        roles:
+            - NotBlank: ~
+            - Type:
+                type: array
