@@ -1,12 +1,42 @@
 security:
+    encoders:
+        FOS\UserBundle\Model\UserInterface: sha512
+
     providers:
-        in_memory:
-            memory: ~
+        fos_userbundle:
+            id: fos_user.user_provider.username_email
 
     firewalls:
         dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
+            pattern:    ^/(_profiler|_wdt|css|js)
+            security:   false
+        main:
+            pattern: ^/
+            form_login:
+                #always_use_default_target_path: true
+                default_target_path: /
+                provider: fos_userbundle
+                csrf_provider: form.csrf_provider
+                login_path:  /user/login
+                check_path:  /user/login_check
+                require_previous_session: true
+            logout:       
+                path:   /user/logout
+                target: /
+            anonymous:    true
+            remember_me:
+                key:      "%secret%"
+                lifetime: 3600
+                path:     /
+                domain:   ~
 
-        default:
-            anonymous: ~
+    role_hierarchy:
+        ROLE_ADMIN:       [ROLE_MANAGER, ROLE_BOOKKEEPER]
+        ROLE_MANAGER: ROLE_USER
+        ROLE_BOOKKEEPER: ROLE_USER
+
+    access_control:
+        - { path: ^/user/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/_wdt, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' } 
+        - { path: ^/_profiler, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/, role: ROLE_USER }

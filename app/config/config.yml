@@ -105,3 +105,9 @@ stof_doctrine_extensions:
             uploadable:     false
             tree:           false
             sortable:       false
+            
+# FOSUserBundle Configuration
+fos_user:
+    db_driver: mongodb
+    firewall_name: main
+    user_class: MBH\Bundle\UserBundle\Document\User

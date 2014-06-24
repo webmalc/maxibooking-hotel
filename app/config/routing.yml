@@ -1,0 +1,14 @@
+mbh_base:
+    resource: "@MBHBaseBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+mbh_user:
+    resource: "@MBHUserBundle/Controller/"
+    type:     annotation
+    prefix:   /user
+ 
+fos_user_security:
+    resource: "@FOSUserBundle/Resources/config/routing/security.xml"
+    prefix: /user
+
