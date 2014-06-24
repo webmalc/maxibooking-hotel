@@ -111,3 +111,10 @@ fos_user:
     db_driver: mongodb
     firewall_name: main
     user_class: MBH\Bundle\UserBundle\Document\User
+    
+# KnpMenuBundle Configuration    
+knp_menu:
+    twig:  # use "twig: false" to disable the Twig extension and the TwigRenderer
+        template: MBHBaseBundle:Menu:menu.html.twig
+    templating: false # if true, enables the helper for PHP templates
+    default_renderer: twig

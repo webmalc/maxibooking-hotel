@@ -18,6 +18,8 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new FOS\UserBundle\FOSUserBundle(),
+            new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
+            new Knp\Bundle\MenuBundle\KnpMenuBundle(),
             
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),
