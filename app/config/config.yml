@@ -42,24 +42,6 @@ assetic:
         #yui_css:
         #    jar: "%kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar"
 
-# Doctrine Configuration
-doctrine:
-    dbal:
-        driver:   "%database_driver%"
-        host:     "%database_host%"
-        port:     "%database_port%"
-        dbname:   "%database_name%"
-        user:     "%database_user%"
-        password: "%database_password%"
-        charset:  UTF8
-        # if using pdo_sqlite as your database driver, add the path in parameters.yml
-        # e.g. database_path: "%kernel.root_dir%/data/data.db3"
-        # path:     "%database_path%"
-
-    orm:
-        auto_generate_proxy_classes: "%kernel.debug%"
-        auto_mapping: true
-
 # Swiftmailer Configuration
 swiftmailer:
     transport: "%mailer_transport%"
@@ -67,3 +49,59 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+    
+# DoctrineMongoDBBundle Configuration
+doctrine_mongodb:
+    connections:
+        default:
+            server: %mongodb_url%
+            options: {}
+    default_database: %mongodb_database%
+    document_managers:
+        default:
+            connection: 'default'
+            auto_mapping: true
+            filters:
+                    softdeleteable:
+                        class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
+                        enabled: true
+            mappings:
+                gedmo_loggable:
+                    type: annotation
+                    prefix: Gedmo\Loggable\Document
+                    dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Document"
+                    alias: GedmoLoggable # this one is optional and will default to the name set for the mapping
+                    is_bundle: false
+#                gedmo_translatable:
+#                    type: annotation
+#                    prefix: Gedmo\Translatable\Document
+#                    dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Translatable/Document"
+#                    alias: GedmoTranslatable # this one is optional and will default to the name set for the mapping
+#                    is_bundle: false
+#                gedmo_translator:
+#                    type: annotation
+#                    prefix: Gedmo\Translator\Document
+#                    dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Translator/Document"
+#                    alias: GedmoTranslator # this one is optional and will default to the name set for the mapping
+#                    is_bundle: false
+#                gedmo_tree:
+#                    type: annotation
+#                    prefix: Gedmo\Tree\Document
+#                    dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Tree/Document"
+#                    alias: GedmoTree # this one is optional and will default to the name set for the mapping
+#                    is_bundle: false
+
+# StofDoctrineExtensionsBundle Configuration
+stof_doctrine_extensions:
+    default_locale: ru_RU
+    mongodb:
+        default:
+            blameable:      true
+            timestampable:  true
+            loggable:       true
+            softdeleteable: true
+            sluggable:      false
+            translatable:   false
+            uploadable:     false
+            tree:           false
+            sortable:       false
