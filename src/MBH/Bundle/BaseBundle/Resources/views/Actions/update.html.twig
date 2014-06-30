@@ -1,6 +1,8 @@
 <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
     <div class="container">
         {% include 'MBHBaseBundle:Actions:saveButtons.html.twig'%}
-        {% include 'MBHBaseBundle:Actions:deleteButtons.html.twig'%}
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="{{ path(delete_route, {'id': entity.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i> Удалить</a></li>
+        </ul>
     </div>
 </div>

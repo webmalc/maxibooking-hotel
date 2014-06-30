@@ -2,6 +2,10 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
 
+parameters:
+    #параметры логов
+    maxibooking.logs.max: 100
+
 framework:
     #esi:             ~
     translator:      { fallback: "%locale%" }

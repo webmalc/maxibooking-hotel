@@ -9,9 +9,9 @@
 
         <div class="tab-content">
             <div class="tab-pane fade in active" id="entity-info">
-                Создана {{entity.created|date('d.m.Y H:i')}} пользователем <a href="{{ path('user_edit', {'id': entity.getCreatedBy.id})}}">{{entity.getCreatedBy}}</a>
-                {% if entity.updated != null and  entity.getUpdatedBy != null%}
-                    <br />Изменена {{entity.updated|date('d.m.Y H:i')}} пользователем <a href="{{ path('user_edit', {'id': entity.getUpdatedBy.id})}}">{{entity.getUpdatedBy}}</a>
+                Создана {{entity.createdAt|date('d.m.Y H:i')}} пользователем {{ entity.createdBy}}
+                {% if entity.updatedAt != null and  entity.getUpdatedBy != null%}
+                    <br />Изменена {{entity.updatedAt|date('d.m.Y H:i')}} пользователем {{entity.updatedBy}}
                 {% endif %}
             </div>
             <div class="tab-pane fade"  id="entity-logs">

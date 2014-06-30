@@ -1,11 +1,7 @@
-_welcome:
-    pattern:  /
-    defaults: { _controller: MBHUserBundle:User:index}
-
 mbh_base:
     resource: "@MBHBaseBundle/Controller/"
     type:     annotation
-    prefix:   /
+    prefix:   /management/hotel
 
 mbh_user:
     resource: "@MBHUserBundle/Controller/"
@@ -18,4 +14,14 @@ fos_user_security:
     
 fos_js_routing:
     resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
+
+mbh_hotel:
+    resource: "@MBHHotelBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+_welcome:
+    pattern:  /
+    defaults: { _controller: MBHUserBundle:User:index}
+
 

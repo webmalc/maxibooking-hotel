@@ -17,9 +17,9 @@
                 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.4.6/select2.min.css">
                 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.4.6/select2-bootstrap.css">
                 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.0.0rc/css/bootstrap3/bootstrap-switch.min.css">
-                <link rel="stylesheet" href="//cdn.datatables.net/plug-ins/505bef35b56/integration/bootstrap/3/dataTables.bootstrap.css">
-                <link rel="stylesheet" href="//cdn.datatables.net/fixedheader/2.1.0/css/dataTables.fixedHeader.css">
-                <link rel="stylesheet" href="//cdn.datatables.net/tabletools/2.2.0/css/dataTables.tableTools.css">
+                <link rel="stylesheet" href="//cdn.datatables.net/tabletools/2.2.1/css/dataTables.tableTools.css">
+                <link rel="stylesheet" href="//cdn.datatables.net/fixedheader/2.1.1/css/dataTables.fixedHeader.css">
+                <link rel="stylesheet" href="//cdn.datatables.net/plug-ins/be7019ee387/integration/bootstrap/3/dataTables.bootstrap.css">
 
                 {% stylesheets filter='cssrewrite, uglifycss' 
                     '@MBHBaseBundle/Resources/public/css/vendor/*'
@@ -46,11 +46,11 @@
             <script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.4.6/select2.min.js"></script>
             <script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.4.6/select2_locale_ru.js"></script>
             <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.0.0rc/js/bootstrap-switch.min.js"></script>
-            <script src="//cdn.datatables.net/1.10.0-beta.2/js/jquery.dataTables.js"></script>
-            <script src="//cdn.datatables.net/fixedheader/2.1.0/js/dataTables.fixedHeader.min.js"></script>
-            <script src="//cdn.datatables.net/tabletools/2.2.0/js/dataTables.tableTools.min.js"></script>
-            <script src="//cdn.datatables.net/plug-ins/505bef35b56/integration/bootstrap/3/dataTables.bootstrap.js"></script>
-
+            <script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+            <script src="//cdn.datatables.net/tabletools/2.2.1/js/dataTables.tableTools.min.js"></script>
+            <script src="//cdn.datatables.net/fixedheader/2.1.1/js/dataTables.fixedHeader.min.js"></script>
+            <script src="//cdn.datatables.net/plug-ins/be7019ee387/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+            
             {% if app.environment == 'dev' %}
 
                 <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>

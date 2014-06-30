@@ -77,14 +77,10 @@ class Builder extends ContainerAware
         $menu->addChild('hotels', ['route' => '_welcome', 'label' => 'Отели'])
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-building-o'])
         ;
-        $menu['hotels']->addChild('seasonsHeader', ['label' => 'Cезоны'])
+        $menu['hotels']->addChild('pricesHeader', ['label' => 'Цены'])
                 ->setAttribute('class', 'dropdown-header')
         ;
-        $menu['hotels']->addChild('seasons', ['route' => '_welcome', 'label' => 'Список сезонов']);
-        $menu['hotels']->addChild('seasonsRooms', ['route' => '_welcome', 'label' => 'Номера в продаже']);
-        $menu['hotels']->addChild('seasonsPrices', ['route' => '_welcome', 'label' => 'Цены']);
-        $menu['hotels']->addChild('seasonsDiscounts', ['route' => '_welcome', 'label' => 'Скидки']);
-        $menu['hotels']->addChild('seasonsClosedRooms', ['route' => '_welcome', 'label' => 'Номера в ремонте']);
+        $menu['hotels']->addChild('tariffs', ['route' => '_welcome', 'label' => 'Тарифы']);
         $menu['hotels']->addChild('seasonsCalculationFormulas', ['route' => '_welcome', 'label' => 'Формулы рассчета'])
                 ->setAttribute('divider_append', true)
         ;
@@ -92,11 +88,7 @@ class Builder extends ContainerAware
                 ->setAttribute('class', 'dropdown-header')
         ;
         $menu['hotels']->addChild('hotelsList', ['route' => '_welcome', 'label' => 'Список отелей']);
-        $menu['hotels']->addChild('hotelsBuildings', ['route' => '_welcome', 'label' => 'Корпуса']);
-        $menu['hotels']->addChild('hotelsFloors', ['route' => '_welcome', 'label' => 'Этажи']);
-        $menu['hotels']->addChild('hotelsRooms', ['route' => '_welcome', 'label' => 'Номера']);
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => '_welcome', 'label' => 'Типы номеров']);
-        $menu['hotels']->addChild('hotelsRoomSubTypes', ['route' => '_welcome', 'label' => 'Подтипы номеров']);
 
         //Dictionaries links
         $menu->addChild('dictionaries', ['route' => '_welcome', 'label' => 'Справочники'])

@@ -1,10 +1,10 @@
 /*global window */
-$(document).ready(function () {
+$(document).ready(function() {
     'use strict';
 
     //Tooltips configuration
     $('a[data-toggle="tooltip"], li[data-toggle="tooltip"]').tooltip();
-    
+
     //BootstrapSwitch configuration
     $('input[type="checkbox"][class!="plain-html"]').bootstrapSwitch({
         'size': 'small',
@@ -17,14 +17,19 @@ $(document).ready(function () {
     $('select[class!="plain-html"]').select2({
         placeholder: "Сделайте выбор",
         allowClear: true,
-        formatSelection: function (item, container) {
+        formatSelection: function(item, container) {
             var optgroup = $(item.element).parent('optgroup').attr('label');
-            if(!optgroup) {
+            if (!optgroup) {
                 return item.text;
             } else {
                 return optgroup + ': ' + item.text.toLowerCase();
             }
         }
+    });
+
+    //delete link
+    $('.delete-link').click(function(event) {
+        return confirm("Точно удалить?");
     });
 });
 

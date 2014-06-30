@@ -4,3 +4,18 @@ services:
         arguments: [@service_container]
         tags:
             - { name: twig.extension }
+            
+    mbh.form.fieldset_extension:
+        class: MBH\Bundle\BaseBundle\Form\Extension\FieldsetExtension
+        tags:
+            - { name: form.type_extension, alias: form }
+            
+    mbh.form.help_extension:
+        class: MBH\Bundle\BaseBundle\Form\Extension\HelpMessageTypeExtension
+        tags:
+            - { name: form.type_extension, alias: form }
+            
+    mbh.form.bottom_extension:
+        class: MBH\Bundle\BaseBundle\Form\Extension\BottomMessageTypeExtension
+        tags:
+            - { name: form.type_extension, alias: form }

@@ -9,12 +9,14 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
+use Gedmo\Blameable\Traits\BlameableDocument;
 
 /**
  * @ODM\Document(collection="Users")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="email", message="Такой e-mail уже зарегистрирован")
+ * @MongoDBUnique(fields="username", message="Такой логин уже зарегистрирован")
  */
 class User extends BaseUser
 {
@@ -55,12 +57,18 @@ class User extends BaseUser
      * updates createdAt, updatedAt fields
      */
     use TimestampableDocument;
-    
+
     /**
      * Hook softdeleteable behavior
      * deletedAt field
      */
     use SoftDeleteableDocument;
+    
+    /**
+     * Hook blameable behavior
+     * createdBy&updatedBy fields
+     */
+    use BlameableDocument;
     
     public function __construct()
     {

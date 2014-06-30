@@ -1,0 +1,4 @@
+ROLE_ADMIN: Администратор
+ROLE_BOOKKEEPER: Бухгалтер
+ROLE_MANAGER: Менеджер
+ROLE_USER: Пользователь

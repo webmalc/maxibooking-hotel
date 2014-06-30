@@ -42,11 +42,11 @@ $(document).ready(function() {
             }
         }
     });
-    /*new $.fn.dataTable.FixedHeader(table, {
+    new $.fn.dataTable.FixedHeader(table, {
         offsetTop: 50
     });
     var tt = new $.fn.dataTable.TableTools( table , {
-        "sSwfPath": "/bundles/maxibookingbase/js/datatables/swf/copy_csv_xls.swf",
+        "sSwfPath": "/bundles/mbhbase/js/vendor/datatables/swf/copy_csv_xls.swf",
         "aButtons": [
                 {
                     "sExtends": "copy",
@@ -60,10 +60,10 @@ $(document).ready(function() {
                     "sExtends": "xls",
                     "sButtonText": '<i class="fa fa-table"></i> Excel'
                 },
-                {
+                /*{
                     "sExtends": "pdf",
                     "sButtonText": "PDF "
-                },
+                },*/
                 {
                     "sExtends": "print",
                     "sButtonText": '<i class="fa fa-print"></i> Печать'
@@ -71,9 +71,8 @@ $(document).ready(function() {
             ]
     });
     
-    //$( tt.fnContainer() ).insertInto('div.dataTables_wrapper');
     $('#list-export').append($(tt.fnContainer()));
-    $('#list-export').find('a').addClass('navbar-btn');*/
+    $('#list-export').find('a').addClass('navbar-btn');
 });
 
 
