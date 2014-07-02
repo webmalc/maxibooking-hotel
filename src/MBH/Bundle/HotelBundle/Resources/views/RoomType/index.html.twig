@@ -1,0 +1,40 @@
+{% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
+
+{% set small_title = "cписок" %}    
+
+{% block content %}
+
+    <!-- Tabs headers -->
+    <ul class="nav nav-tabs" role="tablist">
+        {% for entity in entities %}
+            <li {% if loop.first %}class="active"{% endif %}>
+                <a href="#{{entity.id}}" role="tab" data-toggle="tab">
+                    <i class="fa fa-circle-o" style="color:#{{entity.color}}" ></i>
+                    {{entity.name}}
+                </a> 
+            </li>
+        {% endfor %}
+            <li>
+                <a href="{{ path('room_type_new') }}"><i class="fa fa-plus"></i> Новый тип номера</a>
+            </li>
+    </ul>
+
+    <!-- Tabs content -->
+    <div class="tab-content">
+        {% for entity in entities %}
+            <div class="tab-pane {% if loop.first %}active{% endif %}" id="{{entity.id}}">
+
+                <!-- Tab actions -->
+                <div class="btn-list text-right">
+                    <a href="{{ path('room_type_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success"><i class="fa fa-edit"></i> Редактировать <{{entity.name}}></a>
+                    <a href="{{ path('room_type_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link"><i class="fa fa-trash-o"></i> Удалить <{{entity.name}}></a>
+                </div>
+
+                Номера типа: {{entity.name}}
+            </div>
+        {% endfor %}
+    </div>
+
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'room_type_new'} %}
+
+{% endblock %} 

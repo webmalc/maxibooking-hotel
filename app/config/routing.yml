@@ -1,7 +1,7 @@
 mbh_base:
     resource: "@MBHBaseBundle/Controller/"
     type:     annotation
-    prefix:   /management/hotel
+    prefix:   /
 
 mbh_user:
     resource: "@MBHUserBundle/Controller/"
@@ -18,7 +18,7 @@ fos_js_routing:
 mbh_hotel:
     resource: "@MBHHotelBundle/Controller/"
     type:     annotation
-    prefix:   /
+    prefix:   /management/hotel
 
 _welcome:
     pattern:  /

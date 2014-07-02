@@ -1,10 +1,7 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
-
-parameters:
-    #параметры логов
-    maxibooking.logs.max: 100
+    - { resource: mbh.yml }
 
 framework:
     #esi:             ~

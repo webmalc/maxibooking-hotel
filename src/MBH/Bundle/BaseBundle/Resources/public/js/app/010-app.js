@@ -31,5 +31,12 @@ $(document).ready(function() {
     $('.delete-link').click(function(event) {
         return confirm("Точно удалить?");
     });
+
+    //autohide messages
+    window.setTimeout(function() {
+    $(".autohide").fadeTo(400, 0).slideUp(400, function(){
+        $(this).remove(); 
+    });
+    }, 5000);
 });
 

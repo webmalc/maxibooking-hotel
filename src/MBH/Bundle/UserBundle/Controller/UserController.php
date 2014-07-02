@@ -30,7 +30,7 @@ class UserController extends Controller
         /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         
-        $entities = $dm->getRepository('MBHUserBundle:User')->createQueryBuilder('BlogPost')
+        $entities = $dm->getRepository('MBHUserBundle:User')->createQueryBuilder('q')
                        ->sort('username', 'asc')
                        ->getQuery()
                        ->execute()

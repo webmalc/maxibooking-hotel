@@ -1,0 +1,12 @@
+{% extends 'MBHHotelBundle:Hotel:layout.html.twig' %}
+
+{% set small_title = "cоздание" %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('hotel_create'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+    {{ form_end(form) }}
+    
+{% endblock %}

@@ -22,7 +22,7 @@ class Builder extends ContainerAware
         $menu->setChildrenAttributes([
             'class' => 'nav navbar-nav', 'id' => 'main-menu'
         ]);
-        
+
         if (!empty($options['management'])) {
             $menu->setChildrenAttribute('style', 'display: none');
         }
@@ -68,34 +68,25 @@ class Builder extends ContainerAware
         $menu->setChildrenAttributes([
             'class' => 'nav navbar-nav', 'id' => 'management-menu'
         ]);
-        
+
         if (!empty($options['management'])) {
             $menu->setChildrenAttribute('style', 'display: block');
         }
-        
+
         //Hotels links
         $menu->addChild('hotels', ['route' => '_welcome', 'label' => 'Отели'])
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-building-o'])
         ;
-        $menu['hotels']->addChild('pricesHeader', ['label' => 'Цены'])
-                ->setAttribute('class', 'dropdown-header')
-        ;
-        $menu['hotels']->addChild('tariffs', ['route' => '_welcome', 'label' => 'Тарифы']);
-        $menu['hotels']->addChild('seasonsCalculationFormulas', ['route' => '_welcome', 'label' => 'Формулы рассчета'])
-                ->setAttribute('divider_append', true)
-        ;
-        $menu['hotels']->addChild('hotelsHeader', ['label' => 'Отели'])
-                ->setAttribute('class', 'dropdown-header')
-        ;
-        $menu['hotels']->addChild('hotelsList', ['route' => '_welcome', 'label' => 'Список отелей']);
-        $menu['hotels']->addChild('hotelsRoomTypes', ['route' => '_welcome', 'label' => 'Типы номеров']);
+        $menu['hotels']->addChild('hotelsList', ['route' => 'hotel', 'label' => 'Список отелей']);
+        $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Типы номеров']);
 
-        //Dictionaries links
-        $menu->addChild('dictionaries', ['route' => '_welcome', 'label' => 'Справочники'])
-                ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-book'])
+        //Prices links
+        $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Цены'])
+                ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-dollar'])
         ;
-        $menu['dictionaries']->addChild('dictionariesWer', ['route' => '_welcome', 'label' => 'Список отелей']);
-
+        $menu['prices']->addChild('tariffs', ['route' => '_welcome', 'label' => 'Тарифы']);
+        $menu['prices']->addChild('seasonsCalculationFormulas', ['route' => '_welcome', 'label' => 'Формулы рассчета']);
+        
         //Users links
         $menu->addChild('users', ['route' => '_welcome', 'label' => 'Пользователи'])
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-users'])
@@ -136,7 +127,7 @@ class Builder extends ContainerAware
                         'data-toggle' => 'tooltip',
                         'data-placement' => "bottom",
                         'title' => "Перейти к настройкам"
-                        ])
+                    ])
             ;
             if (!empty($options['management'])) {
                 $menu['management']->setAttribute('icon', 'fa fa-home fa-lg');
@@ -159,7 +150,7 @@ class Builder extends ContainerAware
 
         return $menu;
     }
-    
+
     /**
      * Create hotel menu
      * @param \Knp\Menu\FactoryInterface $factory
@@ -175,11 +166,11 @@ class Builder extends ContainerAware
             'id' => 'create-hotel-menu',
             'style' => 'display: block;'
         ]);
-        
-        $menu->addChild('create_hotel', ['route' => '_welcome', 'label' => 'Создать новый отель'])
-             ->setAttribute('icon', 'fa fa-plus')
+
+        $menu->addChild('create_hotel', ['route' => 'hotel_new', 'label' => 'Создать новый отель'])
+                ->setAttribute('icon', 'fa fa-plus')
         ;
-        
+
         return $menu;
     }
 
@@ -204,23 +195,22 @@ class Builder extends ContainerAware
             try {
                 $url = str_replace('app_dev.php/', '', parse_url($child->getUri()))['path'];
                 $controllerInfo = explode('::', $router->match($url)['_controller']);
-                
+
                 $rMethod = new \ReflectionMethod($controllerInfo[0], $controllerInfo[1]);
-  
+
                 $metadata = $rMethod->getDocComment();
-                
             } catch (\Exception $e) {
-                
+
                 $menu->removeChild($child);
                 continue;
             }
 
             preg_match('/\@Security\(\"is_granted\(\'(.*)\'\)\"\)/ixu', $metadata, $roles);
-            
+
             if (empty($metadata) || empty($roles[1])) {
                 continue;
             }
-            
+
             if (!$security->isGranted($roles[1])) {
                 $menu->removeChild($child);
             }

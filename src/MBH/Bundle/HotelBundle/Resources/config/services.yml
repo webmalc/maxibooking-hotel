@@ -1,0 +1,6 @@
+services:
+    mbh.check_hotel.action_listener:
+        class: MBH\Bundle\HotelBundle\EventListener\CheckHotelListener
+        arguments: [@service_container]
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }

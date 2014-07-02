@@ -1,12 +1,12 @@
 <?php
- 
+
 namespace MBH\Bundle\BaseBundle\Twig;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
- 
+
 class HotelSelectorExtension extends \Twig_Extension
 {
- 
+
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface 
      */
@@ -16,7 +16,7 @@ class HotelSelectorExtension extends \Twig_Extension
     {
         $this->container = $container;
     }
-    
+
     /**
      * @return string
      */
@@ -27,14 +27,23 @@ class HotelSelectorExtension extends \Twig_Extension
 
     public function getSelectedHotel()
     {
-        return 'Азовский';
+        return $this->container->get('mbh.hotel.selector')->getSelected();
     }
-    
+
     public function getHotels()
     {
-        return ['Азовский', 'Азовлэнд', 'Супер отель'];
+        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        
+        $entities = $dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('h')
+                       ->sort('fullTitle', 'asc')
+                       ->getQuery()
+                       ->execute()
+        ;
+        
+        return $entities;
     }
-    
+
     /**
      * @return array
      */
@@ -45,5 +54,5 @@ class HotelSelectorExtension extends \Twig_Extension
             'hotels' => new \Twig_Function_Method($this, 'getHotels', array('is_safe' => array('html'))),
         );
     }
- 
+
 }

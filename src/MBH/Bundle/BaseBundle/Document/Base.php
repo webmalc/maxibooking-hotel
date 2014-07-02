@@ -1,0 +1,30 @@
+<?php
+
+namespace MBH\Bundle\BaseBundle\Document;
+
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+
+
+/**
+ * @ODM\MappedSuperclass
+ */
+class Base 
+{
+    /**
+     * @var string
+     * @ODM\Id
+     */
+    protected $id;
+
+    /**
+     * Get id
+     *
+     * @return id $id
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+    
+}

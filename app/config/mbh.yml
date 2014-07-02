@@ -1,0 +1,17 @@
+parameters:
+    #параметры логов
+    maxibooking.logs.max: 100
+    
+    #Типы питания
+    maxibooking.food.types:
+        RO:  "RO - Без питания"
+        BB:  "BB - Завтрак"
+        HB:  "HB - Завтрак и ужин"
+        FB:  "FB - Завтрак, обед и ужин"
+        AI:  "AI - Все включено"
+        UAI: "UAI - Ультра все включено"
+        
+    #Типы рассчета
+    maxibooking.calculation.types:
+        perRoom:      "Цена за номер"
+        customPrices: "Ручные цены"

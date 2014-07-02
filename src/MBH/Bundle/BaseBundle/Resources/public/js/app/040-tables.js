@@ -17,6 +17,7 @@ $(document).ready(function() {
         }
     });
 
+    //Datatables
     var table = $('table.table-striped').dataTable({
         "pageLength": 50,
         "stateSave": true,
@@ -42,12 +43,18 @@ $(document).ready(function() {
             }
         }
     });
-    new $.fn.dataTable.FixedHeader(table, {
-        offsetTop: 50
-    });
-    var tt = new $.fn.dataTable.TableTools( table , {
-        "sSwfPath": "/bundles/mbhbase/js/vendor/datatables/swf/copy_csv_xls.swf",
-        "aButtons": [
+
+    if (!$('table.table-striped').hasClass("without-fixed-header") && table.length) {
+        new $.fn.dataTable.FixedHeader(table, {
+            offsetTop: 50
+        });
+    }
+
+    if (!$('table.table-striped').hasClass("without-table-tools")  && table.length) {
+
+        var tt = new $.fn.dataTable.TableTools(table, {
+            "sSwfPath": "/bundles/mbhbase/js/vendor/datatables/swf/copy_csv_xls.swf",
+            "aButtons": [
                 {
                     "sExtends": "copy",
                     "sButtonText": '<i class="fa fa-files-o"></i> Скопировать'
@@ -61,18 +68,19 @@ $(document).ready(function() {
                     "sButtonText": '<i class="fa fa-table"></i> Excel'
                 },
                 /*{
-                    "sExtends": "pdf",
-                    "sButtonText": "PDF "
-                },*/
+                 "sExtends": "pdf",
+                 "sButtonText": "PDF "
+                 },*/
                 {
                     "sExtends": "print",
                     "sButtonText": '<i class="fa fa-print"></i> Печать'
                 },
             ]
-    });
-    
-    $('#list-export').append($(tt.fnContainer()));
-    $('#list-export').find('a').addClass('navbar-btn');
+        });
+
+        $('#list-export').append($(tt.fnContainer()));
+        $('#list-export').find('a').addClass('navbar-btn');
+    }
 });
 
 
