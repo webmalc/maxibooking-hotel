@@ -19,7 +19,42 @@ use MBH\Bundle\HotelBundle\Form\RoomType as RoomForm;
  */
 class RoomTypeController extends Controller implements CheckHotelControllerInterface
 {
-    
+
+    /**
+     * rooms json list.
+     *
+     * @Route("/{id}/room/", name="room_type_room_json", defaults={"_format"="json"}, options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template()
+     */
+    public function jsonRoomsListAction(Request $request, $id)
+    {
+        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $qb = $dm->getRepository('MBHHotelBundle:Room')
+                 ->createQueryBuilder('r')
+                 ->field('roomType.id')->equals($id)
+                 ->skip($request->get('start'))
+                 ->limit($request->get('length'))
+        ;
+
+        $search = $request->get('search')['value'];
+        if (!empty($search)) {
+            $qb->addOr($qb->expr()->field('fullTitle')->equals(new \MongoRegex('/.*'. $search .'.*/ui')));
+            $qb->addOr($qb->expr()->field('title')->equals(new \MongoRegex('/.*'. $search .'.*/ui')));
+        }
+
+        $entities = $qb->getQuery()->execute();
+
+        return [
+            'entities' => $entities,
+            'total' => $entities->count(),
+            'draw' => $request->get('draw')
+        ];
+    }
+
     /**
      * Delete room.
      *
@@ -46,7 +81,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:Room')->find($id);
-        
+
         if (!$entity) {
             throw $this->createNotFoundException();
         }
@@ -59,7 +94,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             'logs' => $this->logs($entity)
         );
     }
-    
+
     /**
      * Update room.
      *
@@ -74,7 +109,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:Room')->find($id);
-        
+
         if (!$entity) {
             throw $this->createNotFoundException();
         }
@@ -86,9 +121,9 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         if ($form->isValid()) {
             $dm->persist($entity);
             $dm->flush();
-            
+
             $this->getRequest()->getSession()->getFlashBag()
-                 ->set('success', 'Запись успешно отредактирована.')
+                    ->set('success', 'Запись успешно отредактирована.')
             ;
 
             if ($this->getRequest()->get('save') !== null) {
@@ -97,14 +132,14 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
             return $this->redirect($this->generateUrl('room_type', ['tab' => $entity->getRoomType()->getId()]));
         }
-        
+
         return array(
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         );
     }
-    
+
     /**
      * Show new room form.
      *
@@ -152,7 +187,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
         $room = new Room();
         $room->setRoomType($entity)
-             ->setHotel($this->get('mbh.hotel.selector')->getSelected())
+                ->setHotel($this->get('mbh.hotel.selector')->getSelected())
         ;
         $form = $this->createForm(new RoomForm(), $room);
         $form->bind($request);
@@ -160,7 +195,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         if ($form->isValid()) {
             $dm->persist($room);
             $dm->flush();
-            
+
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', 'Запись успешно создана.')
             ;

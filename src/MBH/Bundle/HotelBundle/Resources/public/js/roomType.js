@@ -10,7 +10,7 @@ $(document).ready(function() {
         boostat: 2,
         maxboostedstep: 4
     });
-    
+
     $('#mbh_bundle_hotelbundle_room_type_type_additionalPlaces').TouchSpin({
         min: 0,
         max: 10,
@@ -18,8 +18,18 @@ $(document).ready(function() {
         boostat: 2,
         maxboostedstep: 4
     });
-    
+
     //pick-a-color
     $("#mbh_bundle_hotelbundle_room_type_type_color").pickAColor();
+
+    //roomType rooms datatables
+    $('.rooms-table').each(function() {
+        $(this).dataTable({
+            "processing": true,
+            "serverSide": true,
+            "ordering": false,
+            "ajax": Routing.generate('room_type_room_json', {'id': $(this).attr('data-room-type-id')})
+        });
+    });
 });
 

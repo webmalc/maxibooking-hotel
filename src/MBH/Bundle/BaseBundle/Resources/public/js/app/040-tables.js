@@ -18,10 +18,10 @@ $(document).ready(function() {
     });
 
     //Datatables
-    var table = $('table.table-striped').dataTable({
+    $.extend( $.fn.dataTable.defaults, {
         "pageLength": 50,
         "stateSave": true,
-        language: {
+        "language": {
             "sProcessing": "Подождите...",
             "sLengthMenu": "Показать _MENU_ записей",
             "sZeroRecords": "Записи отсутствуют.",
@@ -43,6 +43,8 @@ $(document).ready(function() {
             }
         }
     });
+    
+    var table = $('table.table-striped').not('.not-auto-datatable').dataTable();
 
     if (!$('table.table-striped').hasClass("without-fixed-header") && table.length) {
         new $.fn.dataTable.FixedHeader(table, {
