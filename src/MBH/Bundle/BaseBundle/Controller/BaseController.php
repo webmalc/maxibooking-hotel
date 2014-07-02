@@ -31,16 +31,17 @@ class BaseController extends Controller
      * Redirect after entity save
      * @param string $route
      * @param int $id
+     * @param params $params
      * @return Response
      */
-    public function afterSaveRedirect($route, $id)
+    public function afterSaveRedirect($route, $id, array $params = [])
     {
         if ($this->getRequest()->get('save') !== null) {
             
-            return $this->redirect($this->generateUrl($route . '_edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl($route . '_edit', array_merge(['id' => $id], $params)));
         }
         
-        return $this->redirect($this->generateUrl($route));
+        return $this->redirect($this->generateUrl($route, $params));
     }
     
     /**
@@ -48,10 +49,11 @@ class BaseController extends Controller
      * @param int $id
      * @param string $repo repository name
      * @param string $route route name for redirect
+     * @param params $params
      * @return Response
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    protected function deleteEntity($id, $repo, $route)
+    protected function deleteEntity($id, $repo, $route, array $params = [])
     {
         /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
@@ -70,7 +72,7 @@ class BaseController extends Controller
              ->getFlashBag()
              ->set('success', 'Запись успешно удалена.');
 
-        return $this->redirect($this->generateUrl($route));
+        return $this->redirect($this->generateUrl($route, $params));
     }
 
 }

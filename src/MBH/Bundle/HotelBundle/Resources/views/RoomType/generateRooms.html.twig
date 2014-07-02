@@ -1,0 +1,26 @@
+{% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
+
+{% set small_title = "генерация номеров для типа номера <" ~ entity.name ~ "> #" ~ entity.id %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('room_type_generate_rooms_process', {'id': entity.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+
+    <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+        <div class="container">
+            <ul class="nav navbar-nav">
+                <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сгенерировать номера</button></li><li>
+                <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{{ path('room_type_delete', {'id': entity.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i> Удалить</a></li>
+            </ul>
+        </div>
+    </div>
+            
+    {{ form_end(form) }}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
+
+{% set small_title = "редактирование номера для типа номера <" ~ entity.roomType.name ~ "> #" ~ entity.roomType.id %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('room_type_room_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+        <div class="container">
+            {% include 'MBHBaseBundle:Actions:saveButtons.html.twig'%}
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{{ path('room_type_room_delete', {'id': entity.id, 'roomType': entity.roomType.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i> Удалить</a></li>
+            </ul>
+        </div>
+    </div>
+
+    {{ form_end(form) }}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
+
+{% endblock %}

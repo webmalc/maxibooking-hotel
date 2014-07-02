@@ -182,8 +182,8 @@ class Builder extends ContainerAware
     public function filterMenu(ItemInterface $menu)
     {
         $router = $this->container->get('router');
+        $router->getContext()->setMethod('GET');
         $security = $this->container->get('security.context');
-        $metadataReader = new AnnotationDriver(new \Doctrine\Common\Annotations\AnnotationReader());
 
         foreach ($menu->getChildren() as $child) {
 
@@ -194,11 +194,13 @@ class Builder extends ContainerAware
 
             try {
                 $url = str_replace('app_dev.php/', '', parse_url($child->getUri()))['path'];
+
                 $controllerInfo = explode('::', $router->match($url)['_controller']);
 
                 $rMethod = new \ReflectionMethod($controllerInfo[0], $controllerInfo[1]);
 
                 $metadata = $rMethod->getDocComment();
+                
             } catch (\Exception $e) {
 
                 $menu->removeChild($child);
@@ -210,8 +212,9 @@ class Builder extends ContainerAware
             if (empty($metadata) || empty($roles[1])) {
                 continue;
             }
-
+            
             if (!$security->isGranted($roles[1])) {
+
                 $menu->removeChild($child);
             }
 

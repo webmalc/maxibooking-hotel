@@ -7,30 +7,66 @@
     <!-- Tabs headers -->
     <ul class="nav nav-tabs" role="tablist">
         {% for entity in entities %}
-            <li {% if loop.first %}class="active"{% endif %}>
+            <li {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}class="active"{% endif %}>
                 <a href="#{{entity.id}}" role="tab" data-toggle="tab">
-                    <i class="fa fa-circle-o" style="color:#{{entity.color}}" ></i>
+                    <small><i class="fa fa-circle" style="color:#{{entity.color}};"></i></small>
                     {{entity.name}}
                 </a> 
             </li>
         {% endfor %}
-            <li>
-                <a href="{{ path('room_type_new') }}"><i class="fa fa-plus"></i> Новый тип номера</a>
-            </li>
+        <li>
+            <a href="{{ path('room_type_new') }}"><i class="fa fa-plus"></i> Новый тип номера</a>
+        </li>
     </ul>
-
+        
     <!-- Tabs content -->
     <div class="tab-content">
         {% for entity in entities %}
-            <div class="tab-pane {% if loop.first %}active{% endif %}" id="{{entity.id}}">
+            <div class="tab-pane {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}active{% endif %}" id="{{entity.id}}">
 
                 <!-- Tab actions -->
-                <div class="btn-list text-right">
-                    <a href="{{ path('room_type_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success"><i class="fa fa-edit"></i> Редактировать <{{entity.name}}></a>
-                    <a href="{{ path('room_type_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link"><i class="fa fa-trash-o"></i> Удалить <{{entity.name}}></a>
+                <div class="btn-list spacer-bottom text-right">
+                    <a href="{{ path('room_type_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="Редактировать тип номера <{{entity.name}}>"><i class="fa fa-edit"></i> Редактировать</a>
+                    <a href="{{ path('room_type_room_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="Создать номера для типа номера <{{entity.name}}>"><i class="fa fa-plus"></i> Добавить номер</a>
+                    <a href="{{ path('room_type_generate_rooms', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="Сгенерировать номера для типа номера <{{entity.name}}>"><i class="fa fa-magic"></i> Сгенерировать номера</a>
+                    <a href="{{ path('room_type_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="Удалить тип номера <{{entity.name}}>"><i class="fa fa-trash-o"></i> Удалить</a>
                 </div>
 
-                Номера типа: {{entity.name}}
+                <!-- Rooms list -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Список номеров</h3>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-striped table-hover table-condensed table-icons table-actions">
+                            <thead>
+                                <tr>
+                                    <th class="td-xs"></th>
+                                    <th>Название</th>
+                                    <th class="td-sm"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for room in entity.rooms %}
+                                    <tr>
+                                        <td class="text-center table-icon"><i class="fa fa-home"></i></td>
+                                        <td>
+                                            <a href="{{ path('room_type_room_edit', { 'id': room.id }) }}" rel="main" title="Редактирование записи" data-toggle="tooltip">{{ room.name }}</a>
+                                        </td>
+                                        <td class="table-actions-td text-center">
+                                            <a href="{{ path('room_type_room_edit', { 'id': room.id }) }}" class="btn btn-success btn-xs" title="Редактирование записи" data-toggle="tooltip">
+                                                <i class="fa fa-pencil-square-o"></i>
+                                            </a>
+                                            <a href="{{ path('room_type_room_delete', { 'id': room.id, 'roomType': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
+                                                <i class="fa fa-trash-o"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         {% endfor %}
     </div>
