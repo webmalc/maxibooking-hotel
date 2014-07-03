@@ -77,21 +77,20 @@ class Builder extends ContainerAware
         $menu->addChild('hotels', ['route' => '_welcome', 'label' => 'Отели'])
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-building-o'])
         ;
-        $menu['hotels']->addChild('hotelsList', ['route' => 'hotel', 'label' => 'Список отелей']);
-        $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Типы номеров']);
+        $menu['hotels']->addChild('hotelsList', ['route' => 'hotel', 'label' => 'Отели']);
+        $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номера']);
 
         //Prices links
         $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Цены'])
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-dollar'])
         ;
         $menu['prices']->addChild('tariffs', ['route' => '_welcome', 'label' => 'Тарифы']);
-        $menu['prices']->addChild('seasonsCalculationFormulas', ['route' => '_welcome', 'label' => 'Формулы рассчета']);
-        
+
         //Users links
         $menu->addChild('users', ['route' => '_welcome', 'label' => 'Пользователи'])
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-users'])
         ;
-        $menu['users']->addChild('usersList', ['route' => 'user', 'label' => 'Список пользователей']);
+        $menu['users']->addChild('usersList', ['route' => 'user', 'label' => 'Пользователи']);
 
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])
