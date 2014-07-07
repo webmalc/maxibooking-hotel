@@ -1,0 +1,12 @@
+{% extends 'MBHPriceBundle:Tariff:layout.html.twig' %}
+
+{% set small_title = "cоздание" %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('tariff_create'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false, 'save_text': 'Сохранить и продолжить'} %}
+    {{ form_end(form) }}
+    
+{% endblock %}

@@ -1,0 +1,21 @@
+{% set menu = [
+    {'route': 'tariff_edit', 'title': '<i class="fa fa-info-circle"></i> Основная информация'},
+    {'route': 'room_quota', 'title': '<i class="fa fa-home"></i>  Квоты на номера'}
+]
+%}
+
+{% if entity.isDefault or (entity.isDefault != true and entity.type == 'price') %}
+    {% set menu = menu|merge([
+        {'route': 'room_price', 'title': '<i class="fa fa-ruble"></i> Цены на номера'},
+        {'route': 'food_price', 'title': '<i class="fa fa-ruble"></i> Цены на питание'},
+    ])
+    %}  
+{% endif %}
+
+<ul class="nav nav-tabs" role="tablist">
+{% for item in menu %}
+    <li {% if loop.index == active %}class="active"{% endif %}>
+        <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route, {'id': entity.id}) }}"{% endif %}>{{item.title|raw}}</a>
+    </li>
+{% endfor %}
+</ul>

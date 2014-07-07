@@ -20,6 +20,7 @@
                 <link rel="stylesheet" href="//cdn.datatables.net/tabletools/2.2.1/css/dataTables.tableTools.css">
                 <link rel="stylesheet" href="//cdn.datatables.net/fixedheader/2.1.1/css/dataTables.fixedHeader.css">
                 <link rel="stylesheet" href="//cdn.datatables.net/plug-ins/be7019ee387/integration/bootstrap/3/dataTables.bootstrap.css">
+                <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css">
 
                 {% stylesheets filter='cssrewrite, uglifycss' 
                     '@MBHBaseBundle/Resources/public/css/vendor/*'
@@ -51,7 +52,9 @@
             <script src="//cdn.datatables.net/fixedheader/2.1.1/js/dataTables.fixedHeader.min.js"></script>
             <script src="//cdn.datatables.net/plug-ins/be7019ee387/integration/bootstrap/3/dataTables.bootstrap.js"></script>
             <script src="//cdnjs.cloudflare.com/ajax/libs/tinycolor/0.11.1/tinycolor.min.js"></script>
-            
+            <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
+            <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/locales/bootstrap-datepicker.ru.min.js"></script>
+
             {% if app.environment == 'dev' %}
 
                 <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>

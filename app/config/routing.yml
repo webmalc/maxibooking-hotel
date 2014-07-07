@@ -1,3 +1,13 @@
+mbh_package:
+    resource: "@MBHPackageBundle/Controller/"
+    type:     annotation
+    prefix:   /package
+
+mbh_price:
+    resource: "@MBHPriceBundle/Controller/"
+    type:     annotation
+    prefix:   /management/price
+
 mbh_base:
     resource: "@MBHBaseBundle/Controller/"
     type:     annotation

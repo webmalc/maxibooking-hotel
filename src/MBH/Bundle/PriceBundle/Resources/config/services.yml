@@ -1,0 +1,6 @@
+services:
+    mbh.tariff.validator:
+        class: MBH\Bundle\PriceBundle\Validator\Constraints\TariffValidator
+        arguments: [@service_container]
+        tags:
+            - { name: validator.constraint_validator, alias: mbh.tariff.validator }

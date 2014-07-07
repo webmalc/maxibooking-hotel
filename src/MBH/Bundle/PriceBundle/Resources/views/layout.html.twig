@@ -1,0 +1,10 @@
+{% extends "MBHBaseBundle::page.html.twig" %}
+
+{% block scripts %}
+    {{ parent() }}
+    
+    {% javascripts filter='uglifyjs2''@MBHPriceBundle/Resources/public/js/*'%}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}

@@ -114,6 +114,9 @@ class Hotel extends Base
     /** @ODM\ReferenceMany(targetDocument="Room", mappedBy="hotel") */
     protected $rooms;
     
+    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff", mappedBy="hotel") */
+    protected $tariffs;
+    
     /**
      * Set fullTitle
      *
@@ -266,6 +269,7 @@ class Hotel extends Base
     {
         $this->roomTypes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -326,5 +330,35 @@ class Hotel extends Base
     public function getRooms()
     {
         return $this->rooms;
+    }
+
+    /**
+     * Add tariff
+     *
+     * @param MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     */
+    public function addTariff(\MBH\Bundle\PriceBundle\Document\Tariff $tariff)
+    {
+        $this->tariffs[] = $tariff;
+    }
+
+    /**
+     * Remove tariff
+     *
+     * @param MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     */
+    public function removeTariff(\MBH\Bundle\PriceBundle\Document\Tariff $tariff)
+    {
+        $this->tariffs->removeElement($tariff);
+    }
+
+    /**
+     * Get tariffs
+     *
+     * @return Doctrine\Common\Collections\Collection $tariffs
+     */
+    public function getTariffs()
+    {
+        return $this->tariffs;
     }
 }

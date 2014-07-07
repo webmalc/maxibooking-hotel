@@ -15,3 +15,8 @@ parameters:
     maxibooking.calculation.types:
         perRoom:      "Цена за номер"
         customPrices: "Ручные цены"
+        
+    #Типы тарифов
+    maxibooking.tariff.types:
+        rate:      "Процент от цен основного тарифа"
+        price: "Конкретные цены"

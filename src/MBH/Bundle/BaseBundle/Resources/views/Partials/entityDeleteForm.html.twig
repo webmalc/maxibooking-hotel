@@ -1,7 +1,3 @@
-{{ form_start(delete_form, {'action': path(route, {'id': entity.id}), 'method': 'DELETE', 'attr': {'id': 'entity-delete-form'}}) }}
-{{ form_widget(delete_form) }}
-{{ form_end(delete_form) }}
-
 <div class="modal fade" id="entity-delete-confirmation" tabindex="-1" role="dialog" aria-labelledby="entity-delete-button" aria-hidden="true">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">

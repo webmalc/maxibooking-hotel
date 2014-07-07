@@ -1,3 +1,15 @@
+var deleteLink = function() {
+    $('.delete-link').click(function(event) {
+        event.preventDefault();
+
+        var href = ($(this).attr('href')) ? $(this).attr('href') : $(this).attr('data-href');
+        $('#entity-delete-button').click(function() {
+            window.location.href = href;
+        });
+        $('#entity-delete-confirmation').modal();
+    });
+};
+
 /*global window */
 $(document).ready(function() {
     'use strict';
@@ -5,38 +17,14 @@ $(document).ready(function() {
     //Tooltips configuration
     $('a[data-toggle="tooltip"], li[data-toggle="tooltip"]').tooltip();
 
-    //BootstrapSwitch configuration
-    $('input[type="checkbox"][class!="plain-html"]').bootstrapSwitch({
-        'size': 'small',
-        'onText': 'да',
-        'offText': 'нет',
-        'labelText': '<i class="fa fa-arrows-h" style="opacity: 0.6;"></i>'
-    });
-
-    //Select2 configuration
-    $('select[class!="plain-html"]').select2({
-        placeholder: "Сделайте выбор",
-        allowClear: true,
-        formatSelection: function(item, container) {
-            var optgroup = $(item.element).parent('optgroup').attr('label');
-            if (!optgroup) {
-                return item.text;
-            } else {
-                return optgroup + ': ' + item.text.toLowerCase();
-            }
-        }
-    });
-
     //delete link
-    $('.delete-link').click(function(event) {
-        return confirm("Точно удалить?");
-    });
+    deleteLink();
 
     //autohide messages
     window.setTimeout(function() {
-    $(".autohide").fadeTo(400, 0).slideUp(400, function(){
-        $(this).remove(); 
-    });
+        $(".autohide").fadeTo(400, 0).slideUp(400, function() {
+            $(this).remove();
+        });
     }, 5000);
 });
 

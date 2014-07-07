@@ -44,7 +44,7 @@ class HotelType extends AbstractType
                     'label' => 'Количество дней продажи',
                     'group' => 'Настройки',
                     'required' => true,
-                    'attr' => ['placeholder' => 'hotel', 'class' => 'spinner'],
+                    'attr' => ['placeholder' => '365', 'class' => 'spinner'],
                     'help' => 'На сколько дней открыта продажа от текущего числа'
                 ])
                 ->add('isDefault', 'checkbox', [

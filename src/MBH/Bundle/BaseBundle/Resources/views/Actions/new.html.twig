@@ -1,5 +1,9 @@
+{% if save_close is not defined %}
+    {% set save_close = true %}
+{% endif %}
+
 <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
     <div class="container">
-        {% include 'MBHBaseBundle:Actions:saveButtons.html.twig'%}
+        {% include 'MBHBaseBundle:Actions:saveButtons.html.twig' with {'save_close': save_close, 'save_text': save_text|default('Сохранить')}%}
     </div>
 </div>

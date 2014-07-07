@@ -25,6 +25,8 @@ class AppKernel extends Kernel
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),
             new MBH\Bundle\UserBundle\MBHUserBundle(),
             new MBH\Bundle\HotelBundle\MBHHotelBundle(),
+            new MBH\Bundle\PriceBundle\MBHPriceBundle(),
+            new MBH\Bundle\PackageBundle\MBHPackageBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

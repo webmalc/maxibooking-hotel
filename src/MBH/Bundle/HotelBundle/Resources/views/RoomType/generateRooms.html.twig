@@ -14,7 +14,7 @@
                 <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="{{ path('room_type_delete', {'id': entity.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i> Удалить</a></li>
+                <li><button data-href="{{ path('room_type_delete', {'id': entity.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i> Удалить</button></li>
             </ul>
         </div>
     </div>

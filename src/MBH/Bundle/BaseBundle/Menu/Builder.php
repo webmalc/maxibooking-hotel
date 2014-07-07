@@ -74,20 +74,20 @@ class Builder extends ContainerAware
         }
 
         //Hotels links
-        $menu->addChild('hotels', ['route' => '_welcome', 'label' => 'Отели'])
+        $menu->addChild('hotels', ['url' => '#', 'label' => 'Отели'])
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-building-o'])
         ;
         $menu['hotels']->addChild('hotelsList', ['route' => 'hotel', 'label' => 'Отели']);
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номера']);
 
         //Prices links
-        $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Цены'])
+        $menu->addChild('prices', ['url' => '#', 'label' => 'Цены'])
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-dollar'])
         ;
-        $menu['prices']->addChild('tariffs', ['route' => '_welcome', 'label' => 'Тарифы']);
+        $menu['prices']->addChild('tariffs', ['route' => 'tariff', 'label' => 'Тарифы']);
 
         //Users links
-        $menu->addChild('users', ['route' => '_welcome', 'label' => 'Пользователи'])
+        $menu->addChild('users', ['url' => '#', 'label' => 'Пользователи'])
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-users'])
         ;
         $menu['users']->addChild('usersList', ['route' => 'user', 'label' => 'Пользователи']);

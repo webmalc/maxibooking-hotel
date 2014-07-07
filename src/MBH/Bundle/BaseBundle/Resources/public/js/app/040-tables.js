@@ -41,6 +41,9 @@ $(document).ready(function() {
                 "sSortAscending": ": активировать для сортировки столбца по возрастанию",
                 "sSortDescending": ": активировать для сортировки столбцов по убыванию"
             }
+        },
+        "drawCallback": function(settings, json) {
+            deleteLink();
         }
     });
     

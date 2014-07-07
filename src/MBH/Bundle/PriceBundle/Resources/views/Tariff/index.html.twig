@@ -1,0 +1,23 @@
+{% extends 'MBHPriceBundle:Tariff:layout.html.twig' %}
+
+{% set small_title = "cписок" %}    
+
+{% block content %}
+
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active"><a href="#defaults" role="tab" data-toggle="tab">Основные ({{ defaults.count(true) }})</a></li>
+        <li><a href="#others" role="tab" data-toggle="tab">Дополнительные ({{ others.count(true) }})</a></li>
+        <li><a href="#old" role="tab" data-toggle="tab">Завершенные ({{ old.count(true) }})</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane active" id="defaults">{% include 'MBHPriceBundle:Tariff:indexTable.html.twig' with {'entities': defaults} %}</div>
+        <div class="tab-pane" id="others">{% include 'MBHPriceBundle:Tariff:indexTable.html.twig' with {'entities': others} %}</div>
+        <div class="tab-pane" id="old">{% include 'MBHPriceBundle:Tariff:indexTable.html.twig' with {'entities': old} %}</div>
+    </div>
+
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'tariff_new'} %}
+
+{% endblock %} 
+
