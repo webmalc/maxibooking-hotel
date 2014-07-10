@@ -3,6 +3,8 @@
 use Symfony\Component\ClassLoader\ApcClassLoader;
 use Symfony\Component\HttpFoundation\Request;
 
+mb_internal_encoding('utf-8');
+
 $loader = require_once __DIR__.'/../var/bootstrap.php.cache';
 
 // Use APC for autoloading to improve performance.

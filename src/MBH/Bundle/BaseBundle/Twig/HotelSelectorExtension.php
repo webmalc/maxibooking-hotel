@@ -32,7 +32,7 @@ class HotelSelectorExtension extends \Twig_Extension
 
     public function getHotels()
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         
         $entities = $dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('h')

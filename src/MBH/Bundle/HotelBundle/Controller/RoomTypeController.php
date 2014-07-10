@@ -30,7 +30,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function jsonRoomsListAction(Request $request, $id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $qb = $dm->getRepository('MBHHotelBundle:Room')
@@ -77,7 +77,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function editRoomAction($id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:Room')->find($id);
@@ -105,7 +105,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function updateRoomAction(Request $request, $id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:Room')->find($id);
@@ -150,7 +150,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function newRoomAction($id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
@@ -177,7 +177,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function createRoomAction(Request $request, $id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
@@ -224,7 +224,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function generateRoomsAction($id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
@@ -251,7 +251,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function generateRoomsProcessAction(Request $request, $id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
@@ -303,7 +303,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function indexAction()
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entities = $dm->getRepository('MBHHotelBundle:RoomType')->createQueryBuilder('s')
@@ -334,7 +334,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     {
         $entity = new RoomType();
         $form = $this->createForm(
-                new RoomTypeType(), $entity, ['calculationTypes' => $this->container->getParameter('maxibooking.calculation.types')]
+                new RoomTypeType(), $entity, ['calculationTypes' => $this->container->getParameter('mbh.calculation.types')]
         );
 
         return array(
@@ -356,12 +356,12 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $entity->setHotel($this->get('mbh.hotel.selector')->getSelected());
 
         $form = $this->createForm(
-                new RoomTypeType(), $entity, ['calculationTypes' => $this->container->getParameter('maxibooking.calculation.types')]
+                new RoomTypeType(), $entity, ['calculationTypes' => $this->container->getParameter('mbh.calculation.types')]
         );
         $form->bind($request);
 
         if ($form->isValid()) {
-            /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
             $dm->persist($entity);
             $dm->flush();
@@ -389,7 +389,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function updateAction(Request $request, $id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
@@ -399,13 +399,13 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         }
 
         $form = $this->createForm(
-                new RoomTypeType(), $entity, ['calculationTypes' => $this->container->getParameter('maxibooking.calculation.types')]
+                new RoomTypeType(), $entity, ['calculationTypes' => $this->container->getParameter('mbh.calculation.types')]
         );
         $form->bind($request);
 
         if ($form->isValid()) {
 
-            /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
             $dm->persist($entity);
             $dm->flush();
@@ -434,7 +434,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function editAction($id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
@@ -444,7 +444,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         }
 
         $form = $this->createForm(
-                new RoomTypeType(), $entity, ['calculationTypes' => $this->container->getParameter('maxibooking.calculation.types')]
+                new RoomTypeType(), $entity, ['calculationTypes' => $this->container->getParameter('mbh.calculation.types')]
         );
 
         return array(

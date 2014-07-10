@@ -24,7 +24,7 @@ class BaseController extends Controller
             return null;
         }
         
-        return array_slice($logs, 0, $this->container->getParameter('maxibooking.logs.max'));
+        return array_slice($logs, 0, $this->container->getParameter('mbh.logs.max'));
     }
     
     /**
@@ -55,7 +55,7 @@ class BaseController extends Controller
      */
     protected function deleteEntity($id, $repo, $route, array $params = [])
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository($repo)->find($id);

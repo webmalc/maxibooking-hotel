@@ -16,7 +16,6 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @Gedmo\Loggable
  * @MBHValidator\Tariff
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
-
  */
 class Tariff extends Base
 {

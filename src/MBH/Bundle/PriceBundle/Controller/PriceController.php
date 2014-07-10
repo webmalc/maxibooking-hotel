@@ -30,7 +30,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
      */
     public function foodAction($id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
@@ -40,7 +40,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
         }
 
         $form = $this->createForm(
-                new FoodPriceType(), [], ['entity' => $entity, 'types' => $this->container->getParameter('maxibooking.food.types')]
+                new FoodPriceType(), [], ['entity' => $entity, 'types' => $this->container->getParameter('mbh.food.types')]
         );
 
         return array(
@@ -58,7 +58,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
      */
     public function foodCreateAction(Request $request, $id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
@@ -68,7 +68,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
         }
 
         $form = $this->createForm(
-                new FoodPriceType(), [], ['entity' => $entity, 'types' => $this->container->getParameter('maxibooking.food.types')]
+                new FoodPriceType(), [], ['entity' => $entity, 'types' => $this->container->getParameter('mbh.food.types')]
         );
         $form->bind($request);
 
@@ -115,7 +115,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
      */
     public function roomQuotaAction($id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
@@ -143,7 +143,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
      */
     public function roomQuotaCreateAction(Request $request, $id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
@@ -204,7 +204,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
      */
     public function roomPriceAction($id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
@@ -232,7 +232,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
      */
     public function roomPriceCreateAction(Request $request, $id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);

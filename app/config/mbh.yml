@@ -1,9 +1,9 @@
 parameters:
     #параметры логов
-    maxibooking.logs.max: 100
+    mbh.logs.max: 100
     
     #Типы питания
-    maxibooking.food.types:
+    mbh.food.types:
         RO:  "RO - Без питания"
         BB:  "BB - Завтрак"
         HB:  "HB - Завтрак и ужин"
@@ -12,11 +12,20 @@ parameters:
         UAI: "UAI - Ультра все включено"
         
     #Типы рассчета
-    maxibooking.calculation.types:
+    mbh.calculation.types:
         perRoom:      "Цена за номер"
         customPrices: "Ручные цены"
         
     #Типы тарифов
-    maxibooking.tariff.types:
+    mbh.tariff.types:
         rate:      "Процент от цен основного тарифа"
-        price: "Конкретные цены"
+        price:     "Конкретные цены"
+
+    #М/Ж
+    mbh.gender.types:
+        male: "Мужчина"
+        female: "Женщина"
+        unknown: "Неизвестно"
+
+    
+    

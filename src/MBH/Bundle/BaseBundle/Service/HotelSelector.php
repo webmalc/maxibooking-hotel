@@ -28,7 +28,7 @@ class HotelSelector
         $session = $this->container->get('session');
         $id = $session->get('selected_hotel_id');
 
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->container
                 ->get('doctrine_mongodb')
                 ->getManager()
@@ -70,7 +70,7 @@ class HotelSelector
         $session = $this->container->get('session');
         $session->remove('selected_hotel_id');
         
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->container
                 ->get('doctrine_mongodb')
                 ->getManager()

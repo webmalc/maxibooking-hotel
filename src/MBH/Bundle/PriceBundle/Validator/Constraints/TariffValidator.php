@@ -21,11 +21,15 @@ class TariffValidator extends ConstraintValidator
 
     public function validate($object, Constraint $constraint)
     {
+        if($object->getBegin() >= $object->getEnd()) {
+            $this->context->addViolation($constraint->beginEndMessage);
+        }
+        
         if (!$object->getIsDefault()) {
             return true;
         }
         
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         $qb = $dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('q');
 

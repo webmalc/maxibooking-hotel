@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\PriceBundle\Controller;
+namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -8,72 +8,74 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\PriceBundle\Form\TariffMainType;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Form\TouristType;
 
 /**
- * @Route("tariff")
+ * @Route("/tourist")
  */
-class TariffController extends Controller implements CheckHotelControllerInterface
+class TouristController extends Controller
 {
 
     /**
      * Lists all entities.
      *
-     * @Route("/", name="tariff")
+     * @Route("/", name="tourist")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER')")
      * @Template()
      */
     public function indexAction()
     {
+        return [];
+    }
+    
+    /**
+     * Lists all entities as json.
+     *
+     * @Route("/json", name="tourist_json", defaults={"_format"="json"}, options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function jsonAction(Request $request)
+    {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $defaults = $dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('s')
-                       ->field('isDefault')->equals(true)
-                       ->field('end')->gte(new \DateTime())
-                       ->sort(['begin' => 'desc', 'end' => 'desc'])
-                       ->getQuery()
-                       ->execute()
+        $qb = $dm->getRepository('MBHPackageBundle:Tourist')
+                 ->createQueryBuilder('r')
+                 ->skip($request->get('start'))
+                 ->limit($request->get('length'))
         ;
-        
-        $others = $dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('s')
-                     ->field('isDefault')->equals(false)
-                     ->field('end')->gte(new \DateTime())
-                     ->sort(['begin' => 'desc', 'end' => 'desc'])
-                     ->getQuery()
-                     ->execute()
-        ;
-        
-        $old = $dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('s')
-                     ->field('end')->lt(new \DateTime())
-                     ->sort(['begin' => 'desc', 'end' => 'desc'])
-                     ->getQuery()
-                     ->execute()
-        ;
-        
-        return array(
-            'defaults' => $defaults,
-            'others'   => $others,
-            'old'      => $old
-        );
+
+        $search = $request->get('search')['value'];
+        if (!empty($search)) {
+            $qb->addOr($qb->expr()->field('fullName')->equals(new \MongoRegex('/.*'. $search .'.*/ui')));
+        }
+
+        $entities = $qb->getQuery()->execute();
+
+        return [
+            'entities' => $entities,
+            'total' => $entities->count(),
+            'draw' => $request->get('draw')
+        ];
     }
 
     /**
      * Displays a form to create a new entity.
      *
-     * @Route("/new", name="tariff_new")
+     * @Route("/new", name="tourist_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER')")
      * @Template()
      */
     public function newAction()
-    {   
-        $entity = new Tariff();
+    {
+        $entity = new Tourist();
         $form = $this->createForm(
-                new TariffMainType(), $entity, ['types' => $this->container->getParameter('mbh.tariff.types')]
+                new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
         );
 
         return array(
@@ -84,18 +86,16 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     /**
      * Creates a new entity.
      *
-     * @Route("/create", name="tariff_create")
+     * @Route("/create", name="tourist_create")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
-     * @Template("MBHPriceBundle:Tariff:new.html.twig")
+     * @Security("is_granted('ROLE_USER')")
+     * @Template("MBHPackageBundle:Tourist:new.html.twig")
      */
     public function createAction(Request $request)
     {
-        $entity = new Tariff();
-        $entity->setHotel($this->get('mbh.hotel.selector')->getSelected());
-        
+        $entity = new Tourist();
         $form = $this->createForm(
-                new TariffMainType(), $entity, ['types' => $this->container->getParameter('mbh.tariff.types')]
+                new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
         );
         $form->bind($request);
 
@@ -106,10 +106,10 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $dm->flush();
 
             $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', 'Тариф успешно создана. Теперь необходимо заполнить цены.')
+                    ->set('success', 'Запись успешно создана.')
             ;
 
-            return $this->afterSaveRedirect('tariff', $entity->getId());
+            return $this->afterSaveRedirect('tourist', $entity->getId());
         }
 
         return array(
@@ -121,24 +121,24 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     /**
      * Edits an existing entity.
      *
-     * @Route("/{id}", name="tariff_update")
+     * @Route("/{id}", name="tourist_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN')")
-     * @Template("MBHPriceBundle:Tariff:edit.html.twig")
+     * @Security("is_granted('ROLE_USER')")
+     * @Template("MBHPackageBundle:Tourist:edit.html.twig")
      */
     public function updateAction(Request $request, $id)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
+        $entity = $dm->getRepository('MBHPackageBundle:Tourist')->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException();
         }
 
         $form = $this->createForm(
-                new TariffMainType(), $entity, ['types' => $this->container->getParameter('mbh.tariff.types')]
+                new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
         );
         
         $form->bind($request);
@@ -153,8 +153,8 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', 'Запись успешно отредактирована.')
             ;
-
-            return $this->afterSaveRedirect('tariff', $entity->getId());
+            
+            return $this->afterSaveRedirect('tourist', $entity->getId());
         }
 
         return array(
@@ -163,13 +163,13 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             'logs' => $this->logs($entity)
         );
     }
-
+    
     /**
      * Displays a form to edit an existing entity.
      *
-     * @Route("/{id}/edit", name="tariff_edit")
+     * @Route("/{id}/edit", name="tourist_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER')")
      * @Template()
      */
     public function editAction($id)
@@ -177,33 +177,33 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
+        $entity = $dm->getRepository('MBHPackageBundle:Tourist')->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException();
         }
-
+        
         $form = $this->createForm(
-                new TariffMainType(), $entity, ['types' => $this->container->getParameter('mbh.tariff.types')]
+                new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
         );
-
+        
         return array(
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         );
     }
-
+    
     /**
      * Delete entity.
      *
-     * @Route("/{id}/delete", name="tariff_delete")
+     * @Route("/{id}/delete", name="tourist_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function deleteAction($id)
     {
-        return $this->deleteEntity($id, 'MBHPriceBundle:Tariff', 'tariff');
+        return $this->deleteEntity($id, 'MBHPackageBundle:Tourist', 'tourist');
     }
 
 }

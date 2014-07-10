@@ -50,7 +50,7 @@ class HotelController extends Controller
      */
     public function indexAction()
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         
         $entities = $dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('s')
@@ -75,7 +75,7 @@ class HotelController extends Controller
     public function newAction()
     {
         $entity = new Hotel();
-        $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('maxibooking.food.types')]);
+        $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('mbh.food.types')]);
 
         return array(
             'form' => $form->createView(),
@@ -93,11 +93,11 @@ class HotelController extends Controller
     public function createAction(Request $request)
     {
         $entity = new Hotel();
-        $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('maxibooking.food.types')]);
+        $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('mbh.food.types')]);
         $form->bind($request);
 
         if ($form->isValid()) {
-            /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
             $dm->persist($entity);
             $dm->flush();
@@ -125,7 +125,7 @@ class HotelController extends Controller
      */
     public function updateAction(Request $request, $id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:Hotel')->find($id);
@@ -134,13 +134,13 @@ class HotelController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('maxibooking.food.types')]);
+        $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('mbh.food.types')]);
         
         $form->bind($request);
 
         if ($form->isValid()) {
 
-            /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
             $dm->persist($entity);
             $dm->flush();
@@ -169,7 +169,7 @@ class HotelController extends Controller
      */
     public function editAction($id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:Hotel')->find($id);
@@ -178,7 +178,7 @@ class HotelController extends Controller
             throw $this->createNotFoundException();
         }
         
-        $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('maxibooking.food.types')]);
+        $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('mbh.food.types')]);
         
         return array(
             'entity' => $entity,

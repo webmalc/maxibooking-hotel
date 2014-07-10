@@ -1,0 +1,12 @@
+services:
+    mbh.package.subscriber:
+        class: MBH\Bundle\PackageBundle\EventListener\PackageSubscriber
+        arguments: [@service_container]
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+            
+    mbh.package.validator:
+            class: MBH\Bundle\PackageBundle\Validator\Constraints\PackageValidator
+            arguments: [@service_container]
+            tags:
+                - { name: validator.constraint_validator, alias: mbh.package.validator }

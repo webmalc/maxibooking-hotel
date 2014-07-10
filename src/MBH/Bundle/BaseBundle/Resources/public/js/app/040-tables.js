@@ -28,6 +28,7 @@ $(document).ready(function() {
             "sInfo": "Записи с _START_ до _END_ из _TOTAL_ записей",
             "sInfoEmpty": "Записи с 0 до 0 из 0 записей",
             "sInfoFiltered": "(отфильтровано из _MAX_ записей)",
+            "sEmptyTable": "Ничего не найдено",
             "sInfoPostFix": "",
             "sSearch": "Поиск ",
             "sUrl": "",

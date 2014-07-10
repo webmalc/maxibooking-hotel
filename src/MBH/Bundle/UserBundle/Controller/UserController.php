@@ -27,7 +27,7 @@ class UserController extends Controller
      */
     public function indexAction()
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         
         $entities = $dm->getRepository('MBHUserBundle:User')->createQueryBuilder('q')
@@ -75,7 +75,7 @@ class UserController extends Controller
         $form->bind($request);
 
         if ($form->isValid()) {
-            /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
             $dm->persist($entity);
             $dm->flush();
@@ -103,7 +103,7 @@ class UserController extends Controller
      */
     public function editAction($id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHUserBundle:User')->find($id);
@@ -131,7 +131,7 @@ class UserController extends Controller
      */
     public function updateAction(Request $request, $id)
     {
-        /* @var $dm  Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHUserBundle:User')->find($id);

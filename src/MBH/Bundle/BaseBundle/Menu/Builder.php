@@ -31,10 +31,9 @@ class Builder extends ContainerAware
         $menu->addChild('reservations', ['route' => '_welcome', 'label' => 'Бронирование'])
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-plane'])
         ;
-        $menu['reservations']->addChild('search', ['route' => '_welcome', 'label' => 'Подбор брони']);
-        $menu['reservations']->addChild('reservationNew', ['route' => '_welcome', 'label' => 'Новая бронь']);
+        $menu['reservations']->addChild('search', ['route' => '_welcome', 'label' => 'Подбор проживания']);
         $menu['reservations']->addChild('reservationsList', ['route' => '_welcome', 'label' => 'Список броней']);
-        $menu['reservations']->addChild('clients', ['route' => '_welcome', 'label' => 'Клиенты']);
+        $menu['reservations']->addChild('clients', ['route' => 'tourist', 'label' => 'Отчеты']);
         $menu['reservations']->addChild('reservationsRequests', ['route' => '_welcome', 'label' => 'Он-лайн заявки']);
 
         // Cash links
@@ -43,15 +42,6 @@ class Builder extends ContainerAware
         ;
         $menu['cash']->addChild('cashDocuments', ['route' => '_welcome', 'label' => 'Документы']);
         $menu['cash']->addChild('cashbook', ['route' => '_welcome', 'label' => 'Кассовая книга']);
-
-        // Reports links
-        $menu->addChild('reports', ['route' => '_welcome', 'label' => 'Отчеты'])
-                ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bar-chart-o'])
-        ;
-        $menu['reports']->addChild('reportRooms', ['route' => '_welcome', 'label' => 'По номерам']);
-        $menu['reports']->addChild('reportPrices', ['route' => '_welcome', 'label' => 'По ценам']);
-        $menu['reports']->addChild('analytics', ['route' => '_welcome', 'label' => 'Аналитика']);
-
 
         return $this->filterMenu($menu);
     }
@@ -81,17 +71,15 @@ class Builder extends ContainerAware
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номера']);
 
         //Prices links
-        $menu->addChild('prices', ['url' => '#', 'label' => 'Цены'])
-                ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-dollar'])
+        $menu->addChild('prices', ['route' => 'tariff', 'label' => 'Цены'])
+                ->setAttributes(['icon' => 'fa fa-dollar'])
         ;
-        $menu['prices']->addChild('tariffs', ['route' => 'tariff', 'label' => 'Тарифы']);
-
+        
         //Users links
-        $menu->addChild('users', ['url' => '#', 'label' => 'Пользователи'])
-                ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-users'])
+        $menu->addChild('users', ['route' => 'user', 'label' => 'Пользователи'])
+                ->setAttributes(['icon' => 'fa fa-users'])
         ;
-        $menu['users']->addChild('usersList', ['route' => 'user', 'label' => 'Пользователи']);
-
+        
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])
                 ->setAttribute('icon', 'fa fa-arrows-h')
