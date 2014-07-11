@@ -23,13 +23,13 @@ class PackageController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $tariff = $dm->getRepository('MBHPriceBundle:Tariff')
-           ->findOneBy([]);
+           ->find('53be912970bf7692288b4567');
         
         $tourist = $dm->getRepository('MBHPackageBundle:Tourist')
            ->find('53be5b5070bf7659168b4567');
         
-        $begin = new \DateTime('2014-07-15');
-        $end = new \DateTime('2014-07-20');
+        $begin = new \DateTime('2014-11-15');
+        $end = new \DateTime('2014-11-20');
         
         $package = new Package();
         $package->setBegin($begin)

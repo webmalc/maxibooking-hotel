@@ -15,7 +15,7 @@
     {% endif %}
 
     <div class="container main-container">
-
+        
         <h2 id="main-header">
             {% if title_url is defined and title_url %}
                 <a href="{{title_url}}">{{ title|default(project_title) }}</a>
@@ -28,7 +28,7 @@
         </h2>
 
         {% block messages %}
-            {% include 'MBHBaseBundle::messages.html.twig' %}
+            <div id="messages">{% include 'MBHBaseBundle::messages.html.twig' %}</div>
         {% endblock %}
 
     {% block content %}{% endblock %}

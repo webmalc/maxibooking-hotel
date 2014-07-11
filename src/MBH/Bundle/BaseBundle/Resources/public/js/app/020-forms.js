@@ -30,6 +30,9 @@ $(document).ready(function () {
         }
     });
     
+    //
+    $('.form-horizontal, .form-inline, .are-you-sure').areYouSure({'message': 'Внесенные изменения не сохранены!'});
+    
     //Datepicker configuration
     $('.datepicker').datepicker({
         language: "ru",

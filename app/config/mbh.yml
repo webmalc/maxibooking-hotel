@@ -1,4 +1,8 @@
 parameters:
+    #генерация кеша
+    mbh.room.cache.message: <i class="fa fa-spinner fa-spin"></i> Внимание! Идет пересчет цен и количества свободных номеров.
+    mbh.room.cache.message.type: danger
+    
     #параметры логов
     mbh.logs.max: 100
     

@@ -51,9 +51,9 @@ $(document).ready(function() {
     var table = $('table.table-striped').not('.not-auto-datatable').dataTable();
 
     if (!$('table.table-striped').hasClass("without-fixed-header") && table.length) {
-        new $.fn.dataTable.FixedHeader(table, {
+        /*new $.fn.dataTable.FixedHeader(table, {
             offsetTop: 50
-        });
+        });*/
     }
 
     if (!$('table.table-striped').hasClass("without-table-tools")  && table.length) {

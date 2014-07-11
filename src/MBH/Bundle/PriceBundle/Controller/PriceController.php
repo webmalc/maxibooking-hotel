@@ -92,6 +92,9 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', 'Цены успешно сохранены.')
             ;
+            
+            $this->get('mbh.room.cache.generator')->generateInBackground();
+            
             if ($this->getRequest()->get('save') !== null) {
 
                 return $this->redirect($this->generateUrl('food_price', array_merge(['id' => $id])));
@@ -170,8 +173,11 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
                 if (!$roomType) {
                     continue;
                 }
+                
+                ((int) $value > $roomType->getRooms()->count()) ? $number = $roomType->getRooms()->count() : $number = (int) $value;
+                
                 $quota = new RoomQuota();
-                $quota->setRoomType($roomType)->setNumber((int) $value);
+                $quota->setRoomType($roomType)->setNumber($number);
                 $entity->addRoomQuota($quota);
             }
 
@@ -181,6 +187,9 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', 'Квоты успешно сохранены.')
             ;
+            
+            $this->get('mbh.room.cache.generator')->generateInBackground();
+            
             if ($this->getRequest()->get('save') !== null) {
 
                 return $this->redirect($this->generateUrl('room_quota', array_merge(['id' => $id])));
@@ -272,6 +281,9 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', 'Цены успешно сохранены.')
             ;
+            
+            $this->get('mbh.room.cache.generator')->generateInBackground();
+            
             if ($this->getRequest()->get('save') !== null) {
 
                 return $this->redirect($this->generateUrl('room_price', array_merge(['id' => $id])));

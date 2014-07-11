@@ -11,7 +11,7 @@ mbh_price:
 mbh_base:
     resource: "@MBHBaseBundle/Controller/"
     type:     annotation
-    prefix:   /
+    prefix:   /base
 
 mbh_user:
     resource: "@MBHUserBundle/Controller/"

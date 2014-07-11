@@ -30,11 +30,13 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-
+        $hotel = $this->get('mbh.hotel.selector')->getSelected();
+        
         $defaults = $dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('s')
                        ->field('isDefault')->equals(true)
                        ->field('end')->gte(new \DateTime())
-                       ->sort(['begin' => 'desc', 'end' => 'desc'])
+                       ->field('hotel.id')->equals($hotel->getId())
+                       ->sort(['begin' => 'asc', 'end' => 'asc'])
                        ->getQuery()
                        ->execute()
         ;
@@ -42,14 +44,16 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $others = $dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('s')
                      ->field('isDefault')->equals(false)
                      ->field('end')->gte(new \DateTime())
-                     ->sort(['begin' => 'desc', 'end' => 'desc'])
+                     ->field('hotel.id')->equals($hotel->getId())
+                     ->sort(['begin' => 'asc', 'end' => 'asc'])
                      ->getQuery()
                      ->execute()
         ;
         
         $old = $dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('s')
                      ->field('end')->lt(new \DateTime())
-                     ->sort(['begin' => 'desc', 'end' => 'desc'])
+                     ->field('hotel.id')->equals($hotel->getId())
+                     ->sort(['begin' => 'asc', 'end' => 'asc'])
                      ->getQuery()
                      ->execute()
         ;
@@ -109,6 +113,8 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
                     ->set('success', 'Тариф успешно создана. Теперь необходимо заполнить цены.')
             ;
 
+            $this->get('mbh.room.cache.generator')->generateInBackground();
+            
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
 
@@ -154,6 +160,8 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
                     ->set('success', 'Запись успешно отредактирована.')
             ;
 
+            $this->get('mbh.room.cache.generator')->generateInBackground();
+            
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
 
@@ -203,6 +211,8 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      */
     public function deleteAction($id)
     {
+        $this->get('mbh.room.cache.generator')->generateInBackground();
+        
         return $this->deleteEntity($id, 'MBHPriceBundle:Tariff', 'tariff');
     }
 

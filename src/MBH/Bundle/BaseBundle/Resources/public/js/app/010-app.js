@@ -10,9 +10,31 @@ var deleteLink = function() {
     });
 };
 
+var checkMessages = function() {
+    $.getJSON(Routing.generate('message'), function(data) {
+        var container = $('#messages');
+        $('#messages').find('.message').remove();
+
+        if (!data.length) {
+            return;
+        }
+
+        $.each(data, function(index, value) {
+            var autohide = (value.autohide) ? 'autohide' : '';
+            $('#messages').prepend('<div class="' + autohide + ' message alert alert-' + value.type + '"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + value.text + '</div>');
+        });
+    });
+};
+
 /*global window */
 $(document).ready(function() {
     'use strict';
+
+    //get messages
+    checkMessages();
+    window.setInterval(function() {
+        checkMessages();
+    }, 10000);
 
     //Tooltips configuration
     $('a[data-toggle="tooltip"], li[data-toggle="tooltip"]').tooltip();
