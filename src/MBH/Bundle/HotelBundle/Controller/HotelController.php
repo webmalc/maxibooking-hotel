@@ -105,6 +105,7 @@ class HotelController extends Controller
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', 'Запись успешно создана.')
             ;
+            $this->get('mbh.room.cache.generator')->generateInBackground();
             
             return $this->afterSaveRedirect('hotel', $entity->getId());
         }
@@ -148,6 +149,7 @@ class HotelController extends Controller
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', 'Запись успешно отредактирована.')
             ;
+            $this->get('mbh.room.cache.generator')->generateInBackground();
             
             return $this->afterSaveRedirect('hotel', $entity->getId());
         }
@@ -196,6 +198,9 @@ class HotelController extends Controller
      */
     public function deleteAction($id)
     {
-        return $this->deleteEntity($id, 'MBHHotelBundle:Hotel', 'hotel');
+        $response = $this->deleteEntity($id, 'MBHHotelBundle:Hotel', 'hotel');
+        $this->get('mbh.room.cache.generator')->generateInBackground();
+        
+        return $response;
     }
 }

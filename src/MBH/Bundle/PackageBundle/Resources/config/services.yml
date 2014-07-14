@@ -2,6 +2,10 @@ services:
     mbh.room.cache.generator:
         class: MBH\Bundle\PackageBundle\Services\RoomCacheGenerator
         arguments: [@service_container]
+        
+    mbh.calculation:
+        class: MBH\Bundle\PackageBundle\Services\Calculation
+        arguments: [@service_container]
 
     mbh.package.subscriber:
         class: MBH\Bundle\PackageBundle\EventListener\PackageSubscriber

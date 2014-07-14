@@ -321,5 +321,30 @@ class RoomType extends Base
     {
         return $this->rooms;
     }
+    
+    /**
+     * @return int
+     */
+    public function getTotalPlaces()
+    {
+        return $this->places + $this->additionalPlaces;
+    }
+    
+    /**
+     * @return []
+     */
+    public function getAdultsChildrenCombinations()
+    {
+        $result = [];
+        
+        for($i = 0 ; $i <= $this->getTotalPlaces(); $i++) {
+            for($k = 0; $k <= $this->getTotalPlaces(); $k++) {
+                if(($k + $i) && ($k + $i) <= $this->getTotalPlaces()) {
+                    $result[] = ['adults' => $k, 'children' => $i];
+                }
+            }
+        }
+        return $result;
+    }
 
 }

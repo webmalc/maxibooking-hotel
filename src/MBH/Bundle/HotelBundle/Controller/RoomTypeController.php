@@ -64,7 +64,14 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function deleteRoomAction($roomType, $id)
     {
-        return $this->deleteEntity($id, 'MBHHotelBundle:Room', 'room_type', ['tab' => $roomType]);
+        $response =  $this->deleteEntity($id, 'MBHHotelBundle:Room', 'room_type', ['tab' => $roomType]);
+        $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground(
+                $this->get('doctrine_mongodb')
+                     ->getManager()
+                     ->getRepository('MBHHotelBundle:RoomType')
+                     ->find($roomType)
+        );
+        return $response;
     }
 
     /**
@@ -126,6 +133,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
                     ->set('success', 'Запись успешно отредактирована.')
             ;
 
+            $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground($entity->getRoomType());
+            
             if ($this->getRequest()->get('save') !== null) {
                 return $this->redirect($this->generateUrl('room_type_room_edit', ['id' => $id]));
             }
@@ -200,6 +209,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
                     ->set('success', 'Запись успешно создана.')
             ;
 
+            $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground($entity);
+            
             if ($this->getRequest()->get('save') !== null) {
                 return $this->redirect($this->generateUrl('room_type_room_edit', ['id' => $room->getId()]));
             }
@@ -279,6 +290,9 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             }
 
             $dm->flush();
+            
+            $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground($entity);
+            
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', 'Номера успешно сгенерированы.')
             ;
@@ -366,6 +380,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $dm->persist($entity);
             $dm->flush();
 
+            $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground($entity);
+            
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', 'Запись успешно создана.')
             ;
@@ -410,6 +426,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $dm->persist($entity);
             $dm->flush();
 
+            $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground($entity);
+            
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', 'Запись успешно отредактирована.')
             ;
@@ -463,7 +481,10 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function deleteAction($id)
     {
-        return $this->deleteEntity($id, 'MBHHotelBundle:RoomType', 'room_type');
+        $response =  $this->deleteEntity($id, 'MBHHotelBundle:RoomType', 'room_type');
+        $this->get('mbh.room.cache.generator')->generateInBackground();
+        
+        return $response;
     }
 
 }

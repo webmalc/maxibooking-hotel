@@ -190,7 +190,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         if (!$entity) {
             throw $this->createNotFoundException();
         }
-
+        
         $form = $this->createForm(
                 new TariffMainType(), $entity, ['types' => $this->container->getParameter('mbh.tariff.types')]
         );
@@ -211,9 +211,10 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      */
     public function deleteAction($id)
     {
+        $response = $this->deleteEntity($id, 'MBHPriceBundle:Tariff', 'tariff');
         $this->get('mbh.room.cache.generator')->generateInBackground();
         
-        return $this->deleteEntity($id, 'MBHPriceBundle:Tariff', 'tariff');
+        return $response;
     }
 
 }

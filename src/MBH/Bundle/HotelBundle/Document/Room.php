@@ -56,7 +56,7 @@ class Room extends Base
      * @ODM\String(name="fullTitle")
      * @Assert\NotNull()
      * @Assert\Length(
-     *      min=2,
+     *      min=1,
      *      minMessage="Слишком короткое имя",
      *      max=100,
      *      maxMessage="Слишком длинное имя"
@@ -69,7 +69,7 @@ class Room extends Base
      * @Gedmo\Versioned
      * @ODM\String(name="title")
      * @Assert\Length(
-     *      min=2,
+     *      min=1,
      *      minMessage="Слишком короткое имя",
      *      max=100,
      *      maxMessage="Слишком длинное имя"
