@@ -78,9 +78,9 @@ class TouristController extends Controller
                 new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
         );
 
-        return array(
+        return [
             'form' => $form->createView(),
-        );
+        ];
     }
 
     /**
@@ -112,10 +112,10 @@ class TouristController extends Controller
             return $this->afterSaveRedirect('tourist', $entity->getId());
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
-        );
+        ];
     }
     
     /**
@@ -157,11 +157,11 @@ class TouristController extends Controller
             return $this->afterSaveRedirect('tourist', $entity->getId());
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
     
     /**
@@ -187,11 +187,11 @@ class TouristController extends Controller
                 new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
         );
         
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
     
     /**

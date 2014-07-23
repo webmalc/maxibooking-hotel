@@ -1,3 +1,7 @@
+_welcome:
+    pattern:  /
+    defaults: { _controller: MBHUserBundle:User:index}
+
 mbh_package:
     resource: "@MBHPackageBundle/Controller/"
     type:     annotation
@@ -29,9 +33,5 @@ mbh_hotel:
     resource: "@MBHHotelBundle/Controller/"
     type:     annotation
     prefix:   /management/hotel
-
-_welcome:
-    pattern:  /
-    defaults: { _controller: MBHUserBundle:User:index}
 
 

@@ -31,7 +31,7 @@ class Builder extends ContainerAware
         $menu->addChild('reservations', ['route' => '_welcome', 'label' => 'Бронирование'])
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-plane'])
         ;
-        $menu['reservations']->addChild('search', ['route' => '_welcome', 'label' => 'Подбор проживания']);
+        $menu['reservations']->addChild('search', ['route' => 'package_search', 'label' => 'Подбор проживания']);
         $menu['reservations']->addChild('reservationsList', ['route' => '_welcome', 'label' => 'Список броней']);
         $menu['reservations']->addChild('clients', ['route' => 'tourist', 'label' => 'Отчеты']);
         $menu['reservations']->addChild('reservationsRequests', ['route' => '_welcome', 'label' => 'Он-лайн заявки']);

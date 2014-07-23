@@ -27,4 +27,16 @@ class Base
         return $this->id;
     }
     
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        if (method_exists($this, 'getName')) {
+            return $this->getName();
+        }
+        
+        return $this->getId();
+    }
+    
 }

@@ -9,7 +9,7 @@ $(document).ready(function () {
     });
     
     //BootstrapSwitch configuration
-    $('input[type="checkbox"][class!="plain-html"]').bootstrapSwitch({
+    $('input[type="checkbox"]').not('.plain-html').bootstrapSwitch({
         'size': 'small',
         'onText': 'да',
         'offText': 'нет',
@@ -17,7 +17,7 @@ $(document).ready(function () {
     });
 
     //Select2 configuration
-    $('select[class!="plain-html"]').select2({
+    $('select').not('.plain-html').select2({
         placeholder: "Сделайте выбор",
         allowClear: true,
         formatSelection: function(item, container) {

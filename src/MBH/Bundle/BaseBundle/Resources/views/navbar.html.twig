@@ -17,7 +17,11 @@
                 <a data-toggle="dropdown" href="#" class="navbar-brand" id="hotel-selector">{{ selected_hotel().name }} <i class="fa fa-caret-down"></i></a>
                 <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                     {% for hotel in hotels() %}
-                        <li><a href="{{ path('hotel_select', {'id': hotel.id}) }}" title="Выбрать отель" data-toggle="tooltip">{{ hotel.name }}</a></li>
+                        <li>
+                            {% if title_url is defined  %}{% set hotel_url = title_url %}{% else %}{% set hotel_url = null %}{% endif%}
+                            <a href="{{ path('hotel_select', {'id': hotel.id, 'url': hotel_url}) }}" title="Выбрать отель" data-toggle="tooltip">{{ hotel.name }}
+                            </a>
+                        </li>
                     {% endfor %}
                     
                     {% if is_granted('ROLE_ADMIN') %}

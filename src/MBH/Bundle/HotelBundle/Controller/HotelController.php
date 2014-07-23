@@ -33,9 +33,13 @@ class HotelController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
      */
-    public function selectHotelAction($id)
+    public function selectHotelAction(Request $request, $id)
     {
         $this->get('mbh.hotel.selector')->setSelected($id);
+        
+        if ($request->get('url')) {
+            return $this->redirect($request->get('url'));
+        }
         
         return $this->redirect($this->generateUrl('_welcome'));
     }

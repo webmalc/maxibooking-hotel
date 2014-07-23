@@ -1,0 +1,125 @@
+{% extends 'MBHPackageBundle:Search:layout.html.twig' %}
+
+{% set small_title = "поиск" %}    
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('package_search'), 'method': 'GET', 'attr': {'class': 'form-horizontal search-form'}}) }}
+
+    <div class="well row">
+
+        {{ form_errors(form) }}
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <div class="col-md-3">{{ form_label(form.begin) }}</div>
+                <div class="col-md-9">{{ form_widget(form.begin) }}</div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">{{ form_label(form.end) }}</div>
+                <div class="col-md-9">{{ form_widget(form.end) }}</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <div class="col-md-3">{{ form_label(form.adults) }}</div>
+                <div class="col-md-9">{{ form_widget(form.adults) }}</div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">{{ form_label(form.children) }}</div>
+                <div class="col-md-9">{{ form_widget(form.children) }}</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <div class="col-md-3">{{ form_label(form.roomType) }}</div>
+                <div class="col-md-9">{{ form_widget(form.roomType) }}</div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': 'Искать'} %}
+
+    {{ form_end(form) }}
+
+    <div class="row">
+        <div class="spacer-top">
+
+            {% if results != false %}
+
+                <div class="panel panel-default package-search-tariffs">
+                    <div class="panel-heading">Поиск по тарифам</div>
+                    <div class="panel-body">
+                        <ul>
+                            <li><a href="">Семейный пакет</a></li>
+                            <li><a href="">Романтические выходные - шампанское, фрукты, поздний выезд</a></li>
+                            <li><a href="">Пакет Командировочный - завтрак+ужин</a></li>
+                            <li><a href="">Основной</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <table class="package-search-table table table-striped table-hover table-condensed table-icons table-actions">
+                    <thead>
+                        <tr>
+                            <th class="td-xs"></th>
+                            <th class="td-sm">Заезд</th>
+                            <th class="td-sm">Отъезд</th>
+                            <th class="td-sm">Дни/ночи</th>
+                            <th>Отель</th>
+                            <th>Тип номера</th>
+                            <th>Тариф</th>
+                            <th class="td-sm">Питание</th>
+                            <th class="td-sm">Цена</th>
+                            <th class="td-md"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results  %}
+                    {% if result.foods|length != 0 %}{% set badResult = false %}{%else%}{% set badResult = true %}{%endif%}
+
+                    <tr {% if badResult %}class="danger"{% endif %}>
+                        <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
+                        <td class="text-center">{{ result.begin|date('d.m.Y') }}</td>
+                        <td class="text-center">{{ result.end|date('d.m.Y') }}</td>
+                        <td class="text-center">{{ result.days }}/{{ result.nights }}</td>
+                        <td>{{ result.roomType.hotel }} <a href=""><i class="fa fa-external-link"></i></a></td>
+                        <td>{{ result.roomType }} <a href=""><i class="fa fa-external-link"></i></a></td>
+                        <td>{{ result.tariff}} </td>
+                        <td class="text-right">
+                            <select class="form-control plain-html input-sm search-food-select">
+                                {% for food in result.foods %}
+                                    <option value="{{food}}">{{food}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td class="text-right">
+                            {% for priceFood,price  in result.prices %}
+                                <ul class="package-search-prices">
+                                    <li class="{{priceFood}}_food">{{ price|number_format}}</li>
+                                </ul>
+                            {% endfor %}
+                        </td>
+                        <td class="text-center">
+                            {% if badResult != true %}
+                                <a href="" class="btn btn-success btn-xs" title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
+                                    <i class="fa fa-pencil-square-o"></i> Бронировать ({{ result.roomsCount }})
+                                </a>
+                            {% else %}
+                                <a href="#" class="btn btn-danger btn-xs"><i class="fa fa-exclamation-circle"></i> Ошибка!</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor  %}
+            </tbody>
+        </table>
+
+    {% elseif results is iterable and results|length == 0 %}
+        <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> По вашему запросу нечего не найдено.</div>
+    {% else %}
+        <div class="alert alert-info"><i class="fa fa-search"></i> Введите данные для подбора проживания.</div>
+    {% endif %}
+</div></div>
+
+{% endblock %} 
+

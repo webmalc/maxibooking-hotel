@@ -40,6 +40,19 @@ class RoomCache extends Base
      */
     protected $rooms;
     
+    /**
+     * @var int
+     * @ODM\Boolean()
+     */
+    protected $isDefault;
+    
+    /**
+     * @var int
+     * @ODM\Int()
+     */
+    protected $places;
+
+
     /** 
      * @var PriceCache[]
      * @ODM\EmbedMany(targetDocument="PriceCache")
@@ -163,6 +176,28 @@ class RoomCache extends Base
     }
 
     /**
+     * Set places
+     *
+     * @param int $places
+     * @return self
+     */
+    public function setPlaces($places)
+    {
+        $this->places = $places;
+        return $this;
+    }
+
+    /**
+     * Get places
+     *
+     * @return int $places
+     */
+    public function getPlaces()
+    {
+        return $this->places;
+    }
+    
+    /**
      * Add price
      *
      * @param MBH\Bundle\PackageBundle\Document\PriceCache $price
@@ -190,5 +225,27 @@ class RoomCache extends Base
     public function getPrices()
     {
         return $this->prices;
+    }
+    
+    /**
+     * Set isDefault
+     *
+     * @param boolean $isDefault
+     * @return self
+     */
+    public function setIsDefault($isDefault)
+    {
+        $this->isDefault = $isDefault;
+        return $this;
+    }
+
+    /**
+     * Get isDefault
+     *
+     * @return boolean $isDefault
+     */
+    public function getIsDefault()
+    {
+        return $this->isDefault;
     }
 }

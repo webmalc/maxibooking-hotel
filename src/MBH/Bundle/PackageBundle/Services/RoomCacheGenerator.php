@@ -136,7 +136,7 @@ class RoomCacheGenerator
             $this->generatePrices($cache);
             $this->dm->persist($cache);
             $i++;
-            if ($i >= 500) {
+            if ($i >= 200) {
                 $this->dm->flush();
                 $this->dm->clear();
                 $i = 0;
@@ -260,10 +260,12 @@ class RoomCacheGenerator
                 $rooms = $this->countRooms($tariff, $roomType);
                 $cache = new RoomCache();
                 $cache->setTariff($tariff)
-                        ->setRoomType($roomType)
-                        ->setDate($date)
-                        ->setTotalRooms($rooms)
-                        ->setRooms($rooms - $this->countPackages($tariff, $roomType, $date))
+                      ->setRoomType($roomType)
+                      ->setDate($date)
+                      ->setIsDefault($tariff->getIsDefault())
+                      ->setPlaces($roomType->getTotalPlaces())
+                      ->setTotalRooms($rooms)
+                      ->setRooms($rooms - $this->countPackages($tariff, $roomType, $date))
                 ;
 
                 $this->dm->persist($cache);
@@ -337,7 +339,7 @@ class RoomCacheGenerator
                         ->field('tariff.id')->equals($tariff->getId())
                         ->field('roomType.id')->equals($roomType->getId())
                         ->field('begin')->lte($date)
-                        ->field('end')->gte($date)
+                        ->field('end')->gt($date)
                         ->getQuery()
                         ->count()
         ;
