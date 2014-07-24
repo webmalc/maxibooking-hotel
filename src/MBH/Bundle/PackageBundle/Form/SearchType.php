@@ -46,6 +46,14 @@ class SearchType extends AbstractType
                     'choices' => $roomTypes,
                     'data' => $data
                 ])
+                ->add('tariff', 'document', [
+                    'label' => 'Тафиф',
+                    'required' => false,
+                    'multiple' => false,
+                    'error_bubbling' => true,
+                    'class' => 'MBHPriceBundle:Tariff',
+                    'attr'  => ['class' => 'plain-html']
+                ])
                 ->add('begin', 'date', array(
                     'label' => 'Заезд',
                     'widget' => 'single_text',

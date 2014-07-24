@@ -13,7 +13,7 @@ security:
         main:
             pattern: ^/
             form_login:
-                #always_use_default_target_path: true
+                always_use_default_target_path: true
                 default_target_path: /
                 provider: fos_userbundle
                 csrf_provider: form.csrf_provider

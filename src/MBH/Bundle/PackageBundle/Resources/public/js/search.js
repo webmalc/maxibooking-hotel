@@ -32,6 +32,27 @@ $(document).ready(function() {
         });
         
     }());
+    
+    //tariff choser
+    (function() {
+        var links  = $('#package-search-tariffs li a'),
+            select = $('#s_tariff'),
+            form   = $('form[name="s"]')
+        ;
+        links.click(function (e) {
+            e.preventDefault();
+            select.val($(this).attr('data-id'));
+            form.submit();
+        });
+    }());
+    
+    //book button
+    $('.package-search-book').click( function(e) {
+        var numWrappper = $(this).find('span');
+        var num = parseInt(numWrappper.text()) - 1;
+        (num <= 0) ? num = 0 : num;
+        numWrappper.text(num);
+    });
 
 });
 

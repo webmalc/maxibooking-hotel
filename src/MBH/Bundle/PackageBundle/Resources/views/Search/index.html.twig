@@ -40,24 +40,30 @@
 
     {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': 'Искать'} %}
 
-    {{ form_end(form) }}
+    <div class="hide">{{ form_end(form) }}</div>
+    
+    
 
     <div class="row">
         <div class="spacer-top">
 
-            {% if results != false %}
+            {% if tariffResults != false and tariffResults is iterable and tariffResults|length != 0 %}
 
                 <div class="panel panel-default package-search-tariffs">
                     <div class="panel-heading">Поиск по тарифам</div>
                     <div class="panel-body">
-                        <ul>
-                            <li><a href="">Семейный пакет</a></li>
-                            <li><a href="">Романтические выходные - шампанское, фрукты, поздний выезд</a></li>
-                            <li><a href="">Пакет Командировочный - завтрак+ужин</a></li>
-                            <li><a href="">Основной</a></li>
+                        
+                        {% for tariffResult in tariffResults  %}
+                            
+                        <ul id="package-search-tariffs">
+                            <li><a href="#" data-id="{{ tariffResult.id }}">{{ tariffResult }}</a></li>
                         </ul>
+                        {% endfor %}
                     </div>
                 </div>
+            {% endif %}
+
+            {% if results != false %}
 
                 <table class="package-search-table table table-striped table-hover table-condensed table-icons table-actions">
                     <thead>
@@ -102,8 +108,8 @@
                         </td>
                         <td class="text-center">
                             {% if badResult != true %}
-                                <a href="" class="btn btn-success btn-xs" title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
-                                    <i class="fa fa-pencil-square-o"></i> Бронировать ({{ result.roomsCount }})
+                                <a href="" target="_blank" class="btn btn-success btn-xs package-search-book" title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
+                                    <i class="fa fa-pencil-square-o"></i> Бронировать (<span>{{ result.roomsCount }}</span>)
                                 </a>
                             {% else %}
                                 <a href="#" class="btn btn-danger btn-xs"><i class="fa fa-exclamation-circle"></i> Ошибка!</a>

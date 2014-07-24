@@ -37,7 +37,7 @@ class SearchResult
      * @var Tariff 
      */
     protected $tariff;
-
+    
     /**
      * @var $foods
      */
@@ -287,5 +287,5 @@ class SearchResult
         
         return $this;
     }
-
+    
 }

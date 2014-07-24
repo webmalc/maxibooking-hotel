@@ -33,30 +33,30 @@ class Search
      * @return \MBH\Bundle\PackageBundle\Lib\SearchQuery[]
      */
     public function search(SearchQuery $query)
-    {        
-        $groupedCaches = $caches =  $results = [];
-        
+    {
+        $groupedCaches = $caches = $results = [];
+
         $qb = $this->dm->getRepository('MBHPackageBundle:RoomCache')
-                       ->createQueryBuilder('q')
-                       ->field('date')->lt($query->end)
-                       ->field('date')->gte($query->begin)
-                       ->field('places')->gte($query->adults + $query->children)
-                       ->field('rooms')->gt(0)
-                       ->sort('date', 'asc')
-                          
+                ->createQueryBuilder('q')
+                ->field('date')->lt($query->end)
+                ->field('date')->gte($query->begin)
+                ->field('places')->gte($query->adults + $query->children)
+                ->field('rooms')->gt(0)
+                ->sort('date', 'asc')
+
         ;
         if (!empty($query->tariff)) {
-            $qb->field('tariff.id')->equals($query->tariff);
+            $qb->field('tariff.id')->equals($query->tariff->getId());
         } else {
             $qb->field('isDefault')->equals(true);
         }
-        
+
         if (!empty($query->roomTypes)) {
             $qb->field('roomType.id')->in($query->roomTypes);
         }
-        
+
         $caches = $qb->getQuery()->execute();
-        
+
         //Group cache
         foreach ($caches as $cache) {
             $groupedCaches[$cache->getRoomType()->getId()][] = $cache;
@@ -72,34 +72,50 @@ class Search
             if ($query->end->diff($query->begin)->format("%a") != count($groupedCache)) {
                 continue;
             }
-            
+
             $firstCache = array_values($groupedCache)[0];
             $lastDate = clone array_slice($groupedCache, -1)[0]->getDate();
-            
+
             $result = new SearchResult();
             $result->setBegin($firstCache->getDate())
-                   ->setEnd($lastDate->modify('+1 day'))
-                   ->setRoomType($firstCache->getRoomType())
-                   ->setTariff($firstCache->getTariff())
-                   ->setRoomsCount($firstCache->getRooms())
-                   ->setAdults($query->adults)
-                   ->setChildren($query->children)
+                    ->setEnd($lastDate->modify('+1 day'))
+                    ->setRoomType($firstCache->getRoomType())
+                    ->setTariff($firstCache->getTariff())
+                    ->setRoomsCount($firstCache->getRooms())
+                    ->setAdults($query->adults)
+                    ->setChildren($query->children)
             ;
-            
+
             //Set foods & prices
             foreach ($groupedCache as $cache) {
                 foreach ($cache->getPrices() as $price) {
-                    
+
                     $result->addFood($price->getFood(), $price->getPrice())
-                           ->addPrice($price->getFood(), $price->getPrice(), $price->getAdults(), $price->getChildren())
+                            ->addPrice($price->getFood(), $price->getPrice(), $price->getAdults(), $price->getChildren())
                     ;
                 }
             }
-            
+
             $results[] = $result;
         }
-        
+
         return $results;
+    }
+
+    public function searchTariffs(SearchQuery $query)
+    {
+        $qb = $this->dm->getRepository('MBHPriceBundle:Tariff')
+                ->createQueryBuilder('q')
+        ;
+
+        $qb->addOr(
+                $qb->expr()
+                        ->field('end')->gte($query->begin)
+                        ->field('begin')->lt($query->end)
+        )
+        ;
+
+        return $qb->getQuery()->execute();
     }
 
 }

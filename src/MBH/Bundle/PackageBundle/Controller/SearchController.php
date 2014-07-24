@@ -16,6 +16,7 @@ use MBH\Bundle\PackageBundle\Lib\SearchQuery;
  */
 class SearchController extends Controller
 {
+
     /**
      * Search action
      *
@@ -28,15 +29,14 @@ class SearchController extends Controller
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
+        $results = $tariffResults = false;
         
         $form = $this->createForm(
                 new SearchType(), [], ['dm' => $dm, 'hotel' => $this->get('mbh.hotel.selector')->getSelected()]
         );
-        
-        $results = false;
-        
+
         // Validate form
-        if($request->get('s')) {
+        if ($request->get('s')) {
             $form->bind($request);
             if ($form->isValid()) {
                 $data = $form->getData();
@@ -47,29 +47,33 @@ class SearchController extends Controller
                 $query->end = $data['end'];
                 $query->adults = (int) $data['adults'];
                 $query->children = (int) $data['children'];
-                
+                $query->tariff = $data['tariff'];
+
                 foreach ($data['roomType'] as $id) {
-                    if(mb_stripos($id, 'allrooms_') !== false) {
+                    if (mb_stripos($id, 'allrooms_') !== false) {
                         $hotel = $dm->getRepository('MBHHotelBundle:Hotel')->find(str_replace('allrooms_', '', $id));
-                        
-                        if(!$hotel) {
+
+                        if (!$hotel) {
                             continue;
                         }
                         foreach ($hotel->getRoomTypes() as $roomType) {
                             $query->addRoomType($roomType->getId());
                         }
-                        
                     } else {
                         $query->addRoomType($id);
                     }
                 }
-                
+
                 $results = $this->get('mbh.package.search')->search($query);
+                $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
             }
         }
+
         return [
-             'form' => $form->createView(),
-             'results'     => $results
+            'form' => $form->createView(),
+            'results' => $results,
+            'tariffResults' => $tariffResults
         ];
     }
+
 }
