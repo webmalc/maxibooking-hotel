@@ -1,0 +1,16 @@
+{% extends 'MBHCashBundle:Cash:layout.html.twig' %}
+
+{% set small_title = "редактирование документа #" ~ entity.id %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('cash_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'cash_delete' } %}
+    {{ form_end(form) }}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'cash_delete' } %}
+
+</div>
+</div>
+{% endblock %}

@@ -39,6 +39,7 @@ class Tariff extends Base
     use BlameableDocument;
     
     /** 
+     * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="tariffs")
      * @Assert\NotNull(message="Не выбран отель")
      */

@@ -16,6 +16,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @MBHValidator\Package
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ * @ODM\HasLifecycleCallbacks
  */
 class Package extends Base
 {
@@ -36,6 +37,9 @@ class Package extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+    
+    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="package") */
+    protected $cashDocuments;
     
     /** 
      * @Gedmo\Versioned
@@ -60,7 +64,6 @@ class Package extends Base
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Tourist", inversedBy="mainPackages")
-     * @Assert\NotNull(message="Не выбран основной турист")
      */
     protected $mainTourist;
     
@@ -94,7 +97,7 @@ class Package extends Base
      *      minMessage="Количество взрослых не может быть меньше нуля"
      * )
      */
-    protected $adults = 1;
+    protected $adults;
     
     
     /**
@@ -108,7 +111,7 @@ class Package extends Base
      *      minMessage="Количество детей не может быть меньше нуля"
      * )
      */
-    protected $children = 0;
+    protected $children;
     
     /**
      * @var \DateTime
@@ -146,7 +149,7 @@ class Package extends Base
      *      minMessage="Цена не может быть меньше нуля"
      * )
      */
-    protected $price = 0;
+    protected $price;
     
     /**
      * @var int
@@ -158,23 +161,42 @@ class Package extends Base
      *      minMessage="Оплачено не может быть меньше нуля"
      * )
      */
-    protected $paid = 0;
+    protected $paid;
+    
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isPaid;
     
     /**
      * @var string
+     * @Gedmo\Versioned
      * @ODM\String(name="status")
+     * @Assert\Choice(
+     *      choices = {"offline", "online", "channel_manager"}, 
+     *      message = "Неверный статус."
+     * )
      */
     protected $status;
     
     /**
      * @var string
+     * @Gedmo\Versioned
      * @ODM\String(name="note")
      */
     protected $note;
     
     /**
      * @var string
+     * @Gedmo\Versioned
      * @ODM\String(name="purposeOfArrival")
+     * @Assert\Choice(
+     *      choices = {"tourism", "work", "study", "residence", "other"}, 
+     *      message = "Невернай цель приезда."
+     * )
      */
     protected $purposeOfArrival;
     
@@ -563,5 +585,81 @@ class Package extends Base
     public function getTourists()
     {
         return $this->tourists;
+    }
+    /**
+     * Add cashDocument
+     *
+     * @param MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
+     */
+    public function addCashDocument(\MBH\Bundle\CashBundle\Document\CashDocument $cashDocument)
+    {
+        $this->cashDocuments[] = $cashDocument;
+    }
+
+    /**
+     * Remove cashDocument
+     *
+     * @param MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
+     */
+    public function removeCashDocument(\MBH\Bundle\CashBundle\Document\CashDocument $cashDocument)
+    {
+        $this->cashDocuments->removeElement($cashDocument);
+    }
+
+    /**
+     * Get cashDocuments
+     *
+     * @return Doctrine\Common\Collections\Collection $cashDocuments
+     */
+    public function getCashDocuments()
+    {
+        return $this->cashDocuments;
+    }
+
+    /**
+     * Set isPaid
+     *
+     * @param boolean $isPaid
+     * @return self
+     */
+    public function setIsPaid($isPaid)
+    {
+        $this->isPaid = $isPaid;
+        return $this;
+    }
+
+    /**
+     * Get isPaid
+     *
+     * @return boolean $isPaid
+     */
+    public function getIsPaid()
+    {
+        return $this->isPaid;
+    }
+    
+    /**
+     * @ODM\PrePersist
+     */
+    public function prePersist()
+    {
+        $this->checkPaid();
+    }
+    
+    /**
+     * @ODM\preUpdate
+     */
+    public function preUpdate()
+    {
+        $this->checkPaid();
+    }
+    
+    public function checkPaid()
+    {
+        if ($this->getPaid() >= $this->getPrice()) {
+            $this->setIsPaid(true);
+        } else {
+            $this->setIsPaid(false);
+        }
     }
 }

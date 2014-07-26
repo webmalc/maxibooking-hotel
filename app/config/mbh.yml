@@ -6,6 +6,18 @@ parameters:
     #параметры логов
     mbh.logs.max: 100
     
+    #Виды способов оплаты
+    mbh.cash.methods:
+        cash: "Наличные"
+        cashless: "Безнал"
+        electronic: "Электронный"
+    
+    #Типы операций с кассой
+    mbh.cash.operations:
+        in: "Поступление"
+        out: "Возврат"
+        fine: "Штраф"
+            
     #Типы питания
     mbh.food.types:
         RO:  "RO - Без питания"

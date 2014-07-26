@@ -288,4 +288,17 @@ class SearchResult
         return $this;
     }
     
+    /**
+     * @param string $food
+     * @return int
+     */
+    public function getPrice($food)
+    {
+        if(!isset($this->getPrices()[$food])) {
+            return null;
+        }
+        
+        return (int) $this->getPrices()[$food];
+    }
+    
 }

@@ -59,7 +59,7 @@ class Calculation
         }
         
         $prices = $this->getRoomPrices($tariff, $roomType, $date);
-        $foodPrice = $this->getFoodPrice($tariff, $food, $date);
+        $foodPrice = $this->getFoodPrice($tariff, $food, $date, $roomType->getHotel()->getId());
         $all = $adults + $children;
         $places = $roomType->getPlaces();
         $price = null;
@@ -109,10 +109,11 @@ class Calculation
     /**
      * Get FoodPrice from tariff
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
-     * @param type $food
+     * @param string $food
+     * @param string $hotelId
      * @return int
      */
-    public function getFoodPrice(Tariff $tariff, $food, \DateTime $date)
+    public function getFoodPrice(Tariff $tariff, $food, \DateTime $date, $hotelId)
     {
         if (!$tariff->getIsDefault() && $tariff->getType() == 'rate') {
 
@@ -122,6 +123,7 @@ class Calculation
                     ->field('isDefault')->equals(true)
                     ->field('begin')->lte($date)
                     ->field('end')->gte($date)
+                    ->field('hotel.id')->equals($hotelId)
                     ->limit(1)
                     ->getQuery()
                     ->getSingleResult()
@@ -161,6 +163,7 @@ class Calculation
                     ->field('isDefault')->equals(true)
                     ->field('begin')->lte($date)
                     ->field('end')->gte($date)
+                    ->field('hotel.id')->equals($roomType->getHotel()->getId())
                     ->limit(1)
                     ->getQuery()
                     ->getSingleResult()
@@ -169,11 +172,10 @@ class Calculation
             if (!$defaultTariff) {
                 return null;
             }
-            
+                      
             // Rate tariff
             if ($tariff->getType() == 'rate') {
                 $rate = $tariff->getRate()/100;
-                
                 return $this->getPricesFromTariff($defaultTariff, $roomType, $rate);
             }
             
@@ -213,6 +215,8 @@ class Calculation
     private function getPricesFromTariff(Tariff $tariff, RoomType $roomType, $rate = 1)
     {
         foreach ($tariff->getRoomPrices() as $price) {
+            
+            
             if ($price->getRoomType()->getId() != $roomType->getId()) {
                 continue;
             }

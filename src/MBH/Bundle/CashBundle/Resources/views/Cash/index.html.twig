@@ -1,0 +1,40 @@
+{% extends 'MBHCashBundle:Cash:layout.html.twig' %}
+
+{% set small_title = "список документов" %}    
+
+{% block content %}
+
+    <div class="well">
+        <form class="form-inline" role="form">
+            C <input type="text" id="begin" class="datepicker begin-datepiker form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ "now"|date("d.m.Y") }}">
+            По <input type="text" id="end" class="datepicker end-datepiker form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ "now"|date_modify("+1 day")|date("d.m.Y")}}">
+        </form>
+    </div>
+    
+    <table id="cash-table" class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+            <tr>
+                <th class="td-xs"></th>
+                <th class="td-sm">Бронь</th>
+                <th class="td-md">Приход</th>
+                <th class="td-md">Расход</th>
+                <th class="td-md">Способ оплаты</th>
+                <th class="td-md">Вид операции</th>
+                <th class="td-md">Дата</th>
+                <th class="td-sm"></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="8" class="text-right">
+                    <strong>Приход:</strong>&nbsp;<span id="cash-table-total-in"></span><br>
+                    <strong>Расход:</strong>&nbsp;<span id="cash-table-total-out"></span>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+{% endblock %} 
+

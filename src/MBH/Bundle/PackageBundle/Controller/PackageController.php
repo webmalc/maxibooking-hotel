@@ -5,54 +5,95 @@ namespace MBH\Bundle\PackageBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Document\Package;
 
 class PackageController extends Controller
 {
+
     /**
-     * @Route("/")
+     * List entities
+     *
+     * @Route("/", name="package")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
      * @Template()
      */
     public function indexAction()
     {
-        //53be5b5070bf7659168b4567
-        
+        return array();
+    }
+
+    /**
+     * Create new entity
+     *
+     * @Route("/new", name="package_new")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function newAction(Request $request)
+    {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $tariff = $dm->getRepository('MBHPriceBundle:Tariff')
-           ->find('53be912970bf7692288b4567');
-        
-        $tourist = $dm->getRepository('MBHPackageBundle:Tourist')
-           ->find('53be5b5070bf7659168b4567');
-        
-        $begin = new \DateTime('2014-11-15');
-        $end = new \DateTime('2014-11-20');
-        
-        $package = new Package();
-        $package->setBegin($begin)
-                ->setEnd($end)
-                ->setTariff($tariff)
-                ->setFood($tariff->getHotel()->getFood()[0])
-                ->setRoomType($tariff->getHotel()->getRoomTypes()[0])
-                ->setMainTourist($tourist)
-                ->addTourist($tourist)
-        ;
-        
-        $errors = $this->get('validator')->validate($package);
-        
-        if (count($errors)) {
-            foreach($errors as $error) {
-                var_dump($error->getMessage());
-            }
-        } else {
-            $dm->persist($package);
-            $dm->flush($package);
-            var_dump('ok');
+        if (!$request->get('begin') ||
+                !$request->get('end') ||
+                !$request->get('adults') === null ||
+                !$request->get('children') === null ||
+                !$request->get('roomType') ||
+                !$request->get('food')
+        ) {
+            return [];
         }
+
+        //Set query
+        $query = new SearchQuery();
+        $query->begin = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('begin') . ' 00:00:00');
+        $query->end = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('end') . ' 00:00:00');
+        $query->adults = (int) $request->get('adults');
+        $query->children = (int) $request->get('children');
+        if (!empty($request->get('tariff'))) {
+            $query->tariff = $request->get('tariff');
+        }
+        $query->addRoomType($request->get('roomType'));
+
+        $results = $this->get('mbh.package.search')->search($query);
+
+        if (count($results) != 1) {
+            return [];
+        }
+
+        $package = new Package();
+        $package->setBegin($results[0]->getBegin())
+                ->setEnd($results[0]->getEnd())
+                ->setAdults($results[0]->getAdults())
+                ->setChildren($results[0]->getChildren())
+                ->setTariff($results[0]->getTariff())
+                ->setStatus('offline')
+                ->setRoomType($results[0]->getRoomType())
+                ->setFood($request->get('food'))
+                ->setPaid(0)
+                ->setPrice($results[0]->getPrice($package->getFood()))
+        ;
+
+        $errors = $this->get('validator')->validate($package);
+
+        if (count($errors)) {
+            return [];
+        }
+
+        $dm->persist($package);
+        $dm->flush();
         
-        
-        
-        return array();
+        $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground(
+                $package->getRoomType(), $package->getBegin(), $package->getEnd()
+        );
+
+        return [];
     }
+
 }

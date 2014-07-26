@@ -22,6 +22,9 @@ $(document).ready(function() {
                     select.closest('tr').find('ul.package-search-prices li').hide();
                     select.closest('tr').find('ul.package-search-prices li.' + select.val() + '_food').show();
                     select.closest('tr').find('ul.package-search-prices').show();
+                    var bookLink = select.closest('tr').find('a.package-search-book');
+                    var oldHref = bookLink.prop('href').replace(/&food=.*(\&|$)/, '');
+                    bookLink.prop('href', oldHref + '&food=' + select.val());
                 }
         ;
         select.click(function() {

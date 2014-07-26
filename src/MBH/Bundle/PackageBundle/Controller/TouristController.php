@@ -47,6 +47,7 @@ class TouristController extends Controller
                  ->createQueryBuilder('r')
                  ->skip($request->get('start'))
                  ->limit($request->get('length'))
+                 ->sort('fullName', 'asc')
         ;
 
         $search = $request->get('search')['value'];

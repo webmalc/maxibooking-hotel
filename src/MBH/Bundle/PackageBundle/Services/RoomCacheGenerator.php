@@ -74,7 +74,9 @@ class RoomCacheGenerator
      */
     public function generateInBackground()
     {
-        $process = new Process('nohup php ' . $this->console . 'mbh:cache:generate --no-debug > /dev/null 2>&1 &');
+        ($this->container->get('kernel')->getEnvironment() == 'prod') ? $env = '--env=prod ' : $env = '';
+
+        $process = new Process('nohup php ' . $this->console . 'mbh:cache:generate --no-debug ' . $env . '> /dev/null 2>&1 &');
         $process->run();
     }
 
@@ -88,28 +90,29 @@ class RoomCacheGenerator
     {
         ($begin) ? $beginStr = ' --begin=' . $begin->format('d.m.Y') : $beginStr = '';
         ($end) ? $endStr = ' --end=' . $end->format('d.m.Y') : $endStr = '';
+        ($this->container->get('kernel')->getEnvironment() == 'prod') ? $env = '--env=prod ' : $env = '';
 
         $process = new Process(
                 'nohup php ' . $this->console . 'mbh:cache:generate  --no-debug --roomType=' .
-                $roomType->getId() . $beginStr . $endStr . ' > /dev/null 2>&1 &'
+                $roomType->getId() . $beginStr . $endStr . ' ' . $env . '> /dev/null 2>&1 &'
         );
         $process->run();
     }
-    
+
     /**
      * Generate prices for cache
-     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param int $roomTypeId
      * @param \DateTime $begin
      * @param \DateTime $end
      */
-    public function prices(RoomType $roomType = null, \DateTime $begin = null, \DateTime $end = null)
+    public function prices($roomTypeId = null, \DateTime $begin = null, \DateTime $end = null)
     {
         $this->dm->clear();
-        
+
         $qb = $this->dm->getRepository('MBHPackageBundle:RoomCache')->createQueryBuilder('q');
-     
-        if ($roomType) {
-            $qb->field('roomType.id')->equals($roomType->getId());
+
+        if ($roomTypeId) {
+            $qb->field('roomType.id')->equals($roomTypeId);
         }
         if ($begin) {
             $qb->field('date')->gte($begin);
@@ -117,21 +120,21 @@ class RoomCacheGenerator
         if ($end) {
             $qb->field('date')->lte($end);
         }
-     
+
         $caches = $qb->sort('date', 'asc')
-                     ->getQuery()
-                     ->execute()
+                ->getQuery()
+                ->execute()
         ;
-        foreach($caches as $cache) {
+        foreach ($caches as $cache) {
             $cacheIds[] = $cache->getId();
         }
-        
+
         $i = 0;
         foreach ($cacheIds as $id) {
             $cache = $this->dm->getRepository('MBHPackageBundle:RoomCache')->find($id);
 
             if (!$cache) {
-                continue; 
+                continue;
             }
             $this->generatePrices($cache);
             $this->dm->persist($cache);
@@ -176,10 +179,10 @@ class RoomCacheGenerator
             foreach ($tariffs as $tariff) {
                 $total += $this->generateForTariff($tariff);
             }
-        } 
+        }
         $this->prices();
         $this->clearMessages();
-        
+
         return $total;
     }
 
@@ -213,7 +216,7 @@ class RoomCacheGenerator
             $total += $this->generateForTariff($tariff, $roomType, $begin, $end);
         }
 
-        $this->prices($roomType, $begin, $end);
+        $this->prices($roomType->getId(), $begin, $end);
         $this->clearMessages();
         return $total;
     }
@@ -260,12 +263,12 @@ class RoomCacheGenerator
                 $rooms = $this->countRooms($tariff, $roomType);
                 $cache = new RoomCache();
                 $cache->setTariff($tariff)
-                      ->setRoomType($roomType)
-                      ->setDate($date)
-                      ->setIsDefault($tariff->getIsDefault())
-                      ->setPlaces($roomType->getTotalPlaces())
-                      ->setTotalRooms($rooms)
-                      ->setRooms($rooms - $this->countPackages($tariff, $roomType, $date))
+                        ->setRoomType($roomType)
+                        ->setDate($date)
+                        ->setIsDefault($tariff->getIsDefault())
+                        ->setPlaces($roomType->getTotalPlaces())
+                        ->setTotalRooms($rooms)
+                        ->setRooms($this->countPackages($tariff, $roomType, $date, $rooms))
                 ;
 
                 $this->dm->persist($cache);
@@ -292,12 +295,7 @@ class RoomCacheGenerator
                         ->setChildren($comb['children'])
                         ->setFood($food)
                         ->setPrice($this->calc->getDayPrice(
-                            $cache->getTariff()->getId(),
-                            $cache->getRoomType()->getId(),
-                            $cache->getDate(),
-                            $comb['adults'],
-                            $comb['children'],
-                            $food
+                                        $cache->getTariff()->getId(), $cache->getRoomType()->getId(), $cache->getDate(), $comb['adults'], $comb['children'], $food
                         ))
                 ;
                 $cache->addPrice($price);
@@ -330,19 +328,35 @@ class RoomCacheGenerator
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
      * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
      * @param \DateTime $date
+     * @param int $rooms
      * @return int
      */
-    private function countPackages(Tariff $tariff, RoomType $roomType, \DateTime $date)
+    private function countPackages(Tariff $tariff, RoomType $roomType, \DateTime $date, $rooms)
     {
-        return $this->dm->getRepository('MBHPackageBundle:Package')
-                        ->createQueryBuilder('q')
-                        ->field('tariff.id')->equals($tariff->getId())
-                        ->field('roomType.id')->equals($roomType->getId())
-                        ->field('begin')->lte($date)
-                        ->field('end')->gt($date)
-                        ->getQuery()
-                        ->count()
+        $all = $this->dm->getRepository('MBHPackageBundle:Package')
+                ->createQueryBuilder('p')
+                ->field('roomType.id')->equals($roomType->getId())
+                ->field('begin')->lte($date)
+                ->field('end')->gt($date)
+                ->getQuery()
+                ->count()
         ;
+        $tariff = $this->dm->getRepository('MBHPackageBundle:Package')
+                ->createQueryBuilder('t')
+                ->field('tariff.id')->equals($tariff->getId())
+                ->field('roomType.id')->equals($roomType->getId())
+                ->field('begin')->lte($date)
+                ->field('end')->gt($date)
+                ->getQuery()
+                ->count()
+        ;
+
+        $totalAll = $rooms - $all;
+        $totalTariff = $rooms - $tariff;
+
+        ($totalTariff > $totalAll) ? $total = $totalAll : $total = $totalTariff;
+
+        return $total;
     }
 
 }

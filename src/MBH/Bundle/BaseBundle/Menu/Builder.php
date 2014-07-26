@@ -37,11 +37,9 @@ class Builder extends ContainerAware
         $menu['reservations']->addChild('reservationsRequests', ['route' => '_welcome', 'label' => 'Он-лайн заявки']);
 
         // Cash links
-        $menu->addChild('cash', ['route' => '_welcome', 'label' => 'Касса'])
-                ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-money'])
+        $menu->addChild('cash', ['route' => 'cash', 'label' => 'Касса'])
+             ->setAttribute('icon', 'fa fa-money')
         ;
-        $menu['cash']->addChild('cashDocuments', ['route' => '_welcome', 'label' => 'Документы']);
-        $menu['cash']->addChild('cashbook', ['route' => '_welcome', 'label' => 'Кассовая книга']);
 
         return $this->filterMenu($menu);
     }

@@ -107,7 +107,6 @@ class Search
         $qb = $this->dm->getRepository('MBHPriceBundle:Tariff')
                 ->createQueryBuilder('q')
         ;
-
         $qb->addOr(
                 $qb->expr()
                         ->field('end')->gte($query->begin)
