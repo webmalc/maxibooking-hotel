@@ -662,4 +662,20 @@ class Package extends Base
             $this->setIsPaid(false);
         }
     }
+    
+    /**
+     * @return int
+     */
+    public function getDays()
+    {
+        return $this->getNights() + 1;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNights()
+    {
+        return $this->end->diff($this->begin)->format("%a");
+    }
 }

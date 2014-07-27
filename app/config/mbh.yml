@@ -6,6 +6,20 @@ parameters:
     #параметры логов
     mbh.logs.max: 100
     
+    #Цели приезда
+    mbh.package.arrivals:
+        tourism: "Отдых/туризм"
+        work: "Работа/стажировка"
+        study: "Курсы/учеба"
+        residence: "Временное проживание"
+        other: "Другое"
+    
+    #Цели приезда
+    mbh.package.statuses:
+        offline: "Обычная"
+        online: "Онлайн"
+        channel_manager: "Channel manager"
+    
     #Виды способов оплаты
     mbh.cash.methods:
         cash: "Наличные"

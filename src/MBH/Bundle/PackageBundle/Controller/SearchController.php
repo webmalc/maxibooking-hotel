@@ -10,11 +10,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\PackageBundle\Form\SearchType;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 
 /**
  * @Route("/search")
  */
-class SearchController extends Controller
+class SearchController extends Controller implements CheckHotelControllerInterface
 {
 
     /**

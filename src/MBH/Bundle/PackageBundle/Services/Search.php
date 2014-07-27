@@ -34,7 +34,7 @@ class Search
      */
     public function search(SearchQuery $query)
     {
-        $groupedCaches = $caches = $results = [];
+        $groupedCaches = $caches = $results = $groupedCachesMin = [];
 
         $qb = $this->dm->getRepository('MBHPackageBundle:RoomCache')
                 ->createQueryBuilder('q')
@@ -46,7 +46,12 @@ class Search
 
         ;
         if (!empty($query->tariff)) {
-            $qb->field('tariff.id')->equals($query->tariff->getId());
+            
+            if($query->tariff instanceof \MBH\Bundle\PriceBundle\Document\Tariff) {
+                $qb->field('tariff.id')->equals($query->tariff->getId());
+            } else {
+                $qb->field('tariff.id')->equals($query->tariff);
+            }
         } else {
             $qb->field('isDefault')->equals(true);
         }
@@ -60,6 +65,14 @@ class Search
         //Group cache
         foreach ($caches as $cache) {
             $groupedCaches[$cache->getRoomType()->getId()][] = $cache;
+            
+            if (!isset($groupedCachesMin[$cache->getRoomType()->getId()])) {
+                $groupedCachesMin[$cache->getRoomType()->getId()] = $cache->getRooms();
+            }
+            if ($groupedCachesMin[$cache->getRoomType()->getId()] > $cache->getRooms()) {
+                $groupedCachesMin[$cache->getRoomType()->getId()] = $cache->getRooms();
+            }
+            
         }
         //Delete short cache chains
         foreach ($groupedCaches as $key => $groupedCache) {
@@ -68,7 +81,7 @@ class Search
             }
         }
         //Generate result
-        foreach ($groupedCaches as $groupedCache) {
+        foreach ($groupedCaches as $key => $groupedCache) {
             if ($query->end->diff($query->begin)->format("%a") != count($groupedCache)) {
                 continue;
             }
@@ -81,7 +94,7 @@ class Search
                     ->setEnd($lastDate->modify('+1 day'))
                     ->setRoomType($firstCache->getRoomType())
                     ->setTariff($firstCache->getTariff())
-                    ->setRoomsCount($firstCache->getRooms())
+                    ->setRoomsCount($groupedCachesMin[$key])
                     ->setAdults($query->adults)
                     ->setChildren($query->children)
             ;
@@ -107,6 +120,22 @@ class Search
         $qb = $this->dm->getRepository('MBHPriceBundle:Tariff')
                 ->createQueryBuilder('q')
         ;
+        
+        if (!empty($query->roomTypes)) {
+            $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+                                  ->createQueryBuilder('r')
+                                  ->field('id')->in($query->roomTypes)
+                                  ->getQuery()
+                                  ->execute()
+            ;
+            
+            $hotelsIds = [];
+            foreach ($roomTypes as $roomType) {
+                $hotelsIds[] = $roomType->getHotel()->getId();
+            }
+            $qb->field('hotel.id')->in($hotelsIds);
+        }
+        
         $qb->addOr(
                 $qb->expr()
                         ->field('end')->gte($query->begin)

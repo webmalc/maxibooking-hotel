@@ -50,13 +50,13 @@
             {% if tariffResults != false and tariffResults is iterable and tariffResults|length != 0 %}
 
                 <div class="panel panel-default package-search-tariffs">
-                    <div class="panel-heading">Поиск по тарифам</div>
+                    <div class="panel-heading">Поиск по тарифам <div class="text-right pull-right"><small><span class="text-success">зеленый</span> - основные тарифы</small><small>&nbsp; <span class="text-primary">синий</span> - специальные тарифы</small></div></div>
                     <div class="panel-body">
                         
                         {% for tariffResult in tariffResults  %}
                             
                         <ul id="package-search-tariffs">
-                            <li><a href="#" data-id="{{ tariffResult.id }}">{{ tariffResult }}</a></li>
+                            <li><a href="#" {% if tariffResult.isDefault %}class="text-success"{% endif %} data-id="{{ tariffResult.id }}">{{ tariffResult }}</a></li>
                         </ul>
                         {% endfor %}
                     </div>

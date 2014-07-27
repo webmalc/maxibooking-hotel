@@ -1,0 +1,86 @@
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+
+{% set small_title = "редактирование брони " ~ entity.numberWithPrefix %}    
+
+{% block content %}
+
+    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 1 , 'entity': entity} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+            
+            <div class="alert alert-warning package-main-info">
+                <div class="row">
+                    <div class="col-md-2 text-right"><strong>Даты</strong></div>
+                    <div class="col-md-10">{{ entity.begin|date('d.m.Y') }} - {{ entity.end|date('d.m.Y') }} ({{ entity.days }}/{{ entity.nights }})</div>
+                </div>
+                <div class="row spacer-top">
+                    <div class="col-md-2 text-right"><strong>Гости</strong></div>
+                    <div class="col-md-10">
+                        <span data-toggle="tooltip" title="Взрослых: {{entity.adults}} Детей: {{entity.children}}">
+                            {% if entity.adults > 0 %}{% for i in 1..entity.adults %}<i class="fa fa-male"></i>&nbsp;{% endfor %}{% endif %}{% if entity.children > 0 %}<small>{% for i in 1..entity.children %}<i class="fa fa-child"></i>&nbsp;{% endfor %}</small>{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="row spacer-top">
+                    <div class="col-md-2 text-right"><strong>Тариф</strong></div>
+                    <div class="col-md-10">{{ entity.tariff }}</div>
+                </div>
+                <div class="row spacer-top">
+                    <div class="col-md-2 text-right"><strong>Комната</strong></div>
+                    <div class="col-md-10">{{ entity.roomType.hotel }} - {{ entity.roomType }} - {{ entity.food }}</div>
+                </div>
+                <div class="row spacer-top">
+                    <div class="col-md-2 text-right"><strong>Цена/Оплачено</strong></div>
+                    <div class="col-md-10">
+                        {{ entity.price|number_format }} / {{ entity.paid|number_format }}
+                        &nbsp; 
+                        {% if entity.isPaid %}
+                            <small class="text-success"><i class="fa fa-check"></i> оплачена</small>
+                        {% else %}
+                            <small class="text-danger"><i class="fa fa-times"></i> не оплачена</small>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row spacer-top">
+                    <div class="col-md-2 text-right"><strong>Тип брони</strong></div>
+                    <div class="col-md-10">{{ statuses[entity.status] }}</div>
+                </div>
+            </div>
+            
+            {{ form_start(form, {'action': path('package_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
+            {{ form_end(form) }}
+
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script>
+        /*$(document).ready(function() {
+            $('#mbh_bundle_packagebundle_package_main_type_adults').TouchSpin({
+                min: 0,
+                max: {{ entity.roomType.totalPlaces }},
+                step: 1,
+                boostat: 2,
+                maxboostedstep: 4
+            });
+        });
+        $(document).ready(function() {
+            $('#mbh_bundle_packagebundle_package_main_type_children').TouchSpin({
+                min: 0,
+                max: {{ entity.roomType.totalPlaces }},
+                step: 1,
+                boostat: 2,
+                maxboostedstep: 4
+            });
+        });*/
+    </script>
+{% endblock %}
+

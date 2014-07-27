@@ -359,4 +359,55 @@ class RoomCacheGenerator
         return $total;
     }
 
+    /**
+     * Decrease rooms count
+     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     */
+    public function decrease(RoomType $roomType, \DateTime $begin, \DateTime $end)
+    {
+        $caches = $this->dm->getRepository('MBHPackageBundle:RoomCache')
+                           ->createQueryBuilder('q')
+                           ->field('roomType.id')->equals($roomType->getId())
+                           ->field('date')->gte($begin)
+                           ->field('date')->lt($end)
+                           ->getQuery()
+                           ->execute();
+        
+        foreach ($caches as $cache) {
+            $cache->setRooms($cache->getRooms() - 1);
+            if ($cache->getRooms() < 0 ) {
+                $cache->setRooms(0);
+            }
+            $this->dm->persist($cache);
+        }
+        $this->dm->flush();
+    }
+    
+    /**
+     * Increase rooms count
+     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     */
+    public function increase(RoomType $roomType, \DateTime $begin, \DateTime $end)
+    {
+        $caches = $this->dm->getRepository('MBHPackageBundle:RoomCache')
+                           ->createQueryBuilder('q')
+                           ->field('roomType.id')->equals($roomType->getId())
+                           ->field('date')->gte($begin)
+                           ->field('date')->lt($end)
+                           ->getQuery()
+                           ->execute();
+        
+        foreach ($caches as $cache) {
+            $cache->setRooms($cache->getRooms() + 1);
+            if ($cache->getRooms() > $cache->getTotalRooms()) {
+                $cache->setRooms($cache->getTotalRooms());
+            }
+            $this->dm->persist($cache);
+        }
+        $this->dm->flush();
+    }
 }
