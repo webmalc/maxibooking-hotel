@@ -5,7 +5,7 @@ mbh_cash:
 
 _welcome:
     pattern:  /
-    defaults: { _controller: MBHUserBundle:User:index}
+    defaults: { _controller: MBHPackageBundle:Package:index}
 
 mbh_package:
     resource: "@MBHPackageBundle/Controller/"

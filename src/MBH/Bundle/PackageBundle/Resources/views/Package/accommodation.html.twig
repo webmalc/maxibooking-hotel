@@ -1,0 +1,34 @@
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+
+{% set small_title = "редактирование брони " ~ entity.numberWithPrefix %}    
+
+{% block content %}
+
+    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 4 , 'entity': entity} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+            {% if entity.accommodation %}
+                <div class="alert alert-warning">
+                    <i class="fa fa-home"></i> Размещение: {{ entity.accommodation.name(true, true) }}
+                    <div class="pull-right">
+                        <a href="{{ path('package_accommodation_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
+                            <i class="fa fa-trash-o"></i>
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-circle"></i> Размещение не указано
+                </div>
+            {% endif %}
+
+            {{ form_start(form, {'action': path('package_accommodation', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
+            {{ form_end(form) }}
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
+        </div>
+    </div>
+
+{% endblock %}

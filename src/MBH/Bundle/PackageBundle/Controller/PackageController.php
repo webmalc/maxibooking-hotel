@@ -12,6 +12,7 @@ use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\PackageMainType;
 use MBH\Bundle\PackageBundle\Form\PackageGuestType;
+use MBH\Bundle\PackageBundle\Form\PackageAccommodationType;
 use MBH\Bundle\CashBundle\Form\CashDocumentType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
@@ -30,7 +31,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function indexAction()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -263,7 +264,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Route("/{id}/guest/{touristId}/delete", name="package_guest_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
-     * @Template()
      */
     public function guestDeleteAction(Request $request, $id, $touristId)
     {
@@ -357,7 +357,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Route("/{id}/cash/{cashId}/delete", name="package_cash_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
-     * @Template()
      */
     public function cashDeleteAction(Request $request, $id, $cashId)
     {
@@ -401,10 +400,118 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
+        $roomTypes = $dm->getRepository('MBHHotelBundle:RoomType')
+                    ->createQueryBuilder('q')
+                    ->sort('fullTitle', 'asc')
+                    ->getQuery()
+                    ->execute()
+                    ->toArray()
+        ;
+        $groupedRooms = [];
+
+        foreach ($roomTypes as $key => $roomType) {
+            if ($roomType->getId() == $entity->getRoomType()->getId()) {
+                unset($roomTypes[$key]);
+                array_unshift($roomTypes, $roomType);
+            }
+        }
+
+        $qb = $dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('q');
+        $qb->field('accommodation')->notEqual(null)
+           ->addOr(
+                $qb->expr()
+                    ->field('begin')->gte($entity->getBegin())
+                    ->field('begin')->lt($entity->getEnd())
+           )
+           ->addOr(
+                $qb->expr()
+                    ->field('end')->gt($entity->getBegin())
+                    ->field('end')->lte($entity->getEnd())
+           )
+           ->addOr(
+                $qb->expr()
+                    ->field('end')->gte($entity->getEnd())
+                    ->field('begin')->lte($entity->getBegin())
+           )
+        ;
+
+        $notIds = [];
+        foreach ($qb->getQuery()->execute() as $package) {
+            $notIds[] = $package->getAccommodation()->getId();
+        }
+        ;
+
+        foreach ($roomTypes as $roomType) {
+
+            $rooms = $dm->getRepository('MBHHotelBundle:Room')
+                        ->createQueryBuilder('q')
+                        ->sort('fullTitle', 'asc')
+                        ->field('roomType.id')->equals($roomType->getId())
+                        ->field('id')->notIn($notIds)
+                        ->getQuery()
+                        ->execute()
+            ;
+            if (!count($rooms)) {
+                continue;
+            }
+            foreach($rooms as $room) {
+                $groupedRooms[$roomType->getName()][$room->getId()] = $room->getName();
+            }
+        }
+
+        $form = $this->createForm(new PackageAccommodationType(), [], ['rooms' => $groupedRooms]);
+
+        if ($request->getMethod() == 'PUT') {
+            $form->bind($request);
+
+            if ($form->isValid()) {
+
+                $entity->setAccommodation($dm->getRepository('MBHHotelBundle:Room')->find($form->getData()['room']));
+                $dm->persist($entity);
+                $dm->flush();
+
+                $request->getSession()
+                    ->getFlashBag()
+                    ->set('success', 'Размещение успешно сохранено.')
+                ;
+                return $this->afterSaveRedirect('package', $entity->getId(), [], '_accommodation');
+            }
+        }
+
         return [
             'entity' => $entity,
+            'form' => $form->createView(),
             'logs' => $this->logs($entity)
         ];
+    }
+
+    /**
+     * Accommodation delete
+     *
+     * @Route("/{id}/accommodation/delete", name="package_accommodation_delete")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     */
+    public function accommodationDeleteAction(Request $request, $id)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException();
+        }
+        $entity->removeAccommodation();
+        $dm->persist($entity);
+        $dm->flush();
+
+        $request->getSession()
+            ->getFlashBag()
+            ->set('success', 'Размещение успешно удалено.')
+        ;
+
+        return $this->redirect($this->generateUrl('package_accommodation', ['id' => $id]));
     }
 
     /**

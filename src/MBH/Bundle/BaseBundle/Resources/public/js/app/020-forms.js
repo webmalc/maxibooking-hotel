@@ -20,6 +20,7 @@ $(document).ready(function () {
     $('select').not('.plain-html').select2({
         placeholder: "Сделайте выбор",
         allowClear: true,
+        width: 'element',
         formatSelection: function(item, container) {
             var optgroup = $(item.element).parent('optgroup').attr('label');
             if (!optgroup) {

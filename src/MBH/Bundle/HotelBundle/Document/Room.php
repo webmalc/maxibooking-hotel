@@ -80,7 +80,7 @@ class Room extends Base
     /**
      * Set hotel
      *
-     * @param MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
      * @return self
      */
     public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
@@ -164,15 +164,24 @@ class Room extends Base
     {
         return $this->title;
     }
-    
+
     /**
+     * @param boolean $hotel
+     * @param boolean $roomType
      * @return string
+     *
      */
-    public function getName()
+    public function getName($roomType = false, $hotel = false)
     {
-        if (!empty($this->title)) {
-            return $this->title;
+        (!empty($this->title)) ?  $name = $this->title : $name = $this->fullTitle;
+
+        if ($roomType) {
+            $name = $this->getRoomType()->getName() . ' - ' . $name;
         }
-        return $this->fullTitle;
+        if ($hotel) {
+            $name = $this->getHotel()->getName() . ' - ' . $name;
+        }
+
+        return $name;
     }
 }

@@ -12,5 +12,8 @@ $(document).ready(function() {
         postfix: '<i class="fa fa-ruble"></i>'
     });
 
+    //package datatable
+    $('#package-table').dataTable();
+
 });
 

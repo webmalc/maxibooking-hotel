@@ -1,4 +1,4 @@
-/*global window */
+/*global window, $ */
 $(document).ready(function () {
     'use strict';
 

@@ -1,1 +1,161 @@
-Hello {{ name }}!
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+
+{% set small_title = "список броней" %}
+
+{% block content %}
+
+    <div class="well">
+        <form id="package-table-filter" class="form-inline" role="form">
+
+            <div class="input">
+                C <input type="text" id="begin" class="datepicker begin-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
+            </div>
+
+            <div class="input">
+                По <input type="text" id="end" class="datepicker end-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
+            </div>
+
+            <div class="input">
+                Тип номера <select class="form-control input-sm">
+                    <option></option>
+                    <option value="cash">Комфорт</option>
+                    <option value="cashless">Стандарт</option>
+                    <option value="electronic">Каморка</option>
+                </select>
+            </div>
+
+            <div class="input">
+                Тип брони <select class="form-control input-sm">
+                    <option></option>
+                    <option value="cash">Обычная</option>
+                    <option value="cashless">Онлайн</option>
+                    <option value="electronic">Channel manager</option>
+                </select>
+            </div>
+
+            <div class="input">
+                Удаленные <input type="checkbox"  value="1" />
+            </div>
+
+        </form>
+    </div>
+
+    <table id="package-table"
+           class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xs"></th>
+            <th class="td-xs">#</th>
+            <th class="td-sm">Создана</th>
+            <th class="td-md">Комната</th>
+            <th class="td-md">Даты</th>
+            <th class="td-md">Туристы</th>
+            <th class="td-sm">Стоимость</th>
+            <th class="td-sm"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <div class="text-center"><span class="text-danger" data-toggle="tooltip" title="Тип брони: Channel manager"><i class="fa fa fa-paper-plane-o"></i></span></div>
+            </td>
+            <td>
+                <div class="text-center"><a href="">AZ-2535</a></div>
+            </td>
+            <td>23.09.2014 12:53<br>
+                <small>webmalc</small>
+            </td>
+            <td>Стандарт - BB<br>
+                <small>Стандарт - 23</small>
+            </td>
+            <td>11.10.2014 - 23.10.2014<br>
+                <small>13/12</small>
+            </td>
+            <td>Иванов Федор Ваисльевич<br>
+                <small>2+1</small>
+            </td>
+            <td><span class="text-success">32,000 / 12.000</span></td>
+            <td>
+                <div class="text-center btn-list">
+                    <a target="_blank" href="" class="btn btn-success btn-xs" title="Редактирование записи"
+                       data-toggle="tooltip">
+                        <i class="fa fa-pencil-square-o"></i>
+                    </a>
+                    <a href="" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
+                        <i class="fa fa-trash-o"></i>
+                    </a>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="text-center"><span class="text-danger" data-toggle="tooltip" title="Тип: Channel manager"><i
+                                class="fa fa-plane"></i></span></div>
+            </td>
+            <td>
+                <div class="text-center"><a href="">AZ-2535</a></div>
+            </td>
+            <td>23.09.2014 12:53<br>
+                <small>webmalc</small>
+            </td>
+            <td>Стандарт - BB<br>
+                <small>Стандарт - 23</small>
+            </td>
+            <td>11.10.2014 - 23.10.2014<br>
+                <small>13/12</small>
+            </td>
+            <td>Иванов Федор Ваисльевич<br>
+                <small>2+1</small>
+            </td>
+            <td><span class="text-success">32,000 / 12.000</span></td>
+            <td>
+                <div class="text-center btn-list">
+                    <a target="_blank" href="" class="btn btn-success btn-xs" title="Редактирование записи"
+                       data-toggle="tooltip">
+                        <i class="fa fa-pencil-square-o"></i>
+                    </a>
+                    <a href="" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
+                        <i class="fa fa-trash-o"></i>
+                    </a>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="text-center"><span class="text-success" data-toggle="tooltip"
+                                               title="Тип: Channel manager"><i class="fa fa-plane"></i></span></div>
+            </td>
+            <td>
+                <div class="text-center"><a href="">AZ-2535</a></div>
+            </td>
+            <td>23.09.2014 12:53<br>
+                <small>webmalc</small>
+            </td>
+            <td>Стандарт - BB<br>
+                <small>Стандарт - 23</small>
+            </td>
+            <td>11.10.2014 - 23.10.2014<br>
+                <small>13/12</small>
+            </td>
+            <td>Иванов Федор Ваисльевич<br>
+                <small>2+1</small>
+            </td>
+            <td><span class="text-danger">32,000 / 12.000</span></td>
+            <td>
+                <div class="text-center btn-list">
+                    <a target="_blank" href="" class="btn btn-success btn-xs" title="Редактирование записи"
+                       data-toggle="tooltip">
+                        <i class="fa fa-pencil-square-o"></i>
+                    </a>
+                    <a href="" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
+                        <i class="fa fa-trash-o"></i>
+                    </a>
+                </div>
+            </td>
+        </tr>
+
+        <tbody>
+    </table>
+
+
+{% endblock content %}

@@ -267,6 +267,17 @@ class Package extends Base
     }
 
     /**
+     * Remove accommodation
+     * @return $this
+     */
+    public function removeAccommodation()
+    {
+        $this->accommodation = null;
+
+        return $this;
+    }
+
+    /**
      * Set number
      *
      * @param increment $number
