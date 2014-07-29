@@ -29,6 +29,7 @@ framework:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
+    base_template_class: MBH\Bundle\BaseBundle\Twig\Template
     
     globals:
         meta_title: 'Система бронирования "MaxiBooking".'

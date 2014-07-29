@@ -5,6 +5,8 @@ namespace MBH\Bundle\PackageBundle\Services;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 
 /**
  *  Calculation service
@@ -31,6 +33,31 @@ class Calculation
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
+    }
+
+    public function setPaid(Package $package, CashDocument $newDoc = null, CashDocument $removeDoc = null)
+    {
+        $total = 0;
+
+        $cashes = $package->getCashDocuments();
+
+        if ($newDoc) {
+            $cashes[] = $newDoc;
+        }
+        foreach ($cashes as $cash) {
+
+            if($removeDoc && $removeDoc->getId() == $cash->getId()) {
+                continue;
+            }
+            if ($cash->getOperation() == 'out') {
+                $total -= $cash->getTotal();
+            } else {
+                $total += $cash->getTotal();
+            }
+        }
+        $package->setPaid($total);
+
+        return $package;
     }
 
     /**

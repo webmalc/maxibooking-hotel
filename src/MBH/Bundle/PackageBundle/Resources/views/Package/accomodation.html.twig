@@ -1,0 +1,16 @@
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+
+{% set small_title = "редактирование брони " ~ entity.numberWithPrefix %}    
+
+{% block content %}
+
+    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 4 , 'entity': entity} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+
+            размещение
+        </div>
+    </div>
+
+{% endblock %}

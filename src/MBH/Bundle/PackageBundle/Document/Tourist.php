@@ -37,12 +37,12 @@ class Tourist extends Base
     use BlameableDocument;
     
     /**
-     * @ODM\ReferenceMany(targetDocument="Package", mappedBy="tourists")
+     * @ODM\ReferenceMany(targetDocument="Package", nullable="true", mappedBy="tourists")
      */
     public $packages;
     
     /**
-     * @ODM\ReferenceMany(targetDocument="Package", mappedBy="tourist")
+     * @ODM\ReferenceMany(targetDocument="Package", nullable="true", mappedBy="mainTourist")
      */
     public $mainPackages;
     
@@ -524,6 +524,22 @@ class Tourist extends Base
     public function getMainPackages()
     {
         return $this->mainPackages;
+    }
+    
+    /**
+     * Get age
+     * @return int 
+     */
+    public function getAge()
+    {
+        if ($this->getBirthday()) {
+            $now = new \DateTime();
+            $diff = $now->diff($this->getBirthday());
+            
+            return $diff->y;
+        }
+        
+        return null;
     }
 
 }

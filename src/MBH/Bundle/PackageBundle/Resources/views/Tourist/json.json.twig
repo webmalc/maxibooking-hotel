@@ -9,6 +9,7 @@
                 "<a href='{{ path('tourist_edit', { 'id': entity.id }) }}' rel='main' title='Редактирование записи' data-toggle='tooltip'>{{ entity.fullName }}</a>",
                 "<div class='text-center'>{{ entity.packages.count}}</div>",
                 "<div class='text-center'>{% if entity.birthday %}{{ entity.birthday|date('d.m.Y')}}{% endif %}</div>",
+                "<div class='text-center'>{{ entity.age }}</div>",
                 "{{ entity.phone }}",
                 "{% if entity.email %}<a href='mailto:{{ entity.email }}'>{{ entity.email }}</a>{% endif %}",
                 "{% include 'MBHPackageBundle:Tourist:jsonButtons.html.twig' with {'entity': entity} %}"

@@ -1,0 +1,82 @@
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+
+{% set small_title = "редактирование брони " ~ entity.numberWithPrefix %}    
+
+{% block content %}
+
+    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 3 , 'entity': entity} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+
+            <div class="alert alert-warning">
+                <i class="fa fa-money"></i>
+                Цена/Оплачено: {{ entity.price|number_format }} / {{ entity.paid|number_format }}
+                &nbsp;
+                {% if entity.isPaid %}
+                    <small class="text-success"><i class="fa fa-check"></i> оплачена</small>
+                {% else %}
+                    <small class="text-danger"><i class="fa fa-times"></i> не оплачена</small>
+                {% endif %}
+            </div>
+
+            {% if cashes|length > 0 %}
+                <table id="cash-table" class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+                    <thead>
+                    <tr>
+                        <th class="td-xs"></th>
+                        <th class="td-md">Приход</th>
+                        <th class="td-md">Расход</th>
+                        <th class="td-md">Способ оплаты</th>
+                        <th class="td-md">Вид операции</th>
+                        <th class="td-md">Дата</th>
+                        <th class="td-md">Удалена</th>
+                        <th class="td-sm"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for cash in cashes %}
+                        <tr {% if cash.deletedAt %}class="danger"{% endif %}>
+                            <td class="text-center"><i class='fa fa-money'></i></td>
+                            <td class="text-right">
+                                {% if cash.operation != 'out' %}
+                                    <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' rel='main' class='text-success' title='Редактирование записи' data-toggle='tooltip'>
+                                        {{ cash.total|number_format }}
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td class="text-right">
+                                {% if cash.operation == 'out' %}
+                                    <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' rel='main' class='text-danger' title='Редактирование записи' data-toggle='tooltip'>
+                                        {{ cash.total|number_format }}
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td>{{ methods[cash.method] }}</td>
+                            <td>{{ operations[cash.operation] }}</td>
+                            <td>{{ cash.createdAt|date('d.m.Y') }}</td>
+                            <td>{% if cash.deletedAt %}{{ cash.deletedAt|date('d.m.Y') }}{% endif %}</td>
+                            <td class="table-actions-td text-center">
+                                <a target="_blank" href="{{ path('cash_edit', { 'id': cash.id }) }}" class="btn btn-success btn-xs" title="Редактирование записи" data-toggle="tooltip">
+                                    <i class="fa fa-pencil-square-o"></i>
+                                </a>
+                                <a href="{{ path('package_cash_delete', { 'id': entity.id, 'cashId': cash.id }) }}" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
+                                    <i class="fa fa-trash-o"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+
+            {{ form_start(form, {'action': path('package_cash', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
+            {{ form_end(form) }}
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
+        </div>
+    </div>
+
+{% endblock %}

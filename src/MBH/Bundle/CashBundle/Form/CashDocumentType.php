@@ -14,6 +14,7 @@ class CashDocumentType extends AbstractType
                 ->add('total', 'text', [
                     'label' => 'Сумма',
                     'required' => true,
+                    'group' => $options['groupName'],
                     'attr' => ['class' => 'spinner'],
                 ])
                 ->add('method', 'choice', [
@@ -21,6 +22,7 @@ class CashDocumentType extends AbstractType
                     'required' => true,
                     'multiple' => false,
                     'empty_value' => '',
+                    'group' => $options['groupName'],
                     'choices' => $options['methods']
                 ])
                 ->add('operation', 'choice', [
@@ -28,10 +30,12 @@ class CashDocumentType extends AbstractType
                     'required' => true,
                     'multiple' => false,
                     'empty_value' => '',
+                    'group' => $options['groupName'],
                     'choices' => $options['operations']
                 ])
                 ->add('note', 'textarea', [
                     'label' => 'Комментарий',
+                    'group' => $options['groupName'],
                     'required' => false,
                 ])
         ;
@@ -42,7 +46,8 @@ class CashDocumentType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\CashBundle\Document\CashDocument',
             'methods' => [],
-            'operations' => []
+            'operations' => [],
+            'groupName' => null
         ));
     }
 

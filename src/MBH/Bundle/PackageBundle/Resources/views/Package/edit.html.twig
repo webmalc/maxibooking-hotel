@@ -24,11 +24,11 @@
                 </div>
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>Тариф</strong></div>
-                    <div class="col-md-10">{{ entity.tariff }}</div>
+                    <div class="col-md-10">{{ entity.tariff.name }}</div>
                 </div>
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>Комната</strong></div>
-                    <div class="col-md-10">{{ entity.roomType.hotel }} - {{ entity.roomType }} - {{ entity.food }}</div>
+                    <div class="col-md-10">{{ entity.roomType.hotel.name }} - {{ entity.roomType.name }} - {{ entity.food }}</div>
                 </div>
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>Цена/Оплачено</strong></div>

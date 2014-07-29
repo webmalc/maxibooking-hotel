@@ -31,14 +31,15 @@ class BaseController extends Controller
      * Redirect after entity save
      * @param string $route
      * @param int $id
-     * @param params $params
+     * @param [] $params
+     * @param string $suffix
      * @return Response
      */
-    public function afterSaveRedirect($route, $id, array $params = [])
+    public function afterSaveRedirect($route, $id, array $params = [], $suffix = '_edit')
     {
         if ($this->getRequest()->get('save') !== null) {
             
-            return $this->redirect($this->generateUrl($route . '_edit', array_merge(['id' => $id], $params)));
+            return $this->redirect($this->generateUrl($route . $suffix, array_merge(['id' => $id], $params)));
         }
         
         return $this->redirect($this->generateUrl($route, $params));

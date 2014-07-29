@@ -12,7 +12,7 @@ $(document).ready(function () {
         });
     });
 
-    $('#mbh_bundle_packagebundle_touristtype_birthday').datepicker({
+    $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday').datepicker({
         language: "ru",
         autoclose: true,
         startView: 2

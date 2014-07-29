@@ -40,9 +40,8 @@ class CashController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $repo = $dm->getRepository('MBHCashBundle:CashDocument');
         $qb = $repo->createQueryBuilder('CashDocument')
-                   ->skip($request->get('start'))
-                   ->limit($request->get('length'))
-        ;
+            ->skip($request->get('start'))
+            ->limit($request->get('length'));
         //Order
         $sort = 'createdAt';
         $dir = 'desc';
@@ -57,22 +56,22 @@ class CashController extends Controller
         //Search
         $search = $request->get('search')['value'];
         if (!empty($search)) {
-            $qb->addOr($qb->expr()->field('total')->equals((int) $search));
+            $qb->addOr($qb->expr()->field('total')->equals((int)$search));
             $qb->addOr($qb->expr()->field('prefix')->equals(new \MongoRegex('/.*' . $search . '.*/ui')));
         }
-        
+
         $begin = $end = null;
         //Dates
         if (!empty($request->get('begin'))) {
             $begin = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('begin') . ' 00:00:00');
             $qb->field('createdAt')->gte($begin);
         }
-        
+
         if (!empty($request->get('end'))) {
             $end = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('end') . ' 00:00:00');
             $qb->field('createdAt')->lte($end);
         }
-        
+
         $entities = $qb->getQuery()->execute();
 
         return [
@@ -105,10 +104,12 @@ class CashController extends Controller
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(
-                new CashDocumentType(), $entity, [
-            'methods' => $this->container->getParameter('mbh.cash.methods'),
-            'operations' => $this->container->getParameter('mbh.cash.operations')
-                ]
+            new CashDocumentType(),
+            $entity,
+            [
+                'methods' => $this->container->getParameter('mbh.cash.methods'),
+                'operations' => $this->container->getParameter('mbh.cash.operations')
+            ]
         );
 
         return [
@@ -137,10 +138,12 @@ class CashController extends Controller
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(
-                new CashDocumentType(), $entity, [
-            'methods' => $this->container->getParameter('mbh.cash.methods'),
-            'operations' => $this->container->getParameter('mbh.cash.operations')
-                ]
+            new CashDocumentType(),
+            $entity,
+            [
+                'methods' => $this->container->getParameter('mbh.cash.methods'),
+                'operations' => $this->container->getParameter('mbh.cash.operations')
+            ]
         );
 
         $form->bind($request);
@@ -153,8 +156,7 @@ class CashController extends Controller
             $dm->flush();
 
             $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', 'Запись успешно отредактирована.')
-            ;
+                ->set('success', 'Запись успешно отредактирована.');
 
             return $this->afterSaveRedirect('cash', $entity->getId());
         }

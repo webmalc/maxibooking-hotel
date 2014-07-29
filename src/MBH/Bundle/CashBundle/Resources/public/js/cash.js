@@ -4,7 +4,7 @@ $(document).ready(function () {
 
     //spinners
     $('#mbh_bundle_cashbundle_cashdocumenttype_total').TouchSpin({
-        min: 0,
+        min: 1,
         max: 9007199254740992,
         step: 1,
         boostat: 5,
@@ -12,7 +12,7 @@ $(document).ready(function () {
         postfix: '<i class="fa fa-ruble"></i>'
     });
 
-    //roomType rooms datatables
+    //cash datatable
     $('#cash-table').each(function() {
         $(this).dataTable({
             "processing": true,

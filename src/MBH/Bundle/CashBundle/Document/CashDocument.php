@@ -84,7 +84,7 @@ class CashDocument extends Base
      *      message = "Неверный тип тарифа."
      * )
      */
-    protected $operation = 'in';
+    protected $operation;
 
     /**
      * @var string
@@ -94,13 +94,9 @@ class CashDocument extends Base
     protected $note;
 
     /**
-     * @var $id
-     */
-
-    /**
      * Set package
      *
-     * @param MBH\Bundle\PackageBundle\Document\Package $package
+     * @param \MBH\Bundle\PackageBundle\Document\Package $package
      * @return self
      */
     public function setPackage(\MBH\Bundle\PackageBundle\Document\Package $package)

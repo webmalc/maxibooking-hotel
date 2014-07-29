@@ -546,6 +546,16 @@ class Package extends Base
         $this->mainTourist = $mainTourist;
         return $this;
     }
+    
+    /**
+     * @return \MBH\Bundle\PackageBundle\Document\Package
+     */
+    public function removeMainTourist()
+    {
+        $this->mainTourist = null;
+        
+        return $this;
+    }
 
     /**
      * Get mainTourist
