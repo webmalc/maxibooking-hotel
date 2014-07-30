@@ -1,6 +1,8 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = "редактирование брони " ~ entity.numberWithPrefix %}    
+{% set small_title = "редактирование брони " ~ entity.numberWithPrefix %}
+
+{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">удалена</span>' %}{% endif %}
 
 {% block content %}
 
@@ -66,6 +68,7 @@
                                 {% endif %}
                             </td>
                             <td class="table-actions-td text-center">
+                                {% if entity.deletedAt is empty %}
                                 <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}"
                                    class="btn btn-success btn-xs" title="Редактирование записи" data-toggle="tooltip">
                                     <i class="fa fa-pencil-square-o"></i>
@@ -75,6 +78,7 @@
                                    data-toggle="tooltip">
                                     <i class="fa fa-trash-o"></i>
                                 </a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
@@ -82,24 +86,26 @@
                 </table>
             {% endif %}
 
-            {% if entity.tourists|length < totalGuests %}
-                {{ form_start(form, {'action': path('package_guest', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
-                {{ form_widget(form) }}
-                {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
-                {{ form_end(form) }}
-            {% else %}
-                <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
-                    <div class="container">
-                        <ul class="nav navbar-nav navbar-right">
-                            <li>
-                                <button data-href="{{ path('package_delete', {'id': entity.id}) }}"
-                                        class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i>
-                                    Удалить
-                                </button>
-                            </li>
-                        </ul>
+            {% if entity.deletedAt is empty %}
+                {% if entity.tourists|length < totalGuests %}
+                    {{ form_start(form, {'action': path('package_guest', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
+                    {{ form_widget(form) }}
+                    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
+                    {{ form_end(form) }}
+                {% else %}
+                    <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+                        <div class="container">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li>
+                                    <button data-href="{{ path('package_delete', {'id': entity.id}) }}"
+                                            class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i>
+                                        Удалить
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             {% endif %}
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
 

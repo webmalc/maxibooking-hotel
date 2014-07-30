@@ -2,6 +2,8 @@
 
 {% set small_title = "редактирование брони " ~ entity.numberWithPrefix %}    
 
+{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">удалена</span>' %}{% endif %}
+
 {% block content %}
 
     {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 1 , 'entity': entity} %}
@@ -44,14 +46,18 @@
                 </div>
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>Тип брони</strong></div>
-                    <div class="col-md-10">{{ statuses[entity.status] }}</div>
+                    <div class="col-md-10">{{ statuses[entity.status].title }}{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"></i> удалена</small>{% endif %}</div>
                 </div>
             </div>
-            
+
+
             {{ form_start(form, {'action': path('package_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
+            {% if entity.deletedAt is empty %}
+                {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
+            {% endif %}
             {{ form_end(form) }}
+
 
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
 

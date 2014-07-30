@@ -23,7 +23,7 @@
                 {{ title|default(project_title) }}
             {% endif %}
             {% if small_title is defined %}
-                <small><i class="fa fa-angle-double-right"></i> {{ small_title }}</small>
+                <small><i class="fa fa-angle-double-right"></i> {{ small_title|raw }}</small>
             {% endif %}
         </h2>
 

@@ -6,37 +6,46 @@
 
     <div class="well">
         <form id="package-table-filter" class="form-inline" role="form">
-
             <div class="input">
-                C <input type="text" id="begin" class="datepicker begin-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
+                <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp <input type="text" id="package-filter-begin" class="datepicker package-filter begin-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
             </div>
-
             <div class="input">
-                По <input type="text" id="end" class="datepicker end-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
+                - &nbsp <input type="text" id="package-filter-end" class="datepicker package-filter end-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
             </div>
-
             <div class="input">
-                Тип номера <select class="form-control input-sm">
-                    <option></option>
-                    <option value="cash">Комфорт</option>
-                    <option value="cashless">Стандарт</option>
-                    <option value="electronic">Каморка</option>
+                <select id="package-filter-dates" class="package-filter form-control input-sm">
+                    <option value="begin">Заезд</option>
+                    <option value="end">Выезд</option>
+                    <option value="createdAt">Создание</option>
                 </select>
             </div>
-
             <div class="input">
-                Тип брони <select class="form-control input-sm">
+                <i class="fa fa-home" title='Тип номера' data-toggle='tooltip'></i>&nbsp  <select data-placeholder="Тип номера" id="package-filter-roomType" class="package-filter form-control input-sm">
                     <option></option>
-                    <option value="cash">Обычная</option>
-                    <option value="cashless">Онлайн</option>
-                    <option value="electronic">Channel manager</option>
+                    {% for roomType in roomTypes %}
+                    <option value="{{ roomType.id }}">{{ roomType.name }}</option>
+                    {% endfor %}
                 </select>
             </div>
-
             <div class="input">
-                Удаленные <input type="checkbox"  value="1" />
+                <i class="fa fa-paper-plane" title='Тип брони' data-toggle='tooltip'></i>&nbsp <select data-placeholder="Тип брони" id="package-filter-status" class="package-filter form-control input-sm plain-html">
+                    <option></option>
+                    {% for key, status in statuses %}
+                        <option value="{{ key }}" data-class="{{ status.class }}">{{ status.title }}</option>
+                    {% endfor %}
+                </select>
             </div>
-
+            <div class="input">
+                <i class="fa fa-money" title='Статус оплаты' data-toggle='tooltip'></i>&nbsp <select data-placeholder="Статус оплаты" id="package-filter-paid" class="package-filter form-control input-sm">
+                    <option></option>
+                    <option value="paid">Оплачена</option>
+                    <option value="part">Частично оплачена</option>
+                    <option value="not_paid">Не оплачена</option>
+                </select>
+            </div>
+            <div class="input">
+                <i class="fa fa-trash-o" title='Удаленные?' data-toggle='tooltip'></i>&nbsp <input type="checkbox" id="package-filter-deleted" class="package-filter"  value="1" />
+            </div>
         </form>
     </div>
 
@@ -46,113 +55,15 @@
         <tr>
             <th class="td-xs"></th>
             <th class="td-xs">#</th>
-            <th class="td-sm">Создана</th>
+            <th class="td-md">Создана</th>
             <th class="td-md">Комната</th>
             <th class="td-md">Даты</th>
             <th class="td-md">Туристы</th>
-            <th class="td-sm">Стоимость</th>
+            <th>Стоимость</th>
             <th class="td-sm"></th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td>
-                <div class="text-center"><span class="text-danger" data-toggle="tooltip" title="Тип брони: Channel manager"><i class="fa fa fa-paper-plane-o"></i></span></div>
-            </td>
-            <td>
-                <div class="text-center"><a href="">AZ-2535</a></div>
-            </td>
-            <td>23.09.2014 12:53<br>
-                <small>webmalc</small>
-            </td>
-            <td>Стандарт - BB<br>
-                <small>Стандарт - 23</small>
-            </td>
-            <td>11.10.2014 - 23.10.2014<br>
-                <small>13/12</small>
-            </td>
-            <td>Иванов Федор Ваисльевич<br>
-                <small>2+1</small>
-            </td>
-            <td><span class="text-success">32,000 / 12.000</span></td>
-            <td>
-                <div class="text-center btn-list">
-                    <a target="_blank" href="" class="btn btn-success btn-xs" title="Редактирование записи"
-                       data-toggle="tooltip">
-                        <i class="fa fa-pencil-square-o"></i>
-                    </a>
-                    <a href="" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
-                        <i class="fa fa-trash-o"></i>
-                    </a>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="text-center"><span class="text-danger" data-toggle="tooltip" title="Тип: Channel manager"><i
-                                class="fa fa-plane"></i></span></div>
-            </td>
-            <td>
-                <div class="text-center"><a href="">AZ-2535</a></div>
-            </td>
-            <td>23.09.2014 12:53<br>
-                <small>webmalc</small>
-            </td>
-            <td>Стандарт - BB<br>
-                <small>Стандарт - 23</small>
-            </td>
-            <td>11.10.2014 - 23.10.2014<br>
-                <small>13/12</small>
-            </td>
-            <td>Иванов Федор Ваисльевич<br>
-                <small>2+1</small>
-            </td>
-            <td><span class="text-success">32,000 / 12.000</span></td>
-            <td>
-                <div class="text-center btn-list">
-                    <a target="_blank" href="" class="btn btn-success btn-xs" title="Редактирование записи"
-                       data-toggle="tooltip">
-                        <i class="fa fa-pencil-square-o"></i>
-                    </a>
-                    <a href="" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
-                        <i class="fa fa-trash-o"></i>
-                    </a>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="text-center"><span class="text-success" data-toggle="tooltip"
-                                               title="Тип: Channel manager"><i class="fa fa-plane"></i></span></div>
-            </td>
-            <td>
-                <div class="text-center"><a href="">AZ-2535</a></div>
-            </td>
-            <td>23.09.2014 12:53<br>
-                <small>webmalc</small>
-            </td>
-            <td>Стандарт - BB<br>
-                <small>Стандарт - 23</small>
-            </td>
-            <td>11.10.2014 - 23.10.2014<br>
-                <small>13/12</small>
-            </td>
-            <td>Иванов Федор Ваисльевич<br>
-                <small>2+1</small>
-            </td>
-            <td><span class="text-danger">32,000 / 12.000</span></td>
-            <td>
-                <div class="text-center btn-list">
-                    <a target="_blank" href="" class="btn btn-success btn-xs" title="Редактирование записи"
-                       data-toggle="tooltip">
-                        <i class="fa fa-pencil-square-o"></i>
-                    </a>
-                    <a href="" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
-                        <i class="fa fa-trash-o"></i>
-                    </a>
-                </div>
-            </td>
-        </tr>
 
         <tbody>
     </table>

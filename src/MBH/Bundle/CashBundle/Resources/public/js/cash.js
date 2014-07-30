@@ -1,4 +1,4 @@
-/*global window */
+/*global window, $ */
 $(document).ready(function () {
     'use strict';
 
@@ -36,7 +36,8 @@ $(document).ready(function () {
                    { "bSortable": false } // actions
             ],
             "drawCallback": function(settings) {
-                console.log();
+                $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
+                deleteLink();
                 $('#cash-table-total-in').html(settings.json.totalIn);
                 $('#cash-table-total-out').html(settings.json.totalOut);
             }

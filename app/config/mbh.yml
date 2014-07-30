@@ -5,7 +5,7 @@ parameters:
     
     #параметры логов
     mbh.logs.max: 100
-    
+
     #Цели приезда
     mbh.package.arrivals:
         tourism: "Отдых/туризм"
@@ -16,10 +16,10 @@ parameters:
     
     #Цели приезда
     mbh.package.statuses:
-        offline: "Обычная"
-        online: "Онлайн"
-        channel_manager: "Channel manager"
-    
+        offline: { title: "Обычная", class: "default"}
+        online: { title: "Онлайн", class: "success"}
+        channel_manager: { title: "Channel manager", class: "danger"}
+
     #Виды способов оплаты
     mbh.cash.methods:
         cash: "Наличные"

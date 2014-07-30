@@ -8,14 +8,17 @@ class CashDocumentRepository extends DocumentRepository
 {
 
     /**
-     * @param string $type in || out
+     * @param $type
+     * @param $search
+     * @param \DateTime $begin
+     * @param \DateTime $end
      * @return int
-     * @throws Exception
+     * @throws \Exception
      */
     public function total($type, $search, \DateTime $begin = null, \DateTime $end = null)
     {
         if (!in_array($type, ['in', 'out'])) {
-            throw new Exception('Invalid type');
+            throw new \Exception('Invalid type');
         }
 
         $qb = $this->createQueryBuilder('CashDocument');

@@ -31,7 +31,47 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function indexAction()
     {
-        return [];
+        return [
+            'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
+            'statuses' => $this->container->getParameter('mbh.package.statuses')
+        ];
+    }
+
+    /**
+     * Lists all entities as json.
+     *
+     * @Route("/json", name="package_json", defaults={"_format"="json"}, options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function jsonAction(Request $request)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $entities = $dm->getRepository('MBHPackageBundle:Package')->fetch([
+                'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
+                'roomType' => $request->get('roomType'),
+                'status' => $request->get('status'),
+                'deleted' => $request->get('deleted'),
+                'begin' => $request->get('begin'),
+                'end' => $request->get('end'),
+                'dates' => $request->get('dates'),
+                'skip' => $request->get('start'),
+                'limit' => $request->get('length'),
+                'query' => $request->get('search')['value'],
+                'order' => $request->get('order')['0']['column'],
+                'dir' => $request->get('order')['0']['dir'],
+                'paid' => $request->get('paid'),
+        ]);
+
+        return [
+            'entities' => $entities,
+            'total' => $entities->count(),
+            'draw' => $request->get('draw'),
+            'statuses' => $this->container->getParameter('mbh.package.statuses')
+        ];
     }
 
     /**
@@ -46,6 +86,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm->getFilterCollection()->disable('softdeleteable');
 
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
 
@@ -196,7 +237,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
+        $dm->getFilterCollection()->disable('softdeleteable');
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
+        $dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -302,10 +345,14 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
+        $dm->getFilterCollection()->disable('softdeleteable');
         /* @var $entity  Package */
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
 
-        $dm->getFilterCollection()->disable('softdeleteable');
+        if (!$entity) {
+            throw $this->createNotFoundException();
+        }
+
         $cashes = $dm->getRepository('MBHCashBundle:CashDocument')->findBy(['package.id' => $entity->getId()]);
         $dm->getFilterCollection()->enable('softdeleteable');
 
@@ -394,7 +441,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
+        $dm->getFilterCollection()->disable('softdeleteable');
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
+        $dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -403,6 +452,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $roomTypes = $dm->getRepository('MBHHotelBundle:RoomType')
                     ->createQueryBuilder('q')
                     ->sort('fullTitle', 'asc')
+                    ->field('hotel.id')->equals($entity->getRoomType()->getHotel()->getId())
                     ->getQuery()
                     ->execute()
                     ->toArray()
