@@ -1,0 +1,67 @@
+/*global window, $ */
+$(document).ready(function() {
+    'use strict';
+
+    // set accommodation package bg color
+    var setPackageBg = function () {
+        var div = $('#accommodation-report-table').find('div.package').each(function(){
+            $(this).css('background-color', $(this).css('color'));
+        });
+    };
+    setPackageBg();
+
+    // set accommodation  roomType paging
+    var accommodationPagingSet = function () {
+        $('#accommodation-report-pagination').find('a').each( function() {
+            $(this).click(function (e) {
+                e.preventDefault();
+                accommodationReportGet({'page': $(this).attr('data-page')});
+            })
+        });
+    };
+
+    // set accommodation  roomType paging
+    var accommodationMonthsSet = function () {
+        $('#accommodation-report-table-row').find('div.arrow a').each( function() {
+            $(this).click(function (e) {
+                e.preventDefault();
+                $('#accommodation-report-filter-begin').val($(this).attr('data-begin'));
+                accommodationReportGet({'begin': $(this).attr('data-begin')});
+            })
+        });
+    };
+
+    // get accommodation report content
+    var accommodationReportGet = function (data) {
+        var data = (typeof data !== 'undefined') ? data : {};
+        var wrapper = $('#accommodation-report-content');
+
+        if (wrapper.length === 0) {
+            return false;
+        }
+
+        wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+
+        if (!data.begin) {
+            data.begin = $('#accommodation-report-filter-begin').val();
+        }
+        data.roomType = $('#accommodation-report-filter-roomType').val();
+
+        $.ajax({
+            url: Routing.generate('report_accommodation_table'),
+            data: data,
+            success: function (data) {
+                wrapper.html(data);
+                setPackageBg();
+                accommodationPagingSet();
+                accommodationMonthsSet();
+                $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"], i[data-toggle="tooltip"]').tooltip();
+
+            },
+            dataType: 'html'
+        });
+    }
+    accommodationReportGet();
+    $('#accommodation-report-filter').change(function () { accommodationReportGet() });
+});
+

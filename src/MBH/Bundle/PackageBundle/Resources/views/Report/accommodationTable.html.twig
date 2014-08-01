@@ -1,0 +1,132 @@
+{% if rooms|length <= 0 %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> Не найдено номеров у выбранного отеля.
+    </div>
+{% else %}
+    <div id="accommodation-report-table-row">
+        <div class="cols arrow arrow-previous"><a href="#"
+                                                  data-begin="{{ begin|date_modify('-1 month')|date('d.m.Y') }}"><i
+                        class="fa fa-caret-left fa-4x"></i></a></div>
+        <div class="cols table-div">
+
+            <table id="accommodation-report-table"
+                   class="table table-bordered not-auto-datatable table-striped table-hover table-condensed">
+
+                <!-- table head -->
+                <thead>
+                <tr>
+                    <th class="month-th"></th>
+
+                    {% set i = 1 %}
+                    {% for day in period %}
+                        {% if day|date('n') != day|date_modify('+1 day')|date('n') or loop.last %}
+                            <th class="text-center month-th"
+                                colspan="{{ i }}">{% if i >= 5 %}{{ months[day|date('n')] }}, {{ day|date('Y') }}{% endif %}</th>
+                            {% set i = 0 %}
+                        {% endif %}
+                        {% set i = i + 1 %}
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <th class="text-center">Номер</th>
+
+                    {% for day in period %}
+                        <th class="text-center date-th {% if day == begin %}text-warning{% elseif day|date('N') >= 6 %}text-danger{% endif %}">{{ day|date('j') }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+
+                <!-- table content -->
+                {% for room in rooms %}
+
+                    {% if roomTypeId is not defined or roomTypeId != room.roomType.id %}
+                        <tr>
+                            <td class="text-center" colspan="37">
+                                <small><strong>{{ room.roomType }}</strong></small>
+                            </td>
+                            {% set roomTypeId = room.roomType.id %}
+                        </tr>
+                    {% endif %}
+
+                    <tr>
+                        <td class="text-center">
+                            <small>
+                            {% if room.name|length > 5 %}
+                                <span data-toggle="tooltip" title="{{ room.name }}">...{{ room.name[room.name|length - 5:] }}</span>
+                            {% else %}
+                                {{ room.name }}
+                            {% endif %}
+                            </small>
+                        </td>
+                        {% for date in period %}
+                            <td class="cell {% if date == begin %}chosen{% elseif date|date('N') >= 6 %}weekend{% endif %}">
+
+                                {% set day = date %}
+
+                                {% if packages[room.id] is defined %}
+
+                                    {% for package in packages[room.id] %}
+
+                                        {% if day >= package.begin and day <= package.end %}
+
+                                        <a href="{{ path('package_edit', {'id': package.id }) }}" target="_blank" data-toggle="tooltip"
+                                           title="{{ package.numberWithPrefix }}. {{ package.mainTourist.fullName|default('Нет основного туриста') }} ({{ package.adults }}+{{ package.children }}). Цена: {{ package.price }}/{{ package.paid }}. Тип: {{ statuses[package.status].title }}">
+                                            <div class="package text-{{ statuses[package.status].class }} {% if day == package.end %}package-end{% endif %}{% if day == package.begin %}package-begin{% endif %}">
+                                                &nbsp;</div>
+                                        </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+        <div class="cols arrow arrow-next text-right"><a href="#"
+                                                         data-begin="{{ begin|date_modify('+1 month')|date('d.m.Y') }}"><i
+                        class="fa fa-caret-right fa-4x"></i></a></div>
+    </div>
+
+    <!-- paging -->
+    {% if pages > 1 %}
+        <div class="row" id="accommodation-report-pagination">
+            <div class="col-md-12 text-center">
+                <ul class="pagination">
+                    <li {% if currentPage == 1 %}class="disabled"{% endif %}><a href="#"
+                                                                                data-page="{{ currentPage - 1 }}">&laquo;</a>
+                    </li>
+
+                    {% if currentPage > 3 %}{% set start = currentPage - 3 %}{% else %}{% set start = 1 %}{% endif %}
+                    {% if currentPage < pages  - 3 %}{% set end = currentPage + 3 %}{% else %}{% set end = pages %}{% endif %}
+
+                    {% if currentPage != 1 and start != 1 %}
+                        <li><a href="#" data-page="1">1</a></li>
+                        <li class="active"><span>...<span class="sr-only">(current)</span></span></li>
+                    {% endif %}
+
+                    {% for page in start..end %}
+
+                        {% if page == currentPage %}
+                            <li class="active"><span>{{ page }}<span class="sr-only">(current)</span></span></li>
+                        {% else %}
+                            <li><a href="#" data-page="{{ page }}">{{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if currentPage != pages and end != pages %}
+                        <li class="active"><span>...<span class="sr-only">(current)</span></span></li>
+                        <li><a href="#" data-page="{{ pages }}">{{ pages }}</a></li>
+                    {% endif %}
+
+                    <li {% if currentPage == pages %}class="disabled"{% endif %}><a href="#"
+                                                                                    data-page="{{ currentPage + 1 }}">&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}

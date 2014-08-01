@@ -6,6 +6,9 @@ parameters:
     #параметры логов
     mbh.logs.max: 100
 
+    #параметры отчетов
+    mbh.reports.accommodation.rooms.max: 15
+
     #Цели приезда
     mbh.package.arrivals:
         tourism: "Отдых/туризм"
@@ -16,7 +19,7 @@ parameters:
     
     #Цели приезда
     mbh.package.statuses:
-        offline: { title: "Обычная", class: "default"}
+        offline: { title: "Обычная", class: "info"}
         online: { title: "Онлайн", class: "success"}
         channel_manager: { title: "Channel manager", class: "danger"}
 
