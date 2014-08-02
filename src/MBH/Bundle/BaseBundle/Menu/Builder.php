@@ -70,7 +70,7 @@ class Builder extends ContainerAware
 
         //Prices links
         $menu->addChild('prices', ['route' => 'tariff', 'label' => 'Цены'])
-                ->setAttributes(['icon' => 'fa fa-dollar'])
+                ->setAttributes(['icon' => 'fa fa-ruble'])
         ;
         
         //Users links

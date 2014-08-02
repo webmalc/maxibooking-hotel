@@ -20,13 +20,24 @@ $(document).ready(function() {
         });
     };
 
-    // set accommodation  roomType paging
+    // set accommodation  roomType month paging
     var accommodationMonthsSet = function () {
         $('#accommodation-report-table-row').find('div.arrow a').each( function() {
             $(this).click(function (e) {
                 e.preventDefault();
                 $('#accommodation-report-filter-begin').val($(this).attr('data-begin'));
                 accommodationReportGet({'begin': $(this).attr('data-begin')});
+            })
+        });
+    };
+
+    // set rooms  roomType month paging
+    var roomsMonthsSet = function () {
+        $('#rooms-report-table-row').find('div.arrow a').each( function() {
+            $(this).click(function (e) {
+                e.preventDefault();
+                $('#rooms-report-filter-begin').val($(this).attr('data-begin'));
+                roomsReportGet({'begin': $(this).attr('data-begin')});
             })
         });
     };
@@ -62,6 +73,37 @@ $(document).ready(function() {
         });
     }
     accommodationReportGet();
-    $('#accommodation-report-filter').change(function () { accommodationReportGet() });
+    $('.accommodation-report-filter').change(function () { accommodationReportGet() });
+
+    // get rooms report content
+    var roomsReportGet = function (data) {
+        var data = (typeof data !== 'undefined') ? data : {};
+        var wrapper = $('#rooms-report-content');
+
+        if (wrapper.length === 0) {
+            return false;
+        }
+
+        wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+
+        if (!data.begin) {
+            data.begin = $('#rooms-report-filter-begin').val();
+        }
+        data.roomType = $('#rooms-report-filter-roomType').val();
+        data.tariff = $('#rooms-report-filter-tariff').val();
+
+        $.ajax({
+            url: Routing.generate('rooms_accommodation_table'),
+            data: data,
+            success: function (data) {
+                wrapper.html(data);
+                roomsMonthsSet();
+                $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"], i[data-toggle="tooltip"]').tooltip();
+            },
+            dataType: 'html'
+        });
+    }
+    roomsReportGet();
+    $('.rooms-report-filter').change(function () { roomsReportGet() });
 });
 

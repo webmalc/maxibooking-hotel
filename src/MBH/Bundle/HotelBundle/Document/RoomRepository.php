@@ -4,7 +4,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Form\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 
 class RoomRepository extends DocumentRepository
 {
