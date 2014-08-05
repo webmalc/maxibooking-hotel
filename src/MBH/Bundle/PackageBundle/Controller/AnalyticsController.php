@@ -335,19 +335,14 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         $period = iterator_to_array($this->getInterval());
         $begin = reset($period);
         $end = end($period);
+        $end->modify('+1 day');
 
         $qb = $dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('q');
         if (count($roomTypesIds)) {
             $qb->field('roomType.id')->in($roomTypesIds);
         }
-        $qb->addOr($qb->expr()->field('begin')->range($begin, $end))
-            ->addOr($qb->expr()->field('end')->range($begin, $end))
-            ->addOr(
-                $qb->expr()
-                    ->field('end')->gte($end)
-                    ->field('begin')->lte($begin)
-            )
-            ->sort('begin', 'asc')
+        $qb->addOr($qb->expr()->field('createdAt')->range($begin, $end))
+           ->sort('begin', 'asc')
         ;
 
         return $qb->getQuery()->execute();
