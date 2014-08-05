@@ -21,6 +21,7 @@ class AppKernel extends Kernel
             new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
             new Cg\KintBundle\CgKintBundle(),
+            new Ob\HighchartsBundle\ObHighchartsBundle(),
             
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),

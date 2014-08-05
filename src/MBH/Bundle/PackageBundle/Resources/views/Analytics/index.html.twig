@@ -1,0 +1,74 @@
+{% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
+
+{% set small_title = "аналитика" %}
+
+{% block content %}
+
+    {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 4} %}
+
+    <div class="well">
+        <form id="analytics-filter" class="form-inline" role="form">
+            <div class="input">
+                <i class="fa fa-calendar" title='Даты продажи' data-toggle='tooltip'></i>&nbsp <input
+                        value="{{ "now"|date_modify("-1 month")|date('d.m.Y') }}" type="text"
+                        name="begin"
+                        id="analytics-filter-begin"
+                        class="datepicker begin-datepiker analytics-filter form-control input-sm"
+                        data-date-format="dd.mm.yyyy">
+            </div>
+            <div class="input">
+                - &nbsp<input value="{{ "now"|date('d.m.Y') }}" type="text" id="analytics-filter-end"
+                              class="datepicker end-datepiker analytics-filter form-control input-sm"
+                              name="end"
+                              data-date-format="dd.mm.yyyy">
+            </div>
+            <div class="input">
+                <i class="fa fa-bar-chart-o" title='Тип отчета' data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder="Тип отчета" id="analytics-filter-type"
+                        name="type"
+                        class="analytics-filter form-control input-sm">
+                    {% for key, type in types %}
+                        <option value="{{ key }}"{% if loop.index == 1 %} selected {% endif %}>{{ type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input">
+                <i class="fa fa-home" title='Тип номера' data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder="Тип номера" id="analytics-filter-roomType" multiple="multiple"
+                        name="roomType[]"
+                        class="analytics-filter form-control input-sm">
+                    <option></option>
+                    {% for roomType in roomTypes %}
+
+                        {% if hotel is not defined or hotel.id != roomType.hotel.id %}
+                            <optgroup label="{{ roomType.hotel }}">
+                            <option value="allrooms_{{ roomType.hotel.id }}">Все номера</option>
+                            {% set hotel = roomType.hotel %}
+                        {% endif %}
+
+                        <option value="{{ roomType.id }}">{{ roomType.name }}</option>
+
+                        {% if hotel is not defined or hotel.id != roomType.hotel.id %}</optgroup>{% endif %}
+
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="input">
+                <i class="fa fa-sort-amount-asc" title='Накопительный?' data-toggle='tooltip'></i>&nbsp <input
+                        type="checkbox" name="cumulative" id="analytics-filter-cumulative" class="analytics-filter"
+                        value="1"/>
+            </div>
+            <div class="input">
+                <i class="fa fa-calendar" title='По месяцам?' data-toggle='tooltip'></i>&nbsp <input type="checkbox"
+                                                                                                     name="months"
+                                                                                                     id="analytics-filter-months"
+                                                                                                     class="analytics-filter"
+                                                                                                     value="1"/>
+            </div>
+        </form>
+    </div>
+
+    <div id="analytics-filter-content"></div>
+
+{% endblock %}

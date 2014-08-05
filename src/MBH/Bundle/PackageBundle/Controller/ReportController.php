@@ -227,7 +227,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 $roomsInfo[$roomType->getId()][$day->format('d.m.Y')] = [
                     'all' =>$all,
                     'occupied' => 0,
-                    'free' => 0
+                    'free' => $all
                 ];
                 if (isset($packages[$roomType->getId()][$day->format('d.m.Y')])) {
                     $roomsInfo[$roomType->getId()][$day->format('d.m.Y')]['occupied'] = $packages[$roomType->getId()][$day->format('d.m.Y')];
@@ -241,7 +241,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 $roomsInfo['all'][$day->format('d.m.Y')] = [
                     'all' => $all,
                     'occupied' => 0,
-                    'free' => 0
+                    'free' => $all
                 ];
                 if (isset($packages['all'][$day->format('d.m.Y')])) {
                     $roomsInfo['all'][$day->format('d.m.Y')]['occupied'] = $packages['all'][$day->format('d.m.Y')];

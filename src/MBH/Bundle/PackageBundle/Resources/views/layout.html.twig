@@ -3,6 +3,8 @@
 {% block scripts %}
     {{ parent() }}
 
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+
     {% javascripts filter='uglifyjs2''@MBHPackageBundle/Resources/public/js/*'%}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}

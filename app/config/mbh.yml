@@ -9,6 +9,11 @@ parameters:
     #параметры отчетов
     mbh.reports.accommodation.rooms.max: 15
 
+    #Типы отчетов аналитики
+    mbh.analytics.types:
+        sales_packages: "Динамика продаж по количеству броней"
+        sales_cash: "Динамика продаж в деньгах"
+
     #Цели приезда
     mbh.package.arrivals:
         tourism: "Отдых/туризм"

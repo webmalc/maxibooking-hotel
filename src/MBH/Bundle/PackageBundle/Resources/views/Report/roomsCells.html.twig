@@ -20,7 +20,7 @@
     </td>
     {% for date in period %}
         <td class="text-center cell {% if date == begin %}chosen{% elseif date|date('N') >= 6 %}weekend{% endif %}">
-            <small>{{ roomsInfo[id][date|date('d.m.Y')].occupied }}</small>
+            <small class="text-success">{{ roomsInfo[id][date|date('d.m.Y')].occupied }}</small>
         </td>
     {% endfor %}
 </tr>
@@ -30,7 +30,7 @@
     </td>
     {% for date in period %}
         <td class="text-center cell {% if date == begin %}chosen{% elseif date|date('N') >= 6 %}weekend{% endif %}">
-            <small>{{ roomsInfo[id][date|date('d.m.Y')].free }}</small>
+            <small class="text-danger">{{ roomsInfo[id][date|date('d.m.Y')].free }}</small>
         </td>
     {% endfor %}
 </tr>
