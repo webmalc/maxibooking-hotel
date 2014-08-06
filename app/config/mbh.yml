@@ -12,7 +12,7 @@ parameters:
     #Типы отчетов аналитики
     mbh.analytics.types:
         sales_packages: "Динамика продаж по количеству броней"
-        sales_cash: "Динамика продаж в деньгах"
+        sales_cash: "Динамика продаж по стоимости броней"
 
     #Цели приезда
     mbh.package.arrivals:

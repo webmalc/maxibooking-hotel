@@ -16,6 +16,10 @@ class BaseController extends Controller
      */
     public function logs($entity)
     {
+        if (empty($entity)) {
+            return null;
+        }
+
         $dm = $this->get('doctrine_mongodb')->getManager();
         
         $logs = $dm->getRepository('Gedmo\Loggable\Document\LogEntry')->getLogEntries($entity);

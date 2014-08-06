@@ -70,18 +70,20 @@ class Builder extends ContainerAware
 
         //Prices links
         $menu->addChild('prices', ['route' => 'tariff', 'label' => 'Цены'])
-                ->setAttributes(['icon' => 'fa fa-ruble'])
+             ->setAttributes(['icon' => 'fa fa-ruble'])
         ;
         
         //Users links
         $menu->addChild('users', ['route' => 'user', 'label' => 'Пользователи'])
-                ->setAttributes(['icon' => 'fa fa-users'])
+             ->setAttributes(['icon' => 'fa fa-users'])
         ;
         
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])
-                ->setAttribute('icon', 'fa fa-arrows-h')
+             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa fa-arrows-h'])
         ;
+
+        $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель.RU']);
 
         return $this->filterMenu($menu);
     }

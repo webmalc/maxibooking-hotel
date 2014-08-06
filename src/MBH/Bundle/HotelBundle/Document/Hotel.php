@@ -116,6 +116,9 @@ class Hotel extends Base
     
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff", mappedBy="hotel") */
     protected $tariffs;
+
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig", mappedBy="hotel") */
+    protected $vashotelConfig;
     
     /**
      * Set fullTitle
@@ -360,5 +363,27 @@ class Hotel extends Base
     public function getTariffs()
     {
         return $this->tariffs;
+    }
+
+    /**
+     * Set vashotelConfig
+     *
+     * @param \MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig $vashotelConfig
+     * @return self
+     */
+    public function setVashotelConfig(\MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig $vashotelConfig)
+    {
+        $this->vashotelConfig = $vashotelConfig;
+        return $this;
+    }
+
+    /**
+     * Get vashotelConfig
+     *
+     * @return \MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig $vashotelConfig
+     */
+    public function getVashotelConfig()
+    {
+        return $this->vashotelConfig;
     }
 }
