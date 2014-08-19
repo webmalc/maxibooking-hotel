@@ -1,0 +1,8 @@
+services:
+    mbh.channelmanager:
+        class: MBH\Bundle\ChannelManagerBundle\Services\ChannelManager
+        arguments: [@service_container]
+
+    mbh.channelmanager.vashotel:
+            class: MBH\Bundle\ChannelManagerBundle\Services\Vashotel
+            arguments: [@service_container]

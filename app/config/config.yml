@@ -146,5 +146,5 @@ knp_menu:
 # Kints Configuration   
 cg_kint:
     enabled:          true
-    nesting_depth:    3
+    nesting_depth:    20
     string_length:    60

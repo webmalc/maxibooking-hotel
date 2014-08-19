@@ -2,7 +2,14 @@ parameters:
     #генерация кеша
     mbh.room.cache.message: <i class="fa fa-spinner fa-spin"></i> Внимание! Идет пересчет цен и количества свободных номеров.
     mbh.room.cache.message.type: danger
-    
+
+    #параметры Channel manager
+    mbh.channelmanager.services:
+        vashotel:
+          title: 'ВашОтель.RU'
+          service: 'mbh.channelmanager.vashotel'
+        #booking: {title: 'Booking.com', service: 'mbh.channelmanager.booking'}
+
     #параметры логов
     mbh.logs.max: 100
 

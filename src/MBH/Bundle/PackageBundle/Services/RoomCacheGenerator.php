@@ -101,7 +101,7 @@ class RoomCacheGenerator
 
     /**
      * Generate prices for cache
-     * @param int $roomTypeId
+     * @param string $roomTypeId
      * @param \DateTime $begin
      * @param \DateTime $end
      */
@@ -181,6 +181,9 @@ class RoomCacheGenerator
             }
         }
         $this->prices();
+
+        $this->container->get('mbh.channelmanager')->update();
+
         $this->clearMessages();
 
         return $total;
@@ -189,6 +192,8 @@ class RoomCacheGenerator
     /**
      * Generate RoomCache for all hotels & roomTypes
      * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param \DateTime $begin
+     * @param \DateTime $end
      * @return int
      */
     public function generateForRoomType(RoomType $roomType, \DateTime $begin = null, \DateTime $end = null)
@@ -217,6 +222,7 @@ class RoomCacheGenerator
         }
 
         $this->prices($roomType->getId(), $begin, $end);
+        $this->container->get('mbh.channelmanager')->update(null, null, $roomType);
         $this->clearMessages();
         return $total;
     }
@@ -228,7 +234,6 @@ class RoomCacheGenerator
      * @param \MBH\Bundle\HotelBundle\Document\RoomType $calcRoomType
      * @param \DateTime $calcBegin
      * @param \DateTime $calcEnd
-     * @param boolean $prices
      * @return int
      */
     public function generateForTariff(Tariff $tariff, RoomType $calcRoomType = null, \DateTime $calcBegin = null, \DateTime $calcEnd = null)
@@ -377,12 +382,10 @@ class RoomCacheGenerator
         
         foreach ($caches as $cache) {
             $cache->setRooms($cache->getRooms() - 1);
-            if ($cache->getRooms() < 0 ) {
-                $cache->setRooms(0);
-            }
             $this->dm->persist($cache);
         }
         $this->dm->flush();
+        $this->updateChannelManagerInBackground($roomType, $begin, $end);
     }
     
     /**
@@ -409,5 +412,21 @@ class RoomCacheGenerator
             $this->dm->persist($cache);
         }
         $this->dm->flush();
+
+        $this->updateChannelManagerInBackground($roomType, $begin, $end);
+    }
+
+    public function updateChannelManagerInBackground(RoomType $roomType = null, \DateTime $begin = null, \DateTime $end = null)
+    {
+        ($begin) ? $beginStr = ' --begin=' . $begin->format('d.m.Y') : $beginStr = '';
+        ($end) ? $endStr = ' --end=' . $end->format('d.m.Y') : $endStr = '';
+        ($roomType) ? $roomTypeStr = ' --roomType=' . $roomType->getId() : $roomTypeStr = '';
+        ($this->container->get('kernel')->getEnvironment() == 'prod') ? $env = '--env=prod ' : $env = '';
+
+        $process = new Process(
+            'nohup php ' . $this->console . 'mbh:channelmanager:update  ' . $roomTypeStr
+             . $beginStr . $endStr . ' ' . $env . '> /dev/null 2>&1 &'
+        );
+        $process->run();
     }
 }

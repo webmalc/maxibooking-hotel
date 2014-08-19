@@ -9,13 +9,14 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 
 /**
  * @ODM\Document(collection="VashotelConfig")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class VashotelConfig extends Base
+class VashotelConfig extends Base implements BaseInterface
 {
 
     /**
@@ -79,6 +80,15 @@ class VashotelConfig extends Base
      * @Assert\Type(type="boolean")
      */
     protected $enabled = false;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean(name="isBreakfast")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isBreakfast = false;
 
     /**
      * Set hotel
@@ -252,5 +262,56 @@ class VashotelConfig extends Base
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTariffsAsArray()
+    {
+        $result = [];
+
+        foreach($this->getTariffs() as $tariff) {
+            $result[$tariff->getTariffId()] = $tariff->getTariff();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRoomsAsArray()
+    {
+        $result = [];
+
+        foreach($this->getRooms() as $room) {
+            $result[$room->getRoomId()] = $room->getRoomType();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Set isBreakfast
+     *
+     * @param boolean $isBreakfast
+     * @return self
+     */
+    public function setIsBreakfast($isBreakfast)
+    {
+        $this->isBreakfast = $isBreakfast;
+
+        return $this;
+    }
+
+    /**
+     * Get isBreakfast
+     *
+     * @return boolean $isBreakfast
+     */
+    public function getIsBreakfast()
+    {
+        return $this->isBreakfast;
     }
 }

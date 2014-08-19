@@ -41,7 +41,18 @@ class VashotelType extends AbstractType
                     'attr' => ['placeholder' => '1567'],
                     'help' => 'ID отеля в настройках ВашОтель.RU'
                 ]
-            );
+            )
+            ->add(
+                'isBreakfast',
+                'checkbox',
+                [
+                    'label' => 'Завтрак?',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'Какой тип питания использовать RO или BB?'
+                ]
+            )
+        ;
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

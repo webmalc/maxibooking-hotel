@@ -90,7 +90,7 @@ class Package extends Base
      * @var int
      * @Gedmo\Versioned
      * @ODM\Int(name="adults")
-     * @Assert\NotNull()
+     * @Assert\NotNull(message="Количество взрослых не указано")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -104,7 +104,7 @@ class Package extends Base
      * @var int
      * @Gedmo\Versioned
      * @ODM\Int(name="children")
-     * @Assert\NotNull()
+     * @Assert\NotNull(message="Количество детей не указано")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -117,7 +117,7 @@ class Package extends Base
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date(name="begin")
-     * @Assert\NotNull()
+     * @Assert\NotNull(message="Начало не указано")
      * @Assert\Date()
      */
     protected $begin;
@@ -126,7 +126,7 @@ class Package extends Base
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date(name="end")
-     * @Assert\NotNull()
+     * @Assert\NotNull(message="Конец не указан")
      * @Assert\Date()
      */
     protected $end;
@@ -142,7 +142,7 @@ class Package extends Base
      * @var int
      * @Gedmo\Versioned
      * @ODM\Int(name="price")
-     * @Assert\NotNull()
+     * @Assert\NotNull(message="Цена не указана")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -195,15 +195,33 @@ class Package extends Base
      * @ODM\String(name="purposeOfArrival")
      * @Assert\Choice(
      *      choices = {"tourism", "work", "study", "residence", "other"}, 
-     *      message = "Невернай цель приезда."
+     *      message = "Неверная цель приезда."
      * )
      */
     protected $purposeOfArrival;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="channelManagerType")
+     * @Assert\Choice(
+     *      choices = {"vashotel"},
+     *      message = "Неверный тип channel manager`а."
+     * )
+     */
+    protected $channelManagerType;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="channelManagerId")
+     */
+    protected $channelManagerId;
     
     /**
      * Set tariff
      *
-     * @param MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
      * @return self
      */
     public function setTariff(\MBH\Bundle\PriceBundle\Document\Tariff $tariff)
@@ -225,7 +243,7 @@ class Package extends Base
     /**
      * Set roomType
      *
-     * @param MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
      * @return self
      */
     public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
@@ -247,7 +265,7 @@ class Package extends Base
     /**
      * Set accommodation
      *
-     * @param MBH\Bundle\HotelBundle\Document\Room $accommodation
+     * @param \MBH\Bundle\HotelBundle\Document\Room $accommodation
      * @return self
      */
     public function setAccommodation(\MBH\Bundle\HotelBundle\Document\Room $accommodation)
@@ -549,7 +567,7 @@ class Package extends Base
     /**
      * Set mainTourist
      *
-     * @param MBH\Bundle\PackageBundle\Document\Tourist $mainTourist
+     * @param \MBH\Bundle\PackageBundle\Document\Tourist $mainTourist
      * @return self
      */
     public function setMainTourist(\MBH\Bundle\PackageBundle\Document\Tourist $mainTourist)
@@ -581,7 +599,7 @@ class Package extends Base
     /**
      * Add tourist
      *
-     * @param MBH\Bundle\PackageBundle\Document\Tourist $tourist
+     * @param \MBH\Bundle\PackageBundle\Document\Tourist $tourist
      */
     public function addTourist(\MBH\Bundle\PackageBundle\Document\Tourist $tourist)
     {
@@ -591,7 +609,7 @@ class Package extends Base
     /**
      * Remove tourist
      *
-     * @param MBH\Bundle\PackageBundle\Document\Tourist $tourist
+     * @param \MBH\Bundle\PackageBundle\Document\Tourist $tourist
      */
     public function removeTourist(\MBH\Bundle\PackageBundle\Document\Tourist $tourist)
     {
@@ -610,7 +628,7 @@ class Package extends Base
     /**
      * Add cashDocument
      *
-     * @param MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
+     * @param \MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
      */
     public function addCashDocument(\MBH\Bundle\CashBundle\Document\CashDocument $cashDocument)
     {
@@ -620,7 +638,7 @@ class Package extends Base
     /**
      * Remove cashDocument
      *
-     * @param MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
+     * @param \MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
      */
     public function removeCashDocument(\MBH\Bundle\CashBundle\Document\CashDocument $cashDocument)
     {
@@ -698,5 +716,49 @@ class Package extends Base
     public function getNights()
     {
         return $this->end->diff($this->begin)->format("%a");
+    }
+
+    /**
+     * Set channelManagerType
+     *
+     * @param string $channelManagerType
+     * @return self
+     */
+    public function setChannelManagerType($channelManagerType)
+    {
+        $this->channelManagerType = $channelManagerType;
+        return $this;
+    }
+
+    /**
+     * Get channelManagerType
+     *
+     * @return string $channelManagerType
+     */
+    public function getChannelManagerType()
+    {
+        return $this->channelManagerType;
+    }
+
+    /**
+     * Set channelManagerId
+     *
+     * @param string $channelManagerId
+     * @return self
+     */
+    public function setChannelManagerId($channelManagerId)
+    {
+        $this->channelManagerId = $channelManagerId;
+        return $this;
+    }
+
+    /**
+     * Get channelManagerId
+     *
+     * @return string $channelManagerId
+     */
+    public function getChannelManagerId()
+    {
+        return $this->channelManagerId;
     }
 }

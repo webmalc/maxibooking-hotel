@@ -23,3 +23,6 @@ services:
     mbh.hotel.selector:
         class: MBH\Bundle\BaseBundle\Service\HotelSelector
         arguments: [@service_container]
+
+    mbh.helper:
+            class: MBH\Bundle\BaseBundle\Service\Helper

@@ -77,6 +77,8 @@ class VashotelController extends Controller implements CheckHotelControllerInter
                 ->set('success', 'Настройки успешно сохранены.')
             ;
 
+            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
+
             return $this->redirect($this->generateUrl('vashotel'));
         }
 
@@ -166,6 +168,8 @@ class VashotelController extends Controller implements CheckHotelControllerInter
                 return $this->redirect($this->generateUrl('vashotel_room'));
             }
 
+            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
+
             return $this->redirect($this->generateUrl('vashotel'));
         }
 
@@ -252,6 +256,9 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             $request->getSession()->getFlashBag()
                 ->set('success', 'Настройки успешно сохранены.')
             ;
+
+            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
+
             if ($request->get('save') !== null) {
 
                 return $this->redirect($this->generateUrl('vashotel_tariff'));

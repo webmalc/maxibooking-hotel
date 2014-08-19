@@ -17,8 +17,6 @@ class VashotelTariffType extends AbstractType
         $tariffEntities = $config->getTariffs();
         $ids = [];
 
-
-
         foreach ($tariffEntities as $tariff) {
             $ids[$tariff->getTariff()->getId()] = $tariff->getTariffId();
         }
@@ -31,11 +29,16 @@ class VashotelTariffType extends AbstractType
 
             (isset($ids[$tariff->getId()])) ? $data = $ids[$tariff->getId()] : $data = null;
 
-            ($tariff->getIsDefault()) ? $class = 'success' : $class = 'primary' ;
+            if ($tariff->getIsDefault()) {
+                $type = 'hidden';
+                $data = 0;
+            }  else {
+                $type = 'text';
+            }
 
             $builder
-                ->add($tariff->getId(), 'text', [
-                        'label' => '<span class="text-' . $class . '">' . $tariff->getName() . '<span>',
+                ->add($tariff->getId(), $type, [
+                        'label' => $tariff->getName(),
                         'required' => false,
                         'attr' => [
                             'placeholder' => 'ID тарифа <'. $tariff->getName() .'> в настройках ВашОтель.RU',

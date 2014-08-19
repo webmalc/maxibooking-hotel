@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<request>
+
+    {% if config.isBreakfast %}
+        {% set breakfastIncluded, food = 1, 'BB' %}
+    {% else %}
+        {% set breakfastIncluded, food = 0, 'RO' %}
+    {% endif %}
+
+    <hotel_id>{{ config.hotelId }}</hotel_id>
+    <salt>{{ salt }}</salt>
+    {% if sig is defined %}
+        <sig>{{ sig }}</sig>
+    {% endif %}
+    {% if tariff.doc.isDefault == false %}
+        <rate_id>{{ tariff.id }}</rate_id>
+    {% endif %}
+    {% for cache in caches %}
+
+    {% if roomType is not defined %}
+        {% set roomType = cache.roomType %}
+        <room id="{{ roomTypes[roomType.id].id }}">
+    {% endif %}
+    {% if roomType.id != cache.roomType.id %}
+        {% set roomType = cache.roomType %}
+        </room><room id="{{ roomTypes[roomType.id].id }}">
+    {% endif %}
+
+        <date value="{{ cache.date|date('Y-m-d') }}">
+            <prices>
+                {% for price in cache.prices %}
+                    {% if price.children == 0 and price.price is not null and price.food == food  %}
+                        <price_{{ price.adults }}>{{ price.price }}</price_{{ price.adults }}>
+                    {% endif %}
+                {% endfor %}
+            </prices>
+            <sellquantity>{{cache.rooms}}</sellquantity>
+            <breakfastIncluded>{{ breakfastIncluded }}</breakfastIncluded>
+        </date>
+
+    {% if loop.last %}</room>{% endif%}
+    {% endfor %}
+</request>
