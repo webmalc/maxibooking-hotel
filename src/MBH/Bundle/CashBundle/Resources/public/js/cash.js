@@ -1,4 +1,29 @@
 /*global window, $ */
+var cashDocumentConfirmation = function (link) {
+    var icon = link.find('i'),
+        number = link.closest('tr').find('div.cash-number')
+    ;
+    $('#entity-delete-confirmation').modal('hide');
+    icon.attr('class', 'fa fa-spin fa-spinner');
+
+    $.ajax({
+        url: link.attr('href'),
+        success: function (response) {
+            if(!response.error) {
+                if (number.length) {
+                    number.removeClass('text-danger');
+                    number.find('br').remove();
+                    number.find('small').remove();
+                }
+                link.remove();
+            } else {
+                alert(response.message)
+            }
+        },
+        dataType: 'json'
+    });
+}
+
 $(document).ready(function () {
     'use strict';
 

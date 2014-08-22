@@ -38,7 +38,7 @@ class CashDocument extends Base
     use BlameableDocument;
 
     /**
-     * @var MBH\Bundle\PackageBundle\Document\Package
+     * @var \MBH\Bundle\PackageBundle\Document\Package
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Package", inversedBy="cashDocuments")
      * @Assert\NotNull(message="Не выбрана путевка")
@@ -94,6 +94,14 @@ class CashDocument extends Base
     protected $note;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isConfirmed = false;
+
+    /**
      * Set package
      *
      * @param \MBH\Bundle\PackageBundle\Document\Package $package
@@ -108,7 +116,7 @@ class CashDocument extends Base
     /**
      * Get package
      *
-     * @return MBH\Bundle\PackageBundle\Document\Package $package
+     * @return \MBH\Bundle\PackageBundle\Document\Package $package
      */
     public function getPackage()
     {
@@ -233,4 +241,25 @@ class CashDocument extends Base
         $this->setPrefix($this->getPackage()->getNumberWithPrefix());
     }
 
+    /**
+     * Set isConfirmed
+     *
+     * @param boolean $isConfirmed
+     * @return self
+     */
+    public function setIsConfirmed($isConfirmed)
+    {
+        $this->isConfirmed = $isConfirmed;
+        return $this;
+    }
+
+    /**
+     * Get isConfirmed
+     *
+     * @return boolean $isConfirmed
+     */
+    public function getIsConfirmed()
+    {
+        return $this->isConfirmed;
+    }
 }

@@ -335,7 +335,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * Cash documents
      *
-     * @Route("/{id}/cahs", name="package_cash")
+     * @Route("/{id}/cash", name="package_cash")
      * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_USER')")
      * @Template()

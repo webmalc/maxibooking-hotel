@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\CashBundle\Form\CashDocumentType;
@@ -178,6 +179,37 @@ class CashController extends Controller
     public function deleteAction($id)
     {
         return $this->deleteEntity($id, 'MBHCashBundle:CashDocument', 'cash');
+    }
+
+    /**
+     * Delete entity.
+     *
+     * @Route("/{id}/confirm", name="cash_confirm", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_BOOKKEEPER')")
+     */
+    public function confirmAction(Request $request, $id)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm->getFilterCollection()->disable('softdeleteable');
+        $entity = $dm->getRepository('MBHCashBundle:CashDocument')->find($id);
+        $dm->getFilterCollection()->enable('softdeleteable');
+
+        if (!$entity) {
+            return new JsonResponse([
+                'error' => true,
+                'message' => 'CashDocument not found'
+            ]);
+        }
+        $entity->setIsConfirmed(true);
+        $dm->persist($entity);
+        $dm->flush();
+
+        return new JsonResponse([
+            'error' => false,
+            'message' => 'Платеж успешно подтвержден'
+        ]);
     }
 
 }

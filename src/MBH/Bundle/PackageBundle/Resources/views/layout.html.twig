@@ -5,7 +5,10 @@
 
     <script src="http://code.highcharts.com/highcharts.js"></script>
 
-    {% javascripts filter='uglifyjs2''@MBHPackageBundle/Resources/public/js/*'%}
+    {% javascripts filter='uglifyjs2'
+     '@MBHPackageBundle/Resources/public/js/*'
+     '@MBHCashBundle/Resources/public/js/cash.js'
+    %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
@@ -14,7 +17,7 @@
 {% block styles %}
     {{ parent() }}
     
-    {% stylesheets filter='cssrewrite, uglifycss''@MBHPackageBundle/Resources/public/css/*'%}
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/*'%}
     <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
 {% endblock %}

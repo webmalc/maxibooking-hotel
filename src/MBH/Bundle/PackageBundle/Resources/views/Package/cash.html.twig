@@ -23,7 +23,7 @@
             </div>
 
             {% if cashes|length > 0 %}
-                <table id="cash-table" class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+                <table id="cash-package-table" class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
                     <thead>
                     <tr>
                         <th class="td-xs"></th>
@@ -33,7 +33,7 @@
                         <th class="td-md">Вид операции</th>
                         <th class="td-md">Дата</th>
                         <th class="td-md">Удалена</th>
-                        <th class="td-sm"></th>
+                        <th class="td-md"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -58,7 +58,12 @@
                             <td>{{ operations[cash.operation] }}</td>
                             <td>{{ cash.createdAt|date('d.m.Y') }}</td>
                             <td>{% if cash.deletedAt %}{{ cash.deletedAt|date('d.m.Y') }}{% endif %}</td>
-                            <td class="table-actions-td text-center">
+                            <td class="table-actions-td text-right">
+                                {% if cash.isConfirmed == false %}
+                                    <a data-action='cashDocumentConfirmation' data-header='Подтверждение платежа' data-text='Точно подтвердить платеж на сумму <b>{{ cash.total|number_format }} RUR</b>?' data-button='Подтвердить' data-button-icon='fa-check' data-button-class='primary' href='{{ path('cash_confirm', { 'id': cash.id}) }}' class='btn btn-primary btn-xs delete-link' title='Подтверждение платежа' data-toggle='tooltip'>
+                                        <i class='fa fa-check'></i>
+                                    </a>
+                                {% endif %}
                                 <a target="_blank" href="{{ path('cash_edit', { 'id': cash.id }) }}" class="btn btn-success btn-xs" title="Редактирование записи" data-toggle="tooltip">
                                     <i class="fa fa-pencil-square-o"></i>
                                 </a>

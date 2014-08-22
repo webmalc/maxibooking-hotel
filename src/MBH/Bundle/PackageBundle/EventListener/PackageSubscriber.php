@@ -45,11 +45,15 @@ class PackageSubscriber implements EventSubscriber
                 continue;
             }
 
-            $package = $entity->getPackage();
-            $this->container->get('mbh.calculation')->setPaid($package);
-            $dm->persist($package);
-            $meta = $dm->getClassMetadata(get_class($package));
-            $uow->recomputeSingleDocumentChangeSet($meta, $package);
+            try {
+                $package = $entity->getPackage();
+                $this->container->get('mbh.calculation')->setPaid($package);
+                $dm->persist($package);
+                $meta = $dm->getClassMetadata(get_class($package));
+                $uow->recomputeSingleDocumentChangeSet($meta, $package);
+            } catch (\Exception $e) {
+
+            }
         }
     }
 
@@ -75,10 +79,14 @@ class PackageSubscriber implements EventSubscriber
 
         //Calc paid
         if($entity instanceof CashDocument) {
-            $package = $entity->getPackage();
-            $this->container->get('mbh.calculation')->setPaid($package, null, $entity);
-            $dm->persist($package);
-            $dm->flush();
+            try {
+                $package = $entity->getPackage();
+                $this->container->get('mbh.calculation')->setPaid($package, null, $entity);
+                $dm->persist($package);
+                $dm->flush();
+            } catch (\Exception $e) {
+
+            }
         }
 
         return;
