@@ -46,6 +46,9 @@ class Calculation
         }
         foreach ($cashes as $cash) {
 
+            if ($cash->getOperation() == 'fee') {
+                continue;
+            }
             if($removeDoc && $removeDoc->getId() == $cash->getId()) {
                 continue;
             }

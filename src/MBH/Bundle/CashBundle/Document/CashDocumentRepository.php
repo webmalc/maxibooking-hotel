@@ -28,9 +28,9 @@ class CashDocumentRepository extends DocumentRepository
             $qb->addOr($qb->expr()->field('prefix')->equals(new \MongoRegex('/.*' . $search . '.*/ui')));
         }
         if ($type == 'in') {
-            $qb->field('operation')->notEqual('out');
+            $qb->field('operation')->notIn(['out', 'fee']);
         } else {
-            $qb->field('operation')->equals('out');
+            $qb->field('operation')->in(['out', 'fee']);
         }
         
         if (!empty($begin)) {

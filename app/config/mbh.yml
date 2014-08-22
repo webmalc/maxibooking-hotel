@@ -8,6 +8,7 @@ parameters:
         vashotel:
           title: 'ВашОтель.RU'
           service: 'mbh.channelmanager.vashotel'
+          fee: 0.15
         #booking: {title: 'Booking.com', service: 'mbh.channelmanager.booking'}
 
     #параметры логов
@@ -46,6 +47,7 @@ parameters:
         in: "Поступление"
         out: "Возврат"
         fine: "Штраф"
+        fee: "Комиссия"
             
     #Типы питания
     mbh.food.types:

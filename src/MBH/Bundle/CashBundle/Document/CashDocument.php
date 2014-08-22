@@ -80,7 +80,7 @@ class CashDocument extends Base
      * @Gedmo\Versioned
      * @ODM\String()
      * @Assert\Choice(
-     *      choices = {"in", "out", "fine"}, 
+     *      choices = {"in", "out", "fine", "fee"},
      *      message = "Неверный тип тарифа."
      * )
      */

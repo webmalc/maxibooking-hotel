@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use \MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -180,6 +181,37 @@ class Vashotel extends Base
             $this->dm->persist($package);
             $this->dm->flush();
 
+            if ($newInfo['type'] == 'prepayment') {
+                $cashIn = new CashDocument();
+                $cashIn->setMethod('electronic')
+                    ->setOperation('in')
+                    ->setPackage($package)
+                    ->setTotal($package->getPrice())
+                    ->setNote('Vashotel.ru payment' )
+                    ->setIsConfirmed(true)
+                ;
+
+                $this->dm->persist($cashIn);
+                $this->dm->flush();
+
+                $cashOut = new CashDocument();
+                $cashOut->setMethod('electronic')
+                    ->setOperation('fee')
+                    ->setPackage($package)
+                    ->setTotal($newInfo['fee'])
+                    ->setNote('Vashotel.ru fee' )
+                    ->setIsConfirmed(true)
+                ;
+
+                $this->dm->persist($cashOut);
+                $this->dm->flush();
+
+                $package->setPaid($package->getPrice());
+                $this->dm->persist($package);
+                $this->dm->flush();
+            }
+
+
             $this->container->get('mbh.room.cache.generator')->decrease(
                 $package->getRoomType(), $package->getBegin(), $package->getEnd()
             );
@@ -351,10 +383,20 @@ class Vashotel extends Base
                 }
                 $roomType = $config->getRoomsAsArray( )[(string) $room->attributes()['id']];
 
+                //type
+                $type = (string)$reservation->xpath('type')[0];
+
                 // get price
                 $total = 0;
+                $fee = 0;
                 foreach ($room->xpath('pricePerDay/price/price') as $price) {
                     $total += $price;
+                }
+
+                if ($type == 'prepayment') {
+                    $percent = $this->container->getParameter('mbh.channelmanager.services')['vashotel']['fee'];
+                    $total = $total/(1 - $percent);
+                    $fee = $total * $percent;
                 }
 
                 //get food Type
@@ -379,12 +421,14 @@ class Vashotel extends Base
 
                 $result['new'][$reservationId] = [
                     'channelManagerId' => $reservationId,
+                    'type' => $type,
                     'begin' => $begin,
                     'end' => $end,
                     'roomType' => $roomType,
                     'mainTourist' => $mainTourist,
                     'tariff' => $tariff,
                     'price' => $total,
+                    'fee' => $fee,
                     'tourists' => $tourist,
                     'adults' => (int) $room->xpath('guests_count')[0],
                     'food' => $food
