@@ -83,6 +83,7 @@ class Builder extends ContainerAware
              ->setAttributes(['dropdown' => true, 'icon' => 'fa fa fa-arrows-h'])
         ;
 
+        $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'Онлайн форма']);
         $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель.RU']);
 
         return $this->filterMenu($menu);

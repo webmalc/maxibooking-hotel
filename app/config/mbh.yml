@@ -3,6 +3,12 @@ parameters:
     mbh.room.cache.message: <i class="fa fa-spinner fa-spin"></i> Внимание! Идет пересчет цен и количества свободных номеров.
     mbh.room.cache.message.type: danger
 
+    #параметры онлайн формы
+    mbh.online.form:
+        size:
+          form: {width: 300, height: 'auto'}
+          result: {width: 500, height: 'auto'}
+
     #параметры Channel manager
     mbh.channelmanager.services:
         vashotel:

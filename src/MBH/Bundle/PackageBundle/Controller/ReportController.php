@@ -185,10 +185,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             $roomTypesIds[] = $roomType->getId();
         }
         $packages = [];
+        $selectedTariff = null;
         if (count($roomTypesIds)) {
             $qb = $dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('q');
 
-            $selectedTariff = null;
             if (!empty($request->get('tariff'))) {
                 $selectedTariff = $dm->getRepository('MBHPriceBundle:Tariff')->find($request->get('tariff'));
                 $qb->field('tariff.id')->equals($request->get('tariff'));
