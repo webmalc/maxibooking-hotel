@@ -1,0 +1,51 @@
+{% extends 'MBHOnlineBundle:Form:layout.html.twig' %}
+
+{% set small_title = "настройки" %}
+
+{% block content %}
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#online-form-config" data-toggle="tab"><i class="fa fa-cog"></i> Настройки</a></li>
+        <li><a href="#online-form-code" data-toggle="tab"><i class="fa fa-code"></i> Код для сайта</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane in active" id="online-form-config">
+
+            {{ form_start(form, {'action': path('online_form_save'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
+            {{ form_end(form) }}
+
+            {%  if entity %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tariff_delete' } %}
+            {%  endif %}
+
+        </div>
+        <div class="tab-pane"  id="online-form-code">
+
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Код формы для вставки на сайт</h3>
+                </div>
+                <div class="panel-body">
+                    {% set code1  = '<script type="text/javascript">mbhFormConfig = { width: "' ~ config.size.form.width ~'", height: "' ~ config.size.form.height ~'"}</script>' %}
+                    {% set code2  = '<script type="text/javascript" src="url"></script>' %}
+                    <p class="text-success">{{ code1 }}<br>{{ code2 }}</p>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Код страницы поиска для вставки на сайт:</h3>
+                </div>
+                <div class="panel-body">
+                    {% set code1  = '<script type="text/javascript">mbhResultConfig = { width: "' ~ config.size.result.width ~'", height: "' ~ config.size.result.height ~'"}</script>' %}
+                    {% set code2  = '<script type="text/javascript" src="url"></script>' %}
+                    <p class="text-success">{{ code1 }}<br>{{ code2 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
