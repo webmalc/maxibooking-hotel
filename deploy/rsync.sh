@@ -1,5 +1,5 @@
 SERVER='root@95.85.3.188'
-FOLDER='/var/www/mbh.mbf/'
+FOLDER='/var/www/mbh/strogino/'
 CACHE=$FOLDER'bin/console cache:clear --env=prod'
 FOS=$FOLDER'bin/console fos:js-routing:dump'
 ASSEST=$FOLDER'bin/console assets:install '$FOLDER'web --symlink'

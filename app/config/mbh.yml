@@ -73,12 +73,12 @@ parameters:
     #Типы рассчета
     mbh.calculation.types:
         perRoom:      "Цена за номер"
-        customPrices: "Ручные цены"
+        customPrices: "Цена за человека"
         
     #Типы тарифов
     mbh.tariff.types:
         rate:      "Процент от цен основного тарифа"
-        price:     "Конкретные цены"
+        price:     "Индивидуальные цены"
 
     #М/Ж
     mbh.gender.types:
