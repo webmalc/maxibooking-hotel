@@ -76,7 +76,7 @@ class SearchType extends AbstractType
                     'label' => 'Взрослые',
                     'required' => true,
                     'error_bubbling' => true,
-                    'data' => 1,
+                    'data' => 0,
                     'attr' => ['class' => 'spinner'],
                     'constraints' => [
                         new Range(['min' => 0, 'minMessage' => 'Количество взрослых не может быть меньше нуля']),

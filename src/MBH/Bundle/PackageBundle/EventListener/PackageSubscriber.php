@@ -26,8 +26,33 @@ class PackageSubscriber implements EventSubscriber
         return array(
             'prePersist',
             'preRemove',
-            'onFlush'
+            'onFlush',
+            'postPersist',
+            'postSoftDelete'
         );
+    }
+
+    public function postPersist(LifecycleEventArgs $args)
+    {
+        $doc = $args->getEntity();
+
+        if ($doc instanceof Package) {
+            $this->container->get('mbh.room.cache.generator')->recalculateCache(
+                $doc->getRoomType(), $doc->getBegin(), $doc->getEnd()
+            );
+        }
+    }
+
+    public function postSoftDelete(LifecycleEventArgs $args)
+    {
+        $doc = $args->getEntity();
+
+        if ($doc instanceof Package) {
+
+            $this->container->get('mbh.room.cache.generator')->recalculateCache(
+                $doc->getRoomType(), $doc->getBegin(), $doc->getEnd()
+            );
+        }
     }
 
     public function onFlush(OnFlushEventArgs $args)

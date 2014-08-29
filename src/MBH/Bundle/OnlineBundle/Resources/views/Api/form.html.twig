@@ -1,0 +1,51 @@
+{% spaceless %}
+<form id="mbh-form" method="get" action="{{ config.result.url }}">
+
+    {% if hotels|length > 1 %}
+    <div class="mbh-form-row">
+        <label for="mbh-form-hotel">Отель</label>
+        <select name="hotel" id="mbh-form-hotel">
+            <option></option>
+            {% for hotel in hotels %}<option value="{{ hotel.id }}">{{ hotel.fullTitle }}</option>{% endfor %}
+        </select>
+    </div>
+    {% endif %}
+
+    <div class="mbh-form-row">
+        <label for="mbh-form-begin">Дата заезда</label>
+        <input type="text" id="mbh-form-begin" name="begin" required value="{{ 'now'|date('d.m.Y') }}">
+    </div>
+
+    <div class="mbh-form-row">
+        <label for="mbh-form-end">Дата выезда</label>
+        <input type="text" id="mbh-form-end" name="end" required value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
+    </div>
+
+    {% if formConfig.roomTypes and hotels|length <= 1 and hotels|first.roomTypes|length %}
+    <div class="mbh-form-row">
+        <label for="mbh-form-roomType">Тип номера</label>
+        <select id="mbh-form-roomType" name="roomType">
+            <option></option>
+            {% for roomType in hotels|first.roomTypes %}<option value="{{ roomType.id }}">{{ roomType.fullTitle }}</option>{% endfor %}
+        </select>
+    </div>
+    {% endif %}
+
+    {% if formConfig.tourists %}
+        <div class="mbh-form-row">
+            <label for="mbh-form-adults">Взрослые</label>
+            <input type="number" id="mbh-form-adults" name="adults"  value="1">
+        </div>
+
+        <div class="mbh-form-row">
+            <label for="mbh-form-children">Дети</label>
+            <input type="number" id="mbh-form-children" name="children" value="0">
+        </div>
+    {% endif %}
+
+    <div class="mbh-form-row">
+        <button type="submit" id="mbh-form-submit">Найти</button>
+    </div>
+</form>
+{% endspaceless %}
+

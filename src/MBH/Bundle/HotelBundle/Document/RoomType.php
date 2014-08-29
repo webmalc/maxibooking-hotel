@@ -329,21 +329,52 @@ class RoomType extends Base
     {
         return $this->places + $this->additionalPlaces;
     }
-    
+
     /**
-     * @return []
+     * Convert children to adults
+     * @param $adults
+     * @param $children
+     * @return array
+     */
+    public function getAdultsChildrenCombination($adults, $children)
+    {
+        $result = ['adults' => 0, 'children' => 0];
+        $total = $children + $adults;
+
+        for ($i = 1; $i <= $total; $i++) {
+
+            if ($i > $this->getTotalPlaces()) {
+                break;
+            }
+
+            if ( $i > $this->getPlaces() && $i > $adults) {
+                $result['children']++;
+            } else {
+                $result['adults']++;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array
      */
     public function getAdultsChildrenCombinations()
     {
         $result = [];
-        
-        for($i = 0 ; $i <= $this->getTotalPlaces(); $i++) {
-            for($k = 0; $k <= $this->getTotalPlaces(); $k++) {
+
+        for ($i = 1 ; $i <= $this->getTotalPlaces(); $i++) {
+            $result[] = ['adults' => $i, 'children' => 0];
+        }
+        for ($i = $this->getPlaces(); $i <= $this->getTotalPlaces(); $i++) {
+            for($k = 1; $k <= $this->getAdditionalPlaces(); $k++) {
                 if(($k + $i) && ($k + $i) <= $this->getTotalPlaces()) {
-                    $result[] = ['adults' => $k, 'children' => $i];
+                    $result[] = ['adults' => $i, 'children' => $k];
                 }
             }
         }
+
         return $result;
     }
 

@@ -8,7 +8,7 @@
 <ul class="nav nav-tabs" role="tablist">
 {% for item in menu %}
     {% if entity is null and loop.index != 1 %}
-        <li  class="disabled">
+        <li class="disabled">
             <a href="#" role="tab" data-toggle="tooltip" title="Необходимо заполнить основные настройки!">{{item.title|raw}}</a>
         </li>
     {% else  %}

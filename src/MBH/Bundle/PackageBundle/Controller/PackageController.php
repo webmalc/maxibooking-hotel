@@ -200,7 +200,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 ->setRoomType($results[0]->getRoomType())
                 ->setFood($request->get('food'))
                 ->setPaid(0)
-                ->setPrice($results[0]->getPrice($package->getFood()))
+                ->setPrice($results[0]->getPrice($package->getFood(), $results[0]->getAdults(), $results[0]->getChildren()))
         ;
 
         $errors = $this->get('validator')->validate($package);
@@ -211,10 +211,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $dm->persist($package);
         $dm->flush();
-
-        $this->get('mbh.room.cache.generator')->decrease(
-                $package->getRoomType(), $package->getBegin(), $package->getEnd()
-        );
 
         $request->getSession()
                 ->getFlashBag()
@@ -582,14 +578,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
-        $roomType = $entity->getRoomType();
-        $begin = $entity->getBegin();
-        $end = $entity->getEnd();
-
         $dm->remove($entity);
         $dm->flush($entity);
-
-        $this->get('mbh.room.cache.generator')->increase($roomType, $begin, $end);
 
         $this->getRequest()
                 ->getSession()

@@ -1,0 +1,80 @@
+{% if results|length %}
+
+    <div id="mbh-results-duration">
+        Даты: <strong>{{ results|first.begin|date('d.m.Y') }} - {{ results|first.end|date('d.m.Y') }}.</strong>
+        Дни/ночи: <strong>{{ results|first.days }}/{{ results|first.nights }}</strong>
+    </div>
+
+    <table id="mbh-results-table">
+        <thead>
+            <tr>
+                {% if hotels|length > 1 %}
+                    <th>Отель</th>
+                {% endif %}
+                <th>Тип номера</th>
+                <th>Тариф</th>
+                <th>Туристы</th>
+                <th>Питание</th>
+                <th>Цена/номер</th>
+                <th>Количество</th>
+            </tr>
+        </thead>
+        {% for result in results %}
+        <tbody>
+            <tr>
+                {% if hotels|length > 1 %}
+                    <td>{{ result.roomType.hotel.fullTitle }}</td>
+                {% endif %}
+                <td>{{ result.roomType.fullTitle }}</td>
+                <td>{{ result.tariff.fullTitle }}</td>
+                <td class="mbh-center">
+                    <select class="mbh-results-tourists-select">
+                        {% for priceTourists, priceFoods  in result.prices %}
+                            {% set arr = priceTourists|split('_') %}
+                            <option value="{{ priceTourists }}">
+                                {% if arr[0] %}{% for i in 1..arr[0] %}A&nbsp;{% endfor %}{% endif %}
+                                {% if arr[1] %}{% for k in 1..arr[1] %}C&nbsp;{% endfor %}{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td class="mbh-center">
+                    <select class="mbh-results-food-select select2">
+                        {% for food in result.foods %}
+                            <option value="{{food}}">{{food}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td class="mbh-center">
+                    {% for priceTourists, priceFoods  in result.prices %}
+                        {% for priceFood, price  in priceFoods %}
+                            <ul class="mbh-results-prices">
+                                <li data-value="{{ price }}" class="{{ priceTourists }}_{{priceFood}}_food">{{ price|number_format}}</li>
+                            </ul>
+                        {% endfor %}
+                    {% endfor %}
+                </td>
+                <td  class="mbh-center">
+                    <select class="mbh-results-packages-count select2">
+                        <option></option>
+                        {% if  result.roomsCount > config.packages_max %}
+                            {% set max = config.packages_max %}
+                        {% else %}
+                            {% set max = result.roomsCount %}
+                        {% endif %}
+                        <option value="0" selected="selected">0</option>
+                        {% for i in 1..max %}
+                            <option value="{{ i }}">{{ i }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+    <div id="mbh-results-actions">
+        <span id="mbh-results-total">Итого: <span id="mbh-results-total-sum">0</span> <i class="fa fa-ruble"></i></span><button id="mbh-results-next">Продолжить</button>
+    </div>
+{% else %}
+    <div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> По вашему запросу ничего не найдено.</div>
+{% endif %}

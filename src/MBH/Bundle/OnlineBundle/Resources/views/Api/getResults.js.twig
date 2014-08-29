@@ -1,0 +1,124 @@
+/*global window */
+$(document).ready(function () {
+    var wrapper = $('#mbh-results-wrapper'),
+        getUrlVars = function () {
+            var vars = [], hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i].split('=');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+        },
+        setSelect2 = function () {
+            $('select.select2').select2({
+                placeholder: '',
+                allowClear: false,
+                minimumResultsForSearch: -1,
+                width: 'resolve'
+            });
+        },
+        query = getUrlVars()
+    ;
+    if (!query.begin || !query.end) {
+        wrapper.html('<div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Не выбраны даты заезда и выезда!</div>');
+        return false;
+    }
+    wrapper.html('<div class="mbh-results-info"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+
+    // load table
+    $.ajax({
+        url: '{{ urls.table }}',
+        data: window.location.search.replace('?', ''),
+        dataType: 'html',
+        crossDomain: true,
+        success: function(data) {
+            wrapper.html('{{ styles }}' + data);
+            setSelect2();
+
+            // tourists select2
+            (function () {
+                var format = function (icon) {
+                    var arr = icon.id.split('_'),
+                        text = '';
+                    ;
+                    for (var i = 1; i <= arr[0]; i++) {
+                        text += '<i class="fa fa-male"></i> ';
+                    }
+                    for (var i = 1; i <= arr[1]; i++) {
+                        text += '<small><i class="fa fa-child"></i></small>';
+                    }
+                    return text;
+
+                };
+
+                $('.mbh-results-tourists-select').each(function () {
+                    $(this).select2({
+                        placeholder: '',
+                        allowClear: false,
+                        width: 'resolve',
+                        minimumResultsForSearch: -1,
+                        formatResult: format,
+                        formatSelection: format
+                    });
+                });
+            }());
+
+            // table prices
+            (function() {
+                var show = function(tr) {
+                        var tourist = tr.find('.mbh-results-tourists-select'),
+                            select  = tr.find('.mbh-results-food-select'),
+                            selectVal = select.select2('data').id,
+                            touristVal = tourist.select2('data').id
+                            ;
+                        tr.find('ul.mbh-results-prices').hide();
+                        tr.find('ul.mbh-results-prices li').hide();
+                        tr.find('ul.mbh-results-prices li.' + touristVal + '_' + selectVal + '_food').show();
+                        tr.find('ul.mbh-results-prices').show();
+                    }
+                    ;
+                $('.mbh-results-tourists-select, .mbh-results-food-select').click(function() {
+                    show($(this).closest('tr'));
+                });
+                $('.mbh-results-tourists-select, .mbh-results-food-select').each(function() {
+                    show($(this).closest('tr'));
+                });
+            }());
+
+            // calc total
+            (function() {
+                var calc = function() {
+                        var total = 0,
+                            nextButton = $('#mbh-results-next'),
+                            roomCount = $('select.mbh-results-packages-count')
+                        ;
+                        nextButton.prop('disabled', true);
+                        roomCount.each( function() {
+                            if($(this).val() > 0) {
+                                var tr = $(this).closest('tr'),
+                                    li = tr.find('ul.mbh-results-prices li:visible');
+                                    if(li.length) {
+                                        total += parseInt(li.attr('data-value')) * $(this).val();
+                                    }
+                                ;
+                            }
+                        });
+
+                        $('#mbh-results-total-sum').html(total);
+                        if(total > 0) {
+                            nextButton.prop('disabled', false);
+                        }
+                    }
+                    ;
+                calc();
+                $('.mbh-results-tourists-select, .mbh-results-food-select, .mbh-results-packages-count').click(function() {
+                    calc();
+                });
+            }());
+        }
+    });
+})
+
+

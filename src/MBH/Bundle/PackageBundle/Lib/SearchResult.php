@@ -127,8 +127,8 @@ class SearchResult
     }
 
     /**
-     * @param \MBH\Bundle\HotelBundle\Form\RoomType $roomType
-     * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
+     * @param RoomType $roomType
+     * @return $this
      */
     public function setRoomType(RoomType $roomType)
     {
@@ -232,20 +232,24 @@ class SearchResult
      */
     public function addPrice($food, $price, $adults = null, $children = null)
     {
-        if ($adults !== null &&  $children !== null) {
-            if(($adults != $this->getAdults()) || ($children != $this->getChildren())) {
-                return $this;
+        if ($adults !== null && $children !== null) {
+
+            if ($this->getAdults() !== 0 || $this->getChildren() !== 0) {
+                if(($adults != $this->getAdults()) || ($children != $this->getChildren())) {
+                    return $this;
+                }
             }
         }
+
         if($price === null) {
             return $this;
         }
         
-        if (!isset($this->prices[$food])) {
-            $this->prices[$food] = 0;
+        if (!isset($this->prices[$adults . '_' . $children][$food])) {
+            $this->prices[$adults . '_' . $children][$food] = 0;
         }
 
-        $this->prices[$food] += (int) $price;
+        $this->prices[$adults . '_' . $children][$food] += (int) $price;
 
         return $this;
     }
@@ -267,7 +271,7 @@ class SearchResult
     }
 
     /**
-     * @param type $adults
+     * @param int $adults
      * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
      */
     public function setAdults($adults)
@@ -278,7 +282,7 @@ class SearchResult
     }
 
     /**
-     * @param type $children
+     * @param int $children
      * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
      */
     public function setChildren($children)
@@ -287,18 +291,20 @@ class SearchResult
         
         return $this;
     }
-    
+
     /**
      * @param string $food
-     * @return int
+     * @param int $adults
+     * @param int $children
+     * @return int|null
      */
-    public function getPrice($food)
+    public function getPrice($food, $adults, $children)
     {
-        if(!isset($this->getPrices()[$food])) {
+        if(!isset($this->getPrices()[$adults . '_' . $children][$food])) {
             return null;
         }
         
-        return (int) $this->getPrices()[$food];
+        return (int) $this->getPrices()[$adults . '_' . $children][$food];
     }
     
 }

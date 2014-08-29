@@ -124,7 +124,7 @@ class RoomCache extends Base
     /**
      * Get date
      *
-     * @return date $date
+     * @return \DateTime $date
      */
     public function getDate()
     {
@@ -210,7 +210,7 @@ class RoomCache extends Base
     /**
      * Remove price
      *
-     * @param MBH\Bundle\PackageBundle\Document\PriceCache $price
+     * @param \MBH\Bundle\PackageBundle\Document\PriceCache $price
      */
     public function removePrice(\MBH\Bundle\PackageBundle\Document\PriceCache $price)
     {
@@ -220,11 +220,23 @@ class RoomCache extends Base
     /**
      * Get prices
      *
-     * @return Doctrine\Common\Collections\Collection $prices
+     * @return \Doctrine\Common\Collections\Collection $prices
      */
     public function getPrices()
     {
         return $this->prices;
+    }
+
+
+    /**
+     * @param array $prices
+     * @return $this|array
+     */
+    public function setPrices($prices)
+    {
+        return $this->prices = $prices;
+
+        return $this;
     }
     
     /**

@@ -210,11 +210,6 @@ class Vashotel extends Base
                 $this->dm->persist($package);
                 $this->dm->flush();
             }
-
-
-            $this->container->get('mbh.room.cache.generator')->decrease(
-                $package->getRoomType(), $package->getBegin(), $package->getEnd()
-            );
         }
 
         // remove canceled packages
@@ -228,12 +223,6 @@ class Vashotel extends Base
             foreach ($deletedPackages as $deletedPackage) {
                 $this->dm->remove($deletedPackage);
                 $this->dm->flush();
-
-                $roomType = $deletedPackage->getRoomType();
-                $begin = $deletedPackage->getBegin();
-                $end = $deletedPackage->getEnd();
-
-                $this->container->get('mbh.room.cache.generator')->increase($roomType, $begin, $end);
             }
         }
 
@@ -246,6 +235,7 @@ class Vashotel extends Base
     public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
         $script = 'set_availability.php';
+        $result = false;
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {

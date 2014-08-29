@@ -5,7 +5,13 @@
 {% block content %}
     <ul class="nav nav-tabs">
         <li class="active"><a href="#online-form-config" data-toggle="tab"><i class="fa fa-cog"></i> Настройки</a></li>
-        <li><a href="#online-form-code" data-toggle="tab"><i class="fa fa-code"></i> Код для сайта</a></li>
+
+        {% if entity %}
+            <li><a href="#online-form-code" data-toggle="tab"><i class="fa fa-code"></i> Код для сайта</a></li>
+        {% else %}
+            <li class="disabled"><a href="#" data-toggle="tooltip" title="Необходимо заполнить основные настройки!"><i class="fa fa-code"></i> Код для сайта</a></li>
+        {%  endif %}
+
     </ul>
 
     <div class="tab-content">
@@ -23,16 +29,23 @@
         </div>
         <div class="tab-pane"  id="online-form-code">
 
-
-
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">Код формы для вставки на сайт</h3>
                 </div>
                 <div class="panel-body">
-                    {% set code1  = '<script type="text/javascript">mbhFormConfig = { width: "' ~ config.size.form.width ~'", height: "' ~ config.size.form.height ~'"}</script>' %}
-                    {% set code2  = '<script type="text/javascript" src="url"></script>' %}
-                    <p class="text-success">{{ code1 }}<br>{{ code2 }}</p>
+                    {% set code1  = '<div id="mbh-form-wrapper" style="overflow: hidden; width: ' ~ config.form.width ~'; height: ' ~ config.form.height ~';"></div>' %}
+                    {% set code2  = '<script>window.jQuery || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"><\\/script>\')</script>' %}
+                    {% set code3  = '<script>$.isFunction($().datepicker) || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"><\\/script><link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css"/>\')</script>' %}
+                    {% set code4  = '<script type="text/javascript" src="' ~ url('online_form_get') ~ '"></script>' %}
+                    <div class="row spacer-bottom">
+                        <div class="col-md-3"><small>На место для формы:</small></div>
+                        <div class="col-md-9"><span class="text-success">{{ code1 }}</span></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3"><small>Перед закрывающим тегом &lt;/body&gt;:</small></div>
+                        <div class="col-md-9"><span class="text-success">{{ code2 }}{{ code3 }}{{ code4 }}</span></div>
+                    </div>
                 </div>
             </div>
 
@@ -41,9 +54,18 @@
                     <h3 class="panel-title">Код страницы поиска для вставки на сайт:</h3>
                 </div>
                 <div class="panel-body">
-                    {% set code1  = '<script type="text/javascript">mbhResultConfig = { width: "' ~ config.size.result.width ~'", height: "' ~ config.size.result.height ~'"}</script>' %}
-                    {% set code2  = '<script type="text/javascript" src="url"></script>' %}
-                    <p class="text-success">{{ code1 }}<br>{{ code2 }}</p>
+                    {% set code0  = '<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">' %}
+                    {% set code1  = '<div id="mbh-results-wrapper" style="overflow: hidden; width: ' ~ config.result.width ~'; height: ' ~ config.result.height ~';"></div>' %}
+                    {% set code2  = '<script>window.jQuery || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"><\\/script>\')</script>' %}
+                    {% set code3  = '<script type="text/javascript" src="' ~ url('online_form_results') ~ '"></script>' %}
+                    <div class="row spacer-bottom">
+                        <div class="col-md-3"><small>На место для результатов:</small></div>
+                        <div class="col-md-9"><span class="text-success">{{ code0 }}{{ code1 }}</span></div>
+                    </div>
+                    <div class="row spacer-bottom">
+                        <div class="col-md-3"><small>Перед закрывающим тегом &lt;/body&gt;:</small></div>
+                        <div class="col-md-9"><span class="text-success">{{ code2 }}{{ code3 }}</span></div>
+                    </div>
                 </div>
             </div>
         </div>

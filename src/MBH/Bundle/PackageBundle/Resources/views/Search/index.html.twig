@@ -73,9 +73,10 @@
                             <th class="td-sm">Отъезд</th>
                             <th class="td-sm">Дни/ночи</th>
                             <th>Отель</th>
-                            <th>Тип номера</th>
+                            <th>Тип</th>
                             <th>Тариф</th>
                             <th class="td-sm">Питание</th>
+                            <th class="td-sm">Гости</th>
                             <th class="td-sm">Цена</th>
                             <th class="td-md"></th>
                         </tr>
@@ -92,18 +93,32 @@
                         <td>{{ result.roomType.hotel }}</td>
                         <td>{{ result.roomType }}</td>
                         <td>{{ result.tariff}} </td>
-                        <td class="text-right">
+                        <td class="text-center">
                             <select class="form-control plain-html input-sm search-food-select">
                                 {% for food in result.foods %}
                                     <option value="{{food}}">{{food}}</option>
                                 {% endfor %}
                             </select>
                         </td>
+                        <td class="text-center">
+                            <select class="form-control plain-html input-sm search-tourists-select">
+                                {% for priceTourists, priceFoods  in result.prices %}
+                                    {% set arr = priceTourists|split('_') %}
+                                    <option value="{{ priceTourists }}">
+                                        {% if arr[0] %}{% for i in 1..arr[0] %}A&nbsp;{% endfor %}{% endif %}
+                                        {% if arr[1] %}{% for k in 1..arr[1] %}C&nbsp;{% endfor %}{% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+
+                        </td>
                         <td class="text-right">
-                            {% for priceFood,price  in result.prices %}
+                            {% for priceTourists, priceFoods  in result.prices %}
+                                {% for priceFood, price  in priceFoods %}
                                 <ul class="package-search-prices">
-                                    <li class="{{priceFood}}_food">{{ price|number_format}}</li>
+                                    <li class="{{ priceTourists }}_{{priceFood}}_food">{{ price|number_format}}</li>
                                 </ul>
+                                {% endfor %}
                             {% endfor %}
                         </td>
                         <td class="text-center">

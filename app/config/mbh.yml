@@ -5,9 +5,15 @@ parameters:
 
     #параметры онлайн формы
     mbh.online.form:
-        size:
-          form: {width: 300, height: 'auto'}
-          result: {width: 500, height: 'auto'}
+          sites: ['http://test.h', 'http://test2.h']
+          packages_max: 5
+          form:
+            width: '300px'
+            height: 'auto'
+          result:
+            width: 'auto'
+            height: 'auto'
+            url: 'http://test.h/hotel/results.html'
 
     #параметры Channel manager
     mbh.channelmanager.services:

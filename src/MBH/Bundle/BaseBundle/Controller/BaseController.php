@@ -10,6 +10,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class BaseController extends Controller
 {
     /**
+     * Add Access-Control-Allow-Origin header to response
+     * @param array $sites
+     */
+    public function addAccessControlAllowOriginHeaders(array $sites)
+    {
+        $origin = $this->getRequest()->headers->get('origin');
+        foreach ($sites as $site) {
+            if ($origin == $site) {
+                header('Access-Control-Allow-Origin: ' . $site);
+            }
+        }
+    }
+
+    /**
      * Get entity logs
      * @param object $entity
      * @return Gedmo\Loggable\Entity\LogEntr[]|null

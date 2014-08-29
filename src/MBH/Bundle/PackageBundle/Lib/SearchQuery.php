@@ -20,7 +20,7 @@ class SearchQuery
     public $adults;
     
     /**
-     * @var \DateTime 
+     * @var int
      */
     public $children;
     
@@ -40,7 +40,7 @@ class SearchQuery
     
     public function addRoomType($id)
     {
-        if (!in_array($id, $this->roomTypes)) {
+        if (!in_array($id, $this->roomTypes) && !empty($id)) {
             $this->roomTypes[] = $id;
         }
     }
