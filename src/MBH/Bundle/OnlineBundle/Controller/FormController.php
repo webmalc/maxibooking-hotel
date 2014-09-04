@@ -31,7 +31,9 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
         $entity = $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]);
 
         $form = $this->createForm(
-            new FormType(), $entity
+            new FormType(),
+            $entity,
+            ['paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types']]
         );
 
         return [
@@ -60,7 +62,9 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
         }
 
         $form = $this->createForm(
-            new FormType(), $entity
+            new FormType(),
+            $entity,
+            ['paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types']]
         );
 
         $form->submit($request);

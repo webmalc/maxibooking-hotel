@@ -1,4 +1,8 @@
 <style>
+    /* RESULTS TABLE STYLES */
+    button:disabled {
+        color: #999;
+    }
     .select2-chosen {
         text-align: center;
     }
@@ -22,7 +26,26 @@
     #mbh-results-duration {
         background-color: #e5e5e5;
         padding: 10px;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
+    }
+
+    /* Tariffs */
+    #mbh-results-tariffs {
+        background-color: #e5e5e5;
+        padding: 10px;
+        margin-bottom: 5px;
+    }
+    #mbh-results-tariffs h4 {
+        padding: 0px;
+        margin: 0px 0px 5px 0px;
+    }
+    #mbh-results-tariffs ul li {
+        margin: 0px 0px 5px 0px;
+    }
+    #mbh-results-tariffs p {
+        padding: 0px;
+        margin: 0px 2px 0px;
+        font-size: small;
     }
     #mbh-results-table td, #mbh-results-table th {
         padding: 5px;
@@ -39,5 +62,45 @@
     }
     #mbh-results-total-sum {
         font-weight: bold;
+    }
+
+    /* USER FORM STYLES */
+    .mbh-user-form-row {
+        margin-bottom: 10px;
+    }
+    .mbh-user-form-row label {
+        width: 150px;
+    }
+    #mbh-user-form {
+        background-color: #e5e5e5;
+        padding: 10px;
+    }
+    #mbh-user-form h4 {
+        padding: 0px;
+        margin: 0px 0px 15px 0px;
+    }
+    sup {
+        color: maroon;
+    }
+    /* PAYMENT TYPES STYLES */
+    #mbh-package-info, #mbh-payment-types {
+        background-color: #e5e5e5;
+        padding: 10px;
+        margin-bottom: 5px;
+    }
+    #mbh-payment-types h4 {
+        padding: 0px;
+        margin: 0px 0px 15px 0px;
+    }
+    .mbh-payment-type-row {
+        margin-bottom: 10px;
+    }
+    .mbh-payment-type-label {
+        font-weight: bold;
+        font-size: larger;
+        cursor: pointer;
+    }
+    .mbh-payment-type-row input {
+        margin-right: 5px;
     }
 </style>

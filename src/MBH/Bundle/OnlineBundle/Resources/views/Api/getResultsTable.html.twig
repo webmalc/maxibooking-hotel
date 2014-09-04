@@ -1,9 +1,33 @@
+{% spaceless %}
 {% if results|length %}
 
     <div id="mbh-results-duration">
-        Даты: <strong>{{ results|first.begin|date('d.m.Y') }} - {{ results|first.end|date('d.m.Y') }}.</strong>
-        Дни/ночи: <strong>{{ results|first.days }}/{{ results|first.nights }}</strong>
+        Даты: <strong><span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> - <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>.</strong>
+        Дни/ночи: <strong><span id="mbh-results-duration-days">{{ results|first.days }}</span>/<span id="mbh-results-duration-nights">{{ results|first.nights }}</span></strong>
     </div>
+
+    <div>
+
+    {% if tariffResults|length > 1 %}
+    <div iv id="mbh-results-tariffs">
+        <h4>Тарифы и спецпредложения</h4>
+        <ul>
+            {% for tariff in tariffResults %}
+            <li>
+                <p class="mbh-results-tariffs-label">
+                    {% if (tariff.id == app.request.query.get('tariff')) or (app.request.query.get('tariff') is null and tariff.isDefault) %}
+                        <span id="mbh-results-tariffs-selected">{{ tariff.fullTitle }}</span>{% if tariff.isDefault %}&nbsp;<small>(оновной тариф)</small>{% endif %}</p>
+                    {% else %}
+                        <a href="?{{ app.request.query.all|merge({'tariff': tariff.id })|url_encode }}">{{ tariff.fullTitle }}</a>{% if tariff.isDefault %}&nbsp;<small>(оновной тариф)</small>{% endif %}</p>
+                    {% endif %}
+                {% if tariff.description %}
+                <p class="mbh-results-tariffs-description">{{ tariff.description|raw }}</p>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
 
     <table id="mbh-results-table">
         <thead>
@@ -25,7 +49,7 @@
                 {% if hotels|length > 1 %}
                     <td>{{ result.roomType.hotel.fullTitle }}</td>
                 {% endif %}
-                <td>{{ result.roomType.fullTitle }}</td>
+                <td><span class="mbh-results-roomType" data-id="{{ result.roomType.id  }}">{{ result.roomType.fullTitle }}</span></td>
                 <td>{{ result.tariff.fullTitle }}</td>
                 <td class="mbh-center">
                     <select class="mbh-results-tourists-select">
@@ -73,8 +97,10 @@
         {% endfor %}
     </table>
     <div id="mbh-results-actions">
-        <span id="mbh-results-total">Итого: <span id="mbh-results-total-sum">0</span> <i class="fa fa-ruble"></i></span><button id="mbh-results-next">Продолжить</button>
+        <span id="mbh-results-total">Итого: <span id="mbh-results-total-sum">0</span> <i class="fa fa-ruble"></i></span>
+        <button id="mbh-results-next">Продолжить <small><i class="fa fa-chevron-right "></i></small></button>
     </div>
 {% else %}
     <div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> По вашему запросу ничего не найдено.</div>
 {% endif %}
+{% endspaceless %}

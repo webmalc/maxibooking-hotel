@@ -1,0 +1,86 @@
+{% spaceless %}
+    {% if request.packages|length %}
+        <div id="mbh-user-form">
+            <form id="mbh-user-form-form">
+                <h4>Заполните данные для продолжения </h4>
+
+                <div class="mbh-user-form-row">
+                    <label for="mbh-user-form-lastName">Фамилия <sup>*</sup></label>
+                    <input type="text" id="mbh-user-form-lastName" name="lastName" required value=""
+                           placeholder="Иванов">
+                </div>
+
+                <div class="mbh-user-form-row">
+                    <label for="mbh-user-form-firstName">Имя <sup>*</sup></label>
+                    <input type="text" id="mbh-user-form-firstName" name="firstName" required value=""
+                           placeholder="Иван">
+                </div>
+
+                <div class="mbh-user-form-row">
+                    <label for="mbh-user-form-phone">Телефон <sup>*</sup></label>
+                    <input type="tel" id="mbh-user-form-phone" name="phone" required value=""
+                           placeholder="+7(925)3456512">
+                </div>
+
+                <div class="mbh-user-form-row">
+                    <label for="mbh-user-form-email">E-mail</label>
+                    <input type="email" id="mbh-user-form-email" name="email" value="" placeholder="mail@example.com">
+                </div>
+
+                <div class="mbh-user-form-row">
+                    <label for="mbh-user-form-birthday">День рождения</label>
+                    <input type="text" id="mbh-user-form-birthday" name="birthday" value="" placeholder="27.08.1975">
+                </div>
+
+                <div class="mbh-user-form-row">
+                    <label for="mbh-user-form-arrival">Время заезда</label>
+                    <select id="mbh-user-form-arrival" name="arrival">
+                        <option></option>
+                        {% for i in 0..23 %}
+                            <option value="{{ i }}"
+                                    {% if i == arrival %}selected="selected"{% endif %}>{{ "%02d"|format(i) }}:00
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mbh-user-form-row">
+                    <label for="mbh-user-form-departure">Время отъезда</label>
+                    <select id="mbh-user-form-departure" name="departure">
+                        <option></option>
+                        {% for i in 0..23 %}
+                            <option value="{{ i }}"
+                                    {% if i == arrival %}selected="selected"{% endif %}>{{ "%02d"|format(i) }}:00
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mbh-user-form-row">
+                    <label for="mbh-user-form-note">Комментарий</label>
+                    <textarea id="mbh-user-form-note" name="note"></textarea>
+                </div>
+
+
+                <div class="mbh-user-form-row">
+                    <sup>*</sup> - поля обязательные для заполнения
+                </div>
+            </form>
+        </div>
+
+        <div id="mbh-results-actions">
+            <button id="mbh-user-form-previous">
+                <small><i class="fa fa-chevron-left"></i></small>
+                Выбрать другие номера
+            </button>
+            <button id="mbh-user-form-next">Продолжить
+                <small><i class="fa fa-chevron-right "></i></small>
+            </button>
+        </div>
+
+    {% else %}
+        <div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Произошла ошибка во время бронирования.
+            Обновите страницу и попробуйте еще раз.
+        </div>
+    {% endif %}
+{% endspaceless %}

@@ -42,6 +42,16 @@ class FormType extends AbstractType
                     'help' => 'Использовать ли поле "Количестов туристов" в онлайн форме?'
                 ]
             )
+            ->add(
+                'paymentTypes',
+                'choice',
+                [
+                    'choices' => $options['paymentTypes'],
+                    'label' => 'Типы оплаты',
+                    'multiple' => true,
+                    'help' => 'Типы оплаты при бронировании с помощью онлайн формы'
+                ]
+            )
         ;
     }
 
@@ -50,6 +60,7 @@ class FormType extends AbstractType
         $resolver->setDefaults(
             array(
                 'data_class' => 'MBH\Bundle\OnlineBundle\Document\FormConfig',
+                'paymentTypes' => []
             )
         );
     }

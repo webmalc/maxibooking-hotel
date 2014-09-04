@@ -45,6 +45,12 @@ class RoomCache extends Base
      * @ODM\Boolean()
      */
     protected $isDefault;
+
+    /**
+     * @var int
+     * @ODM\Boolean()
+     */
+    protected $isOnline;
     
     /**
      * @var int
@@ -68,7 +74,7 @@ class RoomCache extends Base
     /**
      * Set tariff
      *
-     * @param MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
      * @return self
      */
     public function setTariff(\MBH\Bundle\PriceBundle\Document\Tariff $tariff)
@@ -90,7 +96,7 @@ class RoomCache extends Base
     /**
      * Set roomType
      *
-     * @param MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
      * @return self
      */
     public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
@@ -200,7 +206,7 @@ class RoomCache extends Base
     /**
      * Add price
      *
-     * @param MBH\Bundle\PackageBundle\Document\PriceCache $price
+     * @param \MBH\Bundle\PackageBundle\Document\PriceCache $price
      */
     public function addPrice(\MBH\Bundle\PackageBundle\Document\PriceCache $price)
     {
@@ -259,5 +265,27 @@ class RoomCache extends Base
     public function getIsDefault()
     {
         return $this->isDefault;
+    }
+
+    /**
+     * Set isOnline
+     *
+     * @param boolean $isOnline
+     * @return self
+     */
+    public function setIsOnline($isOnline)
+    {
+        $this->isOnline = $isOnline;
+        return $this;
+    }
+
+    /**
+     * Get isOnline
+     *
+     * @return boolean $isOnline
+     */
+    public function getIsOnline()
+    {
+        return $this->isOnline;
     }
 }

@@ -57,6 +57,9 @@ class Search
         } else {
             $qb->field('isDefault')->equals(true);
         }
+        if($query->isOnline) {
+            $qb->field('isOnline')->equals(true);
+        }
 
         if (!empty($query->roomTypes)) {
             $qb->field('roomType.id')->in($query->roomTypes);
@@ -136,6 +139,10 @@ class Search
                 $hotelsIds[] = $roomType->getHotel()->getId();
             }
             $qb->field('hotel.id')->in($hotelsIds);
+        }
+
+        if($query->isOnline) {
+            $qb->field('isOnline')->equals(true);
         }
 
         $qb->addOr(

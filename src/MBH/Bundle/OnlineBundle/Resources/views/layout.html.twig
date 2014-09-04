@@ -1,18 +1,1 @@
 {% extends "MBHBaseBundle::page.html.twig" %}
-
-{% block scripts %}
-    {{ parent() }}
-
-    {% javascripts filter='uglifyjs2''@MBHOnlineBundle/Resources/public/js/*'%}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-
-{% endblock %}
-
-{% block styles %}
-    {{ parent() }}
-    
-    {% stylesheets filter='cssrewrite, uglifycss''@MBHOnlineBundle/Resources/public/css/*'%}
-    <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% endblock %}

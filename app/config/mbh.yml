@@ -7,6 +7,7 @@ parameters:
     mbh.online.form:
           sites: ['http://test.h', 'http://test2.h']
           packages_max: 5
+          messages: true
           form:
             width: '300px'
             height: 'auto'
@@ -14,6 +15,10 @@ parameters:
             width: 'auto'
             height: 'auto'
             url: 'http://test.h/hotel/results.html'
+          payment_types:
+            in_hotel: 'Оплата при заселении'
+            online_full: 'Предварительная оплата'
+            online_first_day: 'Предварительная оплата первого дня'
 
     #параметры Channel manager
     mbh.channelmanager.services:
@@ -41,6 +46,9 @@ parameters:
         study: "Курсы/учеба"
         residence: "Временное проживание"
         other: "Другое"
+
+    #Время заезда по умолчанию
+    mbh.package.arrival.time: 12
     
     #Цели приезда
     mbh.package.statuses:

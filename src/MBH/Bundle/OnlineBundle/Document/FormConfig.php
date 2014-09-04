@@ -63,6 +63,15 @@ class FormConfig extends Base
     protected $tourists = true;
 
     /**
+     * @var array
+     * @Gedmo\Versioned
+     * @ODM\Collection
+     * @Assert\NotNull()
+     * @Assert\Choice(choices = {"in_hotel", "online_full", "online_first_day"}, multiple = true)
+     */
+    protected $paymentTypes = [];
+
+    /**
      * Set enabled
      *
      * @param boolean $enabled
@@ -126,5 +135,27 @@ class FormConfig extends Base
     public function getTourists()
     {
         return $this->tourists;
+    }
+
+    /**
+     * Set paymentTypes
+     *
+     * @param collection $paymentTypes
+     * @return self
+     */
+    public function setPaymentTypes($paymentTypes)
+    {
+        $this->paymentTypes = $paymentTypes;
+        return $this;
+    }
+
+    /**
+     * Get paymentTypes
+     *
+     * @return collection $paymentTypes
+     */
+    public function getPaymentTypes()
+    {
+        return $this->paymentTypes;
     }
 }

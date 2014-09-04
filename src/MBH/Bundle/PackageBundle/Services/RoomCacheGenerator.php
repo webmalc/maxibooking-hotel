@@ -285,6 +285,7 @@ class RoomCacheGenerator
                         ->setRoomType($roomType)
                         ->setDate($date)
                         ->setIsDefault($tariff->getIsDefault())
+                        ->setIsOnline($tariff->getIsOnline())
                         ->setPlaces($roomType->getTotalPlaces())
                         ->setTotalRooms($rooms)
                         ->setRooms($this->countPackages($tariff, $roomType, $date, $rooms))
@@ -383,7 +384,7 @@ class RoomCacheGenerator
                 ->getSingleResult();
             ;
 
-            if (!$defaultCache) {
+            if (!empty($defaultCache)) {
                 $roomsDefault = $defaultCache->getTotalRooms();
             } else {
                 $roomsDefault = $roomType->getRooms()->count();
