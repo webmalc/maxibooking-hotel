@@ -27,20 +27,24 @@ class Builder extends ContainerAware
             $menu->setChildrenAttribute('style', 'display: none');
         }
 
-        // Reservations links
-        $menu->addChild('reservations', ['route' => '_welcome', 'label' => 'Бронирование'])
-                ->setAttributes(['dropdown' => true, 'icon' => 'fa fa fa-paper-plane-o'])
+        // search
+        $menu->addChild('reservations', ['route' => '_welcome', 'label' => 'Подбор'])
+             ->setAttributes(['icon' => 'fa fa-search'])
         ;
-        $menu['reservations']->addChild('search', ['route' => 'package_search', 'label' => 'Подбор проживания']);
-        $menu['reservations']->addChild('package', ['route' => 'package', 'label' => 'Список броней']);
-        $menu['reservations']->addChild('clients', ['route' => 'tourist', 'label' => 'Отчеты']);
-        $menu['reservations']->addChild('packageOnline', ['route' => '_welcome', 'label' => 'Он-лайн заявки']);
+        // packages
+        $menu->addChild('package', ['route' => 'package', 'label' => 'Брони'])
+            ->setAttributes(['icon' => 'fa fa-paper-plane'])
+        ;
 
-        // Cash links
+        // report
+        $menu->addChild('report', ['route' => 'report_accommodation', 'label' => 'Отчеты'])
+             ->setAttributes(['icon' => 'fa fa-bar-chart-o'])
+        ;
+
+        // cash
         $menu->addChild('cash', ['route' => 'cash', 'label' => 'Касса'])
-             ->setAttribute('icon', 'fa fa-money')
+             ->setAttribute('icon', 'fa fa-ruble')
         ;
-
         return $this->filterMenu($menu);
     }
 
