@@ -1,0 +1,15 @@
+deploy/
+*~
+node_modules/
+.git
+.git*
+var/logs/*
+var/cache/*
+web/css/*
+web/js/*
+web/bundles/
+web/bundles/*
+#/web/*_dev.php
+nbproject
+.idea
+

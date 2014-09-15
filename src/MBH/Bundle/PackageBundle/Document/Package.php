@@ -298,7 +298,7 @@ class Package extends Base
     /**
      * Set number
      *
-     * @param increment $number
+     * @param int $number
      * @return self
      */
     public function setNumber($number)
@@ -386,7 +386,7 @@ class Package extends Base
     /**
      * Set begin
      *
-     * @param date $begin
+     * @param /DateTime $begin
      * @return self
      */
     public function setBegin($begin)
@@ -408,7 +408,7 @@ class Package extends Base
     /**
      * Set end
      *
-     * @param date $end
+     * @param /DateTime $end
      * @return self
      */
     public function setEnd($end)
@@ -420,7 +420,7 @@ class Package extends Base
     /**
      * Get end
      *
-     * @return date $end
+     * @return /DateTime $end
      */
     public function getEnd()
     {

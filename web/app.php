@@ -11,7 +11,7 @@ $loader = require_once __DIR__.'/../var/bootstrap.php.cache';
 // Change 'sf2' to a unique prefix in order to prevent cache key conflicts
 // with other applications also using APC.
 
-$apcLoader = new ApcClassLoader('mbh', $loader);
+$apcLoader = new ApcClassLoader('clone', $loader);
 $loader->unregister();
 $apcLoader->register(true);
 

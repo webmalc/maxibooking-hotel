@@ -32,6 +32,7 @@ class AppKernel extends Kernel
             new MBH\Bundle\CashBundle\MBHCashBundle(),
             new MBH\Bundle\ChannelManagerBundle\MBHChannelManagerBundle(),
             new MBH\Bundle\OnlineBundle\MBHOnlineBundle(),
+            new MBH\Bundle\DemoBundle\MBHDemoBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

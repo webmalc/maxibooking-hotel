@@ -1,0 +1,14 @@
+{% set menu = [
+    {'route': 'package', 'title': '<i class="fa fa-list "></i> Список'},
+    {'route': 'report_room', 'title': '<i class="fa fa-table"></i>  Таблица'},
+]
+%}
+
+<ul class="nav nav-tabs" role="tablist">
+{% for item in menu %}
+    {%  if active is not defined  %}{%  set active = 1  %}{% endif %}
+    <li {% if loop.index == active %}class="active"{% endif %}>
+        <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route) }}"{% endif %}>{{item.title|raw}}</a>
+    </li>
+{% endfor %}
+</ul>

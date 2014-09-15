@@ -28,7 +28,7 @@ class Builder extends ContainerAware
         }
 
         // search
-        $menu->addChild('reservations', ['route' => '_welcome', 'label' => 'Подбор'])
+        $menu->addChild('reservations', ['route' => 'package_search', 'label' => 'Подбор'])
              ->setAttributes(['icon' => 'fa fa-search'])
         ;
         // packages

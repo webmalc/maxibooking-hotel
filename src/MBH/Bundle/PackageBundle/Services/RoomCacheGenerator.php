@@ -126,6 +126,9 @@ class RoomCacheGenerator
                 ->getQuery()
                 ->execute()
         ;
+
+        $cacheIds = [];
+
         foreach ($caches as $cache) {
             $cacheIds[] = $cache->getId();
         }

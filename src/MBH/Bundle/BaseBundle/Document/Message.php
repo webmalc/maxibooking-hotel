@@ -106,7 +106,7 @@ class Message extends Base implements \JsonSerializable
     }
     
     /**
-     * @return []
+     * @return array
      */
     public function jsonSerialize()
     {

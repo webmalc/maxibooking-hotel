@@ -409,6 +409,8 @@ class Tariff extends Base
     public function addFoodPrice(\MBH\Bundle\PriceBundle\Document\FoodPrice $foodPrice)
     {
         $this->foodPrices[] = $foodPrice;
+
+        return $this;
     }
 
     /**

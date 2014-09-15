@@ -48,7 +48,7 @@ $(document).ready(function() {
                 d.paid = $('#package-filter-paid').val();
             }
         },
-        "order": [[2, 'desc']],
+        "order": [[4, 'desc']],
         "aoColumns": [
             { "bSortable": false }, // icon
             null, // prefix
