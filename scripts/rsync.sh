@@ -17,7 +17,7 @@ fi
 
 echo -e "${GREEN}Start rsync $DRY_RUN${NC}"
 
-rsync -avz $DRY_RUN --delete --exclude-from=deploy/ingnore.txt * -e ssh $SERVER:$FOLDER
+rsync -avz $DRY_RUN --delete --exclude-from=scripts/ingnore.txt * -e ssh $SERVER:$FOLDER
 
 if [[ $1 = 'force' ]]; then
 

@@ -137,6 +137,7 @@ class FixturesCommand extends ContainerAwareCommand
             $end->modify('+' . rand(3,25) . ' day');
 
             $package = new Package();
+            $number = $key + 1;
             $package->setCreatedBy('demo')
                     ->setBegin($begin)
                     ->setEnd($end)
@@ -147,10 +148,10 @@ class FixturesCommand extends ContainerAwareCommand
                     ->setFood('RO')
                     ->setIsPaid(false)
                     ->setNote('Демонстрационные брони')
-                    ->setNumber($key)
+                    ->setNumber($number)
                     ->setStatus('offline')
                     ->setPaid(0)
-                    ->setNumberWithPrefix('HTL' . $key)
+                    ->setNumberWithPrefix('HTL' . $number)
             ;
             $package->setPrice($numberInfo['price'][$key] * $package->getNights());
             $packages[] = $package;

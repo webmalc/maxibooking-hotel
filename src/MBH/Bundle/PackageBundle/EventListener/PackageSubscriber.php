@@ -147,10 +147,12 @@ class PackageSubscriber implements EventSubscriber
             $dm->getFilterCollection()->enable('softdeleteable');
             
             (empty($lastEntity) || empty($lastEntity->getNumber())) ? $number = 1 : $number = $lastEntity->getNumber() + 1;
+
+            if (empty($entity->getNumber())) {
+                $entity->setNumber($number);
+            }
             
-            $entity->setNumber($number);
-            
-            if ($entity->getTariff()) {
+            if ($entity->getTariff() && empty($entity->getNumberWithPrefix())) {
                 $entity->setNumberWithPrefix($entity->getTariff()->getHotel()->getPrefix() . $number);
             }
         }

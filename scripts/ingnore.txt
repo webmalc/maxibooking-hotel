@@ -1,4 +1,5 @@
 deploy/
+scripts/
 *~
 node_modules/
 .git
