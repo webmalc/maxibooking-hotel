@@ -135,15 +135,13 @@ $(document).ready(function () {
                     requestParams.nights = $('#mbh-results-duration-nights').text();
                     requestParams.total = $('#mbh-results-total-sum').text();
                     requestParams.packages = [];
-                    if (urlParams.tariff) {
-                        requestParams.tariff = {id: urlParams.tariff, 'title': $('#mbh-results-tariffs-selected').text()};
-                    }
                     roomCount.each( function() {
                         if($(this).val() > 0) {
                             var tr = $(this).closest('tr'),
                                 pricesLi = tr.find('ul.mbh-results-prices li:visible'),
                                 foodSelect = tr.find('select.mbh-results-food-select'),
-                                roomType = tr.find('span.mbh-results-roomType')
+                                roomType = tr.find('span.mbh-results-roomType'),
+                                tariff = tr.find('span.mbh-results-tariff')
                             ;
                             for(var i = 1; i <= $(this).val(); i++) {
                                 if(pricesLi.length) {
@@ -154,6 +152,7 @@ $(document).ready(function () {
                                         'price': parseInt(pricesLi.attr('data-value')),
                                         'food': foodSelect.val(),
                                         'roomType': {id : roomType.attr('data-id'), 'title': roomType.text()},
+                                        'tariff': {id: tariff.attr('data-id'), 'title': tariff.text()},
                                         'adults': tourists[0],
                                         'children': tourists[1]
                                     });

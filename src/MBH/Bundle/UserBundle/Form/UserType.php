@@ -57,7 +57,7 @@ class UserType extends AbstractType
 
         $builder
                 ->add('roles', 'choice', array(
-                    'group' => 'Данные аутентификации',
+                    'group' => 'Настройки',
                     'label' => 'Роли',
                     'multiple' => true,
                     'choices' => $this->roles,
@@ -65,10 +65,17 @@ class UserType extends AbstractType
                     'attr' => array('class' => "chzn-select roles")
                 ))
                 ->add('enabled', 'checkbox', array(
-                    'group' => 'Данные аутентификации',
+                    'group' => 'Настройки',
                     'label' => 'Включен?',
                     'value' => true,
                     'required' => false,
+                ))
+                ->add('emailNotifications', 'checkbox', array(
+                    'group' => 'Настройки',
+                    'label' => 'Уведомления?',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'Получать ли уведомления на электронную почту?'
                 ))
                 ->add('lastName', 'text', array('required' => false, 'label' => 'Фамилия', 'group' => 'Общая информация', 'attr' => ['placeholder' => 'Иванов']))
                 ->add('firstName', 'text', array('required' => false, 'label' => 'Имя', 'group' => 'Общая информация', 'attr' => ['placeholder' => 'Иван']))

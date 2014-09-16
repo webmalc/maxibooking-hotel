@@ -15,11 +15,13 @@
             {% for tariff in tariffResults %}
             <li>
                 <p class="mbh-results-tariffs-label">
+                    {% if app.request.query.get('hotel') is same as('') %}{{ tariff.hotel.fullTitle }}: {% endif %}
                     {% if (tariff.id == app.request.query.get('tariff')) or (app.request.query.get('tariff') is null and tariff.isDefault) %}
-                        <span id="mbh-results-tariffs-selected">{{ tariff.fullTitle }}</span>{% if tariff.isDefault %}&nbsp;<small>(оновной тариф)</small>{% endif %}</p>
+                        <span id="mbh-results-tariffs-selected" data-id="{{ tariff.id }}">{{ tariff.fullTitle }}</span>
                     {% else %}
-                        <a href="?{{ app.request.query.all|merge({'tariff': tariff.id })|url_encode }}">{{ tariff.fullTitle }}</a>{% if tariff.isDefault %}&nbsp;<small>(оновной тариф)</small>{% endif %}</p>
+                        <a href="?{{ app.request.query.all|merge({'tariff': tariff.isDefault ? null : tariff.id })|url_encode }}">{{ tariff.fullTitle }}</a>
                     {% endif %}
+                {% if tariff.isDefault %}&nbsp;<small>(базовый тариф)</small>{% endif %}</p>
                 {% if tariff.description %}
                 <p class="mbh-results-tariffs-description">{{ tariff.description|raw }}</p>
                 {% endif %}
@@ -50,7 +52,7 @@
                     <td>{{ result.roomType.hotel.fullTitle }}</td>
                 {% endif %}
                 <td><span class="mbh-results-roomType" data-id="{{ result.roomType.id  }}">{{ result.roomType.fullTitle }}</span></td>
-                <td>{{ result.tariff.fullTitle }}</td>
+                <td><span class="mbh-results-tariff" data-id="{{ result.tariff.id  }}">{{ result.tariff.fullTitle }}</span></td>
                 <td class="mbh-center">
                     <select class="mbh-results-tourists-select">
                         {% for priceTourists, priceFoods  in result.prices %}

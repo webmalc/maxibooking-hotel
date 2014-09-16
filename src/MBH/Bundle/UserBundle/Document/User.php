@@ -51,6 +51,15 @@ class User extends BaseUser
      * )
      */
     protected $lastName;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $emailNotifications = true;
     
     /**
      * Hook timestampable behavior
@@ -139,4 +148,27 @@ class User extends BaseUser
         
         return $username;
     }
+
+    /**
+     * Set emailNotifications
+     *
+     * @param boolean $emailNotifications
+     * @return self
+     */
+    public function setEmailNotifications($emailNotifications)
+    {
+        $this->emailNotifications = $emailNotifications;
+        return $this;
+    }
+
+    /**
+     * Get emailNotifications
+     *
+     * @return boolean $emailNotifications
+     */
+    public function getEmailNotifications()
+    {
+        return $this->emailNotifications;
+    }
+
 }

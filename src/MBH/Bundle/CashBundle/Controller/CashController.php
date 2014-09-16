@@ -77,8 +77,8 @@ class CashController extends Controller
 
         return [
             'entities' => $entities,
-            'totalIn' => $repo->total('in', $search, $begin, $end),
-            'totalOut' => $repo->total('out', $search, $begin, $end),
+            'totalIn' => ($entities->count()) ? $repo->total('in', $search, $begin, $end) : 0,
+            'totalOut' => ($entities->count()) ? $repo->total('out', $search, $begin, $end) : 0,
             'total' => $entities->count(),
             'draw' => $request->get('draw'),
             'methods' => $this->container->getParameter('mbh.cash.methods'),

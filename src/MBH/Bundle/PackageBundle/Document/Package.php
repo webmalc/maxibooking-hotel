@@ -761,4 +761,9 @@ class Package extends Base
     {
         return $this->channelManagerId;
     }
+
+    public function __toString()
+    {
+        return $this->getNumberWithPrefix();
+    }
 }

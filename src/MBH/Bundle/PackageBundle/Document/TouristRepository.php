@@ -24,7 +24,7 @@ class TouristRepository extends DocumentRepository
         if ($email || $birthday) {
             $qb = $this->createQueryBuilder('q')
                 ->field('lastName')->equals($lastName)
-                ->field('lastName')->equals($firstName)
+                ->field('firstName')->equals($firstName)
             ;
             if ($patronymic) {
                 $qb->field('patronymic')->equals($patronymic);
@@ -43,7 +43,7 @@ class TouristRepository extends DocumentRepository
                     $tourist->setPhone($phone);
                 }
                 if ($birthday) {
-                    $tourist->setBirthday($phone);
+                    $tourist->setBirthday($birthday);
                 }
                 if ($email) {
                     $tourist->setEmail($email);

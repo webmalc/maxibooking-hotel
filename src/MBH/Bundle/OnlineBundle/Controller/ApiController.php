@@ -3,7 +3,9 @@
 namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -166,30 +168,122 @@ class ApiController extends Controller
      */
     public function createPackagesAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         $request = json_decode($request->getContent());
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
         //create packages
+        $packages = $this->createPackages($request);
 
+        if (empty($packages)) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
+            ]);
+        }
+        $this->sendNotifications($packages);
 
         if ($request->paymentType == 'in_hotel') {
-            return new JsonResponse([
-                'success' => true,
-                'message' => 'Брони #12345, #123456 успешно созданы! И еще какой-то поздравительный текст...'
-            ]);
+
+            if(count($packages) > 1) {
+                $message = 'Брони ' . implode(', ', $packages) . ' успешно созданы! И еще какой-то поздравительный текст...';
+            } else {
+                $message = 'Бронь ' . $packages[0]->getNumberWithPrefix() . ' успешно создана! И еще какой-то поздравительный текст...';
+            }
+            return new JsonResponse(['success' => true, 'message' => $message]);
+
         } else {
             return new JsonResponse([
                 'success' => true,
                 'payment_url' => 'http://google.ru/',
             ]);
         }
+    }
 
-        return new JsonResponse([
-                'success' => false,
-                'message' => 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
-        ]);
+    /**
+     * @param array $packages
+     * @return bool
+     */
+    public function sendNotifications(array $packages)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $users = $dm->getRepository('MBHUserBundle:User')->findBy(
+          ['emailNotifications' => true, 'enabled' => true, 'locked' => false]
+        );
+
+        if(!count($users)) {
+            return false;
+        }
+
+        $recipients = [];
+        foreach ($users as $user) {
+            $recipients[] = [$user->getEmail() => $user->getFullName()];
+        }
+        try {
+            $this->get('mbh.mailer')->send($recipients, ['packages' => $packages], 'MBHOnlineBundle:Api:notification.html.twig');
+            return true;
+        } catch (\Exception $e) {
+
+            return false;
+        }
+    }
+
+    /**
+     * @param $request
+     * @return bool|array
+     *
+     */
+    private function createPackages($request)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $helper = $this->get('mbh.helper');
+        $packages = [];
+
+        foreach ($request->packages as $info) {
+
+            $tourist = $dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                $request->user->lastName,
+                $request->user->firstName,
+                null,
+                (empty($request->user->birthday)) ? null : $helper->getDateFromString($request->user->birthday),
+                $request->user->email,
+                $request->user->phone
+            );
+
+            $tariff = $dm->getRepository('MBHPriceBundle:Tariff')->find($info->tariff->id);
+            if (!$tariff) {
+                return false;
+            }
+
+            $roomType = $dm->getRepository('MBHHotelBundle:RoomType')->find($info->roomType->id);
+            if (!$roomType) {
+                return false;
+            }
+
+            $package = new Package() ;
+            $package->setStatus('online')
+                ->setPaid(0)
+                ->setTariff($tariff)
+                ->setPaid(0)
+                ->setPrice($info->price)
+                ->setAdults($info->adults)
+                ->setChildren($info->children)
+                ->setFood($info->food)
+                ->setRoomType($roomType)
+                ->setBegin($helper->getDateFromString($request->begin))
+                ->setEnd($helper->getDateFromString($request->end))
+                ->setMainTourist($tourist)
+                ->addTourist($tourist)
+            ;
+
+            $dm->persist($package);
+            $dm->flush();
+
+            $packages[] = $package;
+        }
+
+        return $packages;
     }
 }
