@@ -38,7 +38,7 @@ $(document).ready(function () {
         dataType: 'html',
         crossDomain: true,
         success: function(data) {
-            wrapper.html('{{ styles }}' + data);
+            wrapper.html('{{ styles|escape("js") }}' + data);
             setSelect2();
 
             // tourists select2
@@ -172,7 +172,7 @@ $(document).ready(function () {
                         dataType: 'html',
                         crossDomain: true,
                         success: function(data) {
-                            wrapper.html('{{ styles }}' + data);
+                            wrapper.html('{{ styles|escape("js") }}' + data);
 
                             var prevUser = $.cookie('mbh.user');
                             var prevPackage = $.cookie('mbh.package');
@@ -266,7 +266,7 @@ $(document).ready(function () {
                                     success: function(data) {
 
                                         var total = requestParams.total;
-                                        wrapper.html('{{ styles }}' + data);
+                                        wrapper.html('{{ styles|escape("js") }}' + data);
 
                                         $('#mbh-payment-types-previous').click(function(){
                                             window.location.reload();
@@ -315,10 +315,10 @@ $(document).ready(function () {
                                                         if (data.payment_url) {
                                                             window.location = data.payment_url;
                                                         } else {
-                                                            wrapper.html('{{ styles }} <div class="mbh-results-error"><i class="fa fa-check-circle-o"></i> ' + data.message + '</div>');
+                                                            wrapper.html('{{ styles|escape("js") }} <div class="mbh-results-error"><i class="fa fa-check-circle-o"></i> ' + data.message + '</div>');
                                                         }
                                                     } else {
-                                                        wrapper.html('{{ styles }} <div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> ' + data.message + '</div>');
+                                                        wrapper.html('{{ styles|escape("js") }} <div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> ' + data.message + '</div>');
                                                     }
                                                 }
                                             })

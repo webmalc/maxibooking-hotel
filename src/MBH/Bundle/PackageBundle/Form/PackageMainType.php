@@ -11,17 +11,25 @@ class PackageMainType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        for ($i = 0; $i <= 23; $i++) {
+            $hours[$i] = sprintf('%02d', $i) . ':00';
+        }
+
         $builder
-                /*->add('adults', 'text', [
-                    'label' => 'Взрослые',
-                    'required' => true,
-                    'attr' => ['class' => 'spinner'],
+                ->add('arrivalTime', 'choice', [
+                    'label' => 'Время заезда',
+                    'required' => false,
+                    'multiple' => false,
+                    'error_bubbling' => true,
+                    'choices' => $hours,
                 ])
-                ->add('children', 'text', [
-                    'label' => 'Дети',
-                    'required' => true,
-                    'attr' => ['class' => 'spinner'],
-                ])*/
+                ->add('departureTime', 'choice', [
+                    'label' => 'Время отъезда',
+                    'required' => false,
+                    'multiple' => false,
+                    'error_bubbling' => true,
+                    'choices' => $hours,
+                ])
                 ->add('purposeOfArrival', 'choice', [
                     'label' => 'Цель приезда',
                     'required' => false,
@@ -41,7 +49,8 @@ class PackageMainType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
-            'arrivals' => []
+            'arrivals' => [],
+            'defaultTime' => null
         ));
     }
 

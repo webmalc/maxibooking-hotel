@@ -274,6 +274,8 @@ class ApiController extends Controller
                 ->setRoomType($roomType)
                 ->setBegin($helper->getDateFromString($request->begin))
                 ->setEnd($helper->getDateFromString($request->end))
+                ->setArrivalTime($request->arrival)
+                ->setDepartureTime($request->departure)
                 ->setMainTourist($tourist)
                 ->addTourist($tourist)
             ;

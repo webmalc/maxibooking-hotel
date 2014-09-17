@@ -24,7 +24,7 @@ class APCChangeCommand extends ContainerAwareCommand
 
 
         if (empty($input->getOption('name'))) {
-            $output->writeln("<error>--db = false</error>");
+            $output->writeln("<error>--name = false</error>");
             return false;
         }
 

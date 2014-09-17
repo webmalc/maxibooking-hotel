@@ -5,7 +5,7 @@ $(document).ready(function () {
         a.datepicker.setDefaults(a.datepicker.regional.ru)
     });
     var wrapper = $('#mbh-form-wrapper');
-    wrapper.html('{{ styles }}{{ text }}');
+    wrapper.html("{{ styles|escape('js') }}{{ text|escape('js') }}");
 
     var begin = $('#mbh-form-begin'),
         end = $('#mbh-form-end'),

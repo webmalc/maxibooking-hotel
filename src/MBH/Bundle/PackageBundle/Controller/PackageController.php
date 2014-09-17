@@ -94,7 +94,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(
-                new PackageMainType(), $entity, ['arrivals' => $this->container->getParameter('mbh.package.arrivals')]
+                new PackageMainType(), $entity, [
+                    'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
+                    'defaultTime' => $this->container->getParameter('mbh.package.arrival.time')
+                ]
         );
 
         return [
@@ -124,7 +127,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(
-                new PackageMainType(), $entity, ['arrivals' => $this->container->getParameter('mbh.package.arrivals')]
+                new PackageMainType(), $entity, [
+                    'arrivals' => $this->container->getParameter('mbh.package.arrivals')
+                ]
         );
 
         $form->bind($request);

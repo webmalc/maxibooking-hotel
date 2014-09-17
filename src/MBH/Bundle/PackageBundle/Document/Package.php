@@ -217,7 +217,35 @@ class Package extends Base
      * @ODM\String(name="channelManagerId")
      */
     protected $channelManagerId;
-    
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=0,
+     *      minMessage="Время заезда не может быть меньше 0",
+     *      max=23,
+     *      minMessage="Время заезда не может быть больше 23",
+     * )
+     */
+    protected $arrivalTime;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=0,
+     *      minMessage="Время отъезда не может быть меньше 0",
+     *      max=23,
+     *      minMessage="Время отъезда не может быть больше 23",
+     * )
+     */
+    protected $departureTime;
+
     /**
      * Set tariff
      *
@@ -765,5 +793,49 @@ class Package extends Base
     public function __toString()
     {
         return $this->getNumberWithPrefix();
+    }
+
+    /**
+     * Set arrivalTime
+     *
+     * @param int $arrivalTime
+     * @return self
+     */
+    public function setArrivalTime($arrivalTime)
+    {
+        $this->arrivalTime = $arrivalTime;
+        return $this;
+    }
+
+    /**
+     * Get arrivalTime
+     *
+     * @return int $arrivalTime
+     */
+    public function getArrivalTime()
+    {
+        return $this->arrivalTime;
+    }
+
+    /**
+     * Set departureTime
+     *
+     * @param int $departureTime
+     * @return self
+     */
+    public function setDepartureTime($departureTime)
+    {
+        $this->departureTime = $departureTime;
+        return $this;
+    }
+
+    /**
+     * Get departureTime
+     *
+     * @return int $departureTime
+     */
+    public function getDepartureTime()
+    {
+        return $this->departureTime;
     }
 }

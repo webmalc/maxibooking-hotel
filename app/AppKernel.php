@@ -1,6 +1,7 @@
 <?php
 
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
