@@ -13,6 +13,7 @@ use MBH\Bundle\UserBundle\Form\UserType;
 
 /**
  * User controller.
+ * @Route("management/user")
  */
 class UserController extends Controller
 {

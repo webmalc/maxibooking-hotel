@@ -1,17 +1,17 @@
 /*global window */
-$(document).ready(function () {
+jQuery(document).ready(function () {
     jQuery(function (a) {
         a.datepicker.regional.ru = {closeText: "Закрыть", prevText: "&#x3c;Пред", nextText: "След&#x3e;", currentText: "Сегодня", monthNames: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"], monthNamesShort: ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"], dayNames: ["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"], dayNamesShort: ["вск", "пнд", "втр", "срд", "чтв", "птн", "сбт"], dayNamesMin: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"], dateFormat: "dd.mm.yy", firstDay: 1, isRTL: false};
         a.datepicker.setDefaults(a.datepicker.regional.ru)
     });
-    var wrapper = $('#mbh-form-wrapper');
+    var wrapper = jQuery('#mbh-form-wrapper');
     wrapper.html("{{ styles|escape('js') }}{{ text|escape('js') }}");
 
-    var begin = $('#mbh-form-begin'),
-        end = $('#mbh-form-end'),
-        adults = $('#mbh-form-adults'),
-        children = $('#mbh-form-children'),
-        button = $('#mbh-form-submit'),
+    var begin = jQuery('#mbh-form-begin'),
+        end = jQuery('#mbh-form-end'),
+        adults = jQuery('#mbh-form-adults'),
+        children = jQuery('#mbh-form-children'),
+        button = jQuery('#mbh-form-submit'),
         options = {
             minDate: 0
         },
@@ -40,8 +40,8 @@ $(document).ready(function () {
 
     setValue(begin, query.begin);
     setValue(end, query.end);
-    setValue($('#mbh-form-roomType'), query.roomType);
-    setValue($('#mbh-form-hotel'), query.hotel);
+    setValue(jQuery('#mbh-form-roomType'), query.roomType);
+    setValue(jQuery('#mbh-form-hotel'), query.hotel);
     setValue(adults, query.adults);
     setValue(children, query.children);
 
@@ -100,7 +100,7 @@ $(document).ready(function () {
         });
     }
 
-    $('#mbh-form-begin, #mbh-form-end').change(function () {
+    jQuery('#mbh-form-begin, #mbh-form-end').change(function () {
         if (begin.val() && end.val()) {
             button.prop('disabled', false);
         } else {

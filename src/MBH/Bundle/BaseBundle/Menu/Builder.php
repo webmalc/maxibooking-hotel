@@ -126,15 +126,14 @@ class Builder extends ContainerAware
                 $menu['management']->setAttribute('title', 'Назад к главному меню');
             }
         }
-        $menu->addChild('login', ['route' => '_welcome', 'label' => 'Привет, ' . $user->getUsername()])
+        $menu->addChild('login', ['url' => '#', 'label' => $user->getFullName(true)])
                 ->setAttribute('dropdown', true)
         ;
         $menu['login']->addChild('profile', [
-                    'route' => '_welcome',
-                    'label' => 'Профиль',
-                    'routeParameters' => ['id' => $user->getId()]
+                    'route' => 'user_profile',
+                    'label' => 'Смена пароля'
                 ])
-                ->setAttributes(['divider_append' => true, 'icon' => 'fa fa-user'])
+                ->setAttributes(['divider_append' => true, 'icon' => 'fa fa-lock'])
         ;
         $menu['login']->addChild('logout', ['route' => 'fos_user_security_logout', 'label' => 'Выйти'])
                 ->setAttribute('icon', 'fa fa-sign-out')

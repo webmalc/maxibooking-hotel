@@ -35,7 +35,7 @@ mbh_base:
 mbh_user:
     resource: "@MBHUserBundle/Controller/"
     type:     annotation
-    prefix:   /management/user
+    prefix:   /
  
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"

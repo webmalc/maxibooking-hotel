@@ -185,10 +185,15 @@ class ApiController extends Controller
         if ($request->paymentType == 'in_hotel') {
 
             if(count($packages) > 1) {
-                $message = 'Брони ' . implode(', ', $packages) . ' успешно созданы! И еще какой-то поздравительный текст...';
+                $roomStr = 'Номера успешно забронированы.';
+                $packageStr = 'Номера ваших броней';
             } else {
-                $message = 'Бронь ' . $packages[0]->getNumberWithPrefix() . ' успешно создана! И еще какой-то поздравительный текст...';
+                $roomStr = 'Номер успешно забронирован.';
+                $packageStr = 'Номер вашей брони';
             }
+            $message = 'Большое спасибо. '. $roomStr .' Мы свяжемся с Вами в ближайшее время.<br><br>';
+            $message .= $packageStr . ': '. implode(', ', $packages) . '.';
+
             return new JsonResponse(['success' => true, 'message' => $message]);
 
         } else {

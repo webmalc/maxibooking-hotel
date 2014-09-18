@@ -1,0 +1,14 @@
+{% extends 'MBHUserBundle:Profile:layout.html.twig' %}
+
+{% set small_title = "cмена пароля"%}
+
+{% block content %}
+
+    <div class="alert alert-warning"><i class="fa fa-lock"></i> Пароль дожен быть не меньше 8 символов и содержать цифру и заглавную букву!</div>
+
+    {{ form_start(form, {'action': path('user_profile_update'), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': 'Сменить пароль'} %}
+    {{ form_end(form) }}
+
+{% endblock %}

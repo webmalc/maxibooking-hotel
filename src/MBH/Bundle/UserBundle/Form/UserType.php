@@ -36,7 +36,7 @@ class UserType extends AbstractType
                 'group' => 'Данные аутентификации',
                 'type' => 'password',
                 'options' => array('translation_domain' => 'FOSUserBundle'),
-                'first_options' => array('label' => 'form.password', 'attr' => array('autocomplete' => 'off'),),
+                'first_options' => array('label' => 'form.password', 'attr' => array('autocomplete' => 'off', 'class' => 'password'),),
                 'second_options' => array('label' => 'form.password_confirmation'),
                 'invalid_message' => 'fos_user.password.mismatch',
                 'constraints' => new NotBlank()
@@ -48,7 +48,7 @@ class UserType extends AbstractType
                 'mapped' => false,
                 'required' => false,
                 'options' => array('translation_domain' => 'FOSUserBundle'),
-                'first_options' => array('label' => 'Новый пароль', 'attr' => array('autocomplete' => 'off'),),
+                'first_options' => array('label' => 'Новый пароль', 'attr' => array('autocomplete' => 'off', 'class' => 'password'),),
                 'second_options' => array('label' => 'Подтвердите пароль'),
                 'invalid_message' => 'fos_user.password.mismatch',
                 'constraints' => new Length(array('min' => 6))

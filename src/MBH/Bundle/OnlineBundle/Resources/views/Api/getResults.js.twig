@@ -1,6 +1,6 @@
 /*global window */
-$(document).ready(function () {
-    var wrapper = $('#mbh-results-wrapper'),
+jQuery(document).ready(function () {
+    var wrapper = jQuery('#mbh-results-wrapper'),
         requestParams = {},
         waiting = function () {
             wrapper.html('<div class="mbh-results-info"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
@@ -16,7 +16,7 @@ $(document).ready(function () {
             return vars;
         },
         setSelect2 = function () {
-            $('select.select2').select2({
+            jQuery('select.select2').select2({
                 placeholder: '',
                 allowClear: false,
                 minimumResultsForSearch: -1,
@@ -32,7 +32,7 @@ $(document).ready(function () {
     waiting();
 
     // load table
-    $.ajax({
+    jQuery.ajax({
         url: '{{ urls.table }}',
         data: window.location.search.replace('?', ''),
         dataType: 'html',
@@ -57,8 +57,8 @@ $(document).ready(function () {
 
                 };
 
-                $('.mbh-results-tourists-select').each(function () {
-                    $(this).select2({
+                jQuery('.mbh-results-tourists-select').each(function () {
+                    jQuery(this).select2({
                         placeholder: '',
                         allowClear: false,
                         width: 'resolve',
@@ -67,6 +67,13 @@ $(document).ready(function () {
                         formatSelection: format
                     });
                 });
+            }());
+
+            //tariff links
+            (function () {
+                jQuery('#mbh-results-tariffs a').each(function () {
+                    jQuery(this).attr('href', jQuery(location).attr('pathname') + jQuery(this).attr('href'));
+                })
             }());
 
             // table prices
@@ -83,11 +90,11 @@ $(document).ready(function () {
                         tr.find('ul.mbh-results-prices').show();
                     }
                     ;
-                $('.mbh-results-tourists-select, .mbh-results-food-select').click(function() {
-                    show($(this).closest('tr'));
+                jQuery('.mbh-results-tourists-select, .mbh-results-food-select').click(function() {
+                    show(jQuery(this).closest('tr'));
                 });
-                $('.mbh-results-tourists-select, .mbh-results-food-select').each(function() {
-                    show($(this).closest('tr'));
+                jQuery('.mbh-results-tourists-select, .mbh-results-food-select').each(function() {
+                    show(jQuery(this).closest('tr'));
                 });
             }());
 
@@ -95,55 +102,55 @@ $(document).ready(function () {
             (function() {
                 var calc = function() {
                         var total = 0,
-                            nextButton = $('#mbh-results-next'),
-                            roomCount = $('select.mbh-results-packages-count')
+                            nextButton = jQuery('#mbh-results-next'),
+                            roomCount = jQuery('select.mbh-results-packages-count')
                         ;
                         nextButton.prop('disabled', true);
                         roomCount.each( function() {
-                            if($(this).val() > 0) {
-                                var tr = $(this).closest('tr'),
+                            if(jQuery(this).val() > 0) {
+                                var tr = jQuery(this).closest('tr'),
                                     li = tr.find('ul.mbh-results-prices li:visible')
                                     ;
                                     if(li.length) {
-                                        total += parseInt(li.attr('data-value')) * $(this).val();
+                                        total += parseInt(li.attr('data-value')) * jQuery(this).val();
                                     }
                                 ;
                             }
                         });
 
-                        $('#mbh-results-total-sum').html(total);
+                        jQuery('#mbh-results-total-sum').html(total);
                         if(total > 0) {
                             nextButton.prop('disabled', false);
                         }
                     }
                     ;
                 calc();
-                $('.mbh-results-tourists-select, .mbh-results-food-select, .mbh-results-packages-count').click(function() {
+                jQuery('.mbh-results-tourists-select, .mbh-results-food-select, .mbh-results-packages-count').click(function() {
                     calc();
                 });
             }());
 
             // results next button
             (function(){
-                $('#mbh-results-next').click(function(){
+                jQuery('#mbh-results-next').click(function(){
                     var urlParams = getUrlVars(),
-                        roomCount = $('select.mbh-results-packages-count')
+                        roomCount = jQuery('select.mbh-results-packages-count')
                         ;
-                    requestParams.begin  = $('#mbh-results-duration-begin').text();
-                    requestParams.end = $('#mbh-results-duration-end').text();
-                    requestParams.days = $('#mbh-results-duration-days').text();
-                    requestParams.nights = $('#mbh-results-duration-nights').text();
-                    requestParams.total = $('#mbh-results-total-sum').text();
+                    requestParams.begin  = jQuery('#mbh-results-duration-begin').text();
+                    requestParams.end = jQuery('#mbh-results-duration-end').text();
+                    requestParams.days = jQuery('#mbh-results-duration-days').text();
+                    requestParams.nights = jQuery('#mbh-results-duration-nights').text();
+                    requestParams.total = jQuery('#mbh-results-total-sum').text();
                     requestParams.packages = [];
                     roomCount.each( function() {
-                        if($(this).val() > 0) {
-                            var tr = $(this).closest('tr'),
+                        if(jQuery(this).val() > 0) {
+                            var tr = jQuery(this).closest('tr'),
                                 pricesLi = tr.find('ul.mbh-results-prices li:visible'),
                                 foodSelect = tr.find('select.mbh-results-food-select'),
                                 roomType = tr.find('span.mbh-results-roomType'),
                                 tariff = tr.find('span.mbh-results-tariff')
                             ;
-                            for(var i = 1; i <= $(this).val(); i++) {
+                            for(var i = 1; i <= jQuery(this).val(); i++) {
                                 if(pricesLi.length) {
 
                                     var tourists = tr.find('select.mbh-results-tourists-select').val().split('_')
@@ -165,7 +172,7 @@ $(document).ready(function () {
                     waiting();
 
                     // STEP2: load user form
-                    $.ajax({
+                    jQuery.ajax({
                         url: '{{ urls.user_form }}',
                         type: 'POST',
                         data: JSON.stringify(requestParams),
@@ -174,68 +181,68 @@ $(document).ready(function () {
                         success: function(data) {
                             wrapper.html('{{ styles|escape("js") }}' + data);
 
-                            var prevUser = $.cookie('mbh.user');
-                            var prevPackage = $.cookie('mbh.package');
+                            var prevUser = jQuery.cookie('mbh.user');
+                            var prevPackage = jQuery.cookie('mbh.package');
 
                             if (prevUser) {
                                 prevUser = JSON.parse(prevUser);
-                                $('#mbh-user-form-firstName').val(prevUser.firstName),
-                                $('#mbh-user-form-lastName').val(prevUser.lastName),
-                                $('#mbh-user-form-phone').val(prevUser.phone),
-                                $('#mbh-user-form-email').val(prevUser.email),
-                                $('#mbh-user-form-birthday').val(prevUser.birthday)
+                                jQuery('#mbh-user-form-firstName').val(prevUser.firstName),
+                                jQuery('#mbh-user-form-lastName').val(prevUser.lastName),
+                                jQuery('#mbh-user-form-phone').val(prevUser.phone),
+                                jQuery('#mbh-user-form-email').val(prevUser.email),
+                                jQuery('#mbh-user-form-birthday').val(prevUser.birthday)
                             }
 
                             if (prevPackage) {
                                 prevPackage = JSON.parse(prevPackage);
-                                $('#mbh-user-form-arrival').val(prevPackage.arrival),
-                                $('#mbh-user-form-departure').val(prevPackage.departure),
-                                $('#mbh-user-form-note').val(prevPackage.note)
+                                jQuery('#mbh-user-form-arrival').val(prevPackage.arrival),
+                                jQuery('#mbh-user-form-departure').val(prevPackage.departure),
+                                jQuery('#mbh-user-form-note').val(prevPackage.note)
                             }
 
-                            $('#mbh-user-form-birthday').mask("99.99.9999");
+                            jQuery('#mbh-user-form-birthday').mask("99.99.9999");
 
-                            $('#mbh-user-form-previous').click(function(){
+                            jQuery('#mbh-user-form-previous').click(function(){
                                 window.location.reload();
                             });
 
                             var getUser = function () {
                                 return {
-                                    firstName: $('#mbh-user-form-firstName').val(),
-                                    lastName: $('#mbh-user-form-lastName').val(),
-                                    phone: $('#mbh-user-form-phone').val(),
-                                    email: $('#mbh-user-form-email').val(),
-                                    birthday: $('#mbh-user-form-birthday').val()
+                                    firstName: jQuery('#mbh-user-form-firstName').val(),
+                                    lastName: jQuery('#mbh-user-form-lastName').val(),
+                                    phone: jQuery('#mbh-user-form-phone').val(),
+                                    email: jQuery('#mbh-user-form-email').val(),
+                                    birthday: jQuery('#mbh-user-form-birthday').val()
                                 };
                             };
                             var getPackageInfo = function () {
                                 return {
-                                    'arrival': $('#mbh-user-form-arrival').val(),
-                                    'departure': $('#mbh-user-form-departure').val(),
-                                    'note': $('#mbh-user-form-note').val()
+                                    'arrival': jQuery('#mbh-user-form-arrival').val(),
+                                    'departure': jQuery('#mbh-user-form-departure').val(),
+                                    'note': jQuery('#mbh-user-form-note').val()
                                 };
                             };
 
                             //save cookies
                             (function(){
-                                $('#mbh-user-form-form input, #mbh-user-form-form textarea').keyup(function (){
-                                    $.cookie('mbh.user', JSON.stringify(getUser()));
-                                    $.cookie('mbh.package', JSON.stringify(getPackageInfo()), { expires: 1});
+                                jQuery('#mbh-user-form-form input, #mbh-user-form-form textarea').keyup(function (){
+                                    jQuery.cookie('mbh.user', JSON.stringify(getUser()));
+                                    jQuery.cookie('mbh.package', JSON.stringify(getPackageInfo()), { expires: 1});
                                 });
-                                $('#mbh-user-form-form select').change(function(){
-                                    $.cookie('mbh.package', JSON.stringify(getPackageInfo()), { expires: 1});
+                                jQuery('#mbh-user-form-form select').change(function(){
+                                    jQuery.cookie('mbh.package', JSON.stringify(getPackageInfo()), { expires: 1});
                                 });
                             }());
 
                             // validate user form
                             (function() {
 
-                                var inputs = $('#mbh-user-form input:required'),
+                                var inputs = jQuery('#mbh-user-form input:required'),
                                     validate = function() {
-                                        var nextButton = $('#mbh-user-form-next');
+                                        var nextButton = jQuery('#mbh-user-form-next');
                                         nextButton.prop('disabled', false);
                                         inputs.each(function(){
-                                            if(!$(this).val()) {
+                                            if(!jQuery(this).val()) {
                                                 nextButton.prop('disabled', true);
                                                 return false;
                                             }
@@ -250,14 +257,14 @@ $(document).ready(function () {
                             }());
 
                             // user form next button
-                            $('#mbh-user-form-next').click(function(){
+                            jQuery('#mbh-user-form-next').click(function(){
                                 requestParams.user = getUser();
-                                requestParams = $.extend(requestParams, getPackageInfo());
+                                requestParams = jQuery.extend(requestParams, getPackageInfo());
 
                                 waiting();
 
                                 // STEP 3: load payment type
-                                $.ajax({
+                                jQuery.ajax({
                                     url: '{{ urls.payment_type }}',
                                     type: 'POST',
                                     data: JSON.stringify(requestParams),
@@ -268,18 +275,18 @@ $(document).ready(function () {
                                         var total = requestParams.total;
                                         wrapper.html('{{ styles|escape("js") }}' + data);
 
-                                        $('#mbh-payment-types-previous').click(function(){
+                                        jQuery('#mbh-payment-types-previous').click(function(){
                                             window.location.reload();
                                         });
 
                                         // user payment form validate & calc total
                                         (function(){
                                             var validate = function() {
-                                                $('#mbh-payment-types-next').prop('disabled', !$('.mbh-payment-types-radio:checked').length);
+                                                jQuery('#mbh-payment-types-next').prop('disabled', !jQuery('.mbh-payment-types-radio:checked').length);
                                             };
                                             var calc = function() {
-                                                var type = $('.mbh-payment-types-radio:checked'),
-                                                    totalWrapper = $('#mbh-package-info-total'),
+                                                var type = jQuery('.mbh-payment-types-radio:checked'),
+                                                    totalWrapper = jQuery('#mbh-package-info-total'),
                                                     sum = total;
                                                     ;
                                                 if (type.length && type.val() == 'online_first_day') {
@@ -288,21 +295,21 @@ $(document).ready(function () {
                                                 totalWrapper.html(sum);
                                             }
                                             validate();
-                                            $('.mbh-payment-types-radio').change(function() {
+                                            jQuery('.mbh-payment-types-radio').change(function() {
                                                 validate();
                                                 calc();
                                             });
                                         }());
 
                                         //user payment types next button
-                                        $('#mbh-payment-types-next').click(function(){
-                                            requestParams.total = $('#mbh-package-info-total').text();
-                                            requestParams.paymentType = $('.mbh-payment-types-radio:checked').val();
+                                        jQuery('#mbh-payment-types-next').click(function(){
+                                            requestParams.total = jQuery('#mbh-package-info-total').text();
+                                            requestParams.paymentType = jQuery('.mbh-payment-types-radio:checked').val();
 
                                             waiting();
 
                                             // STEP 4: results
-                                            $.ajax({
+                                            jQuery.ajax({
                                                 url: '{{ urls.results }}',
                                                 type: 'POST',
                                                 data: JSON.stringify(requestParams),
@@ -310,7 +317,7 @@ $(document).ready(function () {
                                                 crossDomain: true,
                                                 success: function(data) {
                                                     if (data.success) {
-                                                        $.removeCookie('mbh.package');
+                                                        jQuery.removeCookie('mbh.package');
 
                                                         if (data.payment_url) {
                                                             window.location = data.payment_url;
