@@ -24,10 +24,17 @@ FOS=$FOLDER'bin/console fos:js-routing:dump'
 ASSEST=$FOLDER'bin/console assets:install '$FOLDER'web --symlink'
 ASSESTIC=$FOLDER'bin/console assetic:dump'
 DB=$FOLDER'bin/console doctrine:mongodb:schema:create'
+MOVE_PARAMS='mv -f '$FOLDER'parameters.yml '$FOLDER'/app/config/parameters.yml'
 
-echo -e "${GREEN}Start rsync $DRY_RUN${NC}"
+echo -e "${GREEN}Start rsync${NC}"
 
 rsync -avz --delete --exclude-from=scripts/$IGNORE * -e ssh $SERVER:$FOLDER
+
+if [[ $2 == 'new' ]]; then
+
+    echo -e "${GREEN}Move parameters.yml${NC}"
+    ssh $SERVER $MOVE_PARAMS
+fi
 
 echo -e "${GREEN}Start mbh:demo:apc${NC}"
 ssh $SERVER $APC
@@ -52,4 +59,16 @@ ssh $SERVER $ASSESTIC
 
 echo -e "${GREEN}Start doctrine:mongodb:schema:create${NC}"
 ssh $SERVER $DB
+
+if [[ $2 == 'new' ]]; then
+
+    echo -e "${GREEN}Make cache and logs directories${NC}"
+    ssh $SERVER 'setfacl -R -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs'
+    ssh $SERVER 'setfacl -dR -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs'
+
+    echo -e "${GREEN}Make user admin/admin${NC}"
+    ssh $SERVER $FOLDER'bin/console doctrine:mongodb:schema:update'
+    ssh $SERVER $FOLDER'bin/console fos:user:create admin admin@example.com admin'
+    ssh $SERVER $FOLDER'bin/console fos:user:promote admin ROLE_ADMIN'
+fi
 

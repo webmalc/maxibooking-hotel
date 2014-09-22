@@ -19,7 +19,9 @@
             {% for paymentType in formConfig.paymentTypes %}
                 <div class="mbh-payment-type-row">
                     <input {% if formConfig.paymentTypes|length == 1 %}checked style="display:none;"{% endif %} type="radio" class="mbh-payment-types-radio" name="paymentType" value="{{ paymentType }}" id="{{ paymentType }}_radio" required><label for="{{ paymentType }}_radio" class="mbh-payment-type-label">{{ config.payment_types[paymentType] }}</label>
-                    <p>Описание способа оплаты... описание ... описание ... описание... описание ... описание ... описание...</p>
+                    {% if paymentType == 'in_hotel' %}
+                    <p>Оплата по прибытию в гостиницу на стойке размещения, при незаезде или аннуляции штраф не взимается</p>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>

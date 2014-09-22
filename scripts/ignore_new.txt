@@ -13,7 +13,7 @@ web/css/*
 web/js/*
 web/bundles/
 web/bundles/*
-#/web/*_dev.php
+/web/*_dev.php
 nbproject
 .idea
 

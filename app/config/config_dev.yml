@@ -31,8 +31,3 @@ monolog:
 
 assetic:
     use_controller: %use_assetic_controller%
-
-swiftmailer:
-    transport: gmail
-    username:  webmalc.work@gmail.com
-    password:  ithKJR[jkvc

@@ -18,5 +18,6 @@ web/bundles/
 web/bundles/*
 #/web/*_dev.php
 nbproject
+parameters.yml
 .idea
 

@@ -16,6 +16,14 @@ class PackageMainType extends AbstractType
         }
 
         $builder
+                ->add('discount', 'text', [
+                    'label' => 'Скидка',
+                    'required' => false,
+                    'error_bubbling' => true,
+                    'attr' => [
+                        'class' => 'discount-spinner'
+                    ],
+                ])
                 ->add('arrivalTime', 'choice', [
                     'label' => 'Время заезда',
                     'required' => false,

@@ -73,6 +73,7 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+    encryption: ssl
     
 # DoctrineMongoDBBundle Configuration
 doctrine_mongodb:

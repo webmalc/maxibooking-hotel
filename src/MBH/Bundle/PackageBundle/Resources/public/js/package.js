@@ -12,6 +12,16 @@ $(document).ready(function() {
         postfix: '<i class="fa fa-ruble"></i>'
     });
 
+    //spinners
+    $('.discount-spinner').TouchSpin({
+        min: 1,
+        max: 100,
+        step: 1,
+        boostat: 10,
+        maxboostedstep: 20,
+        postfix: '%'
+    });
+
     //package filter select 2
     (function () {
 

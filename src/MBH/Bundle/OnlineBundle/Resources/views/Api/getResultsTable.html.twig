@@ -35,14 +35,14 @@
         <thead>
             <tr>
                 {% if hotels|length > 1 %}
-                    <th>Отель</th>
+                    <th id="mbh-results-table-th-hotel">Отель</th>
                 {% endif %}
-                <th>Тип номера</th>
-                <th>Тариф</th>
-                <th>Туристы</th>
-                <th>Питание</th>
-                <th>Цена/номер</th>
-                <th>Количество</th>
+                <th id="mbh-results-table-th-roomType">Тип номера</th>
+                <th id="mbh-results-table-th-tariff">Тариф</th>
+                <th id="mbh-results-table-th-tourist">Туристы</th>
+                <th id="mbh-results-table-th-food">Питание</th>
+                <th id="mbh-results-table-th-price">Цена/номер</th>
+                <th id="mbh-results-table-th-count">Количество</th>
             </tr>
         </thead>
         {% for result in results %}

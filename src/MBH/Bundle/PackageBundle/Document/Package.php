@@ -227,7 +227,7 @@ class Package extends Base
      *      min=0,
      *      minMessage="Время заезда не может быть меньше 0",
      *      max=23,
-     *      minMessage="Время заезда не может быть больше 23",
+     *      maxMessage="Время заезда не может быть больше 23",
      * )
      */
     protected $arrivalTime;
@@ -241,10 +241,24 @@ class Package extends Base
      *      min=0,
      *      minMessage="Время отъезда не может быть меньше 0",
      *      max=23,
-     *      minMessage="Время отъезда не может быть больше 23",
+     *      maxMessage="Время отъезда не может быть больше 23",
      * )
      */
     protected $departureTime;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=1,
+     *      minMessage="Скидка не может быть меньше 1%",
+     *      max=100,
+     *      maxMessage="Скидка не может быть больше 100%",
+     * )
+     */
+    protected $discount;
 
     /**
      * Set tariff
@@ -496,7 +510,7 @@ class Package extends Base
      */
     public function getPrice()
     {
-        return $this->price;
+        return $this->price - $this->price * $this->getDiscount(false);
     }
 
     /**
@@ -837,5 +851,27 @@ class Package extends Base
     public function getDepartureTime()
     {
         return $this->departureTime;
+    }
+
+    /**
+     * Set discount
+     *
+     * @param int $discount
+     * @return self
+     */
+    public function setDiscount($discount)
+    {
+        $this->discount = $discount;
+        return $this;
+    }
+
+    /**
+     * Get discount
+     *
+     * @return int $discount
+     */
+    public function getDiscount($procent = true)
+    {
+        return ($procent) ? $this->discount : $this->discount/100;
     }
 }
