@@ -28,6 +28,7 @@ $(document).ready(function() {
             "processing": true,
             "serverSide": true,
             "ordering": false,
+            "bAutoWidth": false,
             "ajax": Routing.generate('room_type_room_json', {'id': $(this).attr('data-room-type-id')})
         });
     });

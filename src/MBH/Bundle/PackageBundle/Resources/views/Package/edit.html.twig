@@ -45,6 +45,13 @@
                     </div>
                 </div>
                 <div class="row spacer-top">
+                    <div class="col-md-2 text-right"><strong>Цена услуг</strong></div>
+                    <div class="col-md-10">
+                        {{ entity.servicesPrice|number_format }}
+
+                    </div>
+                </div>
+                <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>Тип брони</strong></div>
                     <div class="col-md-10">{{ statuses[entity.status].title }}{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"></i> удалена</small>{% endif %}</div>
                 </div>

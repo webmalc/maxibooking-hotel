@@ -117,6 +117,9 @@ class Hotel extends Base
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff", mappedBy="hotel") */
     protected $tariffs;
 
+    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PriceBundle\Document\ServiceCategory", mappedBy="hotel") */
+    protected $servicesCategories;
+
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig", mappedBy="hotel") */
     protected $vashotelConfig;
     
@@ -385,5 +388,35 @@ class Hotel extends Base
     public function getVashotelConfig()
     {
         return $this->vashotelConfig;
+    }
+
+    /**
+     * Add servicesCategory
+     *
+     * @param \MBH\Bundle\PriceBundle\Document\ServiceCategory $servicesCategory
+     */
+    public function addServicesCategory(\MBH\Bundle\PriceBundle\Document\ServiceCategory $servicesCategory)
+    {
+        $this->servicesCategories[] = $servicesCategory;
+    }
+
+    /**
+     * Remove servicesCategory
+     *
+     * @param \MBH\Bundle\PriceBundle\Document\ServiceCategory $servicesCategory
+     */
+    public function removeServicesCategory(\MBH\Bundle\PriceBundle\Document\ServiceCategory $servicesCategory)
+    {
+        $this->servicesCategories->removeElement($servicesCategory);
+    }
+
+    /**
+     * Get servicesCategories
+     *
+     * @return \Doctrine\Common\Collections\Collection $servicesCategories
+     */
+    public function getServicesCategories()
+    {
+        return $this->servicesCategories;
     }
 }

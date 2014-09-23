@@ -3,14 +3,14 @@
 {% set small_title = "cписок" %}    
 
 {% block content %}
-  
+
     <!-- Tabs headers -->
     <ul class="nav nav-tabs" role="tablist">
         {% for entity in entities %}
             <li {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}class="active"{% endif %}>
                 <a href="#{{entity.id}}" role="tab" data-toggle="tab">
                     <i class="fa fa-home" style="color:#{{entity.color}};"></i> {{entity.name}}
-                </a> 
+                </a>
             </li>
         {% endfor %}
         <li>

@@ -3,6 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -50,7 +52,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $entities = $dm->getRepository('MBHPackageBundle:Package')->fetch([
+        $entities = $dm->getRepository('MBHPackageBundle:Package')->fetch(
+            [
                 'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
                 'roomType' => $request->get('roomType'),
                 'status' => $request->get('status'),
@@ -64,7 +67,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 'order' => $request->get('order')['0']['column'],
                 'dir' => $request->get('order')['0']['dir'],
                 'paid' => $request->get('paid'),
-        ]);
+            ]
+        );
 
         return [
             'entities' => $entities,
@@ -94,10 +98,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(
-                new PackageMainType(), $entity, [
-                    'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
-                    'defaultTime' => $this->container->getParameter('mbh.package.arrival.time')
-                ]
+            new PackageMainType(),
+            $entity,
+            [
+                'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
+                'defaultTime' => $this->container->getParameter('mbh.package.arrival.time')
+            ]
         );
 
         return [
@@ -127,9 +133,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(
-                new PackageMainType(), $entity, [
-                    'arrivals' => $this->container->getParameter('mbh.package.arrivals')
-                ]
+            new PackageMainType(),
+            $entity,
+            [
+                'arrivals' => $this->container->getParameter('mbh.package.arrivals')
+            ]
         );
 
         $form->bind($request);
@@ -141,8 +149,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $dm->flush();
 
             $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', 'Запись успешно отредактирована.')
-            ;
+                ->set('success', 'Запись успешно отредактирована.');
 
             return $this->afterSaveRedirect('package', $entity->getId());
         }
@@ -169,11 +176,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         if (!$request->get('begin') ||
-                !$request->get('end') ||
-                !$request->get('adults') === null ||
-                !$request->get('children') === null ||
-                !$request->get('roomType') ||
-                !$request->get('food')
+            !$request->get('end') ||
+            !$request->get('adults') === null ||
+            !$request->get('children') === null ||
+            !$request->get('roomType') ||
+            !$request->get('food')
         ) {
             return [];
         }
@@ -182,8 +189,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $query = new SearchQuery();
         $query->begin = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('begin') . ' 00:00:00');
         $query->end = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('end') . ' 00:00:00');
-        $query->adults = (int) $request->get('adults');
-        $query->children = (int) $request->get('children');
+        $query->adults = (int)$request->get('adults');
+        $query->children = (int)$request->get('children');
         if (!empty($request->get('tariff'))) {
             $query->tariff = $request->get('tariff');
         }
@@ -197,16 +204,17 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $package = new Package();
         $package->setBegin($results[0]->getBegin())
-                ->setEnd($results[0]->getEnd())
-                ->setAdults($results[0]->getAdults())
-                ->setChildren($results[0]->getChildren())
-                ->setTariff($results[0]->getTariff())
-                ->setStatus('offline')
-                ->setRoomType($results[0]->getRoomType())
-                ->setFood($request->get('food'))
-                ->setPaid(0)
-                ->setPrice($results[0]->getPrice($package->getFood(), $results[0]->getAdults(), $results[0]->getChildren()))
-        ;
+            ->setEnd($results[0]->getEnd())
+            ->setAdults($results[0]->getAdults())
+            ->setChildren($results[0]->getChildren())
+            ->setTariff($results[0]->getTariff())
+            ->setStatus('offline')
+            ->setRoomType($results[0]->getRoomType())
+            ->setFood($request->get('food'))
+            ->setPaid(0)
+            ->setPrice(
+                $results[0]->getPrice($package->getFood(), $results[0]->getAdults(), $results[0]->getChildren())
+            );
 
         $errors = $this->get('validator')->validate($package);
 
@@ -218,9 +226,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $dm->flush();
 
         $request->getSession()
-                ->getFlashBag()
-                ->set('success', 'Бронь успешно создана.')
-        ;
+            ->getFlashBag()
+            ->set('success', 'Бронь успешно создана.');
 
         return $this->redirect($this->generateUrl('package_edit', ['id' => $package->getId()]));
     }
@@ -247,7 +254,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $form = $this->createForm(
-                new PackageGuestType()
+            new PackageGuestType()
         );
 
         if ($request->getMethod() == 'PUT') {
@@ -257,7 +264,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
                 $data = $form->getData();
                 $criteria = [
-                    'firstName' => $data['firstName'], 'lastName' => $data['lastName']
+                    'firstName' => $data['firstName'],
+                    'lastName' => $data['lastName']
                 ];
                 if (!empty($data['patronymic'])) {
                     $criteria['patronymic'] = $data['patronymic'];
@@ -271,10 +279,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 if (empty($tourist)) {
                     $tourist = new Tourist();
                     $tourist->setFirstName($data['firstName'])
-                            ->setLastName($data['lastName'])
-                            ->setPatronymic($data['patronymic'])
-                            ->setBirthday($data['birthday'])
-                    ;
+                        ->setLastName($data['lastName'])
+                        ->setPatronymic($data['patronymic'])
+                        ->setBirthday($data['birthday']);
                     $dm->persist($tourist);
                 }
 
@@ -288,9 +295,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 $dm->flush();
 
                 $request->getSession()
-                        ->getFlashBag()
-                        ->set('success', 'Турист успешно добавлен.')
-                ;
+                    ->getFlashBag()
+                    ->set('success', 'Турист успешно добавлен.');
+
                 return $this->afterSaveRedirect('package', $entity->getId(), [], '_guest');
             }
         }
@@ -326,10 +333,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $dm->flush();
 
         $request->getSession()
-                ->getFlashBag()
-                ->set('success', 'Турист успешно удален.')
-        ;
-        
+            ->getFlashBag()
+            ->set('success', 'Турист успешно удален.');
+
         return $this->redirect($this->generateUrl('package_guest', ['id' => $id]));
     }
 
@@ -382,9 +388,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 $dm->flush();
 
                 $request->getSession()
-                        ->getFlashBag()
-                        ->set('success', 'Кассовый документ успешно добавлен.')
-                ;
+                    ->getFlashBag()
+                    ->set('success', 'Кассовый документ успешно добавлен.');
+
                 return $this->afterSaveRedirect('package', $entity->getId(), [], '_cash');
             }
         }
@@ -398,7 +404,109 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'logs' => $this->logs($entity)
         ];
     }
-    
+
+    /**
+     * Cash documents
+     *
+     * @Route("/{id}/services", name="package_service")
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function serviceAction(Request $request, $id)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $dm->getFilterCollection()->disable('softdeleteable');
+        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
+        $dm->getFilterCollection()->enable('softdeleteable');
+
+        if (!$entity) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(
+            new PackageServiceType(),
+            null,
+            ['package' => $entity]
+        );
+
+        if ($request->getMethod() == 'PUT') {
+            $form->submit($request);
+
+            if ($form->isValid()) {
+                $data = $form->getData();
+
+                $service = $dm->getRepository('MBHPriceBundle:Service')->find($data['service']);
+
+                if (!$service || empty($data['amount'])) {
+                    $request->getSession()
+                        ->getFlashBag()
+                        ->set(
+                            'danger',
+                            'Произошла ошибка при добавлении услуги. Обновите страницу и попробуйте еще раз.'
+                        );
+
+                    return $this->redirect($this->generateUrl('package_service', ['id' => $id]));
+                }
+
+                $packageService = new PackageService();
+                $packageService->setPackage($entity)
+                    ->setService($service)
+                    ->setAmount((int)$data['amount'])
+                    ->setPrice($service->getPrice());
+
+                $dm->persist($packageService);
+                $dm->flush();
+
+                $request->getSession()
+                    ->getFlashBag()
+                    ->set(
+                        'success',
+                        'Услуга успешно добавлена.'
+                    );
+
+                return $this->afterSaveRedirect('package', $id, [], '_service');
+            }
+        }
+
+        return [
+            'entity' => $entity,
+            'logs' => $this->logs($entity),
+            'form' => $form->createView()
+        ];
+    }
+
+    /**
+     * Service document delete
+     *
+     * @Route("/{id}/service/{serviceId}/delete", name="package_service_delete")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     */
+    public function serviceDeleteAction(Request $request, $id, $serviceId)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
+        $service = $dm->getRepository('MBHPackageBundle:PackageService')->find($serviceId);
+
+        if (!$entity || !$service) {
+            throw $this->createNotFoundException();
+        }
+
+        $dm->remove($service);
+        $dm->flush();
+
+        $request->getSession()
+            ->getFlashBag()
+            ->set('success', 'Услуга успешно удалена.');
+
+        return $this->redirect($this->generateUrl('package_service', ['id' => $id]));
+    }
+
     /**
      * Cash document delete
      *
@@ -422,10 +530,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $dm->flush();
 
         $request->getSession()
-                ->getFlashBag()
-                ->set('success', 'Кассовый документ успешно удален.')
-        ;
-        
+            ->getFlashBag()
+            ->set('success', 'Кассовый документ успешно удален.');
+
         return $this->redirect($this->generateUrl('package_cash', ['id' => $id]));
     }
 
@@ -451,13 +558,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $roomTypes = $dm->getRepository('MBHHotelBundle:RoomType')
-                    ->createQueryBuilder('q')
-                    ->sort('fullTitle', 'asc')
-                    ->field('hotel.id')->equals($entity->getRoomType()->getHotel()->getId())
-                    ->getQuery()
-                    ->execute()
-                    ->toArray()
-        ;
+            ->createQueryBuilder('q')
+            ->sort('fullTitle', 'asc')
+            ->field('hotel.id')->equals($entity->getRoomType()->getHotel()->getId())
+            ->getQuery()
+            ->execute()
+            ->toArray();
         $groupedRooms = [];
 
         foreach ($roomTypes as $key => $roomType) {
@@ -469,43 +575,40 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $qb = $dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('q');
         $qb->field('accommodation')->notEqual(null)
-           ->addOr(
+            ->addOr(
                 $qb->expr()
                     ->field('begin')->gte($entity->getBegin())
                     ->field('begin')->lt($entity->getEnd())
-           )
-           ->addOr(
+            )
+            ->addOr(
                 $qb->expr()
                     ->field('end')->gt($entity->getBegin())
                     ->field('end')->lte($entity->getEnd())
-           )
-           ->addOr(
+            )
+            ->addOr(
                 $qb->expr()
                     ->field('end')->gte($entity->getEnd())
                     ->field('begin')->lte($entity->getBegin())
-           )
-        ;
+            );
 
         $notIds = [];
         foreach ($qb->getQuery()->execute() as $package) {
             $notIds[] = $package->getAccommodation()->getId();
-        }
-        ;
+        };
 
         foreach ($roomTypes as $roomType) {
 
             $rooms = $dm->getRepository('MBHHotelBundle:Room')
-                        ->createQueryBuilder('q')
-                        ->sort('fullTitle', 'asc')
-                        ->field('roomType.id')->equals($roomType->getId())
-                        ->field('id')->notIn($notIds)
-                        ->getQuery()
-                        ->execute()
-            ;
+                ->createQueryBuilder('q')
+                ->sort('fullTitle', 'asc')
+                ->field('roomType.id')->equals($roomType->getId())
+                ->field('id')->notIn($notIds)
+                ->getQuery()
+                ->execute();
             if (!count($rooms)) {
                 continue;
             }
-            foreach($rooms as $room) {
+            foreach ($rooms as $room) {
                 $groupedRooms[$roomType->getName()][$room->getId()] = $room->getName();
             }
         }
@@ -523,8 +626,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
                 $request->getSession()
                     ->getFlashBag()
-                    ->set('success', 'Размещение успешно сохранено.')
-                ;
+                    ->set('success', 'Размещение успешно сохранено.');
+
                 return $this->afterSaveRedirect('package', $entity->getId(), [], '_accommodation');
             }
         }
@@ -559,8 +662,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $request->getSession()
             ->getFlashBag()
-            ->set('success', 'Размещение успешно удалено.')
-        ;
+            ->set('success', 'Размещение успешно удалено.');
 
         return $this->redirect($this->generateUrl('package_accommodation', ['id' => $id]));
     }
@@ -587,9 +689,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $dm->flush($entity);
 
         $this->getRequest()
-                ->getSession()
-                ->getFlashBag()
-                ->set('success', 'Запись успешно удалена.');
+            ->getSession()
+            ->getFlashBag()
+            ->set('success', 'Запись успешно удалена.');
 
         return $this->redirect($this->generateUrl('package'));
 

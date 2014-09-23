@@ -72,7 +72,7 @@ parameters:
     mbh.cash.operations:
         in: "Поступление"
         out: "Возврат"
-        fine: "Штраф"
+        #fine: "Штраф"
         fee: "Комиссия"
             
     #Типы питания

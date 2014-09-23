@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -35,6 +36,12 @@ class Calculation
         $this->dm = $container->get('doctrine_mongodb')->getManager();
     }
 
+    /**
+     * @param Package $package
+     * @param CashDocument $newDoc
+     * @param CashDocument $removeDoc
+     * @return Package
+     */
     public function setPaid(Package $package, CashDocument $newDoc = null, CashDocument $removeDoc = null)
     {
         $total = 0;
@@ -46,19 +53,37 @@ class Calculation
         }
         foreach ($cashes as $cash) {
 
-            if ($cash->getOperation() == 'fee') {
-                continue;
-            }
             if($removeDoc && $removeDoc->getId() == $cash->getId()) {
                 continue;
             }
             if ($cash->getOperation() == 'out') {
                 $total -= $cash->getTotal();
-            } else {
+            } elseif($cash->getOperation() == 'in') {
                 $total += $cash->getTotal();
             }
         }
         $package->setPaid($total);
+
+        return $package;
+    }
+
+    public function setServicesPrice(Package $package, PackageService $newDoc = null, PackageService $removeDoc = null)
+    {
+        $total = 0;
+
+        $services = $package->getServices();
+
+        if ($newDoc) {
+            $services[] = $newDoc;
+        }
+        foreach ($services as $service) {
+
+            if($removeDoc && $removeDoc->getId() == $service->getId()) {
+                continue;
+            }
+            $total += $service->getPrice() * $service->getAmount();
+        }
+        $package->setServicesPrice($total);
 
         return $package;
     }

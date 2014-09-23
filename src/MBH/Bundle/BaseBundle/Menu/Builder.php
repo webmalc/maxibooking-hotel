@@ -73,9 +73,11 @@ class Builder extends ContainerAware
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номера']);
 
         //Prices links
-        $menu->addChild('prices', ['route' => 'tariff', 'label' => 'Цены'])
-             ->setAttributes(['icon' => 'fa fa-ruble'])
+        $menu->addChild('prices', ['url' => '#', 'label' => 'Цены'])
+             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-ruble'])
         ;
+        $menu['prices']->addChild('tariff', ['route' => 'tariff', 'label' => 'Тарифы']);
+        $menu['prices']->addChild('services', ['route' => 'price_service_category', 'label' => 'Услуги']);
         
         //Users links
         $menu->addChild('users', ['route' => 'user', 'label' => 'Пользователи'])

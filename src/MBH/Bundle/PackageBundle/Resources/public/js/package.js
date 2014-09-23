@@ -13,6 +13,15 @@ $(document).ready(function() {
     });
 
     //spinners
+    $('.spinner').TouchSpin({
+        min: 1,
+        max: 9007199254740992,
+        step: 1,
+        boostat: 5,
+        maxboostedstep: 10,
+    });
+
+    //spinners
     $('.discount-spinner').TouchSpin({
         min: 1,
         max: 100,

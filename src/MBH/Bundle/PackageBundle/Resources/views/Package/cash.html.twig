@@ -6,7 +6,7 @@
 
 {% block content %}
 
-    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 3 , 'entity': entity} %}
+    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 4 , 'entity': entity} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
@@ -20,6 +20,9 @@
                 {% else %}
                     <small class="text-danger"><i class="fa fa-times"></i> не оплачена</small>
                 {% endif %}
+                &nbsp;
+                <i class="fa fa-plug"></i>
+                Цена услуг: {{ entity.servicesPrice|number_format }}
             </div>
 
             {% if cashes|length > 0 %}

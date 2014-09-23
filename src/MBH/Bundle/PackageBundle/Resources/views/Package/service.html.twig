@@ -1,0 +1,82 @@
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+
+{% set small_title = "редактирование брони " ~ entity.numberWithPrefix %}
+
+{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">удалена</span>' %}{% endif %}
+
+{% block content %}
+
+    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 3 , 'entity': entity} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+
+            <div class="alert alert-warning">
+                <i class="fa fa-money"></i>
+                Цена/Оплачено: {{ entity.price|number_format }} / {{ entity.paid|number_format }}
+                &nbsp;
+                {% if entity.isPaid %}
+                    <small class="text-success"><i class="fa fa-check"></i> оплачена</small>
+                {% else %}
+                    <small class="text-danger"><i class="fa fa-times"></i> не оплачена</small>
+                {% endif %}
+                &nbsp;
+                <i class="fa fa-plug"></i>
+                Цена услуг: {{ entity.servicesPrice|number_format }}
+            </div>
+
+            {% if entity.services|length > 0 %}
+            <table class="package-service-table table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable">
+                <thead>
+                <tr>
+                    <th class="td-xs"></th>
+                    <th>Название</th>
+                    <th class="td-xs text-center">Количество</th>
+                    <th class="td-md text-right">Цена/штука</th>
+                    <th class="td-md text-right">Итог</th>
+                    <th class="td-md text-center">Дата</th>
+                    <th class="td-sm"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for service in entity.services %}
+                    <tr>
+                        <td class="text-center table-icon"><i class="fa fa-plug"></i></td>
+                        <td>{{ service.service }}</td>
+                        <td class="text-center">{{ service.amount }}</td>
+                        <td class="text-right text-success">{{ service.price|number_format }}</td>
+                        <td class="text-right text-success">{{ (service.price * service.amount)|number_format }}</td>
+                        <td class="text-center">{{ service.createdAt|date('d.m.Y') }}</td>
+                        <td class="table-actions-td text-center">
+                            {% if entity.deletedAt is empty %}
+                                <a href="{{ path('package_service_delete', { 'id': entity.id, "serviceId": service.id }) }}"
+                                   class="btn btn-danger btn-xs delete-link " title="Удаление записи"
+                                   data-toggle="tooltip">
+                                    <i class="fa fa-trash-o"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% if entity.deletedAt is empty %}
+
+                {% if entity.tariff.hotel.servicesCategories|length > 0 %}
+
+                    {{ form_start(form, {'action': path('package_service', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
+                    {{ form_widget(form) }}
+                    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
+                    {{ form_end(form) }}
+
+                {% else %}
+                    <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> У отеля <{{ entity.tariff.hotel }}> нет ни одной услуги. <a href="{{ path('price_service_category') }}">Добавить услуги?</a></div>
+                {% endif %}
+            {% endif %}
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
+        </div>
+    </div>
+
+{% endblock %}

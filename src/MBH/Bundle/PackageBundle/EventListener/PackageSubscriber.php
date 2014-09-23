@@ -5,6 +5,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\CashBundle\Document\CashDocument;
@@ -114,6 +115,18 @@ class PackageSubscriber implements EventSubscriber
             }
         }
 
+        //Calc services price
+        if($entity instanceof PackageService) {
+            try {
+                $package = $entity->getPackage();
+                $this->container->get('mbh.calculation')->setServicesPrice($package, null, $entity);
+                $dm->persist($package);
+                $dm->flush();
+            } catch (\Exception $e) {
+
+            }
+        }
+
         return;
     }
 
@@ -126,6 +139,13 @@ class PackageSubscriber implements EventSubscriber
             $package = $entity->getPackage();
             $this->container->get('mbh.calculation')->setPaid($package, $entity);
         }
+
+        //Calc services price
+        if($entity instanceof PackageService) {
+            $package = $entity->getPackage();
+            $this->container->get('mbh.calculation')->setServicesPrice($package, $entity);
+        }
+
 
         if (!$entity instanceof Package) {
             return;

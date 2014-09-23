@@ -40,6 +40,9 @@ class Package extends Base
     
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="package") */
     protected $cashDocuments;
+
+    /** @ODM\ReferenceMany(targetDocument="PackageService", mappedBy="package") */
+    protected $services;
     
     /** 
      * @Gedmo\Versioned
@@ -150,6 +153,18 @@ class Package extends Base
      * )
      */
     protected $price;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Int(name="servicesPrice")
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=0,
+     *      minMessage="Цена услуг не может быть меньше нуля"
+     * )
+     */
+    protected $servicesPrice;
     
     /**
      * @var int
@@ -510,7 +525,17 @@ class Package extends Base
      */
     public function getPrice()
     {
-        return $this->price - $this->price * $this->getDiscount(false);
+        return $this->price - $this->price * $this->getDiscount(false) + $this->getServicesPrice();
+    }
+
+    /**
+     * Get price
+     *
+     * @return int $price
+     */
+    public function getPackagePrice()
+    {
+        return $this->price;
     }
 
     /**
@@ -870,8 +895,60 @@ class Package extends Base
      *
      * @return int $discount
      */
-    public function getDiscount($procent = true)
+    public function getDiscount($percent = true)
     {
-        return ($procent) ? $this->discount : $this->discount/100;
+        return ($percent) ? $this->discount : $this->discount/100;
+    }
+
+    /**
+     * Add service
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\PackageService $service
+     */
+    public function addService(\MBH\Bundle\PackageBundle\Document\PackageService $service)
+    {
+        $this->services[] = $service;
+    }
+
+    /**
+     * Remove service
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\PackageService $service
+     */
+    public function removeService(\MBH\Bundle\PackageBundle\Document\PackageService $service)
+    {
+        $this->services->removeElement($service);
+    }
+
+    /**
+     * Get services
+     *
+     * @return \Doctrine\Common\Collections\Collection $services
+     */
+    public function getServices()
+    {
+        return $this->services;
+    }
+
+    /**
+     * Set servicesPrice
+     *
+     * @param int $servicesPrice
+     * @return self
+     */
+    public function setServicesPrice($servicesPrice)
+    {
+        $this->servicesPrice = $servicesPrice;
+        return $this;
+    }
+
+    /**
+     * Get servicesPrice
+     *
+     * @return int $servicesPrice
+     */
+    public function getServicesPrice()
+    {
+        return $this->servicesPrice;
     }
 }
