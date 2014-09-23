@@ -93,7 +93,9 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new RoomForm(), $entity);
+        $form = $this->createForm(
+            new RoomForm(), $entity, ['isNew' => false, 'hotelId' => $entity->getHotel()->getId()]
+        );
 
         return array(
             'entity' => $entity,
@@ -121,7 +123,9 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new RoomForm(), $entity);
+        $form = $this->createForm(
+            new RoomForm(), $entity, ['isNew' => false, 'hotelId' => $entity->getHotel()->getId()]
+        );
 
         $form->bind($request);
 

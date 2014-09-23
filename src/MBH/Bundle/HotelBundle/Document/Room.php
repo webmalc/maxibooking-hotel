@@ -38,13 +38,15 @@ class Room extends Base
      */
     use BlameableDocument;
 
-    /** 
+    /**
+     * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="rooms")
      * @Assert\NotNull(message="Не выбран отель")
      */
     protected $hotel;
     
-    /** 
+    /**
+     * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="RoomType", inversedBy="rooms")
      * @Assert\NotNull(message="Не выбран тип номера")
      */

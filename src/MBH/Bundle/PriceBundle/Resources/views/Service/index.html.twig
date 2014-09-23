@@ -45,7 +45,7 @@
                             {% for entry in entity.services %}
                                 <tr>
                                     <td><i class="fa fa-plug"></i></td>
-                                    <td>{{ entry.name }}</td>
+                                    <td><a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}'>{{ entry.name }}</a></td>
                                     <td><input name="entries[{{ entry.id }}]" class="form-control spinner price-spinner input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}"></td>
                                     <td class="text-center">
                                         <div class='btn-list'>
