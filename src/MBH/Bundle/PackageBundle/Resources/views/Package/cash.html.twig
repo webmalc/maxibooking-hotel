@@ -12,7 +12,7 @@
         <div class="tab-pane active" id="home">
 
             <div class="alert alert-warning">
-                <i class="fa fa-money"></i>
+                <i class="fa fa-ruble"></i>
                 Цена/Оплачено: {{ entity.price|number_format }} / {{ entity.paid|number_format }}
                 &nbsp;
                 {% if entity.isPaid %}
@@ -42,7 +42,7 @@
                     <tbody>
                     {% for cash in cashes %}
                         <tr {% if cash.deletedAt %}class="danger"{% endif %}>
-                            <td class="text-center"><i class='fa fa-money'></i></td>
+                            <td class="text-center"><i class='fa fa-ruble'></i></td>
                             <td class="text-right">
                                 {% if cash.operation not in ['fee', 'out'] %}
                                     <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' rel='main' class='text-success' title='Редактирование записи' data-toggle='tooltip'>

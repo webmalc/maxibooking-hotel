@@ -55,6 +55,13 @@
                     <div class="col-md-2 text-right"><strong>Тип брони</strong></div>
                     <div class="col-md-10">{{ statuses[entity.status].title }}{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"></i> удалена</small>{% endif %}</div>
                 </div>
+                <div class="row spacer-top">
+                    <div class="col-md-12 text-right">
+                        <a target="_blank" class="btn btn-default btn-sm {% if entity.isPaid is empty %}disabled{% endif %}" href="{{ path('package_pdf', {'id': entity.id}) }}">
+                            <i class="fa fa-print"></i> Распечатать акт
+                        </a>
+                    </div>
+                </div>
             </div>
 
 

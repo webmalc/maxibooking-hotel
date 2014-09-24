@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -22,6 +23,44 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 
 class PackageController extends Controller implements CheckHotelControllerInterface
 {
+
+    /**
+     * Return pdf doc
+     *
+     * @Route("/{id}/pdf", name="package_pdf")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function pdfAction($id)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm->getFilterCollection()->disable('softdeleteable');
+
+        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
+
+        $dm->getFilterCollection()->enable('softdeleteable');
+
+        if (!$entity || !$entity->getIsPaid()) {
+            throw $this->createNotFoundException();
+        }
+
+        $html = $this->renderView('MBHPackageBundle:Package:pdf.html.twig', [
+                'entity' => $entity,
+                'organization' => $this->container->getParameter('mbh.organization'),
+                'strPrice' => $this->get('mbh.helper')->num2str($entity->getPrice())
+            ]);
+
+        return new Response(
+            $this->get('knp_snappy.pdf')->getOutputFromHtml($html),
+            200,
+            array(
+                'Content-Type'          => 'application/pdf',
+                'Content-Disposition'   => 'attachment; filename="act_' . $entity->getNumberWithPrefix() . '.pdf"'
+            )
+        );
+    }
 
     /**
      * List entities

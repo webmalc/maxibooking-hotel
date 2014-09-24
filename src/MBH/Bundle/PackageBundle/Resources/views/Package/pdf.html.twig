@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-size: 12px;
+        }
+        td {
+            font-size: 11px;
+        }
+        th {
+            text-align: center;
+        }
+        .services {
+            margin-top: 10px;
+            border: 1px solid #000;
+            border-collapse: collapse ;
+        }
+        .services td {
+            padding: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <h2>Акт № {{ entity.numberWithPrefix }} от {{ 'now'|date('d.m.Y') }}.</h2>
+    <hr>
+    <table border="0" width="100%">
+        <tr>
+            <td width="15%">Исполнитель:</td>
+            <td width="85%"><strong>{{ organization.title }}</strong></td>
+        </tr>
+        <tr>
+            <td>Заказчик:</td>
+            <td><strong>{{ entity.mainTourist.fullName|default('Не указан') }}</strong></td>
+        </tr>
+    </table>
+
+    <!-- Services -->
+    <table border="1" width="100%" cellpadding="0" cellspacing="0" class="services">
+        <thead>
+            <tr>
+                <th style="width: 20px;">№</th>
+                <th>Наименование работ, услуг</th>
+                <th style="width: 30px;">Кол-во</th>
+                <th style="width: 30px;">Ед.</th>
+                <th style="width: 100px;">Цена</th>
+                <th style="width: 100px;">Сумма</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td align="center">1</td>
+                <td>Проживание в отеле.</td>
+                <td align="center">{{ entity.nights }}</td>
+                <td align="center">ночь</td>
+                <td align="right">{{ (entity.packagePrice/entity.nights)|round(1)|number_format }}</td>
+                <td align="right">{{ entity.packagePrice|number_format }}</td>
+            </tr>
+            {% for service in entity.services %}
+            <tr>
+                <td align="center">{{ loop.index + 1 }}</td>
+                <td>Услуга "{{ service.service.fullTitle }}"</td>
+                <td align="center">{{ service.amount }}</td>
+                <td align="center">штука</td>
+                <td align="right">{{ service.price|number_format }}</td>
+                <td align="right">{{ service.total|number_format }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Total -->
+    <table border="0" width="100%">
+        <tr>
+            <td align="right"><strong>Итого:</strong></td>
+            <td align="right" style="width: 100px;"><strong>{{ entity.price|number_format }}</strong></td>
+        </tr>
+        <tr>
+            <td align="right"><strong>В том числе НДС:</strong></td>
+            <td align="right"><strong>0</strong></td>
+        </tr>
+    </table>
+
+    <p>Всего оказано услуг {{ entity.services|length + 1 }}, на сумму {{ entity.price|number_format }} руб.<br>
+    <strong>{{ strPrice|capitalize }}</strong></p>
+
+    <p>Вышеперечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания
+    услуг не имеет.</p>
+
+    <!-- footer -->
+    <table border="0" class="footer" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td valign="top" style="border-bottom: 1px solid #000; height: 120px; width: 50%;">
+                <h3>ИСПОЛНИТЕЛЬ</h3>
+                <p style="font-size: 11px;">{{ organization.position }}</p>
+            </td>
+            <td style="height: 120px; width: 10%;"></td>
+            <td valign="top" style="border-bottom: 1px solid #000; height: 120px; width: 40%">
+                <h3>ЗАКАЗЧИК</h3>
+            </td>
+        </tr>
+        <tr>
+            <td align="center">
+                {{ organization.name }}
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+
+</body>
+
+
+

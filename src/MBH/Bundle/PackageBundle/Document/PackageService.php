@@ -159,4 +159,12 @@ class PackageService extends Base
     {
         return $this->amount;
     }
+
+    /**
+     * @return int
+     */
+    public function getTotal()
+    {
+        return $this->getPrice() * $this->getAmount();
+    }
 }

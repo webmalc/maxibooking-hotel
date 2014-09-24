@@ -12,7 +12,7 @@
         <div class="tab-pane active" id="home">
 
             <div class="alert alert-warning">
-                <i class="fa fa-money"></i>
+                <i class="fa fa-ruble"></i>
                 Цена/Оплачено: {{ entity.price|number_format }} / {{ entity.paid|number_format }}
                 &nbsp;
                 {% if entity.isPaid %}
@@ -45,7 +45,7 @@
                         <td>{{ service.service }}</td>
                         <td class="text-center">{{ service.amount }}</td>
                         <td class="text-right text-success">{{ service.price|number_format }}</td>
-                        <td class="text-right text-success">{{ (service.price * service.amount)|number_format }}</td>
+                        <td class="text-right text-success">{{ service.total|number_format }}</td>
                         <td class="text-center">{{ service.createdAt|date('d.m.Y') }}</td>
                         <td class="table-actions-td text-center">
                             {% if entity.deletedAt is empty %}

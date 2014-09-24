@@ -30,7 +30,8 @@
         "knplabs/knp-menu-bundle": "dev-master",
         "jms/security-extra-bundle": "dev-master",
         "cg/kint-bundle": "dev-master",
-        "ob/highcharts-bundle": "dev-master"
+        "ob/highcharts-bundle": "dev-master",
+        "knplabs/knp-snappy-bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

@@ -149,3 +149,14 @@ cg_kint:
     enabled:          true
     nesting_depth:    20
     string_length:    60
+
+# KnpSnappyBundle Configuration
+knp_snappy:
+    pdf:
+        enabled:    true
+        binary:     /usr/local/bin/wkhtmltopdf
+        options:    []
+    image:
+        enabled:    true
+        binary:     /usr/local/bin/wkhtmltoimage
+        options:    []

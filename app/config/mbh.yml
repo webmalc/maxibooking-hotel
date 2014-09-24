@@ -1,4 +1,10 @@
 parameters:
+    #organization info
+    mbh.organization:
+      title: 'OOO "Рога и Копыта"'
+      position: 'Директор OOO "Рога и Копыта"'
+      name: 'Козлов И.В.'
+
     #mailer
     mbh.mailer:
       from: {'robot@maxi-booking.ru': 'MaxiBooking'}
