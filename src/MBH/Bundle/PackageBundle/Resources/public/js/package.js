@@ -13,7 +13,7 @@ $(document).ready(function() {
     });
 
     //spinners
-    $('.spinner').TouchSpin({
+    $('#mbh_bundle_packagebundle_package_service_type_amount').TouchSpin({
         min: 1,
         max: 9007199254740992,
         step: 1,

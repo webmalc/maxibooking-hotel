@@ -1,0 +1,27 @@
+{% set searchQuery = {
+
+    'begin': entity.begin|date('d.m.Y'),
+    'end': entity.end|date('d.m.Y'),
+    'adults': entity.adults,
+    'children': entity.children,
+    'roomType': [entity.roomType.id]
+} %}
+
+{% if entity.tariff.isDefault is empty %}
+    {% set searchQuery = searchQuery|merge({'tariff': entity.tariff.id}) %}
+{% endif %}
+
+
+<div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+    <div class="container">
+        <ul class="nav navbar-nav">
+            <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить и закрыть</button></li>
+            <li><button type="submit" name="save" class="btn btn-info navbar-btn"><i class="fa fa-check-square-o"></i> {{ save_text|default('Сохранить') }}</button></li>
+            <li><button type="button" onclick="location.href = '{{ path('package_search', {'s': searchQuery, 'food': entity.food}) }}'" class="btn btn-default navbar-btn"><i class="fa fa-search"></i> Найти похожую</button></li>
+            <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><button data-href="{{ path(delete_route, {'id': entity.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i> Удалить</button></li>
+        </ul>
+    </div>
+</div>

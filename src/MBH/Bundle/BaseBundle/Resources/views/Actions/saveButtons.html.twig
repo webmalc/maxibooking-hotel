@@ -3,7 +3,7 @@
 {% endif %}
 
 <ul class="nav navbar-nav">
-    {% if save_close %}<li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить и закрыть</button></li><li>{% endif %}
+    {% if save_close %}<li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить и закрыть</button></li>{% endif %}
     <li><button type="submit" name="save" class="btn btn-info navbar-btn"><i class="fa fa-check-square-o"></i> {{ save_text|default('Сохранить') }}</button></li>
     <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
 </ul>

@@ -35,6 +35,7 @@ class PackageServiceType extends AbstractType
                     'label' => 'Услуга',
                     'required' => true,
                     'choices' => $services,
+                    'empty_value' => '',
                     'error_bubbling' => true,
                     'group' => 'Добавить услугу',
                     'constraints' => new NotBlank()

@@ -47,16 +47,23 @@
     <div class="row">
         <div class="spacer-top">
 
+            {% set selectedTariff = app.request.query.get('s').tariff|default(null) %}
+
             {% if tariffResults != false and tariffResults is iterable and tariffResults|length != 0 %}
 
                 <div class="panel panel-default package-search-tariffs">
                     <div class="panel-heading">Поиск по тарифам <div class="text-right pull-right"><small><span class="text-success">зеленый</span> - основные тарифы</small><small>&nbsp; <span class="text-primary">синий</span> - специальные тарифы</small></div></div>
                     <div class="panel-body">
-                        
+
                         {% for tariffResult in tariffResults  %}
                             
                         <ul id="package-search-tariffs">
-                            <li><a href="#" {% if tariffResult.isDefault %}class="text-success"{% endif %} data-id="{{ tariffResult.id }}">{{ tariffResult }}</a></li>
+                            <li>
+                                <a href="#" {% if tariffResult.isDefault %}class="text-success"{% endif %} data-id="{{ tariffResult.id }}">
+                                    {% if selectedTariff == tariffResult.id or (selectedTariff is empty and tariffResult.isDefault)  %} <small><i class="fa fa-check"></i></small> {% endif %}
+                                    {{ tariffResult }} <small>({{ tariffResult.hotel }})</small>
+                                </a>
+                            </li>
                         </ul>
                         {% endfor %}
                     </div>
@@ -64,6 +71,8 @@
             {% endif %}
 
             {% if results != false %}
+
+                {% set queryFood = app.request.query.get('food') %}
 
                 <table class="package-search-table table table-striped table-hover table-condensed table-icons table-actions">
                     <thead>
@@ -96,7 +105,7 @@
                         <td class="text-center">
                             <select class="form-control plain-html input-sm search-food-select">
                                 {% for food in result.foods %}
-                                    <option value="{{food}}">{{food}}</option>
+                                    <option value="{{food}}" {% if queryFood is not empty and queryFood == food %} selected="selected"{% endif %}>{{food}}</option>
                                 {% endfor %}
                             </select>
                         </td>

@@ -156,7 +156,7 @@ class Search
         $qb->addOr(
             $qb->expr()
                 ->field('end')->gte($query->begin)
-                ->field('begin')->lt($query->end)
+                ->field('begin')->lte($query->begin)
         );
 
         return $qb->getQuery()->execute();
