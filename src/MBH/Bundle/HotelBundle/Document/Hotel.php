@@ -10,12 +10,14 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\HotelBundle\Validator\Constraints as MBHValidator;
 
 /**
  * @ODM\Document(collection="Hotels")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
+ * @MBHValidator\Hotel
  */
 class Hotel extends Base
 {
@@ -98,6 +100,30 @@ class Hotel extends Base
      * )
      */
     protected $saleDays = 0;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=1,
+     *      minMessage="Максимальная продолжительность путевки не может быть меньше 1"
+     * )
+     */
+    protected $maxPackageDuration;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=1,
+     *      minMessage="Минимальная продолжительность путевки не может быть меньше 1"
+     * )
+     */
+    protected $minPackageDuration;
 
     /**
      * @var boolean
@@ -192,7 +218,7 @@ class Hotel extends Base
     /**
      * Set food
      *
-     * @param collection $food
+     * @param array $food
      * @return self
      */
     public function setFood(array $food)
@@ -281,7 +307,7 @@ class Hotel extends Base
     /**
      * Add roomType
      *
-     * @param MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
      */
     public function addRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
     {
@@ -291,7 +317,7 @@ class Hotel extends Base
     /**
      * Remove roomType
      *
-     * @param MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
      */
     public function removeRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
     {
@@ -301,7 +327,7 @@ class Hotel extends Base
     /**
      * Get roomTypes
      *
-     * @return Doctrine\Common\Collections\Collection $roomTypes
+     * @return \Doctrine\Common\Collections\Collection $roomTypes
      */
     public function getRoomTypes()
     {
@@ -311,7 +337,7 @@ class Hotel extends Base
     /**
      * Add room
      *
-     * @param MBH\Bundle\HotelBundle\Document\Room $room
+     * @param \MBH\Bundle\HotelBundle\Document\Room $room
      */
     public function addRoom(\MBH\Bundle\HotelBundle\Document\Room $room)
     {
@@ -321,7 +347,7 @@ class Hotel extends Base
     /**
      * Remove room
      *
-     * @param MBH\Bundle\HotelBundle\Document\Room $room
+     * @param \MBH\Bundle\HotelBundle\Document\Room $room
      */
     public function removeRoom(\MBH\Bundle\HotelBundle\Document\Room $room)
     {
@@ -331,7 +357,7 @@ class Hotel extends Base
     /**
      * Get rooms
      *
-     * @return Doctrine\Common\Collections\Collection $rooms
+     * @return \Doctrine\Common\Collections\Collection $rooms
      */
     public function getRooms()
     {
@@ -341,7 +367,7 @@ class Hotel extends Base
     /**
      * Add tariff
      *
-     * @param MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
      */
     public function addTariff(\MBH\Bundle\PriceBundle\Document\Tariff $tariff)
     {
@@ -351,7 +377,7 @@ class Hotel extends Base
     /**
      * Remove tariff
      *
-     * @param MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
      */
     public function removeTariff(\MBH\Bundle\PriceBundle\Document\Tariff $tariff)
     {
@@ -361,7 +387,7 @@ class Hotel extends Base
     /**
      * Get tariffs
      *
-     * @return Doctrine\Common\Collections\Collection $tariffs
+     * @return \Doctrine\Common\Collections\Collection $tariffs
      */
     public function getTariffs()
     {
@@ -418,5 +444,49 @@ class Hotel extends Base
     public function getServicesCategories()
     {
         return $this->servicesCategories;
+    }
+
+    /**
+     * Set maxPackageDuration
+     *
+     * @param int $maxPackageDuration
+     * @return self
+     */
+    public function setMaxPackageDuration($maxPackageDuration)
+    {
+        $this->maxPackageDuration = $maxPackageDuration;
+        return $this;
+    }
+
+    /**
+     * Get maxPackageDuration
+     *
+     * @return int $maxPackageDuration
+     */
+    public function getMaxPackageDuration()
+    {
+        return $this->maxPackageDuration;
+    }
+
+    /**
+     * Set minPackageDuration
+     *
+     * @param int $minPackageDuration
+     * @return self
+     */
+    public function setMinPackageDuration($minPackageDuration)
+    {
+        $this->minPackageDuration = $minPackageDuration;
+        return $this;
+    }
+
+    /**
+     * Get minPackageDuration
+     *
+     * @return int $minPackageDuration
+     */
+    public function getMinPackageDuration()
+    {
+        return $this->minPackageDuration;
     }
 }

@@ -147,7 +147,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
                 new TariffMainType(), $entity, ['types' => $this->container->getParameter('mbh.tariff.types')]
         );
         
-        $form->bind($request);
+        $form->submit($request);
 
         if ($form->isValid()) {
 
@@ -190,7 +190,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         if (!$entity) {
             throw $this->createNotFoundException();
         }
-        
+
         $form = $this->createForm(
                 new TariffMainType(), $entity, ['types' => $this->container->getParameter('mbh.tariff.types')]
         );

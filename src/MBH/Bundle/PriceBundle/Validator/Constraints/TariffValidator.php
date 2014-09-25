@@ -21,6 +21,10 @@ class TariffValidator extends ConstraintValidator
 
     public function validate($object, Constraint $constraint)
     {
+        if((!empty($object->getMinPackageDuration()) && !empty($object->getMaxPackageDuration())) && $object->getMinPackageDuration() > $object->getMaxPackageDuration()) {
+            $this->context->addViolation($constraint->packageDurationValidator);
+        }
+
         if($object->getBegin() >= $object->getEnd()) {
             $this->context->addViolation($constraint->beginEndMessage);
         }

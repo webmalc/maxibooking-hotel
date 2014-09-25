@@ -47,6 +47,27 @@ class HotelType extends AbstractType
                     'attr' => ['placeholder' => '365', 'class' => 'spinner'],
                     'help' => 'На сколько дней открыта продажа от текущего числа'
                 ])
+                ->add('minPackageDuration', 'text', [
+                    'label' => 'Минимальная длина брони',
+                    'group' => 'Настройки',
+                    'required' => false,
+                    'attr' => ['placeholder' => 'Не используется', 'class' => 'spinner'],
+                    'help' => 'Минимальная продолжительность брони в ночах'
+                ])
+                ->add('maxPackageDuration', 'text', [
+                    'label' => 'Максимальная длина брони',
+                    'group' => 'Настройки',
+                    'required' => false,
+                    'attr' => ['placeholder' => 'Не используется', 'class' => 'spinner'],
+                    'help' => 'Максимальная продолжительность брони в ночах'
+                ])
+                ->add('saleDays', 'text', [
+                    'label' => 'Количество дней продажи',
+                    'group' => 'Настройки',
+                    'required' => true,
+                    'attr' => ['placeholder' => '365', 'class' => 'spinner'],
+                    'help' => 'На сколько дней открыта продажа от текущего числа'
+                ])
                 ->add('isDefault', 'checkbox', [
                     'label' => 'Выбран по умолчанию?',
                     'group' => 'Настройки',

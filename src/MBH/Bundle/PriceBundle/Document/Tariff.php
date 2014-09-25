@@ -162,6 +162,30 @@ class Tariff extends Base
      * )
      */
     protected $rate = 0;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=1,
+     *      minMessage="Максимальная продолжительность путевки не может быть меньше 1"
+     * )
+     */
+    protected $maxPackageDuration;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=1,
+     *      minMessage="Минимальная продолжительность путевки не может быть меньше 1"
+     * )
+     */
+    protected $minPackageDuration;
    
     /**
      * Set hotel
@@ -400,11 +424,10 @@ class Tariff extends Base
         $this->roomQuotas = new \Doctrine\Common\Collections\ArrayCollection();
         $this->roomPrices = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
-     * Add foodPrice
-     *
-     * @param MBH\Bundle\PriceBundle\Document\FoodPrice $foodPrice
+     * @param FoodPrice $foodPrice
+     * @return $this
      */
     public function addFoodPrice(\MBH\Bundle\PriceBundle\Document\FoodPrice $foodPrice)
     {
@@ -416,7 +439,7 @@ class Tariff extends Base
     /**
      * Remove foodPrice
      *
-     * @param MBH\Bundle\PriceBundle\Document\FoodPrice $foodPrice
+     * @param \MBH\Bundle\PriceBundle\Document\FoodPrice $foodPrice
      */
     public function removeFoodPrice(\MBH\Bundle\PriceBundle\Document\FoodPrice $foodPrice)
     {
@@ -441,7 +464,7 @@ class Tariff extends Base
     /**
      * Add roomQuota
      *
-     * @param MBH\Bundle\PriceBundle\Document\RoomQuota $roomQuota
+     * @param \MBH\Bundle\PriceBundle\Document\RoomQuota $roomQuota
      */
     public function addRoomQuota(\MBH\Bundle\PriceBundle\Document\RoomQuota $roomQuota)
     {
@@ -451,7 +474,7 @@ class Tariff extends Base
     /**
      * Remove roomQuota
      *
-     * @param MBH\Bundle\PriceBundle\Document\RoomQuota $roomQuota
+     * @param \MBH\Bundle\PriceBundle\Document\RoomQuota $roomQuota
      */
     public function removeRoomQuota(\MBH\Bundle\PriceBundle\Document\RoomQuota $roomQuota)
     {
@@ -476,7 +499,7 @@ class Tariff extends Base
     /**
      * Add roomPrice
      *
-     * @param MBH\Bundle\PriceBundle\Document\RoomPrice $roomPrice
+     * @param \MBH\Bundle\PriceBundle\Document\RoomPrice $roomPrice
      */
     public function addRoomPrice(\MBH\Bundle\PriceBundle\Document\RoomPrice $roomPrice)
     {
@@ -486,7 +509,7 @@ class Tariff extends Base
     /**
      * Remove roomPrice
      *
-     * @param MBH\Bundle\PriceBundle\Document\RoomPrice $roomPrice
+     * @param \MBH\Bundle\PriceBundle\Document\RoomPrice $roomPrice
      */
     public function removeRoomPrice(\MBH\Bundle\PriceBundle\Document\RoomPrice $roomPrice)
     {
@@ -506,5 +529,53 @@ class Tariff extends Base
     public function removeAllRoomPrices()
     {
         $this->roomPrices = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Set maxPackageDuration
+     *
+     * @param int $maxPackageDuration
+     * @return self
+     */
+    public function setMaxPackageDuration($maxPackageDuration)
+    {
+        $this->maxPackageDuration = $maxPackageDuration;
+        return $this;
+    }
+
+    /**
+     * @param bool $hotel
+     * @return int
+     */
+    public function getMaxPackageDuration($hotel = false)
+    {
+        if ($hotel && empty($this->maxPackageDuration)) {
+            return $this->getHotel()->getMaxPackageDuration();
+        }
+        return $this->maxPackageDuration;
+    }
+
+    /**
+     * Set minPackageDuration
+     *
+     * @param int $minPackageDuration
+     * @return self
+     */
+    public function setMinPackageDuration($minPackageDuration)
+    {
+        $this->minPackageDuration = $minPackageDuration;
+        return $this;
+    }
+
+    /**
+     * @param bool $hotel
+     * @return int
+     */
+    public function getMinPackageDuration($hotel = false)
+    {
+        if ($hotel && empty($this->minPackageDuration)) {
+            return $this->getHotel()->getMinPackageDuration();
+        }
+        return $this->minPackageDuration;
     }
 }

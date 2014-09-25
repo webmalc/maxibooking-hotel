@@ -49,6 +49,20 @@ class TariffMainType extends AbstractType
                     'attr' => array('class' => 'datepicker end-datepiker', 'data-date-format' => 'dd.mm.yyyy'),
                     'help' => 'Дата конца действия тарифа'
                 ))
+                ->add('minPackageDuration', 'text', [
+                    'label' => 'Минимальная длина брони',
+                    'group' => 'Настройки',
+                    'required' => false,
+                    'attr' => ['placeholder' => 'Используются настройки отеля', 'class' => 'spinner'],
+                    'help' => 'Минимальная продолжительность брони в ночах'
+                ])
+                ->add('maxPackageDuration', 'text', [
+                    'label' => 'Максимальная длина брони',
+                    'group' => 'Настройки',
+                    'required' => false,
+                    'attr' => ['placeholder' => 'Используются настройки отеля', 'class' => 'spinner'],
+                    'help' => 'Максимальная продолжительность брони в ночах'
+                ])
                 ->add('isOnline', 'checkbox', [
                     'label' => 'Онлайн?',
                     'group' => 'Настройки',
