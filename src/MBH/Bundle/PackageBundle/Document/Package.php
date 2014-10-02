@@ -290,7 +290,7 @@ class Package extends Base
     /**
      * Get tariff
      *
-     * @return MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     * @return \MBH\Bundle\PriceBundle\Document\Tariff $tariff
      */
     public function getTariff()
     {
@@ -312,7 +312,7 @@ class Package extends Base
     /**
      * Get roomType
      *
-     * @return MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @return \MBH\Bundle\HotelBundle\Document\RoomType $roomType
      */
     public function getRoomType()
     {
@@ -334,7 +334,7 @@ class Package extends Base
     /**
      * Get accommodation
      *
-     * @return MBH\Bundle\HotelBundle\Document\Room $accommodation
+     * @return \MBH\Bundle\HotelBundle\Document\Room $accommodation
      */
     public function getAccommodation()
     {
@@ -686,7 +686,7 @@ class Package extends Base
     /**
      * Get tourists
      *
-     * @return Doctrine\Common\Collections\Collection $tourists
+     * @return \Doctrine\Common\Collections\Collection $tourists
      */
     public function getTourists()
     {
@@ -950,5 +950,15 @@ class Package extends Base
     public function getServicesPrice()
     {
         return $this->servicesPrice;
+    }
+
+    public function getNumberWithPayer()
+    {
+        $result = $this->getNumberWithPrefix();
+        if (!empty($this->getMainTourist())) {
+            $result .= ' (' . $this->getMainTourist()->getFullName() . ')';
+        }
+
+        return $result;
     }
 }

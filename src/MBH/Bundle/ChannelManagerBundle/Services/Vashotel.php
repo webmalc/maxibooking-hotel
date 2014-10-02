@@ -516,6 +516,7 @@ class Vashotel extends Base
         foreach ($config->getTariffs() as $tariff) {
             $keys[$tariff->getTariff()->getId()] = $tariff->getTariffId();
         }
+
         foreach ($config->getHotel()->getTariffs() as $tariff) {
 
             if (!$tariff->getIsOnline()) {
@@ -528,16 +529,19 @@ class Vashotel extends Base
             }
             $tariffFoods = array_unique($tariffFoods);
 
-            if (!isset($keys[$tariff->getId()]) || !in_array($food, $tariffFoods)) {
+            if(!isset($keys[$tariff->getId()]) && !$tariff->getIsDefault()) {
+               continue;
+            }
+
+            if (!in_array($food, $tariffFoods)) {
                 continue;
             }
 
             $result[] = [
-                'id' => $keys[$tariff->getId()],
+                'id' => (!$tariff->getIsDefault()) ? $keys[$tariff->getId()] : null,
                 'doc' => $tariff
             ];
         }
-
         return $result;
     }
 

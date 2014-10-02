@@ -15,6 +15,7 @@ use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\PackageMainType;
 use MBH\Bundle\PackageBundle\Form\PackageGuestType;
+use MBH\Bundle\PackageBundle\Form\PackageCopyType;
 use MBH\Bundle\PackageBundle\Form\PackageAccommodationType;
 use MBH\Bundle\CashBundle\Form\CashDocumentType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
@@ -23,6 +24,142 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 
 class PackageController extends Controller implements CheckHotelControllerInterface
 {
+
+    /**
+     * Copy data from one package to another package
+     *
+     * @Route("/{id}/copy", name="package_copy")
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function copyAction(Request $request, $id)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm->getFilterCollection()->disable('softdeleteable');
+
+        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
+
+        $dm->getFilterCollection()->enable('softdeleteable');
+
+        if (!$entity || !$entity->getDeletedAt()) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(
+            new PackageCopyType()
+        );
+
+        if ($request->getMethod() == 'PUT') {
+            $form->submit($request);
+
+            if ($form->isValid()) {
+                $data = $form->getData();
+
+                $package = $data['package'];
+
+                //copy tourists & main tourist
+                if ($data['tourists']) {
+                    foreach($entity->getTourists() as $tourist) {
+                        $package->addTourist($tourist);
+                        if ($entity->getMainTourist() && empty($package->getMainTourist())) {
+                            $package->setMainTourist($entity->getMainTourist());
+                        }
+                    }
+                }
+                //copy services
+                if ($data['services']) {
+                    foreach ($entity->getServices() as $service) {
+                        $newService = new PackageService();
+                        $newService->setPackage($package)
+                            ->setAmount($service->getAmount())
+                            ->setPrice($service->getPrice())
+                            ->setService($service->getService())
+                        ;
+                        $dm->persist($newService);
+                    }
+                    $dm->flush();
+                }
+
+                //copy cash
+                if ($data['cash'] && $entity->getPaid()) {
+                    $in = new CashDocument();
+                    $in->setPackage($package)
+                        ->setIsConfirmed(false)
+                        ->setMethod('cash')
+                        ->setOperation('in')
+                        ->setNote('Перенос с брони ' . $entity->getNumberWithPrefix())
+                        ->setPrefix($entity->getNumberWithPrefix())
+                        ->setTotal($entity->getPaid())
+                        ;
+                        $dm->persist($in);
+
+                    $out = new CashDocument();
+                    $out->setPackage($entity)
+                        ->setIsConfirmed(false)
+                        ->setMethod('cash')
+                        ->setOperation('out')
+                        ->setNote('Перенос на бронь ' . $package->getNumberWithPrefix())
+                        ->setPrefix($entity->getNumberWithPrefix())
+                        ->setTotal($entity->getPaid())
+                    ;
+                    $dm->persist($out);
+
+                    $dm->flush();
+                }
+
+                //copy accommodation
+                if ($data['accommodation'] && $entity->getAccommodation()) {
+
+                    $qb = $dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('q');
+                    $qb->field('accommodation')->notEqual(null)
+                        ->addOr(
+                            $qb->expr()
+                                ->field('begin')->gte($package->getBegin())
+                                ->field('begin')->lt($entity->getEnd())
+                        )
+                        ->addOr(
+                            $qb->expr()
+                                ->field('end')->gt($package->getBegin())
+                                ->field('end')->lte($package->getEnd())
+                        )
+                        ->addOr(
+                            $qb->expr()
+                                ->field('end')->gte($package->getEnd())
+                                ->field('begin')->lte($package->getBegin())
+                        );
+
+                    $notIds = [];
+                    foreach ($qb->getQuery()->execute() as $accommodationPackage) {
+                        $notIds[] = $accommodationPackage->getAccommodation()->getId();
+                    };
+                    if (in_array($entity->getAccommodation()->getId(), $notIds)) {
+                        $request->getSession()
+                            ->getFlashBag()
+                            ->set('danger', 'Размещение не перенесено. Номер уже занят.');
+                    } else {
+                        $package->setAccommodation($entity->getAccommodation());
+                    }
+                }
+
+                $dm->persist($package);
+                $dm->flush();
+
+                $request->getSession()
+                    ->getFlashBag()
+                    ->set('success', 'Данные успешно пересены.');
+
+                return $this->afterSaveRedirect('package', $entity->getId(), [], '_copy');
+            }
+        }
+
+        return [
+            'entity' => $entity,
+            'logs'   => $this->logs($entity),
+            'form'   => $form->createView()
+        ];
+    }
 
     /**
      * Return pdf doc
@@ -558,7 +695,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
+        $dm->getFilterCollection()->disable('softdeleteable');
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
+        $dm->getFilterCollection()->enable('softdeleteable');
         $cash = $dm->getRepository('MBHCashBundle:CashDocument')->find($cashId);
 
         if (!$entity || !$cash) {

@@ -6,6 +6,9 @@
     {'route': 'package_accommodation', 'title': '<i class="fa fa-home"></i>  Размещение'}
 ]
 %}
+{% if entity.isDeleted is not empty %}
+    {% set menu = menu|merge([{'route': 'package_copy', 'title': '<i class="fa fa-share"></i>  Перенос данных'}]) %}
+{% endif %}
 
 <ul class="nav nav-tabs" role="tablist">
 {% for item in menu %}
