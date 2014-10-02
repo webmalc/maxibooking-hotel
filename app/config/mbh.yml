@@ -1,9 +1,9 @@
 parameters:
     #organization info
     mbh.organization:
-      title: 'OOO "Рога и Копыта"'
-      position: 'Директор OOO "Рога и Копыта"'
-      name: 'Козлов И.В.'
+      title: 'OOO "Название предприятия"'
+      position: 'Директор OOO "Название предприятия"'
+      name: 'Иванов И.В.'
 
     #mailer
     mbh.mailer:

@@ -107,11 +107,11 @@ class Search
                 ->setChildren($tourists['children'])
             ;
 
-            if($result->getNights() < $result->getTariff()->getMinPackageDuration(true)) {
+            if($result->getTariff()->getMinPackageDuration(true) && $result->getNights() < $result->getTariff()->getMinPackageDuration(true)) {
                 continue;
             }
 
-            if($result->getNights() > $result->getTariff()->getMaxPackageDuration(true)) {
+            if($result->getTariff()->getMaxPackageDuration(true) && $result->getNights() > $result->getTariff()->getMaxPackageDuration(true)) {
                 continue;
             }
 
