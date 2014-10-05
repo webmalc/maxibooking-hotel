@@ -137,6 +137,13 @@ class RoomType extends Base
     protected $additionalPlaces = 0;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    public $image;
+
+    /**
      * Set hotel
      *
      * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
@@ -412,6 +419,79 @@ class RoomType extends Base
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * Set image
+     *
+     * @param string $image
+     * @return self
+     */
+    public function setImage($image)
+    {
+        $this->image = $image;
+        return $this;
+    }
+
+
+    /**
+     * @param bool $url
+     * @return null|string
+     */
+    public function getImage($url = false)
+    {
+        if (empty($this->image) || !$url) {
+            return $this->image;
+        }
+        $path = $this->getUploadRootDir() . '/' . $this->image;
+        if (file_exists($path) && is_readable($path)) {
+            return $this->getUploadDir() . '/' . $this->image;
+        }
+
+        return null;
+
+    }
+
+    /**
+     * @return $this
+     */
+    public function imageDelete()
+    {
+        if (empty($this->image)) {
+            return $this;
+        }
+
+        $path = $this->getUploadRootDir() . '/' . $this->image;
+        if (file_exists($path) && is_readable($path)) {
+            unlink($this->getUploadDir() . '/' . $this->image);
+        }
+
+        $this->image = null;
+
+        return $this;
+    }
+
+    public function getUploadRootDir()
+    {
+        return __DIR__.'/../../../../../web/'.$this->getUploadDir();
+    }
+
+    public function getUploadDir()
+    {
+        return 'upload/roomTypes';
+    }
+
+    public function uploadImage(\Symfony\Component\HttpFoundation\File\UploadedFile $image = null)
+    {
+        $this->image = null;
+
+        if (empty($image)) {
+            return;
+        }
+        $newName = $this->id . '.'. $image->guessExtension();
+        $image->move($this->getUploadRootDir(), $newName);
+
+        $this->image = $newName;
     }
 
 }

@@ -13,6 +13,7 @@ var/logs/*
 var/cache/
 var/cache/*
 web/css/*
+web/upload/*
 web/js/*
 web/bundles/
 web/bundles/*

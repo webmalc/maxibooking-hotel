@@ -10,6 +10,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class RoomQuota
 {
+    public function setNullId() {
+        $this->id = null;
+    }
+
     /**
      * @var \MBH\Bundle\HotelBundle\Document\RoomType
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")

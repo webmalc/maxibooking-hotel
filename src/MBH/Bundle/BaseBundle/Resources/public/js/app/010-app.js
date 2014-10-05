@@ -99,5 +99,8 @@ $(document).ready(function() {
             $(this).remove();
         });
     }, 5000);
+
+    //fancybox
+    $('.fancybox').fancybox();
 });
 

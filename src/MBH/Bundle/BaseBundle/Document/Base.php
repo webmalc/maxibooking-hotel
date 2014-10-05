@@ -38,5 +38,10 @@ class Base
         
         return $this->getId();
     }
+
+    public function __clone()
+    {
+        $this->id = null;
+    }
     
 }

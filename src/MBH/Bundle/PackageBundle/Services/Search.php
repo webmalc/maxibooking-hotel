@@ -55,7 +55,7 @@ class Search
                 $qb->field('tariff.id')->equals($query->tariff);
             }
         } else {
-            //$qb->field('isDefault')->equals(true);
+            $qb->field('isDefault')->equals(true);
         }
         if($query->isOnline) {
             $qb->field('isOnline')->equals(true);

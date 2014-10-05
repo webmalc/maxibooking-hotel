@@ -3,6 +3,9 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PriceBundle\Document\RoomQuota;
+use MongoDBODMProxies\__CG__\MBH\Bundle\PriceBundle\Document\FoodPrice;
+use MongoDBODMProxies\__CG__\MBH\Bundle\PriceBundle\Document\RoomPrice;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -200,6 +203,70 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         );
+    }
+
+    /**
+     * Displays a form to edit an existing entity.
+     *
+     * @Route("/{id}/clone", name="tariff_clone")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function cloneAction($id)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException();
+        }
+
+        $new = clone $entity;
+
+        $new->setTitle('')
+            ->setFullTitle($entity->getFullTitle() . '_копия')
+            ->setIsEnabled(false)
+        ;
+
+        $dm->persist($new);
+        $dm->flush();
+
+        $newId = $new->getId();
+        $dm->clear();
+
+        $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
+        $new = $dm->getRepository('MBHPriceBundle:Tariff')->find($newId);
+
+        foreach($entity->getRoomQuotas() as $quota) {
+            $newRoomQuota = new RoomQuota();
+            $newRoomQuota->setRoomType($quota->getRoomType())->setNumber($quota->getNumber());
+            $new->addRoomQuota($newRoomQuota);
+        }
+        foreach($entity->getFoodPrices() as $foodPrice) {
+            $newFoodPrice = new FoodPrice();
+            $newFoodPrice->setType($foodPrice->getType())->setPrice($foodPrice->getPrice());
+            $new->addFoodPrice($newFoodPrice);
+        }
+        foreach($entity->getRoomPrices() as $price) {
+            $newPrice = new RoomPrice();
+            $newPrice->setRoomType($price->getRoomType())
+                ->setPrice($price->getPrice())
+                ->setAdditionalAdultPrice($price->getAdditionalAdultPrice())
+                ->setAdditionalChildPrice($price->getAdditionalChildPrice())
+            ;
+            $new->addRoomPrice($newPrice);
+        }
+
+        $dm->persist($new);
+        $dm->flush();
+
+        $this->getRequest()->getSession()->getFlashBag()
+            ->set('success', 'Запись успешно скопирована.')
+        ;
+
+        return $this->redirect($this->generateUrl('tariff'));
     }
 
     /**

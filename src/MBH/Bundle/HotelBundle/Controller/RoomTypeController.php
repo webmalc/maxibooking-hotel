@@ -384,6 +384,10 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $dm->persist($entity);
             $dm->flush();
 
+            $entity->uploadImage($form['imageFile']->getData());
+            $dm->persist($entity);
+            $dm->flush();
+
             $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground($entity);
             
             $this->getRequest()->getSession()->getFlashBag()
@@ -397,6 +401,39 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             'entity' => $entity,
             'form' => $form->createView(),
         );
+    }
+
+    /**
+     * Delete image
+     *
+     * @Route("/{id}/image/delete", name="room_type_image_delete")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function imageDelete($id)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException();
+        }
+
+        $entity->imageDelete();
+
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm->persist($entity);
+        $dm->flush();
+
+        $this->getRequest()->getSession()->getFlashBag()
+            ->set('success', 'Изображение успешно удалено.')
+        ;
+
+        return $this->redirect($this->generateUrl('room_type_edit', ['id' => $id]));
+
     }
 
     /**
@@ -419,11 +456,17 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         }
 
         $form = $this->createForm(
-                new RoomTypeType(), $entity, ['calculationTypes' => $this->container->getParameter('mbh.calculation.types')]
+            new RoomTypeType(), $entity, [
+                'calculationTypes' => $this->container->getParameter('mbh.calculation.types'),
+                'imageUrl' => $entity->getImage(true),
+                'deleteImageUrl' => $this->generateUrl('room_type_image_delete', ['id' => $id])
+            ]
         );
         $form->bind($request);
 
         if ($form->isValid()) {
+
+            $entity->uploadImage($form['imageFile']->getData());
 
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
@@ -466,7 +509,11 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         }
 
         $form = $this->createForm(
-                new RoomTypeType(), $entity, ['calculationTypes' => $this->container->getParameter('mbh.calculation.types')]
+                new RoomTypeType(), $entity, [
+                    'calculationTypes' => $this->container->getParameter('mbh.calculation.types'),
+                    'imageUrl' => $entity->getImage(true),
+                    'deleteImageUrl' => $this->generateUrl('room_type_image_delete', ['id' => $id])
+                ]
         );
 
         return array(

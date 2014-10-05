@@ -5,12 +5,23 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Validator\Constraints\Image;
 
 class RoomTypeType extends AbstractType
 {
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $fileText = 'Изображние типа номера для онлайн бронирования';
+
+        if($options['imageUrl']) {
+            $fileText  = '<a class="fancybox" href="/' . $options['imageUrl'] . '"><i class="fa fa-image"></i> ' . $fileText . '</a>';
+
+            if ($options['deleteImageUrl']) {
+                $fileText  .= ' <br> <a href="'. $options['deleteImageUrl'] .'" class="text-danger"><i class="fa fa-trash"></i> Удалить изображение</a>';
+            }
+        }
+
         $builder
                 ->add('fullTitle', 'text', [
                     'label' => 'Название',
@@ -39,6 +50,14 @@ class RoomTypeType extends AbstractType
                     'group' => 'Общаяя информация',
                     'attr' => ['placeholder' => '008000'],
                     'help' => 'Цвет типа номера на шахматке'
+                ])
+                ->add('imageFile', 'file', [
+                    'label' => 'Изображение',
+                    'required' => false,
+                    'mapped' => false,
+                    'group' => 'Общаяя информация',
+                    'help' => $fileText,
+                    'constraints' => [new Image()]
                 ])
                 ->add('calculationType', 'choice', [
                     'label' => 'Способ расчета',
@@ -69,7 +88,9 @@ class RoomTypeType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\HotelBundle\Document\RoomType',
-            'calculationTypes' => []
+            'calculationTypes' => [],
+            'imageUrl' => null,
+            'deleteImageUrl' => null
         ));
     }
 

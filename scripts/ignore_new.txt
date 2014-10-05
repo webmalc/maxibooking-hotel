@@ -11,6 +11,7 @@ var/cache/
 var/cache/*
 web/css/*
 web/js/*
+web/upload/*
 web/bundles/
 web/bundles/*
 /web/*_dev.php

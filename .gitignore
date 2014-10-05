@@ -16,6 +16,7 @@
 nbproject/
 /web/css/
 /web/js/
+/web/upload/
 .idea/
 /parameters.yml
 parameters.yml

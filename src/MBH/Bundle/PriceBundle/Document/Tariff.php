@@ -505,6 +505,13 @@ class Tariff extends Base
         $this->roomQuotas = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
+    public function setAllRoomQuotas($roomQuotas)
+    {
+        $this->roomQuotas = $roomQuotas;
+
+        return $this;
+    }
+
     /**
      * Add roomPrice
      *
