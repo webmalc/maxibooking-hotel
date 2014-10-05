@@ -22,7 +22,7 @@
                         <a href="?{{ app.request.query.all|merge({'tariff': tariff.isDefault ? null : tariff.id })|url_encode }}">{{ tariff.fullTitle }}</a>
                     {% endif %}
                 {% if tariff.isDefault %}&nbsp;<small>(базовый тариф)</small>{% endif %}</p>
-                {% if tariff.description %}
+                {% if tariff.description|nl2br %}
                 <p class="mbh-results-tariffs-description">{{ tariff.description|raw }}</p>
                 {% endif %}
             </li>
@@ -51,7 +51,17 @@
                 {% if hotels|length > 1 %}
                     <td>{{ result.roomType.hotel.fullTitle }}</td>
                 {% endif %}
-                <td><span class="mbh-results-roomType" data-id="{{ result.roomType.id  }}">{{ result.roomType.fullTitle }}</span></td>
+                <td>
+                    <span class="mbh-results-roomType" data-id="{{ result.roomType.id  }}"><strong>{{ result.roomType.fullTitle }}</strong></span>
+                    {% if result.roomType.description is not empty %}
+                    <div class="mbh-results-roomType-description-wrappper">
+                        <a href="#" class="mbh-results-roomType-description-link"> <i class="fa fa-angle-right "></i> Описание номера</a>
+                        <div class="mbh-results-roomType-description">
+                            {{ result.roomType.description|nl2br }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </td>
                 <td><span class="mbh-results-tariff" data-id="{{ result.tariff.id  }}">{{ result.tariff.fullTitle }}</span></td>
                 <td class="mbh-center">
                     <select class="mbh-results-tourists-select">

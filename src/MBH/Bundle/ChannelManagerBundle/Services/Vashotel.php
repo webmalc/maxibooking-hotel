@@ -513,8 +513,8 @@ class Vashotel extends Base
 
         $result = $keys = $tariffFoods = [];
 
-        foreach ($config->getTariffs() as $tariff) {
-            $keys[$tariff->getTariff()->getId()] = $tariff->getTariffId();
+        foreach ($config->getTariffs() as $configTariff) {
+            $keys[$configTariff->getTariff()->getId()] = $configTariff->getTariffId();
         }
 
         foreach ($config->getHotel()->getTariffs() as $tariff) {
@@ -522,6 +522,7 @@ class Vashotel extends Base
             if (!$tariff->getIsOnline()) {
                 continue;
             }
+
             foreach ($tariff->getFoodPrices() as $foodPrice) {
                 if ($foodPrice->getPrice() !== null) {
                     $tariffFoods[] = $foodPrice->getType();

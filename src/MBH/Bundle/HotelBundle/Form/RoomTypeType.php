@@ -26,6 +26,13 @@ class RoomTypeType extends AbstractType
                     'attr' => ['placeholder' => 'Комфорт плюс - номера в новом корпусе'],
                     'help' => 'Название для использования внутри MaxiBooking'
                 ])
+                ->add('description', 'textarea', [
+                     'label' => 'Описание',
+                     'help' => 'Описание типа номера для онлайн бронирования',
+                     'required' => false,
+                     'group' => 'Общаяя информация',
+                     'attr' => ['class' => 'big']
+                ])
                 ->add('color', 'text', [
                     'label' => 'Цвет',
                     'required' => true,

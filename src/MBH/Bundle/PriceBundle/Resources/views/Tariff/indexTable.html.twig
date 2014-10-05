@@ -14,7 +14,7 @@
         </thead>
         <tbody>
             {% for entity in entities %}
-                <tr>
+                <tr {% if entity.isEnabled is empty %} class="danger"{% endif %}>
                     <td class="text-center table-icon"><i class="fa fa-sliders"></i></td>
                     <td>
                         <a href="{{ path('tariff_edit', { 'id': entity.id }) }}" rel="main" title="Редактирование записи" data-toggle="tooltip">{{ entity.name }}</a>

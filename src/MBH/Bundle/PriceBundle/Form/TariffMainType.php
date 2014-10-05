@@ -91,6 +91,14 @@ class TariffMainType extends AbstractType
                     'attr' => ['placeholder' => '20', 'class' => 'spinner'],
                     'help' => 'Процент от цен основного тарифа в этом периоде'
                 ])
+                ->add('isEnabled', 'checkbox', [
+                    'label' => 'Включен?',
+                    'group' => 'Настройки',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'Используется ли тариф в поиске?'
+                ])
+
         ;
     }
 

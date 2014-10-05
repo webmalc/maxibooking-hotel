@@ -55,7 +55,7 @@ class Search
                 $qb->field('tariff.id')->equals($query->tariff);
             }
         } else {
-            $qb->field('isDefault')->equals(true);
+            //$qb->field('isDefault')->equals(true);
         }
         if($query->isOnline) {
             $qb->field('isOnline')->equals(true);
@@ -107,11 +107,16 @@ class Search
                 ->setChildren($tourists['children'])
             ;
 
-            if($result->getTariff()->getMinPackageDuration(true) && $result->getNights() < $result->getTariff()->getMinPackageDuration(true)) {
+            // delete  too short & long results
+            if ($result->getTariff()->getMinPackageDuration(true) && $result->getNights() < $result->getTariff()->getMinPackageDuration(true)) {
+                continue;
+            }
+            if ($result->getTariff()->getMaxPackageDuration(true) && $result->getNights() > $result->getTariff()->getMaxPackageDuration(true)) {
                 continue;
             }
 
-            if($result->getTariff()->getMaxPackageDuration(true) && $result->getNights() > $result->getTariff()->getMaxPackageDuration(true)) {
+            // delete results with disabled tariffs
+            if (!$result->getTariff()->getIsEnabled()) {
                 continue;
             }
 
@@ -133,7 +138,9 @@ class Search
     public function searchTariffs(SearchQuery $query)
     {
         $qb = $this->dm->getRepository('MBHPriceBundle:Tariff')
-            ->createQueryBuilder('q');
+            ->createQueryBuilder('q')
+            ->field('isEnabled')->equals(true)
+        ;
 
         if (!empty($query->roomTypes)) {
             $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')

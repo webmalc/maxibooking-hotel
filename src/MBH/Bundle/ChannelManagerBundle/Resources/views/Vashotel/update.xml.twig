@@ -28,13 +28,16 @@
 
         <date value="{{ cache.date|date('Y-m-d') }}">
             <prices>
+                {% set  hostelprice = null %}
                 {% for price in cache.prices %}
                     {% if price.children == 0 and price.price is not null and price.food == food  %}
                         <price_{{ price.adults }}>{{ price.price }}</price_{{ price.adults }}>
+                        {% if price.adults == 1 %}{%  set hostelprice = price.price %}{% endif %}
                     {% endif %}
                 {% endfor %}
+                {% if hostelprice is defined and hostelprice is not null %}<price_place>{{ hostelprice }}</price_place>{% endif %}
             </prices>
-            <sellquantity>{{cache.rooms}}</sellquantity>
+            <sellquantity>{% if cache.tariff.isEnabled %}{{cache.rooms}}{% else %}0{% endif %}</sellquantity>
             <breakfastIncluded>{{ breakfastIncluded }}</breakfastIncluded>
         </date>
 

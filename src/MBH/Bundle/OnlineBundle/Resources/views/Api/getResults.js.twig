@@ -69,6 +69,16 @@ jQuery(document).ready(function () {
                 });
             }());
 
+            //description toggle
+            (function () {
+                $('.mbh-results-roomType-description').hide();
+                $('.mbh-results-roomType-description-link').click(function(e) {
+                    e.preventDefault();
+                    $(this).siblings('.mbh-results-roomType-description').toggle();
+                    $(this).children('i').toggleClass('fa-angle-down');
+                });
+            }());
+
             //tariff links
             (function () {
                 jQuery('#mbh-results-tariffs a').each(function () {

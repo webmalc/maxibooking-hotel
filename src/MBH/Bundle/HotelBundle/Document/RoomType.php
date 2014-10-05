@@ -74,6 +74,20 @@ class RoomType extends Base
      */
     protected $title;
 
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     * @Assert\Length(
+     *      min=2,
+     *      minMessage="Слишком короткое описание",
+     *      max=1000,
+     *      maxMessage="Слишком длинное описание"
+     * )
+     */
+    protected $description;
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -125,7 +139,7 @@ class RoomType extends Base
     /**
      * Set hotel
      *
-     * @param MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
      * @return self
      */
     public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
@@ -376,6 +390,28 @@ class RoomType extends Base
         }
 
         return $result;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string $description
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 
 }
