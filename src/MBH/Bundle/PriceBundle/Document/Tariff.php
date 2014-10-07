@@ -170,7 +170,7 @@ class Tariff extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
-     *      minMessage="Максимальная продолжительность путевки не может быть меньше 1"
+     *      minMessage="Максимальная продолжительность брони не может быть меньше 1"
      * )
      */
     protected $maxPackageDuration;
@@ -182,7 +182,7 @@ class Tariff extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
-     *      minMessage="Минимальная продолжительность путевки не может быть меньше 1"
+     *      minMessage="Минимальная продолжительность брони не может быть меньше 1"
      * )
      */
     protected $minPackageDuration;

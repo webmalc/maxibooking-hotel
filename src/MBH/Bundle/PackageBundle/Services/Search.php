@@ -129,6 +129,10 @@ class Search
                 }
             }
 
+            if(empty($result->getPrices())) {
+                continue;
+            }
+
             $results[] = $result;
         }
 

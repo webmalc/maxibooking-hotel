@@ -119,6 +119,7 @@ class ApiController extends Controller
         return [
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
+            'foodTypes' => $this->container->getParameter('mbh.food.types'),
             'hotels' => array_unique($hotels),
             'tariffResults' => $tariffResults
         ];

@@ -1,5 +1,13 @@
 <style>
     /* RESULTS TABLE STYLES */
+    .hidden {
+        display: none;
+    }
+    .mbh-roomType-image {
+        max-width: 150px;
+        display: block;
+    }
+
     button:disabled {
         color: #999;
     }
@@ -47,10 +55,16 @@
         margin: 0px 2px 0px;
         font-size: small;
     }
+    #mbh-results-table-th-food {
+        width: 200px !important;
+    }
     #mbh-results-table td, #mbh-results-table th {
         padding: 5px;
         border: 1px solid #e5e5e5;
         border-collapse: collapse;
+        vertical-align: top;
+    }
+    #mbh-results-table {
         width: 100%;
     }
     #mbh-results-actions {

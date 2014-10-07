@@ -18,7 +18,7 @@
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <i class="fa fa-exclamation-circle"></i>
                     {% if entity.tourists|length < totalGuests %}Не добавлено гостей: {{ totalGuests - entity.tourists|length }}. {% endif %}
-                    {% if entity.mainTourist is null %}Не добавлен основной турист. {% endif %}
+                    {% if entity.mainTourist is null %}Не добавлен основной гость. {% endif %}
                 </div>
             {% endif %}
 

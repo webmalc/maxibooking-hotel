@@ -36,10 +36,10 @@ class FormType extends AbstractType
                 'tourists',
                 'checkbox',
                 [
-                    'label' => 'Туристы?',
+                    'label' => 'Гости?',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Использовать ли поле "Количестов туристов" в онлайн форме?'
+                    'help' => 'Использовать ли поле "Количестов гостей" в онлайн форме?'
                 ]
             )
             ->add(

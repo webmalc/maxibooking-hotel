@@ -36,7 +36,7 @@ class RoomQuota
     /**
      * Set roomType
      *
-     * @param MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
      * @return self
      */
     public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)

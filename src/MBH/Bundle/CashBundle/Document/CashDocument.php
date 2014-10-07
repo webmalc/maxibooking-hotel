@@ -43,7 +43,7 @@ class CashDocument extends Base
      * @var \MBH\Bundle\PackageBundle\Document\Package
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Package", inversedBy="cashDocuments")
-     * @Assert\NotNull(message="Не выбрана путевка")
+     * @Assert\NotNull(message="Не выбрана бронь")
      */
     protected $package;
 

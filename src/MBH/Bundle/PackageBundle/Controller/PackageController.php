@@ -472,7 +472,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
                 $request->getSession()
                     ->getFlashBag()
-                    ->set('success', 'Турист успешно добавлен.');
+                    ->set('success', 'Гость успешно добавлен.');
 
                 return $this->afterSaveRedirect('package', $entity->getId(), [], '_guest');
             }
@@ -510,7 +510,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $request->getSession()
             ->getFlashBag()
-            ->set('success', 'Турист успешно удален.');
+            ->set('success', 'Гость успешно удален.');
 
         return $this->redirect($this->generateUrl('package_guest', ['id' => $id]));
     }

@@ -11,7 +11,7 @@
     "{{ entity.begin|date('d.m.Y') }} - {{ entity.end|date('d.m.Y') }}<br><small>{{ entity.days }}/{{ entity.nights }}</small>",
     "{{ entity.roomType }} - {{ entity.food }}<br><small>{% if entity.accommodation %}{{ entity.accommodation.name(true) }}{% else %}нет размещения{% endif %}</small>",
     "{{ entity.createdAt|date('d.m.Y H:i') }}<br><small>{{ entity.createdBy }}</small>",
-    "{% if entity.mainTourist %}{{ entity.mainTourist.fullName }}{% else %}<small>Нет основного туриста</small>{% endif %}<br><small>{% if entity.adults > 0 %}{% for i in 1..entity.adults %}<i class='fa fa-male'></i>&nbsp;{% endfor %}{% endif %}{% if entity.children > 0 %}<small>{% for i in 1..entity.children %}<i class='fa fa-child'></i>&nbsp;{% endfor %}</small>{% endif %}</small>",
+    "{% if entity.mainTourist %}{{ entity.mainTourist.fullName }}{% else %}<small>Нет основного гостя</small>{% endif %}<br><small>{% if entity.adults > 0 %}{% for i in 1..entity.adults %}<i class='fa fa-male'></i>&nbsp;{% endfor %}{% endif %}{% if entity.children > 0 %}<small>{% for i in 1..entity.children %}<i class='fa fa-child'></i>&nbsp;{% endfor %}</small>{% endif %}</small>",
     "<div class='text-right'><span {% if entity.isPaid %}class='text-success'{% elseif entity.paid > 0 %}{% else %}class='text-danger'{% endif %}>{{ entity.price|number_format }} / {{ entity.paid|number_format }}</span><br><small>{{ entity.tariff }}</small></div>",
     "{% include 'MBHPackageBundle:Package:jsonButtons.html.twig' with {'entity': entity} %}"
     ]{% if loop.index != entities.count(true) %},{% endif %}

@@ -70,7 +70,7 @@
                                         {% if day >= package.begin and day <= package.end %}
 
                                         <a href="{{ path('package_edit', {'id': package.id }) }}" target="_blank" data-toggle="tooltip"
-                                           title="{{ package.numberWithPrefix }}. {{ package.mainTourist.fullName|default('Нет основного туриста') }} ({{ package.adults }}+{{ package.children }}). Цена: {{ package.price }}/{{ package.paid }}. Тип: {{ statuses[package.status].title }}">
+                                           title="{{ package.numberWithPrefix }}. {{ package.mainTourist.fullName|default('Нет основного гостя') }} ({{ package.adults }}+{{ package.children }}). Цена: {{ package.price }}/{{ package.paid }}. Тип: {{ statuses[package.status].title }}">
                                             <div class="package text-{{ statuses[package.status].class }} {% if day == package.end %}package-end{% endif %}{% if day == package.begin %}package-begin{% endif %}">
                                                 &nbsp;</div>
                                         </a>

@@ -18,7 +18,7 @@ class PackageGuestType extends AbstractType
                 ->add('lastName', 'text', [
                     'label' => 'Фамилия',
                     'required' => true,
-                    'group' => 'Добавить туриста',
+                    'group' => 'Добавить гостя',
                     'attr' => ['placeholder' => 'Иванов'],
                     'constraints' => [new NotBlank(), new Length([
                         'min' => 2,
@@ -30,7 +30,7 @@ class PackageGuestType extends AbstractType
                 ->add('firstName', 'text', [
                     'label' => 'Имя',
                     'required' => true,
-                    'group' => 'Добавить туриста',
+                    'group' => 'Добавить гостя',
                     'attr' => ['placeholder' => 'Иван'],
                     'constraints' => [new NotBlank(), new Length([
                         'min' => 2,
@@ -42,7 +42,7 @@ class PackageGuestType extends AbstractType
                 ->add('patronymic', 'text', [
                     'label' => 'Отчество',
                     'required' => false,
-                    'group' => 'Добавить туриста',
+                    'group' => 'Добавить гостя',
                     'attr' => ['placeholder' => 'Иванович'],
                     'constraints' => [new Length([
                         'min' => 2,
@@ -54,15 +54,15 @@ class PackageGuestType extends AbstractType
                 ->add('birthday', 'date', array(
                     'label' => 'Дата рождения',
                     'widget' => 'single_text',
-                    'group' => 'Добавить туриста',
+                    'group' => 'Добавить гостя',
                     'format' => 'dd.MM.yyyy',
                     'required' => false,
                     'attr' => array('data-date-format' => 'dd.mm.yyyy'),
                     'constraints' => [new Date()]
                 ))
                 ->add('main', 'checkbox', [
-                    'label' => 'Основной турист?',
-                    'group' => 'Добавить туриста',
+                    'label' => 'Основной гостя?',
+                    'group' => 'Добавить гостя',
                     'value' => true,
                     'required' => false,
                 ])
