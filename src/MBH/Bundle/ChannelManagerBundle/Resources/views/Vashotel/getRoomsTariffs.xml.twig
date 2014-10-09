@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<request>
+    <hotel_id>{{ config.hotelId }}</hotel_id>
+    <salt>{{ salt }}</salt>
+    {% if sig is defined %}
+        <sig>{{ sig }}</sig>
+    {% endif %}
+</request>

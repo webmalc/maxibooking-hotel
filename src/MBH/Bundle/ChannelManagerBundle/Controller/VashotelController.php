@@ -54,10 +54,12 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
         $entity = $hotel->getVashotelConfig();
+        $new = false;
 
         if (!$entity) {
             $entity = new VashotelConfig();
             $entity->setHotel($hotel);
+            $new = true;
         }
 
         $form = $this->createForm(
@@ -72,6 +74,13 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             $dm = $this->get('doctrine_mongodb')->getManager();
             $dm->persist($entity);
             $dm->flush();
+
+            if ($new) {
+                $this->get('mbh.channelmanager.vashotel')->roomSync($entity);
+                $this->get('mbh.channelmanager.vashotel')->tariffSync($entity);
+                $dm->persist($entity);
+                $dm->flush();
+            }
 
             $request->getSession()->getFlashBag()
                 ->set('success', 'Настройки успешно сохранены.')
@@ -178,6 +187,80 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             'logs' => $this->logs($entity),
             'form' => $form->createView(),
         );
+    }
+
+    /**
+     * @Route("/room/sync", name="vashotel_room_sync")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template()
+     */
+    public function roomSyncAction(Request $request)
+    {
+        $hotel = $this->get('mbh.hotel.selector')->getSelected();
+        $entity = $hotel->getVashotelConfig();
+
+        if (!$entity) {
+            throw $this->createNotFoundException();
+        }
+
+        $result = $this->get('mbh.channelmanager.vashotel')->roomSync($entity);
+
+        if ($result) {
+            $request->getSession()->getFlashBag()
+                ->set('success', 'Номера успешно синхронизированы.')
+            ;
+
+            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+            $dm = $this->get('doctrine_mongodb')->getManager();
+            $dm->persist($entity);
+            $dm->flush();
+
+            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
+        } else {
+            $request->getSession()->getFlashBag()
+                ->set('danger', 'Во время синхронизации произошла ошибка. Попробуйте еще раз.')
+            ;
+        }
+
+        return $this->redirect($this->generateUrl('vashotel_room'));
+    }
+
+    /**
+     * @Route("/tariff/sync", name="vashotel_tariff_sync")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template()
+     */
+    public function tariffSyncAction(Request $request)
+    {
+        $hotel = $this->get('mbh.hotel.selector')->getSelected();
+        $entity = $hotel->getVashotelConfig();
+
+        if (!$entity) {
+            throw $this->createNotFoundException();
+        }
+
+        $result = $this->get('mbh.channelmanager.vashotel')->tariffSync($entity);
+
+        if ($result) {
+            $request->getSession()->getFlashBag()
+                ->set('success', 'Тарифы успешно синхронизированы.')
+            ;
+
+            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+            $dm = $this->get('doctrine_mongodb')->getManager();
+            $dm->persist($entity);
+            $dm->flush();
+
+            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
+        } else {
+            $request->getSession()->getFlashBag()
+                ->set('danger', 'Во время синхронизации произошла ошибка. Попробуйте еще раз.')
+            ;
+        }
+
+        return $this->redirect($this->generateUrl('vashotel_tariff'));
     }
 
     /**

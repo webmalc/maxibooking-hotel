@@ -4,6 +4,8 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use \MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\VashotelRoom;
+use MBH\Bundle\ChannelManagerBundle\Document\VashotelTariff;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,6 +40,11 @@ class Vashotel extends Base
     const GET_PACKAGES_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:getPackages.xml.twig';
 
     /**
+     * Get roomTypes & tariffs template file
+     */
+    const GET_ROOMS_TARIFFS_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:getRoomsTariffs.xml.twig';
+
+    /**
      * Base API URL
      */
     const BASE_URL = 'https://www.vashotel.ru/hotel_xml/';
@@ -53,6 +60,109 @@ class Vashotel extends Base
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
+    }
+
+    /**
+     * @param VashotelConfig $config
+     * @return bool
+     */
+    public function roomSync(VashotelConfig $config)
+    {
+        $script = 'get_rooms.php';
+
+        $salt = $this->container->get('mbh.helper')->getRandomString(20);
+        $data = ['config' => $config, 'salt' => $salt];
+
+        $sig = $this->getSignature(
+            $this->templating->render(static::GET_ROOMS_TARIFFS_TEMPLATE, $data),
+            $script,
+            $config->getKey()
+        );
+        $data['sig'] = md5($sig);
+
+        $sendResult = $this->send(
+            static::BASE_URL . $script,
+            $this->templating->render(static::GET_ROOMS_TARIFFS_TEMPLATE, $data),
+            $this->headers,
+            true
+        );
+
+        if (!$this->checkResponse($sendResult, $script, $config->getKey())) {
+            return false;
+        }
+
+        $xml = simplexml_load_string($sendResult);
+
+        if (!$xml instanceof \SimpleXMLElement) {
+            return false;
+        }
+
+        $roomTypes = $config->getHotel()->getRoomTypes();
+        $config->removeAllRooms();
+
+        foreach ($xml->xpath('room') as $room) {
+            foreach ($roomTypes as $roomType) {
+                if ($roomType->getFullTitle() == (string)$room->xpath('name')[0]) {
+                    $vashotelRoom = new VashotelRoom();
+                    $vashotelRoom->setRoomType($roomType)->setRoomId((string)$room->xpath('id')[0]);
+                    $config->addRoom($vashotelRoom);
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param VashotelConfig $config
+     * @return bool
+     */
+    public function tariffSync(VashotelConfig $config)
+    {
+        $script = 'get_rates.php';
+
+        $salt = $this->container->get('mbh.helper')->getRandomString(20);
+        $data = ['config' => $config, 'salt' => $salt];
+
+        $sig = $this->getSignature(
+            $this->templating->render(static::GET_ROOMS_TARIFFS_TEMPLATE, $data),
+            $script,
+            $config->getKey()
+        );
+        $data['sig'] = md5($sig);
+
+        $sendResult = $this->send(
+            static::BASE_URL . $script,
+            $this->templating->render(static::GET_ROOMS_TARIFFS_TEMPLATE, $data),
+            $this->headers,
+            true
+        );
+
+        if (!$this->checkResponse($sendResult, $script, $config->getKey())) {
+            return false;
+        }
+        $xml = simplexml_load_string($sendResult);
+
+        if (!$xml instanceof \SimpleXMLElement) {
+            return false;
+        }
+
+        $tariffs = $config->getHotel()->getTariffs();
+        $config->removeAllTariffs();
+
+        foreach ($xml->xpath('rate') as $room) {
+            foreach ($tariffs as $tariff) {
+
+                if ($tariff->getIsDefault()) {
+                    continue;
+                }
+                if ($tariff->getFullTitle() == (string)$room->xpath('name')[0]) {
+                    $vashotelTariff = new VashotelTariff();
+                    $vashotelTariff->setTariff($tariff)->setTariffId((string)$room->xpath('id')[0]);
+                    $config->addTariff($vashotelTariff);
+                }
+            }
+        }
+        return true;
     }
 
     /**

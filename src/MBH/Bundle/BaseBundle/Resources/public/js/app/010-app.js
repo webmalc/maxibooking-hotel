@@ -88,7 +88,7 @@ $(document).ready(function() {
     }, 10000);
 
     //Tooltips configuration
-    $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"], i[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"]').tooltip();
 
     //delete link
     deleteLink();

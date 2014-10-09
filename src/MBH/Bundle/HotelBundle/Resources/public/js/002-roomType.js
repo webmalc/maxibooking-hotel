@@ -11,7 +11,7 @@ $(document).ready(function() {
         maxboostedstep: 4
     });
 
-    $('#mbh_bundle_hotelbundle_room_type_type_additionalPlaces').TouchSpin({
+    $('#mbh_bundle_hotelbundle_room_type_type_additionalPlaces, .spinner').TouchSpin({
         min: 0,
         max: 10,
         step: 1,
