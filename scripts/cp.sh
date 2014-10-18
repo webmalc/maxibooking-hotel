@@ -30,6 +30,7 @@ bin/console cache:clear
 bin/console cache:clear --env=prod
 bin/console mbh:demo:load --name=$1
 bin/console mbh:cache:generate --no-debug
+bin/console mbh:demo:online_form
 
 
 

@@ -483,11 +483,12 @@ class RoomType extends Base
 
     public function uploadImage(\Symfony\Component\HttpFoundation\File\UploadedFile $image = null)
     {
-        $this->image = null;
-
         if (empty($image)) {
             return;
         }
+
+        $this->image = null;
+
         $newName = $this->id . '.'. $image->guessExtension();
         $image->move($this->getUploadRootDir(), $newName);
 

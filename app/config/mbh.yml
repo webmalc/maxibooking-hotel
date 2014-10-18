@@ -26,7 +26,7 @@ parameters:
           result:
             width: 'auto'
             height: 'auto'
-            url: 'http://test.h/hotel/results.html'
+            url: '/demo/results.html'
           payment_types:
             in_hotel: 'Оплата при заселении'
             online_full: 'Предварительная оплата'

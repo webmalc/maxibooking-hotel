@@ -80,7 +80,7 @@ class FixturesCommand extends ContainerAwareCommand
                ->setIsDefault(true)
                ->setBegin($from)
                ->setEnd($to)
-               ->setIsOnline(false)
+               ->setIsOnline(true)
                ->addFoodPrice($roFood->setType('RO')->setPrice(0))
                ->addFoodPrice($bbFood->setType('BB')->setPrice(300))
         ;

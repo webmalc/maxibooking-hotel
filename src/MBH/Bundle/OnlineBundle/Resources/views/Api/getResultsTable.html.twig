@@ -48,7 +48,9 @@
                                 </div>
                             </div>
                         {% endif %}
+                        {% if result.roomType.getImage(true) is not empty %}
                         <img class="mbh-roomType-image" src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}{{ result.roomType.getImage(true) }}">
+                        {% endif %}
                     </td>
                     <td><span class="mbh-results-tariff"
                               data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span></td>

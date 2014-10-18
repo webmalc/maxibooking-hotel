@@ -112,9 +112,9 @@ class ApiController extends Controller
             $hotels[] = $result->getRoomType()->getHotel()->getId();
         }
 
-
-
         $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
+
+
 
         return [
             'results' => $results,
