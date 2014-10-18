@@ -11,6 +11,16 @@ class TariffMainType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $days = [
+            1 => 'Понедельник',
+            2 => 'Вторник',
+            3 => 'Среда',
+            4 => 'Четверг',
+            5 => 'Пятница',
+            6 => 'Суббота',
+            7 => 'Воскресенье',
+        ];
+
         $builder
                 ->add('fullTitle', 'text', [
                     'label' => 'Название',
@@ -49,6 +59,14 @@ class TariffMainType extends AbstractType
                     'attr' => array('class' => 'datepicker end-datepiker', 'data-date-format' => 'dd.mm.yyyy'),
                     'help' => 'Дата конца действия тарифа'
                 ))
+                ->add('weekDays', 'choice', [
+                    'label' => 'Дни недели',
+                    'group' => 'Общаяя информация',
+                    'required' => false,
+                    'multiple' => true,
+                    'choices' => $days,
+                    'help' => 'Дни в которые тариф активен. Если дни не выбраны, то тариф активен всю неделю.'
+                ])
                 ->add('minPackageDuration', 'text', [
                     'label' => 'Минимальная длина брони',
                     'group' => 'Настройки',

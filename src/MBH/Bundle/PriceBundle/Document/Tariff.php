@@ -195,6 +195,14 @@ class Tariff extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isEnabled = true;
+
+    /**
+     * @var array
+     * @Gedmo\Versioned
+     * @ODM\Collection
+     * @Assert\Choice(choices = {1, 2, 3, 4, 5, 6, 7}, multiple=true)
+     */
+    protected $weekDays = [];
    
     /**
      * Set hotel
@@ -616,5 +624,27 @@ class Tariff extends Base
     public function getIsEnabled()
     {
         return $this->isEnabled;
+    }
+
+    /**
+     * Set weekDays
+     *
+     * @param collection $weekDays
+     * @return self
+     */
+    public function setWeekDays($weekDays)
+    {
+        $this->weekDays = $weekDays;
+        return $this;
+    }
+
+    /**
+     * Get weekDays
+     *
+     * @return collection $weekDays
+     */
+    public function getWeekDays()
+    {
+        return $this->weekDays;
     }
 }

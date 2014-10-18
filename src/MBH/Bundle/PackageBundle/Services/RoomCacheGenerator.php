@@ -255,6 +255,7 @@ class RoomCacheGenerator
      */
     public function generateForTariff(Tariff $tariff, RoomType $calcRoomType = null, \DateTime $calcBegin = null, \DateTime $calcEnd = null)
     {
+        (empty($tariff->getWeekDays())) ? $weekDays = [] : $weekDays = $tariff->getWeekDays();
         $total = 0;
         $begin = new \DateTime();
         $begin->setTime(0, 0, 0);
@@ -274,6 +275,10 @@ class RoomCacheGenerator
         $end->modify('+1 day');
 
         foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $date) {
+
+            if(!empty($weekDays) && !in_array($date->format('N'), $weekDays)) {
+                continue;
+            }
 
             foreach ($tariff->getHotel()->getRoomTypes() as $roomType) {
 
