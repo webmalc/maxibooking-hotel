@@ -41,7 +41,13 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         ;
 
         if (!$entities->count()) {
-            return $this->redirect($this->generateUrl('price_service_category_new'));
+            $serviceCategory = new ServiceCategory();
+            $serviceCategory->setFullTitle('Основные')
+                ->setHotel($this->get('mbh.hotel.selector')->getSelected())
+            ;
+            $dm->persist($serviceCategory);
+            $dm->flush();
+            $entities = [$serviceCategory];
         }
         
         return [

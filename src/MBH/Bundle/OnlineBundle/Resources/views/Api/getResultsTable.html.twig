@@ -130,7 +130,7 @@
                         {% if hotels|length > 1 %}
                             <td><span class="mbh-results-services-hotel" data-id="{{ service.category.hotel.id }}">{{ service.category.hotel.fullTitle }}</span></td>
                         {% endif %}
-                        <td><span class="mbh-results-services-name" data-id="{{ service.id }}">{{ service.fullTitle }}</span></td>
+                        <td><span class="mbh-results-services-name" data-id="{{ service.id }}">{{ service.fullTitle }}<br><small>{{ service.description }}</small></span></td>
                         <td><span class="mbh-results-services-prices" data-value="{{ service.price }}">{{ service.price|number_format }}</span></td>
                         <td><span class="mbh-results-services-units">{{ servicesConfig.units[service.unit]|default('Штука') }}</span></td>
                         <td>
