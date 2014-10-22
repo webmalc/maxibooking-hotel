@@ -7,7 +7,7 @@ $(document).ready(function () {
         event.preventDefault();
         $('#entity-delete-form').submit();
     });
-    
+
     //BootstrapSwitch configuration
     $('input[type="checkbox"]').not('.plain-html').bootstrapSwitch({
         'size': 'small',
@@ -30,7 +30,7 @@ $(document).ready(function () {
             }
         }
     });
-    
+
     //areYouSure
     $('.form-horizontal, .form-inline, .are-you-sure').areYouSure({'message': 'Внесенные изменения не сохранены!'});
 
@@ -38,9 +38,29 @@ $(document).ready(function () {
     $('.datepicker').datepicker({
         language: "ru",
         todayHighlight: true,
-        autoclose: true
+        autoclose: true,
     });
-    
+
+    $('.datepicker, #mbh_bundle_packagebundle_touristtype_birthday').keyup(function(e) {
+
+        if(e.keyCode == 8 || e.keyCode == 46 || e.keyCode == 37) {
+            return;
+        }
+        var str = $(this).val().replace(/[^0-9]/g,'').substr(0, 8);
+        if (str.length > 1) {
+            var str = [str.slice(0, 2), '.', str.slice(2)].join('');
+        }
+        if (str.length > 4) {
+            var str = [str.slice(0, 5), '.', str.slice(5)].join('');
+        }
+        $(this).val(str);
+
+        if(str.length == 10) {
+            $(this).datepicker('hide');
+        }
+
+    });
+
     (function(){
         var begin = $('.begin-datepiker'),
             end =   $('.end-datepiker'),
@@ -48,9 +68,9 @@ $(document).ready(function () {
                 begin.datepicker('setEndDate', end.datepicker('getDate'));
                 end.datepicker('setStartDate', begin.datepicker('getDate'));
             };
-            
+
             set();
-            
+
             begin.change(function(){
                 set();
                 if (!end.val()) {
@@ -66,4 +86,3 @@ $(document).ready(function () {
     }());
 
 });
-

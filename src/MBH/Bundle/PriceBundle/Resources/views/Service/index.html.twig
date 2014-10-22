@@ -38,6 +38,7 @@
                                 <th class="td-xs"></th>
                                 <th>Название</th>
                                 <th class="td-xl">Цена</th>
+                                <th class="td-sm">Единица измерения</th>
                                 <th class="td-md"></th>
                             </tr>
                         </thead>
@@ -47,6 +48,7 @@
                                     <td><i class="fa fa-plug"></i></td>
                                     <td><a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}'>{{ entry.name }}</a></td>
                                     <td><input name="entries[{{ entry.id }}]" class="form-control spinner price-spinner input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}"></td>
+                                    <td class="text-center">{{ config.units[entry.unit]|default('Штука') }}</td>
                                     <td class="text-center">
                                         <div class='btn-list'>
                                             <a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>

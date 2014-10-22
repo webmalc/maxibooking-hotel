@@ -45,7 +45,8 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         }
         
         return [
-            'entities' => $entities
+            'entities' => $entities,
+            'config' => $this->container->getParameter('mbh.services')
         ];
     }
 
@@ -103,7 +104,9 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
 
         $entry = new Service();
         $form = $this->createForm(
-            new ServiceType(), $entry
+            new ServiceType(),
+            $entry,
+            ['units' => $this->container->getParameter('mbh.services')['units']]
         );
 
         return [
@@ -135,7 +138,9 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $entry->setCategory($entity);
 
         $form = $this->createForm(
-            new ServiceType(), $entry
+            new ServiceType(),
+            $entry,
+            ['units' => $this->container->getParameter('mbh.services')['units']]
         );
 
         $form->submit($request);
@@ -183,7 +188,9 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         }
 
         $form = $this->createForm(
-            new ServiceType(), $entry
+            new ServiceType(),
+            $entry,
+            ['units' => $this->container->getParameter('mbh.services')['units']]
         );
 
         return [
@@ -213,7 +220,9 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         }
 
         $form = $this->createForm(
-            new ServiceType(), $entry
+            new ServiceType(),
+            $entry,
+            ['units' => $this->container->getParameter('mbh.services')['units']]
         );
 
         $form->submit($request);

@@ -445,6 +445,29 @@ class Hotel extends Base
     {
         return $this->servicesCategories;
     }
+    
+    /**
+     * Get services list
+     * @param boolean $online
+     * @return array
+     */
+    public function getServices($online = false)
+    {
+        $result = [];
+        
+        foreach ($this->servicesCategories as $serviceCategory) {
+            foreach ($serviceCategory->getServices() as $service) {
+                if ($online && !$service->getIsOnline()) {
+                    continue;
+                }
+                if ($service->getPrice() !== null) { 
+                    $result[] = $service;
+                }
+            }
+        }
+        
+        return $result;
+    }
 
     /**
      * Set maxPackageDuration

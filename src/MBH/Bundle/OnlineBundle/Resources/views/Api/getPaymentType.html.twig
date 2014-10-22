@@ -5,7 +5,10 @@
             Даты: <strong>{{ request.begin }} - {{ request.end }}.</strong>
             Дни/ночи: <strong>{{ request.days }}/<span id="mbh-package-info-nights">{{ request.nights }}</span></strong>.
             Номеров: <strong>{{ request.packages|length }}</strong><br />
-            Заказ на сумму: <strong><span id="mbh-package-info-total">{{ request.total }}</span>&nbsp;<i class="fa fa-ruble"></i></strong>{% if request.tariff is defined %}. Тариф: <strong> {{ request.tariff.title }} </strong>{% endif %}
+            Заказ на сумму: <strong><span id="mbh-package-info-total">{{ request.total }}</span>&nbsp;<i class="fa fa-ruble"></i></strong>&nbsp; Номера: <span id="mbh-package-info-total-packages">{{ request.totalPackages }}</span>&nbsp;<i class="fa fa-ruble"></i>&nbsp;Услуги: <span id="mbh-package-info-total-services">{{ request.totalServices }}</span>&nbsp;<i class="fa fa-ruble"></i><br />
+            {% if request.tariff is defined %}
+                Тариф: <strong> {{ request.tariff.title }} </strong>
+            {% endif %}
         </div>
 
         <div id="mbh-payment-types">

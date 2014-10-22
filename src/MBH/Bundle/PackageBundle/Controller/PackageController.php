@@ -650,7 +650,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         return [
             'entity' => $entity,
             'logs' => $this->logs($entity),
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'config' => $this->container->getParameter('mbh.services')
         ];
     }
 

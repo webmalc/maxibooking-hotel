@@ -1,4 +1,11 @@
 parameters:
+    #mbh services
+    mbh.services:
+        units:
+            piece: 'Штука'
+            day: 'Сутки'
+            hour: 'Час'
+
     #organization info
     mbh.organization:
       title: 'OOO "Название предприятия"'
@@ -26,7 +33,7 @@ parameters:
           result:
             width: 'auto'
             height: 'auto'
-            url: '/demo/results.html'
+            url: 'http://test.h/hotel/results.html'
           payment_types:
             in_hotel: 'Оплата при заселении'
             online_full: 'Предварительная оплата'

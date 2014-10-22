@@ -52,7 +52,7 @@
         {%- elseif item.uri is not empty and (not item.current or options.currentAsLink) %}
             {{ block('linkElement') }}
         {%- else %}
-            {{ block('spanElement') }}
+            {{ block('linkElement') }}
         {%- endif %}
 {# render the list of children#}
         {{ block('list') }}

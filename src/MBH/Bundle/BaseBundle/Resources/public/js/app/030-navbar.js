@@ -3,14 +3,14 @@ $(document).ready(function () {
     'use strict';
     
     //Set active menu link
-    (function () {
+    /*(function () {
         $('#navbar-main ul li[class != "dropdown-toggle"] a').each(function () {
             if (window.location.pathname.toLowerCase().indexOf($(this).attr('href')) >= 0) {
                 
             }
         });
-    }());
-    
+    }());*/
+
     //Toggle menus
     (function () {
         var toggleLink = $('#menu-toggle-link a'),

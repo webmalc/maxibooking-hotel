@@ -18,7 +18,7 @@ $(document).ready(function() {
     });
 
     //Datatables
-    $.extend( $.fn.dataTable.defaults, {
+    $.extend($.fn.dataTable.defaults, {
         "pageLength": 50,
         "stateSave": true,
         "language": {
@@ -47,7 +47,7 @@ $(document).ready(function() {
             deleteLink();
         }
     });
-    
+
     var table = $('table.table-striped').not('.not-auto-datatable').dataTable();
 
     if (!$('table.table-striped').hasClass("without-fixed-header") && table.length) {
@@ -88,6 +88,3 @@ $(document).ready(function() {
         $('#list-export').find('a').addClass('navbar-btn');
     }
 });
-
-
-

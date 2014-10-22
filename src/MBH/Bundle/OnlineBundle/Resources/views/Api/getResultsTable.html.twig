@@ -1,5 +1,5 @@
 {% spaceless %}
-
+    
     {% if results|length %}
 
         <div id="mbh-results-duration">
@@ -26,14 +26,14 @@
                 <th id="mbh-results-table-th-tourist">Гости</th>
                 <th id="mbh-results-table-th-food">Питание</th>
                 <th id="mbh-results-table-th-price">Цена/номер</th>
-                <th id="mbh-results-table-th-count">Количество</th>
+                <th id="mbh-results-table-th-amount">Количество</th>
             </tr>
             </thead>
             {% for result in results %}
                 <tbody>
                 <tr>
                     {% if hotels|length > 1 %}
-                        <td>{{ result.roomType.hotel.fullTitle }}</td>
+                        <td><span class="mbh-results-hotel" data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span></td>
                     {% endif %}
                     <td>
                         <span class="mbh-results-roomType"
@@ -108,8 +108,52 @@
                 </tbody>
             {% endfor %}
         </table>
+
+        {% if services|length %}
+        <div id="mbh-results-services-wrapper">
+            <h3>Услуги</h3>
+            <table id="mbh-results-services-table">
+                <thead>
+                    <tr>
+                        {% if hotels|length > 1 %}
+                        <th id="mbh-results-table-services-th-hotel">Отель</th>
+                        {% endif %}
+                        <th id="mbh-results-table-services-th-service">Услуга</th>
+                        <th id="mbh-results-table-services-th-price">Цена</th>
+                        <th id="mbh-results-table-services-th-unit">Единица измерения</th>
+                        <th id="mbh-results-table-services-th-amount">Количество</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in services %}
+                    <tr>
+                        {% if hotels|length > 1 %}
+                            <td><span class="mbh-results-services-hotel" data-id="{{ service.category.hotel.id }}">{{ service.category.hotel.fullTitle }}</span></td>
+                        {% endif %}
+                        <td><span class="mbh-results-services-name" data-id="{{ service.id }}">{{ service.fullTitle }}</span></td>
+                        <td><span class="mbh-results-services-prices" data-value="{{ service.price }}">{{ service.price|number_format }}</span></td>
+                        <td><span class="mbh-results-services-units">{{ servicesConfig.units[service.unit]|default('Штука') }}</span></td>
+                        <td>
+                            <select class="mbh-results-services-count select2">
+                                <option value="0" selected="selected">0</option>
+                                {% for i in 1..100 %}
+                                <option value="{{ i }}">{{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+                        
         <div id="mbh-results-actions">
-            <span id="mbh-results-total">Итого: <span id="mbh-results-total-sum">0</span> <i
+            <span id="mbh-results-packages-total">Номера: <span id="mbh-results-total-packages-sum">0</span>&nbsp;<i
+                        class="fa fa-ruble"></i></span> &nbsp;
+            <span id="mbh-results-services-total">Услуги: <span id="mbh-results-total-services-sum">0</span>&nbsp;<i
+                        class="fa fa-ruble"></i></span> &nbsp;
+            <span id="mbh-results-total">Итого: <span id="mbh-results-total-sum">0</span>&nbsp;<i
                         class="fa fa-ruble"></i></span>
             <button id="mbh-results-next">Продолжить
                 <small><i class="fa fa-chevron-right "></i></small>

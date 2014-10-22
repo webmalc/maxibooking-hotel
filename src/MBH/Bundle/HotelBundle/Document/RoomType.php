@@ -141,7 +141,7 @@ class RoomType extends Base
      * @Gedmo\Versioned
      * @ODM\String()
      */
-    public $image;
+    protected $image;
 
     /**
      * Set hotel

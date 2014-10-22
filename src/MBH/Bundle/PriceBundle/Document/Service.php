@@ -93,6 +93,24 @@ class Service extends Base
      * )
      */
     protected $price;
+    
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean(name="isOnline")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isOnline = true;
+    
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="unit")
+     * @Assert\NotNull()
+     * @Assert\Choice(choices = {"hour", "day", "piece"})
+     */
+    protected $unit;
 
     /**
      * Set category
@@ -213,5 +231,49 @@ class Service extends Base
             return $this->title;
         }
         return $this->fullTitle;
+    }
+
+    /**
+     * Set isOnline
+     *
+     * @param boolean $isOnline
+     * @return self
+     */
+    public function setIsOnline($isOnline)
+    {
+        $this->isOnline = $isOnline;
+        return $this;
+    }
+
+    /**
+     * Get isOnline
+     *
+     * @return boolean $isOnline
+     */
+    public function getIsOnline()
+    {
+        return $this->isOnline;
+    }
+
+    /**
+     * Set unit
+     *
+     * @param string $unit
+     * @return self
+     */
+    public function setUnit($unit)
+    {
+        $this->unit = $unit;
+        return $this;
+    }
+
+    /**
+     * Get unit
+     *
+     * @return string $unit
+     */
+    public function getUnit()
+    {
+        return $this->unit;
     }
 }

@@ -3,6 +3,7 @@
 namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -107,21 +108,25 @@ class ApiController extends Controller
 
         $results = $this->get('mbh.package.search')->search($query);
 
-        $hotels  = [];
+        $hotels = $services = [];
         foreach ($results as $result) {
-            $hotels[] = $result->getRoomType()->getHotel()->getId();
+            $hotel = $result->getRoomType()->getHotel();
+            $hotels[$hotel->getId()] = $hotel;
+        }
+        foreach ($hotels as $hotel) {
+            $services = array_merge($services, $hotel->getServices(true));
         }
 
         $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
-
-
 
         return [
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
             'foodTypes' => $this->container->getParameter('mbh.food.types'),
-            'hotels' => array_unique($hotels),
-            'tariffResults' => $tariffResults
+            'hotels' => $hotels,
+            'tariffResults' => $tariffResults,
+            'services' => $services,
+            'servicesConfig' => $this->container->getParameter('mbh.services')
         ];
     }
 
@@ -249,6 +254,8 @@ class ApiController extends Controller
         $helper = $this->get('mbh.helper');
         $packages = [];
 
+
+        // create packages
         foreach ($request->packages as $info) {
 
             $tourist = $dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
@@ -292,6 +299,34 @@ class ApiController extends Controller
             $dm->flush();
 
             $packages[] = $package;
+        }
+
+        //create services
+        foreach ($request->services as $serviceInfo) {
+            $service = $dm->getRepository('MBHPriceBundle:Service')->find($serviceInfo->id);
+
+            if (!$service) {
+                continue;
+            }
+            //find package
+            foreach ($packages as $servicePackage) {
+
+                if ($servicePackage->getTariff()->getHotel()->getId() == $service->getCategory()->getHotel()->getId()) {
+
+                    $servicePackage = $dm->getRepository('MBHPackageBundle:Package')->find($servicePackage->getId());
+
+                    $packageService = new PackageService();
+                    $packageService->setPackage($servicePackage)
+                        ->setService($service)
+                        ->setAmount((int) $serviceInfo->amount)
+                        ->setPrice($service->getPrice());
+
+                    $dm->persist($packageService);
+                    $dm->flush();
+
+                    break 1;
+                }
+            }
         }
 
         return $packages;

@@ -114,13 +114,13 @@ class Builder extends ContainerAware
                 ->getUser()
         ;
         if ($this->container->get('security.context')->isGranted('ROLE_ADMIN')) {
-            $menu->addChild('management', ['route' => '_welcome', 'label' => '&nbsp;'])
+            $menu->addChild('management', ['url' => 'http://google.ru', 'label' => '&nbsp;'])
                     ->setAttributes([
                         'icon' => 'fa fa-gears fa-lg',
                         'id' => 'menu-toggle-link',
                         'data-toggle' => 'tooltip',
                         'data-placement' => "bottom",
-                        'title' => "Перейти к настройкам"
+                        'title' => "Перейти к настройкам",
                     ])
             ;
             if (!empty($options['management'])) {
