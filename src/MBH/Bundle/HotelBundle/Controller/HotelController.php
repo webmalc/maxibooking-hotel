@@ -79,6 +79,7 @@ class HotelController extends Controller
     public function newAction()
     {
         $entity = new Hotel();
+        $entity->setSaleDays(365);
         $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('mbh.food.types')]);
 
         return array(
@@ -110,7 +111,7 @@ class HotelController extends Controller
                     ->set('success', 'Запись успешно создана.')
             ;
             $this->get('mbh.room.cache.generator')->generateInBackground();
-            
+
             return $this->afterSaveRedirect('hotel', $entity->getId());
         }
 
@@ -140,7 +141,7 @@ class HotelController extends Controller
         }
 
         $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('mbh.food.types')]);
-        
+
         $form->bind($request);
 
         if ($form->isValid()) {
@@ -183,9 +184,9 @@ class HotelController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException();
         }
-        
+
         $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('mbh.food.types')]);
-        
+
         return array(
             'entity' => $entity,
             'form' => $form->createView(),

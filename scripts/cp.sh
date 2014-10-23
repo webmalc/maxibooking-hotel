@@ -17,6 +17,7 @@ bin/console mbh:demo:apc --name='demo_'$1_$RANDOM
 bin/console cache:clear
 bin/console cache:clear --env=prod
 bin/console mbh:demo:params --db='demo_'$1
+bin/console mbh:demo:insert_scripts
 bin/console fos:js-routing:dump
 bin/console assets:install --symlink
 bin/console assetic:dump

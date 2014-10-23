@@ -30,10 +30,15 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
         $dm = $this->get('doctrine_mongodb')->getManager();
         $entity = $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]);
 
+        ($dm->getRepository('MBHHotelBundle:Hotel')->findOneBy(['isHostel' => true])) ? $hostel = true : $hostel = false;
+
         $form = $this->createForm(
             new FormType(),
             $entity,
-            ['paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types']]
+            [
+                'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types'],
+                'isHostel' => $hostel,
+            ]
         );
 
         return [
@@ -61,15 +66,24 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
             $entity = new FormConfig();
         }
 
+        ($dm->getRepository('MBHHotelBundle:Hotel')->findOneBy(['isHostel' => true])) ? $hostel = true : $hostel = false;
+
         $form = $this->createForm(
             new FormType(),
             $entity,
-            ['paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types']]
+            [
+                'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types'],
+                'isHostel' => $hostel,
+            ]
         );
 
         $form->submit($request);
 
         if ($form->isValid()) {
+
+            if($hostel) {
+                $entity->setTourists(false);
+            }
             $dm->persist($entity);
             $dm->flush();
 

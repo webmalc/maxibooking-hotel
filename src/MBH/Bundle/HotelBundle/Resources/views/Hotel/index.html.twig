@@ -9,10 +9,10 @@
             <tr>
                 <th class="td-xs"></th>
                 <th>Название</th>
-                <th>Префикс</th>
-                <th class="td-md">Дни продажи</th>
-                <th class="td-md">Типы питания</th>
-                <th class="td-md">Выбран по умолчанию</th>
+                <th class="td-md text-center">Префикс</th>
+                <th class="td-md text-center">Дни продажи</th>
+                <th class="td-md text-center">Типы питания</th>
+                <th class="td-md text-center">Выбран по умолчанию</th>
                 <th class="td-sm"></th>
             </tr>
         </thead>
@@ -23,9 +23,9 @@
                     <td>
                         <a href="{{ path('hotel_edit', { 'id': entity.id }) }}" rel="main" title="Редактирование записи" data-toggle="tooltip">{{ entity.name }}</a>
                     </td>
-                    <td>{{ entity.prefix }}</td>
-                    <td>{{ entity.saleDays }}</td>
-                    <td>
+                    <td class="text-center">{{ entity.prefix }}</td>
+                    <td class="text-center">{{ entity.saleDays }}</td>
+                    <td class="text-center">
                         {{ entity.food|join(', ') }}
                     </td>
                     <td class="text-center">

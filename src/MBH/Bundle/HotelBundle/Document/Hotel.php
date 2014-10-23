@@ -128,6 +128,15 @@ class Hotel extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isHostel = false;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
      * @ODM\Boolean(name="isDefault")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
@@ -240,7 +249,7 @@ class Hotel extends Base
     /**
      * Set saleDays
      *
-     * @param collection $saleDays
+     * @param int $saleDays
      * @return self
      */
     public function setSaleDays($saleDays)
@@ -511,5 +520,27 @@ class Hotel extends Base
     public function getMinPackageDuration()
     {
         return $this->minPackageDuration;
+    }
+
+    /**
+     * Set isHostel
+     *
+     * @param boolean $isHostel
+     * @return self
+     */
+    public function setIsHostel($isHostel)
+    {
+        $this->isHostel = $isHostel;
+        return $this;
+    }
+
+    /**
+     * Get isHostel
+     *
+     * @return boolean $isHostel
+     */
+    public function getIsHostel()
+    {
+        return $this->isHostel;
     }
 }

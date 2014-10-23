@@ -9,6 +9,8 @@
         {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'room_type_delete' } %}
         {{ form_end(form) }}
 
+        {% if selected_hotel().getIsHostel %}<span id="hotel_is_hostel"></span>{% endif %}
+
         {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
 
 {% endblock %}

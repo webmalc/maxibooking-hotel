@@ -14,7 +14,7 @@ class PackageAccommodationType extends AbstractType
     {
         $builder
             ->add('room', 'choice', [
-                    'label' => 'Комната',
+                    'label' => ($options['isHostel']) ? 'Комната/койко-место': 'Комната',
                     'required' => true,
                     'empty_value' => '',
                     'group' => 'Выбрать размещение',
@@ -28,7 +28,8 @@ class PackageAccommodationType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults([
-            'rooms' => []
+            'rooms' => [],
+            'isHostel' => false
         ]);
     }
 

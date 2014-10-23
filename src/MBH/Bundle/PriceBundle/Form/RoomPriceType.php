@@ -26,7 +26,20 @@ class RoomPriceType extends AbstractType
         }
 
         foreach ($roomTypes as $roomType) {
-            
+
+            if ($roomType->getHotel()->getIsHostel() && $roomType->getCalculationType() == 'customPrices') {
+                $attr = [
+                    'disabled' => 'disabled',
+                    'placeholder' => $placeholder,
+                    'class' => 'spinner price-spinner'
+                ];
+            } else {
+                $attr = [
+                    'placeholder' => $placeholder,
+                    'class' => 'spinner price-spinner'
+                ];
+            }
+
             $builder
                     ->add($roomType->getId() . '_price', 'text', [
                         'label' => 'Основная цена',
@@ -43,10 +56,7 @@ class RoomPriceType extends AbstractType
                         'label' => 'Доп. место ребенок',
                         'group' => $roomType->getName(),
                         'required' => false,
-                        'attr' => [
-                            'placeholder' => $placeholder,
-                            'class' => 'spinner price-spinner'
-                        ],
+                        'attr' => $attr,
                         'data' => (isset($prices[$roomType->getId() . '_additionalAdultPrice']) ? $prices[$roomType->getId() . '_additionalAdultPrice'] : null),
                         'constraints' => new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                     ])
@@ -54,10 +64,7 @@ class RoomPriceType extends AbstractType
                         'label' => 'Доп. место взрослый',
                         'group' => $roomType->getName(),
                         'required' => false,
-                        'attr' => [
-                            'placeholder' => $placeholder,
-                            'class' => 'spinner price-spinner'
-                        ],
+                        'attr' => $attr,
                         'data' => (isset($prices[$roomType->getId() . '_additionalChildPrice']) ? $prices[$roomType->getId() . '_additionalChildPrice'] : null),
                         'constraints' => new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                     ])

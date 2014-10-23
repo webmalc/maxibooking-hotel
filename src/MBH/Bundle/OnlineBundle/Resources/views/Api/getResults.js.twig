@@ -119,13 +119,22 @@ jQuery(document).ready(function () {
                         servicesWrapper.find('tbody tr').hide();
 
                         if (selected.length) {
-                            servicesWrapper.show();
+                            var i = 0;
                             selected.each(function () {
                                 var hotelId = jQuery(this).closest('tr').find('span.mbh-results-hotel').attr('data-id');
                                 jQuery('span.mbh-results-services-hotel').filter(function() {
-                                    return $(this).attr('data-id') == hotelId;
+                                    if ($(this).attr('data-id') == hotelId) {
+                                        i++;
+                                        return true;
+                                    } else {
+                                        return false;
+                                    }
+
                                 }).closest('tr').show();
                             });
+                            if(i) {
+                                servicesWrapper.show();
+                            }
                         }
                     }
                     ;

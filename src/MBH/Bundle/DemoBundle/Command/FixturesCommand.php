@@ -54,6 +54,7 @@ class FixturesCommand extends ContainerAwareCommand
         $to = clone $from;
         $to->modify('+3 months');
         $colors = ['008000', 'ff6600', '0000ff'];
+        $isHostel = ($hotelInfo['hotel_type'] == 'hostel') ? true : false;
 
         // Hotel
         $hotel = new Hotel();
@@ -63,6 +64,7 @@ class FixturesCommand extends ContainerAwareCommand
               ->setFood(['RO', 'BB'])
               ->setSaleDays(365)
               ->setCreatedBy('demo')
+              ->setIsHostel($isHostel)
         ;
         $numberInfo = $hotelInfo['hotel_numbertype'];
 
@@ -92,7 +94,7 @@ class FixturesCommand extends ContainerAwareCommand
             $roomType = new RoomType();
             $roomType->setFullTitle($roomTypeName)
                      ->setColor($colors[$key])
-                     ->setCalculationType('perRoom')
+                     ->setCalculationType(($isHostel) ? 'customPrices' : 'perRoom')
                      ->setHotel($hotel)
                      ->setAdditionalPlaces(0)
                      ->setPlaces($numberInfo['acc'][$key])
@@ -113,10 +115,13 @@ class FixturesCommand extends ContainerAwareCommand
             //Rooms
             for ($i = 1; $i <= $numberInfo['count'][$key]; $i++) {
                 $room = new Room();
+
+                ($isHostel) ? $roomName =  $roomType->getFullTitle() . '/' .sprintf("%02d", $i) : $roomName = sprintf("%02d", $i);
+
                 $room->setCreatedBy('demo')
                     ->setHotel($hotel)
                     ->setRoomType($roomType)
-                    ->setTitle(sprintf("%02d", $i))
+                    ->setTitle($roomName)
                 ;
 
                 if (rand(1, $numberInfo['count'][$key]-1) == $i) {

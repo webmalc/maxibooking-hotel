@@ -1,6 +1,6 @@
 {% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
 
-{% set small_title = "cписок" %}    
+{% set small_title = "cписок" %}
 
 {% block content %}
 
@@ -21,20 +21,23 @@
     <!-- Tabs content -->
     <div class="tab-content">
         {% for entity in entities %}
+
+            {% if entity.hotel.isHostel and entity.calculationType == 'customPrices' %}{% set hostel = true %}{% else %}{% set hostel = false %}{% endif %}
+
             <div class="tab-pane {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}active{% endif %}" id="{{entity.id}}">
 
                 <!-- Tab actions -->
                 <div class="btn-list spacer-bottom text-right">
                     <a href="{{ path('room_type_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="Редактировать тип номера <{{entity.name}}>"><i class="fa fa-edit"></i> Редактировать</a>
-                    <a href="{{ path('room_type_room_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="Создать номера для типа номера <{{entity.name}}>"><i class="fa fa-plus"></i> Добавить номер</a>
-                    <a href="{{ path('room_type_generate_rooms', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="Сгенерировать номера для типа номера <{{entity.name}}>"><i class="fa fa-magic"></i> Сгенерировать номера</a>
+                    <a href="{{ path('room_type_room_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="Создать номера для типа номера <{{entity.name}}>"><i class="fa fa-plus"></i> Добавить {{ hostel ? 'койко-место' : 'номер' }}</a>
+                    <a href="{{ path('room_type_generate_rooms', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="Сгенерировать номера для типа номера <{{entity.name}}>"><i class="fa fa-magic"></i> Сгенерировать {{ hostel ? 'койко-места' : 'номера' }}</a>
                     <a href="{{ path('room_type_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="Удалить тип номера <{{entity.name}}>"><i class="fa fa-trash-o"></i> Удалить</a>
                 </div>
 
                 <!-- Rooms list -->
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Список номеров</h3>
+                        <h3 class="panel-title">Список {{ hostel ? 'койко-мест' : 'номеров' }}</h3>
                     </div>
                     <div class="panel-body">
                         <table data-room-type-id="{{entity.id}}" class="table rooms-table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">

@@ -1,6 +1,13 @@
 {% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
 
-{% set small_title = "генерация номеров для типа номера <" ~ entity.name ~ "> #" ~ entity.id %}
+{% if entity.hotel.isHostel and entity.calculationType == 'customPrices' %}
+    {% set hostel = true %}
+    {% set small_title = "генерация койко-мест для типа номера <" ~ entity.name ~ "> #" ~ entity.id %}
+{% else %}
+    {% set hostel = false %}
+    {% set small_title = "генерация номеров для типа номера <" ~ entity.name ~ "> #" ~ entity.id %}
+{% endif %}
+
 
 {% block content %}
 

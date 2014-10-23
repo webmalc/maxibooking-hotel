@@ -1,10 +1,10 @@
 parameters:
     #mbh services
     mbh.services:
-        units:
-            piece: 'Штука'
-            day: 'Сутки'
-            hour: 'Час'
+      units:
+        piece: 'Штука'
+        day: 'Сутки'
+        hour: 'Час'
 
     #organization info
     mbh.organization:
@@ -99,8 +99,12 @@ parameters:
         
     #Типы рассчета
     mbh.calculation.types:
-        perRoom:      "Цена за номер"
-        customPrices: "Цена за человека"
+        hotel:
+          perRoom:      "Цена за номер"
+          customPrices: "Цена за человека"
+        hostel:
+          perRoom:      "Цена за номер"
+          customPrices: "Цена за койко-место"
         
     #Типы тарифов
     mbh.tariff.types:

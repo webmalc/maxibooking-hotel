@@ -8,5 +8,7 @@
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:new.html.twig' %}
     {{ form_end(form) }}
+
+    {% if selected_hotel().getIsHostel %}<span id="hotel_is_hostel"></span>{% endif %}
     
 {% endblock %}

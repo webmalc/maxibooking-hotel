@@ -16,9 +16,16 @@ class RoomTypeGenerateRoomsType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $entity = $options['entity'];
+        if ($entity && $entity->getHotel()->getIsHostel() && $entity->getCalculationType() == 'customPrices') {
+            $hostel = true;
+        } else {
+            $hostel = false;
+        }
+
         $builder
                 ->add('from', 'text', [
-                    'label' => 'Номер первой комнаты',
+                    'label' => ($hostel) ? 'Номер первого койко-места' : 'Номер первой комнаты',
                     'required' => true,
                     'attr' => ['placeholder' => '1', 'class' => 'spinner'],
                     'constraints' => [
@@ -27,7 +34,7 @@ class RoomTypeGenerateRoomsType extends AbstractType
                     ]
                 ])
                 ->add('to', 'text', [
-                    'label' => 'Номер последней комнаты',
+                    'label' => ($hostel) ? 'Номер последнего койко-места' : 'Номер последней комнаты',
                     'required' => true,
                     'attr' => ['placeholder' => '100', 'class' => 'spinner'],
                     'constraints' => [
@@ -38,8 +45,9 @@ class RoomTypeGenerateRoomsType extends AbstractType
                 ->add('prefix', 'text', [
                     'label' => 'Префикс',
                     'required' => false,
-                    'attr' => ['placeholder' => 'HTL', 'class' => 'spinner'],
-                    'help' => 'Префикс для названия номеров. Пример комнаты: HTL-12',
+                    'data' => ($hostel) ? $entity->getName() . '/' : '',
+                    'attr' => ['placeholder' => 'HTL'],
+                    'help' => 'Префикс для названия. Пример: HTL-12',
                     'constraints' => new Length(['max' => 20])
                 ])
         ;
@@ -50,7 +58,9 @@ class RoomTypeGenerateRoomsType extends AbstractType
         $resolver->setDefaults(
                 [ 'constraints' => [
                         new Callback(['methods' => [[get_class($this), 'rangeValidation']]])
-                    ]]
+                    ],
+                    'entity' => null
+                ]
         );
     }
 

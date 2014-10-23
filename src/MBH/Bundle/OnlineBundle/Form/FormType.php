@@ -31,17 +31,22 @@ class FormType extends AbstractType
                     'required' => false,
                     'help' => 'Использовать ли поле "Тип номера" в онлайн форме?'
                 ]
-            )
-            ->add(
-                'tourists',
-                'checkbox',
-                [
-                    'label' => 'Гости?',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'Использовать ли поле "Количестов гостей" в онлайн форме?'
-                ]
-            )
+            );
+        if (!$options['isHostel']) {
+            $builder
+                ->add(
+                    'tourists',
+                    'checkbox',
+                    [
+                        'label' => 'Гости?',
+                        'value' => true,
+                        'required' => false,
+                        'help' => 'Использовать ли поле "Количестов гостей" в онлайн форме?'
+                    ]
+                )
+            ;
+        }
+        $builder
             ->add(
                 'paymentTypes',
                 'choice',
@@ -60,7 +65,8 @@ class FormType extends AbstractType
         $resolver->setDefaults(
             array(
                 'data_class' => 'MBH\Bundle\OnlineBundle\Document\FormConfig',
-                'paymentTypes' => []
+                'paymentTypes' => [],
+                'isHostel' => false
             )
         );
     }

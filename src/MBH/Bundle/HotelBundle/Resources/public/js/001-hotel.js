@@ -8,7 +8,7 @@ $(document).ready(function() {
         max: 365,
         step: 1,
         boostat: 5,
-        maxboostedstep: 10,
+        maxboostedstep: 10
     });
     $('.spinner').TouchSpin({
         min: 0,

@@ -24,13 +24,19 @@ class RoomQuotaType extends AbstractType
         foreach ($roomTypes as $roomType) {
             
             (isset($quotas[$roomType->getId()])) ? $data = $quotas[$roomType->getId()] : $data = null;
-            
+
+            if ($roomType->getHotel()->getIsHostel() && $roomType->getCalculationType() == 'customPrices') {
+                $title = 'койко-места';
+            } else {
+                $title = 'номера';
+            }
+
             $builder
                     ->add($roomType->getId(), 'text', [
                         'label' => $roomType->getName(),
                         'required' => false,
                         'attr' => [
-                            'placeholder' => 'Используются все номера: ' . $roomType->getRooms()->count(),
+                            'placeholder' => 'Используются все ' . $title . ': ' . $roomType->getRooms()->count(),
                             'class' => 'spinner quota-spinner'
                         ],
                         'data' => $data,

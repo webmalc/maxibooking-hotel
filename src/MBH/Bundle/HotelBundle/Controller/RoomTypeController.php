@@ -247,7 +247,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new RoomTypeGenerateRoomsType());
+        $form = $this->createForm(new RoomTypeGenerateRoomsType(), [], ['entity' => $entity]);
 
         return array(
             'entity' => $entity,
@@ -351,8 +351,14 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     public function newAction()
     {
         $entity = new RoomType();
+
+        ($this->get('mbh.hotel.selector')->getSelected()->getIsHostel()) ? $type = 'hostel' : $type = 'hotel';
         $form = $this->createForm(
-                new RoomTypeType(), $entity, ['calculationTypes' => $this->container->getParameter('mbh.calculation.types')]
+            new RoomTypeType(),
+            $entity,
+            [
+                'calculationTypes' => $this->container->getParameter('mbh.calculation.types')[$type]
+            ]
         );
 
         return array(
@@ -373,9 +379,15 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $entity = new RoomType();
         $entity->setHotel($this->get('mbh.hotel.selector')->getSelected());
 
+        ($this->get('mbh.hotel.selector')->getSelected()->getIsHostel()) ? $type = 'hostel' : $type = 'hotel';
         $form = $this->createForm(
-                new RoomTypeType(), $entity, ['calculationTypes' => $this->container->getParameter('mbh.calculation.types')]
+            new RoomTypeType(),
+            $entity,
+            [
+                'calculationTypes' => $this->container->getParameter('mbh.calculation.types')[$type]
+            ]
         );
+
         $form->bind($request);
 
         if ($form->isValid()) {
@@ -455,9 +467,10 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
+        ($this->get('mbh.hotel.selector')->getSelected()->getIsHostel()) ? $type = 'hostel' : $type = 'hotel';
         $form = $this->createForm(
             new RoomTypeType(), $entity, [
-                'calculationTypes' => $this->container->getParameter('mbh.calculation.types'),
+                'calculationTypes' => $this->container->getParameter('mbh.calculation.types')[$type],
                 'imageUrl' => $entity->getImage(true),
                 'deleteImageUrl' => $this->generateUrl('room_type_image_delete', ['id' => $id])
             ]
@@ -508,12 +521,13 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
+        ($this->get('mbh.hotel.selector')->getSelected()->getIsHostel()) ? $type = 'hostel' : $type = 'hotel';
         $form = $this->createForm(
-                new RoomTypeType(), $entity, [
-                    'calculationTypes' => $this->container->getParameter('mbh.calculation.types'),
-                    'imageUrl' => $entity->getImage(true),
-                    'deleteImageUrl' => $this->generateUrl('room_type_image_delete', ['id' => $id])
-                ]
+            new RoomTypeType(), $entity, [
+                'calculationTypes' => $this->container->getParameter('mbh.calculation.types')[$type],
+                'imageUrl' => $entity->getImage(true),
+                'deleteImageUrl' => $this->generateUrl('room_type_image_delete', ['id' => $id])
+            ]
         );
 
         return array(

@@ -68,6 +68,13 @@ class HotelType extends AbstractType
                     'attr' => ['placeholder' => '365', 'class' => 'spinner'],
                     'help' => 'На сколько дней открыта продажа от текущего числа'
                 ])
+                ->add('isHostel', 'checkbox', [
+                    'label' => 'Хостел?',
+                    'group' => 'Настройки',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'Отель хостел или нет?'
+                ])
                 ->add('isDefault', 'checkbox', [
                     'label' => 'Выбран по умолчанию?',
                     'group' => 'Настройки',
@@ -82,7 +89,8 @@ class HotelType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
-            'food' => []
+            'food' => [],
+            'types' => [],
         ));
     }
 

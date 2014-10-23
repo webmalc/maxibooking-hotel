@@ -792,7 +792,13 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             }
         }
 
-        $form = $this->createForm(new PackageAccommodationType(), [], ['rooms' => $groupedRooms]);
+        $form = $this->createForm(
+            new PackageAccommodationType(),
+            [],
+            [
+                'rooms' => $groupedRooms,
+                'isHostel' => $this->get('mbh.hotel.selector')->getSelected()->getIsHostel()
+            ]);
 
         if ($request->getMethod() == 'PUT') {
             $form->bind($request);
