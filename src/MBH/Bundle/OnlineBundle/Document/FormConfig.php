@@ -63,6 +63,15 @@ class FormConfig extends Base
     protected $tourists = true;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $nights = false;
+
+    /**
      * @var array
      * @Gedmo\Versioned
      * @ODM\Collection
@@ -157,5 +166,27 @@ class FormConfig extends Base
     public function getPaymentTypes()
     {
         return $this->paymentTypes;
+    }
+
+    /**
+     * Set nights
+     *
+     * @param boolean $nights
+     * @return self
+     */
+    public function setNights($nights)
+    {
+        $this->nights = $nights;
+        return $this;
+    }
+
+    /**
+     * Get nights
+     *
+     * @return boolean $nights
+     */
+    public function getNights()
+    {
+        return $this->nights;
     }
 }

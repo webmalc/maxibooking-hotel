@@ -259,6 +259,7 @@ class RoomCacheGenerator
         $total = 0;
         $begin = new \DateTime();
         $begin->setTime(0, 0, 0);
+        //$begin->modify('-1 year');
         $saleDate = clone $begin;
         $saleDate->modify('+' . $tariff->getHotel()->getSaleDays() . ' day');
         $end = clone $tariff->getEnd();

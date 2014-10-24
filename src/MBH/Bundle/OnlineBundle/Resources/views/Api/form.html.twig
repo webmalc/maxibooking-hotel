@@ -16,10 +16,21 @@
         <input type="text" id="mbh-form-begin" name="begin" required value="{{ 'now'|date('d.m.Y') }}">
     </div>
 
-    <div class="mbh-form-row">
+    <div class="mbh-form-row" {% if formConfig.nights %}style='display: none;'{% endif %}>
         <label for="mbh-form-end">Дата выезда</label>
         <input type="text" id="mbh-form-end" name="end" required value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
     </div>
+
+    {% if formConfig.nights %}
+    <div class="mbh-form-row">
+        <label for="mbh-form-nights">Количество ночей</label>
+        <select name="nights" id="mbh-form-nights" required>
+        {% for i in 1..100 %}
+            <option value="{{ i }}">{{ i }}</option>
+        {% endfor %}
+        </select>
+    </div>
+    {% endif %}
 
     {% if formConfig.roomTypes and hotels|length <= 1 and hotels|first.roomTypes|length %}
     <div class="mbh-form-row">

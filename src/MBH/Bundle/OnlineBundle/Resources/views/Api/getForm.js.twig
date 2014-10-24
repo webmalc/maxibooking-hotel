@@ -9,6 +9,7 @@ jQuery(document).ready(function () {
 
     var begin = jQuery('#mbh-form-begin'),
         end = jQuery('#mbh-form-end'),
+        nights = jQuery('#mbh-form-nights'),
         adults = jQuery('#mbh-form-adults'),
         children = jQuery('#mbh-form-children'),
         button = jQuery('#mbh-form-submit'),
@@ -38,12 +39,23 @@ jQuery(document).ready(function () {
     begin.datepicker(options);
     end.datepicker(options);
 
+    // nights
+    if (nights.length) {
+        nights.change(function() {
+            var beginDate = begin.datepicker("getDate");
+            var endDate =  beginDate;
+            endDate.setDate(beginDate.getDate() + parseInt(nights.val(), 10));
+            end.datepicker('setDate', endDate);
+        });
+    }
+
     setValue(begin, query.begin);
     setValue(end, query.end);
     setValue(jQuery('#mbh-form-roomType'), query.roomType);
     setValue(jQuery('#mbh-form-hotel'), query.hotel);
     setValue(adults, query.adults);
     setValue(children, query.children);
+    setValue(nights, query.nights);
 
     begin.change(function () {
         var beginDate = begin.datepicker("getDate"),

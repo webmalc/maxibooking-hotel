@@ -48,6 +48,16 @@ class FormType extends AbstractType
         }
         $builder
             ->add(
+                'nights',
+                'checkbox',
+                [
+                    'label' => 'Поле "ночи"?',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'Использовать ли поле дату заезда и количестов ночей или дату заезда/выезда?'
+                ]
+            )
+            ->add(
                 'paymentTypes',
                 'choice',
                 [

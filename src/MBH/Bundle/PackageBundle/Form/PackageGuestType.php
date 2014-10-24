@@ -61,7 +61,7 @@ class PackageGuestType extends AbstractType
                     'constraints' => [new Date()]
                 ))
                 ->add('main', 'checkbox', [
-                    'label' => 'Основной гостя?',
+                    'label' => 'Основной гость?',
                     'group' => 'Добавить гостя',
                     'value' => true,
                     'required' => false,
