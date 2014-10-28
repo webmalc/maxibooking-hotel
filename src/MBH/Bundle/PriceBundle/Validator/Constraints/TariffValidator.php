@@ -51,6 +51,18 @@ class TariffValidator extends ConstraintValidator
                        ->execute()
         ;
 
+        if(!empty($object->getWeekDays()) && count($entities)) {
+            $allWeekDays = [];
+            foreach ($entities as $entity) {
+                (!empty($entity->getWeekDays())) ? $entityWeekDays = $entity->getWeekDays(): $entityWeekDays = [1, 2, 3, 4, 5, 6, 7];
+                $allWeekDays = array_merge($allWeekDays, $entityWeekDays);
+            }
+
+            if(empty(array_uintersect($allWeekDays, $object->getWeekDays(), 'strcasecmp'))) {
+                return true;
+            };
+        };
+
         if (count($entities)) {
             $message = '';
             foreach ($entities as $entity) {

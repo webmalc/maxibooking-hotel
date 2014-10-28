@@ -57,7 +57,7 @@
                             
                         <ul id="package-search-tariffs">
                             <li>
-                                <a href="#" {% if tariffResult.isDefault %}class="text-success"{% endif %} data-id="{{ tariffResult.id }}">
+                                <a href="#" {% if tariffResult.isDefault %}class="text-success"{% else %}data-id="{{ tariffResult.id }}{% endif %}">
                                     {% if selectedTariff == tariffResult.id or (selectedTariff is empty and tariffResult.isDefault)  %} <small><i class="fa fa-check"></i></small> {% endif %}
                                     {{ tariffResult }} <small>({{ tariffResult.hotel }})</small>
                                 </a>
