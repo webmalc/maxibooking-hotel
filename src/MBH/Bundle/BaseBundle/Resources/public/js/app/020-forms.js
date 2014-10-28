@@ -38,7 +38,7 @@ $(document).ready(function () {
     $('.datepicker').datepicker({
         language: "ru",
         todayHighlight: true,
-        autoclose: true,
+        autoclose: true
     });
 
     $('.datepicker, #mbh_bundle_packagebundle_touristtype_birthday').keyup(function(e) {

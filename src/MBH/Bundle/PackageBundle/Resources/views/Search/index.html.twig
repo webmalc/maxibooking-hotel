@@ -153,3 +153,11 @@
 
 {% endblock %} 
 
+{% block scripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            setSearchDatepickers('{{ beginDate|date('Y-m-d') }}');
+        });
+    </script>
+{% endblock %}

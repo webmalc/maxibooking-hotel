@@ -70,9 +70,14 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             }
         }
 
+        $beginDate = new \DateTime();
+        $beginDate->setTime(0,0,0);
+        $beginDate->modify($this->container->getParameter('mbh.room.cache.date.modify'));
+
         return [
             'form' => $form->createView(),
             'results' => $results,
+            'beginDate' => $beginDate,
             'tariffResults' => $tariffResults
         ];
     }

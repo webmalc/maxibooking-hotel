@@ -79,6 +79,7 @@ class Search
             }
 
         }
+
         //Delete short cache chains
         foreach ($groupedCaches as $key => $groupedCache) {
             if ($query->end->diff($query->begin)->format("%a") != count($groupedCache)) {

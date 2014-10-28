@@ -1,8 +1,12 @@
 /*global window */
+
+var setSearchDatepickers = function(date){
+    (typeof(date) === 'undefined') ? date = new Date() : date = new Date(date);
+    $('#s_begin').datepicker('setStartDate', date);
+};
+
 $(document).ready(function() {
     'use strict';
-
-    $('#s_begin').datepicker('setStartDate', new Date());
 
     //spinners
     $('#s_adults, #s_children').TouchSpin({
