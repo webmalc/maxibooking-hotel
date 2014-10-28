@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use MBH\Bundle\PackageBundle\Document\CacheQueue;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -70,25 +71,35 @@ class RoomCacheGenerator
     }
 
     /**
-     * Run generate as command 
+     * @return bool
      */
     public function generateInBackground()
     {
-        ($this->container->get('kernel')->getEnvironment() == 'prod') ? $env = '--env=prod ' : $env = '';
+        /*($this->container->get('kernel')->getEnvironment() == 'prod') ? $env = '--env=prod ' : $env = '';
 
         $process = new Process('nohup php ' . $this->console . 'mbh:cache:generate --no-debug ' . $env . '> /dev/null 2>&1 &');
-        $process->run();
+        $process->run();*/
+
+        if ($this->dm->getRepository('MBHPackageBundle:CacheQueue')->findOneBy(['status' => 'waiting', 'roomType' => null])) {
+            return false;
+        }
+
+        $queue = new CacheQueue();
+        $this->dm->persist($queue);
+        $this->dm->flush();
+
+        return true;
     }
 
     /**
-     * Run generateForRoomType as command 
-     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param RoomType $roomType
      * @param \DateTime $begin
      * @param \DateTime $end
+     * @return bool
      */
     public function generateForRoomTypeInBackground(RoomType $roomType, \DateTime $begin = null, \DateTime $end = null)
     {
-        ($begin) ? $beginStr = ' --begin=' . $begin->format('d.m.Y') : $beginStr = '';
+        /*($begin) ? $beginStr = ' --begin=' . $begin->format('d.m.Y') : $beginStr = '';
         ($end) ? $endStr = ' --end=' . $end->format('d.m.Y') : $endStr = '';
         ($this->container->get('kernel')->getEnvironment() == 'prod') ? $env = '--env=prod ' : $env = '';
 
@@ -96,7 +107,23 @@ class RoomCacheGenerator
                 'nohup php ' . $this->console . 'mbh:cache:generate  --no-debug --roomType=' .
                 $roomType->getId() . $beginStr . $endStr . ' ' . $env . '> /dev/null 2>&1 &'
         );
-        $process->run();
+        $process->run();*/
+
+        $repo = $this->dm->getRepository('MBHPackageBundle:CacheQueue');
+
+        if ($repo->findOneBy(['status' => 'waiting', 'roomType' => null])) {
+            return false;
+        }
+        if ($repo->findOneBy(['status' => 'waiting', 'roomType.id' => $roomType->getId(), 'begin' => $begin, 'end' => $end])) {
+            return false;
+        }
+
+        $queue = new CacheQueue();
+        $queue->setBegin($begin)->setEnd($end)->setRoomType($roomType);
+        $this->dm->persist($queue);
+        $this->dm->flush();
+
+        return true;
     }
 
     /**

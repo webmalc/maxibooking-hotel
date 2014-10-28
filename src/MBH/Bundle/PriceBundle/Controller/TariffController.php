@@ -266,6 +266,8 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             ->set('success', 'Запись успешно скопирована.')
         ;
 
+        $this->get('mbh.room.cache.generator')->generateInBackground();
+
         return $this->redirect($this->generateUrl('tariff'));
     }
 
