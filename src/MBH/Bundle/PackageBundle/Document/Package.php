@@ -43,6 +43,9 @@ class Package extends Base
 
     /** @ODM\ReferenceMany(targetDocument="PackageService", mappedBy="package") */
     protected $services;
+
+    /** @ODM\ReferenceMany(targetDocument="PackageSource", mappedBy="package") */
+    protected $sources;
     
     /** 
      * @Gedmo\Versioned
@@ -960,5 +963,35 @@ class Package extends Base
         }
 
         return $result;
+    }
+
+    /**
+     * Add source
+     *
+     * @param MBH\Bundle\PackageBundle\Document\PackageSource $source
+     */
+    public function addSource(\MBH\Bundle\PackageBundle\Document\PackageSource $source)
+    {
+        $this->sources[] = $source;
+    }
+
+    /**
+     * Remove source
+     *
+     * @param MBH\Bundle\PackageBundle\Document\PackageSource $source
+     */
+    public function removeSource(\MBH\Bundle\PackageBundle\Document\PackageSource $source)
+    {
+        $this->sources->removeElement($source);
+    }
+
+    /**
+     * Get sources
+     *
+     * @return Doctrine\Common\Collections\Collection $sources
+     */
+    public function getSources()
+    {
+        return $this->sources;
     }
 }

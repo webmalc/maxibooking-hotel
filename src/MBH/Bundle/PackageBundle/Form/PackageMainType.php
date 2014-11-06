@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 
 class PackageMainType extends AbstractType
 {
@@ -23,6 +24,18 @@ class PackageMainType extends AbstractType
                     'attr' => [
                         'class' => 'discount-spinner'
                     ],
+                ])
+                ->add('sources', 'document', [
+                    'label' => 'Источник',
+                    'required' => false,
+                    'multiple' => true,
+                    'class' => 'MBHPackageBundle:PackageSource',
+                    'query_builder' => function(DocumentRepository $dr) use ($options) {
+                        return $dr->createQueryBuilder('q')
+                            ->field('deletedAt')->equals(null)
+                            ->sort(['fullTitle' => 'asc', 'title' => 'asc'])
+                            ;
+                    },
                 ])
                 ->add('arrivalTime', 'choice', [
                     'label' => 'Время заезда',
@@ -45,6 +58,7 @@ class PackageMainType extends AbstractType
                     'error_bubbling' => true,
                     'choices' => $options['arrivals'],
                 ])
+
                 ->add('note', 'textarea', [
                     'label' => 'Комментарий',
                     'required' => false,

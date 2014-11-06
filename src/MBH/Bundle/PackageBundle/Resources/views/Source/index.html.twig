@@ -1,0 +1,44 @@
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+
+{% set small_title = "источник броней" %}
+
+{% block content %}
+
+    <table class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xs"></th>
+            <th>Название</th>
+            <th class="td-md">Внутреннее название</th>
+            <th class="td-md">Создан</th>
+            <th class="td-sm"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for entity in entities %}
+            <tr>
+                <td class="text-center table-icon"><i class="fa fa-arrow-circle-right"></i></td>
+                <td>
+                    <a href="{{ path('package_source_edit', { 'id': entity.id }) }}" rel="main" title="Редактирование записи" data-toggle="tooltip">{{ entity.fullTitle }}</a>
+                </td>
+                <td>{{ entity.title }}</td>
+                <td>{{ entity.createdAt|date('d.m.Y') }}</td>
+                <td class="table-actions-td text-center">
+                    <a href="{{ path('package_source_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title="Редактирование записи" data-toggle="tooltip">
+                        <i class="fa fa-pencil-square-o"></i>
+                    </a>
+                    <a href="{{ path('package_source_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
+                        <i class="fa fa-trash-o"></i>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {{ form_start(form, {'action': path('package_source'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false} %}
+    {{ form_end(form) }}
+
+{% endblock %}

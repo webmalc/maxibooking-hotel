@@ -324,6 +324,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $dm->persist($entity);
             $dm->flush();
 
+            foreach ($entity->getSources() as $source) {
+                $source->setPackage($entity);
+                $dm->persist($entity);
+            }
+            $dm->flush();
+
             $this->getRequest()->getSession()->getFlashBag()
                 ->set('success', 'Запись успешно отредактирована.');
 

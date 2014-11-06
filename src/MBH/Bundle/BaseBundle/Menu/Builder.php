@@ -80,8 +80,15 @@ class Builder extends ContainerAware
         $menu['prices']->addChild('services', ['route' => 'price_service_category', 'label' => 'Услуги']);
         
         //Users links
-        $menu->addChild('users', ['route' => 'user', 'label' => 'Пользователи'])
-             ->setAttributes(['icon' => 'fa fa-users'])
+        $menu->addChild('configs', ['url' => '#', 'label' => 'Настройки'])
+            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-cogs'])
+        ;
+        $menu['configs']->addChild('users', ['route' => 'user', 'label' => 'Пользователи'])
+            ->setAttributes(['icon' => 'fa fa-users'])
+        ;
+
+        $menu['configs']->addChild('sources', ['route' => 'package_source', 'label' => 'Источники'])
+             ->setAttributes(['icon' => 'fa fa-arrow-circle-right '])
         ;
         
         //Services links
