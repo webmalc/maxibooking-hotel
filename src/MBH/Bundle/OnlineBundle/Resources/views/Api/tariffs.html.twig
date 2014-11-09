@@ -3,16 +3,19 @@
     <ul>
         {% for tariff in tariffResults %}
             <li>
+
                 <p class="mbh-results-tariffs-label">
-                    {% if app.request.query.get('hotel') is same as('') %}{{ tariff.hotel.fullTitle }}: {% endif %}
                     {% if (tariff.id == app.request.query.get('tariff')) or (app.request.query.get('tariff') is null and tariff.isDefault) %}
-                        <span id="mbh-results-tariffs-selected"
+                        <input type="radio" disabled checked><span id="mbh-results-tariffs-selected"
                               data-id="{{ tariff.id }}">{{ tariff.fullTitle }}</span>
                     {% else %}
-                        <a href="?{{ app.request.query.all|merge({'tariff': tariff.isDefault ? null : tariff.id })|url_encode }}">{{ tariff.fullTitle }}</a>
+                        {% set href = app.request.query.all|merge({'tariff': tariff.isDefault ? null : tariff.id })|url_encode %}
+                        <input type="radio" disabled><a href="?{{ href }}">{{ tariff.fullTitle }}</a>
                     {% endif %}
                     {% if tariff.isDefault %}&nbsp;
-                        <small>(базовый тариф)</small>{% endif %}</p>
+                        <small>(базовый тариф)</small>{% endif %}
+                    - {% if app.request.query.get('hotel') is same as('') %}<small>{{ tariff.hotel.fullTitle }}</small>{% endif %}
+                </p>
                 {% if tariff.description|nl2br %}
                     <p class="mbh-results-tariffs-description">{{ tariff.description|raw }}</p>
                 {% endif %}

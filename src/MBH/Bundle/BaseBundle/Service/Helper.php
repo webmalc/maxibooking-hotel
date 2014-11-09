@@ -35,6 +35,21 @@ class Helper
     }
 
     /**
+     * @param $n number
+     * @param $s1 word form 1
+     * @param $s2 word form 2
+     * @param $s3 word form 3
+     * @return string
+     */
+    public function plural($n, $s1, $s2, $s3)
+    {
+        $m = $n % 10; $j = $n % 100;
+        if($m==0 || $m>=5 || ($j>=10 && $j<=20)) return $n.' '.$s3;
+        if($m>=2 && $m<=4) return  $n.' '.$s2;
+        return $n.' '.$s1;
+    }
+
+    /**
      * Возвращает сумму прописью
      * @author runcore
      * @uses morph(...)

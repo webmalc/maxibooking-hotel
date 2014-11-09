@@ -88,7 +88,7 @@ class Builder extends ContainerAware
         ;
 
         $menu['configs']->addChild('sources', ['route' => 'package_source', 'label' => 'Источники'])
-             ->setAttributes(['icon' => 'fa fa-arrow-circle-right '])
+             ->setAttributes(['icon' => 'fa fa-compass'])
         ;
         
         //Services links

@@ -1,121 +1,365 @@
 <style>
-    /* RESULTS TABLE STYLES */
-    .hidden {
+    .button {
+        background: #7fbbd7; /* Old browsers */
+        /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+        background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIxJSIgc3RvcC1jb2xvcj0iIzdmYmJkNyIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM1Zjk3YjIiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+        background: -moz-linear-gradient(top, #7fbbd7 1%, #5f97b2 100%); /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,#7fbbd7), color-stop(100%,#5f97b2)); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top, #7fbbd7 1%,#5f97b2 100%); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top, #7fbbd7 1%,#5f97b2 100%); /* Opera 11.10+ */
+        background: -ms-linear-gradient(top, #7fbbd7 1%,#5f97b2 100%); /* IE10+ */
+        background: linear-gradient(to bottom, #7fbbd7 1%,#5f97b2 100%); /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7fbbd7', endColorstr='#5f97b2',GradientType=0 ); /* IE6-8 */
+        border: 1px solid #71a3be;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        padding: 3px 5px;
+        margin: 0px 5px;
+        display: inline-block;
+        color: #fff;
+        text-shadow: 1px 1px 2px #71a3be;
+    }
+    #mbh-result-response-info {
         display: none;
     }
-    .mbh-roomType-image {
-        max-width: 150px;
-        display: block;
+    .button:disabled {
+        color: #43809f;
     }
-
-    button:disabled {
-        color: #999;
+    .without-border {
+        border: 0px !important;
     }
-    .select2-chosen {
-        text-align: center;
+    .mbh-right {
+        text-align: right !important;
+    }
+    .mbh-left {
+        text-align: left !important;
     }
     .mbh-center {
+        text-align: center !important;
+    }
+    #mbh-results-global-wrapper {
+        margin: 10px 0px 0px 0px;
+        font-size: 14px;
+        font-family : Arial, Helvetica, "Nimbus Sans L", "Liberation Sans", FreeSans, Sans-serif;
+    }
+    .mbh-results-packages-count, .mbh-results-services-count {
+        width: 50px;
+    }
+    #mbh-results-global-wrapper a, #mbh-results-global-wrapper a:visited, #mbh-results-global-wrapper a:link
+    {
+        color: #0f62a4;
+        text-decoration: underline;
+    }
+    .select2-container a {
+        text-decoration: none !important;
+        color: #949494 !important;
+    }
+    #mbh-results-global-wrapper a:visited {
+        text-decoration: none;
+    }
+
+    #mbh-results-duration {
+        padding: 0px 14px;
+    }
+
+    /* ------------------------------------------------------  TARIFFS ---------------------------------- */
+    #mbh-results-tariffs h4, .mbh-results-info, #mbh-user-form h4, #mbh-payment-types h4 {
+        font-size: 14px;
+        padding: 7px 7px;
+        color: #fff;
+        background-color: #308dac;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+    }
+    #mbh-results-tariffs p {
+        padding: 0px;
+        margin: 0px;
+    }
+    #mbh-results-tariffs a{
+        text-decoration: none !important;
+    }
+    #mbh-results-tariffs small {
+        font-size: 11px;
+    }
+    .mbh-results-tariffs-description {
+        font-size: 12px;
+        color: #999;
+        padding: 0px 0px 0px 20px !important;
+    }
+    #mbh-results-tariffs p input {
+        margin: 0px 6px 0px 0px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    #mbh-results-tariffs ul {
+        padding: 0px 15px;
+        list-style-type: none;
+        margin: 0px;
+    }
+
+    #mbh-results-tariffs ul li {
+        margin: 3px 0px 0px 0px;
+        padding: 0px;
+        border: 10px;
+
+    }
+    #mbh-results-tariffs-selected {
+        color: #f67a00;
+    }
+
+    /* -------------------------- RESULTS -------------------------------- */
+    #mbh-results-table th {
+        font-weight: normal;
+        font-style: italic;
+    }
+    #mbh-results-table-wrapper {
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        border: #b4b4b4 1px solid;
+        margin: 20px 0px 0px 0px;
+        width: 100%;
+        overflow: hidden;
+    }
+    #mbh-results-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    .mbh-results-tariff {
+        display: none;
+    }
+    #mbh-results-table th, #mbh-results-table td {
+        border-bottom: #b4b4b4 1px solid;
+        padding: 4px 10px;
         text-align: center;
+        font-size: 12px;
+    }
+    #mbh-results-table tr:last-child td {
+        /*border-bottom: 0px;*/
+    }
+    #mbh-results-table th {
+        border-width: 0px 0px 1px 0px;
+    }
+    #mbh-results-table tr
+    {
+        background-color: #f3f8fb;
+    }
+    #mbh-results-table tr.even
+    {
+        background-color: #e6f1f5;
+    }
+    .mbh-results-hotel {
+        font-size: 12px;
+        color: #999;
+        padding: 0px 0px 0px 4px;
+    }
+    .mbh-results-food-select {
+        width: 120px;
+    }
+    #mbh-results-table-th-amount {
+        width:80px;
+    }
+    #mbh-results-table-th-price {
+        width: 120px;
+    }
+    #mbh-results-table-th-food {
+        width: 100px;
+    }
+    #mbh-results-table-th-tourist {
+        width: 100px;
+    }
+    #mbh-results-table-th-roomType {
+
     }
     .mbh-results-prices {
         margin: 0px;
         padding: 0px;
         list-style-type: none;
     }
-    .mbh-results-food-select {
-        width: 60px;
+    .mbh-results-prices li {
+        font-size: 16px;
     }
-    .mbh-results-packages-count {
-        width: 50px;
+    .mbh-results-per-person {
+        font-size: 11px;
+        color: #7e747c;
+    }
+    .mbh-result-selected-tr {
+        background-color: #ffc480 !important;
+    }
+    .mbh-results-roomType {
+        font-size: 15px;
     }
     .mbh-results-tourists-select {
-        min-width: 60px;
+        width: 100px;
     }
-    #mbh-results-duration {
-        background-color: #e5e5e5;
+    .mbh-results-roomType-description-link {
+        font-size: 11px;
+    }
+    .mbh-results-roomType-description {
+        background-color: #fff;
+        border: 0px;
+    }
+    .mbh-roomType-image {
+        max-width: 100px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        float: left;
+        margin: 0px 10px 0px 0px;
+    }
+    #mbh-image-show-wrapper {
+        border: 1px solid #b4b4b4;
+        position: absolute;
+        /*left: 20%;*/
+        /*top: 30%;*/
+        z-index: 100;
+        max-width: 420px;
+        max-width: 420px;
+        /*width: 420px; */
+        /*height: 420px;*/
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        background-color: #fff;
         padding: 10px;
-        margin-bottom: 5px;
-    }
+        text-align: center;
+        visibility: hidden;
+        overflow: hidden;
 
-    /* Tariffs */
-    #mbh-results-tariffs {
-        background-color: #e5e5e5;
-        padding: 10px;
-        margin-bottom: 5px;
     }
-    #mbh-results-tariffs h4 {
-        padding: 0px;
-        margin: 0px 0px 5px 0px;
+    #mbh-image-show-wrapper img {
+        max-width: 400px;
+        max-height: 400px;
     }
-    #mbh-results-tariffs ul li {
-        margin: 0px 0px 5px 0px;
+    /* -------------------------- SERVICES -------------------------------- */
+    #mbh-results-services-wrapper h3 {
+        font-size: 14px;
+        padding: 7px 7px;
+        color: #fff;
+        background-color: #308dac;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
     }
-    #mbh-results-tariffs p {
-        padding: 0px;
-        margin: 0px 2px 0px;
-        font-size: small;
+    #mbh-results-services-table-wrapper {
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        border: #b4b4b4 1px solid;
+        margin: 20px 0px 0px 0px;
+        width: 100%;
+        overflow: hidden;
     }
-    #mbh-results-table-th-food {
-        width: 200px !important;
-    }
-    #mbh-results-table td, #mbh-results-table th,
-    #mbh-results-services-table td, #mbh-results-services-table th {
-        padding: 5px;
-        border: 1px solid #e5e5e5;
+    #mbh-results-services-table {
         border-collapse: collapse;
-        vertical-align: top;
-    }
-    #mbh-results-table, #mbh-results-services-table {
         width: 100%;
     }
+    #mbh-results-services-table th {
+        font-weight: normal;
+        font-style: italic;
+    }
+    #mbh-results-services-table th, #mbh-results-services-table td {
+        border-bottom: #b4b4b4 1px solid;
+        padding: 4px 10px;
+        text-align: center;
+        font-size: 12px;
+    }
+    .mbh-results-services-name small {
+        font-size: 11px;
+        color: #7e747c;
+    }
+    #mbh-results-services-table tr:last-child td {
+        border-bottom: 0px;
+    }
+    #mbh-results-services-table th {
+        border-width: 0px 0px 1px 0px;
+    }
+    #mbh-results-services-table tr
+    {
+        background-color: #f3f8fb;
+    }
+    #mbh-results-services-table tr.even
+    {
+        background-color: #e6f1f5;
+    }
+    .mbh-results-services-name {
+        font-size: 15px;
+    }
+    .mbh-results-services-per-service {
+        font-size: 11px;
+        color: #7e747c;
+    }
+    .mbh-results-services-prices {
+        font-size: 16px;
+    }
+    #mbh-results-table-services-th-price {
+        width:120px;
+    }
+    #mbh-results-table-services-th-amount {
+        width:80px;
+    }
+    /* -------------------------- RESULTS ACTIONS -------------------------------- */
     #mbh-results-actions {
-        margin-top: 10px;
+        margin: 20px 0px;
         text-align: right;
     }
-    #mbh-results-total {
-        margin-right: 10px;
-    }
-    #mbh-results-total-sum {
+    .mbh-results-total-sum {
+        font-size: 16px;
         font-weight: bold;
     }
-
-    /* USER FORM STYLES */
-    .mbh-user-form-row {
-        margin-bottom: 10px;
-    }
-    .mbh-user-form-row label {
-        width: 150px;
-    }
-    #mbh-user-form {
-        background-color: #e5e5e5;
+    /* -------------------------- USER FORM -------------------------------- */
+    #mbh-user-form-form {
+        background-color: #e6f1f5;
+        margin: 10px 0px;
         padding: 10px;
+        -webkit-border-radius: 8px;
+        -moz-border-radius: 8px;
+        border-radius: 8px;
+        border: 1px solid #b4b4b4;
+        font-size: 14px;
+        font-family : Arial, Helvetica, "Nimbus Sans L", "Liberation Sans", FreeSans, Sans-serif;
     }
-    #mbh-user-form h4 {
-        padding: 0px;
-        margin: 0px 0px 15px 0px;
-    }
-    sup {
+    #mbh-user-form sup {
         color: maroon;
     }
-    /* PAYMENT TYPES STYLES */
-    #mbh-package-info, #mbh-payment-types {
-        background-color: #e5e5e5;
-        padding: 10px;
-        margin-bottom: 5px;
-    }
-    #mbh-payment-types h4 {
+    #mbh-user-form-form label {
+        display: block;
+        margin: 0px;
         padding: 0px;
-        margin: 0px 0px 15px 0px;
-    }
-    .mbh-payment-type-row {
-        margin-bottom: 10px;
-    }
-    .mbh-payment-type-label {
+        float: left;
+        width: 150px;
+        color: #555;
         font-weight: bold;
-        font-size: larger;
-        cursor: pointer;
     }
-    .mbh-payment-type-row input {
-        margin-right: 5px;
+    .mbh-user-form-row {
+        margin-bottom: 15px;
+        clear: both;
+    }
+    #mbh-user-form-birthday {
+        width: 100px;
+    }
+    /* -------------------------- PAYMENT TYPE FORM -------------------------------- */
+    .mbh-payment-type-row {
+        background-color: #e6f1f5;
+        margin: 10px 0px;
+        padding: 10px;
+        -webkit-border-radius: 8px;
+        -moz-border-radius: 8px;
+        border-radius: 8px;
+        border: 1px solid #b4b4b4;
+        font-size: 14px;
+        vertical-align: middle;
+    }
+    .mbh-payment-type-row p {
+        font-size: 11px;
+        color: #7e747c;
+    }
+    .mbh-payment-type-row label {
+        font-size: 16px;
+        font-weight: normal;
+        margin-left: 6px;
+        cursor: pointer;
     }
 </style>

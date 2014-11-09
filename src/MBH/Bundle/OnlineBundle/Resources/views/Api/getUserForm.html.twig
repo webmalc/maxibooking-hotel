@@ -1,8 +1,9 @@
 {% spaceless %}
+<div id="mbh-results-global-wrapper">
     {% if request.packages|length %}
         <div id="mbh-user-form">
+            <h4>Заполните данные для продолжения</h4>
             <form id="mbh-user-form-form">
-                <h4>Заполните данные для продолжения </h4>
 
                 <div class="mbh-user-form-row">
                     <label for="mbh-user-form-lastName">Фамилия <sup>*</sup></label>
@@ -69,11 +70,11 @@
         </div>
 
         <div id="mbh-results-actions">
-            <button id="mbh-user-form-previous">
+            <button id="mbh-user-form-previous" class="button">
                 <small><i class="fa fa-chevron-left"></i></small>
                 Выбрать другие номера
             </button>
-            <button id="mbh-user-form-next">Продолжить
+            <button id="mbh-user-form-next" class="button">Продолжить
                 <small><i class="fa fa-chevron-right "></i></small>
             </button>
         </div>
@@ -83,4 +84,5 @@
             Обновите страницу и попробуйте еще раз.
         </div>
     {% endif %}
+</div>
 {% endspaceless %}

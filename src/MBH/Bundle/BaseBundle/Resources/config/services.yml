@@ -4,6 +4,12 @@ services:
         arguments: [@service_container]
         tags:
             - { name: twig.extension }
+
+    mbh.twig.plural_extension:
+            class: MBH\Bundle\BaseBundle\Twig\PluralExtension
+            arguments: [@service_container]
+            tags:
+                - { name: twig.extension }
             
     mbh.form.fieldset_extension:
         class: MBH\Bundle\BaseBundle\Form\Extension\FieldsetExtension

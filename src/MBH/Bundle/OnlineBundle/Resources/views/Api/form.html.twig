@@ -1,6 +1,8 @@
 {% spaceless %}
 <form id="mbh-form" method="get" action="{{ config.result.url }}">
 
+    <h3>Бронирование номеров</h3>
+
     {% if hotels|length > 1 %}
     <div class="mbh-form-row">
         <label for="mbh-form-hotel">Отель</label>
@@ -43,24 +45,29 @@
     {% endif %}
 
     {% if formConfig.tourists %}
-        <div class="mbh-form-row">
-            <label for="mbh-form-adults">Взрослые</label>
-            <input type="number" id="mbh-form-adults" name="adults"  value="1">
-        </div>
+        <div id="mbh-form-adults-children-wrapper">
+            <div class="mbh-form-row">
+                <label for="mbh-form-adults">Взрослые</label>
+                <input type="number" id="mbh-form-adults" name="adults"  value="1">
+            </div>
 
-        <div class="mbh-form-row">
-            <label for="mbh-form-children">Дети</label>
-            <input type="number" id="mbh-form-children" name="children" value="0">
+            <div class="mbh-form-row">
+                <label for="mbh-form-children">Дети</label>
+                <input type="number" id="mbh-form-children" name="children" value="0">
+            </div>
         </div>
+        <div id="mbh-form-adults-children-clear"></div>
     {% endif %}
 
-    <div class="mbh-form-row">
-        <button type="submit" id="mbh-form-submit">Найти</button>
+    <div class="mbh-form-row" id="mbh-form-submit-wrapper">
+        <button type="submit" id="mbh-form-submit">Найти номер</button>
     </div>
-</form>
 
     <div id="mbh-logo-link-wrapper">
         <a id="mbh-logo-link" href="http://maxi-booking.ru/" target="_blank">система онлайн бронирования</a>
     </div>
+</form>
+
+
 {% endspaceless %}
 

@@ -3,7 +3,7 @@ jQuery(document).ready(function () {
     var wrapper = jQuery('#mbh-results-wrapper'),
         requestParams = {},
         waiting = function () {
-            wrapper.html('<div class="mbh-results-info"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+            wrapper.html('<div class="mbh-results-info" style="padding: 10px; margin: 10px 0px; background-color: #308dac; color: #fff; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
         },
         getUrlVars = function () {
             var vars = [], hash;
@@ -41,41 +41,38 @@ jQuery(document).ready(function () {
             wrapper.html('{{ styles|escape("js") }}' + data);
             setSelect2();
 
-            // tourists select2
+            //show full image
             (function () {
-                var format = function (icon) {
-                    var arr = icon.id.split('_'),
-                        text = '';
-                    ;
-                    for (var i = 1; i <= arr[0]; i++) {
-                        text += '<i class="fa fa-male"></i> ';
-                    }
-                    for (var i = 1; i <= arr[1]; i++) {
-                        text += '<small><i class="fa fa-child"></i></small>';
-                    }
-                    return text;
-
-                };
-
-                jQuery('.mbh-results-tourists-select').each(function () {
-                    jQuery(this).select2({
-                        placeholder: '',
-                        allowClear: false,
-                        width: 'resolve',
-                        minimumResultsForSearch: -1,
-                        formatResult: format,
-                        formatSelection: format
-                    });
+                var wrapperImage = jQuery('#mbh-image-show-wrapper');
+                jQuery('.mbh-roomType-image').each(function () {
+                    jQuery(this).hover(function(e){
+                        wrapperImage.css('top', e.pageY - 100);
+                        wrapperImage.css('left', 150);
+                        wrapperImage.html('<img src="'+ jQuery(this).attr('src') +'">');
+                        if(wrapperImage.find('img').width() > 100) {
+                            wrapperImage.css('visibility' , "visible");
+                        }
+                    })
+                    jQuery(this).mouseleave(function(){
+                        wrapperImage.css('visibility' , "hidden");
+                        wrapperImage.find('img').remove();
+                    })
                 });
+            }());
+
+            // remove border
+            (function () {
+                jQuery('#mbh-results-table tbody tr:last td').css('border', '0px');
             }());
 
             //description toggle
             (function () {
-                $('.mbh-results-roomType-description').hide();
-                $('.mbh-results-roomType-description-link').click(function(e) {
+                jQuery('.mbh-results-roomType-description-tr').hide();
+                jQuery('.mbh-results-roomType-description-link').click(function(e) {
                     e.preventDefault();
-                    $(this).siblings('.mbh-results-roomType-description').toggle();
-                    $(this).children('i').toggleClass('fa-angle-down');
+                    jQuery(this).closest('tr').find('td').toggleClass('without-border');
+                    jQuery(this).closest('tr').siblings('.mbh-results-roomType-description-tr').toggle();
+                    jQuery(this).children('i').toggleClass('fa-angle-down');
                 });
             }());
 
@@ -92,12 +89,20 @@ jQuery(document).ready(function () {
                         var tourist = tr.find('.mbh-results-tourists-select'),
                             select  = tr.find('.mbh-results-food-select'),
                             selectVal = select.select2('data').id,
-                            touristVal = tourist.select2('data').id
+                            touristVal = tourist.select2('data').id,
+                            per_person = tr.find('.mbh-results-per-person')
                             ;
                         tr.find('ul.mbh-results-prices').hide();
                         tr.find('ul.mbh-results-prices li').hide();
                         tr.find('ul.mbh-results-prices li.' + touristVal + '_' + selectVal + '_food').show();
                         tr.find('ul.mbh-results-prices').show();
+
+                        var touriststHash = touristVal.split('_'),
+                            totalTourists = parseInt(touriststHash[0], 10) + parseInt(touriststHash[1], 10);
+                            var touristsPhrase = (totalTourists === 1) ? ' человека': ' человек';
+                            ;
+
+                        per_person.html('цена за ' + totalTourists + touristsPhrase);
                     }
                     ;
                 jQuery('.mbh-results-tourists-select, .mbh-results-food-select').click(function() {
@@ -108,22 +113,25 @@ jQuery(document).ready(function () {
                 });
             }());
 
-            //show services
+            //show services & colorize tr
             (function() {
                 var servicesWrapper = jQuery('#mbh-results-services-wrapper'),
                     show = function () {
                         var selected = jQuery('select.mbh-results-packages-count').filter(function() {
-                            return parseInt($(this).val(), 10) > 0;
+                            return parseInt(jQuery(this).val(), 10) > 0;
                         });
                         servicesWrapper.hide();
                         servicesWrapper.find('tbody tr').hide();
+
+                        $('#mbh-results-table').find('tr').removeClass('mbh-result-selected-tr');
 
                         if (selected.length) {
                             var i = 0;
                             selected.each(function () {
                                 var hotelId = jQuery(this).closest('tr').find('span.mbh-results-hotel').attr('data-id');
+                                jQuery(this).closest('tr').addClass('mbh-result-selected-tr');
                                 jQuery('span.mbh-results-services-hotel').filter(function() {
-                                    if ($(this).attr('data-id') == hotelId) {
+                                    if (jQuery(this).attr('data-id') == hotelId) {
                                         i++;
                                         return true;
                                     } else {
@@ -250,6 +258,8 @@ jQuery(document).ready(function () {
                             });
                         }
                     });
+
+                    //jQuery('#mbh-results-table-wrapper').html('sdsd'); return 1;
 
                     waiting();
 
@@ -411,10 +421,10 @@ jQuery(document).ready(function () {
                                                         if (data.payment_url) {
                                                             window.location = data.payment_url;
                                                         } else {
-                                                            wrapper.html('{{ styles|escape("js") }} <div class="mbh-results-error"><i class="fa fa-check-circle-o"></i> ' + data.message + '</div>');
+                                                            wrapper.html('{{ styles|escape("js") }} <div class="mbh-results-info" style="padding: 10px; margin: 10px 0px; background-color: #308dac; color: #fff; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;"><i class="fa fa-check-circle-o"></i> ' + data.message + '</div>');
                                                         }
                                                     } else {
-                                                        wrapper.html('{{ styles|escape("js") }} <div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> ' + data.message + '</div>');
+                                                        wrapper.html('{{ styles|escape("js") }} <div class="mbh-results-error" style="padding: 10px; margin: 10px 0px; background-color: #308dac; color: #fff; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;"><i class="fa fa-exclamation-circle"></i> ' + data.message + '</div>');
                                                     }
                                                 }
                                             })

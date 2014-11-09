@@ -1,11 +1,12 @@
 {% spaceless %}
+<div id="mbh-results-global-wrapper">
     {%  if request.packages|length and request.user|length and formConfig is not null %}
 
         <div id="mbh-package-info">
             Даты: <strong>{{ request.begin }} - {{ request.end }}.</strong>
             Дни/ночи: <strong>{{ request.days }}/<span id="mbh-package-info-nights">{{ request.nights }}</span></strong>.
             Номеров: <strong>{{ request.packages|length }}</strong><br />
-            Заказ на сумму: <strong><span id="mbh-package-info-total">{{ request.total }}</span>&nbsp;<i class="fa fa-ruble"></i></strong>&nbsp; Номера: <span id="mbh-package-info-total-packages">{{ request.totalPackages }}</span>&nbsp;<i class="fa fa-ruble"></i>&nbsp;Услуги: <span id="mbh-package-info-total-services">{{ request.totalServices }}</span>&nbsp;<i class="fa fa-ruble"></i><br />
+            Заказ на сумму: <strong><span class="mbh-results-total-sum"><span id="mbh-package-info-total">{{ request.total }}</span>&nbsp;р.</span></strong>&nbsp; Номера: <span class="mbh-results-total-sum"><span id="mbh-package-info-total-packages">{{ request.totalPackages }}</span>&nbsp;р.</span>&nbsp;Услуги: <span class="mbh-results-total-sum"><span id="mbh-package-info-total-services">{{ request.totalServices }}</span>&nbsp;р.</span><br />
             {% if request.tariff is defined %}
                 Тариф: <strong> {{ request.tariff.title }} </strong>
             {% endif %}
@@ -23,22 +24,29 @@
                 <div class="mbh-payment-type-row">
                     <input {% if formConfig.paymentTypes|length == 1 %}checked style="display:none;"{% endif %} type="radio" class="mbh-payment-types-radio" name="paymentType" value="{{ paymentType }}" id="{{ paymentType }}_radio" required><label for="{{ paymentType }}_radio" class="mbh-payment-type-label">{{ config.payment_types[paymentType] }}</label>
                     {% if paymentType == 'in_hotel' %}
-                    <p>Оплата по прибытию в гостиницу на стойке размещения, при незаезде или аннуляции штраф не взимается</p>
+                        <p>Оплата по прибытию в гостиницу на стойке размещения, при незаезде или аннуляции штраф не взимается</p>
+                    {% endif %}
+                    {% if paymentType == 'online_full' %}
+                        <p>Описание этого способа оплаты</p>
+                    {% endif %}
+                    {% if paymentType == 'online_first_day' %}
+                        <p>Описание этого способа оплаты</p>
                     {% endif %}
                 </div>
             {% endfor %}
         </div>
 
         <div id="mbh-results-actions">
-            <button id="mbh-payment-types-previous">
+            <button id="mbh-payment-types-previous" class="button">
                 <small><i class="fa fa-chevron-left"></i></small>
                 Выбрать другие номера
             </button>
-            <button id="mbh-payment-types-next">Бронировать
+            <button id="mbh-payment-types-next" class="button">Бронировать
                 <small><i class="fa fa-chevron-right "></i></small>
             </button>
         </div>
     {% else %}
         <div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.</div>
     {% endif %}
+    </div>
 {% endspaceless %}

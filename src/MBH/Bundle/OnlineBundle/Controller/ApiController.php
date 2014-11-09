@@ -199,7 +199,7 @@ class ApiController extends Controller
                 $roomStr = 'Номер успешно забронирован.';
                 $packageStr = 'Номер вашей брони';
             }
-            $message = 'Большое спасибо. '. $roomStr .' Мы свяжемся с Вами в ближайшее время.<br><br>';
+            $message = 'Большое спасибо. '. $roomStr .' Мы свяжемся с Вами в ближайшее время.<br>';
             $message .= $packageStr . ': '. implode(', ', $packages) . '.';
 
             return new JsonResponse(['success' => true, 'message' => $message]);

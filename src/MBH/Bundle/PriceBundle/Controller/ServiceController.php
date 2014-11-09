@@ -213,7 +213,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      * @Route("/{id}/update/entry", name="price_service_category_entry_update")
      * @Method("PUT")
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Template()
+     * @Template("MBHPriceBundle:Service:editEntry.html.twig")
      */
     public function updateEntryAction(Request $request, $id)
     {
@@ -254,7 +254,8 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         return [
             'entry' => $entry,
             'entity' => $entry->getCategory(),
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'logs' => $this->logs($entry)
         ];
     }
 
@@ -352,7 +353,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      * @Route("/{id}", name="price_service_category_update")
      * @Method("PUT")
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Template("MBHHotelBundle:RoomType:edit.html.twig")
+     * @Template("MBHPriceBundle:Service:edit.html.twig")
      */
     public function updateAction(Request $request, $id)
     {

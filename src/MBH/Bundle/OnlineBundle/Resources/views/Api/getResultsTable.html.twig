@@ -1,66 +1,57 @@
 {% spaceless %}
-    
+
+    <div id="mbh-results-global-wrapper">
+
     {% if results|length %}
-
+        <div id="mbh-image-show-wrapper"></div>
         <div id="mbh-results-duration">
-            Даты: <strong><span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> - <span
-                        id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>.</strong>
-            Дни/ночи: <strong><span id="mbh-results-duration-days">{{ results|first.days }}</span>/<span
-                        id="mbh-results-duration-nights">{{ results|first.nights }}</span></strong>
+            <div id="mbh-result-response-info">
+                <span id="mbh-results-duration-days">{{ results|first.nights }}</span>
+                <span id="mbh-results-duration-nights">{{ results|first.days }}</span>
+            </div>
+            Номера в отеле на {{ plural( results|first.nights, 'ночь', 'ночи', 'ночей') }} c <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> по <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>
         </div>
-
-        <div>
-
         {% if tariffResults|length > 1 %}
             {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
         {% endif %}
 
+       <div id="mbh-results-table-wrapper">
         <table id="mbh-results-table">
             <thead>
             <tr>
-                {% if hotels|length > 1 %}
-                    <th id="mbh-results-table-th-hotel">Отель</th>
-                {% endif %}
                 <th id="mbh-results-table-th-roomType">Тип номера</th>
-                <th id="mbh-results-table-th-tariff">Тариф</th>
                 <th id="mbh-results-table-th-tourist">Гости</th>
                 <th id="mbh-results-table-th-food">Питание</th>
-                <th id="mbh-results-table-th-price">Цена/номер</th>
-                <th id="mbh-results-table-th-amount">Количество</th>
+                <th id="mbh-results-table-th-price">Цена</th>
+                <th id="mbh-results-table-th-amount">Кол-во номеров</th>
             </tr>
             </thead>
+
             {% for result in results %}
                 <tbody>
-                <tr>
-                    {% if hotels|length > 1 %}
-                        <td><span class="mbh-results-hotel" data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span></td>
-                    {% endif %}
-                    <td>
+                <tr class="{{ cycle(['odd', 'even'], loop.index0) }}">
+                    <td class="mbh-left">
+                        <span class="mbh-results-tariff"
+                              data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
+                        {% if result.roomType.getImage(true) is not empty %}
+                            <img class="mbh-roomType-image" src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}{{ result.roomType.getImage(true) }}">
+                        {% endif %}
                         <span class="mbh-results-roomType"
-                              data-id="{{ result.roomType.id }}"><strong>{{ result.roomType.fullTitle }}</strong></span>
+                              data-id="{{ result.roomType.id }}">{{ result.roomType.fullTitle }}</span>
+                        {% if hotels|length > 1 %}<span class="mbh-results-hotel" data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span>{% endif %}
                         {% if result.roomType.description is not empty %}
                             <div class="mbh-results-roomType-description-wrappper">
                                 <a href="#" class="mbh-results-roomType-description-link"> <i
-                                            class="fa fa-angle-right "></i> Описание номера</a>
-
-                                <div class="mbh-results-roomType-description">
-                                    {{ result.roomType.description|nl2br }}
-                                </div>
+                                            class="fa fa-angle-right "></i> описание номера</a>
                             </div>
                         {% endif %}
-                        {% if result.roomType.getImage(true) is not empty %}
-                        <img class="mbh-roomType-image" src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}{{ result.roomType.getImage(true) }}">
-                        {% endif %}
                     </td>
-                    <td><span class="mbh-results-tariff"
-                              data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span></td>
                     <td class="mbh-center">
-                        <select class="mbh-results-tourists-select {% if result.prices|length == 1 %}hidden{% endif %}">
+                        <select class="mbh-results-tourists-select select2 {% if result.prices|length == 1 %}hidden{% endif %}">
                             {% for priceTourists, priceFoods  in result.prices %}
                                 {% set arr = priceTourists|split('_') %}
                                 <option value="{{ priceTourists }}">
-                                    {% if arr[0] %}{% for i in 1..arr[0] %}A&nbsp;{% endfor %}{% endif %}
-                                    {% if arr[1] %}{% for k in 1..arr[1] %}C&nbsp;{% endfor %}{% endif %}
+                                    {% if arr[0] %}{{ arr[0] }} вз.{% endif %}{% if arr[1] and arr[0] %}+{% endif %}{% if arr[1] %}{{ arr[1] }} рб.{% endif %}
                                 </option>
                             {% endfor %}
                         </select>
@@ -80,19 +71,19 @@
                         </select>
                         {% if result.foods|length == 1 %}{% set food =  result.food|first %}{{ foodTypes[food] }}{% endif %}
                     </td>
-                    <td class="mbh-center">
+                    <td class="mbh-right">
                         {% for priceTourists, priceFoods  in result.prices %}
                             {% for priceFood, price  in priceFoods %}
                                 <ul class="mbh-results-prices">
                                     <li data-value="{{ price }}"
-                                        class="{{ priceTourists }}_{{ priceFood }}_food">{{ price|number_format }}</li>
+                                        class="{{ priceTourists }}_{{ priceFood }}_food">{{ price|number_format }} р.
                                 </ul>
                             {% endfor %}
                         {% endfor %}
+                        <span class="mbh-results-per-person">цена за 1 человека</span>
                     </td>
                     <td class="mbh-center">
                         <select class="mbh-results-packages-count select2">
-                            <option></option>
                             {% if  result.roomsCount > config.packages_max %}
                                 {% set max = config.packages_max %}
                             {% else %}
@@ -105,22 +96,30 @@
                         </select>
                     </td>
                 </tr>
+                {% if result.roomType.description is not empty%}
+                <tr class="mbh-left mbh-results-roomType-description-tr">
+                    <td class="mbh-left mbh-results-roomType-description" colspan="5" >
+                        {{ result.roomType.description|nl2br }}
+                    </td>
+                </tr>
+                {% endif %}
                 </tbody>
             {% endfor %}
         </table>
+       </div>
 
         {% if services|length %}
         <div id="mbh-results-services-wrapper">
             <h3>Услуги</h3>
+            <div id="mbh-results-services-table-wrapper">
             <table id="mbh-results-services-table">
                 <thead>
                     <tr>
                         {% if hotels|length > 1 %}
                         <th id="mbh-results-table-services-th-hotel">Отель</th>
                         {% endif %}
-                        <th id="mbh-results-table-services-th-service">Услуга</th>
+                        <th id="mbh-results-table-services-th-service">Тип услуги</th>
                         <th id="mbh-results-table-services-th-price">Цена</th>
-                        <th id="mbh-results-table-services-th-unit">Единица измерения</th>
                         <th id="mbh-results-table-services-th-amount">Количество</th>
                     </tr>
                 </thead>
@@ -128,11 +127,15 @@
                     {% for service in services %}
                     <tr>
                         {% if hotels|length > 1 %}
-                            <td><span class="mbh-results-services-hotel" data-id="{{ service.category.hotel.id }}">{{ service.category.hotel.fullTitle }}</span></td>
+                            <td class="mbh-left"><span class="mbh-results-services-hotel" data-id="{{ service.category.hotel.id }}">{{ service.category.hotel.fullTitle }}</span></td>
                         {% endif %}
-                        <td><span class="mbh-results-services-name" data-id="{{ service.id }}">{{ service.fullTitle }}<br><small>{{ service.description }}</small></span></td>
-                        <td><span class="mbh-results-services-prices" data-value="{{ service.price }}">{{ service.price|number_format }}</span></td>
-                        <td><span class="mbh-results-services-units">{{ servicesConfig.units[service.unit]|default('Штука') }}</span></td>
+                        <td class="mbh-left"><span class="mbh-results-services-name" data-id="{{ service.id }}">{{ service.fullTitle }}<br><small>{{ service.description }}</small></span></td>
+                        <td class="mbh-right">
+                            <span class="mbh-results-services-prices" data-value="{{ service.price }}">
+                                {{ service.price|number_format }} р.
+                            </span><br>
+                            <span class="mbh-results-services-per-service" data-type="{{ service.unit }}">цена за {% if service.unit == 'piece' %}штуку{% elseif service.unit == 'day' %}день{% else %}час{% endif %}</span>
+                        </td>
                         <td>
                             <select class="mbh-results-services-count select2">
                                 <option value="0" selected="selected">0</option>
@@ -145,17 +148,15 @@
                     {% endfor %}
                 </tbody>
             </table>
+            </div>
         </div>
         {% endif %}
                         
         <div id="mbh-results-actions">
-            <span id="mbh-results-packages-total">Номера: <span id="mbh-results-total-packages-sum">0</span>&nbsp;<i
-                        class="fa fa-ruble"></i></span> &nbsp;
-            <span id="mbh-results-services-total">Услуги: <span id="mbh-results-total-services-sum">0</span>&nbsp;<i
-                        class="fa fa-ruble"></i></span> &nbsp;
-            <span id="mbh-results-total">Итого: <span id="mbh-results-total-sum">0</span>&nbsp;<i
-                        class="fa fa-ruble"></i></span>
-            <button id="mbh-results-next">Продолжить
+            <span id="mbh-results-packages-total">Номера: <span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">р.</span></span> &nbsp;
+            <span id="mbh-results-services-total">Услуги: <span id="mbh-results-total-services-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">р.</span></span> &nbsp;
+            <span id="mbh-results-total">Итого: <span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">р.</span></span>
+            <button id="mbh-results-next" class="button">Продолжить
                 <small><i class="fa fa-chevron-right "></i></small>
             </button>
         </div>
@@ -166,4 +167,5 @@
         <div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> По вашему запросу ничего не найдено.
         </div>
     {% endif %}
+            </div>
 {% endspaceless %}
