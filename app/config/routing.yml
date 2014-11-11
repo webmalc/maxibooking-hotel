@@ -1,3 +1,8 @@
+mbh_client:
+    resource: "@MBHClientBundle/Controller/"
+    type:     annotation
+    prefix:   /management/client
+
 mbh_online:
     resource: "@MBHOnlineBundle/Controller/"
     type:     annotation

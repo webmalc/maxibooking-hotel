@@ -113,7 +113,27 @@ jQuery(document).ready(function () {
                 });
             }());
 
-            //show services & colorize tr
+            //colorize tr
+            (function() {
+                var show = function () {
+                        var selected = jQuery('select.mbh-results-packages-count').filter(function() {
+                            return parseInt(jQuery(this).val(), 10) > 0;
+                        });
+                        $('#mbh-results-table').find('tr').removeClass('mbh-result-selected-tr');
+                        if (selected.length) {
+                            selected.each(function () {
+                                jQuery(this).closest('tr').addClass('mbh-result-selected-tr');
+
+                            });
+                        }
+                    };
+                    show();
+                    jQuery('select.mbh-results-packages-count').change(function(){
+                        show();
+                    });
+            }());
+
+            //show services
             (function() {
                 var servicesWrapper = jQuery('#mbh-results-services-wrapper'),
                     show = function () {

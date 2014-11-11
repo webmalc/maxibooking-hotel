@@ -1,0 +1,16 @@
+{% extends 'MBHClientBundle:ClientConfig:layout.html.twig' %}
+
+{% set small_title = "редактирование" %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('client_config_save'), 'attr': {'class': 'form-horizontal' }}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
+    {{ form_end(form) }}
+
+    {% if entity %}
+        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
+    {% endif %}
+
+{% endblock %}
