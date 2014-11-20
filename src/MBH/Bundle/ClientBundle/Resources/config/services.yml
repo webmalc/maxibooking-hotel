@@ -1,0 +1,4 @@
+services:
+    mbh.client.server:
+        class: MBH\Bundle\ClientBundle\Service\ServerCaller
+        arguments: [@service_container]

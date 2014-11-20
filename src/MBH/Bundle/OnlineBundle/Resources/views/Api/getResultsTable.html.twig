@@ -80,7 +80,9 @@
                                 </ul>
                             {% endfor %}
                         {% endfor %}
-                        <span class="mbh-results-per-person">цена за 1 человека</span>
+
+                        <span class="mbh-results-per-person" data-change="{{ result.roomType.calculationType == 'perRoom' ? 0 : 1 }}">цена за номер</span>
+
                     </td>
                     <td class="mbh-center">
                         <select class="mbh-results-packages-count select2">

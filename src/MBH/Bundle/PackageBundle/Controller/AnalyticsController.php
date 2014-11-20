@@ -3,6 +3,9 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\Service;
+use MBH\Bundle\UserBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -65,7 +68,210 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     }
 
     /**
-     * Index template
+     * @Route("/sales_services", name="analytics_sales_services")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template("MBHPackageBundle:Analytics:response.html.twig")
+     */
+    public function salesServicesAction()
+    {
+        $data = [];
+
+        foreach ($this->getPackages() as $package) {
+
+            foreach ($package->getServices() as $packageService) {
+                $id  = $packageService->getService()->getId();
+                $day = $package->getCreatedAt()->format('d.m.Y');
+                $month = $package->getCreatedAt()->format('m.Y');
+
+                if (!isset($data[$id][$day])) {
+                    $data[$id][$day] = 0;
+                }
+                if (!isset($data[$id][$month])) {
+                    $data[$id][$month] = 0;
+                }
+
+                $data[$id][$day] += $packageService->getAmount();
+                $data[$id][$month] += $packageService->getAmount();
+            }
+        }
+
+        $chart = $this->getChart('Количество услуг');
+        $chart->series($this->getSeries($data, 'getServices'));
+
+        return $this->getResponse($chart);
+    }
+
+    /**
+     * @Route("/sales_cash_documents", name="analytics_sales_cash_documents")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template("MBHPackageBundle:Analytics:response.html.twig")
+     */
+    public function salesCashDocumentsAction()
+    {
+        $data = [];
+
+        foreach ($this->getPackages() as $package) {
+            $id  = $package->getRoomType()->getId();
+
+            foreach ($package->getCashDocuments() as $cashDocument) {
+                $day = $cashDocument->getCreatedAt()->format('d.m.Y');
+                $month = $cashDocument->getCreatedAt()->format('m.Y');
+
+                if (!isset($data[$id][$day])) {
+                    $data[$id][$day] = 0;
+                }
+                if (!isset($data[$id][$month])) {
+                    $data[$id][$month] = 0;
+                }
+
+                if ($cashDocument->getOperation() == 'in') {
+                    $data[$id][$day] += $cashDocument->getTotal();
+                    $data[$id][$month] += $cashDocument->getTotal();
+                } else {
+                    $data[$id][$day] -= $cashDocument->getTotal();
+                    $data[$id][$month] -= $cashDocument->getTotal();
+                }
+            }
+        }
+
+        $chart = $this->getChart('Выручка');
+        $chart->series($this->getSeries($data));
+
+        return $this->getResponse($chart);
+    }
+
+    /**
+     * @Route("/hotel_occupancy", name="analytics_hotel_occupancy")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template("MBHPackageBundle:Analytics:response.html.twig")
+     */
+    public function hotelOccupancyAction()
+    {
+        $data = $newData = $total = [];
+
+        foreach ($this->getPackages() as $package) {
+            $id  = $package->getRoomType()->getId();
+
+            if(!isset($total[$id])) {
+                $total[$id] = count($package->getRoomType()->getRooms());
+            }
+
+            $day = $package->getCreatedAt()->format('d.m.Y');
+            $month = $package->getCreatedAt()->format('m.Y');
+
+            if (!isset($data[$id][$day])) {
+                $data[$id][$day] = 0;
+            }
+            if (!isset($data[$id][$month])) {
+                $data[$id][$month] = 0;
+            }
+            $data[$id][$day]++;
+            $data[$id][$month]++;
+        }
+
+        foreach ($data as $id => $values) {
+            if(!isset($total[$id])) {
+                continue;
+            }
+            foreach ($values as $dataId => $value) {
+                $newData[$id][$dataId] =  round($value/$total[$id] , 2)*100;
+            }
+        }
+
+        $chart = $this->getChart('Процент');
+        $chart->series($this->getSeries($newData, 'getRoomTypes', true));
+
+        return $this->getResponse($chart);
+    }
+
+    /**
+     * @Route("/sales_managers", name="analytics_sales_managers")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template("MBHPackageBundle:Analytics:response.html.twig")
+     */
+    public function salesManagersAction()
+    {
+        $data = [];
+
+        foreach ($this->getPackages() as $package) {
+
+            $username  = $package->getCreatedBy();
+
+            if (empty($username)) {
+                continue;
+            }
+
+            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+            $dm = $this->get('doctrine_mongodb')->getManager();
+            $manager = $dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => $username]);
+
+            if (empty($manager)) {
+                continue;
+            }
+
+            $id = $manager->getId();
+            $day = $package->getCreatedAt()->format('d.m.Y');
+            $month = $package->getCreatedAt()->format('m.Y');
+
+            if (!isset($data[$id][$day])) {
+                $data[$id][$day] = 0;
+            }
+            if (!isset($data[$id][$month])) {
+                $data[$id][$month] = 0;
+            }
+            $data[$id][$day]++;
+            $data[$id][$month]++;
+
+        }
+
+        $chart = $this->getChart('Количество путевок');
+        $chart->series($this->getSeries($data, 'getManagers'));
+
+        return $this->getResponse($chart);
+    }
+
+    /**
+     * @Route("/sales_sources", name="analytics_sales_sources")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template("MBHPackageBundle:Analytics:response.html.twig")
+     */
+    public function salesSourcesAction()
+    {
+        $data = [];
+
+        foreach ($this->getPackages() as $package) {
+                $source = $package->getSource();
+                if (!$source) {
+                    continue;
+                }
+
+                $id  = $source->getId();
+                $day = $package->getCreatedAt()->format('d.m.Y');
+                $month = $package->getCreatedAt()->format('m.Y');
+
+                if (!isset($data[$id][$day])) {
+                    $data[$id][$day] = 0;
+                }
+                if (!isset($data[$id][$month])) {
+                    $data[$id][$month] = 0;
+                }
+                $data[$id][$day]++;
+                $data[$id][$month]++;
+
+        }
+
+        $chart = $this->getChart('Количество путевок');
+        $chart->series($this->getSeries($data, 'getSources'));
+
+        return $this->getResponse($chart);
+    }
+
+    /**
      * @Route("/sales_packages", name="analytics_sales_packages")
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -97,7 +303,6 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     }
 
     /**
-     * Index template
      * @Route("/sales_cash", name="analytics_sales_cash", defaults={"_format"="json"})
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
@@ -192,6 +397,42 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         return new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end);
     }
 
+    private function getSources()
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        return $dm->getRepository('MBHPackageBundle:PackageSource')->createQueryBuilder('s')
+            ->sort('fullTitle', 'asc')
+            ->getQuery()
+            ->execute()
+        ;
+    }
+
+    private function getServices()
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        return $dm->getRepository('MBHPriceBundle:Service')->createQueryBuilder('s')
+            ->sort(['hotel.id' => 'asc', 'fullName' => 'desc'])
+            ->getQuery()
+            ->execute()
+            ;
+    }
+
+    private function getManagers()
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        return $dm->getRepository('MBHUserBundle:User')->createQueryBuilder('s')
+            ->sort(['lastName' => 'desc', 'username' => 'desc'])
+            ->getQuery()
+            ->execute()
+            ;
+    }
+
     /**
      * @param boolean $array
      * @return array
@@ -238,18 +479,42 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     }
 
     /**
+     * @param object $category
+     * @return string
+     */
+    private function getCategoryName($category)
+    {
+        if ($category instanceof User) {
+            return $category->getFullName(true);
+        }
+        if ($category instanceof Service) {
+            return $category->getCategory()->getHotel() . ': ' . $category;
+        }
+        if ($category instanceof RoomType) {
+            return $category->getHotel() . ': ' . $category;
+        }
+        if (method_exists($category, 'getName')) {
+            return $category->getName();
+        }
+
+        return (string) $category;
+    }
+
+    /**
      * @param array $values
+     * @param string $categoryGetMethod
+     * @param boolean $withoutTotal
      * @return array
      */
-    private function getSeries($values = array())
+    private function getSeries($values = array(), $categoryGetMethod = 'getRoomTypes', $withoutTotal = false)
     {
         $request = $this->getRequest();
         $cumulative = $request->get('cumulative');
         $months = $request->get('months');
         $series = $all = $allValues = [];
         $i = 0;
-        foreach ($this->getRoomTypes() as $roomType) {
-            $series[$i]['name'] = $roomType->getHotel() . ': ' . $roomType;
+        foreach ($this->$categoryGetMethod() as $category) {
+            $series[$i]['name'] = $this->getCategoryName($category);
             foreach ($this->getInterval() as $date) {
                 $value = 0;
                 $prev = clone $date;
@@ -264,15 +529,15 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
                     $prevId = $prev->format('m.Y');
                 }
 
-                if (isset($values[$roomType->getId()][$dayId]))  {
-                    $value = $values[$roomType->getId()][$dayId];
+                if (isset($values[$category->getId()][$dayId]))  {
+                    $value = $values[$category->getId()][$dayId];
                 }
 
-                if ($cumulative && isset($allValues[$roomType->getId()][$prevId])) {
-                    $value += $allValues[$roomType->getId()][$prevId];
+                if ($cumulative && isset($allValues[$category->getId()][$prevId])) {
+                    $value += $allValues[$category->getId()][$prevId];
                 }
 
-                $allValues[$roomType->getId()][$dayId] = $value;
+                $allValues[$category->getId()][$dayId] = $value;
 
                 if (!isset($all[$dayId]))  {
                     $all[$dayId] = 0;
@@ -294,6 +559,10 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
 
         if(count($series) <= 1) {
             return $series;
+        }
+
+        if ($withoutTotal) {
+            return array_reverse($series);
         }
 
         $series[$i]['name'] = 'Итог';

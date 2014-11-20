@@ -97,12 +97,14 @@ jQuery(document).ready(function () {
                         tr.find('ul.mbh-results-prices li.' + touristVal + '_' + selectVal + '_food').show();
                         tr.find('ul.mbh-results-prices').show();
 
-                        var touriststHash = touristVal.split('_'),
-                            totalTourists = parseInt(touriststHash[0], 10) + parseInt(touriststHash[1], 10);
+                        if (parseInt(per_person.attr('data-change'), 10)) {
+                            var touriststHash = touristVal.split('_'),
+                                totalTourists = parseInt(touriststHash[0], 10) + parseInt(touriststHash[1], 10);
                             var touristsPhrase = (totalTourists === 1) ? ' человека': ' человек';
                             ;
 
-                        per_person.html('цена за ' + totalTourists + touristsPhrase);
+                            per_person.html('цена за ' + totalTourists + touristsPhrase);
+                        }
                     }
                     ;
                 jQuery('.mbh-results-tourists-select, .mbh-results-food-select').click(function() {
@@ -119,7 +121,7 @@ jQuery(document).ready(function () {
                         var selected = jQuery('select.mbh-results-packages-count').filter(function() {
                             return parseInt(jQuery(this).val(), 10) > 0;
                         });
-                        $('#mbh-results-table').find('tr').removeClass('mbh-result-selected-tr');
+                        jQuery('#mbh-results-table').find('tr').removeClass('mbh-result-selected-tr');
                         if (selected.length) {
                             selected.each(function () {
                                 jQuery(this).closest('tr').addClass('mbh-result-selected-tr');
@@ -143,7 +145,7 @@ jQuery(document).ready(function () {
                         servicesWrapper.hide();
                         servicesWrapper.find('tbody tr').hide();
 
-                        $('#mbh-results-table').find('tr').removeClass('mbh-result-selected-tr');
+                        jQuery('#mbh-results-table').find('tr').removeClass('mbh-result-selected-tr');
 
                         if (selected.length) {
                             var i = 0;
@@ -337,7 +339,7 @@ jQuery(document).ready(function () {
 
                             //save cookies
                             (function(){
-                                jQuery('#mbh-user-form-form input, #mbh-user-form-form textarea').keyup(function (){
+                                jQuery('#mbh-user-form-form input, #mbh-user-form-form textarea').bind('propertychange change click keyup input paste', function (){
                                     jQuery.cookie('mbh.user', JSON.stringify(getUser()));
                                     jQuery.cookie('mbh.package', JSON.stringify(getPackageInfo()), { expires: 1});
                                 });
@@ -363,9 +365,9 @@ jQuery(document).ready(function () {
                                     }
                                     ;
                                 validate();
-                                inputs.keyup(function() {
+                                inputs.bind("propertychange change click keyup input paste", function () {
                                     validate();
-                                });
+                                })
                             }());
 
                             // user form next button

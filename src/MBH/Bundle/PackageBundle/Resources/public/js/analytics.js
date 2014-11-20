@@ -24,8 +24,17 @@ $(document).ready(function() {
     }
 
     var chartGet = function () {
-        var wrapper = $('#analytics-filter-content');
+        var wrapper = $('#analytics-filter-content')
+            var hideFilters = function () {
+                    if(jQuery.inArray($('#analytics-filter-type').val(), ['hotel_occupancy']) !== -1) {
+                        $('#analytics-filter-cumulative-wrapper, #analytics-filter-months-wrapper').hide();
+                    } else {
+                        $('#analytics-filter-cumulative-wrapper, #analytics-filter-months-wrapper').show();
+                    }
 
+                }
+            ;
+        hideFilters();
         wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
         $.ajax({
             url: Routing.generate('analytics_choose'),

@@ -39,10 +39,9 @@ class PackageSource extends Base
     use BlameableDocument;
 
     /**
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="Package", inversedBy="sources")
+     * @ODM\ReferenceMany(targetDocument="Package", inversedBy="source")
      */
-    protected $package;
+    protected $packages;
 
     /**
      * @var string
@@ -70,29 +69,6 @@ class PackageSource extends Base
      * )
      */
     protected $title;
-
-    /**
-     * Set package
-     *
-     * @param \MBH\Bundle\PackageBundle\Document\Package $package
-     * @return self
-     */
-    public function setPackage(\MBH\Bundle\PackageBundle\Document\Package $package)
-    {
-        $this->package = $package;
-
-        return $this;
-    }
-
-    /**
-     * Get package
-     *
-     * @return MBH\Bundle\PackageBundle\Document\Package $package
-     */
-    public function getPackage()
-    {
-        return $this->package;
-    }
 
     /**
      * Set fullTitle
@@ -150,5 +126,40 @@ class PackageSource extends Base
         }
 
         return $this->fullTitle;
+    }
+
+    public function __construct()
+    {
+        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add package
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\Package $package
+     */
+    public function addPackage(\MBH\Bundle\PackageBundle\Document\Package $package)
+    {
+        $this->packages[] = $package;
+    }
+
+    /**
+     * Remove package
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\Package $package
+     */
+    public function removePackage(\MBH\Bundle\PackageBundle\Document\Package $package)
+    {
+        $this->packages->removeElement($package);
+    }
+
+    /**
+     * Get packages
+     *
+     * @return Doctrine\Common\Collections\Collection $packages
+     */
+    public function getPackages()
+    {
+        return $this->packages;
     }
 }

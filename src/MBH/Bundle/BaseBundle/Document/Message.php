@@ -86,7 +86,7 @@ class Message extends Base implements \JsonSerializable
     /**
      * Set end
      *
-     * @param date $end
+     * @param \DateTime $end
      * @return self
      */
     public function setEnd($end)

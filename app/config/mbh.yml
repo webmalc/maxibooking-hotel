@@ -1,4 +1,9 @@
 parameters:
+    #mbh server
+    mbh.server:
+      url: 'http://mbhs.h/app_dev.php/'
+      key: 'AMliD0HLwjtLNewcrcNLr2xm8SGNY9HzV2Rz3zlA'
+
     #mbh sources
     mbh.default.sources: ['Он-лайн бронирование', 'ВашОтель.ру', 'Постоянный клиент', 'Рекомендация знакомых']
 
@@ -61,6 +66,12 @@ parameters:
     mbh.analytics.types:
         sales_packages: "Динамика продаж по количеству броней"
         sales_cash: "Динамика продаж по стоимости броней"
+        sales_cash_documents: "Динамика продаж в полученных деньгах"
+        sales_sources: "Источники продаж"
+        hotel_occupancy: "Заполняемость отеля"
+        sales_services: "Динамика реализации услуг"
+        sales_managers: "Менеджеры и брони"
+
 
     #Цели приезда
     mbh.package.arrivals:
