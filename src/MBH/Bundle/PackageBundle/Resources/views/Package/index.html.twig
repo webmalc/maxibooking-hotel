@@ -48,8 +48,16 @@
                 </select>
             </div>
             <div class="input">
+                <i class="fa fa-check" title='Подтверждена?' data-toggle='tooltip'></i>&nbsp <select data-placeholder="Подтверждена?" id="package-filter-confirmed" class="package-filter form-control input-sm">
+                    <option></option>
+                    <option value="1">Да</option>
+                    <option value="0">Нет</option>
+                </select>
+            </div>
+            <div class="input">
                 <i class="fa fa-trash-o" title='Удаленные?' data-toggle='tooltip'></i>&nbsp <input type="checkbox" id="package-filter-deleted" class="package-filter"  value="1" />
             </div>
+
         </form>
     </div>
 
@@ -57,13 +65,13 @@
            class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
         <thead>
         <tr>
-            <th class="td-xs"></th>
+            <th class="td-xxs"></th>
             <th class="td-xs">#</th>
             <th class="td-md">Даты</th>
-            <th class="td-md">Комната</th>
-            <th class="td-md">Создана</th>
+            <th>Размещение</th>
             <th class="td-md">Гости</th>
-            <th>Стоимость</th>
+            <th class="td-md">Стоимость</th>
+            <th class="td-md">Создана</th>
             <th class="td-sm"></th>
         </tr>
         </thead>

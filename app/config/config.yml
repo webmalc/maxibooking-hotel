@@ -160,3 +160,8 @@ knp_snappy:
         enabled:    true
         binary:     /usr/local/bin/wkhtmltoimage
         options:    []
+
+# SonataIntlBundle Configuration
+sonata_intl:
+    timezone:
+        default: Europe/Moscow

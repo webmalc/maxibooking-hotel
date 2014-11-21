@@ -1,10 +1,6 @@
-{% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
-
-{% set small_title = "аналитика" %}
+{% extends 'MBHPackageBundle:Analytics:layout.html.twig' %}
 
 {% block content %}
-
-    {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 3} %}
 
     <div class="well">
         <form id="analytics-filter" class="form-inline" role="form">

@@ -37,7 +37,7 @@ class Builder extends ContainerAware
         ;
 
         // report
-        $menu->addChild('report', ['route' => 'report_accommodation', 'label' => 'Отчеты'])
+        $menu->addChild('report', ['route' => 'analytics', 'label' => 'Аналитика'])
              ->setAttributes(['icon' => 'fa fa-bar-chart-o'])
         ;
 

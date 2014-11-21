@@ -1,5 +1,10 @@
 {% spaceless %}
-    <div class='btn-list text-center'>
+    <div class='btn-list text-right'>
+        {% if not entity.confirmed %}
+            <a href='{{ path('package_confirmation', { 'id': entity.id }) }}' class='btn btn-primary btn-xs' title='Подтверждение брони' data-toggle='tooltip'>
+                <i class='fa fa-check'></i>
+            </a>
+        {% endif %}
         <a href='{{ path('package_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
             <i class='fa fa-pencil-square-o'></i>
         </a>

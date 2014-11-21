@@ -65,6 +65,7 @@ $(document).ready(function() {
                 d.deleted = ($('#package-filter-deleted').is(':checked')) ? 1 : 0;
                 d.dates = $('#package-filter-dates').val();
                 d.paid = $('#package-filter-paid').val();
+                d.confirmed = $('#package-filter-confirmed').val();
             }
         },
         "order": [[4, 'desc']],

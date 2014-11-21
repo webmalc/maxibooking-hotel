@@ -1,10 +1,10 @@
-{% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title = "список клиентов" %}    
 
 {% block content %}
 
-    {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 1} %}
+    {% include 'MBHPackageBundle:Package:listTabs.html.twig' with {'active': 4 } %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">

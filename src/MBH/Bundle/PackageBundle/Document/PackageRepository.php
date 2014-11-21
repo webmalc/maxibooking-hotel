@@ -98,6 +98,17 @@ class PackageRepository extends DocumentRepository
             $qb->field($dateType)->lte($data['end']);
         }
 
+        //confirmed
+        if(isset($data['confirmed']) && $data['confirmed'] != null) {
+
+            if ((int) $data['confirmed']) {
+                $qb->field('confirmed')->equals(true);
+            } else {
+                $qb->addOr($qb->expr()->field('confirmed')->exists(false));
+                $qb->addOr($qb->expr()->field('confirmed')->equals(false));
+            }
+        }
+
         //query
         if(isset($data['query']) && !empty($data['query'])) {
             $query = trim($data['query']);
@@ -124,7 +135,7 @@ class PackageRepository extends DocumentRepository
         //order
         $order = 'createdAt';
         $dir = 'desc';
-        $cols = [1 => 'number', 2 => 'begin', 3 => 'roomType', 4 => 'createdAt', 5 => 'mainTourist', 6 => 'price'];
+        $cols = [1 => 'number', 2 => 'begin', 3 => 'roomType', 4 => 'mainTourist', 5 => 'price', 6 => 'createdAt'];
         if (isset($data['order']) && isset($cols[$data['order']])) {
             $order = $cols[$data['order']];
         }

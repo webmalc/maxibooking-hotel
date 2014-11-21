@@ -33,9 +33,9 @@
                     <div class="col-md-10">{{ entity.roomType.hotel.name }} - {{ entity.roomType.name }} - {{ entity.food }}</div>
                 </div>
                 <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>Цена/Оплачено</strong></div>
+                    <div class="col-md-2 text-right"><strong>Оплачено/Цена</strong></div>
                     <div class="col-md-10">
-                        {{ entity.price|number_format }} / {{ entity.paid|number_format }}
+                        {{ entity.paid|number_format }} / {{ entity.price|number_format }}
                         &nbsp; 
                         {% if entity.isPaid %}
                             <small class="text-success"><i class="fa fa-check"></i> оплачена</small>
@@ -56,6 +56,16 @@
                     <div class="col-md-10">{{ statuses[entity.status].title }}{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"></i> удалена</small>{% endif %}</div>
                 </div>
                 <div class="row spacer-top">
+                    <div class="col-md-2 text-right"><strong>Подтверждена?</strong></div>
+                    <div class="col-md-10">
+                        {% if entity.confirmed %}
+                            <small class="text-success"><i class="fa fa-check"></i> да</small>
+                        {% else %}
+                            <small class="text-danger"><i class="fa fa-times"></i> нет</small>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row spacer-top">
                     <div class="col-md-12 text-right">
                         <a target="_blank" class="btn btn-default btn-sm {% if entity.isPaid is empty %}disabled{% endif %}" href="{{ path('package_pdf', {'id': entity.id}) }}">
                             <i class="fa fa-print"></i> Распечатать акт
@@ -63,7 +73,6 @@
                     </div>
                 </div>
             </div>
-
 
             {{ form_start(form, {'action': path('package_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}

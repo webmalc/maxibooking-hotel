@@ -25,6 +25,7 @@ class AppKernel extends Kernel
             new Ob\HighchartsBundle\ObHighchartsBundle(),
             new Knp\Bundle\SnappyBundle\KnpSnappyBundle(),
             new Misd\GuzzleBundle\MisdGuzzleBundle(),
+            new Sonata\IntlBundle\SonataIntlBundle(),
             
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),

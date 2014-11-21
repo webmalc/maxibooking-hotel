@@ -191,6 +191,14 @@ class Package extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isPaid;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $confirmed = false;
     
     /**
      * @var string
@@ -988,5 +996,27 @@ class Package extends Base
     public function getSource()
     {
         return $this->source;
+    }
+
+    /**
+     * Set confirmed
+     *
+     * @param boolean $confirmed
+     * @return self
+     */
+    public function setConfirmed($confirmed)
+    {
+        $this->confirmed = $confirmed;
+        return $this;
+    }
+
+    /**
+     * Get confirmed
+     *
+     * @return boolean $confirmed
+     */
+    public function getConfirmed()
+    {
+        return $this->confirmed;
     }
 }

@@ -36,3 +36,9 @@ services:
     mbh.mailer:
             class: MBH\Bundle\BaseBundle\Service\Mailer
             arguments: [@service_container]
+
+    doctrine_mongo_db_param_converter:
+        class: Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter
+        arguments: [@doctrine_mongodb]
+        tags:
+          - { name: request.param_converter, converter: doctrine.odm }

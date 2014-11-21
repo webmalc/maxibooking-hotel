@@ -11,12 +11,14 @@
     {% set searchQuery = searchQuery|merge({'tariff': entity.tariff.id}) %}
 {% endif %}
 
-
 <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
     <div class="container">
         <ul class="nav navbar-nav">
             <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить и закрыть</button></li>
             <li><button type="submit" name="save" class="btn btn-info navbar-btn"><i class="fa fa-check-square-o"></i> {{ save_text|default('Сохранить') }}</button></li>
+            {% if not entity.confirmed %}
+                <li><button type="button" onclick="location.href = '{{ path('package_confirmation', {'id': entity.id, 'route': app.request.attributes.get('_route')}) }}'" class="btn btn-primary navbar-btn"><i class="fa fa-check"></i> Подтвердить</button></li>
+            {% endif %}
             <li><button type="button" onclick="location.href = '{{ path('package_search', {'s': searchQuery, 'food': entity.food}) }}'" class="btn btn-default navbar-btn"><i class="fa fa-search"></i> Найти похожую</button></li>
             <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
         </ul>

@@ -21,9 +21,38 @@ use MBH\Bundle\CashBundle\Form\CashDocumentType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class PackageController extends Controller implements CheckHotelControllerInterface
 {
+
+    /**
+     * Package confirmation
+     *
+     * @Route("/{id}/confirmation", name="package_confirmation")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @param Package $package
+     * @param Request $request
+     * @return Response
+     */
+    public function confirmationAction(Package $package, Request $request)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $package->setConfirmed(true);
+        $dm->persist($package);
+        $dm->flush();
+
+        $request->getSession()->getFlashBag()->set('success', 'Бронь успешно подтверждена.');
+        $route = $request->get('route');
+        if ($route) {
+
+            return $this->redirect($this->generateUrl($route, ['id' => $package->getId()]));
+        }
+
+        return $this->redirect($this->generateUrl('package'));
+    }
 
     /**
      * Copy data from one package to another package
@@ -243,6 +272,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 'order' => $request->get('order')['0']['column'],
                 'dir' => $request->get('order')['0']['dir'],
                 'paid' => $request->get('paid'),
+                'confirmed' => $request->get('confirmed'),
             ]
         );
 
@@ -250,7 +280,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'entities' => $entities,
             'total' => $entities->count(),
             'draw' => $request->get('draw'),
-            'statuses' => $this->container->getParameter('mbh.package.statuses')
+            'statuses' => $this->container->getParameter('mbh.package.statuses'),
+            'foodTypes' => $this->container->getParameter('mbh.food.types')
         ];
     }
 

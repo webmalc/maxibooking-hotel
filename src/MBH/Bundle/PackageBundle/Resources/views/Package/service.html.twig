@@ -13,7 +13,7 @@
 
             <div class="alert alert-warning">
                 <i class="fa fa-ruble"></i>
-                Цена/Оплачено: {{ entity.price|number_format }} / {{ entity.paid|number_format }}
+                Оплачено/Цена: {{ entity.paid|number_format }} / {{ entity.price|number_format }}
                 &nbsp;
                 {% if entity.isPaid %}
                     <small class="text-success"><i class="fa fa-check"></i> оплачена</small>
