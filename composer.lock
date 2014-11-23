@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e71143992c19be6d3b416fc4a7472e08",
+    "hash": "3059b72505ffa2e54ce71cccbd82e14c",
     "packages": [
         {
             "name": "cg/kint-bundle",
@@ -1221,6 +1221,51 @@
                 "web service"
             ],
             "time": "2014-08-11 04:32:36"
+        },
+        {
+            "name": "iampersistent/mongodb-acl-bundle",
+            "version": "dev-master",
+            "target-dir": "IamPersistent/MongoDBAclBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/iampersistent/MongoDBAclBundle.git",
+                "reference": "390087ed00aa02d0605c100d7d9f1d9ce9f349ae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/iampersistent/MongoDBAclBundle/zipball/390087ed00aa02d0605c100d7d9f1d9ce9f349ae",
+                "reference": "390087ed00aa02d0605c100d7d9f1d9ce9f349ae",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/mongodb": "~1.0",
+                "php": ">=5.3.2",
+                "symfony/security": "~2.1"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-0": {
+                    "IamPersistent\\MongoDBAclBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "contributors",
+                    "homepage": "https://github.com/iampersistent/MongoDBAclBundle/contributors"
+                }
+            ],
+            "description": "MongoDB ACL Bundle",
+            "homepage": "https://github.com/iampersistent/MongoDBAclBundle",
+            "keywords": [
+                "acl",
+                "mongodb",
+                "security"
+            ],
+            "time": "2014-06-10 16:27:33"
         },
         {
             "name": "incenteev/composer-parameter-handler",
@@ -3201,7 +3246,7 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "doctrine/mongodb-odm": 20,
         "doctrine/mongodb-odm-bundle": 20,
@@ -3213,7 +3258,8 @@
         "jms/security-extra-bundle": 20,
         "cg/kint-bundle": 20,
         "ob/highcharts-bundle": 20,
-        "knplabs/knp-snappy-bundle": 20
+        "knplabs/knp-snappy-bundle": 20,
+        "iampersistent/mongodb-acl-bundle": 20
     },
     "prefer-stable": false,
     "platform": {

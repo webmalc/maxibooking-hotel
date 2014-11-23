@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class HotelController extends Controller
 {   
@@ -171,20 +172,13 @@ class HotelController extends Controller
      *
      * @Route("/{id}/edit", name="hotel_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted(['EDIT', 'ROLE_ADMIN'], entity)")
      * @Template()
+     * @param Hotel $entity
+     * @return Response
      */
-    public function editAction($id)
+    public function editAction(Hotel $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHHotelBundle:Hotel')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
         $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('mbh.food.types')]);
 
         return array(

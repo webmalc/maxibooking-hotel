@@ -3,6 +3,7 @@
     "license": "MIT",
     "type": "project",
     "description": "The \"Symfony Standard Edition\" distribution",
+    "minimum-stability": "dev",
     "autoload": {
         "psr-0": {
             "": "src/",
@@ -33,7 +34,8 @@
         "ob/highcharts-bundle": "dev-master",
         "knplabs/knp-snappy-bundle": "dev-master",
         "misd/guzzle-bundle": "~1.1",
-        "sonata-project/intl-bundle": "~2.2"
+        "sonata-project/intl-bundle": "~2.2",
+        "iampersistent/mongodb-acl-bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

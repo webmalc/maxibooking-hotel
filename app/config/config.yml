@@ -165,3 +165,8 @@ knp_snappy:
 sonata_intl:
     timezone:
         default: Europe/Moscow
+
+# IamPersistentMongoDBAclBundle Configuration
+iam_persistent_mongo_db_acl:
+    acl_provider:
+        default_database: %mongodb_database%

@@ -26,6 +26,7 @@ class AppKernel extends Kernel
             new Knp\Bundle\SnappyBundle\KnpSnappyBundle(),
             new Misd\GuzzleBundle\MisdGuzzleBundle(),
             new Sonata\IntlBundle\SonataIntlBundle(),
+            new IamPersistent\MongoDBAclBundle\IamPersistentMongoDBAclBundle(),
             
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),
