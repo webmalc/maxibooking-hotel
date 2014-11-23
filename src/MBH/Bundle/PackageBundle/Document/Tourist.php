@@ -103,7 +103,7 @@ class Tourist extends Base
     protected $birthday;
     
     /**
-     * @var \DateTime
+     * @var \string
      * @Gedmo\Versioned
      * @ODM\String(name="sex")
      * @Assert\Choice(
@@ -260,7 +260,7 @@ class Tourist extends Base
     /**
      * Set birthday
      *
-     * @param date $birthday
+     * @param \DateTime $birthday
      * @return self
      */
     public function setBirthday($birthday)
@@ -282,7 +282,7 @@ class Tourist extends Base
     /**
      * Set sex
      *
-     * @param date $sex
+     * @param string $sex
      * @return self
      */
     public function setSex($sex)

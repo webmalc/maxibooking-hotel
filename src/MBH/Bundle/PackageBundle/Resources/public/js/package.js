@@ -86,12 +86,16 @@ $(document).ready(function() {
         }
     });
 
-    $('.package-filter').change(function(){
-        $('#package-table').dataTable().fnDraw();
-    });
-    $('#package-filter-deleted').on('switchChange', function() {
-        $('#package-table').dataTable().fnDraw();
-    });
+    (function () {
+        $('#package-table-filter').sayt();
+
+        $('.package-filter').change(function(){
+            $('#package-table').dataTable().fnDraw();
+        });
+        $('#package-filter-deleted').on('switchChange', function() {
+            $('#package-table').dataTable().fnDraw();
+        });
+    }());
 
 });
 

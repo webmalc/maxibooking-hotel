@@ -6,6 +6,10 @@ services:
     mbh.package.search:
         class: MBH\Bundle\PackageBundle\Services\Search
         arguments: [@service_container]
+
+    mbh.tourists.messenger:
+            class: MBH\Bundle\PackageBundle\Services\TouristsMessenger
+            arguments: [@service_container]
         
     mbh.calculation:
         class: MBH\Bundle\PackageBundle\Services\Calculation

@@ -44,6 +44,18 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $dm->persist($package);
         $dm->flush();
 
+        //notify main tourist
+        try {
+            $this->container->get('mbh.tourists.messenger')->send(
+                $package->getMainTourist(),
+                'Ваша бронь #' . $package->getNumberWithPrefix() . ' подтверждена'
+            );
+        } catch (\Exception $e) {
+            $request->getSession()
+                ->getFlashBag()
+                ->set('danger', 'Ошибка: ' . $e->getMessage());
+        }
+
         $request->getSession()->getFlashBag()->set('success', 'Бронь успешно подтверждена.');
         $route = $request->get('route');
         if ($route) {

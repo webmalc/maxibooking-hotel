@@ -5,6 +5,7 @@ namespace MBH\Bundle\DemoBundle\Command;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\RoomPrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\FoodPrice;
@@ -87,7 +88,8 @@ class FixturesCommand extends ContainerAwareCommand
                ->addFoodPrice($bbFood->setType('BB')->setPrice(300))
         ;
 
-
+        $packages = [];
+        $withoutAccommodation = false;
         foreach($numberInfo['name'] as $key => $roomTypeName) {
 
             //RoomType
@@ -112,6 +114,7 @@ class FixturesCommand extends ContainerAwareCommand
             ;
             $tariff->addRoomPrice($roomPrice);
 
+            $rooms = [];
             //Rooms
             for ($i = 1; $i <= $numberInfo['count'][$key]; $i++) {
                 $room = new Room();
@@ -124,30 +127,32 @@ class FixturesCommand extends ContainerAwareCommand
                     ->setTitle($roomName)
                 ;
 
-                if (rand(1, $numberInfo['count'][$key]-1) == $i) {
-                    $pRoom = $room;
+                $dm->persist($room);
+                $rooms[] = $room;
+            }
+
+            for ($i = 1; $i <=3; $i++) {
+
+                $pRoom = false;
+                if (count($rooms)) {
+                    $pRoomKey = array_rand($rooms);
+                    $pRoom = $rooms[$pRoomKey];
+                    unset($rooms[$pRoomKey]);
                 }
 
-                $dm->persist($room);
-            }
 
-            if (!isset($pRoom)) {
-                $pRoom = $room;
-            }
+                //Packages
+                $begin = clone $from;
+                $begin->modify('+' . rand(1,25) . ' day');
+                $end = clone $begin;
+                $end->modify('+' . rand(3,25) . ' day');
 
-            //Packages
-            $begin = clone $from;
-            $begin->modify('+' . rand(1,25) . ' day');
-            $end = clone $begin;
-            $end->modify('+' . rand(3,25) . ' day');
-
-            $package = new Package();
-            $number = $key + 1;
-            $package->setCreatedBy('demo')
+                $package = new Package();
+                $number = count($packages) + 1;
+                $package->setCreatedBy('demo')
                     ->setBegin($begin)
                     ->setEnd($end)
                     ->setRoomType($roomType)
-                    ->setAccommodation($room)
                     ->setAdults(1)
                     ->setChildren(0)
                     ->setFood('RO')
@@ -157,18 +162,40 @@ class FixturesCommand extends ContainerAwareCommand
                     ->setStatus('offline')
                     ->setPaid(0)
                     ->setNumberWithPrefix('HTL' . $number)
-            ;
-            $package->setPrice($numberInfo['price'][$key] * $package->getNights());
-            $packages[] = $package;
+                ;
+                if ($withoutAccommodation || ($i != 2 && $pRoom)) {
+                    $package->setAccommodation($pRoom);
+                } else {
+                    $withoutAccommodation = true;
+                }
 
+                $package->setPrice($numberInfo['price'][$key] * $package->getNights());
+                $packages[] = $package;
+            }
         }
 
         $dm->persist($tariff);
+        $dm->flush();
 
+        //Add tourist
+        $tourist  = new Tourist();
+        $tourist->setFirstName('Иван')
+                ->setLastName('Иванов')
+                ->setPatronymic('Иванович')
+                ->setSex('male')
+                ->setBirthday(\DateTime::createFromFormat('d.m.Y', '16.05.1968'))
+                ->setPhone('+79251234567')
+                ->setEmail('example@example.com')
+        ;
+
+        $dm->persist($tourist);
         $dm->flush();
 
         foreach ($packages as $package) {
-            $package->setTariff($tariff);
+            $package->setTariff($tariff)
+                ->setMainTourist($tourist)
+                ->addTourist($tourist)
+            ;
             $dm->persist($package);
         }
 

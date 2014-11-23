@@ -36,15 +36,16 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-paper-plane'])
         ;
 
+        // cash
+        $menu->addChild('cash', ['route' => 'cash', 'label' => 'Касса'])
+            ->setAttribute('icon', 'fa fa-ruble')
+        ;
+
         // report
         $menu->addChild('report', ['route' => 'analytics', 'label' => 'Аналитика'])
              ->setAttributes(['icon' => 'fa fa-bar-chart-o'])
         ;
 
-        // cash
-        $menu->addChild('cash', ['route' => 'cash', 'label' => 'Касса'])
-             ->setAttribute('icon', 'fa fa-ruble')
-        ;
         return $this->filterMenu($menu);
     }
 

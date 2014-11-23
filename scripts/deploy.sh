@@ -24,6 +24,7 @@ FOS=$FOLDER'bin/console fos:js-routing:dump'
 ASSEST=$FOLDER'bin/console assets:install '$FOLDER'web --symlink'
 ASSESTIC=$FOLDER'bin/console assetic:dump'
 DB=$FOLDER'bin/console doctrine:mongodb:schema:create'
+PHP_FPM='service php5-fpm restart'
 MOVE_PARAMS='mv -f '$FOLDER'parameters.yml '$FOLDER'/app/config/parameters.yml'
 
 echo -e "${GREEN}Start rsync${NC}"
@@ -71,4 +72,6 @@ if [[ $2 == 'new' ]]; then
     ssh $SERVER $FOLDER'bin/console fos:user:create admin admin@example.com admin'
     ssh $SERVER $FOLDER'bin/console fos:user:promote admin ROLE_ADMIN'
 fi
+
+ssh $SERVER $PHP_FPM
 

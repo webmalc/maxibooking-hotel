@@ -42,7 +42,7 @@ class ServerCaller
     }
 
     /**
-     * @param phone $text
+     * @param string $text
      * @param string $phone
      * @return \stdClass
      */
@@ -87,7 +87,7 @@ class ServerCaller
      * @param string $text
      * @param string $type
      */
-    public function sendMessage($from, $text, $type = 'danger')
+    protected function sendMessage($from, $text, $type = 'danger')
     {
         $message = new Message();
         $end = new \DateTime();
