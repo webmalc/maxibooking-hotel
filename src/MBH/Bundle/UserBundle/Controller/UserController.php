@@ -10,6 +10,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Form\UserType;
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
+use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
+use Symfony\Component\Security\Acl\Exception\NoAceFoundException;
+use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
 /**
  * User controller.
@@ -54,7 +59,11 @@ class UserController extends Controller
     {
         $entity = new User();
         
-        $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')), $entity);
+        $form = $this->createForm(
+            new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
+            $entity,
+            ['admin' => $entity->hasRole('ROLE_ADMIN')]
+        );
 
         return array(
             'form' => $form->createView(),
@@ -72,7 +81,11 @@ class UserController extends Controller
     public function createAction(Request $request)
     {
         $entity = new User(array());
-        $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')), $entity);
+        $form = $this->createForm(
+            new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
+            $entity,
+            ['admin' => $entity->hasRole('ROLE_ADMIN')]
+        );
         $form->bind($request);
 
         if ($form->isValid()) {
@@ -80,6 +93,8 @@ class UserController extends Controller
             $dm = $this->get('doctrine_mongodb')->getManager();
             $dm->persist($entity);
             $dm->flush();
+
+            $this->updateAcl($entity, $form);
 
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', 'Запись успешно создана.')
@@ -112,9 +127,34 @@ class UserController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException();
         }
-        
-        $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')), $entity);
-        
+
+        $hasHotels = [];
+        $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+        foreach ($hotels as $hotel) {
+            $aclProvider = $this->get('security.acl.provider');
+            $objectIdentity = ObjectIdentity::fromDomainObject($hotel);
+            try {
+                $acl = $aclProvider->findAcl($objectIdentity);
+            } catch (AclNotFoundException $e) {
+                $acl = $aclProvider->createAcl($objectIdentity);
+            }
+
+            $securityIdentity = new UserSecurityIdentity($entity, 'MBH\Bundle\UserBundle\Document\User');
+
+            try {
+                if ($acl->isGranted([MaskBuilder::MASK_MASTER], [$securityIdentity])) {
+                    $hasHotels[] = $hotel;
+                }
+            } catch (NoAceFoundException $e) {
+
+            }
+        }
+            $form = $this->createForm(
+            new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
+            $entity,
+            ['admin' => $entity->hasRole('ROLE_ADMIN'), 'hotels' => $hasHotels]
+        );
+
         return array(
             'entity' => $entity,
             'form' => $form->createView(),
@@ -141,9 +181,14 @@ class UserController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')), $entity);
-        
-        $form->bind($request);
+        $form = $this->createForm(
+            new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
+            $entity,
+            ['admin' => $entity->hasRole('ROLE_ADMIN')]
+            
+        );
+
+        $form->submit($request);
 
         if ($form->isValid()) {
 
@@ -154,11 +199,13 @@ class UserController extends Controller
             }
             
             $this->container->get('fos_user.user_manager')->updateUser($entity);
-            
+
+            //update ACL
+            $this->updateAcl($entity, $form);
+
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', 'Запись успешно отредактирована.')
             ;
-
             return $this->afterSaveRedirect('user', $entity->getId());
         }
 
@@ -167,6 +214,42 @@ class UserController extends Controller
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         );
+    }
+
+    private function updateAcl(User $user, $form)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+        foreach ($hotels as $hotel) {
+            $aclProvider = $this->get('security.acl.provider');
+            $objectIdentity = ObjectIdentity::fromDomainObject($hotel);
+            try {
+                $acl = $aclProvider->findAcl($objectIdentity);
+            } catch (AclNotFoundException $e) {
+                $acl = $aclProvider->createAcl($objectIdentity);
+            }
+
+            $securityIdentity = new UserSecurityIdentity($user, 'MBH\Bundle\UserBundle\Document\User');
+
+            foreach($acl->getObjectAces() as $i => $ace) {
+                if ($ace->getSecurityIdentity() == $securityIdentity) {
+                    $acl->deleteObjectAce($i);
+                }
+            }
+
+            if (!empty($form['hotels'])) {
+                foreach ($form['hotels']->getData() as $formHotel) {
+                    if ($formHotel->getId() == $hotel->getId()) {
+                        $acl->insertObjectAce($securityIdentity, MaskBuilder::MASK_MASTER);
+                    }
+                }
+            }
+
+            $aclProvider->updateAcl($acl);
+        }
+
     }
     
     /**

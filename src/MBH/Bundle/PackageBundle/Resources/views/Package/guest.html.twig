@@ -72,7 +72,7 @@
                                 {% endif %}
                             </td>
                             <td class="table-actions-td text-center">
-                                {% if entity.deletedAt is empty %}
+                                {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                                 <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}"
                                    class="btn btn-success btn-xs" title="Редактирование записи" data-toggle="tooltip">
                                     <i class="fa fa-pencil-square-o"></i>
@@ -90,7 +90,7 @@
                 </table>
             {% endif %}
 
-            {% if entity.deletedAt is empty %}
+            {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                 {% if entity.tourists|length < totalGuests %}
                     {{ form_start(form, {'action': path('package_guest', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
                     {{ form_widget(form) }}

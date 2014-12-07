@@ -14,21 +14,25 @@
             {% if selected_hotel() is empty %}
                 <a href="{{ path('_welcome')}}" class="navbar-brand">{{ project_title }}</a>
             {% else %}
+                {% if hotels()|length > 1 or is_granted('ROLE_ADMIN') %}
                 <a data-toggle="dropdown" href="#" class="navbar-brand" id="hotel-selector">{{ selected_hotel().name }} <i class="fa fa-caret-down"></i></a>
                 <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                    {% for hotel in hotels() %}
-                        <li>
-                            {% if title_url is defined  %}{% set hotel_url = title_url %}{% else %}{% set hotel_url = null %}{% endif%}
-                            <a href="{{ path('hotel_select', {'id': hotel.id, 'url': hotel_url}) }}" title="Выбрать отель" data-toggle="tooltip">{{ hotel.name }}
-                            </a>
-                        </li>
-                    {% endfor %}
+                        {% for hotel in hotels() %}
+                            <li>
+                                {% if title_url is defined  %}{% set hotel_url = title_url %}{% else %}{% set hotel_url = null %}{% endif%}
+                                <a href="{{ path('hotel_select', {'id': hotel.id, 'url': hotel_url}) }}" title="Выбрать отель" data-toggle="tooltip">{{ hotel.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
                     
                     {% if is_granted('ROLE_ADMIN') %}
                     <li class="divider"></li>
                     <li><a href="{{ path('hotel_new') }}"><i class="fa fa-plus"></i> Добавить отель</a></li>
                     {% endif %}
                 </ul>
+                {% else %}
+                    <a href="{{ path('_welcome') }}" class="navbar-brand">{{ selected_hotel().name }}</a>
+                {% endif %}
             {% endif %}
 
             <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
@@ -46,7 +50,7 @@
                 {% set main_menu = knp_menu_get('MBHBaseBundle:Builder:mainMenu', [], {'management': management_menu_switch}) %}
                 {{ knp_menu_render(main_menu) }}
 
-                {% if is_granted('ROLE_ADMIN') %}
+                {% if is_granted('ROLE_ADMIN_HOTEL') %}
                     {% set management_menu = knp_menu_get('MBHBaseBundle:Builder:managementMenu', [], {'management': management_menu_switch}) %}
                     {{ knp_menu_render(management_menu) }}
                 {% endif%}

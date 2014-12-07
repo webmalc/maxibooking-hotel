@@ -25,7 +25,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/", name="price_service_category")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function indexAction()
@@ -61,7 +61,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/", name="price_service_category_save_prices")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function savePricesAction(Request $request)
@@ -95,7 +95,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/new/entry", name="price_service_category_entry_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function newEntryAction($id)
@@ -127,7 +127,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/create/entry", name="price_service_category_entry_create")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template("MBHPriceBundle:Service:newEntry.html.twig")
      */
     public function createEntryAction(Request $request, $id)
@@ -180,7 +180,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/edit/entry", name="price_service_category_entry_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function editEntryAction($id)
@@ -212,7 +212,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/update/entry", name="price_service_category_entry_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template("MBHPriceBundle:Service:editEntry.html.twig")
      */
     public function updateEntryAction(Request $request, $id)
@@ -264,7 +264,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/new", name="price_service_category_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function newAction()
@@ -285,7 +285,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/create", name="price_service_category_create")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template("MBHPriceBundle:Service:new.html.twig")
      */
     public function createAction(Request $request)
@@ -322,7 +322,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/edit", name="price_service_category_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function editAction($id)
@@ -352,7 +352,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}", name="price_service_category_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template("MBHPriceBundle:Service:edit.html.twig")
      */
     public function updateAction(Request $request, $id)
@@ -397,7 +397,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/delete", name="price_service_category_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      */
     public function deleteAction($id)
     {
@@ -409,7 +409,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/entry/delete", name="price_service_category_entry_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      */
     public function deleteEntryAction(Request $request, $id)
     {

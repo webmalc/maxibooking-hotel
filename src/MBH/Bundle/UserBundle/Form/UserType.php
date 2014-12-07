@@ -63,7 +63,24 @@ class UserType extends AbstractType
                     'choices' => $this->roles,
                     'translation_domain' => 'MBHUserBundleRoles',
                     'attr' => array('class' => "chzn-select roles")
-                ))
+                ));
+
+        if(!$options['admin']) {
+
+            $builder->add('hotels', 'document', array(
+                    'group' => 'Настройки',
+                    'label' => 'Отели',
+                    'multiple' => true,
+                    'mapped' => false,
+                    'data' => $options['hotels'],
+                    'class' => 'MBHHotelBundle:Hotel',
+                    'property' => 'name',
+                    'help' => 'Отели к которым имеет доступ пользователь.',
+                    'attr' => array('class' => "chzn-select")
+                ));
+        }
+
+        $builder
                 ->add('enabled', 'checkbox', array(
                     'group' => 'Настройки',
                     'label' => 'Включен?',
@@ -86,7 +103,9 @@ class UserType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'MBH\Bundle\UserBundle\Document\User'
+            'data_class' => 'MBH\Bundle\UserBundle\Document\User',
+            'admin' => false,
+            'hotels' => []
         ));
     }
 

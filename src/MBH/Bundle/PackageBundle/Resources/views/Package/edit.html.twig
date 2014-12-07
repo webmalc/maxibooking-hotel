@@ -89,27 +89,3 @@
 
 {% endblock %}
 
-{% block scripts %}
-    {{ parent() }}
-    <script>
-        /*$(document).ready(function() {
-            $('#mbh_bundle_packagebundle_package_main_type_adults').TouchSpin({
-                min: 0,
-                max: {{ entity.roomType.totalPlaces }},
-                step: 1,
-                boostat: 2,
-                maxboostedstep: 4
-            });
-        });
-        $(document).ready(function() {
-            $('#mbh_bundle_packagebundle_package_main_type_children').TouchSpin({
-                min: 0,
-                max: {{ entity.roomType.totalPlaces }},
-                step: 1,
-                boostat: 2,
-                maxboostedstep: 4
-            });
-        });*/
-    </script>
-{% endblock %}
-

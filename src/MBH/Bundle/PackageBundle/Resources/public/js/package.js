@@ -68,7 +68,7 @@ $(document).ready(function() {
                 d.confirmed = $('#package-filter-confirmed').val();
             }
         },
-        "order": [[4, 'desc']],
+        "order": [[2, 'desc']],
         "aoColumns": [
             { "bSortable": false }, // icon
             null, // prefix

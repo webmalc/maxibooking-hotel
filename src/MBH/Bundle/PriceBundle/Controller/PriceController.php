@@ -25,7 +25,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
     /**
      * @Route("/{id}/food/price", name="food_price")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function foodAction($id)
@@ -53,7 +53,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
     /**
      * @Route("/{id}/food/price/create", name="food_price_create")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template("MBHPriceBundle:Price:food.html.twig")
      */
     public function foodCreateAction(Request $request, $id)
@@ -113,7 +113,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
     /**
      * @Route("/{id}/room/quota", name="room_quota")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function roomQuotaAction($id)
@@ -141,7 +141,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
     /**
      * @Route("/{id}/room/quota/create", name="room_quota_create")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template("MBHPriceBundle:Price:roomQuota.html.twig")
      */
     public function roomQuotaCreateAction(Request $request, $id)
@@ -208,7 +208,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
     /**
      * @Route("/{id}/room/price", name="room_price")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function roomPriceAction($id)
@@ -236,7 +236,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
     /**
      * @Route("/{id}/room/price/create", name="room_price_create")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template("MBHPriceBundle:Price:roomPrice.html.twig")
      */
     public function roomPriceCreateAction(Request $request, $id)

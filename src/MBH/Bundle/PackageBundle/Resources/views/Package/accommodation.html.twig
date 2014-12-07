@@ -13,7 +13,7 @@
             {% if entity.accommodation %}
                 <div class="alert alert-warning">
                     <i class="fa fa-home"></i> Размещение: {{ entity.accommodation.name(true, true) }}
-                    {% if entity.deletedAt is empty %}
+                    {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                         <div class="pull-right">
                             <a href="{{ path('package_accommodation_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
                                 <i class="fa fa-trash-o"></i>
@@ -28,7 +28,7 @@
             {% endif %}
 
 
-            {% if entity.deletedAt is empty %}
+            {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                 {{ form_start(form, {'action': path('package_accommodation', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
                 {{ form_widget(form) }}
                 {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}

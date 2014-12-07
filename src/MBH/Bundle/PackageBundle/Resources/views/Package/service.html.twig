@@ -50,7 +50,7 @@
                         <td class="text-right text-success">{{ service.total|number_format }}</td>
                         <td class="text-center">{{ service.createdAt|date('d.m.Y') }}</td>
                         <td class="table-actions-td text-center">
-                            {% if entity.deletedAt is empty %}
+                            {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                                 <a href="{{ path('package_service_delete', { 'id': entity.id, "serviceId": service.id }) }}"
                                    class="btn btn-danger btn-xs delete-link " title="Удаление записи"
                                    data-toggle="tooltip">
@@ -64,7 +64,7 @@
             </table>
             {% endif %}
 
-            {% if entity.deletedAt is empty %}
+            {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
 
                 {% if entity.tariff.hotel.servicesCategories|length > 0 %}
 

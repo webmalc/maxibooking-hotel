@@ -22,6 +22,9 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
+use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
 class PackageController extends Controller implements CheckHotelControllerInterface
 {
@@ -38,6 +41,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function confirmationAction(Package $package, Request $request)
     {
+        if (!$this->container->get('mbh.package.permissions')->check($package)) {
+            throw $this->createNotFoundException();
+        }
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $package->setConfirmed(true);
@@ -348,9 +355,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.package.permissions')->check($entity)) {
             throw $this->createNotFoundException();
         }
+
         $form = $this->createForm(
             new PackageMainType(),
             $entity,
@@ -446,6 +454,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $dm->persist($package);
         $dm->flush();
 
+        //Acl
+        $aclProvider = $this->get('security.acl.provider');
+        $acl = $aclProvider->createAcl(ObjectIdentity::fromDomainObject($package));
+        $acl->insertObjectAce(UserSecurityIdentity::fromAccount($this->getUser()), MaskBuilder::MASK_MASTER);
+        $aclProvider->updateAcl($acl);
+
         $request->getSession()
             ->getFlashBag()
             ->set('success', 'Бронь успешно создана.');
@@ -478,7 +492,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             new PackageGuestType()
         );
 
-        if ($request->getMethod() == 'PUT') {
+        if ($request->getMethod() == 'PUT'  && $this->container->get('mbh.package.permissions')->check($entity)) {
             $form->bind($request);
 
             if ($form->isValid()) {
@@ -545,7 +559,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
         $tourist = $dm->getRepository('MBHPackageBundle:Tourist')->find($touristId);
 
-        if (!$entity || !$tourist) {
+        if (!$entity || !$tourist  || !$this->container->get('mbh.package.permissions')->check($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -601,7 +615,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ]
         );
 
-        if ($request->getMethod() == 'PUT') {
+        if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
             $form->bind($request);
 
             if ($form->isValid()) {
@@ -653,7 +667,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ['package' => $entity]
         );
 
-        if ($request->getMethod() == 'PUT') {
+        if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
             $form->submit($request);
 
             if ($form->isValid()) {
@@ -715,7 +729,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
         $service = $dm->getRepository('MBHPackageBundle:PackageService')->find($serviceId);
 
-        if (!$entity || !$service) {
+        if (!$entity || !$service || !$this->container->get('mbh.package.permissions')->check($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -746,7 +760,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $dm->getFilterCollection()->enable('softdeleteable');
         $cash = $dm->getRepository('MBHCashBundle:CashDocument')->find($cashId);
 
-        if (!$entity || !$cash) {
+        if (!$entity || !$cash || !$this->container->get('mbh.package.permissions')->check($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -845,7 +859,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 'isHostel' => $this->get('mbh.hotel.selector')->getSelected()->getIsHostel()
             ]);
 
-        if ($request->getMethod() == 'PUT') {
+        if ($request->getMethod() == 'PUT'  && $this->container->get('mbh.package.permissions')->check($entity)) {
             $form->bind($request);
 
             if ($form->isValid()) {
@@ -883,7 +897,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.package.permissions')->check($entity)) {
             throw $this->createNotFoundException();
         }
         $entity->removeAccommodation();
@@ -911,7 +925,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.package.permissions')->check($entity)) {
             throw $this->createNotFoundException();
         }
 

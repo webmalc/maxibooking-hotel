@@ -26,7 +26,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/", name="tariff")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function indexAction()
@@ -73,7 +73,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/new", name="tariff_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function newAction()
@@ -93,7 +93,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/create", name="tariff_create")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template("MBHPriceBundle:Tariff:new.html.twig")
      */
     public function createAction(Request $request)
@@ -132,7 +132,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/{id}", name="tariff_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template("MBHPriceBundle:Tariff:edit.html.twig")
      */
     public function updateAction(Request $request, $id)
@@ -180,7 +180,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/{id}/edit", name="tariff_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function editAction($id)
@@ -210,7 +210,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/{id}/clone", name="tariff_clone")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      */
     public function cloneAction($id)
     {
@@ -276,7 +276,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/{id}/delete", name="tariff_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      */
     public function deleteAction($id)
     {

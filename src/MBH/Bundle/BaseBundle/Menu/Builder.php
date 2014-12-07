@@ -67,21 +67,21 @@ class Builder extends ContainerAware
         }
 
         //Hotels links
-        $menu->addChild('hotels', ['url' => '#', 'label' => 'Отели'])
+        $menu->addChild('hotels', ['route' => '_welcome', 'label' => 'Отели'])
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-building-o'])
         ;
         $menu['hotels']->addChild('hotelsList', ['route' => 'hotel', 'label' => 'Отели']);
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номера']);
 
         //Prices links
-        $menu->addChild('prices', ['url' => '#', 'label' => 'Цены'])
+        $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Цены'])
              ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-ruble'])
         ;
         $menu['prices']->addChild('tariff', ['route' => 'tariff', 'label' => 'Тарифы']);
         $menu['prices']->addChild('services', ['route' => 'price_service_category', 'label' => 'Услуги']);
         
         //Users links
-        $menu->addChild('configs', ['url' => '#', 'label' => 'Настройки'])
+        $menu->addChild('configs', ['route' => '_welcome', 'label' => 'Настройки'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-cogs'])
         ;
         $menu['configs']->addChild('users', ['route' => 'user', 'label' => 'Пользователи'])
@@ -123,7 +123,7 @@ class Builder extends ContainerAware
                 ->getToken()
                 ->getUser()
         ;
-        if ($this->container->get('security.context')->isGranted('ROLE_ADMIN')) {
+        if ($this->container->get('security.context')->isGranted('ROLE_ADMIN_HOTEL')) {
             $menu->addChild('management', ['url' => 'http://google.ru', 'label' => '&nbsp;'])
                     ->setAttributes([
                         'icon' => 'fa fa-gears fa-lg',
@@ -138,7 +138,7 @@ class Builder extends ContainerAware
                 $menu['management']->setAttribute('title', 'Назад к главному меню');
             }
         }
-        $menu->addChild('login', ['url' => '#', 'label' => $user->getFullName(true)])
+        $menu->addChild('login', ['route' => '_welcome', 'label' => $user->getFullName(true)])
                 ->setAttribute('dropdown', true)
         ;
         $menu['login']->addChild('profile', [
@@ -215,7 +215,7 @@ class Builder extends ContainerAware
             if (empty($metadata) || empty($roles[1])) {
                 continue;
             }
-            
+
             if (!$security->isGranted($roles[1])) {
 
                 $menu->removeChild($child);

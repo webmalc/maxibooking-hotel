@@ -34,9 +34,11 @@ security:
                 domain:   ~
 
     role_hierarchy:
-        ROLE_ADMIN:       [ROLE_MANAGER, ROLE_BOOKKEEPER]
-        ROLE_MANAGER: ROLE_USER
+        ROLE_ADMIN:       [ROLE_SENIOR_MANAGER, ROLE_BOOKKEEPER, ROLE_ADMIN_HOTEL]
+        ROLE_ADMIN_HOTEL: [ROLE_SENIOR_MANAGER, ROLE_BOOKKEEPER]
         ROLE_BOOKKEEPER: ROLE_USER
+        ROLE_SENIOR_MANAGER: [ROLE_MANAGER]
+        ROLE_MANAGER: ROLE_USER
 
     access_control:
         - { path: ^/management/channelmanager/package/notifications, role: IS_AUTHENTICATED_ANONYMOUSLY }

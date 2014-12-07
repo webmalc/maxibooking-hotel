@@ -15,6 +15,10 @@ services:
         class: MBH\Bundle\PackageBundle\Services\Calculation
         arguments: [@service_container]
 
+    mbh.package.permissions:
+            class: MBH\Bundle\PackageBundle\Services\Permissions
+            arguments: [@service_container]
+
     mbh.package.subscriber:
         class: MBH\Bundle\PackageBundle\EventListener\PackageSubscriber
         arguments: [@service_container]

@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  * HotelSelector service
@@ -20,12 +21,28 @@ class HotelSelector
         $this->container = $container;
     }
 
+
     /**
-     * @return \MBH\Bundle\HotelBundle\Document\Hotel|null
+     * @param Hotel $hotel
+     * @return bool
+     */
+    public function checkPermissions(Hotel $hotel)
+    {
+        $securityContext = $this->container->get('security.context');
+        if ($securityContext->isGranted('ROLE_ADMIN')) {
+            return true;
+        }
+
+        return $securityContext->isGranted('EDIT', $hotel);
+    }
+
+    /**
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel
      */
     public function getSelected()
     {
         $session = $this->container->get('session');
+
         $id = $session->get('selected_hotel_id');
 
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
@@ -38,32 +55,32 @@ class HotelSelector
             $hotel = $dm->getRepository('MBHHotelBundle:Hotel')
                     ->find($id)
             ;
-            if ($hotel) {
+            if ($hotel && $this->checkPermissions($hotel)) {
                 return $hotel;
-            }
 
+            }
             $session->remove('selected_hotel_id');
         }
 
         // Select first hotel
-        $hotel = $dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('s')
-                ->limit(1)
+        $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('s')
                 ->sort('isDefault', 'desc')
                 ->getQuery()
-                ->getSingleResult()
+                ->execute()
         ;
 
-        if ($hotel) {
-            $session->set('selected_hotel_id', (string) $hotel->getId());
-            return $hotel;
+        foreach ($hotels as $hotel) {
+            if ($hotel && $this->checkPermissions($hotel)) {
+                $session->set('selected_hotel_id', (string) $hotel->getId());
+                return $hotel;
+            }
         }
-
         return null;
     }
 
     /**
      * @param string $id
-     * @return @return \MBH\Bundle\HotelBundle\Document\Hotel|null
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel
      */
     public function setSelected($id)
     {
@@ -79,7 +96,7 @@ class HotelSelector
         $hotel = $dm->getRepository('MBHHotelBundle:Hotel')
                 ->find($id)
         ;
-        if ($hotel) {
+        if ($hotel && $this->checkPermissions($hotel)) {
             $session->set('selected_hotel_id', (string) $hotel->getId());
             return $hotel;
         }

@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\Twig;
 
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class HotelSelectorExtension extends \Twig_Extension
@@ -34,14 +36,31 @@ class HotelSelectorExtension extends \Twig_Extension
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->container->get('doctrine_mongodb')->getManager();
-        
+
         $entities = $dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('h')
                        ->sort('fullTitle', 'asc')
                        ->getQuery()
                        ->execute()
         ;
-        
-        return $entities;
+
+        $result = [];
+        foreach ($entities as $entity) {
+            if ($this->checkPermissions($entity)) {
+                $result[] = $entity;
+            }
+        }
+
+        return $result;
+    }
+
+    public function checkPermissions(Hotel $hotel)
+    {
+        return $this->container->get('mbh.hotel.selector')->checkPermissions($hotel);
+    }
+
+    public function checkPackagePermissions(Package $package)
+    {
+        return $this->container->get('mbh.package.permissions')->check($package);
     }
 
     /**
@@ -52,6 +71,8 @@ class HotelSelectorExtension extends \Twig_Extension
         return array(
             'selected_hotel' => new \Twig_Function_Method($this, 'getSelectedHotel', array('is_safe' => array('html'))),
             'hotels' => new \Twig_Function_Method($this, 'getHotels', array('is_safe' => array('html'))),
+            'checkPermissions' => new \Twig_Function_Method($this, 'checkPermissions', array('is_safe' => array('html'))),
+            'checkPackagePermissions' => new \Twig_Function_Method($this, 'checkPackagePermissions', array('is_safe' => array('html'))),
         );
     }
 
