@@ -98,8 +98,27 @@ class PackageRepository extends DocumentRepository
             $qb->field($dateType)->lte($data['end']);
         }
 
+        // filter
+        if (isset($data['filter']) && $data['filter'] != null) {
+            //live now
+            if ($data['filter'] == 'live_now') {
+                $now = new \DateTime();
+                $now->setTime(0,0,0);
+                $qb->field('begin')->lte($now);
+                $qb->field('end')->gte($now);
+            }
+            // without accommodation
+            if ($data['filter'] == 'without_accommodation') {
+                $qb->field('accommodation')->equals(null);
+            }
+        }
+
+        if (isset($data['created_by']) && $data['created_by'] != null) {
+            $qb->field('createdBy')->equals($data['created_by']);
+        }
+
         //confirmed
-        if(isset($data['confirmed']) && $data['confirmed'] != null) {
+        if (isset($data['confirmed']) && $data['confirmed'] != null) {
 
             if ((int) $data['confirmed']) {
                 $qb->field('confirmed')->equals(true);
@@ -156,7 +175,13 @@ class PackageRepository extends DocumentRepository
         if (isset($data['deleted']) && $data['deleted']) {
             $dm->getFilterCollection()->disable('softdeleteable');
         }
-        $docs = $qb->getQuery()->execute();
+
+        if (isset($data['count']) && $data['count']) {
+            $docs = $qb->getQuery()->count();
+        } else {
+            $docs = $qb->getQuery()->execute();
+        }
+
         if (isset($data['deleted']) && $data['deleted']) {
             $dm->getFilterCollection()->enable('softdeleteable');
         }

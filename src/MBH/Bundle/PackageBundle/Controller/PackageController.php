@@ -257,9 +257,59 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function indexAction()
     {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        //begin today count
+        $data = [
+            'count' => true,
+            'hotel' => $this->get('mbh.hotel.selector')->getSelected()
+        ];
+        $now = new \DateTime();
+        $count['begin_today'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
+                'begin' => $now->format('d.m.Y'),
+                'end' => $now->format('d.m.Y'),
+                'dates' => 'begin'
+            ], $data)
+        );
+        //begin tomorrow count
+        $now->modify('+1 day');
+        $count['begin_tomorrow'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
+                    'begin' => $now->format('d.m.Y'),
+                    'end' => $now->format('d.m.Y'),
+                    'dates' => 'begin'
+                ], $data)
+        );
+        //live now count
+        $count['live_now'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
+                    'filter' => 'live_now'
+                ], $data)
+        );
+        //without-approval count
+        $count['without_approval'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
+                    'confirmed' => '0'
+                ], $data)
+        );
+        //without_accommodation count
+        $count['without_accommodation'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
+                    'filter' => 'without_accommodation'
+                ], $data)
+        );
+        //not_paid count
+        $count['not_paid'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
+                    'paid' => 'not_paid'
+                ], $data)
+        );
+        //created_by count
+        $count['created_by'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
+                    'created_by' => $this->getUser()->getUsername()
+                ], $data)
+        );
+
         return [
             'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
-            'statuses' => $this->container->getParameter('mbh.package.statuses')
+            'statuses' => $this->container->getParameter('mbh.package.statuses'),
+            'count' => $count
         ];
     }
 
@@ -276,24 +326,63 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $entities = $dm->getRepository('MBHPackageBundle:Package')->fetch(
-            [
-                'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
-                'roomType' => $request->get('roomType'),
-                'status' => $request->get('status'),
-                'deleted' => $request->get('deleted'),
-                'begin' => $request->get('begin'),
-                'end' => $request->get('end'),
-                'dates' => $request->get('dates'),
-                'skip' => $request->get('start'),
-                'limit' => $request->get('length'),
-                'query' => $request->get('search')['value'],
-                'order' => $request->get('order')['0']['column'],
-                'dir' => $request->get('order')['0']['dir'],
-                'paid' => $request->get('paid'),
-                'confirmed' => $request->get('confirmed'),
-            ]
-        );
+        $data = [
+            'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
+            'roomType' => $request->get('roomType'),
+            'status' => $request->get('status'),
+            'deleted' => $request->get('deleted'),
+            'begin' => $request->get('begin'),
+            'end' => $request->get('end'),
+            'dates' => $request->get('dates'),
+            'skip' => $request->get('start'),
+            'limit' => $request->get('length'),
+            'query' => $request->get('search')['value'],
+            'order' => $request->get('order')['0']['column'],
+            'dir' => $request->get('order')['0']['dir'],
+            'paid' => $request->get('paid'),
+            'confirmed' => $request->get('confirmed'),
+        ];
+
+        //quick links
+        switch ($request->get('quick_link')){
+            case 'begin-today':
+                $data['dates'] = 'begin';
+                $now = new \DateTime();
+                $data['begin'] = $now->format('d.m.Y');
+                $data['end'] = $now->format('d.m.Y');
+                break;
+
+            case 'begin-tomorrow':
+                $data['dates'] = 'begin';
+                $now = new \DateTime();
+                $now->modify('+1 day');
+                $data['begin'] = $now->format('d.m.Y');
+                $data['end'] = $now->format('d.m.Y');
+                break;
+
+            case 'live-now':
+                $data['filter'] = 'live_now';
+                break;
+
+            case 'without-approval':
+                $data['confirmed'] = '0';
+                break;
+
+            case 'without-accommodation':
+                $data['filter'] = 'without_accommodation';
+                break;
+
+            case 'not-paid':
+                $data['paid'] = 'not_paid';
+                break;
+
+            case 'created-by':
+                $data['created_by'] = $this->getUser()->getUsername();
+                break;
+            default:
+        }
+
+        $entities = $dm->getRepository('MBHPackageBundle:Package')->fetch($data);
 
         return [
             'entities' => $entities,

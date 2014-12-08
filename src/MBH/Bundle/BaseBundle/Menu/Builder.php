@@ -139,7 +139,10 @@ class Builder extends ContainerAware
             }
         }
         $menu->addChild('login', ['route' => '_welcome', 'label' => $user->getFullName(true)])
-                ->setAttribute('dropdown', true)
+                ->setAttributes([
+                        'icon' => 'fa fa-user',
+                        'dropdown' => true
+                    ])
         ;
         $menu['login']->addChild('profile', [
                     'route' => 'user_profile',

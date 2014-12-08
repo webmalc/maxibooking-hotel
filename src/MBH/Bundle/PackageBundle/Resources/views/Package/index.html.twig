@@ -8,7 +8,7 @@
 
 <div class="tab-content">
 
-    <div class="well">
+    <div class="well" id="package-table-filter-well">
         <form id="package-table-filter" class="form-inline" role="form">
             <div class="input">
                 <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp <input type="text" id="package-filter-begin" class="datepicker package-filter begin-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
@@ -58,8 +58,20 @@
                 <i class="fa fa-trash-o" title='Удаленные?' data-toggle='tooltip'></i>&nbsp <input type="checkbox" id="package-filter-deleted" class="package-filter"  value="1" />
             </div>
 
+            <input type="hidden" id="package-filter-quick-link" value="">
         </form>
     </div>
+
+    <ul id="package-table-quick-links">
+        <li><a class="label label-default" data-value="begin-today" href="#">заезд сегодня ({{ count.begin_today|default('-') }})</a></li>
+        <li><a class="label label-default" data-value="begin-tomorrow" href="#">заезд завтра ({{ count.begin_tomorrow|default('-') }})</a></li>
+        <li><a class="label label-default" data-value="live-now" href="#">живут сейчас ({{ count.live_now|default('-') }})</a></li>
+        <li><a class="label label-default" data-value="without-approval" href="#">не подтвержденные ({{ count.without_approval|default('-') }})</a></li>
+        <li><a class="label label-default" data-value="without-accommodation" href="#">без размещения ({{ count.without_accommodation|default('-') }})</a></li>
+        <li><a class="label label-default" data-value="not-paid" href="#">не оплаченные ({{ count.not_paid|default('-') }})</a></li>
+        <li><a class="label label-default" data-value="created-by" href="#">мои брони ({{ count.created_by|default('-') }})</a></li>
+        <li><a class="label label-default" id="package-table-quick-reset" href="#"><i class="fa fa-ban"></i></a></li>
+    </ul>
 
     <table id="package-table"
            class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
