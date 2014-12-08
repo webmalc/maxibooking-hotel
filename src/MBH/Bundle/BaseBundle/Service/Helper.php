@@ -105,4 +105,19 @@ class Helper
         if ($n==1) return $f1;
         return $f5;
     }
+
+    /**
+     * @param array $collection
+     * @return array
+     */
+    public function toIds($collection)
+    {
+        $result = [];
+
+        foreach ($collection as $object) {
+            $result[] = $object->getId();
+        }
+
+        return $result;
+    }
 }

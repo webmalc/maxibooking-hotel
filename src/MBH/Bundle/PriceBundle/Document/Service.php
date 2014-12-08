@@ -276,4 +276,12 @@ class Service extends Base
     {
         return $this->unit;
     }
+
+    /**
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel
+     */
+    public function getHotel()
+    {
+        return $this->getCategory()->getHotel();
+    }
 }

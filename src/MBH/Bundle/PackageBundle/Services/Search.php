@@ -121,6 +121,11 @@ class Search
                 continue;
             }
 
+            // check hotel permission
+            if (!$this->container->get('mbh.hotel.selector')->checkPermissions($result->getRoomType()->getHotel())) {
+                continue;
+            }
+
             //Set foods & prices
             foreach ($groupedCache as $cache) {
                 foreach ($cache->getPrices() as $price) {
@@ -171,7 +176,18 @@ class Search
                 ->field('begin')->lte($query->begin)
         );
 
-        return $qb->getQuery()->execute();
+        $tariffs =  $qb->getQuery()->execute();
+
+        $results = [];
+
+        foreach($tariffs as $tariff) {
+            if (!$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel())) {
+                continue;
+            }
+            $results[] = $tariff;
+        }
+
+        return $results;
     }
 
 }

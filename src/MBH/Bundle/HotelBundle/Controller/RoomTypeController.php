@@ -89,7 +89,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
         $entity = $dm->getRepository('MBHHotelBundle:Room')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -119,7 +119,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
         $entity = $dm->getRepository('MBHHotelBundle:Room')->find($id);
 
-        if (!$entity) {
+        if (!$entity  || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -167,7 +167,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
-        if (!$entity) {
+        if (!$entity  || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -194,7 +194,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
-        if (!$entity) {
+        if (!$entity  || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -429,7 +429,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
         $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
 
-        if (!$entity) {
+        if (!$entity  || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -463,7 +463,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
         $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
 
-        if (!$entity) {
+        if (!$entity  || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -517,7 +517,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
         $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 

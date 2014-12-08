@@ -27,6 +27,11 @@ class SearchType extends AbstractType
         $roomTypes = [];
         
         foreach ($hotels as $hotel) {
+
+            if (!$options['security']->checkPermissions($hotel)) {
+                continue;
+            }
+
             $roomTypes[$hotel->getName()]['allrooms_' . $hotel->getId()] = 'Все номера';
             foreach($hotel->getRoomTypes() as $roomType) {
                 $roomTypes[$hotel->getName()][$roomType->getId()] = $roomType->getName();
@@ -102,6 +107,7 @@ class SearchType extends AbstractType
         $resolver->setDefaults([
             'csrf_protection' => false,
             'dm' => null,
+            'security' => null,
             'hotel' => null,
         ]);
     }

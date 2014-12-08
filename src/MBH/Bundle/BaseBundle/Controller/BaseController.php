@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Controller;
 
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
@@ -81,6 +82,18 @@ class BaseController extends Controller
 
         if (!$entity) {
             throw $this->createNotFoundException();
+        }
+
+        if (method_exists($entity, 'getHotel')) {
+            if(!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+                throw $this->createNotFoundException();
+            }
+        }
+
+        if ($entity instanceof Hotel) {
+            if(!$this->container->get('mbh.hotel.selector')->checkPermissions($entity)) {
+                throw $this->createNotFoundException();
+            }
         }
 
         $dm->remove($entity);

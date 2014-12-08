@@ -35,7 +35,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
 
         $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -63,7 +63,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
 
         $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -123,7 +123,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
 
         $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -151,7 +151,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
 
         $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -218,7 +218,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
 
         $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -246,7 +246,7 @@ class PriceController extends Controller implements CheckHotelControllerInterfac
 
         $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 

@@ -33,7 +33,11 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         $results = $tariffResults = false;
         
         $form = $this->createForm(
-                new SearchType(), [], ['dm' => $dm, 'hotel' => $this->get('mbh.hotel.selector')->getSelected()]
+                new SearchType(), [], [
+                    'security'  => $this->container->get('mbh.hotel.selector'),
+                    'dm' => $dm,
+                    'hotel' => $this->get('mbh.hotel.selector')->getSelected()
+                ]
         );
 
         // Validate form

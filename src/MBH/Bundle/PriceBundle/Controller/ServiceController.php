@@ -73,7 +73,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         foreach ($entries as $id => $price) {
             $entity = $dm->getRepository('MBHPriceBundle:Service')->find($id);
 
-            if (!$entity || $entity->getPrice() == $price) {
+            if (!$entity || $entity->getPrice() == $price || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
                 continue;
             }
 
@@ -104,7 +104,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $dm = $this->get('doctrine_mongodb')->getManager();
         $entity = $dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -136,7 +136,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $dm = $this->get('doctrine_mongodb')->getManager();
         $entity = $dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -189,7 +189,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $dm = $this->get('doctrine_mongodb')->getManager();
         $entry = $dm->getRepository('MBHPriceBundle:Service')->find($id);
 
-        if (!$entry) {
+        if (!$entry || !$this->container->get('mbh.hotel.selector')->checkPermissions($entry->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -221,7 +221,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $dm = $this->get('doctrine_mongodb')->getManager();
         $entry = $dm->getRepository('MBHPriceBundle:Service')->find($id);
 
-        if (!$entry) {
+        if (!$entry || !$this->container->get('mbh.hotel.selector')->checkPermissions($entry->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -332,7 +332,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
 
         $entity = $dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -362,7 +362,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
 
         $entity = $dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entry->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -418,7 +418,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
 
         $entity = $dm->getRepository('MBHPriceBundle:Service')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
         $catId = $entity->getCategory()->getId();

@@ -78,6 +78,7 @@ class HotelSelector
         return null;
     }
 
+
     /**
      * @param string $id
      * @return \MBH\Bundle\HotelBundle\Document\Hotel
@@ -102,6 +103,30 @@ class HotelSelector
         }
         
         return null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSelectedPackages()
+    {
+        $hotel = $this->getSelected();
+
+        if (!$hotel) {
+            return [];
+        }
+
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $dm->getFilterCollection()->disable('softdeleteable');
+
+        $packages = $dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('s')
+            ->field('roomType.id')->in($this->container->get('mbh.helper')->toIds($hotel->getRoomTypes()))
+            ->getQuery()
+            ->execute()
+        ;
+        $dm->getFilterCollection()->enable('softdeleteable');
+
+        return $packages;
     }
 
 }

@@ -264,4 +264,12 @@ class CashDocument extends Base
     {
         return $this->isConfirmed;
     }
+
+    /**
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel
+     */
+    public function getHotel()
+    {
+        return $this->getPackage()->getRoomType()->getHotel();
+    }
 }

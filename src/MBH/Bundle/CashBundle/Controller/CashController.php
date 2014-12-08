@@ -73,6 +73,9 @@ class CashController extends Controller
             $qb->field('createdAt')->lte($end);
         }
 
+        $packages = $this->container->get('mbh.package.permissions')->getAvailablePackages();
+        $qb->field('package.id')->in($this->container->get('mbh.helper')->toIds($packages));
+
         $entities = $qb->getQuery()->execute();
 
         return [
@@ -101,7 +104,7 @@ class CashController extends Controller
 
         $entity = $dm->getRepository('MBHCashBundle:CashDocument')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(
@@ -135,7 +138,7 @@ class CashController extends Controller
 
         $entity = $dm->getRepository('MBHCashBundle:CashDocument')->find($id);
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(
@@ -196,7 +199,7 @@ class CashController extends Controller
         $entity = $dm->getRepository('MBHCashBundle:CashDocument')->find($id);
         $dm->getFilterCollection()->enable('softdeleteable');
 
-        if (!$entity) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             return new JsonResponse([
                 'error' => true,
                 'message' => 'CashDocument not found'
