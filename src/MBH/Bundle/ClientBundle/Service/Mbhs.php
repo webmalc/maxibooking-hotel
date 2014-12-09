@@ -5,7 +5,7 @@ namespace MBH\Bundle\ClientBundle\Service;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\BaseBundle\Document\Message;
 
-class ServerCaller
+class Mbhs
 {
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -37,7 +37,7 @@ class ServerCaller
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->guzzle = $container->get('guzzle.client');
-        $this->config = $container->getParameter('mbh.server');
+        $this->config = $container->getParameter('mbh.mbhs');
         $this->request = $container->get('request');
     }
 
@@ -52,7 +52,7 @@ class ServerCaller
         $result->error = false;
 
         try {
-            $request = $this->guzzle->get($this->config['url'] . 'client/sms/send');
+            $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/sms/send');
             $request->getQuery()->set('url', $this->request->getSchemeAndHttpHost());
             $request->getQuery()->set('key', $this->config['key']);
             $request->getQuery()->set('sms', $text);
@@ -96,5 +96,22 @@ class ServerCaller
         $message->setFrom($from)->setText($text)->setType($type)->setEnd($end);
         $this->dm->persist($message);
         $this->dm->flush();
+    }
+
+    /**
+     * @param $ip
+     */
+    public function login($ip)
+    {
+        try {
+            $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/login');
+            $request->getQuery()->set('url', $this->request->getSchemeAndHttpHost());
+            $request->getQuery()->set('key', $this->config['key']);
+            $request->getQuery()->set('ip', $ip);
+
+            $request->send();
+
+        } catch (\Exception $e) {
+        }
     }
 }

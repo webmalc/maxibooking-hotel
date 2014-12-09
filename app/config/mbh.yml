@@ -1,7 +1,7 @@
 parameters:
-    #mbh server
-    mbh.server:
-      url: 'http://mbhs.h/app_dev.php/'
+    #mbhs
+    mbh.mbhs:
+      mbhs: 'aHR0cDovL21iaHMuaC9hcHBfZGV2LnBocC8='
       key: 'AMliD0HLwjtLNewcrcNLr2xm8SGNY9HzV2Rz3zlA'
 
     #mbh sources

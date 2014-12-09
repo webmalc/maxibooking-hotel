@@ -42,7 +42,7 @@ class TouristsMessenger
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->mailer = $container->get('mbh.mailer');
-        $this->caller = $container->get('mbh.client.server');
+        $this->mbhs = $container->get('mbh.mbhs');
         $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
     }
 
@@ -76,7 +76,7 @@ class TouristsMessenger
         }
         // send sms
         if ($sms && $this->config && $this->config->getIsSendSms() && $tourist->getPhone() && $text) {
-            $smsResult = $this->caller->sendSms((empty($smsText)) ? $text : $smsText, $tourist->getPhone());
+            $smsResult = $this->mbhs->sendSms((empty($smsText)) ? $text : $smsText, $tourist->getPhone());
             if (!$smsResult->error) {
                 $isSend = true;
             }
