@@ -40,12 +40,44 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                 ]
         );
 
+        $beginDate = new \DateTime();
+        $beginDate->setTime(0,0,0);
+        $beginDate->modify($this->container->getParameter('mbh.room.cache.date.modify'));
+
+        return [
+            'form' => $form->createView(),
+            'beginDate' => $beginDate,
+        ];
+    }
+
+    /**
+     * Search action
+     *
+     * @Route("/results", name="package_search_results", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function resultsAction(Request $request)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $results = $tariffResults = false;
+
+        $form = $this->createForm(
+            new SearchType(), [], [
+                'security'  => $this->container->get('mbh.hotel.selector'),
+                'dm' => $dm,
+                'hotel' => $this->get('mbh.hotel.selector')->getSelected()
+            ]
+        );
+
         // Validate form
         if ($request->get('s')) {
             $form->bind($request);
             if ($form->isValid()) {
                 $data = $form->getData();
-                
+
                 //Set query
                 $query = new SearchQuery();
                 $query->begin = $data['begin'];
@@ -74,14 +106,8 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             }
         }
 
-        $beginDate = new \DateTime();
-        $beginDate->setTime(0,0,0);
-        $beginDate->modify($this->container->getParameter('mbh.room.cache.date.modify'));
-
         return [
-            'form' => $form->createView(),
             'results' => $results,
-            'beginDate' => $beginDate,
             'tariffResults' => $tariffResults
         ];
     }

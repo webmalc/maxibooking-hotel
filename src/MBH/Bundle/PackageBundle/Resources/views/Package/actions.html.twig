@@ -21,7 +21,7 @@
             {% if not entity.confirmed %}
                 <li><button type="button" onclick="location.href = '{{ path('package_confirmation', {'id': entity.id, 'route': app.request.attributes.get('_route')}) }}'" class="btn btn-primary navbar-btn"><i class="fa fa-check"></i> Подтвердить</button></li>
             {% endif %}
-            <li><button type="button" onclick="location.href = '{{ path('package_search', {'s': searchQuery, 'food': entity.food}) }}'" class="btn btn-default navbar-btn"><i class="fa fa-search"></i> Найти похожую</button></li>
+            <li><button type="button" onclick="location.href = '{{ path('package_search') }}#{{ {'s': searchQuery}|url_encode }}&food={{ entity.food }}'" class="btn btn-default navbar-btn"><i class="fa fa-search"></i> Найти похожую</button></li>
             <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
         </ul>
         {% if entity.isDeleted is empty %}

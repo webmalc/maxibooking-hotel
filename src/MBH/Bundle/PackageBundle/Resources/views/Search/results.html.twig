@@ -1,0 +1,108 @@
+
+    <div class="spacer-top">
+
+        {% set selectedTariff = app.request.query.get('s').tariff|default(null) %}
+
+        {% if tariffResults != false and tariffResults is iterable and tariffResults|length != 0 %}
+
+            <div class="panel panel-default package-search-tariffs">
+                <div class="panel-heading">Поиск по тарифам <div class="text-right pull-right"><small><span class="text-success">зеленый</span> - основные тарифы</small><small>&nbsp; <span class="text-primary">синий</span> - специальные тарифы</small></div></div>
+                <div class="panel-body">
+
+                    {% for tariffResult in tariffResults  %}
+
+                        <ul id="package-search-tariffs">
+                            <li>
+                                <a href="#" {% if tariffResult.isDefault %}class="text-success"{% else %}data-id="{{ tariffResult.id }}{% endif %}">
+                                    {% if selectedTariff == tariffResult.id or (selectedTariff is empty and tariffResult.isDefault)  %} <small><i class="fa fa-check"></i></small> {% endif %}
+                                    {{ tariffResult }} <small>({{ tariffResult.hotel }})</small>
+                                </a>
+                            </li>
+                        </ul>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if results != false %}
+
+            {% set queryFood = app.request.query.get('food') %}
+
+            <table class="package-search-table table table-striped table-hover table-condensed table-icons table-actions">
+                <thead>
+                <tr>
+                    <th class="td-xs"></th>
+                    <th class="td-sm">Заезд</th>
+                    <th class="td-sm">Отъезд</th>
+                    <th class="td-sm">Дни/ночи</th>
+                    <th>Отель</th>
+                    <th>Тип</th>
+                    <th>Тариф</th>
+                    <th class="td-sm">Питание</th>
+                    <th class="td-sm">Гости</th>
+                    <th class="td-sm">Цена</th>
+                    <th class="td-md"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for result in results  %}
+                    {% if result.foods|length != 0 %}{% set badResult = false %}{%else%}{% set badResult = true %}{%endif%}
+
+                    <tr {% if badResult %}class="danger"{% endif %}>
+                        <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
+                        <td class="text-center">{{ result.begin|date('d.m.Y') }}</td>
+                        <td class="text-center">{{ result.end|date('d.m.Y') }}</td>
+                        <td class="text-center">{{ result.days }}/{{ result.nights }}</td>
+                        <td>{{ result.roomType.hotel }}</td>
+                        <td>{{ result.roomType }}</td>
+                        <td>{{ result.tariff}} </td>
+                        <td class="text-center">
+                            <select class="form-control plain-html input-sm search-food-select">
+                                {% for food in result.foods %}
+                                    <option value="{{food}}" {% if queryFood is not empty and queryFood == food %} selected="selected"{% endif %}>{{food}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td class="text-center">
+                            <select class="form-control plain-html input-sm search-tourists-select">
+                                {% for priceTourists, priceFoods  in result.prices %}
+                                    {% set arr = priceTourists|split('_') %}
+                                    <option value="{{ priceTourists }}">
+                                        {% if arr[0] %}{% for i in 1..arr[0] %}A&nbsp;{% endfor %}{% endif %}
+                                        {% if arr[1] %}{% for k in 1..arr[1] %}C&nbsp;{% endfor %}{% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+
+                        </td>
+                        <td class="text-right">
+                            {% for priceTourists, priceFoods  in result.prices %}
+                                {% for priceFood, price  in priceFoods %}
+                                    <ul class="package-search-prices">
+                                        <li class="{{ priceTourists }}_{{priceFood}}_food">{{ price|number_format}}</li>
+                                    </ul>
+                                {% endfor %}
+                            {% endfor %}
+                        </td>
+                        <td class="text-center">
+
+                            {% if badResult != true %}
+
+                                <a href="{{ path('package_new', app.request.get('s')|merge({roomType: result.roomType.id })) }}" target="_blank" class="btn btn-success btn-xs package-search-book" title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
+                                    <i class="fa fa-pencil-square-o"></i> Бронировать (<span>{{ result.roomsCount }}</span>)
+                                </a>
+                            {% else %}
+                                <a href="#" class="btn btn-danger btn-xs"><i class="fa fa-exclamation-circle"></i> Ошибка!</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor  %}
+                </tbody>
+            </table>
+
+        {% elseif results is iterable and results|length == 0 %}
+            <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> По вашему запросу нечего не найдено.</div>
+        {% else %}
+            <div class="alert alert-info"><i class="fa fa-search"></i> Введите данные для подбора проживания.</div>
+        {% endif %}
+</div>
