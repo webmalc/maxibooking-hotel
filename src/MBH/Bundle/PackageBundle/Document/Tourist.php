@@ -542,4 +542,9 @@ class Tourist extends Base
         return null;
     }
 
+    public function __toString()
+    {
+        return $this->getFullName();
+    }
+
 }

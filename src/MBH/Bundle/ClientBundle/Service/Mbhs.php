@@ -4,6 +4,7 @@ namespace MBH\Bundle\ClientBundle\Service;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\BaseBundle\Document\Message;
+use MBH\Bundle\PackageBundle\Document\Package;
 
 class Mbhs
 {
@@ -108,6 +109,27 @@ class Mbhs
             $request->getQuery()->set('url', $this->request->getSchemeAndHttpHost());
             $request->getQuery()->set('key', $this->config['key']);
             $request->getQuery()->set('ip', $ip);
+
+            $request->send();
+
+        } catch (\Exception $e) {
+        }
+    }
+
+    /**
+     * @param Package $package
+     */
+    public function channelManager(Package $package)
+    {
+        try {
+            $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/package/channelmanager');
+            $request->getQuery()->set('url', $this->request->getSchemeAndHttpHost());
+            $request->getQuery()->set('key', $this->config['key']);
+            $request->getQuery()->set('number', $package->getNumberWithPrefix());
+            $request->getQuery()->set('tourist', (string) $package->getMainTourist());
+            $request->getQuery()->set('begin', $package->getBegin()->format('d.m.Y'));
+            $request->getQuery()->set('end', $package->getEnd()->format('d.m.Y'));
+            $request->getQuery()->set('roomType', (string) $package->getRoomType());
 
             $request->send();
 

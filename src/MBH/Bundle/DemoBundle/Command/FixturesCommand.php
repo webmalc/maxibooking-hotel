@@ -135,9 +135,7 @@ class FixturesCommand extends ContainerAwareCommand
 
                 $pRoom = false;
                 if (count($rooms)) {
-                    $pRoomKey = array_rand($rooms);
-                    $pRoom = $rooms[$pRoomKey];
-                    unset($rooms[$pRoomKey]);
+                    $pRoom = $rooms[$i - 1];
                 }
 
 

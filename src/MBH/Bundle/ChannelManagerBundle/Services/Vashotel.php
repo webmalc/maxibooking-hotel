@@ -320,6 +320,8 @@ class Vashotel extends Base
                 $this->dm->persist($package);
                 $this->dm->flush();
             }
+
+            $this->container->get('mbh.mbhs')->channelManager($package);
         }
 
         // remove canceled packages
