@@ -160,6 +160,24 @@ class Hotel extends Base
 
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig", mappedBy="hotel") */
     protected $oktogoConfig;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="Country")
+     */
+    protected $country;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="Region")
+     */
+    protected $region;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="City")
+     */
+    protected $city;
     
     /**
      * Set fullTitle
@@ -567,5 +585,71 @@ class Hotel extends Base
     public function getIsHostel()
     {
         return $this->isHostel;
+    }
+
+    /**
+     * Set country
+     *
+     * @param \MBH\Bundle\HotelBundle\Document\Country $country
+     * @return self
+     */
+    public function setCountry(\MBH\Bundle\HotelBundle\Document\Country $country)
+    {
+        $this->country = $country;
+        return $this;
+    }
+
+    /**
+     * Get country
+     *
+     * @return \MBH\Bundle\HotelBundle\Document\Country $country
+     */
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
+    /**
+     * Set region
+     *
+     * @param \MBH\Bundle\HotelBundle\Document\Region $region
+     * @return self
+     */
+    public function setRegion(\MBH\Bundle\HotelBundle\Document\Region $region)
+    {
+        $this->region = $region;
+        return $this;
+    }
+
+    /**
+     * Get region
+     *
+     * @return \MBH\Bundle\HotelBundle\Document\Region $region
+     */
+    public function getRegion()
+    {
+        return $this->region;
+    }
+
+    /**
+     * Set city
+     *
+     * @param \MBH\Bundle\HotelBundle\Document\City $city
+     * @return self
+     */
+    public function setCity(\MBH\Bundle\HotelBundle\Document\City $city)
+    {
+        $this->city = $city;
+        return $this;
+    }
+
+    /**
+     * Get city
+     *
+     * @return \MBH\Bundle\HotelBundle\Document\City $city
+     */
+    public function getCity()
+    {
+        return $this->city;
     }
 }
