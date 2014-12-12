@@ -81,8 +81,12 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+        curl_setopt($ch, CURLOPT_VERBOSE, 1);
 
         $output = curl_exec($ch);
+
+        var_dump(curl_getinfo($ch));
 
         if (!$output && $error) {
             trigger_error(curl_error($ch));

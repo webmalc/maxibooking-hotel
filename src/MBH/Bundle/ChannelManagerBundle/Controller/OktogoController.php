@@ -3,37 +3,37 @@
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
-use MBH\Bundle\ChannelManagerBundle\Form\TariffType;
-use MBH\Bundle\ChannelManagerBundle\Form\VashotelType;
-use MBH\Bundle\ChannelManagerBundle\Form\RoomType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\ChannelManagerBundle\Form\OktogoType;
+use MBH\Bundle\ChannelManagerBundle\Form\RoomType;
+use MBH\Bundle\ChannelManagerBundle\Form\TariffType;
 
 /**
- * @Route("/vashotel")
+ * @Route("/oktogo")
  */
-class VashotelController extends Controller implements CheckHotelControllerInterface
+class OktogoController extends Controller implements CheckHotelControllerInterface
 {
     /**
      * Main configuration page
-     * @Route("/", name="vashotel")
+     * @Route("/", name="oktogo")
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
      */
     public function indexAction()
     {
-        $entity = $this->get('mbh.hotel.selector')->getSelected()->getVashotelConfig();
+        $entity = $this->get('mbh.hotel.selector')->getSelected()->getOktogoConfig();
 
         $form = $this->createForm(
-            new VashotelType(), $entity
+            new OktogoType(), $entity
         );
 
         return [
@@ -45,28 +45,28 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
     /**
      * Main configuration page save
-     * @Route("/", name="vashotel_save")
+     * @Route("/", name="oktogo_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Template("MBHChannelManagerBundle:Vashotel:index.html.twig")
+     * @Template("MBHChannelManagerBundle:Oktogo:index.html.twig")
      */
     public function saveAction(Request $request)
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
+        $entity = $hotel->getOktogoConfig();
         $new = false;
 
         if (!$entity) {
-            $entity = new VashotelConfig();
+            $entity = new OktogoConfig();
             $entity->setHotel($hotel);
             $new = true;
         }
 
         $form = $this->createForm(
-            new VashotelType(), $entity
+            new OktogoType(), $entity
         );
 
-        $form->bind($request);
+        $form->submit($request);
 
         if ($form->isValid()) {
 
@@ -76,10 +76,10 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             $dm->flush();
 
             if ($new) {
-                $this->get('mbh.channelmanager.vashotel')->roomSync($entity);
-                $this->get('mbh.channelmanager.vashotel')->tariffSync($entity);
-                $dm->persist($entity);
-                $dm->flush();
+                //$this->get('mbh.channelmanager.oktogo')->roomSync($entity);
+                //$this->get('mbh.channelmanager.oktogo')->tariffSync($entity);
+                //$dm->persist($entity);
+                //$dm->flush();
             }
 
             $request->getSession()->getFlashBag()
@@ -88,7 +88,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
             $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
 
-            return $this->redirect($this->generateUrl('vashotel'));
+            return $this->redirect($this->generateUrl('oktogo'));
         }
 
         return [
@@ -99,7 +99,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     }
 
     /**
-     * @Route("/room", name="vashotel_room")
+     * @Route("/room", name="oktogo_room")
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
@@ -107,7 +107,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     public function roomAction()
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
+        $entity = $hotel->getOktogoConfig();
 
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -125,15 +125,15 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     }
 
     /**
-     * @Route("/room", name="vashotel_room_save")
+     * @Route("/room", name="oktogo_room_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Template("MBHChannelManagerBundle:Vashotel:room.html.twig")
+     * @Template("MBHChannelManagerBundle:Oktogo:room.html.twig")
      */
     public function roomSaveAction(Request $request)
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
+        $entity = $hotel->getOktogoConfig();
 
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -174,12 +174,12 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             ;
             if ($request->get('save') !== null) {
 
-                return $this->redirect($this->generateUrl('vashotel_room'));
+                return $this->redirect($this->generateUrl('oktogo_room'));
             }
 
             $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
 
-            return $this->redirect($this->generateUrl('vashotel'));
+            return $this->redirect($this->generateUrl('oktogo'));
         }
 
         return array(
@@ -190,7 +190,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     }
 
     /**
-     * @Route("/room/sync", name="vashotel_room_sync")
+     * @Route("/room/sync", name="oktogo_room_sync")
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
@@ -198,36 +198,22 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     public function roomSyncAction(Request $request)
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
+        $entity = $hotel->getOktogoConfig();
 
         if (!$entity) {
             throw $this->createNotFoundException();
         }
 
-        $result = $this->get('mbh.channelmanager.vashotel')->roomSync($entity);
+        $result = $this->get('mbh.channelmanager.oktogo')->roomSync($entity);
 
-        if ($result) {
-            $request->getSession()->getFlashBag()
-                ->set('success', 'Номера успешно синхронизированы.')
-            ;
 
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
+        echo($result); exit();
 
-            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
-        } else {
-            $request->getSession()->getFlashBag()
-                ->set('danger', 'Во время синхронизации произошла ошибка. Попробуйте еще раз.')
-            ;
-        }
-
-        return $this->redirect($this->generateUrl('vashotel_room'));
+        //return $this->redirect($this->generateUrl('oktogo_room'));
     }
 
     /**
-     * @Route("/tariff/sync", name="vashotel_tariff_sync")
+     * @Route("/tariff/sync", name="oktogo_tariff_sync")
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
@@ -235,13 +221,13 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     public function tariffSyncAction(Request $request)
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
+        $entity = $hotel->getOktogoConfig();
 
         if (!$entity) {
             throw $this->createNotFoundException();
         }
 
-        $result = $this->get('mbh.channelmanager.vashotel')->tariffSync($entity);
+        $result = $this->get('mbh.channelmanager.oktogo')->tariffSync($entity);
 
         if ($result) {
             $request->getSession()->getFlashBag()
@@ -260,11 +246,11 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             ;
         }
 
-        return $this->redirect($this->generateUrl('vashotel_tariff'));
+        return $this->redirect($this->generateUrl('oktogo_tariff'));
     }
 
     /**
-     * @Route("/tariff", name="vashotel_tariff")
+     * @Route("/tariff", name="oktogo_tariff")
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
@@ -272,7 +258,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     public function tariffAction()
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
+        $entity = $hotel->getOktogoConfig();
 
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -290,15 +276,15 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     }
 
     /**
-     * @Route("/tariff", name="vashotel_tariff_save")
+     * @Route("/tariff", name="oktogo_tariff_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Template("MBHChannelManagerBundle:Vashotel:tariff.html.twig")
+     * @Template("MBHChannelManagerBundle:Oktogo:tariff.html.twig")
      */
     public function tariffSaveAction(Request $request)
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
+        $entity = $hotel->getOktogoConfig();
 
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -328,9 +314,9 @@ class VashotelController extends Controller implements CheckHotelControllerInter
                     continue;
                 }
 
-                $vashotelTariff = new Tariff();
-                $vashotelTariff->setTariff($tariff)->setTariffId($value);
-                $entity->addTariff($vashotelTariff);
+                $oktogoTariff = new Tariff();
+                $oktogoTariff->setTariff($tariff)->setTariffId($value);
+                $entity->addTariff($oktogoTariff);
             }
 
             $dm->persist($entity);
@@ -344,10 +330,10 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
             if ($request->get('save') !== null) {
 
-                return $this->redirect($this->generateUrl('vashotel_tariff'));
+                return $this->redirect($this->generateUrl('oktogo_tariff'));
             }
 
-            return $this->redirect($this->generateUrl('vashotel'));
+            return $this->redirect($this->generateUrl('oktogo'));
         }
 
         return array(

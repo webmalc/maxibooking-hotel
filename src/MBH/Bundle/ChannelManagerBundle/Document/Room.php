@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ODM\EmbeddedDocument
  */
-class VashotelRoom
+class Room
 {
     /**
      * @var \MBH\Bundle\HotelBundle\Document\RoomType

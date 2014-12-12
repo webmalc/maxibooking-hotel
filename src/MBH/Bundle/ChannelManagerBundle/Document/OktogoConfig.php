@@ -12,11 +12,11 @@ use Gedmo\Blameable\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 
 /**
- * @ODM\Document(collection="VashotelConfig")
+ * @ODM\Document(collection="OktogoConfig")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class VashotelConfig extends Base implements BaseInterface
+class OktogoConfig extends Base implements BaseInterface
 {
 
     /**
@@ -38,6 +38,13 @@ class VashotelConfig extends Base implements BaseInterface
     use BlameableDocument;
 
     /**
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="oktogoConfig")
+     * @Assert\NotNull(message="Не выбран отель")
+     */
+    protected $hotel;
+
+    /**
      * @var array
      * @ODM\EmbedMany(targetDocument="Room")
      */
@@ -49,29 +56,6 @@ class VashotelConfig extends Base implements BaseInterface
      */
     protected $tariffs;
 
-    /** 
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="vashotelConfig")
-     * @Assert\NotNull(message="Не выбран отель")
-     */
-    protected $hotel;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="key")
-     * @Assert\NotNull(message="Не указан ключ API")
-     */
-    protected $key;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="hotelId")
-     * @Assert\NotNull(message="Не указан Id отеля")
-     */
-    protected $hotelId;
-
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -82,78 +66,25 @@ class VashotelConfig extends Base implements BaseInterface
     protected $enabled = false;
 
     /**
-     * @var boolean
+     * @var string
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isBreakfast")
-     * @Assert\NotNull()
-     * @Assert\Type(type="boolean")
+     * @ODM\String()
+     * @Assert\NotNull(message="Не указан логин (username)")
      */
-    protected $isBreakfast = false;
+    protected $username;
 
     /**
-     * Set hotel
-     *
-     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
-     * @return self
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     * @Assert\NotNull(message="Не указан пароль")
      */
-    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
-    {
-        $this->hotel = $hotel;
-        return $this;
-    }
+    protected $password;
 
-    /**
-     * Get hotel
-     *
-     * @return \MBH\Bundle\HotelBundle\Document\Hotel $hotel
-     */
-    public function getHotel()
+    public function __construct()
     {
-        return $this->hotel;
-    }
-
-    /**
-     * Set key
-     *
-     * @param string $key
-     * @return self
-     */
-    public function setKey($key)
-    {
-        $this->key = $key;
-        return $this;
-    }
-
-    /**
-     * Get key
-     *
-     * @return string $key
-     */
-    public function getKey()
-    {
-        return $this->key;
-    }
-
-    /**
-     * Set hotelId
-     *
-     * @param string $hotelId
-     * @return self
-     */
-    public function setHotelId($hotelId)
-    {
-        $this->hotelId = $hotelId;
-        return $this;
-    }
-
-    /**
-     * Get hotelId
-     *
-     * @return string $hotelId
-     */
-    public function getHotelId()
-    {
-        return $this->hotelId;
+        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -176,12 +107,6 @@ class VashotelConfig extends Base implements BaseInterface
     public function getEnabled()
     {
         return $this->enabled;
-    }
-
-    public function __construct()
-    {
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -215,16 +140,6 @@ class VashotelConfig extends Base implements BaseInterface
     }
 
     /**
-     * @return $this
-     */
-    public function removeAllRooms()
-    {
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
-
-        return $this;
-    }
-
-    /**
      * Add tariff
      *
      * @param \MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff
@@ -252,6 +167,72 @@ class VashotelConfig extends Base implements BaseInterface
     public function getTariffs()
     {
         return $this->tariffs;
+    }
+
+    /**
+     * Set username
+     *
+     * @param string $username
+     * @return self
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+        return $this;
+    }
+
+    /**
+     * Get username
+     *
+     * @return string $username
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * Set password
+     *
+     * @param string $password
+     * @return self
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * Get password
+     *
+     * @return string $password
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * Set hotel
+     *
+     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     * @return self
+     */
+    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
+    {
+        $this->hotel = $hotel;
+        return $this;
+    }
+
+    /**
+     * Get hotel
+     *
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     */
+    public function getHotel()
+    {
+        return $this->hotel;
     }
 
     /**
@@ -293,25 +274,12 @@ class VashotelConfig extends Base implements BaseInterface
     }
 
     /**
-     * Set isBreakfast
-     *
-     * @param boolean $isBreakfast
-     * @return self
+     * @return $this
      */
-    public function setIsBreakfast($isBreakfast)
+    public function removeAllRooms()
     {
-        $this->isBreakfast = $isBreakfast;
+        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
 
         return $this;
-    }
-
-    /**
-     * Get isBreakfast
-     *
-     * @return boolean $isBreakfast
-     */
-    public function getIsBreakfast()
-    {
-        return $this->isBreakfast;
     }
 }

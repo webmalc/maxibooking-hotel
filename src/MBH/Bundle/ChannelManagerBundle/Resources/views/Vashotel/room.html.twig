@@ -3,7 +3,7 @@
 {% set small_title = "настройки" %}
 
 {% block content %}
-    {% include 'MBHChannelManagerBundle:Vashotel:tabs.html.twig' with {'active': 2, 'entity': entity} %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 2, 'entity': entity, 'base': 'vashotel'} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">

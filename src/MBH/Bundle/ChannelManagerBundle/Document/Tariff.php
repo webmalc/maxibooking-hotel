@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ODM\EmbeddedDocument
  */
-class VashotelTariff
+class Tariff
 {
     /**
      * @var string $tariffId

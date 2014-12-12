@@ -1,0 +1,20 @@
+{% extends 'MBHChannelManagerBundle:Oktogo:layout.html.twig' %}
+
+{% set small_title = "настройки" %}
+
+{% block content %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': entity, 'base': 'oktogo'} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+            {{ form_start(form, {'action': path('oktogo_save'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
+            {{ form_end(form) }}
+
+            {%  if entity %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs,} %}
+            {%  endif %}
+        </div>
+    </div>
+{% endblock %}

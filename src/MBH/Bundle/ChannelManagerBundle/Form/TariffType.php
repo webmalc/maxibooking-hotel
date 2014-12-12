@@ -7,7 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints\Range;
 
-class VashotelTariffType extends AbstractType
+class TariffType extends AbstractType
 {
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -41,7 +41,7 @@ class VashotelTariffType extends AbstractType
                         'label' => $tariff->getName(),
                         'required' => false,
                         'attr' => [
-                            'placeholder' => 'ID тарифа <'. $tariff->getName() .'> в настройках ВашОтель.RU',
+                            'placeholder' => 'ID тарифа <'. $tariff->getName() .'> в настройках сервиса',
                         ],
                         'data' => $data
                     ])
@@ -58,7 +58,7 @@ class VashotelTariffType extends AbstractType
 
     public function getName()
     {
-        return 'mbh_bundle_channelmanagerbundle_vashotel_tariff_type';
+        return 'mbh_bundle_channelmanagerbundle_tariff_type';
     }
 
 }

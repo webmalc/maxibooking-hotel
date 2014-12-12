@@ -6,3 +6,7 @@ services:
     mbh.channelmanager.vashotel:
             class: MBH\Bundle\ChannelManagerBundle\Services\Vashotel
             arguments: [@service_container]
+
+    mbh.channelmanager.oktogo:
+            class: MBH\Bundle\ChannelManagerBundle\Services\Oktogo
+            arguments: [@service_container]

@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/message")
@@ -20,10 +21,13 @@ class MessageController extends Controller
      * @Route("/", name="message", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
-     * @Template()
      */
-    public function getAction()
+    public function getAction(Request $request)
     {
+        if (!$request->isXmlHttpRequest()) {
+            return $this->redirect($this->generateUrl('_welcome'));
+        }
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $repo = $dm->getRepository('MBHBaseBundle:Message');

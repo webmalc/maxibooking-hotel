@@ -119,7 +119,7 @@ class Mbhs
     /**
      * @param Package $package
      */
-    public function channelManager(Package $package)
+    public function channelManager(Package $package, $serviceName)
     {
         try {
             $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/package/channelmanager');
@@ -127,9 +127,12 @@ class Mbhs
             $request->getQuery()->set('key', $this->config['key']);
             $request->getQuery()->set('number', $package->getNumberWithPrefix());
             $request->getQuery()->set('tourist', (string) $package->getMainTourist());
+            $request->getQuery()->set('tourist_email', ($package->getMainTourist()) ? $package->getMainTourist()->getEmail() : null);
+            $request->getQuery()->set('tourist_phone', ($package->getMainTourist()) ? $package->getMainTourist()->getPhone() : null);
             $request->getQuery()->set('begin', $package->getBegin()->format('d.m.Y'));
             $request->getQuery()->set('end', $package->getEnd()->format('d.m.Y'));
             $request->getQuery()->set('roomType', (string) $package->getRoomType());
+            $request->getQuery()->set('service', $serviceName);
 
             $request->send();
 

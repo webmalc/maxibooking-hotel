@@ -101,6 +101,7 @@ class Builder extends ContainerAware
 
         $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'Онлайн форма']);
         $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель.RU']);
+        $menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru']);
 
         return $this->filterMenu($menu);
     }

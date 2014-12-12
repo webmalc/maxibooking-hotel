@@ -321,7 +321,7 @@ class Vashotel extends Base
                 $this->dm->flush();
             }
 
-            $this->container->get('mbh.mbhs')->channelManager($package);
+            $this->container->get('mbh.mbhs')->channelManager($package, 'vashotel');
         }
 
         // remove canceled packages
@@ -555,6 +555,10 @@ class Vashotel extends Base
         if (!$xml instanceof \SimpleXMLElement) {
             $xml = simplexml_load_string($xml);
         }
+
+        if(isset($xml->xpath('status')[0]) && (string) $xml->xpath('status')[0] == 'error') {
+            return false;
+        };
 
         $responseSig = (string) $xml->xpath('sig')[0];
 

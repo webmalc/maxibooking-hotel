@@ -7,7 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints\Range;
 
-class VashotelRoomType extends AbstractType
+class RoomType extends AbstractType
 {
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -30,7 +30,7 @@ class VashotelRoomType extends AbstractType
                         'label' => $roomType->getName(),
                         'required' => false,
                         'attr' => [
-                            'placeholder' => 'ID типа номера <'. $roomType->getName() .'> в настройках ВашОтель.RU',
+                            'placeholder' => 'ID типа номера <'. $roomType->getName() .'> в настройках сервиса',
                         ],
                         'data' => $data
                     ])
@@ -47,7 +47,7 @@ class VashotelRoomType extends AbstractType
 
     public function getName()
     {
-        return 'mbh_bundle_channelmanagerbundle_vashotel_room_type';
+        return 'mbh_bundle_channelmanagerbundle_room_type';
     }
 
 }

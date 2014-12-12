@@ -122,7 +122,7 @@ class Search
             }
 
             // check hotel permission
-            if (!$this->container->get('mbh.hotel.selector')->checkPermissions($result->getRoomType()->getHotel())) {
+            if (!$query->isOnline && !$this->container->get('mbh.hotel.selector')->checkPermissions($result->getRoomType()->getHotel())) {
                 continue;
             }
 
@@ -181,7 +181,7 @@ class Search
         $results = [];
 
         foreach($tariffs as $tariff) {
-            if (!$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel())) {
+            if (!$query->isOnline && !$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel())) {
                 continue;
             }
             $results[] = $tariff;

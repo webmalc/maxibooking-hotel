@@ -157,6 +157,9 @@ class Hotel extends Base
 
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig", mappedBy="hotel") */
     protected $vashotelConfig;
+
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig", mappedBy="hotel") */
+    protected $oktogoConfig;
     
     /**
      * Set fullTitle
@@ -423,6 +426,28 @@ class Hotel extends Base
     public function getVashotelConfig()
     {
         return $this->vashotelConfig;
+    }
+
+    /**
+     * Set oktogoConfig
+     *
+     * @param \MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig $oktogoConfig
+     * @return self
+     */
+    public function setOktogoConfig(\MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig $oktogoConfig)
+    {
+        $this->oktogoConfig = $oktogoConfig;
+        return $this;
+    }
+
+    /**
+     * Get oktogoConfig
+     *
+     * @return \MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig $oktogoConfig
+     */
+    public function getOktogoConfig()
+    {
+        return $this->oktogoConfig;
     }
 
     /**
