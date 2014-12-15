@@ -1,0 +1,20 @@
+{% set menu = [
+    {'route': 'hotel_edit', 'title': '<i class="fa fa-info-circle"></i> Основная информация'},
+    {'route': 'hotel_edit_extended', 'title': '<i class="fa fa-cogs"></i>  Дополнительные настройки'},
+]
+%}
+
+<ul class="nav nav-tabs" role="tablist">
+{% for item in menu %}
+    {% if entity is null and loop.index != 1 %}
+        <li class="disabled">
+            <a href="#" role="tab" data-toggle="tooltip" title="Необходимо заполнить основную информацию!">{{item.title|raw}}</a>
+        </li>
+    {% else  %}
+        <li {% if loop.index == active %}class="active"{% endif %}>
+            {% if entity is null %}{% set route = 'hotel_new' %}{% else %}{% set route = item.route %}{% endif %}
+            <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route, {'id': entity.id|default(null)}) }}"{% endif %}>{{item.title|raw}}</a>
+        </li>
+    {% endif  %}
+{% endfor %}
+</ul>

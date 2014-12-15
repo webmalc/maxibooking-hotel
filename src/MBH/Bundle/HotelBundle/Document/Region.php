@@ -36,7 +36,7 @@ class Region extends Base
      */
     use BlameableDocument;
 
-    /** @ODM\ReferenceMany(targetDocument="City", mappedBy="country") */
+    /** @ODM\ReferenceMany(targetDocument="City", mappedBy="region") */
     protected $cities;
 
     /**

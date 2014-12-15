@@ -6,10 +6,12 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelType;
+use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class HotelController extends Controller
@@ -172,7 +174,7 @@ class HotelController extends Controller
      *
      * @Route("/{id}/edit", name="hotel_edit")
      * @Method("GET")
-     * @Security("is_granted(['EDIT', 'ROLE_ADMIN'], entity)")
+     * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
      * @param Hotel $entity
      * @return Response
@@ -186,6 +188,136 @@ class HotelController extends Controller
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         );
+    }
+
+    /**
+     * Displays a form to edit extended config of an existing entity.
+     *
+     * @Route("/{id}/edit/extended", name="hotel_edit_extended")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template()
+     * @param Hotel $entity
+     * @return Response
+     */
+    public function extendedAction(Hotel $entity)
+    {
+        $form = $this->createForm(new HotelExtendedType(), $entity, ['city' => $entity->getCity()]);
+
+        return array(
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        );
+    }
+
+    /**
+     * Save extended config of an existing entity.
+     *
+     * @Route("/{id}/edit/extended", name="hotel_edit_extended_save")
+     * @Method("PUT")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template("MBHHotelBundle:Hotel:extended.html.twig")
+     * @param Hotel $entity
+     * @return Response
+     */
+    public function extendedSaveAction(Request $request, Hotel $entity)
+    {
+        $form = $this->createForm(new HotelExtendedType(), $entity);
+
+        $form->submit($request);
+
+        if ($form->isValid()) {
+            //save address
+            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+            $dm = $this->get('doctrine_mongodb')->getManager();
+
+            $city = $dm->getRepository('MBHHotelBundle:City')->find($form['address']->getData());
+            if ($city) {
+                $entity->setCountry($city->getCountry())
+                    ->setRegion($city->getRegion())
+                    ->setCity($city)
+                ;
+            }
+
+            $dm->persist($entity);
+            $dm->flush();
+
+            $request->getSession()->getFlashBag()
+                ->set('success', 'Запись успешно отредактирована.')
+            ;
+
+            return $this->afterSaveRedirect('hotel', $entity->getId(), [], '_edit_extended');
+        }
+
+        return array(
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        );
+    }
+
+    /**
+     * Get city by query
+     *
+     * @Route("/city/{id}", name="hotel_city", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @return JsonResponse
+     */
+    public function cityAction(Request $request, $id = null)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        if (empty($id) && empty($request->get('query'))) {
+            return new JsonResponse([]);
+        }
+
+        if (!empty($id)) {
+            $city =  $dm->getRepository('MBHHotelBundle:City')->find($id);
+
+            if ($city) {
+                return new JsonResponse([
+                    'id' => $city->getId(),
+                    'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' .$city->getTitle()
+                ]);
+            }
+        }
+
+        $cities = $dm->getRepository('MBHHotelBundle:City')->createQueryBuilder('q')
+            ->field('title')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
+            ->getQuery()
+            ->execute()
+        ;
+
+        $data = [];
+
+        foreach ($cities as $city) {
+            $data[] = [
+                'id' => $city->getId(),
+                'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' .$city->getTitle()
+            ];
+        }
+
+        $regions = $dm->getRepository('MBHHotelBundle:Region')->createQueryBuilder('q')
+            ->field('title')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
+            ->getQuery()
+            ->execute()
+        ;
+
+        foreach ($regions as $region) {
+            foreach ($region->getCities() as $city) {
+
+
+                $data[] = [
+                    'id' => $city->getId(),
+                    'text' => $city->getCountry()->getTitle() . ', ' . $city->getRegion()->getTitle() . ', ' .$city->getTitle()
+                ];
+            }
+        }
+
+        return new JsonResponse($data);
     }
     
     /**
