@@ -202,7 +202,10 @@ class HotelController extends Controller
      */
     public function extendedAction(Hotel $entity)
     {
-        $form = $this->createForm(new HotelExtendedType(), $entity, ['city' => $entity->getCity()]);
+        $form = $this->createForm(new HotelExtendedType(), $entity, [
+            'city' => $entity->getCity(),
+            'config' => $this->container->getParameter('mbh.hotel')
+        ]);
 
         return array(
             'entity' => $entity,
@@ -223,7 +226,10 @@ class HotelController extends Controller
      */
     public function extendedSaveAction(Request $request, Hotel $entity)
     {
-        $form = $this->createForm(new HotelExtendedType(), $entity);
+        $form = $this->createForm(new HotelExtendedType(), $entity, [
+            'city' => $entity->getCity(),
+            'config' => $this->container->getParameter('mbh.hotel')
+        ]);
 
         $form->submit($request);
 

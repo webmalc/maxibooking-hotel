@@ -20,6 +20,47 @@ class HotelExtendedType extends AbstractType
                     'data' => (empty($options['city'])) ? null : $options['city']->getId(),
                     'attr' => ['placeholder' => 'Москва, Московская обл., Щелково', 'style' => 'min-width: 500px']
                 ])
+                ->add('latitude', 'text', [
+                    'label' => 'Широта',
+                    'group' => 'Местоположение',
+                    'required' => false,
+                    'attr' => ['placeholder' => '55.752014'],
+                    'help' => 'GPS координата широты отеля. <a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">Узнать координаты отеля.</a>'
+                ])
+                ->add('longitude', 'text', [
+                    'label' => 'Долгота',
+                    'group' => 'Местоположение',
+                    'required' => false,
+                    'attr' => ['placeholder' => '37.617515'],
+                    'help' => 'GPS координата широты отеля. <a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">Узнать координаты отеля.</a>'
+                ])
+                ->add('rating', 'text', [
+                    'label' => 'Звездность отеля',
+                    'group' => 'Параметры',
+                    'required' => false,
+                ])
+                ->add('type', 'choice', [
+                    'label' => 'Тип отеля',
+                    'group' => 'Параметры',
+                    'required' => false,
+                    'choices' => (isset($options['config']['types'])) ? $options['config']['types'] : [],
+                    'multiple' => true
+                ])
+                ->add('theme', 'choice', [
+                    'label' => 'Тема отеля',
+                    'group' => 'Параметры',
+                    'required' => false,
+                    'choices' => (isset($options['config']['themes'])) ? $options['config']['themes'] : [],
+                    'multiple' => true
+                ])
+                ->add('facilities', 'choice', [
+                    'label' => 'Удобства отеля',
+                    'group' => 'Параметры',
+                    'required' => false,
+                    'choices' => (isset($options['config']['facilities'])) ? $options['config']['facilities'] : [],
+                    'multiple' => true
+                ])
+
         ;
     }
 
@@ -27,7 +68,8 @@ class HotelExtendedType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
-            'city' => null
+            'city' => null,
+            'config' => null,
         ));
     }
 

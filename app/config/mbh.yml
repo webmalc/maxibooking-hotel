@@ -1,4 +1,53 @@
 parameters:
+    #mbh hotel config
+    mbh.hotel:
+      types:
+        apartments: 'Апартаменты'
+        recreation_center: 'База отдыха'
+        guest_house: 'Гостевой дом'
+        pension: 'Пансионат'
+        sanatorium: 'Санаторий'
+        country_club: 'Загородный клуб'
+        hostel: 'Хостел'
+        hotel: 'Отель'
+        motel: 'Мотель'
+        resort: 'Курортный отель'
+        mini_hotel: 'Мини-отель'
+      themes:
+        сity_tour: 'Экскурсия по городу'
+        budget_travel: 'Бюджетные и молодежные поездки'
+        shoping: 'Шопинг'
+        family_trip: 'Семейная поездка'
+        international: 'Международный'
+        business_trip: 'Деловая поездка'
+        romantic_vacation: 'Романтический отпуск/Медовый месяц'
+        interior_design: 'Дизайнерский интерьер'
+        luxury_holidays: 'Отдых класса люкс'
+        haute_cuisine: 'Изысканная кухня'
+        country_holidays: 'Загородный отдых'
+        homestead: 'Усадьба'
+        nature: 'Природа/Дикая флора и фауна'
+        spa: 'Спа/Оздоровительные процедуры'
+        ecological: 'Экологический'
+        ski: 'Горы/лыжи'
+        adventure: 'Приключение'
+        sport: 'Спорт'
+        beach: 'Пляж/Побережье'
+        city: 'Городской'
+      facilities:
+        parking: 'Парковка'
+        animals: 'Разрешены животные'
+        hour_front_desk: 'Круглосуточная стойка регистрации'
+        fitness: 'Фитнес-центр'
+        wi_fi: 'Wi-Fi'
+        free_wi_fi: 'Бесплатный Wi-Fi'
+        conditioner: 'Кондиционер'
+        pool: 'Бассейн'
+        bathroom: 'Ванная комната в номерах'
+        breakfast: 'Завтрак включен'
+        sauna: 'Баня/Сауна'
+        car: 'Прокат автомобиля'
+
     #mbhs
     mbh.mbhs:
       mbhs: 'aHR0cDovL21iaHMuaC9hcHBfZGV2LnBocC8='

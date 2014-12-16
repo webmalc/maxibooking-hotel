@@ -142,6 +142,57 @@ class Hotel extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isDefault = false;
+
+    /**
+     * @var float
+     * @Gedmo\Versioned
+     * @ODM\Float()
+     * @Assert\Type(type="numeric", message="Неверный формат координаты широты. Пример: 55.752014")
+     */
+    public $latitude;
+
+    /**
+     * @var float
+     * @Gedmo\Versioned
+     * @ODM\Float()
+     * @Assert\Type(type="numeric", message="Неверный формат координаты долготы. Пример: 37.617515")
+     */
+    public $longitude;
+
+    /**
+     * @var array
+     * @Gedmo\Versioned
+     * @ODM\Collection()
+     */
+    public $type = [];
+
+    /**
+     * @var array
+     * @Gedmo\Versioned
+     * @ODM\Collection()
+     */
+    public $theme = [];
+
+    /**
+     * @var array
+     * @Gedmo\Versioned
+     * @ODM\Collection()
+     */
+    public $facilities = [];
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=1,
+     *      minMessage="Минимальное количество звезд отеля не может быть меньше 1",
+     *      max=5,
+     *      maxMessage="Максимальое количество звезд отеля не может быть больше 5",
+     * )
+     */
+    public $rating;
     
     /** @ODM\ReferenceMany(targetDocument="RoomType", mappedBy="hotel") */
     protected $roomTypes;
@@ -651,5 +702,137 @@ class Hotel extends Base
     public function getCity()
     {
         return $this->city;
+    }
+
+    /**
+     * Set latitude
+     *
+     * @param float $latitude
+     * @return self
+     */
+    public function setLatitude($latitude)
+    {
+        $this->latitude = $latitude;
+        return $this;
+    }
+
+    /**
+     * Get latitude
+     *
+     * @return float $latitude
+     */
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
+
+    /**
+     * Set longitude
+     *
+     * @param float $longitude
+     * @return self
+     */
+    public function setLongitude($longitude)
+    {
+        $this->longitude = $longitude;
+        return $this;
+    }
+
+    /**
+     * Get longitude
+     *
+     * @return float $longitude
+     */
+    public function getLongitude()
+    {
+        return $this->longitude;
+    }
+
+    /**
+     * Set type
+     *
+     * @param collection $type
+     * @return self
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return collection $type
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set theme
+     *
+     * @param collection $theme
+     * @return self
+     */
+    public function setTheme($theme)
+    {
+        $this->theme = $theme;
+        return $this;
+    }
+
+    /**
+     * Get theme
+     *
+     * @return collection $theme
+     */
+    public function getTheme()
+    {
+        return $this->theme;
+    }
+
+    /**
+     * Set facilities
+     *
+     * @param collection $facilities
+     * @return self
+     */
+    public function setFacilities($facilities)
+    {
+        $this->facilities = $facilities;
+        return $this;
+    }
+
+    /**
+     * Get facilities
+     *
+     * @return collection $facilities
+     */
+    public function getFacilities()
+    {
+        return $this->facilities;
+    }
+
+    /**
+     * Set rating
+     *
+     * @param int $rating
+     * @return self
+     */
+    public function setRating($rating)
+    {
+        $this->rating = $rating;
+        return $this;
+    }
+
+    /**
+     * Get rating
+     *
+     * @return int $rating
+     */
+    public function getRating()
+    {
+        return $this->rating;
     }
 }

@@ -18,6 +18,14 @@ $(document).ready(function() {
         maxboostedstep: 10
     });
 
+    $("#mbh_bundle_hotelbundle_hotel_extended_type_rating").TouchSpin({
+        min: 1,
+        max: 5,
+        step: 1,
+        boostat: 1,
+        maxboostedstep: 1
+    });
+
     $('#mbh_bundle_hotelbundle_hotel_extended_type_address').select2({
         minimumInputLength: 3,
         ajax: {
@@ -42,6 +50,5 @@ $(document).ready(function() {
         },
         dropdownCssClass: "bigdrop"
    });
-
 });
 

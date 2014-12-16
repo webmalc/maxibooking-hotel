@@ -14,5 +14,40 @@
 
         {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
     </div>
+
+    <div class="modal fade" id="hotel_coordinates_help" tabindex="-1" role="dialog" aria-labelledby="hotel_coordinates_help_label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Закрыть</span></button>
+                    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-question-circle"></i>&nbsp;Как узнать координаты отеля?</h4>
+                </div>
+                <div class="modal-body">
+                    <h3>Google maps <small><a target="_blank" href="https://support.google.com/maps/answer/18539?hl=ru">справка на сайте Google.com</a></small></h3>
+                    <ol>
+                        <li>
+                            Перейти на сайт <a href="https://www.google.ru/maps/{{ entity.city is null ? '' : 'place/' ~ entity.city }}" target="_blank">https://www.google.ru/maps</a>
+                        </li>
+                        <li>Найти отель на карте. Можно воспользоваться поисковой строкой для поиска по адресу отеля.</li>
+                        <li>Нажать левую кнопку на расположении отеля на карте. После этого под поисковой строкой появится окно с названием местности и координатами выбранной точки.</li>
+                        <li>Скопировать координаты (пример: 55.751948, 37.617456). Первая цифра - широта, вторая - долгота.</li>
+                    </ol>
+
+                    <h3>Yandex maps</h3>
+                    <ol>
+                        <li>
+                            Перейти на сайт <a href="http://maps.yandex.ru/{{ entity.city is null ? '' : '?text=' ~ entity.city }}" target="_blank">http://maps.yandex.ru</a>
+                        </li>
+                        <li>Найти отель на карте. Можно воспользоваться поисковой строкой для поиска по адресу отеля.</li>
+                        <li>Нажать правую кнопку на расположении отеля на карте и выбрать пункт меню "Что здесь". После этого слева от карты появится вкладка с координатами выбранной точки.</li>
+                        <li>Скопировать координаты в скобках(пример: Широта: 55°45′7.24″N (55.752012) Долгота: 37°37′3″E (37.617501)).</li>
+                    </ol>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
 {% endblock %}
