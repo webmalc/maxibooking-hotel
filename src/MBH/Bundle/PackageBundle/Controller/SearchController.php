@@ -21,7 +21,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
     /**
      * Search action
      *
-     * @Route("/", name="package_search")
+     * @Route("/", name="package_search", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
      * @Template()

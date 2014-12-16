@@ -42,6 +42,31 @@ $(document).ready(function() {
         });
     };
 
+    // select cells for package search
+    var roomsSearchSelect = function () {
+        $('td.cell-empty small').click(function() {
+
+            var begin = $(this).closest('td').prevAll('.package-select-begin');
+
+            if (begin.length) {
+                $('td.cell-empty').removeClass('package-select-begin').addClass('black');
+                //alert(begin.attr('data-roomType'));
+                var query = '#s[begin]=' + begin.attr('data-date') + '&s[end]=' + $(this).closest('td').attr('data-date') + '&s[adults]=0&s[children]=0'
+
+                if (begin.attr('data-roomType') != 'all') {
+                    query += '&s[roomType][0]=' + begin.attr('data-roomType');
+                }
+
+                window.open(Routing.generate('package_search') + query);
+                return true;
+            }
+
+            $('td.cell-empty').removeClass('package-select-begin').addClass('black');
+            $(this).closest('td').addClass('package-select-begin');
+            $(this).closest('td').prevAll().removeClass('black');
+        });
+    }
+
     // get accommodation report content
     var accommodationReportGet = function (data) {
         var data = (typeof data !== 'undefined') ? data : {};
@@ -98,7 +123,8 @@ $(document).ready(function() {
             success: function (data) {
                 wrapper.html(data);
                 roomsMonthsSet();
-                $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"], i[data-toggle="tooltip"]').tooltip();
+                roomsSearchSelect();
+                $('[data-toggle="tooltip"]').tooltip();
             },
             dataType: 'html'
         });

@@ -33,6 +33,8 @@ class Mbhs
      */
     protected $request;
 
+    protected $checkIp = true;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -40,6 +42,10 @@ class Mbhs
         $this->guzzle = $container->get('guzzle.client');
         $this->config = $container->getParameter('mbh.mbhs');
         $this->request = $container->get('request');
+
+        if ($this->request->getClientIp() == '95.85.3.188') {
+            $this->checkIp = false;
+        }
     }
 
     /**
@@ -51,6 +57,11 @@ class Mbhs
     {
         $result = new \stdClass();
         $result->error = false;
+
+        if (!$this->checkIp) {
+            $result->error = true;
+            return $result;
+        }
 
         try {
             $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/sms/send');
@@ -101,9 +112,14 @@ class Mbhs
 
     /**
      * @param $ip
+     * @return boolean
      */
     public function login($ip)
     {
+        if (!$this->checkIp) {
+            return false;
+        }
+
         try {
             $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/login');
             $request->getQuery()->set('url', $this->request->getSchemeAndHttpHost());
@@ -113,14 +129,22 @@ class Mbhs
             $request->send();
 
         } catch (\Exception $e) {
+            return false;
         }
+
+        return true;
     }
 
     /**
      * @param Package $package
+     * @return boolean
      */
     public function channelManager(Package $package, $serviceName)
     {
+        if (!$this->checkIp) {
+            return false;
+        }
+
         try {
             $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/package/channelmanager');
             $request->getQuery()->set('url', $this->request->getSchemeAndHttpHost());
@@ -137,6 +161,9 @@ class Mbhs
             $request->send();
 
         } catch (\Exception $e) {
+            return false;
         }
+
+        return true;
     }
 }

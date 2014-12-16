@@ -71,7 +71,7 @@
 
                                         <a href="{{ path('package_edit', {'id': package.id }) }}" target="_blank" data-toggle="tooltip"
                                            title="{{ package.numberWithPrefix }}. {{ package.mainTourist.fullName|default('Нет основного гостя') }} ({{ package.adults }}+{{ package.children }}). Цена: {{ package.price }}/{{ package.paid }}. Тип: {{ statuses[package.status].title }}">
-                                            <div class="package text-{{ statuses[package.status].class }} {% if day == package.end %}package-end{% endif %}{% if day == package.begin %}package-begin{% endif %}">
+                                            <div class="package text-{% if package.isPaid %}success{% elseif package.paid > 0 %}warning{% else %}danger{% endif %} {% if day == package.end %}package-end{% endif %}{% if day == package.begin %}package-begin{% endif %}">
                                                 &nbsp;</div>
                                         </a>
                                         {% endif %}
