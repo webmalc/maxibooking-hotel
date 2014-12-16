@@ -13,6 +13,7 @@
 !bin/symfony_requirements
 /composer.phar
 *.php~
+*.yml~
 nbproject/
 /web/css/
 /web/js/
