@@ -17,6 +17,7 @@ class FormType extends AbstractType
                 'checkbox',
                 [
                     'label' => 'Включена?',
+                    'group' => 'Параметры',
                     'value' => true,
                     'required' => false,
                     'help' => 'Использовать ли онлайн форму?'
@@ -27,6 +28,7 @@ class FormType extends AbstractType
                 'checkbox',
                 [
                     'label' => 'Типы номеров?',
+                    'group' => 'Параметры',
                     'value' => true,
                     'required' => false,
                     'help' => 'Использовать ли поле "Тип номера" в онлайн форме?'
@@ -39,6 +41,7 @@ class FormType extends AbstractType
                     'checkbox',
                     [
                         'label' => 'Гости?',
+                        'group' => 'Параметры',
                         'value' => true,
                         'required' => false,
                         'help' => 'Использовать ли поле "Количестов гостей" в онлайн форме?'
@@ -52,6 +55,7 @@ class FormType extends AbstractType
                 'checkbox',
                 [
                     'label' => 'Поле "ночи"?',
+                    'group' => 'Параметры',
                     'value' => true,
                     'required' => false,
                     'help' => 'Использовать ли поле дату заезда и количестов ночей или дату заезда/выезда?'
@@ -61,10 +65,41 @@ class FormType extends AbstractType
                 'paymentTypes',
                 'choice',
                 [
+                    'group' => 'Оплата',
                     'choices' => $options['paymentTypes'],
                     'label' => 'Типы оплаты',
                     'multiple' => true,
                     'help' => 'Типы оплаты при бронировании с помощью онлайн формы'
+                ]
+            )
+            ->add(
+                'robokassaMerchantLogin',
+                'text',
+                [
+                    'group' => 'Сервис ROBOKASSA',
+                    'label' => 'Логин магазина',
+                    'required' => false,
+                    'attr' => ['class' => 'robokassa-params']
+                ]
+            )
+            ->add(
+                'robokassaMerchantPass1',
+                'text',
+                [
+                    'group' => 'Сервис ROBOKASSA',
+                    'label' => 'Пароль 1',
+                    'required' => false,
+                    'attr' => ['class' => 'robokassa-params']
+                ]
+            )
+            ->add(
+                'robokassaMerchantPass2',
+                'text',
+                [
+                    'group' => 'Сервис ROBOKASSA',
+                    'label' => 'Пароль 2',
+                    'required' => false,
+                    'attr' => ['class' => 'robokassa-params']
                 ]
             )
         ;

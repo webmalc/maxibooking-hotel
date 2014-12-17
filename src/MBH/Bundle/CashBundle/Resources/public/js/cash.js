@@ -72,5 +72,33 @@ $(document).ready(function () {
     $('#begin, #end').change(function(){
         $('#cash-table').dataTable().fnDraw();
     });
+
+    //payer select2
+    $('#mbh_bundle_cashbundle_cashdocumenttype_payer_select').select2({
+        minimumInputLength: 3,
+        allowClear: true,
+        ajax: {
+            url: Routing.generate('cash_payer'),
+            dataType: 'json',
+            data: function (term) {
+                return {
+                    query: term // search term
+                };
+            },
+            results: function (data) {
+                return { results: data };
+            }
+        },
+        initSelection: function(element, callback) {
+            var id = $(element).val();
+            if (id !== "") {
+                $.ajax(Routing.generate('cash_payer') + '/' + id, {
+                    dataType: "json"
+                }).done(function(data) { callback(data); });
+            }
+        },
+        dropdownCssClass: "bigdrop"
+    });
+
 });
 

@@ -261,11 +261,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $this->container->get('mbh.mbhs')->channelmanager(
-            $dm->getRepository('MBHPackageBundle:Package')->find('546078a890cc28420d8b4572'),
-            'vashotel'
-        );
-
         //begin today count
         $data = [
             'count' => true,
@@ -714,6 +709,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $form->bind($request);
 
             if ($form->isValid()) {
+
+                $payer = $dm->getRepository('MBHPackageBundle:Tourist')->find($form['payer_select']->getData());
+                if ($payer) {
+                    $cash->setPayer($payer);
+                }
+
                 $dm->persist($cash);
                 $dm->flush();
 

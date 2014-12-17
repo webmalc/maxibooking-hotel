@@ -45,6 +45,9 @@ class Tourist extends Base
      * @ODM\ReferenceMany(targetDocument="Package", nullable="true", mappedBy="mainTourist")
      */
     public $mainPackages;
+
+    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="payer") */
+    protected $cashDocuments;
     
     /**
      * @var string
@@ -547,4 +550,33 @@ class Tourist extends Base
         return $this->getFullName();
     }
 
+    /**
+     * Add cashDocument
+     *
+     * @param \MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
+     */
+    public function addCashDocument(\MBH\Bundle\CashBundle\Document\CashDocument $cashDocument)
+    {
+        $this->cashDocuments[] = $cashDocument;
+    }
+
+    /**
+     * Remove cashDocument
+     *
+     * @param \MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
+     */
+    public function removeCashDocument(\MBH\Bundle\CashBundle\Document\CashDocument $cashDocument)
+    {
+        $this->cashDocuments->removeElement($cashDocument);
+    }
+
+    /**
+     * Get cashDocuments
+     *
+     * @return \Doctrine\Common\Collections\Collection $cashDocuments
+     */
+    public function getCashDocuments()
+    {
+        return $this->cashDocuments;
+    }
 }

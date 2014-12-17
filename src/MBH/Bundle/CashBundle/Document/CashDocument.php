@@ -27,13 +27,13 @@ class CashDocument extends Base
      */
     use TimestampableDocument;
 
-/**
+    /**
      * Hook softdeleteable behavior
      * deletedAt field
      */
     use SoftDeleteableDocument;
 
-/**
+    /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
      */
@@ -46,6 +46,12 @@ class CashDocument extends Base
      * @Assert\NotNull(message="Не выбрана бронь")
      */
     protected $package;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Tourist", inversedBy="cashDocuments")
+     */
+    protected $payer;
 
     /**
      * @var string
@@ -271,5 +277,37 @@ class CashDocument extends Base
     public function getHotel()
     {
         return $this->getPackage()->getRoomType()->getHotel();
+    }
+
+    /**
+     * Set payer
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\Tourist $payer
+     * @return self
+     */
+    public function setPayer(\MBH\Bundle\PackageBundle\Document\Tourist $payer)
+    {
+        $this->payer = $payer;
+        return $this;
+    }
+
+    /**
+     * Get payer
+     *
+     * @return \MBH\Bundle\PackageBundle\Document\Tourist $payer
+     */
+    public function getPayer()
+    {
+        return $this->payer;
+    }
+
+    /**
+     * @return self $this
+     */
+    public function removePayer()
+    {
+        $this->payer = null;
+
+        return $this;
     }
 }

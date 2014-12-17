@@ -112,7 +112,8 @@ class CashController extends Controller
             $entity,
             [
                 'methods' => $this->container->getParameter('mbh.cash.methods'),
-                'operations' => $this->container->getParameter('mbh.cash.operations')
+                'operations' => $this->container->getParameter('mbh.cash.operations'),
+                'payer' => $entity->getPayer()
             ]
         );
 
@@ -146,7 +147,8 @@ class CashController extends Controller
             $entity,
             [
                 'methods' => $this->container->getParameter('mbh.cash.methods'),
-                'operations' => $this->container->getParameter('mbh.cash.operations')
+                'operations' => $this->container->getParameter('mbh.cash.operations'),
+                'payer' => $entity->getPayer()
             ]
         );
 
@@ -156,6 +158,14 @@ class CashController extends Controller
 
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
+
+            $payer = $dm->getRepository('MBHPackageBundle:Tourist')->find($form['payer_select']->getData());
+            if ($payer) {
+                $entity->setPayer($payer);
+            } else {
+                $entity->removePayer();
+            }
+
             $dm->persist($entity);
             $dm->flush();
 
@@ -213,6 +223,67 @@ class CashController extends Controller
             'error' => false,
             'message' => 'Платеж успешно подтвержден'
         ]);
+    }
+
+    /**
+     * Get city by query
+     *
+     * @Route("/payer/{id}", name="cash_payer", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @return JsonResponse
+     */
+    public function payerAction(Request $request, $id = null)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        if (empty($id) && empty($request->get('query'))) {
+            return new JsonResponse([]);
+        }
+
+        if (!empty($id)) {
+            $payer =  $dm->getRepository('MBHPackageBundle:Tourist')->find($id);
+
+            if ($payer) {
+
+                $text = $payer->getFullName();
+
+                if (!empty($payer->getBirthday())) {
+                    $text .= ' (' . $payer->getBirthday()->format('d.m.Y')  . ')';
+                }
+
+                return new JsonResponse([
+                    'id' => $payer->getId(),
+                    'text' => $text
+                ]);
+            }
+        }
+
+        $payers = $dm->getRepository('MBHPackageBundle:Tourist')->createQueryBuilder('q')
+            ->field('fullName')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
+            ->sort(['fullName' => 'asc', 'birthday' => 'desc'])
+            ->getQuery()
+            ->execute()
+        ;
+
+        $data = [];
+
+        foreach ($payers as $payer) {
+
+            $text = $payer->getFullName();
+
+            if (!empty($payer->getBirthday())) {
+                $text .= ' (' . $payer->getBirthday()->format('d.m.Y')  . ')';
+            }
+
+            $data[] = [
+                'id' => $payer->getId(),
+                'text' => $text
+            ];
+        }
+
+        return new JsonResponse($data);
     }
 
 }

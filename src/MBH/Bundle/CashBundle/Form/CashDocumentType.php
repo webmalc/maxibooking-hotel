@@ -11,6 +11,14 @@ class CashDocumentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+                ->add('payer_select', 'text', [
+                    'label' => 'Плательщик',
+                    'required' => false,
+                    'mapped' => false,
+                    'data' => (empty($options['payer'])) ? null : $options['payer']->getId(),
+                    'group' => $options['groupName'],
+                    'attr' => ['placeholder' => 'Иванов Иван Иванович', 'style' => 'min-width: 500px']
+                ])
                 ->add('total', 'text', [
                     'label' => 'Сумма',
                     'required' => true,
@@ -47,7 +55,8 @@ class CashDocumentType extends AbstractType
             'data_class' => 'MBH\Bundle\CashBundle\Document\CashDocument',
             'methods' => [],
             'operations' => [],
-            'groupName' => null
+            'groupName' => null,
+            'payer' => null
         ));
     }
 
