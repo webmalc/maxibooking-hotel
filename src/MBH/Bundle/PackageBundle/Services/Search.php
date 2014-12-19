@@ -40,10 +40,12 @@ class Search
             return $results;
         }
 
+        var_dump($query->begin);
+
         $qb = $this->dm->getRepository('MBHPackageBundle:RoomCache')
             ->createQueryBuilder('q')
-            ->field('date')->lt($query->end)
-            ->field('date')->gte($query->begin)
+            ->field('date')->equals($query->end)
+            ->field('date')->equals($query->begin)
             ->field('places')->gte($query->adults + $query->children)
             ->field('rooms')->gt(0)
             ->sort('date', 'asc');
@@ -82,12 +84,23 @@ class Search
 
         //Delete short cache chains
         foreach ($groupedCaches as $key => $groupedCache) {
+
+            foreach ($groupedCache as $cache) {
+                var_dump($cache->getTAriff() . '-' . $cache->getDate()->format('d.m.Y H:i:s'));
+            }
+
+            exit();
+
             if ($query->end->diff($query->begin)->format("%a") != count($groupedCache)) {
                 unset($groupedCaches[$key]);
             }
         }
+
+
         //Generate result
         foreach ($groupedCaches as $key => $groupedCache) {
+
+
             if ($query->end->diff($query->begin)->format("%a") != count($groupedCache)) {
                 continue;
             }
@@ -128,10 +141,10 @@ class Search
 
             //Set foods & prices
             foreach ($groupedCache as $cache) {
-                foreach ($cache->getPrices() as $price) {
 
-                    $result->addFood($price->getFood(), $price->getPrice())
-                        ->addPrice($price->getFood(), $price->getPrice(), $price->getAdults(), $price->getChildren());
+                foreach ($cache->getPrices() as $price) {
+    $result->addFood($price->getFood(), $price->getPrice())
+                           ->addPrice($price->getFood(), $price->getPrice(), $price->getAdults(), $price->getChildren());
                 }
             }
 
@@ -150,6 +163,7 @@ class Search
         $qb = $this->dm->getRepository('MBHPriceBundle:Tariff')
             ->createQueryBuilder('q')
             ->field('isEnabled')->equals(true)
+            ->sort('begin', 'asc')
         ;
 
         if (!empty($query->roomTypes)) {
@@ -174,6 +188,16 @@ class Search
             $qb->expr()
                 ->field('end')->gte($query->begin)
                 ->field('begin')->lte($query->begin)
+        );
+        $qb->addOr(
+            $qb->expr()
+                ->field('end')->gte($query->end)
+                ->field('begin')->lte($query->end)
+        );
+        $qb->addOr(
+            $qb->expr()
+                ->field('end')->lte($query->end)
+                ->field('begin')->gte($query->begin)
         );
 
         $tariffs =  $qb->getQuery()->execute();

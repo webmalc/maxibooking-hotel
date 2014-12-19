@@ -304,6 +304,8 @@ class RoomCacheGenerator
 
         foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $date) {
 
+            $date->setTime(0,0,0);
+
             if(!empty($weekDays) && !in_array($date->format('N'), $weekDays)) {
                 continue;
             }

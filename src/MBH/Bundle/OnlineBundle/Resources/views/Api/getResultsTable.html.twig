@@ -11,7 +11,7 @@
             </div>
             Номера в отеле на {{ plural( results|first.nights, 'ночь', 'ночи', 'ночей') }} c <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> по <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>
         </div>
-        {% if tariffResults|length > 1 %}
+        {% if tariffResults|length > 0 %}
             {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
         {% endif %}
 

@@ -35,7 +35,7 @@ class Base
         if (method_exists($this, 'getName')) {
             return $this->getName();
         }
-        
+
         return $this->getId();
     }
 

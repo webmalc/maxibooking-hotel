@@ -58,8 +58,6 @@ class Oktogo extends Base
             $this->getHeaders($config),
             true
         );
-
-        var_dump($sendResult);
     }
 
     /**

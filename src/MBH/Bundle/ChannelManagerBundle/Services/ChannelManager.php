@@ -53,8 +53,6 @@ class ChannelManager
                     ];
                 }
             } catch (\Exception $e){
-                // @TODO log exception
-                var_dump($e->getMessage());
             }
         }
 

@@ -195,6 +195,9 @@ class SearchResult
     public function addFood($food, $price)
     {
         if ($price === null) {
+            if (in_array($food, $this->foods)) {
+                unset($this->foods[array_search($food, $this->foods)]);
+            }
             return $this;
         }
         if (!in_array($food, $this->foods)) {
@@ -242,6 +245,13 @@ class SearchResult
         }
 
         if($price === null) {
+            if(isset($this->prices[$adults . '_' . $children][$food])) {
+                unset($this->prices[$adults . '_' . $children][$food]);
+
+                if(!count($this->prices[$adults . '_' . $children])) {
+                    unset($this->prices[$adults . '_' . $children]);
+                };
+            }
             return $this;
         }
         

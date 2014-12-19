@@ -34,9 +34,6 @@ class ChannelManagerController extends Controller implements CheckHotelControlle
         try {
             return $this->get($services[$name]['service'])->createPackages();
         } catch (\Exception $e){
-            if(in_array($this->get('kernel')->getEnvironment(), ['test', 'dev'])) {
-                var_dump($e);
-            }
             return new Response('ERROR');
         }
 

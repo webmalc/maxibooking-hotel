@@ -61,18 +61,21 @@
 
             <input type="hidden" id="package-filter-quick-link" value="">
         </form>
+
+
     </div>
 
-    <ul id="package-table-quick-links">
-        <li><a class="label label-default" data-value="begin-today" href="#">заезд сегодня ({{ count.begin_today|default('-') }})</a></li>
-        <li><a class="label label-default" data-value="begin-tomorrow" href="#">заезд завтра ({{ count.begin_tomorrow|default('-') }})</a></li>
-        <li><a class="label label-default" data-value="live-now" href="#">живут сейчас ({{ count.live_now|default('-') }})</a></li>
-        <li><a class="label label-default" data-value="without-approval" href="#">не подтвержденные ({{ count.without_approval|default('-') }})</a></li>
-        <li><a class="label label-default" data-value="without-accommodation" href="#">без размещения ({{ count.without_accommodation|default('-') }})</a></li>
-        <li><a class="label label-default" data-value="not-paid" href="#">не оплаченные ({{ count.not_paid|default('-') }})</a></li>
-        <li><a class="label label-default" data-value="created-by" href="#">мои брони ({{ count.created_by|default('-') }})</a></li>
-        <li><a class="label label-default" id="package-table-quick-reset" href="#"><i class="fa fa-ban"></i></a></li>
-    </ul>
+
+        <ul id="package-table-quick-links">
+            <li><a class="btn btn-xs btn-default" data-value="begin-today" href="#">заезд сегодня (<span class="package-table-quick-links-count">{{ count.begin_today|default('-') }}</span>)</a></li>
+            <li><a class="btn btn-xs btn-default" data-value="begin-tomorrow" href="#">заезд завтра (<span class="package-table-quick-links-count">{{ count.begin_tomorrow|default('-') }}</span>)</a></li>
+            <li><a class="btn btn-xs btn-default" data-value="live-now" href="#">живут сейчас (<span class="package-table-quick-links-count">{{ count.live_now|default('-') }}</span>)</a></li>
+            <li class="package-table-quick-links-margin"><a class="btn btn-xs btn-default" data-value="without-approval" href="#">не подтвержденные (<span class="package-table-quick-links-count">{{ count.without_approval|default('-') }}</span>)</a></li>
+            <li><a class="btn btn-xs btn-default" data-value="without-accommodation" href="#">без размещения (<span class="package-table-quick-links-count">{{ count.without_accommodation|default('-') }}</span>)</a></li>
+            <li><a class="btn btn-xs btn-default" data-value="not-paid" href="#">не оплаченные (<span class="package-table-quick-links-count">{{ count.not_paid|default('-') }}</span>)</a></li>
+            <li class="package-table-quick-links-margin"><a class="btn btn-xs btn-default" data-value="created-by" href="#">мои брони (<span class="package-table-quick-links-count">{{ count.created_by|default('-') }}</span>)</a></li>
+            <li><a class="btn btn-xs btn-default" id="package-table-quick-reset" href="#"><i class="fa fa-ban"></i></a></li>
+        </ul>
 
     <table id="package-table"
            class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">

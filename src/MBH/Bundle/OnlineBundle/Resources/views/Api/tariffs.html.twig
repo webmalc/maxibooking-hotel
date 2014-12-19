@@ -14,7 +14,7 @@
                     {% endif %}
                     {% if tariff.isDefault %}&nbsp;
                         <small>(базовый тариф)</small>{% endif %}
-                    - {% if app.request.query.get('hotel') is same as('') %}<small>{{ tariff.hotel.fullTitle }}</small>{% endif %}
+                    {% if app.request.query.get('hotel') is same as('') %} - <small>{{ tariff.hotel.fullTitle }}</small>{% endif %}
                 </p>
                 {% if tariff.description|nl2br %}
                     <p class="mbh-results-tariffs-description">{{ tariff.description|raw }}</p>

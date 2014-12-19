@@ -86,8 +86,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
         $output = curl_exec($ch);
 
-        var_dump(curl_getinfo($ch));
-
         if (!$output && $error) {
             trigger_error(curl_error($ch));
         }

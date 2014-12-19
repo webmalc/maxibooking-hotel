@@ -25,10 +25,10 @@ class PackageValidator extends ConstraintValidator
             $this->context->addViolation($constraint->beginEndMessage);
         }
         
-        $tariff = $object->getTariff();
+        /*$tariff = $object->getTariff();
         if($tariff && ($object->getBegin() < $tariff->getBegin() || $object->getBegin() > $tariff->getEnd() || $object->getEnd() < $tariff->getBegin() || $object->getEnd() > $tariff->getEnd())) {
             $this->context->addViolation($constraint->tariffMessage);
-        }
+        }*/
 
         return true;
     }

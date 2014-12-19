@@ -1,6 +1,7 @@
 .package-main-info {
     color: #555;
 }
+
 #package-table-filter, #accommodation-report-filter,
 #rooms-report-filter, #analytics-filter
 {
@@ -24,11 +25,37 @@
 }
 #package-table-quick-links
 {
-  margin: -10px 0px 20px 0px;
+  margin: 0px 0px 20px 0px;
   padding: 0px;
 }
 #package-table-quick-links li
 {
   display: inline-block;
   margin: 0px 2px;
+}
+.package-table-quick-links-margin {
+  margin-left: 20px !important;
+}
+
+#package-table {
+  a:not(.btn):not(.label), a:not(.btn):not(.label):visited, a:not(.btn):not(.label):link {
+    color: #555555;
+    text-decoration: none;
+    border-bottom: 1px dashed #aaaaaa;
+  }
+  a.danger {
+    color: #B94A48 !important;
+    border-bottom: 1px dashed #B94A48  !important;
+  }
+  small {
+    a, a:visited, a:link {
+      color: #777777;
+      text-decoration: none;
+      border-bottom: 1px dashed #aaaaaa;
+    }
+    a.danger {
+      color: #B94A48;
+      border-bottom: 1px dashed #B94A48;
+    }
+  }
 }

@@ -91,9 +91,15 @@ $(document).ready(function() {
     (function () {
         $('#package-table-filter').sayt();
 
+        $('#package-table-quick-links li').each(function () {
+             if (parseInt($(this).find('.package-table-quick-links-count').text(), 10) === 0) {
+                 $(this).find('a').addClass('disabled');
+             }
+        });
+
         if ($('#package-filter-quick-link').val()) {
             $('#package-table-quick-links a[data-value="' + $('#package-filter-quick-link').val() + '"]')
-                .removeClass('label-default').addClass('label-success');
+                .removeClass('btn-default').addClass('btn-info');
         }
 
         $('.package-filter').change(function(){
@@ -104,7 +110,7 @@ $(document).ready(function() {
         });
         $('#package-table-quick-links a').click(function () {
             var input = $('#package-filter-quick-link');
-            $('#package-table-quick-links a').removeClass('label-success').addClass('label-default');
+            $('#package-table-quick-links a').removeClass('btn-info').addClass('btn-default');
             input.val(null);
 
             if ($(this).attr('id') == 'package-table-quick-reset') {
@@ -112,7 +118,7 @@ $(document).ready(function() {
                 return;
             }
 
-            $(this).removeClass('label-default').addClass('label-success');
+            $(this).removeClass('label-default').addClass('btn-info');
             input.val($(this).attr('data-value'));
             $('#package-table').dataTable().fnDraw();
         });

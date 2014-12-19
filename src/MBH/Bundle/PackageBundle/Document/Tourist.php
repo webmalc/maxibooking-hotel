@@ -579,4 +579,15 @@ class Tourist extends Base
     {
         return $this->cashDocuments;
     }
+
+    public function getLastNameWithInitials()
+    {
+        $result = $this->getLastName() . ' ' . mb_substr($this->getFirstName(), 0, 1) . '.';
+
+        if (!empty($this->getPatronymic())) {
+            $result .= mb_substr($this->getPatronymic(), 0, 1) . '.';
+        }
+
+        return $result;
+    }
 }

@@ -15,6 +15,12 @@ class PackageGuestType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+                ->add('tourist', 'text', [
+                    'label' => 'ФИО',
+                    'required' => false,
+                    'group' => 'Найти гостя',
+                    'attr' => ['placeholder' => 'Иванов Иван Иванович', 'style' => 'min-width: 500px']
+                ])
                 ->add('lastName', 'text', [
                     'label' => 'Фамилия',
                     'required' => true,

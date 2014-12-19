@@ -11,7 +11,7 @@ abstract class Template extends \Twig_Template
         try {
             $ret = parent::getAttribute($object, $item, $arguments, $type, $isDefinedTest, $ignoreStrictCheck);
         } catch (DocumentNotFoundException $e) {
-            $ret = 'Запись удалена';
+            $ret = null;
         }
         return $ret;
     }

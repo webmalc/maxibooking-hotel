@@ -506,13 +506,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         //Set query
         $query = new SearchQuery();
-        $query->begin = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('begin') . ' 00:00:00');
-        $query->end = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('end') . ' 00:00:00');
+        $begin = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('begin') . ' 00:00:00');
+        //$begin->modify('-1 hour');
+        $end = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('end') . ' 00:00:00');
+        //$end->modify('-1 hour');
+        $query->begin = $begin;
+        $query->end = $end;
         $query->adults = (int)$request->get('adults');
         $query->children = (int)$request->get('children');
-        if (!empty($request->get('tariff'))) {
-            $query->tariff = $request->get('tariff');
-        }
+        $query->tariff = (!empty($request->get('tariff')))  ? $request->get('tariff') : null;
         $query->addRoomType($request->get('roomType'));
 
         $results = $this->get('mbh.package.search')->search($query);
@@ -701,7 +703,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             [
                 'methods' => $this->container->getParameter('mbh.cash.methods'),
                 'operations' => $this->container->getParameter('mbh.cash.operations'),
-                'groupName' => 'Добавить кассовый документ'
+                'groupName' => 'Добавить кассовый документ',
+                'payer' => $entity->getMainTourist()
             ]
         );
 
