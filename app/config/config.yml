@@ -24,7 +24,7 @@ framework:
         handler_id:  ~
     fragments:       ~
     http_method_override: true
-    trusted_proxies:  [127.0.0.1, 127.0.1.1]
+    trusted_proxies:  [127.0.0.1, 127.0.1.1, 176.192.20.30]
 
 # Twig Configuration
 twig:
@@ -161,11 +161,6 @@ knp_snappy:
         enabled:    true
         binary:     /usr/local/bin/wkhtmltoimage
         options:    []
-
-# SonataIntlBundle Configuration
-sonata_intl:
-    timezone:
-        default: Europe/Moscow
 
 # IamPersistentMongoDBAclBundle Configuration
 iam_persistent_mongo_db_acl:

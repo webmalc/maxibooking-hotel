@@ -1,5 +1,5 @@
 #!/bin/bash
-SERVER='root@95.85.3.188'
+SERVER='root@128.199.55.176'
 GREEN='\e[0;32m'
 RED='\e[0;31m'
 NC='\e[0m'
@@ -10,14 +10,18 @@ if [[ -z "$1" ]]; then
 fi
 
 if [[ $2 == 'new' ]]; then
-IGNORE='ignore_new.txt'
+    IGNORE='ignore_new.txt'
 else
-IGNORE='ignore_update.txt'
+    IGNORE='ignore_update.txt'
+fi
+
+if [[ $3 == 'demo' ]]; then
+    SERVER='root@95.85.3.188'
 fi
 
 FOLDER='/var/www/'$1'/'
 APC=$FOLDER'bin/console mbh:demo:apc --name='$1
-CACHE=$FOLDER'bin/console cache:clear --env=prod'
+CACHE='rm -rf '$FOLDER'var/cache/*'
 PROXIES=$FOLDER'bin/console doctrine:mongodb:generate:proxies'
 HYDRATORS=$FOLDER'bin/console doctrine:mongodb:generate:hydrators'
 FOS=$FOLDER'bin/console fos:js-routing:dump'
@@ -40,8 +44,16 @@ fi
 echo -e "${GREEN}Start mbh:demo:apc${NC}"
 ssh $SERVER $APC
 
+echo -e "${GREEN}Make cache and logs directories${NC}"
+ssh $SERVER 'setfacl -R -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs'
+ssh $SERVER 'setfacl -dR -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs'
+
 echo -e "${GREEN}Start clear:cache${NC}"
 ssh $SERVER $CACHE
+
+echo -e "${GREEN}Make cache and logs directories${NC}"
+ssh $SERVER 'setfacl -R -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs'
+ssh $SERVER 'setfacl -dR -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs'
 
 echo -e "${GREEN}Start doctrine:mongodb:generate:hydrators${NC}"
 ssh $SERVER $HYDRATORS
@@ -62,10 +74,6 @@ echo -e "${GREEN}Start doctrine:mongodb:schema:create${NC}"
 ssh $SERVER $DB
 
 if [[ $2 == 'new' ]]; then
-
-    echo -e "${GREEN}Make cache and logs directories${NC}"
-    ssh $SERVER 'setfacl -R -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs'
-    ssh $SERVER 'setfacl -dR -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs'
 
     echo -e "${GREEN}Make user admin/admin${NC}"
     ssh $SERVER $FOLDER'bin/console doctrine:mongodb:schema:update'

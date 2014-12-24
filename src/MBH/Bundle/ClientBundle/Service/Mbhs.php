@@ -43,7 +43,7 @@ class Mbhs
         $this->config = $container->getParameter('mbh.mbhs');
         $this->request = $container->get('request');
 
-        if ($this->request->getClientIp() == '95.85.3.188') {
+        if (in_array($this->request->getClientIp(), ['95.85.3.188'])) {
             $this->checkIp = false;
         }
     }

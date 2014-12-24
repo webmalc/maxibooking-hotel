@@ -40,12 +40,10 @@ class Search
             return $results;
         }
 
-        var_dump($query->begin);
-
         $qb = $this->dm->getRepository('MBHPackageBundle:RoomCache')
             ->createQueryBuilder('q')
-            ->field('date')->equals($query->end)
-            ->field('date')->equals($query->begin)
+            ->field('date')->lt($query->end)
+            ->field('date')->gte($query->begin)
             ->field('places')->gte($query->adults + $query->children)
             ->field('rooms')->gt(0)
             ->sort('date', 'asc');
@@ -71,6 +69,7 @@ class Search
 
         //Group cache
         foreach ($caches as $cache) {
+
             $groupedCaches[$cache->getRoomType()->getId()][] = $cache;
 
             if (!isset($groupedCachesMin[$cache->getRoomType()->getId()])) {
@@ -85,21 +84,13 @@ class Search
         //Delete short cache chains
         foreach ($groupedCaches as $key => $groupedCache) {
 
-            foreach ($groupedCache as $cache) {
-                var_dump($cache->getTAriff() . '-' . $cache->getDate()->format('d.m.Y H:i:s'));
-            }
-
-            exit();
-
             if ($query->end->diff($query->begin)->format("%a") != count($groupedCache)) {
                 unset($groupedCaches[$key]);
             }
         }
 
-
         //Generate result
         foreach ($groupedCaches as $key => $groupedCache) {
-
 
             if ($query->end->diff($query->begin)->format("%a") != count($groupedCache)) {
                 continue;

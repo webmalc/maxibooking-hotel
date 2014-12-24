@@ -17,7 +17,7 @@ web/upload/*
 web/js/*
 web/bundles/
 web/bundles/*
-#/web/*_dev.php
+web/app_dev.php
 nbproject
 parameters.yml
 .idea

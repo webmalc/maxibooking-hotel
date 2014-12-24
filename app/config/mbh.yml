@@ -50,7 +50,7 @@ parameters:
 
     #mbhs
     mbh.mbhs:
-      mbhs: 'aHR0cDovL21iaHMuaC9hcHBfZGV2LnBocC8='
+      mbhs: 'aHR0cDovL21iaHMubWF4aWJvb2tpbmcucnUv'
       key: 'AMliD0HLwjtLNewcrcNLr2xm8SGNY9HzV2Rz3zlA'
 
     #mbh sources

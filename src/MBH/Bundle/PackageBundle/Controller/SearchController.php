@@ -78,8 +78,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             if ($form->isValid()) {
                 $data = $form->getData();
 
-                var_dump(new \DateTime());
-
                 //Set query
                 $query = new SearchQuery();
                 $query->begin = $data['begin'];
