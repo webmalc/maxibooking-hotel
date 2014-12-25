@@ -3,6 +3,8 @@
 namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\OnlineBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
@@ -61,6 +63,63 @@ class ApiController extends Controller
             'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:form.css.twig'),
             'text' => $text
         ];
+    }
+
+    /**
+     * Results js
+     * @Route("/order/check", name="online_form_check_order")
+     * @Method({"POST"})
+     * @Template("")
+     */
+    public function checkOrderAction(Request $request)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $total = (int) $request->get('OutSum');
+        $orderId = (int) $request->get('InvId');
+        $sig = mb_strtolower($request->get('SignatureValue'));
+        $config = $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]);
+        $order = $dm->getRepository('MBHOnlineBundle:Order')->find($orderId);
+
+        if (!$total || !$orderId || !$sig || !$config || !$order || $order->getPaid() || $order->getTotal() != $total) {
+            throw $this->createNotFoundException();
+        }
+
+        if (md5($total . ':' . $orderId . ':' . $config->getRobokassaMerchantPass2()) != $sig) {
+            throw $this->createNotFoundException();
+        }
+
+        foreach ($order->getPackages() as $package)
+        {
+            if ($package->getIsPaid() || $total <= 0) {
+                continue;
+            }
+            ($package->getDebt() >= $total) ? $sum = $total : $sum = $package->getDebt();
+
+            $doc = new CashDocument();
+            $doc->setTotal($sum)
+                ->setMethod('electronic')
+                ->setNote('Robokassa: order #' . $order->getId())
+                ->setOperation('in')
+                ->setPackage($package)
+                ->setPayer($package->getMainTourist())
+            ;
+            $dm->persist($doc);
+            $dm->flush();
+
+            $this->container->get('mbh.calculation')->setPaid($package);
+            $dm->persist($package);
+            $dm->flush();
+
+            $total -= $sum;
+        }
+
+        $order->setPaid(true);
+        $dm->persist($order);
+        $dm->flush();
+
+        return new Response('OK' . $order->getId());
     }
 
     /**
@@ -172,7 +231,6 @@ class ApiController extends Controller
      * Create packages
      * @Route("/results/packages/create", name="online_form_packages_create", options={"expose"=true})
      * @Method("POST")
-     * @Template("")
      */
     public function createPackagesAction(Request $request)
     {
@@ -190,33 +248,51 @@ class ApiController extends Controller
         }
         $this->sendNotifications($packages);
 
-        if ($request->paymentType == 'in_hotel') {
-
-            if(count($packages) > 1) {
-                $roomStr = 'Номера успешно забронированы.';
-                $packageStr = 'Номера ваших броней';
-            } else {
-                $roomStr = 'Номер успешно забронирован.';
-                $packageStr = 'Номер вашей брони';
-            }
-            $message = 'Большое спасибо. '. $roomStr .' Мы свяжемся с Вами в ближайшее время.<br>';
-            $message .= $packageStr . ': '. implode(', ', $packages) . '.';
-
-            return new JsonResponse(['success' => true, 'message' => $message]);
-
+        if(count($packages) > 1) {
+            $roomStr = 'Номера успешно забронированы.';
+            $packageStr = 'Номера ваших броней';
         } else {
-            return new JsonResponse([
-                'success' => true,
-                'payment_url' => 'http://google.ru/',
-            ]);
+            $roomStr = 'Номер успешно забронирован.';
+            $packageStr = 'Номер вашей брони';
         }
+        $message = 'Большое спасибо. '. $roomStr .' Мы свяжемся с Вами в ближайшее время.<br>';
+        $message .= $packageStr . ': '. implode(', ', $packages) . '.';
+
+        if ($request->paymentType == 'in_hotel') {
+            $form = false;
+        } else {
+            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+            $dm = $this->get('doctrine_mongodb')->getManager();
+
+            $order = new Order();
+            $order->setTotal($request->total);
+
+            $repo = $dm->getRepository('MBHPackageBundle:Package');
+            foreach ($packages as $package) {
+                $orderPackage = $repo->find($package->getId());
+                $order->addPackage($orderPackage);
+            }
+
+            $dm->persist($order);
+            $dm->flush();
+
+            $form = $this->container->get('twig')->render(
+                'MBHOnlineBundle:Api:robokassa.html.twig' , [
+                    'order' => $order,
+                    'request' => $request,
+                    'config' => $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([])
+                ]
+            );
+        }
+
+        return new JsonResponse(['success' => true, 'message' => $message, 'form' => $form]);
     }
 
     /**
      * @param array $packages
      * @return bool
      */
-    public function sendNotifications(array $packages)
+    private function sendNotifications(array $packages)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();

@@ -81,5 +81,8 @@ if [[ $2 == 'new' ]]; then
     ssh $SERVER $FOLDER'bin/console fos:user:promote admin ROLE_ADMIN'
 fi
 
+echo -e "${GREEN}Start clear:cache${NC}"
+ssh $SERVER $CACHE
+
 ssh $SERVER $PHP_FPM
 

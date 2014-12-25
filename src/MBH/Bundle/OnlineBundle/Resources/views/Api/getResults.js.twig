@@ -440,10 +440,12 @@ jQuery(document).ready(function () {
                                                     if (data.success) {
                                                         jQuery.removeCookie('mbh.package');
 
-                                                        if (data.payment_url) {
-                                                            window.location = data.payment_url;
+                                                        wrapper.html('{{ styles|escape("js") }} <div class="mbh-results-info" style="padding: 10px; margin: 10px 0px; background-color: #308dac; color: #fff; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;"><i class="fa fa-check-circle-o"></i> ' + data.message + '</div>');
+
+                                                        if (data.form) {
+                                                            wrapper.append(data.form);
                                                         } else {
-                                                            wrapper.html('{{ styles|escape("js") }} <div class="mbh-results-info" style="padding: 10px; margin: 10px 0px; background-color: #308dac; color: #fff; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;"><i class="fa fa-check-circle-o"></i> ' + data.message + '</div>');
+
                                                         }
                                                     } else {
                                                         wrapper.html('{{ styles|escape("js") }} <div class="mbh-results-error" style="padding: 10px; margin: 10px 0px; background-color: #308dac; color: #fff; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;"><i class="fa fa-exclamation-circle"></i> ' + data.message + '</div>');

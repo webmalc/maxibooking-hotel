@@ -1019,4 +1019,12 @@ class Package extends Base
     {
         return $this->confirmed;
     }
+
+    /**
+     * @return int
+     */
+    public function getDebt()
+    {
+        return $this->getPrice() - $this->getPaid();
+    }
 }

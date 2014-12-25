@@ -14,8 +14,8 @@ services:
             tags:
                 - { name: twig.extension }
 
-    mbh.twig.date_extension:
-                class: MBH\Bundle\BaseBundle\Twig\DateExtension
+    mbh.twig.extension:
+                class: MBH\Bundle\BaseBundle\Twig\Extension
                 arguments: [@service_container]
                 tags:
                     - { name: twig.extension }

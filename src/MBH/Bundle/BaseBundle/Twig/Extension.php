@@ -3,7 +3,7 @@ namespace MBH\Bundle\BaseBundle\Twig;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class DateExtension extends \Twig_Extension
+class Extension extends \Twig_Extension
 {
 
     /**
@@ -21,7 +21,7 @@ class DateExtension extends \Twig_Extension
      */
     public function getName()
     {
-        return 'mbh_date_extension';
+        return 'mbh_twig_extension';
     }
 
     /**
@@ -42,6 +42,11 @@ class DateExtension extends \Twig_Extension
         return $date->format('d') . ' ' . $months[$date->format('n') - 1] . '.';
     }
 
+    public function md5($value)
+    {
+        return md5($value);
+    }
+
     /**
      * @return array
      */
@@ -49,6 +54,7 @@ class DateExtension extends \Twig_Extension
     {
         return [
             'mbh_format' => new \Twig_Filter_Method($this, 'format'),
+            'mbh_md5' => new \Twig_Filter_Method($this, 'md5'),
         ];
     }
 

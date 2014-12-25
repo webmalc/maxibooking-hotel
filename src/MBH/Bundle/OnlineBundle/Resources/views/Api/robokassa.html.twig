@@ -1,0 +1,13 @@
+<div id="mbh-results-pay-form-wrapper">
+    <form method="post" action="http://test.robokassa.ru/Index.aspx">
+        <input type="hidden" name="MrchLogin" value="{{ config.robokassaMerchantLogin }}">
+        <input type="hidden" name="OutSum" value="{{ order.total }}">
+        <input type="hidden" name="InvId" value="{{ order.id }}">
+        {% set sig = config.robokassaMerchantLogin ~ ':' ~ order.total ~':' ~ order.id ~ ':' ~ config.robokassaMerchantPass1 %}
+        <input type="hidden" name="SignatureValue" value="{{ sig|mbh_md5 }}">
+
+        <button id="mbh-results-pay-form-button" class="button" type="submit">
+            <i class="fa fa-money"></i> Оплатить {{ order.total|number_format }} р. Номера заказа: {{ order.id }}
+        </button>
+    </form>
+</div>

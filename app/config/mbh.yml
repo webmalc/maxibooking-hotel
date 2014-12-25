@@ -95,7 +95,7 @@ parameters:
           payment_types:
             in_hotel: 'Оплата при заселении'
             online_full: 'Предварительная оплата'
-            online_first_day: 'Предварительная оплата первого дня'
+            online_first_day: 'Предварительная оплата первых суток'
 
     #параметры Channel manager
     mbh.channelmanager.services:
