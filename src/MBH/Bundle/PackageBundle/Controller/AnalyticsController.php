@@ -344,7 +344,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         if ($request->get('months')) {
             $chart->chart->type('column');
         }
-        $chart->chart->renderTo('analytics-filter-content');
+        $chart->chart->renderTo('analytics_filter_content');
         $chart->title->text($this->container->getParameter('mbh.analytics.types')[$request->get('type')]);
         $chart->yAxis->title(['text'  => $y]);
         $chart->xAxis->title(['text'  => 'Даты продажи']);

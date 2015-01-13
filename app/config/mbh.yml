@@ -1,4 +1,6 @@
 parameters:
+    mbh.environment: "%mbh_environment%"
+
     #mbh hotel config
     mbh.hotel:
       types:

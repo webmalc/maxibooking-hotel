@@ -14,8 +14,7 @@ cd $FOLDER'/'
 setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var/cache var/logs
 setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX var/cache var/logs
 bin/console mbh:demo:apc --name='demo_'$1_$RANDOM
-bin/console cache:clear
-bin/console cache:clear --env=prod
+rm -rm var/cache/*
 bin/console mbh:demo:params --db='demo_'$1
 bin/console mbh:demo:insert_scripts
 bin/console fos:js-routing:dump
@@ -27,8 +26,7 @@ bin/console doctrine:mongodb:generate:hydrators
 bin/console doctrine:mongodb:generate:proxies
 bin/console fos:user:create demo user@example.com demo
 bin/console fos:user:promote demo ROLE_ADMIN
-bin/console cache:clear
-bin/console cache:clear --env=prod
+rm -rm var/cache/*
 bin/console mbh:demo:load --name=$1
 bin/console mbh:cache:generate --no-debug
 bin/console mbh:demo:online_form

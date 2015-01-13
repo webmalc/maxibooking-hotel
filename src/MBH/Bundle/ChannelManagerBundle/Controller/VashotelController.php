@@ -15,11 +15,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 
 /**
  * @Route("/vashotel")
  */
-class VashotelController extends Controller implements CheckHotelControllerInterface
+class VashotelController extends Controller implements CheckHotelControllerInterface, EnvironmentInterface
 {
     /**
      * Main configuration page

@@ -69,7 +69,15 @@ class OktogoConfig extends Base implements BaseInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\NotNull(message="Не указан логин (username)")
+     * @Assert\NotNull(message="Не указан логин (login)")
+     */
+    protected $login;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     * @Assert\NotNull(message="Не указано имя пользователя (username)")
      */
     protected $username;
 
@@ -189,6 +197,28 @@ class OktogoConfig extends Base implements BaseInterface
     public function getUsername()
     {
         return $this->username;
+    }
+
+    /**
+     * Set login
+     *
+     * @param string $login
+     * @return self
+     */
+    public function setLogin($login)
+    {
+        $this->login = $login;
+        return $this;
+    }
+
+    /**
+     * Get login
+     *
+     * @return string $login
+     */
+    public function getLogin()
+    {
+        return $this->login;
     }
 
     /**

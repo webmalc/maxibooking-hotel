@@ -46,14 +46,13 @@ jQuery(document).ready(function () {
                 var wrapperImage = jQuery('#mbh-image-show-wrapper');
                 jQuery('.mbh-roomType-image').each(function () {
                     jQuery(this).hover(function(e){
-                        wrapperImage.css('top', e.pageY - 100);
-                        wrapperImage.css('left', 150);
+                        wrapperImage.offset(jQuery(this).offset());
                         wrapperImage.html('<img src="'+ jQuery(this).attr('src') +'">');
                         if(wrapperImage.find('img').width() > 100) {
                             wrapperImage.css('visibility' , "visible");
                         }
                     })
-                    jQuery(this).mouseleave(function(){
+                    wrapperImage.mouseleave(function(){
                         wrapperImage.css('visibility' , "hidden");
                         wrapperImage.find('img').remove();
                     })

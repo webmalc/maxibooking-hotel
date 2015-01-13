@@ -72,9 +72,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     public function send ($url, $data, $headers = null, $error = false)
     {
         $ch = curl_init($url);
+
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 
         if ($headers) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);

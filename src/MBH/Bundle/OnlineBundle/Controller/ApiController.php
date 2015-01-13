@@ -223,6 +223,7 @@ class ApiController extends Controller
         return [
             'config' => $this->container->getParameter('mbh.online.form'),
             'formConfig' => $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]),
+            'env' => $this->container->getParameter('mbh.environment') == 'prod' ? true : false,
             'request' => $request
         ];
     }

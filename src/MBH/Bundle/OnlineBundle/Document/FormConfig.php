@@ -170,7 +170,7 @@ class FormConfig extends Base
     /**
      * Set paymentTypes
      *
-     * @param collection $paymentTypes
+     * @param array $paymentTypes
      * @return self
      */
     public function setPaymentTypes($paymentTypes)

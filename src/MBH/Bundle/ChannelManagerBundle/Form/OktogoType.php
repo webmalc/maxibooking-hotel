@@ -23,12 +23,12 @@ class OktogoType extends AbstractType
                 ]
             )
             ->add(
-                'username',
+                'login',
                 'text',
                 [
                     'label' => 'Логин',
                     'required' => true,
-                    'attr' => ['placeholder' => 'username'],
+                    'attr' => ['placeholder' => 'login'],
                     'help' => 'Логин для доступа к API Oktogo.ru'
                 ]
             )
@@ -40,6 +40,16 @@ class OktogoType extends AbstractType
                     'required' => true,
                     'attr' => ['placeholder' => 'password'],
                     'help' => 'Пароль для доступа к API Oktogo.ru'
+                ]
+            )
+            ->add(
+                'username',
+                'text',
+                [
+                    'label' => 'Имя пользователя',
+                    'required' => true,
+                    'attr' => ['placeholder' => 'username'],
+                    'help' => 'Имя пользователя в Oktogo.ru'
                 ]
             )
         ;

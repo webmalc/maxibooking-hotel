@@ -1,4 +1,10 @@
 services:
+    mbh.base_listener:
+            class: MBH\Bundle\BaseBundle\EventListener\BaseListener
+            arguments: [@service_container]
+            tags:
+                - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+
     mongodb_acl_provider:
             parent: doctrine_mongodb.odm.security.acl.provider
 

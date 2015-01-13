@@ -10,3 +10,4 @@ parameters:
     use_assetic_controller: true
     mongodb_url: 'mongodb://mbh:password@localhost:27017/mbh'
     mongodb_database: mbh
+    mbh_environment: prod

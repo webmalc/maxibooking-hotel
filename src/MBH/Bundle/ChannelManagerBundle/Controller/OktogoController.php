@@ -12,6 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 use MBH\Bundle\ChannelManagerBundle\Form\OktogoType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffType;
@@ -19,7 +20,7 @@ use MBH\Bundle\ChannelManagerBundle\Form\TariffType;
 /**
  * @Route("/oktogo")
  */
-class OktogoController extends Controller implements CheckHotelControllerInterface
+class OktogoController extends Controller implements CheckHotelControllerInterface, EnvironmentInterface
 {
     /**
      * Main configuration page
@@ -206,10 +207,24 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
 
         $result = $this->get('mbh.channelmanager.oktogo')->roomSync($entity);
 
+        if ($result) {
+            $request->getSession()->getFlashBag()
+                ->set('success', 'Номера успешно синхронизированы.')
+            ;
 
-        echo($result); exit();
+            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+            $dm = $this->get('doctrine_mongodb')->getManager();
+            $dm->persist($entity);
+            $dm->flush();
 
-        //return $this->redirect($this->generateUrl('oktogo_room'));
+            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
+        } else {
+            $request->getSession()->getFlashBag()
+                ->set('danger', 'Во время синхронизации произошла ошибка. Попробуйте еще раз.')
+            ;
+        }
+
+        return $this->redirect($this->generateUrl('oktogo_room'));
     }
 
     /**

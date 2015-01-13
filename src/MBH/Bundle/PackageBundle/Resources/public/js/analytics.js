@@ -24,7 +24,7 @@ $(document).ready(function() {
     }
 
     var chartGet = function () {
-        var wrapper = $('#analytics-filter-content')
+        var wrapper = $('#analytics_filter_content')
             var hideFilters = function () {
                     if(jQuery.inArray($('#analytics-filter-type').val(), ['hotel_occupancy']) !== -1) {
                         $('#analytics-filter-cumulative-wrapper, #analytics-filter-months-wrapper').hide();
@@ -40,7 +40,6 @@ $(document).ready(function() {
             url: Routing.generate('analytics_choose'),
             data: $('#analytics-filter').serialize(),
             success: function (data) {
-
                 if (data.error !== null) {
                     wrapper.html('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> Произошла ошибка при постороении отчета</div>');
                 } else {

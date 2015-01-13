@@ -28,7 +28,8 @@ class ParseIniCommand extends ContainerAwareCommand
         $dbName = $input->getOption('db');
         $path = $this->getContainer()->get('kernel')->getRootDir() . '/config/parameters.yml';
 
-        file_put_contents($path, preg_replace('/mongodb_database\:(.*)$/', 'mongodb_database: ' . $dbName, file_get_contents($path)));
+        file_put_contents($path, preg_replace('/mongodb_database\:(.*)$/im', 'mongodb_database: ' . $dbName, file_get_contents($path)));
+        file_put_contents($path, preg_replace('/mbh_environment\:(.*)$/im', 'mbh_environment: test', file_get_contents($path)));
 
         $output->writeln('Complete. New db name: '.$input->getOption('db'));
     }

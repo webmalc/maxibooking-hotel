@@ -6,6 +6,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
+use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 
 /**
@@ -34,11 +35,9 @@ class Oktogo extends Base
     const BASE_URL = 'https://hotelapi-release.oktogotest.ru/';
 
     private $headers = [
-        'Content-type: text/xml;charset="utf-8"',
+        'Content-Type: text/xml; charset=utf-8',
         'Accept: text/xml',
         'Cache-Control: no-cache',
-        'Pragma: no-cache',
-        'SOAPAction: "run"',
     ];
 
     public function __construct(ContainerInterface $container)
@@ -58,6 +57,27 @@ class Oktogo extends Base
             $this->getHeaders($config),
             true
         );
+
+        $xml = simplexml_load_string($sendResult);
+
+        if (!$xml instanceof \SimpleXMLElement) {
+            return false;
+        }
+
+        $roomTypes = $config->getHotel()->getRoomTypes();
+        $config->removeAllRooms();
+
+        foreach ($xml->children() as $room) {
+
+            foreach ($roomTypes as $roomType) {
+                if ($roomType->getFullTitle() == (string)$room) {
+                    $configRoom = new Room();
+                    $configRoom->setRoomType($roomType)->setRoomId((string)$room->attributes()->id);
+                    $config->addRoom($configRoom);
+                }
+            }
+        }
+        return true;
     }
 
     /**

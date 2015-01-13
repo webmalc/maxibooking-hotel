@@ -48,6 +48,7 @@ twig:
           10: 'Октябрь'
           11: 'Ноябрь'
           12: 'Декабрь'
+        environment: "%mbh.environment%"
 
 # Assetic Configuration
 # Assetic Configuration

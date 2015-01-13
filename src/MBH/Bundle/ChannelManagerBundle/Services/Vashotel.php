@@ -4,8 +4,8 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use \MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig;
-use MBH\Bundle\ChannelManagerBundle\Document\VashotelRoom;
-use MBH\Bundle\ChannelManagerBundle\Document\VashotelTariff;
+use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Response;
@@ -103,7 +103,7 @@ class Vashotel extends Base
         foreach ($xml->xpath('room') as $room) {
             foreach ($roomTypes as $roomType) {
                 if ($roomType->getFullTitle() == (string)$room->xpath('name')[0]) {
-                    $vashotelRoom = new VashotelRoom();
+                    $vashotelRoom = new Room();
                     $vashotelRoom->setRoomType($roomType)->setRoomId((string)$room->xpath('id')[0]);
                     $config->addRoom($vashotelRoom);
                 }
@@ -156,7 +156,7 @@ class Vashotel extends Base
                     continue;
                 }
                 if ($tariff->getFullTitle() == (string)$room->xpath('name')[0]) {
-                    $vashotelTariff = new VashotelTariff();
+                    $vashotelTariff = new Tariff();
                     $vashotelTariff->setTariff($tariff)->setTariffId((string)$room->xpath('id')[0]);
                     $config->addTariff($vashotelTariff);
                 }

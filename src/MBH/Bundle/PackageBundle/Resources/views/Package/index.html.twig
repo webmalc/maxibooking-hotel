@@ -55,9 +55,11 @@
                     <option value="0">Нет</option>
                 </select>
             </div>
+            {% if environment == 'prod' %}
             <div class="input">
                 <i class="fa fa-trash-o" title='Удаленные?' data-toggle='tooltip'></i>&nbsp <input type="checkbox" id="package-filter-deleted" class="package-filter"  value="1" />
             </div>
+            {% endif %}
 
             <input type="hidden" id="package-filter-quick-link" value="">
         </form>

@@ -35,10 +35,22 @@ class ChannelManager
     }
 
     /**
+     * @return bool
+     */
+    private function checkEnvironment()
+    {
+        return ($this->container->getParameter('mbh.environment') != 'prod') ? false : true;
+    }
+
+    /**
      * @return array
      */
     private function getServices()
     {
+        if (!$this->checkEnvironment()) {
+            return [];
+        }
+
         $services = [];
 
         foreach ($this->container->getParameter('mbh.channelmanager.services') as $key => $info) {
@@ -61,6 +73,10 @@ class ChannelManager
 
     public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
+        if (!$this->checkEnvironment()) {
+            false;
+        }
+
         $result = false;
         foreach ($this->services as $service) {
 

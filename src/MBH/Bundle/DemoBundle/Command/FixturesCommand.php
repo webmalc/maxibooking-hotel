@@ -5,6 +5,7 @@ namespace MBH\Bundle\DemoBundle\Command;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\RoomPrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -90,6 +91,32 @@ class FixturesCommand extends ContainerAwareCommand
 
         $packages = [];
         $withoutAccommodation = false;
+
+        $desc[] = <<<EOF
+Однокомнатный комфортабельный номер, площадью 20 кв.м. В номере одна широкая французская кровать (категории «double») или две раздельные (категории «twin»).
+
+Данный номер идеально подходит для одноместного или же двуместного размещения. При необходимости в номер можно поставить кроватку для ребенка.
+EOF;
+
+        $desc[] = <<<EOF
+Отель располагает номерами "Комфорт", оборудованными современной техникой. Номер "Комфорт" оснащен отоплением, кондиционером, телефоном, сейфом, феном, скоростным интернетом, спутниковым телевидением, ванной комнатой, минибаром, балконом.
+
+В номере:Номера для четырех человек. Может быть установлена детская кроватка (без дополнительной оплаты).
+EOF;
+
+        $desc[] = <<<EOF
+Номер категории "Люкс" - по-домашнему уютный двухкомнатный номер, площадью 52 кв. м. Номер состоит из комфортной спальни с большой французской кроватью и гостиной, в которой есть уютный диванчик, письменный стол, стул. Интерьер гостиной – потрясающий пример сочетания цветов, гармонии линий и форм, которые придают номеру неповторимый колорит.
+
+Освещение номера приятным светом порадует своей легкостью и непринуждённостью.
+
+Как в спальне, так и в гостиной есть телевизор. Диван в гостиной можно использовать как спальное место.
+
+Номер категории "Люкс" порадует гостей своим сочетанием изысканности и подбору деталей.
+EOF;
+
+
+
+
         foreach($numberInfo['name'] as $key => $roomTypeName) {
 
             //RoomType
@@ -101,6 +128,9 @@ class FixturesCommand extends ContainerAwareCommand
                      ->setAdditionalPlaces(0)
                      ->setPlaces($numberInfo['acc'][$key])
                      ->setCreatedBy('demo')
+                    ->setImage(($key + 1 ) . '.jpeg')
+                    ->setDescription($desc[$key])
+
             ;
 
             $dm->persist($roomType);
@@ -137,7 +167,6 @@ class FixturesCommand extends ContainerAwareCommand
                 if (count($rooms)) {
                     $pRoom = $rooms[$i - 1];
                 }
-
 
                 //Packages
                 $begin = clone $from;
@@ -197,6 +226,18 @@ class FixturesCommand extends ContainerAwareCommand
             $dm->persist($package);
         }
 
+        $dm->flush();
+
+        //Online form
+        $formConfig = new FormConfig();
+        $formConfig->setEnabled(true)
+                   ->setNights(true)
+                   ->setRoomTypes(true)
+                   ->setTourists(true)
+                   ->setPaymentTypes(["in_hotel", "online_full", "online_first_day"])
+        ;
+
+        $dm->persist($formConfig);
         $dm->flush();
 
         unlink($path);
