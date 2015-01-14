@@ -15,7 +15,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @ODM\Document(collection="Room", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields={"roomType", "fullTitle"}, message="Такой номер уже существует")
+ * @MongoDBUnique(fields={"fullTitle", "roomType"}, message="Такой номер уже существует")
  */
 class Room extends Base
 {

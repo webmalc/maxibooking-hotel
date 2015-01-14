@@ -1,4 +1,11 @@
 services:
+    doctrine_odm.mongodb.validator.unique:
+      class: MBH\Bundle\BaseBundle\Validator\Constraints\UniqueEntityValidator
+      arguments:
+        - @doctrine_mongodb
+      tags:
+        - { name: validator.constraint_validator, alias: doctrine_odm.mongodb.unique }
+
     mbh.base_listener:
             class: MBH\Bundle\BaseBundle\EventListener\BaseListener
             arguments: [@service_container]

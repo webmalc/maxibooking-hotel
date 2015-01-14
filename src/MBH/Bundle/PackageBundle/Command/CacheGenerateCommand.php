@@ -50,7 +50,10 @@ class CacheGenerateCommand extends ContainerAwareCommand
         } else {
             $total = $this->getContainer()->get('mbh.room.cache.generator')->generate();
         }
-        
+
+
+        $dm->getRepository('MBHPackageBundle:CacheQueue')->createQueryBuilder('q')->remove()->getQuery()->execute();
+
         $time = $start->diff(new \DateTime());
         $output->writeln('Generation complete. Total entries: ' . $total . '. Elapsed time: ' . $time->format('%H:%I:%S'));
     }

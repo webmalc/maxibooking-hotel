@@ -10,12 +10,14 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 /**
  * @ODM\Document(collection="Tariffs", repositoryClass="MBH\Bundle\PriceBundle\Document\TariffRepository")
  * @Gedmo\Loggable
  * @MBHValidator\Tariff
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="Такой тариф уже существует")
  */
 class Tariff extends Base
 {

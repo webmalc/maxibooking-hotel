@@ -391,6 +391,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $form->bind($request);
 
         if ($form->isValid()) {
+
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
             $dm->persist($entity);

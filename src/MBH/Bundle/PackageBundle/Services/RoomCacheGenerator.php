@@ -75,11 +75,6 @@ class RoomCacheGenerator
      */
     public function generateInBackground()
     {
-        /*($this->container->get('kernel')->getEnvironment() == 'prod') ? $env = '--env=prod ' : $env = '';
-
-        $process = new Process('nohup php ' . $this->console . 'mbh:cache:generate --no-debug ' . $env . '> /dev/null 2>&1 &');
-        $process->run();*/
-
         if ($this->dm->getRepository('MBHPackageBundle:CacheQueue')->findOneBy(['status' => 'waiting', 'roomType' => null])) {
             return false;
         }
@@ -99,16 +94,6 @@ class RoomCacheGenerator
      */
     public function generateForRoomTypeInBackground(RoomType $roomType, \DateTime $begin = null, \DateTime $end = null)
     {
-        /*($begin) ? $beginStr = ' --begin=' . $begin->format('d.m.Y') : $beginStr = '';
-        ($end) ? $endStr = ' --end=' . $end->format('d.m.Y') : $endStr = '';
-        ($this->container->get('kernel')->getEnvironment() == 'prod') ? $env = '--env=prod ' : $env = '';
-
-        $process = new Process(
-                'nohup php ' . $this->console . 'mbh:cache:generate  --no-debug --roomType=' .
-                $roomType->getId() . $beginStr . $endStr . ' ' . $env . '> /dev/null 2>&1 &'
-        );
-        $process->run();*/
-
         $repo = $this->dm->getRepository('MBHPackageBundle:CacheQueue');
 
         if ($repo->findOneBy(['status' => 'waiting', 'roomType' => null])) {
