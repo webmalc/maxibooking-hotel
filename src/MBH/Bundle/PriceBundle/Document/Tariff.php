@@ -18,6 +18,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
  * @MBHValidator\Tariff
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="Такой тариф уже существует")
+ * @ODM\HasLifecycleCallbacks
  */
 class Tariff extends Base
 {
@@ -199,6 +200,15 @@ class Tariff extends Base
     protected $isEnabled = true;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $permanent = false;
+
+    /**
      * @var array
      * @Gedmo\Versioned
      * @ODM\Collection
@@ -317,6 +327,28 @@ class Tariff extends Base
     }
 
     /**
+     * Set permanent
+     *
+     * @param boolean $permanent
+     * @return self
+     */
+    public function setPermanent($permanent)
+    {
+        $this->permanent = $permanent;
+        return $this;
+    }
+
+    /**
+     * Get permanent
+     *
+     * @return boolean $permanent
+     */
+    public function getPermanent()
+    {
+        return $this->permanent;
+    }
+
+    /**
      * Set type
      *
      * @param string $type
@@ -385,7 +417,7 @@ class Tariff extends Base
     /**
      * Set begin
      *
-     * @param date $begin
+     * @param \DateTime $begin
      * @return self
      */
     public function setBegin($begin)
@@ -397,7 +429,7 @@ class Tariff extends Base
     /**
      * Get begin
      *
-     * @return date $begin
+     * @return \DateTime $begin
      */
     public function getBegin()
     {
@@ -407,7 +439,7 @@ class Tariff extends Base
     /**
      * Set end
      *
-     * @param date $end
+     * @param \DateTime $end
      * @return self
      */
     public function setEnd($end)
@@ -419,7 +451,7 @@ class Tariff extends Base
     /**
      * Get end
      *
-     * @return date $end
+     * @return \DateTime $end
      */
     public function getEnd()
     {
@@ -648,5 +680,33 @@ class Tariff extends Base
     public function getWeekDays()
     {
         return $this->weekDays;
+    }
+
+    /**
+     * @ODM\PrePersist
+     */
+    public function prePersist()
+    {
+        $this->checkPermanent();
+    }
+
+    /**
+     * @ODM\preUpdate
+     */
+    public function preUpdate()
+    {
+        $this->checkPermanent();
+    }
+
+    /**
+     * @return $this
+     */
+    public function checkPermanent()
+    {
+        if ($this->getPermanent()) {
+            $this->setBegin(\DateTime::createFromFormat('U', 0))->setEnd(\DateTime::createFromFormat('U', 2147483647));
+        }
+
+        return $this;
     }
 }

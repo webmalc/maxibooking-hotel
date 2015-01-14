@@ -7,10 +7,28 @@ $(document).ready(function() {
         var isDefault = $('#mbh_bundle_pricebundle_tariff_main_type_isDefault'),
                 typeSelect = $('#mbh_bundle_pricebundle_tariff_main_type_type'),
                 type = typeSelect.closest('div.form-group'),
+                permanent = $('#mbh_bundle_pricebundle_tariff_main_type_permanent'),
+                begin = $('#mbh_bundle_pricebundle_tariff_main_type_begin'),
+                end = $('#mbh_bundle_pricebundle_tariff_main_type_end'),
                 rate = $('#mbh_bundle_pricebundle_tariff_main_type_rate').closest('div.form-group'),
                 showHide = function() {
                     type.hide();
                     rate.hide();
+
+                    if (permanent.is(':checked')) {
+                        begin.closest('div.form-group').hide();
+                        end.closest('div.form-group').hide();
+                    }
+
+                    permanent.on('switchChange', function() {
+                        if (permanent.is(':checked')) {
+                            begin.val('01.01.1970').closest('div.form-group').hide();
+                            end.val('19.01.2038').closest('div.form-group').hide();
+                        } else {
+                            begin.val(null).closest('div.form-group').show();
+                            end.val(null).closest('div.form-group').show();
+                        }
+                    });
 
                     if (isDefault.is(':checked')) {
                         type.hide();

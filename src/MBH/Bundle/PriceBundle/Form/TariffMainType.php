@@ -41,6 +41,13 @@ class TariffMainType extends AbstractType
                     'required' => false,
                     'help' => 'Описание тарифа для онлайн бронирования'
                 ])
+                ->add('permanent', 'checkbox', [
+                    'label' => 'Постоянный?',
+                    'group' => 'Общаяя информация',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'Использовать ли даты начала и конца в тарифе?'
+                ])
                 ->add('begin', 'date', array(
                     'label' => 'Начало',
                     'group' => 'Общаяя информация',
