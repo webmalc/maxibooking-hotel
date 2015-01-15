@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Controller;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
@@ -69,40 +70,49 @@ class BaseController extends Controller
      * @param int $id
      * @param string $repo repository name
      * @param string $route route name for redirect
-     * @param params $params
+     * @param array $params
      * @return Response
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     protected function deleteEntity($id, $repo, $route, array $params = [])
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
+        try {
+            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+            $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $entity = $dm->getRepository($repo)->find($id);
+            $entity = $dm->getRepository($repo)->find($id);
 
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        if (method_exists($entity, 'getHotel')) {
-            if(!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+            if (!$entity) {
                 throw $this->createNotFoundException();
             }
-        }
 
-        if ($entity instanceof Hotel) {
-            if(!$this->container->get('mbh.hotel.selector')->checkPermissions($entity)) {
-                throw $this->createNotFoundException();
+            if (method_exists($entity, 'getHotel')) {
+                if(!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+                    throw $this->createNotFoundException();
+                }
             }
+
+            if ($entity instanceof Hotel) {
+                if(!$this->container->get('mbh.hotel.selector')->checkPermissions($entity)) {
+                    throw $this->createNotFoundException();
+                }
+            }
+
+            $dm->remove($entity);
+            $dm->flush($entity);
+
+            $this->getRequest()
+                ->getSession()
+                ->getFlashBag()
+                ->set('success', 'Запись успешно удалена.');
+
+        } catch (DeleteException $e) {
+            $this->getRequest()
+                ->getSession()
+                ->getFlashBag()
+                ->set('danger', $e->getMessage());
         }
 
-        $dm->remove($entity);
-        $dm->flush($entity);
-
-        $this->getRequest()
-             ->getSession()
-             ->getFlashBag()
-             ->set('success', 'Запись успешно удалена.');
 
         return $this->redirect($this->generateUrl($route, $params));
     }

@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Form\ServiceCategoryType;
@@ -413,21 +414,28 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      */
     public function deleteEntryAction(Request $request, $id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
+        try {
+            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+            $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $entity = $dm->getRepository('MBHPriceBundle:Service')->find($id);
+            $entity = $dm->getRepository('MBHPriceBundle:Service')->find($id);
 
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
-            throw $this->createNotFoundException();
+            if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+                throw $this->createNotFoundException();
+            }
+            $catId = $entity->getCategory()->getId();
+            $dm->remove($entity);
+            $dm->flush($entity);
+
+            $request->getSession()
+                ->getFlashBag()
+                ->set('success', 'Запись успешно удалена.');
+        } catch (DeleteException $e) {
+            $request->getSession()
+                ->getFlashBag()
+                ->set('danger', $e->getMessage());
         }
-        $catId = $entity->getCategory()->getId();
-        $dm->remove($entity);
-        $dm->flush($entity);
 
-        $request->getSession()
-            ->getFlashBag()
-            ->set('success', 'Запись успешно удалена.');
 
         return $this->redirect($this->generateUrl('price_service_category', ['tab' => $catId]));
     }

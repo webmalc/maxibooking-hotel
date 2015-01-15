@@ -4,9 +4,11 @@ namespace MBH\Bundle\PackageBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 
@@ -88,6 +90,63 @@ class PackageSubscriber implements EventSubscriber
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         $entity = $args->getEntity();
+
+        //prevent delete hotel
+        if ($entity instanceof Hotel) {
+            $docs = $dm->getRepository('MBHPackageBundle:Package')
+                ->createQueryBuilder('q')
+                ->field('roomType.id')->in($this->container->get('mbh.helper')->toIds($entity->getRoomTypes()))
+                ->getQuery()
+                ->execute()
+            ;
+
+            if(count($docs) > 0) {
+                throw new DeleteException('Невозможно удалить отель с бронями');
+            }
+        }
+
+        //prevent deleting related docs
+        $docs = [
+            ['class' => '\MBH\Bundle\HotelBundle\Document\RoomType', 'criteria' => 'roomType.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
+            ['class' => '\MBH\Bundle\HotelBundle\Document\Room', 'criteria' => 'accommodation.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
+            ['class' => '\MBH\Bundle\PriceBundle\Document\Tariff', 'criteria' => 'tariff.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
+            ['class' => '\MBH\Bundle\PackageBundle\Document\Tourist', 'criteria' => 'mainTourist.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
+            ['class' => '\MBH\Bundle\PackageBundle\Document\Tourist', 'criteria' => 'tourists', 'many' => true, 'repo' => 'MBHPackageBundle:Package'],
+            ['class' => '\MBH\Bundle\PackageBundle\Document\Tourist', 'criteria' => 'tourists', 'many' => true, 'repo' => 'MBHPackageBundle:Package'],
+            ['class' => '\MBH\Bundle\PriceBundle\Document\Service', 'criteria' => 'service.id', 'many' => false, 'repo' => 'MBHPackageBundle:PackageService'],
+            ['class' => '\MBH\Bundle\PackageBundle\Document\PackageSource', 'criteria' => 'source.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
+        ];
+
+        foreach ($docs as $docInfo)  {
+            if (is_a($entity, $docInfo['class'])) {
+
+                if ($docInfo['many']) {
+                    $relatedPackages = $dm->getRepository($docInfo['repo'])
+                        ->createQueryBuilder('q')
+                        ->field($docInfo['criteria'])->includesReferenceTo($entity)
+                        ->getQuery()
+                        ->execute()
+                    ;
+                } else {
+                    $relatedPackages = $dm->getRepository($docInfo['repo'])
+                        ->findBy([$docInfo['criteria'] => $entity->getId()])
+                    ;
+                }
+
+                if (count($relatedPackages) > 0) {
+
+                    foreach ($relatedPackages as $relatedPackage) {
+
+                        if (!$relatedPackage instanceof Package) {
+                            $relatedPackage = $relatedPackage->getPackage();
+                        }
+
+                        $relatedPackagesIds[] = $relatedPackage->getNumberWithPrefix();
+                    }
+                    throw new DeleteException('Невозможно удалить запись с существующими бронями. Брони: ' . implode(', ', $relatedPackagesIds));
+                }
+            }
+        }
 
         //Delete tourist from package
         if ($entity instanceof Tourist)
