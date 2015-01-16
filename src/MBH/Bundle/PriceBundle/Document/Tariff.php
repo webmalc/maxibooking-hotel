@@ -193,15 +193,6 @@ class Tariff extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isEnabled")
-     * @Assert\NotNull()
-     * @Assert\Type(type="boolean")
-     */
-    protected $isEnabled = true;
-
-    /**
-     * @var boolean
-     * @Gedmo\Versioned
      * @ODM\Boolean()
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
@@ -635,29 +626,6 @@ class Tariff extends Base
             return $this->getHotel()->getMinPackageDuration();
         }
         return $this->minPackageDuration;
-    }
-
-
-    /**
-     * Set isEnabled
-     *
-     * @param boolean $isEnabled
-     * @return self
-     */
-    public function setIsEnabled($isEnabled)
-    {
-        $this->isEnabled = $isEnabled;
-        return $this;
-    }
-
-    /**
-     * Get isEnabled
-     *
-     * @return boolean $isEnabled
-     */
-    public function getIsEnabled()
-    {
-        return $this->isEnabled;
     }
 
     /**

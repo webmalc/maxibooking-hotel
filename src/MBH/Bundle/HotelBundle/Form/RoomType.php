@@ -16,20 +16,30 @@ class RoomType extends AbstractType
                 ->add('fullTitle', 'text', [
                     'label' => 'Название',
                     'required' => true,
+                    'group' => 'Общаяя информация',
                     'attr' => ['placeholder' => '27']
                 ])
                 ->add('title', 'text', [
                     'label' => 'Внутреннее название',
                     'required' => false,
+                    'group' => 'Общаяя информация',
                     'attr' => ['placeholder' => '27 (c ремонтом)'],
                     'help' => 'Название для использования внутри MaxiBooking'
                 ])
-        ;
+                ->add('isEnabled', 'checkbox', [
+                    'label' => 'Включен?',
+                    'group' => 'Настройки',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'Используется ли номер в поиске?'
+                ])
+            ;
 
         if (!$options['isNew']) {
             $builder->add('roomType', 'document', [
                     'label' => 'Тип номера',
                     'class' => 'MBHHotelBundle:RoomType',
+                    'group' => 'Общаяя информация',
                     'query_builder' => function(DocumentRepository $dr) use ($options) {
                         return $dr->createQueryBuilder('q')
                             ->field('hotel.id')->equals($options['hotelId'])

@@ -552,15 +552,19 @@ class Hotel extends Base
     /**
      * Get services list
      * @param boolean $online
+     * @param boolean $enabled
      * @return array
      */
-    public function getServices($online = false)
+    public function getServices($enabled = false, $online = false)
     {
         $result = [];
         
         foreach ($this->servicesCategories as $serviceCategory) {
             foreach ($serviceCategory->getServices() as $service) {
                 if ($online && !$service->getIsOnline()) {
+                    continue;
+                }
+                if ($enabled && !$service->getIsEnabled()) {
                     continue;
                 }
                 if ($service->getPrice() !== null) { 

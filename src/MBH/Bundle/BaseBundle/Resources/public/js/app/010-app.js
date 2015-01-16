@@ -10,6 +10,10 @@ var getUrlVars = function () {
     return vars;
 }
 
+var dangerTr = function () {
+    $('span.danger-tr').closest('tr').addClass('danger');
+}
+
 var deleteLink = function() {
     $('.delete-link').click(function(event) {
         event.preventDefault();

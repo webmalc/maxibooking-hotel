@@ -5,7 +5,7 @@
     "data": [
         {% for entity in entities %}
             [
-                "<div class='text-center'><i class='fa fa-home'></i></div>",
+                "{% if entity.isEnabled is empty %}<span class='danger-tr'></span>{% endif %}<div class='text-center'><i class='fa fa-home'></i></div>",
                 "<a href='{{ path('room_type_room_edit', { 'id': entity.id }) }}' rel='main' title='Редактирование записи' data-toggle='tooltip'>{{ entity.name }}</a>",
                 "{% include 'MBHHotelBundle:RoomType:roomListButtons.html.twig' with {'entity': entity} %}"
             ]{% if loop.index != entities.count(true) %},{% endif %}

@@ -173,7 +173,7 @@ class ApiController extends Controller
             $hotels[$hotel->getId()] = $hotel;
         }
         foreach ($hotels as $hotel) {
-            $services = array_merge($services, $hotel->getServices(true));
+            $services = array_merge($services, $hotel->getServices(true, true));
         }
 
         $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);

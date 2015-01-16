@@ -19,8 +19,8 @@
                     <td>
                         <a href="{{ path('tariff_edit', { 'id': entity.id }) }}" rel="main" title="Редактирование записи" data-toggle="tooltip">{{ entity.name }}</a>
                     </td>
-                    <td>{{ entity.begin|date('d.m.Y') }}</td>
-                    <td>{{ entity.end|date('d.m.Y') }}</td>
+                    <td>{{ entity.permanent ? 'нет' : entity.begin|date('d.m.Y') }}</td>
+                    <td>{{ entity.permanent ? 'нет' : entity.end|date('d.m.Y') }}</td>
                     <td class="text-center">{{ entity.roomQuotas.count }}</td>
                     <td class="text-center">{{ entity.foodPrices.count }}</td>
                     <td class="text-center">{{ entity.roomPrices.count }}</td>

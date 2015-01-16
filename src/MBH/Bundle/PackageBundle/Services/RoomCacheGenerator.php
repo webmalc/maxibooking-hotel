@@ -297,6 +297,11 @@ class RoomCacheGenerator
 
             foreach ($tariff->getHotel()->getRoomTypes() as $roomType) {
 
+                //skip disabled roomTypes
+                if (!$roomType->getIsEnabled()) {
+                    continue;
+                }
+
                 if ($calcRoomType && $calcRoomType->getId() != $roomType->getId()) {
                     continue;
                 }
@@ -355,7 +360,13 @@ class RoomCacheGenerator
      */
     private function countRooms(Tariff $tariff, RoomType $roomType)
     {
-        $rooms = $roomType->getRooms()->count();
+        $rooms = 0;
+
+        foreach ($roomType->getRooms() as $room) {
+            if ($room->getIsEnabled()) {
+                $rooms++;
+            }
+        }
 
         foreach ($tariff->getRoomQuotas() as $quota) {
             if ($quota->getNumber() !== null && $quota->getRoomType()->getId() == $roomType->getId() && $rooms > $quota->getNumber()) {

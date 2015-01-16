@@ -45,6 +45,7 @@ $(document).ready(function() {
         },
         "drawCallback": function(settings, json) {
             deleteLink();
+            dangerTr();
         }
     });
 

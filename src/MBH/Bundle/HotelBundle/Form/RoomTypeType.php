@@ -81,6 +81,13 @@ class RoomTypeType extends AbstractType
                     'attr' => ['placeholder' => 'hotel', 'class' => 'spinner'],
                     'help' => 'Количество дополнительных мест в номере'
                 ])
+                ->add('isEnabled', 'checkbox', [
+                    'label' => 'Включен?',
+                    'group' => 'Настройки',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'Используется ли тип номера в поиске?'
+                ])
         ;
     }
 

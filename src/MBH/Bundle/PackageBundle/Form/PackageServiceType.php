@@ -18,7 +18,7 @@ class PackageServiceType extends AbstractType
             foreach ($options['package']->getTariff()->getHotel()->getServicesCategories() as $cat) {
                 foreach ($cat->getServices() as $service) {
 
-                    if (empty($service->getPrice())) {
+                    if (empty($service->getPrice()) || !$service->getIsEnabled()) {
                         continue;
                     }
 
