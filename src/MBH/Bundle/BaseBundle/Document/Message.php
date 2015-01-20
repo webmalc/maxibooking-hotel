@@ -3,9 +3,11 @@
 namespace MBH\Bundle\BaseBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ODM\Document(collection="Messages")
+ * @Gedmo\Loggable
  */
 class Message extends Base implements \JsonSerializable
 {

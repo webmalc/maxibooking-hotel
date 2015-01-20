@@ -118,11 +118,15 @@ class Order extends Base
 
     /**
      * Get total
-     *
+     * @param boolean $isFloat
      * @return int $total
      */
-    public function getTotal()
+    public function getTotal($isFloat = false)
     {
+        if ($isFloat) {
+            return number_format((float) $this->total, 2, '.', '');
+        }
+
         return $this->total;
     }
 

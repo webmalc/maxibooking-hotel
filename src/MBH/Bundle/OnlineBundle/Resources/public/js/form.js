@@ -5,7 +5,7 @@ $(document).ready(function() {
     // show|hide robokassa
     (function(){
         var paymentTypes = $('#mbh_bundle_onlinebundle_form_type_paymentTypes'),
-            fieldset = $('#mbh_bundle_onlinebundle_form_type_robokassaMerchantLogin').closest('fieldset'),
+            fieldset = $('.paysystem-params').closest('fieldset'),
             toggle = function () {
                 fieldset.hide();
 

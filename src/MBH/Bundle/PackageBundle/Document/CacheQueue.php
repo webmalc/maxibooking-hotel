@@ -11,6 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ODM\Document(collection="CacheQueue")
+ * @Gedmo\Loggable
  */
 class CacheQueue extends Base
 {

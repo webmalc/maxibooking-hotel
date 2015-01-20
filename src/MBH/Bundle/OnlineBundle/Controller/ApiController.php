@@ -75,19 +75,31 @@ class ApiController extends Controller
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
+        $paymentSystem = $this->container->getParameter('mbh.online.form')['payment_system'];
+        $test = 1;
 
-        $total = (int) $request->get('OutSum');
-        $orderId = (int) $request->get('InvId');
-        $sig = mb_strtolower($request->get('SignatureValue'));
+        $total = (int) $request->get(($paymentSystem == 'payanyway') ? 'MNT_AMOUNT' : 'OutSum');
+        $orderId = (int) $request->get(($paymentSystem == 'payanyway') ? 'MNT_TRANSACTION_ID' : 'InvId');
+        $sig = mb_strtolower($request->get(($paymentSystem == 'payanyway') ? 'MNT_SIGNATURE' : 'SignatureValue'));
         $config = $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]);
         $order = $dm->getRepository('MBHOnlineBundle:Order')->find($orderId);
+        $response = new Response(($paymentSystem == 'payanyway') ? 'SUCCESS' : 'OK' . $order->getId());
 
-        if (!$total || !$orderId || !$sig || !$config || !$order || $order->getPaid() || $order->getTotal() != $total) {
+        if (!$total || !$orderId || !$sig || !$config || !$order || $order->getTotal() != $total) {
             throw $this->createNotFoundException();
         }
 
-        if (md5($total . ':' . $orderId . ':' . $config->getRobokassaMerchantPass2()) != $sig) {
+        $calcSig = md5($total . ':' . $orderId . ':' . $config->getRobokassaMerchantPass2());
+        if ($paymentSystem == 'payanyway') {
+            $calcSig = md5($config->getPayanywayMntId() . $orderId . $request->get('MNT_OPERATION_ID') . $order->getTotal(true) . 'RUB' . $request->get('MNT_SUBSCRIBER_ID') . $test . $order->getPayanywayKey());
+        }
+
+        if ($calcSig != $sig) {
             throw $this->createNotFoundException();
+        }
+
+        if ($order->getPaid()) {
+            return $response;
         }
 
         foreach ($order->getPackages() as $package)
@@ -100,7 +112,7 @@ class ApiController extends Controller
             $doc = new CashDocument();
             $doc->setTotal($sum)
                 ->setMethod('electronic')
-                ->setNote('Robokassa: order #' . $order->getId())
+                ->setNote('Payment system: order #' . $order->getId())
                 ->setOperation('in')
                 ->setPackage($package)
                 ->setPayer($package->getMainTourist())
@@ -119,7 +131,7 @@ class ApiController extends Controller
         $dm->persist($order);
         $dm->flush();
 
-        return new Response('OK' . $order->getId());
+        return $response;
     }
 
     /**
@@ -247,7 +259,7 @@ class ApiController extends Controller
                 'message' => 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
             ]);
         }
-        $this->sendNotifications($packages);
+        //$this->sendNotifications($packages);
 
         if(count($packages) > 1) {
             $roomStr = 'Номера успешно забронированы.';
@@ -278,7 +290,7 @@ class ApiController extends Controller
             $dm->flush();
 
             $form = $this->container->get('twig')->render(
-                'MBHOnlineBundle:Api:robokassa.html.twig' , [
+                'MBHOnlineBundle:Api:' . $this->container->getParameter('mbh.online.form')['payment_system'] . '.html.twig' , [
                     'order' => $order,
                     'request' => $request,
                     'config' => $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([])

@@ -280,7 +280,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(
-            new TariffType(), [], ['entity' => $entity]
+            new TariffType(), [], ['entity' => $entity, 'hideDefault' => false]
         );
 
         return array(
@@ -306,7 +306,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(
-            new TariffType(), [], ['entity' => $entity]
+            new TariffType(), [], ['entity' => $entity, 'hideDefault' => false]
         );
 
         $form->submit($request);

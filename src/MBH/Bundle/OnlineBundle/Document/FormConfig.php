@@ -102,6 +102,21 @@ class FormConfig extends Base
     protected $robokassaMerchantPass2;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    protected $payanywayMntId;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    protected $payanywayKey;
+
+
+    /**
      * Set enabled
      *
      * @param boolean $enabled
@@ -275,5 +290,49 @@ class FormConfig extends Base
     public function getRobokassaMerchantPass2()
     {
         return $this->robokassaMerchantPass2;
+    }
+
+    /**
+     * Set payanywayMntId
+     *
+     * @param string $payanywayMntId
+     * @return self
+     */
+    public function setPayanywayMntId($payanywayMntId)
+    {
+        $this->payanywayMntId = $payanywayMntId;
+        return $this;
+    }
+
+    /**
+     * Get payanywayMntId
+     *
+     * @return string $payanywayMntId
+     */
+    public function getPayanywayMntId()
+    {
+        return $this->payanywayMntId;
+    }
+
+    /**
+     * Set payanywayKey
+     *
+     * @param string $payanywayKey
+     * @return self
+     */
+    public function setPayanywayKey($payanywayKey)
+    {
+        $this->payanywayKey = $payanywayKey;
+        return $this;
+    }
+
+    /**
+     * Get payanywayKey
+     *
+     * @return string $payanywayKey
+     */
+    public function getPayanywayKey()
+    {
+        return $this->payanywayKey;
     }
 }

@@ -72,37 +72,67 @@ class FormType extends AbstractType
                     'help' => 'Типы оплаты при бронировании с помощью онлайн формы'
                 ]
             )
-            ->add(
-                'robokassaMerchantLogin',
-                'text',
-                [
-                    'group' => 'Сервис ROBOKASSA',
-                    'label' => 'Логин магазина',
-                    'required' => false,
-                    'attr' => ['class' => 'robokassa-params']
-                ]
-            )
-            ->add(
-                'robokassaMerchantPass1',
-                'text',
-                [
-                    'group' => 'Сервис ROBOKASSA',
-                    'label' => 'Пароль 1',
-                    'required' => false,
-                    'attr' => ['class' => 'robokassa-params']
-                ]
-            )
-            ->add(
-                'robokassaMerchantPass2',
-                'text',
-                [
-                    'group' => 'Сервис ROBOKASSA',
-                    'label' => 'Пароль 2',
-                    'required' => false,
-                    'attr' => ['class' => 'robokassa-params']
-                ]
-            )
         ;
+
+        if(empty($options['paymentSystem']) || $options['paymentSystem'] == 'robokassa') {
+            $builder
+                ->add(
+                    'robokassaMerchantLogin',
+                    'text',
+                    [
+                        'group' => 'Сервис ROBOKASSA',
+                        'label' => 'Логин магазина',
+                        'required' => false,
+                        'attr' => ['class' => 'paysystem-params']
+                    ]
+                )
+                ->add(
+                    'robokassaMerchantPass1',
+                    'text',
+                    [
+                        'group' => 'Сервис ROBOKASSA',
+                        'label' => 'Пароль 1',
+                        'required' => false,
+                        'attr' => ['class' => 'paysystem-params']
+                    ]
+                )
+                ->add(
+                    'robokassaMerchantPass2',
+                    'text',
+                    [
+                        'group' => 'Сервис ROBOKASSA',
+                        'label' => 'Пароль 2',
+                        'required' => false,
+                        'attr' => ['class' => 'paysystem-params']
+                    ]
+                )
+            ;
+        }
+
+        if(!empty($options['paymentSystem']) && $options['paymentSystem'] == 'payanyway') {
+            $builder
+                ->add(
+                    'payanywayMntId',
+                    'text',
+                    [
+                        'group' => 'Сервис PAYANYWAY',
+                        'label' => 'Номер расширенного счета',
+                        'required' => false,
+                        'attr' => ['class' => 'paysystem-params']
+                    ]
+                )
+                ->add(
+                    'payanywayKey',
+                    'text',
+                    [
+                        'group' => 'Сервис PAYANYWAY',
+                        'label' => 'Код проверки целостности данных',
+                        'required' => false,
+                        'attr' => ['class' => 'paysystem-params']
+                    ]
+                )
+            ;
+        }
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
@@ -111,7 +141,8 @@ class FormType extends AbstractType
             array(
                 'data_class' => 'MBH\Bundle\OnlineBundle\Document\FormConfig',
                 'paymentTypes' => [],
-                'isHostel' => false
+                'isHostel' => false,
+                'paymentSystem' => null,
             )
         );
     }

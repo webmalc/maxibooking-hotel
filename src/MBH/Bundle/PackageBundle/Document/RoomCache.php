@@ -4,14 +4,16 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ODM\Document(collection="RoomCache")
+ * @Gedmo\Loggable
  */
 class RoomCache extends Base
 {   
     /** 
-     * @var MBH\Bundle\PriceBundle\Document\Tariff
+     * @var \MBH\Bundle\PriceBundle\Document\Tariff
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      */
     protected $tariff;

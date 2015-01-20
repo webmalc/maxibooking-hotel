@@ -29,7 +29,7 @@ class TariffType extends AbstractType
 
             (isset($ids[$tariff->getId()])) ? $data = $ids[$tariff->getId()] : $data = null;
 
-            if ($tariff->getIsDefault()) {
+            if ($tariff->getIsDefault() && $options['hideDefault']) {
                 $type = 'hidden';
                 $data = 0;
             }  else {
@@ -52,7 +52,8 @@ class TariffType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'entity' => false
+            'entity' => false,
+            'hideDefault' => true
         ));
     }
 
