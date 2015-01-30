@@ -79,6 +79,7 @@ class Builder extends ContainerAware
         ;
         $menu['prices']->addChild('tariff', ['route' => 'tariff', 'label' => 'Тарифы']);
         $menu['prices']->addChild('services', ['route' => 'price_service_category', 'label' => 'Услуги']);
+        $menu['prices']->addChild('overview', ['route' => 'prices_overview', 'label' => 'Обзор цен']);
         
         //Users links
         $menu->addChild('configs', ['route' => '_welcome', 'label' => 'Настройки'])

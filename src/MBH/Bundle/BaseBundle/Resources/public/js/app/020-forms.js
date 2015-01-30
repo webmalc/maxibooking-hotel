@@ -59,14 +59,18 @@ $(document).ready(function () {
             $(this).datepicker('hide');
         }
 
-    });
+    }).attr("autocomplete", "off");
 
     (function(){
         var begin = $('.begin-datepiker'),
             end =   $('.end-datepiker'),
             set = function () {
-                begin.datepicker('setEndDate', end.datepicker('getDate'));
-                end.datepicker('setStartDate', begin.datepicker('getDate'));
+                if (!begin.hasClass('not-set-date')) {
+                    begin.datepicker('setEndDate', end.datepicker('getDate'));
+                }
+                if (!end.hasClass('not-set-date')) {
+                    end.datepicker('setStartDate', begin.datepicker('getDate'));
+                }
             };
 
             set();

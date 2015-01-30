@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -676,5 +677,43 @@ class Tariff extends Base
         }
 
         return $this;
+    }
+
+    public function getPlaceCount(RoomType $roomType)
+    {
+        $placeCount = $roomType->getRooms()->count();
+
+        foreach ($this->getRoomQuotas() as $quota) {
+            if ($roomType->getId() != $quota->getRoomType()->getId()) {
+                continue;
+            }
+            if ($quota->getNumber() < $placeCount) {
+                $placeCount = $quota->getNumber();
+            }
+        }
+
+        return $placeCount;
+    }
+
+    public function getRoomTypePrices(RoomType $roomType)
+    {
+        foreach ($this->getRoomPrices() as $roomPrice) {
+            if ($roomType->getId() != $roomPrice->getRoomType()->getId()) {
+                continue;
+            }
+            return $roomPrice;
+        }
+        return null;
+    }
+
+    public function getFoodPrice($type)
+    {
+        foreach ($this->getFoodPrices() as $foodPrice) {
+            if ($foodPrice->getType() != $type) {
+                continue;
+            }
+            return $foodPrice;
+        }
+        return null;
     }
 }

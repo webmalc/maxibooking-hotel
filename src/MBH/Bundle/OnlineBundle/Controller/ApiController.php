@@ -68,7 +68,7 @@ class ApiController extends Controller
     /**
      * Results js
      * @Route("/order/check", name="online_form_check_order")
-     * @Method({"POST"})
+     * @Method({"POST", "GET"})
      * @Template("")
      */
     public function checkOrderAction(Request $request)
@@ -76,7 +76,9 @@ class ApiController extends Controller
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $paymentSystem = $this->container->getParameter('mbh.online.form')['payment_system'];
-        $test = 1;
+        $logger = $this->get('logger');
+        $logger->info('\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP' . $request->getClientIp() . '. Post data: ' . implode('; ', $request->request->all()) . 'Get data: ' . implode('; ', $request->query->all()));
+        $test = 0;
 
         $total = (int) $request->get(($paymentSystem == 'payanyway') ? 'MNT_AMOUNT' : 'OutSum');
         $orderId = (int) $request->get(($paymentSystem == 'payanyway') ? 'MNT_TRANSACTION_ID' : 'InvId');
@@ -86,16 +88,18 @@ class ApiController extends Controller
         $response = new Response(($paymentSystem == 'payanyway') ? 'SUCCESS' : 'OK' . $order->getId());
 
         if (!$total || !$orderId || !$sig || !$config || !$order || $order->getTotal() != $total) {
+            $logger->info('\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Error params not found. total - ' . $total . '; orderId - ' . $orderId . '; sig - ' . $sig);
             throw $this->createNotFoundException();
         }
 
         $calcSig = md5($total . ':' . $orderId . ':' . $config->getRobokassaMerchantPass2());
         if ($paymentSystem == 'payanyway') {
-            $calcSig = md5($config->getPayanywayMntId() . $orderId . $request->get('MNT_OPERATION_ID') . $order->getTotal(true) . 'RUB' . $request->get('MNT_SUBSCRIBER_ID') . $test . $order->getPayanywayKey());
+            $calcSig = md5($config->getPayanywayMntId() . $orderId . $request->get('MNT_OPERATION_ID') . $order->getTotal(true) . 'RUB' . $request->get('MNT_SUBSCRIBER_ID') . $test . $config->getPayanywayKey());
         }
 
         if ($calcSig != $sig) {
             throw $this->createNotFoundException();
+            $logger->info('\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Error invalid signature. MB sig - '. $calcSig . '; sig - 0' .  $sig);
         }
 
         if ($order->getPaid()) {
@@ -259,7 +263,7 @@ class ApiController extends Controller
                 'message' => 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
             ]);
         }
-        //$this->sendNotifications($packages);
+        $this->sendNotifications($packages);
 
         if(count($packages) > 1) {
             $roomStr = 'Номера успешно забронированы.';

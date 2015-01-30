@@ -10,7 +10,7 @@ $(document).ready(function() {
     };
     setPackageBg();
 
-    // set accommodation  roomType paging
+    // set accommodation roomType paging
     var accommodationPagingSet = function () {
         $('#accommodation-report-pagination').find('a').each( function() {
             $(this).click(function (e) {
@@ -20,7 +20,7 @@ $(document).ready(function() {
         });
     };
 
-    // set accommodation  roomType month paging
+    // set accommodation roomType month paging
     var accommodationMonthsSet = function () {
         $('#accommodation-report-table-row').find('div.arrow a').each( function() {
             $(this).click(function (e) {
@@ -98,7 +98,7 @@ $(document).ready(function() {
         });
     }
     accommodationReportGet();
-    $('.accommodation-report-filter').change(function () { accommodationReportGet() });
+    $('.prices-overview-filter').change(function () { accommodationReportGet() });
 
     // get rooms report content
     var roomsReportGet = function (data) {

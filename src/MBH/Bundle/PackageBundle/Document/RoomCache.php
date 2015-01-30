@@ -88,7 +88,7 @@ class RoomCache extends Base
     /**
      * Get tariff
      *
-     * @return MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     * @return \MBH\Bundle\PriceBundle\Document\Tariff $tariff
      */
     public function getTariff()
     {
@@ -110,7 +110,7 @@ class RoomCache extends Base
     /**
      * Get roomType
      *
-     * @return MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @return \MBH\Bundle\HotelBundle\Document\RoomType $roomType
      */
     public function getRoomType()
     {

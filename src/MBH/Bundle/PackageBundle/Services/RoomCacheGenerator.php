@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Services;
 
 use MBH\Bundle\PackageBundle\Document\CacheQueue;
+use MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -192,7 +193,8 @@ class RoomCacheGenerator
             $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
                     ->createQueryBuilder('q')
                     ->field('hotel.id')->equals($hotel->getId())
-                    ->sort(['begin' => 'asc', 'isDefault' => 'desc'])
+                    ->sort('isDefault', 'desc')
+                    ->sort('begin', 'asc')
                     ->getQuery()
                     ->execute()
             ;
@@ -242,7 +244,8 @@ class RoomCacheGenerator
         $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
             ->createQueryBuilder('q')
             ->field('hotel.id')->equals($roomType->getHotel()->getId())
-            ->sort(['begin' => 'asc', 'isDefault' => 'desc'])
+            ->sort('isDefault', 'desc')
+            ->sort('begin', 'asc')
             ->getQuery()
             ->execute()
         ;
@@ -285,6 +288,9 @@ class RoomCacheGenerator
         ($end <= $saleDate) ? $end : $end = clone $saleDate;
         ($calcEnd && $end > $calcEnd) ? $end = clone $calcEnd : $end;
 
+        // roomCacheOverwrite
+        $roomCacheOverwrite = $this->dm->getRepository('MBHPackageBundle:RoomCacheOverwrite')->findStructured();
+
         $end->modify('+1 day');
 
         foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $end) as $date) {
@@ -297,6 +303,12 @@ class RoomCacheGenerator
 
             foreach ($tariff->getHotel()->getRoomTypes() as $roomType) {
 
+
+                $overwrite = null;
+                if (isset($roomCacheOverwrite[$tariff->getId()][$roomType->getId()][$date->format('d.m.Y')])) {
+                    $overwrite = $roomCacheOverwrite[$tariff->getId()][$roomType->getId()][$date->format('d.m.Y')];
+                }
+
                 //skip disabled roomTypes
                 if (!$roomType->getIsEnabled()) {
                     continue;
@@ -307,7 +319,7 @@ class RoomCacheGenerator
                 }
 
                 //Create cache
-                $rooms = $this->countRooms($tariff, $roomType);
+                $rooms = $this->countRooms($tariff, $roomType, $overwrite);
                 $cache = new RoomCache();
                 $cache->setTariff($tariff)
                         ->setRoomType($roomType)
@@ -335,16 +347,33 @@ class RoomCacheGenerator
      */
     private function generatePrices(RoomCache $cache)
     {
-        foreach ($cache->getRoomType()->getAdultsChildrenCombinations() as $comb) {
-            foreach ($cache->getRoomType()->getHotel()->getFood() as $food) {
+        $roomType = $cache->getRoomType();
+        $tariff = $cache->getTariff();
+        $date = $cache->getDate();
+        $overwrite = $this->dm->getRepository('MBHPackageBundle:RoomCacheOverwrite')
+             ->findOneBy([
+                 'tariff.id' => $tariff->getId(),
+                 'roomType.id' => $roomType->getId(),
+                 'date' => $date,
+                 'isEnabled' => true
+             ]);
+
+        foreach ($roomType->getAdultsChildrenCombinations() as $comb) {
+            foreach ($roomType->getHotel()->getFood() as $food) {
 
                 $price = new PriceCache();
                 $price->setAdults($comb['adults'])
-                        ->setChildren($comb['children'])
-                        ->setFood($food)
-                        ->setPrice($this->calc->getDayPrice(
-                                        $cache->getTariff()->getId(), $cache->getRoomType()->getId(), $cache->getDate(), $comb['adults'], $comb['children'], $food
-                        ))
+                    ->setChildren($comb['children'])
+                    ->setFood($food)
+                    ->setPrice($this->calc->getDayPrice(
+                        $tariff->getId(),
+                        $roomType->getId(),
+                        $date,
+                        $comb['adults'],
+                        $comb['children'],
+                        $food,
+                        $overwrite
+                    ))
                 ;
                 $cache->addPrice($price);
             }
@@ -356,9 +385,10 @@ class RoomCacheGenerator
      * Count rooms for tariff
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
      * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param \MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite $overwrite
      * @return int
      */
-    private function countRooms(Tariff $tariff, RoomType $roomType)
+    private function countRooms(Tariff $tariff, RoomType $roomType, RoomCacheOverwrite $overwrite = null)
     {
         $rooms = 0;
 
@@ -366,6 +396,10 @@ class RoomCacheGenerator
             if ($room->getIsEnabled()) {
                 $rooms++;
             }
+        }
+
+        if ($overwrite && is_numeric($overwrite->getPlaces()) && $overwrite->getRoomType()->getId() == $roomType->getId() && $rooms > $overwrite->getPlaces()) {
+            return $overwrite->getPlaces();
         }
 
         foreach ($tariff->getRoomQuotas() as $quota) {

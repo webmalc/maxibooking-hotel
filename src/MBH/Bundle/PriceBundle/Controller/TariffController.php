@@ -113,7 +113,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $dm->flush();
 
             $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', 'Тариф успешно создана. Теперь необходимо заполнить цены.')
+                    ->set('success', 'Тариф успешно создан. Теперь необходимо заполнить цены.')
             ;
 
             $this->get('mbh.room.cache.generator')->generateInBackground();
