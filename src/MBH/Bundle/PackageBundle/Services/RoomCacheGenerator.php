@@ -119,12 +119,15 @@ class RoomCacheGenerator
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param array $prices array[date('d.m.Y')][$roomTypeId][$tariffId] = array $prices
+     * @param boolean $tmp use RoomCache collection or RoomCacheTmp
      */
-    public function prices($roomTypeId = null, \DateTime $begin = null, \DateTime $end = null, array $prices = null)
+    public function prices($roomTypeId = null, \DateTime $begin = null, \DateTime $end = null, array $prices = null, $tmp = false)
     {
+        ($tmp) ? $cacheClassName = 'RoomCacheTmp' : $cacheClassName = 'RoomCache';
+
         $this->dm->clear();
 
-        $qb = $this->dm->getRepository('MBHPackageBundle:RoomCache')->createQueryBuilder('q');
+        $qb = $this->dm->getRepository('MBHPackageBundle:' . $cacheClassName)->createQueryBuilder('q');
 
         if ($roomTypeId) {
             $qb->field('roomType.id')->equals($roomTypeId);
@@ -149,7 +152,7 @@ class RoomCacheGenerator
 
         $i = 0;
         foreach ($cacheIds as $id) {
-            $cache = $this->dm->getRepository('MBHPackageBundle:RoomCache')->find($id);
+            $cache = $this->dm->getRepository('MBHPackageBundle:' . $cacheClassName)->find($id);
 
             if (!$cache) {
                 continue;
@@ -172,6 +175,19 @@ class RoomCacheGenerator
         $this->dm->clear();
     }
 
+    public function copyTmpCache()
+    {
+        $this->dm->getDocumentCollection('MBHPackageBundle:RoomCache')->drop();
+
+        $config = $this->container->getParameter('mbh.mongodb');
+        $m = new \MongoClient($config['url']);
+        $db = $m->$config['db'];
+        $caches = $db->RoomCacheTmp->find();
+
+        return $db->RoomCache->batchInsert(iterator_to_array($caches));;
+
+    }
+
     /**
      * Generate RoomCache for all hotels & roomTypes
      * @return int
@@ -183,7 +199,7 @@ class RoomCacheGenerator
         $this->sendMessage();
 
         // Remove all old RoomCache
-        $this->dm->getDocumentCollection('MBHPackageBundle:RoomCache')->drop();
+        $this->dm->getDocumentCollection('MBHPackageBundle:RoomCacheTmp')->drop();
 
         // Iterate hotels & tariffs
         foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
@@ -201,10 +217,12 @@ class RoomCacheGenerator
             ;
 
             foreach ($tariffs as $tariff) {
-                $total += $this->generateForTariff($tariff);
+                $total += $this->generateForTariff($tariff, null, null, null, true);
             }
         }
-        $this->prices();
+        $this->prices(null, null, null, null, true);
+
+        $this->copyTmpCache();
 
         $this->container->get('mbh.channelmanager')->update();
 
@@ -219,16 +237,18 @@ class RoomCacheGenerator
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param array $prices array[date('d.m.Y')][$roomTypeId][$tariffId] = array $prices
+     * @param boolean $tmp use RoomCache collection or RoomCacheTmp
      * @return int
      */
-    public function generateForRoomType(RoomType $roomType, \DateTime $begin = null, \DateTime $end = null, array $prices = null)
+    public function generateForRoomType(RoomType $roomType, \DateTime $begin = null, \DateTime $end = null, array $prices = null, $tmp = true)
     {
         $total = 0;
 
+        ($tmp) ? $cacheClassName = 'RoomCacheTmp' : $cacheClassName = 'RoomCache';
         $this->sendMessage();
 
         //Remove all old RoomCache with same $roomType
-        $qb = $this->dm->getRepository('MBHPackageBundle:RoomCache')
+        $qb = $this->dm->getRepository('MBHPackageBundle:' . $cacheClassName)
                         ->createQueryBuilder('q')
                         ->remove()
                         ->field('roomType.id')->equals($roomType->getId())
@@ -251,10 +271,15 @@ class RoomCacheGenerator
             ->execute()
         ;
         foreach ($tariffs as $tariff) {
-            $total += $this->generateForTariff($tariff, $roomType, $begin, $end);
+            $total += $this->generateForTariff($tariff, $roomType, $begin, $end, $tmp);
         }
 
-        $this->prices($roomType->getId(), $begin, $end, $prices);
+        $this->prices($roomType->getId(), $begin, $end, $prices, $tmp);
+
+        if ($tmp) {
+            $this->copyTmpCache();
+        }
+
         $this->container->get('mbh.channelmanager')->update(null, null, $roomType);
         $this->clearMessages();
         return $total;
@@ -267,9 +292,10 @@ class RoomCacheGenerator
      * @param \MBH\Bundle\HotelBundle\Document\RoomType $calcRoomType
      * @param \DateTime $calcBegin
      * @param \DateTime $calcEnd
+     * @param boolean $tmp use RoomCache collection or RoomCacheTmp
      * @return int
      */
-    public function generateForTariff(Tariff $tariff, RoomType $calcRoomType = null, \DateTime $calcBegin = null, \DateTime $calcEnd = null)
+    public function generateForTariff(Tariff $tariff, RoomType $calcRoomType = null, \DateTime $calcBegin = null, \DateTime $calcEnd = null, $tmp = false)
     {
         (empty($tariff->getWeekDays())) ? $weekDays = [] : $weekDays = $tariff->getWeekDays();
         $total = 0;
@@ -321,7 +347,7 @@ class RoomCacheGenerator
 
                 //Create cache
                 $rooms = $this->countRooms($tariff, $roomType, $overwrite);
-                $cache = new RoomCache();
+                $cache = ($tmp) ? new RoomCacheTmp() : new RoomCache();
                 $cache->setTariff($tariff)
                         ->setRoomType($roomType)
                         ->setDate($date)
@@ -489,7 +515,7 @@ class RoomCacheGenerator
             $prices[$cache->getDate()->format('d.m.Y')][$cache->getRoomType()->getId()][$cache->getTariff()->getId()] = $cache->getPrices();
         }
 
-        $this->generateForRoomType($roomType, $begin, $end, $prices);
+        $this->generateForRoomType($roomType, $begin, $end, $prices, false);
     }
 
     public function updateChannelManagerInBackground(RoomType $roomType = null, \DateTime $begin = null, \DateTime $end = null)

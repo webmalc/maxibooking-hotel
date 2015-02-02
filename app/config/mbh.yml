@@ -1,4 +1,8 @@
 parameters:
+    mbh.mongodb:
+      url: "%mongodb_url%"
+      db : "%mongodb_database%"
+
     mbh.environment: "%mbh_environment%"
 
     #mbh hotel config
