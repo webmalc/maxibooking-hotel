@@ -89,8 +89,12 @@ class Calculation
         return $package;
     }
 
-    public function overwritePrices(array $prices, RoomCacheOverwrite $overwrite = null)
+    public function overwritePrices($prices, RoomCacheOverwrite $overwrite = null)
     {
+        if (!is_array($prices)) {
+            return $prices;
+        }
+
         $map = [
             'main' => 'price',
             'adults' => 'additionalAdultPrice',
@@ -98,7 +102,7 @@ class Calculation
         ];
 
         foreach ($map as $key => $value) {
-            if ($overwrite && $overwrite->getPrice($value) !== null) {
+            if ($overwrite && $overwrite->getPrice($value) !== null && isset($prices[$key])) {
                 $prices[$key] = $overwrite->getPrice($value);
             }
         }

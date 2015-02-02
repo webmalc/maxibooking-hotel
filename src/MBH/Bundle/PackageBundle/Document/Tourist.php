@@ -35,7 +35,12 @@ class Tourist extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
-    
+
+    /**
+     * @ODM\ReferenceMany(targetDocument="Order", nullable="true", mappedBy="mainTourist")
+     */
+    public $orders;
+
     /**
      * @ODM\ReferenceMany(targetDocument="Package", nullable="true", mappedBy="tourists")
      */
@@ -589,5 +594,35 @@ class Tourist extends Base
         }
 
         return $result;
+    }
+
+    /**
+     * Add order
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\Order $order
+     */
+    public function addOrder(\MBH\Bundle\PackageBundle\Document\Order $order)
+    {
+        $this->orders[] = $order;
+    }
+
+    /**
+     * Remove order
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\Order $order
+     */
+    public function removeOrder(\MBH\Bundle\PackageBundle\Document\Order $order)
+    {
+        $this->orders->removeElement($order);
+    }
+
+    /**
+     * Get orders
+     *
+     * @return \Doctrine\Common\Collections\Collection $orders
+     */
+    public function getOrders()
+    {
+        return $this->orders;
     }
 }

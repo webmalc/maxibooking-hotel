@@ -37,6 +37,13 @@ class Package extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="Order", inversedBy="packages")
+     * @Assert\NotNull(message="Не выбран заказ")
+
+    protected $order;*/
     
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="package") */
     protected $cashDocuments;
@@ -1026,5 +1033,27 @@ class Package extends Base
     public function getDebt()
     {
         return $this->getPrice() - $this->getPaid();
+    }
+
+    /**
+     * Set order
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\Order $order
+     * @return self
+     */
+    public function setOrder(\MBH\Bundle\PackageBundle\Document\Order $order)
+    {
+        $this->order = $order;
+        return $this;
+    }
+
+    /**
+     * Get order
+     *
+     * @return \MBH\Bundle\PackageBundle\Document\Order $order
+     */
+    public function getOrder()
+    {
+        return $this->order;
     }
 }

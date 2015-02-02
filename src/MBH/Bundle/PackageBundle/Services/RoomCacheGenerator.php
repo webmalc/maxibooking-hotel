@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\RoomCache;
+use MBH\Bundle\PackageBundle\Document\RoomCacheTmp;
 use MBH\Bundle\PackageBundle\Document\PriceCache;
 use MBH\Bundle\BaseBundle\Document\Message;
 use Symfony\Component\Process\Process;

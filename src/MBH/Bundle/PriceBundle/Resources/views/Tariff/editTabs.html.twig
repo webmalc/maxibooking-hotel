@@ -12,6 +12,14 @@
     %}  
 {% endif %}
 
+    {% if entity.roomPrices|length == 0 and entity.isDefault %}
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> Тариф не используется в поиске, т.к. не добавлено ни одной цены на номера</div>
+    {% endif %}
+    {% if entity.foodPrices|length == 0 and ((entity.type == 'price' and entity.isDefault != true) or entity.isDefault) %}
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> Тариф не используется в поиске, т.к. не добавлено ни одной цены на питание</div>
+    {% endif %}
+
+
 <ul class="nav nav-tabs" role="tablist">
 {% for item in menu %}
     <li {% if loop.index == active %}class="active"{% endif %}>
