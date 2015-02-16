@@ -1,0 +1,18 @@
+{% set confirmed = entity.confirmed ? '' : '(не подтвержден)' %}
+{% set price = entity.isPaid ? '(' ~ entity.price ~')' : '('~ entity.paid ~ '/' ~ entity.price ~')' %}
+
+{% set menu = [
+    {'route': 'package_order_edit', 'title': '<i class="fa fa-info-circle"></i> Информация о заказе <small>' ~ confirmed ~ '</small>'},
+    {'route': 'package_order_packages', 'title': '<i class="fa fa fa-paper-plane-o"></i>  Брони ' ~ '<small>(' ~ entity.packages|length ~ ')</small>' },
+    {'route': 'package_order_tourist_edit', 'title': '<i class="fa fa-user"></i>  Плательщик'},
+    {'route': 'package_order_cash', 'title': '<i class="fa fa-ruble"></i>  Расчеты <small>' ~ price ~ '</small>'}
+]
+%}
+
+<ul class="nav nav-tabs" role="tablist">
+{% for item in menu %}
+    <li {% if loop.index == active %}class="active"{% endif %}>
+        <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route, {'id': entity.id}) }}"{% endif %}>{{item.title|raw}}</a>
+    </li>
+{% endfor %}
+</ul>

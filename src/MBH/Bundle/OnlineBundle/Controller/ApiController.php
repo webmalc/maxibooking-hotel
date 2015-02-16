@@ -4,7 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\OnlineBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
@@ -87,14 +87,14 @@ class ApiController extends Controller
         $order = $dm->getRepository('MBHOnlineBundle:Order')->find($orderId);
         $response = new Response(($paymentSystem == 'payanyway') ? 'SUCCESS' : 'OK' . $order->getId());
 
-        if (!$total || !$orderId || !$sig || !$config || !$order || $order->getTotal() != $total) {
+        if (!$total || !$orderId || !$sig || !$config || !$order) {
             $logger->info('\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Error params not found. total - ' . $total . '; orderId - ' . $orderId . '; sig - ' . $sig);
             throw $this->createNotFoundException();
         }
 
         $calcSig = md5($total . ':' . $orderId . ':' . $config->getRobokassaMerchantPass2());
         if ($paymentSystem == 'payanyway') {
-            $calcSig = md5($config->getPayanywayMntId() . $orderId . $request->get('MNT_OPERATION_ID') . $order->getTotal(true) . 'RUB' . $request->get('MNT_SUBSCRIBER_ID') . $test . $config->getPayanywayKey());
+            $calcSig = md5($config->getPayanywayMntId() . $orderId . $request->get('MNT_OPERATION_ID') . $total . 'RUB' . $request->get('MNT_SUBSCRIBER_ID') . $test . $config->getPayanywayKey());
         }
 
         if ($calcSig != $sig) {
@@ -251,18 +251,21 @@ class ApiController extends Controller
      */
     public function createPackagesAction(Request $request)
     {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
         $request = json_decode($request->getContent());
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
-        //create packages
-        $packages = $this->createPackages($request);
+        //Create packages
+        $order = $this->createPackages($request);
 
-        if (empty($packages)) {
+        if (empty($order)) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
             ]);
         }
+        $packages = iterator_to_array($order->getPackages());
         $this->sendNotifications($packages);
 
         if(count($packages) > 1) {
@@ -273,30 +276,17 @@ class ApiController extends Controller
             $packageStr = 'Номер вашей брони';
         }
         $message = 'Большое спасибо. '. $roomStr .' Мы свяжемся с Вами в ближайшее время.<br>';
+        $message .= 'Номер вашего заказа: ' . $order->getId() . '. ';
         $message .= $packageStr . ': '. implode(', ', $packages) . '.';
 
         if ($request->paymentType == 'in_hotel') {
             $form = false;
         } else {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-
-            $order = new Order();
-            $order->setTotal($request->total);
-
-            $repo = $dm->getRepository('MBHPackageBundle:Package');
-            foreach ($packages as $package) {
-                $orderPackage = $repo->find($package->getId());
-                $order->addPackage($orderPackage);
-            }
-
-            $dm->persist($order);
-            $dm->flush();
-
             $form = $this->container->get('twig')->render(
                 'MBHOnlineBundle:Api:' . $this->container->getParameter('mbh.online.form')['payment_system'] . '.html.twig' , [
-                    'order' => $order,
+                    'total' => $request->total,
                     'request' => $request,
+                    'order' => $order,
                     'config' => $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([])
                 ]
             );
@@ -337,91 +327,53 @@ class ApiController extends Controller
 
     /**
      * @param $request
-     * @return bool|array
+     * @return Order|boolean
      *
      */
     private function createPackages($request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $helper = $this->get('mbh.helper');
-        $packages = [];
-
-
-        // create packages
+        $packageData = $servicesData = [];
         foreach ($request->packages as $info) {
-
-            $tourist = $dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-                $request->user->lastName,
-                $request->user->firstName,
-                null,
-                (empty($request->user->birthday)) ? null : $helper->getDateFromString($request->user->birthday),
-                $request->user->email,
-                $request->user->phone
-            );
-
-            $tariff = $dm->getRepository('MBHPriceBundle:Tariff')->find($info->tariff->id);
-            if (!$tariff) {
-                return false;
-            }
-
-            $roomType = $dm->getRepository('MBHHotelBundle:RoomType')->find($info->roomType->id);
-            if (!$roomType) {
-                return false;
-            }
-
-            $package = new Package() ;
-            $package->setStatus('online')
-                ->setPaid(0)
-                ->setTariff($tariff)
-                ->setPaid(0)
-                ->setPrice($info->price)
-                ->setAdults($info->adults)
-                ->setChildren($info->children)
-                ->setFood($info->food)
-                ->setRoomType($roomType)
-                ->setBegin($helper->getDateFromString($request->begin))
-                ->setEnd($helper->getDateFromString($request->end))
-                ->setArrivalTime($request->arrival)
-                ->setDepartureTime($request->departure)
-                ->setMainTourist($tourist)
-                ->addTourist($tourist)
-            ;
-
-            $dm->persist($package);
-            $dm->flush();
-
-            $packages[] = $package;
+            $packageData[] = [
+                'begin' => $request->begin,
+                'end' => $request->end,
+                'adults' => $info->adults,
+                'children' => $info->children,
+                'food' => $info->food,
+                'arrivalTime' => $request->arrival,
+                'departureTime' => $request->departure,
+                'roomType' => $info->roomType->id,
+                'tariff' => $info->tariff->id,
+                'isOnline' => true
+            ];
+        }
+        foreach ($request->services as $info) {
+            $servicesData[] = [
+                'id' => $info->id,
+                'amount' => $info->amount
+            ];
+        }
+        try {
+            $order = $this->container->get('mbh.order')->createPackages([
+                'packages' => $packageData,
+                'services' => $servicesData,
+                'tourist' => [
+                    'lastName' => $request->user->lastName,
+                    'firstName' => $request->user->firstName,
+                    'birthday' => $request->user->birthday,
+                    'email' => $request->user->email,
+                    'phone' => $request->user->phone
+                ],
+                'status' => 'online',
+                'confirmed' => false
+            ], null, null);
+        } catch (\Exception $e) {
+            if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+                var_dump($e);
+            };
+            return false;
         }
 
-        //create services
-        foreach ($request->services as $serviceInfo) {
-            $service = $dm->getRepository('MBHPriceBundle:Service')->find($serviceInfo->id);
-
-            if (!$service) {
-                continue;
-            }
-            //find package
-            foreach ($packages as $servicePackage) {
-
-                if ($servicePackage->getTariff()->getHotel()->getId() == $service->getCategory()->getHotel()->getId()) {
-
-                    $servicePackage = $dm->getRepository('MBHPackageBundle:Package')->find($servicePackage->getId());
-
-                    $packageService = new PackageService();
-                    $packageService->setPackage($servicePackage)
-                        ->setService($service)
-                        ->setAmount((int) $serviceInfo->amount)
-                        ->setPrice($service->getPrice());
-
-                    $dm->persist($packageService);
-                    $dm->flush();
-
-                    break 1;
-                }
-            }
-        }
-
-        return $packages;
+        return $order;
     }
 }

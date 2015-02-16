@@ -110,12 +110,18 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
      */
     public function salesCashDocumentsAction()
     {
-        $data = [];
+        $data = $ids = [];
 
         foreach ($this->getPackages() as $package) {
             $id  = $package->getRoomType()->getId();
 
-            foreach ($package->getCashDocuments() as $cashDocument) {
+            foreach ($package->getOrder()->getCashDocuments() as $cashDocument) {
+
+                if (in_array($cashDocument->getId(), $ids)) {
+                    continue;
+                }
+                $ids[] = $cashDocument->getId();
+
                 $day = $cashDocument->getCreatedAt()->format('d.m.Y');
                 $month = $cashDocument->getCreatedAt()->format('m.Y');
 

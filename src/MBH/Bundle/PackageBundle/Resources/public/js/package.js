@@ -73,6 +73,7 @@ $(document).ready(function() {
         "aoColumns": [
             { "bSortable": false }, // icon
             null, // prefix
+            null, // order
             null, // created
             null, // room
             null, //dates
@@ -84,6 +85,7 @@ $(document).ready(function() {
             $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
             deleteLink();
             $('.deleted-entry').closest('tr').addClass('danger');
+            $('.not-confirmed-entry').closest('tr').addClass('info');
         }
     });
 

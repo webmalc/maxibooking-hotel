@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -43,6 +44,12 @@ class Order extends Base
     protected $id;
 
     /**
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="PackageSource")
+     */
+    protected $source;
+
+    /**
      * @ODM\ReferenceMany(targetDocument="Package", mappedBy="order")
      */
     protected $packages;
@@ -53,11 +60,13 @@ class Order extends Base
      */
     protected $mainTourist;
 
+    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="order") */
+    protected $cashDocuments;
+
     /**
      * @var int
      * @Gedmo\Versioned
      * @ODM\Int()
-     * @Assert\NotNull(message="Цена не указана")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -76,7 +85,7 @@ class Order extends Base
      *      minMessage="Оплачено не может быть меньше нуля"
      * )
      */
-    protected $paid;
+    protected $paid = 0;
 
     /**
      * @var boolean
@@ -84,7 +93,7 @@ class Order extends Base
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
      */
-    protected $isPaid;
+    protected $isPaid = false;
 
     /**
      * @var boolean
@@ -153,7 +162,7 @@ class Order extends Base
      * @param \MBH\Bundle\PackageBundle\Document\Tourist $mainTourist
      * @return self
      */
-    public function setMainTourist(\MBH\Bundle\PackageBundle\Document\Tourist $mainTourist)
+    public function setMainTourist(\MBH\Bundle\PackageBundle\Document\Tourist $mainTourist = null)
     {
         $this->mainTourist = $mainTourist;
         return $this;
@@ -183,11 +192,14 @@ class Order extends Base
 
     /**
      * Get price
-     *
+     * @param boolean $isFloat
      * @return int $price
      */
-    public function getPrice()
+    public function getPrice($isFloat = false)
     {
+        if ($isFloat) {
+            return number_format((float) $this->price, 2, '.', '');
+        }
         return $this->price;
     }
 
@@ -299,5 +311,94 @@ class Order extends Base
     public function getNote()
     {
         return $this->note;
+    }
+
+    public function calcPrice(Package $excludePackage = null)
+    {
+        $this->price = 0;
+
+        foreach ($this->getPackages() as $package) {
+            if (empty($excludePackage) || $excludePackage->getId() != $package->getId()) {
+                $this->price += $package->getPrice();
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Add cashDocument
+     *
+     * @param \MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
+     */
+    public function addCashDocument(\MBH\Bundle\CashBundle\Document\CashDocument $cashDocument)
+    {
+        $this->cashDocuments[] = $cashDocument;
+    }
+
+    /**
+     * Remove cashDocument
+     *
+     * @param \MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
+     */
+    public function removeCashDocument(\MBH\Bundle\CashBundle\Document\CashDocument $cashDocument)
+    {
+        $this->cashDocuments->removeElement($cashDocument);
+    }
+
+    /**
+     * Get cashDocuments
+     *
+     * @return \Doctrine\Common\Collections\Collection $cashDocuments
+     */
+    public function getCashDocuments()
+    {
+        return $this->cashDocuments;
+    }
+
+    /**
+     * @ODM\PrePersist
+     */
+    public function prePersist()
+    {
+        $this->checkPaid();
+    }
+
+    /**
+     * @ODM\preUpdate
+     */
+    public function preUpdate()
+    {
+        $this->checkPaid();
+    }
+
+    public function checkPaid()
+    {
+        if ($this->getPaid() >= $this->getPrice()) {
+            $this->setIsPaid(true);
+        } else {
+            $this->setIsPaid(false);
+        }
+    }
+
+    /**
+     * Set source
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\PackageSource $source
+     * @return self
+     */
+    public function setSource(\MBH\Bundle\PackageBundle\Document\PackageSource $source = null)
+    {
+        $this->source = $source;
+        return $this;
+    }
+
+    /**
+     * Get source
+     *
+     * @return \MBH\Bundle\PackageBundle\Document\PackageSource $source
+     */
+    public function getSource()
+    {
+        return $this->source;
     }
 }

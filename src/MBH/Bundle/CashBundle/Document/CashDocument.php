@@ -40,12 +40,12 @@ class CashDocument extends Base
     use BlameableDocument;
 
     /**
-     * @var \MBH\Bundle\PackageBundle\Document\Package
+     * @var \MBH\Bundle\PackageBundle\Document\Order
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Package", inversedBy="cashDocuments")
-     * @Assert\NotNull(message="Не выбрана бронь")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Order", inversedBy="cashDocuments")
+     * @Assert\NotNull(message="Не выбран заказ")
      */
-    protected $package;
+    protected $order;
 
     /**
      * @Gedmo\Versioned
@@ -108,28 +108,6 @@ class CashDocument extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isConfirmed = false;
-
-    /**
-     * Set package
-     *
-     * @param \MBH\Bundle\PackageBundle\Document\Package $package
-     * @return self
-     */
-    public function setPackage(\MBH\Bundle\PackageBundle\Document\Package $package)
-    {
-        $this->package = $package;
-        return $this;
-    }
-
-    /**
-     * Get package
-     *
-     * @return \MBH\Bundle\PackageBundle\Document\Package $package
-     */
-    public function getPackage()
-    {
-        return $this->package;
-    }
 
     /**
      * Set method
@@ -246,7 +224,7 @@ class CashDocument extends Base
      */
     public function prePersist()
     {
-        $this->setPrefix($this->getPackage()->getNumberWithPrefix());
+        $this->setPrefix($this->getOrder()->getId());
     }
 
     /**
@@ -276,7 +254,7 @@ class CashDocument extends Base
      */
     public function getHotel()
     {
-        return $this->getPackage()->getRoomType()->getHotel();
+        return $this->getOrder()->getPackages()[0]->getRoomType()->getHotel();
     }
 
     /**
@@ -309,5 +287,27 @@ class CashDocument extends Base
         $this->payer = null;
 
         return $this;
+    }
+
+    /**
+     * Set order
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\Order $order
+     * @return self
+     */
+    public function setOrder(\MBH\Bundle\PackageBundle\Document\Order $order)
+    {
+        $this->order = $order;
+        return $this;
+    }
+
+    /**
+     * Get order
+     *
+     * @return \MBH\Bundle\PackageBundle\Document\Order $order
+     */
+    public function getOrder()
+    {
+        return $this->order;
     }
 }

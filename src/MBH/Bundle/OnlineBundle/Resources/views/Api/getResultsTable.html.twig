@@ -6,8 +6,8 @@
         <div id="mbh-image-show-wrapper"></div>
         <div id="mbh-results-duration">
             <div id="mbh-result-response-info">
-                <span id="mbh-results-duration-days">{{ results|first.nights }}</span>
-                <span id="mbh-results-duration-nights">{{ results|first.days }}</span>
+                <span id="mbh-results-duration-days">{{ results|first.days }}</span>
+                <span id="mbh-results-duration-nights">{{ results|first.nights }}</span>
             </div>
             Номера в отеле на {{ plural( results|first.nights, 'ночь', 'ночи', 'ночей') }} c <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> по <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>
         </div>

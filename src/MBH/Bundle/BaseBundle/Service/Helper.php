@@ -25,13 +25,20 @@ class Helper
     }
 
     /**
-     * @param string = $string
+     * @param mixed $date
      * @param string $format
      * @return \DateTime
      */
-    public function getDateFromString($string, $format = "d.m.Y")
+    public function getDateFromString($date, $format = "d.m.Y")
     {
-        return \DateTime::createFromFormat($format . ' H:i:s', $string . ' 00:00:00');
+        if (empty($date)) {
+            return null;
+        }
+        if ($date instanceof \DateTime) {
+            return $date;
+        }
+
+        return \DateTime::createFromFormat($format . ' H:i:s', $date . ' 00:00:00');
     }
 
     /**

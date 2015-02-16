@@ -1,0 +1,85 @@
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+
+{% set small_title = "редактирование заказа #" ~ entity.id %}
+
+{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">удален</span>' %}{% endif %}
+
+{% block content %}
+
+    {% include 'MBHPackageBundle:Order:tabs.html.twig' with {'active': 3 , 'entity': entity} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+
+            {% if entity.mainTourist is null %}
+                <div class="alert alert-warning alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <i class="fa fa-exclamation-circle"></i>
+                    Плательщик не указан.
+                </div>
+            {% else %}
+                <div class="alert alert-warning package-main-info">
+                    <div class="row">
+                        <div class="col-md-2 text-right"><strong>ФИО</strong></div>
+                        <div class="col-md-10">
+                            {{ entity.mainTourist }}
+                            <a class="external" target="_blank" href="{{ path('tourist_edit', {'id': entity.mainTourist.id }) }}"><i class="fa fa-external-link"></i></a>
+                        </div>
+                    </div>
+                    <div class="row spacer-top">
+                        <div class="col-md-2 text-right"><strong>Дата рождения</strong></div>
+                        <div class="col-md-10">
+                            {{ entity.mainTourist.birthday|date('d.m.Y')|default('-') }}
+                        </div>
+                    </div>
+                    <div class="row spacer-top">
+                        <div class="col-md-2 text-right"><strong>Пол</strong></div>
+                        <div class="col-md-10">
+                            {{ genders[entity.mainTourist.sex]|default('-') }}
+                        </div>
+                    </div>
+                    <div class="row spacer-top">
+                        <div class="col-md-2 text-right"><strong>Телефон</strong></div>
+                        <div class="col-md-10">
+                            {{ entity.mainTourist.phone|default('-') }}
+                        </div>
+                    </div>
+                    <div class="row spacer-top">
+                        <div class="col-md-2 text-right"><strong>E-mail</strong></div>
+                        <div class="col-md-10">
+                            {{ entity.mainTourist.email|default('-') }}
+                        </div>
+                    </div>
+                    <div class="row spacer-top">
+                        <div class="col-md-2 text-right"><strong>Адрес</strong></div>
+                        <div class="col-md-10">
+                            {% autoescape false %}{{ entity.mainTourist.address|nl2br|default('-') }}{% endautoescape %}
+                        </div>
+                    </div>
+                    <div class="row spacer-top">
+                        <div class="col-md-2 text-right"><strong>Документ</strong></div>
+                        <div class="col-md-10">
+                            {% autoescape false %}{{ entity.mainTourist.document|nl2br|default('-') }}{% endautoescape %}
+                        </div>
+                    </div>
+
+                    <div class="row spacer-top">
+                        <div class="col-md-12 text-right">
+                            <a data-toggle="tooltip" title="Удалить плательщика" href="{{ path('package_order_tourist_delete', {'id': entity.id}) }}" class="delete-link btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></a>
+                        </div>
+                    </div>
+
+                </div>
+            {% endif %}
+
+            {{ form_start(form, {'action': path('package_order_tourist_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity} %}
+            {{ form_end(form) }}
+
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
+        </div>
+    </div>
+
+{% endblock %}
+

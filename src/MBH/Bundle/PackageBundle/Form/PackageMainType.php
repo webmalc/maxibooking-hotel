@@ -25,18 +25,6 @@ class PackageMainType extends AbstractType
                         'class' => 'discount-spinner'
                     ],
                 ])
-                ->add('source', 'document', [
-                    'label' => 'Источник',
-                    'required' => false,
-                    'multiple' => false,
-                    'class' => 'MBHPackageBundle:PackageSource',
-                    'query_builder' => function(DocumentRepository $dr) use ($options) {
-                        return $dr->createQueryBuilder('q')
-                            ->field('deletedAt')->equals(null)
-                            ->sort(['fullTitle' => 'asc', 'title' => 'asc'])
-                            ;
-                    },
-                ])
                 ->add('arrivalTime', 'choice', [
                     'label' => 'Время заезда',
                     'required' => false,

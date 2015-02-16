@@ -22,58 +22,10 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
-use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
-use Symfony\Component\Security\Acl\Permission\MaskBuilder;
+use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 
-class PackageController extends Controller implements CheckHotelControllerInterface
+class PackageController extends Controller implements CheckHotelControllerInterface, DeletableControllerInterface
 {
-
-    /**
-     * Package confirmation
-     *
-     * @Route("/{id}/confirmation", name="package_confirmation")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     * @param Package $package
-     * @param Request $request
-     * @return Response
-     */
-    public function confirmationAction(Package $package, Request $request)
-    {
-        $permissions = $this->container->get('mbh.package.permissions');
-        if (!$permissions->check($package) || !$permissions->checkHotel($package)) {
-            throw $this->createNotFoundException();
-        }
-
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $package->setConfirmed(true);
-        $dm->persist($package);
-        $dm->flush();
-
-        //notify main tourist
-        try {
-            $this->container->get('mbh.tourists.messenger')->send(
-                $package->getMainTourist(),
-                'Ваша бронь #' . $package->getNumberWithPrefix() . ' подтверждена'
-            );
-        } catch (\Exception $e) {
-            $request->getSession()
-                ->getFlashBag()
-                ->set('danger', 'Ошибка: ' . $e->getMessage());
-        }
-
-        $request->getSession()->getFlashBag()->set('success', 'Бронь успешно подтверждена.');
-        $route = $request->get('route');
-        if ($route) {
-
-            return $this->redirect($this->generateUrl($route, ['id' => $package->getId()]));
-        }
-
-        return $this->redirect($this->generateUrl('package'));
-    }
-
     /**
      * Copy data from one package to another package
      *
@@ -86,11 +38,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $dm->getFilterCollection()->disable('softdeleteable');
 
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
 
-        $dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity || !$entity->getDeletedAt() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
@@ -128,33 +78,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                         ;
                         $dm->persist($newService);
                     }
-                    $dm->flush();
-                }
-
-                //copy cash
-                if ($data['cash'] && $entity->getPaid()) {
-                    $in = new CashDocument();
-                    $in->setPackage($package)
-                        ->setIsConfirmed(false)
-                        ->setMethod('cash')
-                        ->setOperation('in')
-                        ->setNote('Перенос с брони ' . $entity->getNumberWithPrefix())
-                        ->setPrefix($entity->getNumberWithPrefix())
-                        ->setTotal($entity->getPaid())
-                        ;
-                        $dm->persist($in);
-
-                    $out = new CashDocument();
-                    $out->setPackage($entity)
-                        ->setIsConfirmed(false)
-                        ->setMethod('cash')
-                        ->setOperation('out')
-                        ->setNote('Перенос на бронь ' . $package->getNumberWithPrefix())
-                        ->setPrefix($entity->getNumberWithPrefix())
-                        ->setTotal($entity->getPaid())
-                    ;
-                    $dm->persist($out);
-
                     $dm->flush();
                 }
 
@@ -222,11 +145,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $dm->getFilterCollection()->disable('softdeleteable');
-
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-
-        $dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity || !$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
@@ -326,6 +245,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm->getFilterCollection()->enable('softdeleteable');
 
         $data = [
             'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
@@ -406,7 +326,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $dm->getFilterCollection()->disable('softdeleteable');
 
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
 
@@ -465,8 +384,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $dm->persist($entity);
             $dm->flush();
 
-            $dm->flush();
-
             $this->getRequest()->getSession()->getFlashBag()
                 ->set('success', 'Запись успешно отредактирована.');
 
@@ -491,72 +408,34 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function newAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        if (!$request->get('begin') ||
-            !$request->get('end') ||
-            !$request->get('adults') === null ||
-            !$request->get('children') === null ||
-            !$request->get('roomType') ||
-            !$request->get('food')
-        ) {
+        try {
+            $order = $this->container->get('mbh.order')->createPackages([
+                'packages' => [[
+                    'begin' => $request->get('begin'),
+                    'end' => $request->get('end'),
+                    'adults' => $request->get('adults'),
+                    'children' => $request->get('children'),
+                    'roomType' => $request->get('roomType'),
+                    'food' => $request->get('food'),
+                    'tariff' => $request->get('tariff')
+                ]],
+                'status' => 'offline',
+                'confirmed' => true
+            ], null, $this->getUser());
+        } catch (\Exception $e) {
+            if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+                var_dump($e);
+            };
             return [];
         }
-
-        //Set query
-        $query = new SearchQuery();
-        $begin = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('begin') . ' 00:00:00');
-        //$begin->modify('-1 hour');
-        $end = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('end') . ' 00:00:00');
-        //$end->modify('-1 hour');
-        $query->begin = $begin;
-        $query->end = $end;
-        $query->adults = (int)$request->get('adults');
-        $query->children = (int)$request->get('children');
-        $query->tariff = (!empty($request->get('tariff')))  ? $request->get('tariff') : null;
-        $query->addRoomType($request->get('roomType'));
-
-        $results = $this->get('mbh.package.search')->search($query);
-
-        if (count($results) != 1 || !$this->container->get('mbh.hotel.selector')->checkPermissions($results[0]->getRoomType()->getHotel())) {
-            return [];
-        }
-
-        $package = new Package();
-        $package->setBegin($results[0]->getBegin())
-            ->setEnd($results[0]->getEnd())
-            ->setAdults($results[0]->getAdults())
-            ->setChildren($results[0]->getChildren())
-            ->setTariff($results[0]->getTariff())
-            ->setStatus('offline')
-            ->setRoomType($results[0]->getRoomType())
-            ->setFood($request->get('food'))
-            ->setPaid(0)
-            ->setPrice(
-                $results[0]->getPrice($package->getFood(), $results[0]->getAdults(), $results[0]->getChildren())
-            );
-
-        $errors = $this->get('validator')->validate($package);
-
-        if (count($errors)) {
-            return [];
-        }
-
-        $dm->persist($package);
-        $dm->flush();
-
-        //Acl
-        $aclProvider = $this->get('security.acl.provider');
-        $acl = $aclProvider->createAcl(ObjectIdentity::fromDomainObject($package));
-        $acl->insertObjectAce(UserSecurityIdentity::fromAccount($this->getUser()), MaskBuilder::MASK_MASTER);
-        $aclProvider->updateAcl($acl);
 
         $request->getSession()
             ->getFlashBag()
-            ->set('success', 'Бронь успешно создана.');
+            ->set('success', 'Заказ успешно создан.');
 
-        return $this->redirect($this->generateUrl('package_edit', ['id' => $package->getId()]));
+        return $this->redirect($this->generateUrl('package_edit', [
+            'id' => $order->getPackages()[0]->getId()
+        ]));
     }
 
     /**
@@ -572,9 +451,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $dm->getFilterCollection()->disable('softdeleteable');
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-        $dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
@@ -613,10 +490,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 }
 
                 $entity->addTourist($tourist);
-
-                if ($data['main']) {
-                    $entity->setMainTourist($tourist);
-                }
 
                 $dm->persist($entity);
                 $dm->flush();
@@ -667,80 +540,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     }
 
     /**
-     * Cash documents
-     *
-     * @Route("/{id}/cash", name="package_cash")
-     * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
-     * @Template()
-     */
-    public function cashAction(Request $request, $id)
-    {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $dm->getFilterCollection()->disable('softdeleteable');
-        /* @var $entity  Package */
-        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
-
-        $cashes = $dm->getRepository('MBHCashBundle:CashDocument')->findBy(['package.id' => $entity->getId()]);
-        $dm->getFilterCollection()->enable('softdeleteable');
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        $cash = new CashDocument();
-        $cash->setPackage($entity);
-
-        $form = $this->createForm(
-            new CashDocumentType(),
-            $cash,
-            [
-                'methods' => $this->container->getParameter('mbh.cash.methods'),
-                'operations' => $this->container->getParameter('mbh.cash.operations'),
-                'groupName' => 'Добавить кассовый документ',
-                'payer' => $entity->getMainTourist()
-            ]
-        );
-
-        if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
-            $form->bind($request);
-
-            if ($form->isValid()) {
-
-                $payer = $dm->getRepository('MBHPackageBundle:Tourist')->find($form['payer_select']->getData());
-                if ($payer) {
-                    $cash->setPayer($payer);
-                }
-
-                $dm->persist($cash);
-                $dm->flush();
-
-                $request->getSession()
-                    ->getFlashBag()
-                    ->set('success', 'Кассовый документ успешно добавлен.');
-
-                return $this->afterSaveRedirect('package', $entity->getId(), [], '_cash');
-            }
-        }
-
-        return [
-            'entity' => $entity,
-            'cashes' => $cashes,
-            'methods' => $this->container->getParameter('mbh.cash.methods'),
-            'operations' => $this->container->getParameter('mbh.cash.operations'),
-            'form' => $form->createView(),
-            'logs' => $this->logs($entity)
-        ];
-    }
-
-    /**
-     * Cash documents
+     * Services
      *
      * @Route("/{id}/services", name="package_service")
      * @Method({"GET", "PUT"})
@@ -752,9 +552,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $dm->getFilterCollection()->disable('softdeleteable');
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-        $dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
@@ -843,37 +641,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     }
 
     /**
-     * Cash document delete
-     *
-     * @Route("/{id}/cash/{cashId}/delete", name="package_cash_delete")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     */
-    public function cashDeleteAction(Request $request, $id, $cashId)
-    {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $dm->getFilterCollection()->disable('softdeleteable');
-        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-        $dm->getFilterCollection()->enable('softdeleteable');
-        $cash = $dm->getRepository('MBHCashBundle:CashDocument')->find($cashId);
-
-        if (!$entity || !$cash || !$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
-
-        $dm->remove($cash);
-        $dm->flush();
-
-        $request->getSession()
-            ->getFlashBag()
-            ->set('success', 'Кассовый документ успешно удален.');
-
-        return $this->redirect($this->generateUrl('package_cash', ['id' => $id]));
-    }
-
-    /**
      * Accommodation
      *
      * @Route("/{id}/accommodation", name="package_accommodation")
@@ -886,9 +653,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $dm->getFilterCollection()->disable('softdeleteable');
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-        $dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
@@ -1017,24 +782,27 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
      */
-    public function deleteAction($id)
+    public function deleteAction($id, Request $request)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-
         $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
 
         if (!$entity || !$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
-
+        $orderId = $entity->getOrder()->getId();
         $dm->remove($entity);
         $dm->flush($entity);
 
-        $this->getRequest()
+        $request
             ->getSession()
             ->getFlashBag()
             ->set('success', 'Запись успешно удалена.');
+
+        if (!empty($request->get('order'))) {
+            return $this->redirect($this->generateUrl('package_order_packages', ['id' => $orderId]));
+        }
 
         return $this->redirect($this->generateUrl('package'));
 

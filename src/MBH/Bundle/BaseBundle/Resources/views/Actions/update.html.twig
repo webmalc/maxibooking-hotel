@@ -6,7 +6,7 @@
     <div class="container">
         {% include 'MBHBaseBundle:Actions:saveButtons.html.twig' with {'save_close': save_close, 'save_text': save_text|default('Сохранить')}%}
         <ul class="nav navbar-nav navbar-right">
-            <li><button data-href="{{ path(delete_route, {'id': entity.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i> Удалить</button></li>
+            <li><button data-href="{{ path(delete_route, {'id': entity.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i> {{ delete_title|default('Удалить') }}</button></li>
         </ul>
     </div>
 </div>

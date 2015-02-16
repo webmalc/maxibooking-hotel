@@ -4,8 +4,8 @@ $(document).ready(function() {
 
     //Select row
     $('table.table-striped').on('click', 'tbody tr', function() {
-        $(this).siblings().removeClass('info');
-        $(this).toggleClass('info');
+        $(this).siblings().removeClass('warning');
+        $(this).toggleClass('warning');
     });
 
     //Dblclick href

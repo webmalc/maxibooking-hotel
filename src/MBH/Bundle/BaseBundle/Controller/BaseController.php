@@ -50,7 +50,7 @@ class BaseController extends Controller
     /**
      * Redirect after entity save
      * @param string $route
-     * @param int $id
+     * @param string $id
      * @param [] $params
      * @param string $suffix
      * @return Response

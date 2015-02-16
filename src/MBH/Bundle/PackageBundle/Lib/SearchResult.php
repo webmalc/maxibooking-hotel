@@ -195,9 +195,9 @@ class SearchResult
     public function addFood($food, $price)
     {
         if ($price === null) {
-            if (in_array($food, $this->foods)) {
+            /*if (in_array($food, $this->foods)) {
                 unset($this->foods[array_search($food, $this->foods)]);
-            }
+            }*/
             return $this;
         }
         if (!in_array($food, $this->foods)) {

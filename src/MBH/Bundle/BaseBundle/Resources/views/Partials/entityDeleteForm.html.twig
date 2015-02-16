@@ -10,7 +10,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban"></i> Отмена</button>
-        <button type="button" id="entity-delete-button" data-default="danger" class="btn btn-danger"><i id="entity-delete-button-icon" data-default="fa-trash-o"  class="fa fa-trash-o"></i>&nbsp;<span data-default="Удалить" id="entity-delete-button-text">Удалить</span></button>
+        <button type="button" id="entity-delete-button" data-default="danger" class="btn btn-danger"><i id="entity-delete-button-icon" data-default="fa-trash-o"  class="fa fa-trash-o"></i>&nbsp;<span data-default="{{ delete_title|default('Удалить') }} " id="entity-delete-button-text">{{ delete_title|default('Удалить') }}</span></button>
       </div>
     </div>
   </div>

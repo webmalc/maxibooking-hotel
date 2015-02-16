@@ -70,7 +70,7 @@ class Base
             return $this->getName();
         }
 
-        return $this->getId();
+        return (string) $this->getId();
     }
 
     public function __clone()

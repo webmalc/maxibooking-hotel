@@ -1,0 +1,247 @@
+<?php
+
+namespace MBH\Bundle\PackageBundle\Services;
+
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\PackageBundle\Document\Order as OrderDoc;
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
+use Symfony\Component\Security\Acl\Permission\MaskBuilder;
+
+/**
+ *  Order service
+ */
+class Order
+{
+
+    /**
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     */
+    protected $container;
+
+    /**
+     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry
+     */
+    protected $dm;
+
+    /**
+     * @var \MBH\Bundle\BaseBundle\Service\Helper
+     */
+    protected $helper;
+
+    /**
+     * @var \Symfony\Component\Validator\Validator;
+     */
+    protected $validator;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+        $this->dm = $container->get('doctrine_mongodb')->getManager();
+        $this->helper = $container->get('mbh.helper');
+        $this->validator = $container->get('validator');
+    }
+
+    /**
+     * @param array $data
+     * @param OrderDoc $order
+     * @param bool $user
+     * @return OrderDoc
+     * @throws \Exception
+     * @throws \Symfony\Component\Security\Acl\Exception\InvalidDomainObjectException
+     */
+    public function createPackages(array $data, OrderDoc $order = null, $user = false)
+    {
+        if (empty($data['packages'])) {
+            throw new \Exception('Create packages error: $data["packages"] is empty.');
+        }
+
+        // create tourist
+        if (!empty($data['tourist'])) {
+            $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                $data['tourist']['lastName'],
+                $data['tourist']['firstName'],
+                null,
+                $this->helper->getDateFromString($data['tourist']['birthday']),
+                $data['tourist']['email'],
+                $data['tourist']['phone']
+            );
+
+            if (empty($tourist)) {
+                throw new \Exception('Tourist error: tourist not found.');
+            }
+        }
+
+        // create order
+        if (!$order) {
+            if  (empty($data['status']) || !isset($data['confirmed'])) {
+                throw new \Exception('Create order error: $data["status"] || $data["confirmed"] is empty.');
+            }
+            $order = new OrderDoc();
+            $order->setConfirmed($data['confirmed'])
+                ->setStatus($data['status'])
+            ;
+            if (!empty($tourist)) {
+                $order->setMainTourist($tourist);
+                $tourist->addOrder($order);
+                $this->dm->persist($tourist);
+            }
+
+            if (!$this->validator->validate($order)) {
+                throw new \Exception('Create order error: validation errors.');
+            }
+
+            $this->dm->persist($order);
+            $this->dm->flush();
+
+            //Acl
+            if ($user) {
+                $aclProvider = $this->container->get('security.acl.provider');
+                $acl = $aclProvider->createAcl(ObjectIdentity::fromDomainObject($order));
+                $acl->insertObjectAce(UserSecurityIdentity::fromAccount($user), MaskBuilder::MASK_MASTER);
+                $aclProvider->updateAcl($acl);
+            }
+        }
+
+        // create packages
+        foreach ($data['packages'] as $packagesData) {
+            $this->createPackage($packagesData, $order, $user);
+        }
+
+        //create services
+        if (!empty($data['services'])) {
+            $this->createServices($data['services'], $order);
+        }
+
+        return $order;
+    }
+
+    /**
+     * @param array $data
+     * @param OrderDoc $order
+     * @return OrderDoc
+     * @throws \Exception
+     */
+    public function createServices(array $data, OrderDoc $order)
+    {
+        foreach ($data as $info) {
+            if(empty($info['id']) || empty($info['amount'])) {
+                throw new \Exception('Create services error: $data["id"] || $data["amount"] is empty.');
+            }
+
+            $service = $this->dm->getRepository('MBHPriceBundle:Service')->find($info['id']);
+
+            if (!$service) {
+                throw new \Exception('Create services error: service not found.');
+            }
+
+            //find package
+            foreach ($order->getPackages() as $package) {
+                if ($package->getTariff()->getHotel()->getId() == $service->getCategory()->getHotel()->getId()) {
+
+                    $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($package->getId());
+
+                    $packageService = new PackageService();
+                    $packageService->setPackage($package)
+                        ->setService($service)
+                        ->setAmount((int) $info['amount'])
+                        ->setPrice($service->getPrice());
+
+                    $this->dm->persist($packageService);
+                    $this->dm->flush();
+
+                    break 1;
+                }
+            }
+        }
+
+        return $order;
+    }
+
+    /**
+     * @param array $data
+     * @param OrderDoc $order
+     * @param null $user
+     * @return Package
+     * @throws \Exception
+     * @throws \Symfony\Component\Security\Acl\Exception\InvalidDomainObjectException
+     */
+    public function createPackage(array $data, OrderDoc $order, $user = null)
+    {
+        if (!$data['begin'] ||
+            !$data['end'] ||
+            !$data['adults'] === null ||
+            !$data['children'] === null ||
+            !$data['roomType'] ||
+            !$data['food']
+        ) {
+            throw new \Exception('Create package error: $data["begin"] || $data["end"] || $data["adults"] || $data["children"] || $data["roomType"] || $data["food"] is empty.');
+        }
+
+        //search for packages
+        $query = new SearchQuery();
+        $query->begin = $this->helper->getDateFromString($data['begin']);
+        $query->end = $this->helper->getDateFromString($data['end']);;
+        $query->adults = (int) $data['adults'];
+        $query->children = (int) $data['children'];
+        $query->tariff = !empty($data['tariff'])  ? $data['tariff'] : null;
+        $query->isOnline = !empty($data['isOnline']);
+        $query->addRoomType($data['roomType']);
+
+        $results = $this->container->get('mbh.package.search')->search($query);
+
+        if (count($results) != 1) {
+            throw new \Exception('Create package error: invalid search results: ' . count($results));
+        }
+
+        if ($user && !$this->container->get('mbh.hotel.selector')->checkPermissions($results[0]->getRoomType()->getHotel())) {
+            throw new \Exception('Acl error: permissions denied');
+        }
+
+        //create package
+        $package = new Package();
+        $package->setBegin($results[0]->getBegin())
+            ->setEnd($results[0]->getEnd())
+            ->setAdults($results[0]->getAdults())
+            ->setChildren($results[0]->getChildren())
+            ->setTariff($results[0]->getTariff())
+            ->setRoomType($results[0]->getRoomType())
+            ->setFood($data['food'])
+            ->setNote(!empty($data['note'])  ? $data['note'] : null)
+            ->setArrivalTime(!empty($data['arrivalTime'])  ? $data['arrivalTime'] : null)
+            ->setDepartureTime(!empty($data['departureTime'])  ? $data['departureTime'] : null)
+            ->setOrder($order)
+            ->setPrice(
+                $results[0]->getPrice($package->getFood(), $results[0]->getAdults(), $results[0]->getChildren())
+            )
+        ;
+        $tourist = $order->getMainTourist();
+        if ($tourist) {
+            $package->addTourist($tourist);
+            $tourist->addPackage($package);
+            $this->dm->persist($tourist);
+        }
+
+        if (!$this->validator->validate($package)) {
+            throw new \Exception('Create package error: validation errors.');
+        }
+
+        $order->addPackage($package);
+        $this->dm->persist($order);
+        $this->dm->persist($package);
+        $this->dm->flush();
+
+        //Acl
+        if ($user) {
+            $aclProvider = $this->container->get('security.acl.provider');
+            $acl = $aclProvider->createAcl(ObjectIdentity::fromDomainObject($package));
+            $acl->insertObjectAce(UserSecurityIdentity::fromAccount($user), MaskBuilder::MASK_MASTER);
+            $aclProvider->updateAcl($acl);
+        }
+
+        return $package;
+    }
+}

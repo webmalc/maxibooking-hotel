@@ -175,17 +175,37 @@ class RoomCacheGenerator
         $this->dm->clear();
     }
 
-    public function copyTmpCache()
+    public function copyTmpCache($tmpToCache = true)
     {
-        $this->dm->getDocumentCollection('MBHPackageBundle:RoomCache')->drop();
+        if ($tmpToCache) {
+            $from = 'RoomCacheTmp';
+            $to = 'RoomCache';
+        } else {
+            $from = 'RoomCache';
+            $to = 'RoomCacheTmp';
+        }
+
+        $this->dm->getDocumentCollection('MBHPackageBundle:' . $to)->drop();
+        $this->dm->clear();
 
         $config = $this->container->getParameter('mbh.mongodb');
         $m = new \MongoClient($config['url']);
         $db = $m->$config['db'];
-        $caches = $db->RoomCacheTmp->find();
 
-        return $db->RoomCache->batchInsert(iterator_to_array($caches));;
+        $max = 100;
+        $rounds = ceil($db->$from->count()/$max);
 
+        for ($i = 1; $i <= $rounds; $i++) {
+            $caches = $caches = $db->$from->find()->skip(($i - 1) * $max)->limit($max);
+
+            if ($caches->count()) {
+                $db->$to->batchInsert(iterator_to_array($caches));
+            }
+
+            unset($caches);
+        }
+
+        return true;
     }
 
     /**
@@ -246,6 +266,10 @@ class RoomCacheGenerator
 
         ($tmp) ? $cacheClassName = 'RoomCacheTmp' : $cacheClassName = 'RoomCache';
         $this->sendMessage();
+
+        if ($tmp) {
+            $this->copyTmpCache(false);
+        }
 
         //Remove all old RoomCache with same $roomType
         $qb = $this->dm->getRepository('MBHPackageBundle:' . $cacheClassName)

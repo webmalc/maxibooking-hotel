@@ -1,19 +1,20 @@
 <div id="mbh-results-pay-form-wrapper">
     <form method="post" action="https://moneta.ru/assistant.htm">
         {% set test = 0 %}
+        {% set fTotal = total|number_format(2, '.', '') %}
         <input type="hidden" name="MNT_ID" value="{{ config.payanywayMntId }}">
         <input type="hidden" name="MNT_TRANSACTION_ID" value="{{ order.id }}">
         <input type="hidden" name="MNT_CURRENCY_CODE" value="RUB">
         <input type="hidden" name="MNT_TEST_MODE" value="{{ test }}">
 
-        <input type="hidden" name="MNT_AMOUNT" value="{{ order.total(true)}}">
+        <input type="hidden" name="MNT_AMOUNT" value="{{ fTotal }}">
 
-        {% set sig = config.payanywayMntId ~ order.id ~ order.total(true) ~ 'RUB' ~ test ~ config.payanywayKey %}
+        {% set sig = config.payanywayMntId ~ order.id ~ fTotal ~ 'RUB' ~ test ~ config.payanywayKey %}
 
         <input type="hidden" name="MNT_SIGNATURE" value="{{ sig|mbh_md5 }}">
 
         <button id="mbh-results-pay-form-button" class="button" type="submit">
-            <i class="fa fa-money"></i> Оплатить {{ order.total|number_format }} р. Номера заказа: {{ order.id }}
+            <i class="fa fa-money"></i> Оплатить {{ total|number_format }} р. Номера заказа: {{ order.id }}
         </button>
     </form>
 </div>

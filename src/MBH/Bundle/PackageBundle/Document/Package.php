@@ -42,21 +42,12 @@ class Package extends Base
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Order", inversedBy="packages")
      * @Assert\NotNull(message="Не выбран заказ")
-
-    protected $order;*/
-    
-    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="package") */
-    protected $cashDocuments;
+    **/
+    protected $order;
 
     /** @ODM\ReferenceMany(targetDocument="PackageService", mappedBy="package") */
     protected $services;
 
-    /**
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="PackageSource")
-     */
-    protected $source;
-    
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
@@ -76,12 +67,6 @@ class Package extends Base
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
      */
     protected $accommodation;
-    
-    /** 
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="Tourist", inversedBy="mainPackages")
-     */
-    protected $mainTourist;
     
     /** 
      * @ODM\ReferenceMany(targetDocument="Tourist", inversedBy="packages")
@@ -178,45 +163,6 @@ class Package extends Base
      * )
      */
     protected $servicesPrice;
-    
-    /**
-     * @var int
-     * @Gedmo\Versioned
-     * @ODM\Int(name="paid")
-     * @Assert\Type(type="numeric")
-     * @Assert\Range(
-     *      min=0,
-     *      minMessage="Оплачено не может быть меньше нуля"
-     * )
-     */
-    protected $paid;
-    
-    /**
-     * @var boolean
-     * @Gedmo\Versioned
-     * @ODM\Boolean()
-     * @Assert\Type(type="boolean")
-     */
-    protected $isPaid;
-
-    /**
-     * @var boolean
-     * @Gedmo\Versioned
-     * @ODM\Boolean()
-     * @Assert\Type(type="boolean")
-     */
-    protected $confirmed = false;
-    
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="status")
-     * @Assert\Choice(
-     *      choices = {"offline", "online", "channel_manager"}, 
-     *      message = "Неверный статус."
-     * )
-     */
-    protected $status;
     
     /**
      * @var string
@@ -498,7 +444,7 @@ class Package extends Base
     /**
      * Get end
      *
-     * @return /DateTime $end
+     * @return \DateTime $end
      */
     public function getEnd()
     {
@@ -552,45 +498,16 @@ class Package extends Base
     /**
      * Get price
      *
+     * @param boolean $discount
      * @return int $price
      */
-    public function getPackagePrice()
+    public function getPackagePrice($discount = false)
     {
+        if ($discount) {
+            return $this->price - $this->price * $this->getDiscount(false);
+        }
+
         return $this->price;
-    }
-
-    /**
-     * Set paid
-     *
-     * @param int $paid
-     * @return self
-     */
-    public function setPaid($paid)
-    {
-        $this->paid = $paid;
-        return $this;
-    }
-
-    /**
-     * Get paid
-     *
-     * @return int $paid
-     */
-    public function getPaid()
-    {
-        return $this->paid;
-    }
-
-    /**
-     * Set status
-     *
-     * @param string $status
-     * @return self
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
-        return $this;
     }
 
     /**
@@ -600,7 +517,7 @@ class Package extends Base
      */
     public function getStatus()
     {
-        return $this->status;
+        return $this->getOrder()->getStatus();
     }
 
     /**
@@ -651,38 +568,7 @@ class Package extends Base
     {
         $this->tourists = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
-    /**
-     * Set mainTourist
-     *
-     * @param \MBH\Bundle\PackageBundle\Document\Tourist $mainTourist
-     * @return self
-     */
-    public function setMainTourist(\MBH\Bundle\PackageBundle\Document\Tourist $mainTourist)
-    {
-        $this->mainTourist = $mainTourist;
-        return $this;
-    }
-    
-    /**
-     * @return \MBH\Bundle\PackageBundle\Document\Package
-     */
-    public function removeMainTourist()
-    {
-        $this->mainTourist = null;
-        
-        return $this;
-    }
 
-    /**
-     * Get mainTourist
-     *
-     * @return MBH\Bundle\PackageBundle\Document\Tourist $mainTourist
-     */
-    public function getMainTourist()
-    {
-        return $this->mainTourist;
-    }
 
     /**
      * Add tourist
@@ -713,47 +599,6 @@ class Package extends Base
     {
         return $this->tourists;
     }
-    /**
-     * Add cashDocument
-     *
-     * @param \MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
-     */
-    public function addCashDocument(\MBH\Bundle\CashBundle\Document\CashDocument $cashDocument)
-    {
-        $this->cashDocuments[] = $cashDocument;
-    }
-
-    /**
-     * Remove cashDocument
-     *
-     * @param \MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
-     */
-    public function removeCashDocument(\MBH\Bundle\CashBundle\Document\CashDocument $cashDocument)
-    {
-        $this->cashDocuments->removeElement($cashDocument);
-    }
-
-    /**
-     * Get cashDocuments
-     *
-     * @return Doctrine\Common\Collections\Collection $cashDocuments
-     */
-    public function getCashDocuments()
-    {
-        return $this->cashDocuments;
-    }
-
-    /**
-     * Set isPaid
-     *
-     * @param boolean $isPaid
-     * @return self
-     */
-    public function setIsPaid($isPaid)
-    {
-        $this->isPaid = $isPaid;
-        return $this;
-    }
 
     /**
      * Get isPaid
@@ -762,32 +607,7 @@ class Package extends Base
      */
     public function getIsPaid()
     {
-        return $this->isPaid;
-    }
-    
-    /**
-     * @ODM\PrePersist
-     */
-    public function prePersist()
-    {
-        $this->checkPaid();
-    }
-    
-    /**
-     * @ODM\preUpdate
-     */
-    public function preUpdate()
-    {
-        $this->checkPaid();
-    }
-    
-    public function checkPaid()
-    {
-        if ($this->getPaid() >= $this->getPrice()) {
-            $this->setIsPaid(true);
-        } else {
-            $this->setIsPaid(false);
-        }
+        return $this->getOrder()->getIsPaid();
     }
     
     /**
@@ -984,37 +804,13 @@ class Package extends Base
     }
 
     /**
-     * Set source
-     *
-     * @param \MBH\Bundle\PackageBundle\Document\PackageSource $source
-     * @return self
-     */
-    public function setSource(\MBH\Bundle\PackageBundle\Document\PackageSource $source)
-    {
-        $this->source = $source;
-        return $this;
-    }
-
-    /**
      * Get source
      *
      * @return \MBH\Bundle\PackageBundle\Document\PackageSource $source
      */
     public function getSource()
     {
-        return $this->source;
-    }
-
-    /**
-     * Set confirmed
-     *
-     * @param boolean $confirmed
-     * @return self
-     */
-    public function setConfirmed($confirmed)
-    {
-        $this->confirmed = $confirmed;
-        return $this;
+        return $this->getOrder()->getSource();
     }
 
     /**
@@ -1024,15 +820,7 @@ class Package extends Base
      */
     public function getConfirmed()
     {
-        return $this->confirmed;
-    }
-
-    /**
-     * @return int
-     */
-    public function getDebt()
-    {
-        return $this->getPrice() - $this->getPaid();
+        return $this->getOrder()->getConfirmed();
     }
 
     /**

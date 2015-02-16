@@ -13,12 +13,11 @@
 
             {% set totalGuests = entity.children + entity.adults %}
 
-            {% if entity.tourists|length < totalGuests or entity.mainTourist is null %}
+            {% if entity.tourists|length < totalGuests %}
                 <div class="alert alert-warning alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <i class="fa fa-exclamation-circle"></i>
                     {% if entity.tourists|length < totalGuests %}Не добавлено гостей: {{ totalGuests - entity.tourists|length }}. {% endif %}
-                    {% if entity.mainTourist is null %}Не добавлен основной гость. {% endif %}
                 </div>
             {% endif %}
 
@@ -65,7 +64,7 @@
                                 {% endif %}
                             </td>
                             <td class="text-center">
-                                {% if entity.mainTourist is not null and entity.mainTourist.id == tourist.id %}
+                                {% if entity.order.mainTourist is not null and entity.order.mainTourist.id == tourist.id %}
                                     <span class="text-success"><i class="fa fa-check"></i></span>
                                 {% else %}
                                     <span class="text-muted"><i class="fa fa-times"></i></span>

@@ -37,6 +37,7 @@ class CashController extends Controller
      */
     public function jsonAction(Request $request)
     {
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $repo = $dm->getRepository('MBHCashBundle:CashDocument');
@@ -73,8 +74,8 @@ class CashController extends Controller
             $qb->field('createdAt')->lte($end);
         }
 
-        $packages = $this->container->get('mbh.package.permissions')->getAvailablePackages();
-        $qb->field('package.id')->in($this->container->get('mbh.helper')->toIds($packages));
+        $orders = $this->container->get('mbh.package.permissions')->getAvailableOrders();
+        $qb->field('order.id')->in($this->container->get('mbh.helper')->toIds($orders));
 
         $entities = $qb->getQuery()->execute();
 

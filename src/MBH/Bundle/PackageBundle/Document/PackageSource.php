@@ -39,9 +39,9 @@ class PackageSource extends Base
     use BlameableDocument;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="Package", inversedBy="source")
+     * @ODM\ReferenceMany(targetDocument="Order", inversedBy="source")
      */
-    protected $packages;
+    protected $orders;
 
     /**
      * @var string
@@ -134,32 +134,32 @@ class PackageSource extends Base
     }
 
     /**
-     * Add package
+     * Add order
      *
-     * @param \MBH\Bundle\PackageBundle\Document\Package $package
+     * @param \MBH\Bundle\PackageBundle\Document\Order $order
      */
-    public function addPackage(\MBH\Bundle\PackageBundle\Document\Package $package)
+    public function addOrder(\MBH\Bundle\PackageBundle\Document\Order $order)
     {
-        $this->packages[] = $package;
+        $this->orders[] = $order;
     }
 
     /**
-     * Remove package
+     * Remove order
      *
-     * @param \MBH\Bundle\PackageBundle\Document\Package $package
+     * @param \MBH\Bundle\PackageBundle\Document\Order $order
      */
-    public function removePackage(\MBH\Bundle\PackageBundle\Document\Package $package)
+    public function removeOrder(\MBH\Bundle\PackageBundle\Document\Order $order)
     {
-        $this->packages->removeElement($package);
+        $this->orders->removeElement($order);
     }
 
     /**
-     * Get packages
+     * Get orders
      *
-     * @return Doctrine\Common\Collections\Collection $packages
+     * @return \Doctrine\Common\Collections\Collection $orders
      */
-    public function getPackages()
+    public function getOrders()
     {
-        return $this->packages;
+        return $this->orders;
     }
 }

@@ -34,7 +34,7 @@
         </tr>
         <tr>
             <td>Заказчик:</td>
-            <td><strong>{{ entity.mainTourist.fullName|default('Не указан') }}</strong></td>
+            <td><strong>{{ entity.order.mainTourist.fullName|default('Не указан') }}</strong></td>
         </tr>
     </table>
 
@@ -56,8 +56,8 @@
                 <td>Проживание в отеле.</td>
                 <td align="center">{{ entity.nights }}</td>
                 <td align="center">ночь</td>
-                <td align="right">{{ (entity.packagePrice/entity.nights)|round(1)|number_format }}</td>
-                <td align="right">{{ entity.packagePrice|number_format }}</td>
+                <td align="right">{{ (entity.packagePrice(true)/entity.nights)|round(1)|number_format }}</td>
+                <td align="right">{{ entity.packagePrice(true)|number_format }}</td>
             </tr>
             {% for service in entity.services %}
             <tr>

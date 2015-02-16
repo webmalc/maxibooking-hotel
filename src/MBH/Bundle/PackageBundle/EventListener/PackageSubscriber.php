@@ -5,6 +5,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -18,6 +19,7 @@ class PackageSubscriber implements EventSubscriber
      * @var \Symfony\Component\DependencyInjection\ContainerInterface 
      */
     protected $container;
+    
 
     public function __construct(ContainerInterface $container)
     {
@@ -29,7 +31,6 @@ class PackageSubscriber implements EventSubscriber
         return array(
             'prePersist',
             'preRemove',
-            'onFlush',
             'postPersist',
             'postSoftDelete'
         );
@@ -58,33 +59,6 @@ class PackageSubscriber implements EventSubscriber
         }
     }
 
-    public function onFlush(OnFlushEventArgs $args)
-    {
-        $dm = $args->getDocumentManager();
-        $uow = $dm->getUnitOfWork();
-
-        $entities = array_merge(
-            //$uow->getScheduledDocumentInsertions(),
-            $uow->getScheduledDocumentUpdates()
-        );
-
-        foreach ($entities as $entity) {
-            if (!($entity instanceof CashDocument)) {
-                continue;
-            }
-
-            try {
-                $package = $entity->getPackage();
-                $this->container->get('mbh.calculation')->setPaid($package);
-                $dm->persist($package);
-                $meta = $dm->getClassMetadata(get_class($package));
-                $uow->recomputeSingleDocumentChangeSet($meta, $package);
-            } catch (\Exception $e) {
-
-            }
-        }
-    }
-
     public function preRemove(LifecycleEventArgs $args)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
@@ -110,8 +84,7 @@ class PackageSubscriber implements EventSubscriber
             ['class' => '\MBH\Bundle\HotelBundle\Document\RoomType', 'criteria' => 'roomType.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
             ['class' => '\MBH\Bundle\HotelBundle\Document\Room', 'criteria' => 'accommodation.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
             ['class' => '\MBH\Bundle\PriceBundle\Document\Tariff', 'criteria' => 'tariff.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
-            ['class' => '\MBH\Bundle\PackageBundle\Document\Tourist', 'criteria' => 'mainTourist.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
-            ['class' => '\MBH\Bundle\PackageBundle\Document\Tourist', 'criteria' => 'tourists', 'many' => true, 'repo' => 'MBHPackageBundle:Package'],
+            ['class' => '\MBH\Bundle\PackageBundle\Document\Tourist', 'criteria' => 'mainTourist.id', 'many' => false, 'repo' => 'MBHPackageBundle:Order'],
             ['class' => '\MBH\Bundle\PackageBundle\Document\Tourist', 'criteria' => 'tourists', 'many' => true, 'repo' => 'MBHPackageBundle:Package'],
             ['class' => '\MBH\Bundle\PriceBundle\Document\Service', 'criteria' => 'service.id', 'many' => false, 'repo' => 'MBHPackageBundle:PackageService'],
             ['class' => '\MBH\Bundle\PackageBundle\Document\PackageSource', 'criteria' => 'source.id', 'many' => false, 'repo' => 'MBHPackageBundle:Package'],
@@ -148,32 +121,6 @@ class PackageSubscriber implements EventSubscriber
             }
         }
 
-        //Delete tourist from package
-        if ($entity instanceof Tourist)
-        {
-            foreach($entity->getPackages() as $package) {
-                $package->removeTourist($entity);
-                $dm->persist($package);
-            }
-            foreach($entity->getMainPackages() as $package) {
-                $package->removeMainTourist();
-                $dm->persist($package);
-            }
-            $dm->flush();
-        }
-
-        //Calc paid
-        if($entity instanceof CashDocument) {
-            try {
-                $package = $entity->getPackage();
-                $this->container->get('mbh.calculation')->setPaid($package, null, $entity);
-                $dm->persist($package);
-                $dm->flush();
-            } catch (\Exception $e) {
-
-            }
-        }
-
         //Calc services price
         if($entity instanceof PackageService) {
             try {
@@ -193,18 +140,11 @@ class PackageSubscriber implements EventSubscriber
     {
         $entity = $args->getEntity();
 
-        //Calc paid
-        if($entity instanceof CashDocument) {
-            $package = $entity->getPackage();
-            $this->container->get('mbh.calculation')->setPaid($package, $entity);
-        }
-
         //Calc services price
         if($entity instanceof PackageService) {
             $package = $entity->getPackage();
             $this->container->get('mbh.calculation')->setServicesPrice($package, $entity);
         }
-
 
         if (!$entity instanceof Package) {
             return;

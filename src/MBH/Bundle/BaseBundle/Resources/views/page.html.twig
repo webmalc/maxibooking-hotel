@@ -14,18 +14,17 @@
         {% form_theme form 'MBHBaseBundle:Form:fields.html.twig' %}
     {% endif %}
 
-    <div class="container main-container">
-        
-        <h3 id="main-header">
+    <div class="container-fluid main-container">
+
+        <ul class="breadcrumb" id="main-breadcrumb">
+            <li><a href="{{ path('_welcome') }}"><i class="fa fa-home"></i></a></li>
             {% if title_url is defined and title_url %}
-                <a href="{{title_url}}">{{ title|default(project_title) }}</a>
-            {% else%}
-                {{ title|default(project_title) }}
+                <li><a href="{{title_url}}">{{ title|default(project_title) }}</a></li>
             {% endif %}
             {% if small_title is defined %}
-                <small><i class="fa fa-angle-double-right"></i> {{ small_title|raw }}</small>
+                <li>{{ small_title|raw }}</li>
             {% endif %}
-        </h3>
+        </ul>
 
         {% block messages %}
             <div id="messages">{% include 'MBHBaseBundle::messages.html.twig' %}</div>

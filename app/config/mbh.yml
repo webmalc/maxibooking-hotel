@@ -142,7 +142,7 @@ parameters:
     
     #Цели приезда
     mbh.package.statuses:
-        offline: { title: "Обычная", class: "info"}
+        offline: { title: "Обычный", class: "info"}
         online: { title: "Онлайн", class: "success"}
         channel_manager: { title: "Channel manager", class: "danger"}
 

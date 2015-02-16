@@ -134,7 +134,7 @@ class Search
             foreach ($groupedCache as $cache) {
 
                 foreach ($cache->getPrices() as $price) {
-    $result->addFood($price->getFood(), $price->getPrice())
+                    $result->addFood($price->getFood(), $price->getPrice())
                            ->addPrice($price->getFood(), $price->getPrice(), $price->getAdults(), $price->getChildren());
                 }
             }

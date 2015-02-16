@@ -154,7 +154,7 @@ class PackageRepository extends DocumentRepository
         //order
         $order = 'createdAt';
         $dir = 'desc';
-        $cols = [1 => 'number', 2 => 'begin', 3 => 'roomType', 4 => 'mainTourist', 5 => 'price', 6 => 'createdAt'];
+        $cols = [1 => 'number', 2 => 'order.id', 3 => 'begin', 4 => 'roomType', 5 => 'mainTourist', 6 => 'price', 7 => 'createdAt'];
         if (isset($data['order']) && isset($cols[$data['order']])) {
             $order = $cols[$data['order']];
         }
@@ -173,17 +173,15 @@ class PackageRepository extends DocumentRepository
 
         //deleted
         if (isset($data['deleted']) && $data['deleted']) {
-            $dm->getFilterCollection()->disable('softdeleteable');
+            if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $dm->getFilterCollection()->disable('softdeleteable');
+            }
         }
 
         if (isset($data['count']) && $data['count']) {
             $docs = $qb->getQuery()->count();
         } else {
             $docs = $qb->getQuery()->execute();
-        }
-
-        if (isset($data['deleted']) && $data['deleted']) {
-            $dm->getFilterCollection()->enable('softdeleteable');
         }
 
         return $docs;

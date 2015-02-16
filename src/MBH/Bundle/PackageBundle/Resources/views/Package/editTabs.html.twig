@@ -1,9 +1,10 @@
+{% set accommodation = entity.accommodation ? '' : '(нет)' %}
+
 {% set menu = [
-    {'route': 'package_edit', 'title': '<i class="fa fa-info-circle"></i> Основная информация'},
-    {'route': 'package_guest', 'title': '<i class="fa fa-users"></i>  Гости'},
-    {'route': 'package_service', 'title': '<i class="fa fa-plug"></i>  Услуги'},
-    {'route': 'package_cash', 'title': '<i class="fa fa-ruble"></i>  Расчеты'},
-    {'route': 'package_accommodation', 'title': '<i class="fa fa-home"></i>  Размещение'}
+    {'route': 'package_edit', 'title': '<i class="fa fa-info-circle"></i> Информация о броне'},
+    {'route': 'package_guest', 'title': '<i class="fa fa-users"></i>  Гости <small>(' ~ entity.tourists|length ~ ')</small>'},
+    {'route': 'package_service', 'title': '<i class="fa fa-plug"></i>  Услуги <small>(' ~ entity.servicesPrice|number_format ~ ')</small>'},
+    {'route': 'package_accommodation', 'title': '<i class="fa fa-home"></i>  Размещение <small>' ~ accommodation ~ '</small>'}
 ]
 %}
 {% if entity.isDeleted is not empty %}
@@ -11,6 +12,11 @@
 {% endif %}
 
 <ul class="nav nav-tabs" role="tablist">
+    <li>
+        <a href="{{ path('package_order_edit', { 'id': entity.order.id }) }}">
+            <i class="fa fa-file-text-o"></i> Заказ #{{ entity.order.id }} <small>({{ entity.order.packages|length }})</small>
+        </a>
+    </li>
 {% for item in menu %}
     <li {% if loop.index == active %}class="active"{% endif %}>
         <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route, {'id': entity.id}) }}"{% endif %}>{{item.title|raw}}</a>

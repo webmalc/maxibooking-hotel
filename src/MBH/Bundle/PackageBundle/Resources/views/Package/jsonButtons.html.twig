@@ -2,16 +2,18 @@
     <div class='btn-list text-right'>
         {% if checkPackagePermissions(entity) %}
             {% if not entity.confirmed %}
-                <a href='{{ path('package_confirmation', { 'id': entity.id }) }}' class='btn btn-primary btn-xs' title='Подтверждение брони' data-toggle='tooltip'>
+                <a href='{{ path('package_order_edit', { 'id': entity.order.id }) }}' class='btn btn-primary btn-xs' title='Подтверждение заказа' data-toggle='tooltip'>
                     <i class='fa fa-check'></i>
                 </a>
             {% endif %}
             <a href='{{ path('package_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
                 <i class='fa fa-pencil-square-o'></i>
             </a>
+            {% if not entity.deletedAt %}
             <a href='{{ path('package_delete', { 'id': entity.id}) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
                 <i class='fa fa-trash-o'></i>
             </a>
+            {% endif %}
         {% else %}
             <a href='{{ path('package_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='Просмотр записи' data-toggle='tooltip'>
                 <i class='fa fa-eye'></i>

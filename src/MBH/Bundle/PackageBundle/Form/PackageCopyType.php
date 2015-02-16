@@ -14,8 +14,6 @@ class PackageCopyType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $now = new \DateTime();
-        $now->setTime(0,0,0);
 
         $builder
             ->add('package', 'document', [
@@ -24,9 +22,9 @@ class PackageCopyType extends AbstractType
                     'class' => 'MBHPackageBundle:Package',
                     'required' => true,
                     'property' => 'numberWithPayer',
-                    'query_builder' => function(DocumentRepository $er) use ($now) {
+                    'query_builder' => function(DocumentRepository $er) {
                         return $er->createQueryBuilder('q')
-                            ->field('end')->gte($now)
+                            ->field('end')->gte(new \DateTime('midnight'))
                             ->sort('createdAt', 'desc');
                     },
                     'empty_value' => '',
@@ -34,13 +32,6 @@ class PackageCopyType extends AbstractType
                     'constraints' => [
                         new NotBlank(['message' => 'Не выбрана бронь для переноса'])
                     ]
-                ])
-            ->add('cash', 'checkbox', [
-                    'label' => 'Расчеты',
-                    'group' => 'Параметры переноса',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'Перенести ли все денежные средства в выбранную бронь?'
                 ])
             ->add('tourists', 'checkbox', [
                     'label' => 'Гости',

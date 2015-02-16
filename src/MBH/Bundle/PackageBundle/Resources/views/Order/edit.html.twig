@@ -1,0 +1,63 @@
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+
+{% set small_title = "редактирование заказа #" ~ entity.id %}
+
+{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">удален</span>' %}{% endif %}
+
+{% block content %}
+
+    {% include 'MBHPackageBundle:Order:tabs.html.twig' with {'active': 1 , 'entity': entity} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+
+            <div class="alert alert-warning package-main-info">
+                <div class="row">
+                    <div class="col-md-2 text-right"><strong>Номер</strong></div>
+                    <div class="col-md-10">
+                        {{ entity.id }}
+                    </div>
+                </div>
+                <div class="row spacer-top">
+                    <div class="col-md-2 text-right"><strong>Оплачено/Цена</strong></div>
+                    <div class="col-md-10">
+                        {{ entity.paid|number_format }} / {{ entity.price|number_format }}
+                        &nbsp;
+                        {% if entity.isPaid %}
+                            <small class="text-success"><i class="fa fa-check"></i> оплачен</small>
+                        {% else %}
+                            <small class="text-danger"><i class="fa fa-times"></i> не оплачен</small>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row spacer-top">
+                    <div class="col-md-2 text-right"><strong>Тип заказа</strong></div>
+                    <div class="col-md-10"><span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}</span>{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"></i> удален</small>{% endif %}</div>
+                </div>
+                <div class="row spacer-top">
+                    <div class="col-md-2 text-right"><strong>Плательщик</strong></div>
+                    <div class="col-md-10">{% if entity.mainTourist %}{{ entity.mainTourist }} <a class="external" target="_blank" href="{{ path('tourist_edit', {'id': entity.mainTourist.id }) }}"><i class="fa fa-external-link"></i></a>{% else %}<small class="text-danger">не указан</small>{% endif %}</div>
+                </div>
+                <div class="row spacer-top">
+                    <div class="col-md-2 text-right"><strong>Подтвержден?</strong></div>
+                    <div class="col-md-10">
+                        {% if entity.confirmed %}
+                            <small class="text-success"><i class="fa fa-check"></i> да</small>
+                        {% else %}
+                            <small class="text-danger"><i class="fa fa-times"></i> нет</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {{ form_start(form, {'action': path('package_order_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity} %}
+            {{ form_end(form) }}
+
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
+        </div>
+    </div>
+
+{% endblock %}
+

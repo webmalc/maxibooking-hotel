@@ -53,14 +53,14 @@ class HotelSelectorExtension extends \Twig_Extension
         return $result;
     }
 
-    public function checkPermissions(Hotel $hotel)
+    public function checkPermissions($doc)
     {
-        return $this->container->get('mbh.hotel.selector')->checkPermissions($hotel);
+        return $this->container->get('mbh.hotel.selector')->checkPermissions($doc);
     }
 
-    public function checkPackagePermissions(Package $package)
+    public function checkPackagePermissions($doc)
     {
-        return $this->container->get('mbh.package.permissions')->check($package);
+        return $this->container->get('mbh.package.permissions')->check($doc);
     }
 
     /**

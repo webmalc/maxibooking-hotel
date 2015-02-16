@@ -33,9 +33,9 @@
                     <div class="col-md-10">{{ entity.roomType.hotel.name }} - {{ entity.roomType.name }} - {{ entity.food }}</div>
                 </div>
                 <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>Оплачено/Цена</strong></div>
+                    <div class="col-md-2 text-right"><strong>Цена</strong></div>
                     <div class="col-md-10">
-                        {{ entity.paid|number_format }} / {{ entity.price|number_format }}
+                        {{ entity.price|number_format }}
                         &nbsp; 
                         {% if entity.isPaid %}
                             <small class="text-success"><i class="fa fa-check"></i> оплачена</small>
@@ -52,8 +52,8 @@
                     </div>
                 </div>
                 <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>Тип брони</strong></div>
-                    <div class="col-md-10">{{ statuses[entity.status].title }}{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"></i> удалена</small>{% endif %}</div>
+                    <div class="col-md-2 text-right"><strong>Тип заказа</strong></div>
+                    <div class="col-md-10"><span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}</span>{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"></i> удалена</small>{% endif %}</div>
                 </div>
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>Подтверждена?</strong></div>

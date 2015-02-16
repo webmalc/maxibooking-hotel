@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -38,16 +39,17 @@ class Calculation
     }
 
     /**
-     * @param Package $package
+     * @param Order $order
      * @param CashDocument $newDoc
      * @param CashDocument $removeDoc
-     * @return Package
+     * @return Order
      */
-    public function setPaid(Package $package, CashDocument $newDoc = null, CashDocument $removeDoc = null)
+    public function setPaid(Order $order, CashDocument $newDoc = null, CashDocument $removeDoc = null)
     {
         $total = 0;
 
-        $cashes = $package->getCashDocuments();
+        $this->dm->getFilterCollection()->enable('softdeleteable');
+        $cashes = $order->getCashDocuments();
 
         if ($newDoc) {
             $cashes[] = $newDoc;
@@ -63,9 +65,9 @@ class Calculation
                 $total += $cash->getTotal();
             }
         }
-        $package->setPaid($total);
+        $order->setPaid($total);
 
-        return $package;
+        return $order;
     }
 
     public function setServicesPrice(Package $package, PackageService $newDoc = null, PackageService $removeDoc = null)

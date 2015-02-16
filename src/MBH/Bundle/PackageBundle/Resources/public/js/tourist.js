@@ -12,14 +12,14 @@ $(document).ready(function () {
         });
     });
 
-    $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday').datepicker({
+    $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday, .guestBirthday').datepicker({
         language: "ru",
         autoclose: true,
         startView: 2
     });
 
     //payer select2
-    $('#mbh_bundle_packagebundle_package_guest_type_tourist').on("select2-selecting", function(e) {
+    $('#mbh_bundle_packagebundle_package_guest_type_tourist, .findGuest').on("select2-selecting", function(e) {
         var userInfo = (e.object.text).split(' '),
             lastName = userInfo[0],
             firstName = userInfo[1],
@@ -40,10 +40,10 @@ $(document).ready(function () {
             }
         }
 
-        $('#mbh_bundle_packagebundle_package_guest_type_lastName').val(lastName);
-        $('#mbh_bundle_packagebundle_package_guest_type_firstName').val(firstName);
-        $('#mbh_bundle_packagebundle_package_guest_type_patronymic').val(patronymic);
-        $('#mbh_bundle_packagebundle_package_guest_type_birthday').val(birthday);
+        $('#mbh_bundle_packagebundle_package_guest_type_lastName, .guestLastName').val(lastName);
+        $('#mbh_bundle_packagebundle_package_guest_type_firstName, .guestFirstName').val(firstName);
+        $('#mbh_bundle_packagebundle_package_guest_type_patronymic, .guestPatronymic').val(patronymic);
+        $('#mbh_bundle_packagebundle_package_guest_type_birthday, .guestBirthday').val(birthday);
     });
 });
 

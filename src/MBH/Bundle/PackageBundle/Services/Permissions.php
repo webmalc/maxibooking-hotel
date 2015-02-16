@@ -2,8 +2,10 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\BaseBundle\Document\Base;
 
 
 /**
@@ -22,9 +24,13 @@ class Permissions
         $this->container = $container;
     }
 
-    public function check(Package $package)
+    /**
+     * @param $doc
+     * @return bool
+     */
+    public function check(Base $doc)
     {
-        if (!$package->getCreatedBy()) {
+        if (!$doc->getCreatedBy()) {
             return true;
         }
 
@@ -35,18 +41,34 @@ class Permissions
             return true;
         }
 
-        return $securityContext->isGranted('EDIT', $package);;
+        return $securityContext->isGranted('EDIT', $doc);;
     }
 
     /**
-     * @param Package $package
+     * @param Base $doc
      * @return boolean
      */
-    public function checkHotel(Package $package)
+    public function checkHotel(Base $doc)
     {
-        return $this->container->get('mbh.hotel.selector')->checkPermissions($package->getRoomType()->getHotel());
+        $hotelSelector = $this->container->get('mbh.hotel.selector');
+        if ($doc instanceof Package) {
+            return $hotelSelector->checkPermissions($doc->getRoomType()->getHotel());
+        }
+        if ($doc instanceof Order) {
+            foreach ($doc->getPackages() as $package) {
+                if (!$hotelSelector->checkPermissions($package->getRoomType()->getHotel())) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        return false;
     }
 
+    /**
+     * @return array
+     */
     public function getAvailablePackages()
     {
         $dm = $this->container->get('doctrine_mongodb')->getManager();
@@ -71,6 +93,19 @@ class Permissions
 
         $dm->getFilterCollection()->enable('softdeleteable');
 
+        return $result;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAvailableOrders()
+    {
+        $result = [];
+
+        foreach ($this->getAvailablePackages() as $package) {
+            $result[] = $package->getOrder();
+        }
         return $result;
     }
 

@@ -4,46 +4,54 @@
 
 {% block content %}
 
-    {{ form_start(form, {'action': path('package_search'), 'method': 'GET', 'attr': {'class': 'form-horizontal search-form'}}) }}
+    <div class="well">
 
-    <div class="well row">
+        {{ form_start(form, {'action': path('package_search'), 'method': 'GET', 'attr': {'class': 'form-horizontal search-form'}}) }}
 
         {{ form_errors(form) }}
 
-        <div class="col-md-4">
-            <div class="form-group">
-                <div class="col-md-3">{{ form_label(form.begin) }}</div>
-                <div class="col-md-9">{{ form_widget(form.begin) }}</div>
+        <div class="row">
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <div class="col-md-3">{{ form_label(form.begin) }}</div>
+                    <div class="col-md-9">{{ form_widget(form.begin) }}</div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">{{ form_label(form.end) }}</div>
+                    <div class="col-md-9">{{ form_widget(form.end) }}</div>
+                </div>
             </div>
-            <div class="form-group">
-                <div class="col-md-3">{{ form_label(form.end) }}</div>
-                <div class="col-md-9">{{ form_widget(form.end) }}</div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <div class="col-md-3">{{ form_label(form.adults) }}</div>
+                    <div class="col-md-9">{{ form_widget(form.adults) }}</div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">{{ form_label(form.children) }}</div>
+                    <div class="col-md-9">{{ form_widget(form.children) }}</div>
+                </div>
             </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <div class="col-md-3">{{ form_label(form.roomType) }}</div>
+                    <div class="col-md-9">{{ form_widget(form.roomType) }}</div>
+                </div>
+            </div>
+
+            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': 'Искать'} %}
+
+
+            <div class="hide">{{ form_end(form) }}</div>
+
         </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <div class="col-md-3">{{ form_label(form.adults) }}</div>
-                <div class="col-md-9">{{ form_widget(form.adults) }}</div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-3">{{ form_label(form.children) }}</div>
-                <div class="col-md-9">{{ form_widget(form.children) }}</div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <div class="col-md-3">{{ form_label(form.roomType) }}</div>
-                <div class="col-md-9">{{ form_widget(form.roomType) }}</div>
-            </div>
-        </div>
+
     </div>
 
-    {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': 'Искать'} %}
-
-    <div class="hide">{{ form_end(form) }}</div>
-
-    <div id="package-search-results-wrapper" class="row">
-        <div class="alert alert-info"><i class="fa fa-search"></i> Введите данные для подбора проживания.</div>
+    <div class="row">
+        <div id="package-search-results-wrapper" class="col-md-12">
+            <div class="alert alert-info"><i class="fa fa-search"></i> Введите данные для подбора проживания.</div>
+        </div>
     </div>
 
 {% endblock %} 
@@ -51,7 +59,7 @@
 {% block scripts %}
     {{ parent() }}
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             setSearchDatepickers('{{ beginDate|date('Y-m-d') }}');
         });
     </script>

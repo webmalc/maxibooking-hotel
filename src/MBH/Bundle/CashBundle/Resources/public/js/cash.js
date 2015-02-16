@@ -74,7 +74,7 @@ $(document).ready(function () {
     });
 
     //payer select2
-    $('#mbh_bundle_cashbundle_cashdocumenttype_payer_select, #mbh_bundle_packagebundle_package_guest_type_tourist').select2({
+    $('#mbh_bundle_cashbundle_cashdocumenttype_payer_select, #mbh_bundle_packagebundle_package_guest_type_tourist, .findGuest').select2({
         minimumInputLength: 3,
         allowClear: true,
         ajax: {

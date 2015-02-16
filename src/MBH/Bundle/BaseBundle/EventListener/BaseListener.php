@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 
 class BaseListener
 {
@@ -35,6 +36,15 @@ class BaseListener
         if ($controller[0] instanceof EnvironmentInterface && $this->container->getParameter('mbh.environment') != 'prod') {
 
             throw new NotFoundHttpException('Page not found');
+        }
+
+        if ($controller[0] instanceof DeletableControllerInterface) {
+
+            $collection = $this->container->get('doctrine_mongodb')->getManager()->getFilterCollection();
+
+            if ($collection->isEnabled('softdeleteable')) {
+                $collection->disable('softdeleteable');
+            }
         }
     }
 
