@@ -47,6 +47,7 @@ class Calculation
     public function setPaid(Order $order, CashDocument $newDoc = null, CashDocument $removeDoc = null)
     {
         $total = 0;
+        $ids = [];
 
         $this->dm->getFilterCollection()->enable('softdeleteable');
         $cashes = $order->getCashDocuments();
@@ -55,6 +56,11 @@ class Calculation
             $cashes[] = $newDoc;
         }
         foreach ($cashes as $cash) {
+
+            if (in_array($cash->getId(), $ids)) {
+                continue;
+            }
+            $ids[] = $cash->getId();
 
             if($removeDoc && $removeDoc->getId() == $cash->getId()) {
                 continue;
@@ -66,6 +72,7 @@ class Calculation
             }
         }
         $order->setPaid($total);
+        $order->checkPaid();
 
         return $order;
     }

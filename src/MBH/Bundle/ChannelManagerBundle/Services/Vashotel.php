@@ -261,21 +261,79 @@ class Vashotel extends Base
 
         // create new packages
         $packageRepo = $this->dm->getRepository('MBHPackageBundle:Package');
-        foreach ($packagesData['new'] as $newInfo) {
+        $packageData = [];
+
+        foreach ($packagesData['new'] as $index => $newInfo) {
+
+            $packageData[$index] = [
+                'begin' => $newInfo['begin'],
+                'end' => $newInfo['end'],
+                'adults' => $newInfo['adults'],
+                'children' => 0,
+                'food' => $newInfo['food'],
+                'roomType' => $newInfo['roomType'],
+                'tariff' => $newInfo['tariff'],
+                'price' => $newInfo['price'],
+                'channelManagerId' => $newInfo['channelManagerId'],
+                'channelManagerType' => 'vashotel',
+                'excludeMainTourist' => true,
+            ];
+            // tourists
+            foreach ($newInfo['tourists'] as $tourist) {
+                $package[$index]['tourists'] = [
+                    'lastName' => $tourist->getLastName(),
+                    'firstName' => $tourist->getFirstName(),
+                    'birthday' => $tourist->getBirthday(),
+                    'email' => $tourist->getEmail(),
+                    'phone' => $tourist->getPhone()
+                ];
+            }
+            // cash
+            if ($newInfo['type'] == 'prepayment') {
+                $package[$index]['paid'] = true;
+                $package[$index]['fee'] = $newInfo['fee'];
+            }
+        }
+
+        try {
+            $order = $this->container->get('mbh.order')->createPackages([
+                'packages' => $packageData,
+                'tourist' => [
+                    'lastName' => $newInfo['mainTourist']->getLastName(),
+                    'firstName' => $newInfo['mainTourist']->getFirstName(),
+                    'birthday' => $newInfo['mainTourist']->getBirthday(),
+                    'email' => $newInfo['mainTourist']->getEmail(),
+                    'phone' => $newInfo['mainTourist']->getPhone()
+                ],
+                'channel_manager' => 'online',
+                'confirmed' => true
+            ], null, null);
+        } catch (\Exception $e) {
+            if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+                var_dump($e);
+            };
+            return false;
+        }
+
+        // server
+        $this->container->get('mbh.mbhs')->channelManager($order, 'vashotel');
+
+
+        /*foreach ($packagesData['new'] as $newInfo) {
 
             $package = new Package();
             $package->setBegin($newInfo['begin'])
                     ->setEnd($newInfo['end'])
-                    ->setChannelManagerId($newInfo['channelManagerId'])
-                    ->setChannelManagerType('vashotel')
+                    ->setChannelManagerId($newInfo['channelManagerId']) ***
+                    ->setChannelManagerType('vashotel') ***
                     ->setTariff($newInfo['tariff'])
                     ->setRoomType($newInfo['roomType'])
                     ->setAdults($newInfo['adults'])
                     ->setChildren(0)
                     ->setPrice($newInfo['price'])
-                    ->setMainTourist($newInfo['mainTourist'])
+                    ->setMainTourist($newInfo['mainTourist']) ***
                     ->setFood($newInfo['food'])
-                    ->setStatus('channel_manager')
+                    ->setStatus('channel_manager') ***
             ;
 
             foreach ($newInfo['tourists'] as $tourist) {
@@ -322,7 +380,7 @@ class Vashotel extends Base
             }
 
             $this->container->get('mbh.mbhs')->channelManager($package, 'vashotel');
-        }
+        }*/
 
         // remove canceled packages
         if(!empty($packagesData['deleted'])) {

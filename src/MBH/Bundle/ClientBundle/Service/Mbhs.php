@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ClientBundle\Service;
 
+use MBH\Bundle\OnlineBundle\Document\Order;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\BaseBundle\Document\Message;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -136,32 +137,43 @@ class Mbhs
     }
 
     /**
-     * @param Package $package
+     * @param mixed $doc
+     * @param string $serviceName
      * @return boolean
      */
-    public function channelManager(Package $package, $serviceName)
+    public function channelManager($doc, $serviceName)
     {
         if (!$this->checkIp) {
             return false;
         }
+        $packages = [];
 
-        try {
-            $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/package/channelmanager');
-            $request->getQuery()->set('url', $this->request->getSchemeAndHttpHost());
-            $request->getQuery()->set('key', $this->config['key']);
-            $request->getQuery()->set('number', $package->getNumberWithPrefix());
-            $request->getQuery()->set('tourist', (string) $package->getMainTourist());
-            $request->getQuery()->set('tourist_email', ($package->getMainTourist()) ? $package->getMainTourist()->getEmail() : null);
-            $request->getQuery()->set('tourist_phone', ($package->getMainTourist()) ? $package->getMainTourist()->getPhone() : null);
-            $request->getQuery()->set('begin', $package->getBegin()->format('d.m.Y'));
-            $request->getQuery()->set('end', $package->getEnd()->format('d.m.Y'));
-            $request->getQuery()->set('roomType', (string) $package->getRoomType());
-            $request->getQuery()->set('service', $serviceName);
+        if ($doc instanceof Package) {
+            $packages[] = $doc;
+        }
+        if ($doc instanceof Order) {
+            $packages = $doc->getPackages();
+        }
 
-            $request->send();
+        foreach ($packages as $package) {
+            try {
+                $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/package/channelmanager');
+                $request->getQuery()->set('url', $this->request->getSchemeAndHttpHost());
+                $request->getQuery()->set('key', $this->config['key']);
+                $request->getQuery()->set('number', $package->getNumberWithPrefix());
+                $request->getQuery()->set('tourist', (string) $package->getMainTourist());
+                $request->getQuery()->set('tourist_email', ($package->getMainTourist()) ? $package->getMainTourist()->getEmail() : null);
+                $request->getQuery()->set('tourist_phone', ($package->getMainTourist()) ? $package->getMainTourist()->getPhone() : null);
+                $request->getQuery()->set('begin', $package->getBegin()->format('d.m.Y'));
+                $request->getQuery()->set('end', $package->getEnd()->format('d.m.Y'));
+                $request->getQuery()->set('roomType', (string) $package->getRoomType());
+                $request->getQuery()->set('service', $serviceName);
 
-        } catch (\Exception $e) {
-            return false;
+                $request->send();
+
+            } catch (\Exception $e) {
+                return false;
+            }
         }
 
         return true;

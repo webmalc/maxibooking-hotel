@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
@@ -213,16 +214,37 @@ class Order
             ->setNote(!empty($data['note'])  ? $data['note'] : null)
             ->setArrivalTime(!empty($data['arrivalTime'])  ? $data['arrivalTime'] : null)
             ->setDepartureTime(!empty($data['departureTime'])  ? $data['departureTime'] : null)
+            ->setChannelManagerId(!empty($data['channelManagerId'])  ? $data['channelManagerId'] : null)
+            ->setChannelManagerType(!empty($data['channelManagerType'])  ? $data['channelManagerType'] : null)
             ->setOrder($order)
             ->setPrice(
-                $results[0]->getPrice($package->getFood(), $results[0]->getAdults(), $results[0]->getChildren())
+                (isset($data['price'])) ? (int) $data['price'] : $results[0]->getPrice($package->getFood(), $results[0]->getAdults(), $results[0]->getChildren())
             )
         ;
+
+        // add MainTourist
         $tourist = $order->getMainTourist();
-        if ($tourist) {
+        if ($tourist && empty($data['excludeMainTourist'])) {
             $package->addTourist($tourist);
             $tourist->addPackage($package);
             $this->dm->persist($tourist);
+        }
+
+        // add Tourists
+        if(!empty($data['tourists']) && is_array($data['tourists'])) {
+            foreach ($data['tourists'] as $info) {
+                $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                    $info['lastName'],
+                    $info['firstName'],
+                    null,
+                    $this->helper->getDateFromString($info['birthday']),
+                    $info['email'],
+                    $info['phone']
+                );
+                $package->addTourist($tourist);
+                $tourist->addPackage($package);
+                $this->dm->persist($tourist);
+            }
         }
 
         if (!$this->validator->validate($package)) {
@@ -240,6 +262,36 @@ class Order
             $acl = $aclProvider->createAcl(ObjectIdentity::fromDomainObject($package));
             $acl->insertObjectAce(UserSecurityIdentity::fromAccount($user), MaskBuilder::MASK_MASTER);
             $aclProvider->updateAcl($acl);
+        }
+
+        //Add cash docs
+        if (!empty($data['paid'])) {
+            $cashIn = new CashDocument();
+            $cashIn->setMethod('electronic')
+                ->setOperation('in')
+                ->setOrder($order)
+                ->setTotal($package->getPrice())
+                ->setIsConfirmed(true)
+            ;
+            $order->addCashDocument($cashIn);
+            $this->dm->persist($order);
+            $this->dm->persist($cashIn);
+            $this->dm->flush();
+        }
+
+        if (!empty($data['fee'])) {
+            $cashOut = new CashDocument();
+            $cashOut->setMethod('electronic')
+                ->setOperation('fee')
+                ->setOrder($order)
+                ->setTotal((int) $data['fee'])
+                ->setNote('fee')
+                ->setIsConfirmed(true)
+            ;
+            $order->addCashDocument($cashOut);
+            $this->dm->persist($order);
+            $this->dm->persist($cashOut);
+            $this->dm->flush();
         }
 
         return $package;
