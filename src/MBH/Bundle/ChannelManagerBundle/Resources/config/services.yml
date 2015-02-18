@@ -10,3 +10,7 @@ services:
     mbh.channelmanager.oktogo:
             class: MBH\Bundle\ChannelManagerBundle\Services\Oktogo
             arguments: [@service_container]
+
+    mbh.channelmanager.booking:
+                class: MBH\Bundle\ChannelManagerBundle\Services\Booking
+                arguments: [@service_container]

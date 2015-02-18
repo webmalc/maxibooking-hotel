@@ -318,70 +318,6 @@ class Vashotel extends Base
         // server
         $this->container->get('mbh.mbhs')->channelManager($order, 'vashotel');
 
-
-        /*foreach ($packagesData['new'] as $newInfo) {
-
-            $package = new Package();
-            $package->setBegin($newInfo['begin'])
-                    ->setEnd($newInfo['end'])
-                    ->setChannelManagerId($newInfo['channelManagerId']) ***
-                    ->setChannelManagerType('vashotel') ***
-                    ->setTariff($newInfo['tariff'])
-                    ->setRoomType($newInfo['roomType'])
-                    ->setAdults($newInfo['adults'])
-                    ->setChildren(0)
-                    ->setPrice($newInfo['price'])
-                    ->setMainTourist($newInfo['mainTourist']) ***
-                    ->setFood($newInfo['food'])
-                    ->setStatus('channel_manager') ***
-            ;
-
-            foreach ($newInfo['tourists'] as $tourist) {
-                $package->addTourist($tourist);
-            }
-
-            $errors = $this->container->get('validator')->validate($package);
-
-            if(count($errors)) {
-                throw new \Exception($errors[0]->getMessage());
-            }
-
-            $this->dm->persist($package);
-            $this->dm->flush();
-
-            if ($newInfo['type'] == 'prepayment') {
-                $cashIn = new CashDocument();
-                $cashIn->setMethod('electronic')
-                    ->setOperation('in')
-                    ->setPackage($package)
-                    ->setTotal($package->getPrice())
-                    ->setNote('Vashotel.ru payment' )
-                    ->setIsConfirmed(true)
-                ;
-
-                $this->dm->persist($cashIn);
-                $this->dm->flush();
-
-                $cashOut = new CashDocument();
-                $cashOut->setMethod('electronic')
-                    ->setOperation('fee')
-                    ->setPackage($package)
-                    ->setTotal($newInfo['fee'])
-                    ->setNote('Vashotel.ru fee' )
-                    ->setIsConfirmed(true)
-                ;
-
-                $this->dm->persist($cashOut);
-                $this->dm->flush();
-
-                $package->setPaid($package->getPrice());
-                $this->dm->persist($package);
-                $this->dm->flush();
-            }
-
-            $this->container->get('mbh.mbhs')->channelManager($package, 'vashotel');
-        }*/
-
         // remove canceled packages
         if(!empty($packagesData['deleted'])) {
             $deletedPackages = $packageRepo->createQueryBuilder('d')
@@ -822,5 +758,10 @@ class Vashotel extends Base
         }
 
         return $fields;
+    }
+
+    public function sync()
+    {
+        
     }
 }

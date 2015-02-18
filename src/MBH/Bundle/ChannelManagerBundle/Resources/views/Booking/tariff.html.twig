@@ -1,0 +1,43 @@
+    {% extends 'MBHChannelManagerBundle:Booking:layout.html.twig' %}
+
+{% set small_title = "настройки" %}
+
+{% block content %}
+
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 3, 'entity': doc, 'base': 'booking'} %}
+
+    <div class="tab-content">
+
+        <table class="table table-striped table-hover table-condensed not-auto-datatable">
+            <thead>
+            <tr>
+                <th class="td-lg">Тариф</th>
+                <th>ID</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for tariff in doc.tariffs %}
+                <tr>
+                    <td>{{ tariff.tariff }} <a class="external" target="_blank" href="{{ path('tariff_edit', {'id': tariff.tariff.id}) }}"><i class="fa fa-external-link"></i></a></td>
+                    <td>{{ tariff.tariffId }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="tab-pane active" id="home">
+            <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+                <div class="container">
+                    <ul class="nav navbar-nav">
+                        <li><button type="button" data-toggle="tooltip" title="Синхронизироваться с Booking.com" onclick="location.href = '{{ path('channel_manager_sync', {'name': 'booking'}) }}'" class="btn btn-success navbar-btn"><i class="fa fa-share-square-o"></i> Синхронизировать</button></li>
+                        <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
+                    </ul>
+                </div>
+            </div>
+
+            {%  if doc %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': doc, 'logs': logs} %}
+            {%  endif %}
+        </div>
+    </div>
+{% endblock %}

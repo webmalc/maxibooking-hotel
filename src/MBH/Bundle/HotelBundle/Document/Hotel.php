@@ -212,6 +212,9 @@ class Hotel extends Base
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig", mappedBy="hotel") */
     protected $oktogoConfig;
 
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\BookingConfig", mappedBy="hotel") */
+    protected $bookingConfig;
+
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Country")
@@ -838,5 +841,27 @@ class Hotel extends Base
     public function getRating()
     {
         return $this->rating;
+    }
+
+    /**
+     * Set bookingConfig
+     *
+     * @param \MBH\Bundle\ChannelManagerBundle\Document\BookingConfig $bookingConfig
+     * @return self
+     */
+    public function setBookingConfig(\MBH\Bundle\ChannelManagerBundle\Document\BookingConfig $bookingConfig)
+    {
+        $this->bookingConfig = $bookingConfig;
+        return $this;
+    }
+
+    /**
+     * Get bookingConfig
+     *
+     * @return \MBH\Bundle\ChannelManagerBundle\Document\BookingConfig $bookingConfig
+     */
+    public function getBookingConfig()
+    {
+        return $this->bookingConfig;
     }
 }

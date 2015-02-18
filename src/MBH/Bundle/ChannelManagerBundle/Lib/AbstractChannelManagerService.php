@@ -61,7 +61,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             $method = 'get' . static::CONFIG;
             $config = $hotel->$method();
 
-            if ($config && $config instanceof BaseInterface && $config->getEnabled()) {
+            if ($config && $config instanceof BaseInterface && $config->getIsEnabled()) {
                 $result[] = $config;
             }
         }
@@ -69,6 +69,13 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         return $result;
     }
 
+    /**
+     * @param $url
+     * @param $data
+     * @param null $headers
+     * @param bool $error
+     * @return mixed
+     */
     public function send ($url, $data, $headers = null, $error = false)
     {
         $ch = curl_init($url);
@@ -92,5 +99,25 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         curl_close($ch);
 
         return $output;
+    }
+
+    /**
+     * @param $url
+     * @param $data
+     * @param null $headers
+     * @param bool $error
+     * @return \SimpleXMLElement
+     * @throws \Exception
+     */
+    public function sendXml($url, $data, $headers = null, $error = false)
+    {
+        $result = $this->send($url, $data, $headers, $error);
+        $xml = simplexml_load_string($result);
+
+        if (!$xml instanceof \SimpleXMLElement) {
+            throw new \Exception('Invalid xml response');
+        }
+
+        return $xml;
     }
 }

@@ -17,12 +17,12 @@ use Symfony\Component\HttpFoundation\Response;
 class ChannelManagerController extends Controller implements CheckHotelControllerInterface
 {
     /**
-     * Main configuration page
-     *
      * @Route("/package/notifications/{name}", name="channel_manager_notifications")
      * @Method({"POST"})
+     * @param string $name
+     * @return Response
      */
-    public function packageNotificationsAction(Request $request, $name)
+    public function packageNotificationsAction($name)
     {
         $services = $this->container->getParameter('mbh.channelmanager.services');
 
@@ -36,6 +36,27 @@ class ChannelManagerController extends Controller implements CheckHotelControlle
             return new Response('ERROR');
         }
 
+        return new Response('OK');
+    }
+
+    /**
+     * Sync rooms & tariffs
+     *
+     * @Route("/sync/{name}", name="channel_manager_sync")
+     * @Method({"GET"})
+     * @param string $name
+     * @return Response
+     */
+    public function syncAction(Request $request, $name = null)
+    {
+        $this->get('mbh.channelmanager')->sync($name);
+
+        if ($name) {
+            $request->getSession()->getFlashBag()
+                ->set('success', 'Синхронизация окончена.')
+            ;
+            return $this->redirect($this->generateUrl($name));
+        }
         return new Response('OK');
     }
 }

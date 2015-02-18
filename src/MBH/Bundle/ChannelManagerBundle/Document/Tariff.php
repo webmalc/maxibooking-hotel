@@ -19,7 +19,7 @@ class Tariff
 
     /**
      * @var \MBH\Bundle\PriceBundle\Document\Tariff
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      * @Assert\NotNull()
      */
     protected $tariff;

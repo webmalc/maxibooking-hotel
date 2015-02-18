@@ -43,9 +43,10 @@ class ChannelManager
     }
 
     /**
+     * @param array $filter
      * @return array
      */
-    private function getServices()
+    public function getServices(array $filter = null)
     {
         if (!$this->checkEnvironment()) {
             return [];
@@ -58,6 +59,11 @@ class ChannelManager
                 $service = $this->container->get($info['service']);
 
                 if ($service instanceof ServiceInterface) {
+
+                    if (!empty($filter) && !in_array($key, $filter)) {
+                        continue;
+                    }
+
                     $services[] = [
                         'service' => $service,
                         'title'   => $info['title'],
@@ -69,6 +75,24 @@ class ChannelManager
         }
 
         return $services;
+    }
+
+    /**
+     * @param null $name
+     */
+    public function sync($name = null)
+    {
+        $services = $this->getServices(empty($name) ? null : [$name]);
+
+        foreach ($services as $service) {
+            try {
+                $service['service']->sync();
+            } catch (\Exception $e) {
+                if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+                    var_dump($e);
+                };
+            }
+        }
     }
 
     public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)

@@ -105,6 +105,7 @@ class Builder extends ContainerAware
         if ($this->container->getParameter('mbh.environment') == 'prod') {
             $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель.RU']);
             $menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru']);
+            $menu['services']->addChild('booking', ['route' => 'booking', 'label' => 'Booking.com']);
         }
 
         return $this->filterMenu($menu);

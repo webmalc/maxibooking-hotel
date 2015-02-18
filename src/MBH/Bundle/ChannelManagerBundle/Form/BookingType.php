@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class VashotelType extends AbstractType
+class BookingType extends AbstractType
 {
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -23,13 +23,23 @@ class VashotelType extends AbstractType
                 ]
             )
             ->add(
-                'key',
+                'username',
                 'text',
                 [
-                    'label' => 'Ключ API',
+                    'label' => 'Логин',
                     'required' => true,
-                    'attr' => ['placeholder' => 'MySecretKeyForVashotelAPI'],
-                    'help' => 'Ключ, который задается в настройках гостиницы ВашОтель.RU'
+                    'attr' => ['placeholder' => 'username'],
+                    'help' => 'Логин (username) для доступа к API Booking.com'
+                ]
+            )
+            ->add(
+                'password',
+                'text',
+                [
+                    'label' => 'Пароль',
+                    'required' => true,
+                    'attr' => ['placeholder' => 'password'],
+                    'help' => 'Пароль (password) для доступа к API Booking.com'
                 ]
             )
             ->add(
@@ -38,18 +48,8 @@ class VashotelType extends AbstractType
                 [
                     'label' => 'ID отеля',
                     'required' => true,
-                    'attr' => ['placeholder' => '1567'],
-                    'help' => 'ID отеля в настройках ВашОтель.RU'
-                ]
-            )
-            ->add(
-                'isBreakfast',
-                'checkbox',
-                [
-                    'label' => 'Завтрак?',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'Какой тип питания использовать RO или BB?'
+                    'attr' => ['placeholder' => 'hotel id'],
+                    'help' => 'ID отеля в Booking.com'
                 ]
             )
         ;
@@ -59,14 +59,14 @@ class VashotelType extends AbstractType
     {
         $resolver->setDefaults(
             array(
-                'data_class' => 'MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig',
+                'data_class' => 'MBH\Bundle\ChannelManagerBundle\Document\BookingConfig',
             )
         );
     }
 
     public function getName()
     {
-        return 'mbh_bundle_channelmanagerbundle_vashotel_type';
+        return 'mbh_bundle_channelmanagerbundle_booking_type';
     }
 
 }

@@ -21,4 +21,10 @@ interface ChannelManagerServiceInterface
      * @throw \Exception
      */
     public function createPackages();
+
+    /**
+     * Sync tariffs & rates
+     * @return mixed
+     */
+    public function sync();
 }

@@ -1,0 +1,31 @@
+{% extends 'MBHChannelManagerBundle:Booking:layout.html.twig' %}
+
+{% set small_title = "настройки" %}
+
+{% block content %}
+
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': doc, 'base': 'booking'} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+            {{ form_start(form, {'action': path('booking_save'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+                <div class="container">
+                    <ul class="nav navbar-nav">
+                        <li><button type="submit" name="save" class="btn btn-info navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить</button></li>
+                        {% if doc %}
+                        <li><button type="button" data-toggle="tooltip" title="Синхронизироваться с Booking.com" onclick="location.href = '{{ path('channel_manager_sync', {'name': 'booking'}) }}'" class="btn btn-success navbar-btn"><i class="fa fa-share-square-o"></i> Синхронизировать</button></li>
+                        {% endif %}
+                        <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
+                    </ul>
+                </div>
+            </div>
+            {{ form_end(form) }}
+
+            {%  if doc %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': doc, 'logs': logs} %}
+            {%  endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -110,7 +110,10 @@ parameters:
           title: 'ВашОтель.RU'
           service: 'mbh.channelmanager.vashotel'
           fee: 0.15
-        #booking: {title: 'Booking.com', service: 'mbh.channelmanager.booking'}
+        booking:
+          title: 'Booking.com'
+          service: 'mbh.channelmanager.booking'
+          fee: 0.15
 
     #параметры логов
     mbh.logs.max: 100

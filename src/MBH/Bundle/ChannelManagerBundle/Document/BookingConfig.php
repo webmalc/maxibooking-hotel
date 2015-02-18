@@ -10,13 +10,14 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
- * @ODM\Document(collection="VashotelConfig")
+ * @ODM\Document(collection="BookingConfig")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class VashotelConfig extends Base implements BaseInterface
+class BookingConfig extends Base implements BaseInterface
 {
 
     /**
@@ -37,6 +38,37 @@ class VashotelConfig extends Base implements BaseInterface
      */
     use BlameableDocument;
 
+    /** 
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="bookingConfig")
+     * @Assert\NotNull(message="Не выбран отель")
+     */
+    protected $hotel;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     * @Assert\NotNull(message="Не указан логин (username)")
+     */
+    protected $username;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     * @Assert\NotNull(message="Не указан пароль (password)")
+     */
+    protected $password;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     * @Assert\NotNull(message="Не указан Id отеля")
+     */
+    protected $hotelId;
+
     /**
      * @var array
      * @ODM\EmbedMany(targetDocument="Room")
@@ -49,45 +81,13 @@ class VashotelConfig extends Base implements BaseInterface
      */
     protected $tariffs;
 
-    /** 
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="vashotelConfig")
-     * @Assert\NotNull(message="Не выбран отель")
-     */
-    protected $hotel;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="key")
-     * @Assert\NotNull(message="Не указан ключ API")
-     */
-    protected $key;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="hotelId")
-     * @Assert\NotNull(message="Не указан Id отеля")
-     */
-    protected $hotelId;
-
-    /**
-     * @var boolean
-     * @Gedmo\Versioned
-     * @ODM\Boolean(name="isBreakfast")
-     * @Assert\NotNull()
-     * @Assert\Type(type="boolean")
-     */
-    protected $isBreakfast = false;
-
     /**
      * Set hotel
      *
      * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
      * @return self
      */
-    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
+    public function setHotel(Hotel $hotel)
     {
         $this->hotel = $hotel;
         return $this;
@@ -104,25 +104,47 @@ class VashotelConfig extends Base implements BaseInterface
     }
 
     /**
-     * Set key
+     * Set username
      *
-     * @param string $key
+     * @param string $username
      * @return self
      */
-    public function setKey($key)
+    public function setUsername($username)
     {
-        $this->key = $key;
+        $this->username = $username;
         return $this;
     }
 
     /**
-     * Get key
+     * Get username
      *
-     * @return string $key
+     * @return string $username
      */
-    public function getKey()
+    public function getUsername()
     {
-        return $this->key;
+        return $this->username;
+    }
+
+    /**
+     * Set password
+     *
+     * @param string $password
+     * @return self
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
+     * Get password
+     *
+     * @return string $password
+     */
+    public function getPassword()
+    {
+        return $this->password;
     }
 
     /**
@@ -184,16 +206,6 @@ class VashotelConfig extends Base implements BaseInterface
     }
 
     /**
-     * @return $this
-     */
-    public function removeAllRooms()
-    {
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
-
-        return $this;
-    }
-
-    /**
      * Add tariff
      *
      * @param \MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff
@@ -226,61 +238,20 @@ class VashotelConfig extends Base implements BaseInterface
     /**
      * @return $this
      */
+    public function removeAllRooms()
+    {
+        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
     public function removeAllTariffs()
     {
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getTariffsAsArray()
-    {
-        $result = [];
-
-        foreach($this->getTariffs() as $tariff) {
-            $result[$tariff->getTariffId()] = $tariff->getTariff();
-        }
-
-        return $result;
-    }
-
-    /**
-     * @return array
-     */
-    public function getRoomsAsArray()
-    {
-        $result = [];
-
-        foreach($this->getRooms() as $room) {
-            $result[$room->getRoomId()] = $room->getRoomType();
-        }
-
-        return $result;
-    }
-
-    /**
-     * Set isBreakfast
-     *
-     * @param boolean $isBreakfast
-     * @return self
-     */
-    public function setIsBreakfast($isBreakfast)
-    {
-        $this->isBreakfast = $isBreakfast;
-
-        return $this;
-    }
-
-    /**
-     * Get isBreakfast
-     *
-     * @return boolean $isBreakfast
-     */
-    public function getIsBreakfast()
-    {
-        return $this->isBreakfast;
     }
 }
