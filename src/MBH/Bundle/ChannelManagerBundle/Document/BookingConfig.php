@@ -20,6 +20,11 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 class BookingConfig extends Base implements BaseInterface
 {
 
+    public function getName()
+    {
+        return 'booking';
+    }
+    
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields

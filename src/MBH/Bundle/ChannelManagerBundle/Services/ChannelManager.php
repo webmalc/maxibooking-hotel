@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use Symfony\Component\Process\Process;
 
 /**
  *  ChannelManager service
@@ -26,12 +27,24 @@ class ChannelManager
      * @var array
      */
     protected $services = [];
+    
+    /**
+     * @var string 
+     */
+    protected $console;
+    
+    /**
+     * @var string
+     */
+    protected $env;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->services = $this->getServices();
+        $this->console = $container->get('kernel')->getRootDir() . '/../bin/console ';
+        $this->env = $this->container->get('kernel')->getEnvironment();
     }
 
     /**
@@ -88,13 +101,27 @@ class ChannelManager
             try {
                 $service['service']->sync();
             } catch (\Exception $e) {
-                if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+                if ($this->env == 'dev') {
                     var_dump($e);
                 };
             }
         }
     }
+    
+    public function syncInBackground()
+    {
+        $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
+        
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:sync --no-debug ' . $env . '> /dev/null 2>&1 &');
+        $process->run();
+    }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType $roomType
+     * @throw \Exception
+     */
     public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
         if (!$this->checkEnvironment()) {

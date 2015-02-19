@@ -19,6 +19,11 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInt
 class VashotelConfig extends Base implements BaseInterface
 {
 
+    public function getName()
+    {
+        return 'vashotel';
+    }
+    
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields

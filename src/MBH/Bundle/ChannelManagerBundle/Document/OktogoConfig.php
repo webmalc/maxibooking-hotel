@@ -18,7 +18,11 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInt
  */
 class OktogoConfig extends Base implements BaseInterface
 {
-
+    public function getName()
+    {
+        return 'oktogo';
+    }
+    
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields

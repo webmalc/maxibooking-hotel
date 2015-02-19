@@ -11,4 +11,9 @@ interface ChannelManagerConfigInterface
     public function getHotel();
 
     public function setHotel(Hotel $hotel);
+    
+    /**
+     * @return string
+     */
+    public function getName();
 }
