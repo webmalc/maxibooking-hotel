@@ -22,12 +22,6 @@ class PriceCache
     protected $children;
     
     /**
-     * @var string
-     * @ODM\String()
-     */
-    protected $food;
-    
-    /**
      * @var int
      * @ODM\Int()
      */
@@ -97,27 +91,5 @@ class PriceCache
     public function getPrice()
     {
         return $this->price;
-    }
-
-    /**
-     * Set food
-     *
-     * @param string $food
-     * @return self
-     */
-    public function setFood($food)
-    {
-        $this->food = $food;
-        return $this;
-    }
-
-    /**
-     * Get food
-     *
-     * @return string $food
-     */
-    public function getFood()
-    {
-        return $this->food;
     }
 }

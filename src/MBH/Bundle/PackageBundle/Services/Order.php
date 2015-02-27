@@ -176,10 +176,9 @@ class Order
             !$data['end'] ||
             !$data['adults'] === null ||
             !$data['children'] === null ||
-            !$data['roomType'] ||
-            !$data['food']
+            !$data['roomType']
         ) {
-            throw new \Exception('Create package error: $data["begin"] || $data["end"] || $data["adults"] || $data["children"] || $data["roomType"] || $data["food"] is empty.');
+            throw new \Exception('Create package error: $data["begin"] || $data["end"] || $data["adults"] || $data["children"] || $data["roomType"] is empty.');
         }
 
         //search for packages
@@ -210,7 +209,6 @@ class Order
             ->setChildren($results[0]->getChildren())
             ->setTariff($results[0]->getTariff())
             ->setRoomType($results[0]->getRoomType())
-            ->setFood($data['food'])
             ->setNote(!empty($data['note'])  ? $data['note'] : null)
             ->setArrivalTime(!empty($data['arrivalTime'])  ? $data['arrivalTime'] : null)
             ->setDepartureTime(!empty($data['departureTime'])  ? $data['departureTime'] : null)
@@ -218,7 +216,7 @@ class Order
             ->setChannelManagerType(!empty($data['channelManagerType'])  ? $data['channelManagerType'] : null)
             ->setOrder($order)
             ->setPrice(
-                (isset($data['price'])) ? (int) $data['price'] : $results[0]->getPrice($package->getFood(), $results[0]->getAdults(), $results[0]->getChildren())
+                (isset($data['price'])) ? (int) $data['price'] : $results[0]->getPrice($results[0]->getAdults(), $results[0]->getChildren())
             )
         ;
 

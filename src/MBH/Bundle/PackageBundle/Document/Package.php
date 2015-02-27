@@ -133,13 +133,6 @@ class Package extends Base
     protected $end;
     
     /**
-     * @var string
-     * @ODM\String(name="food")
-     * @Assert\NotNull(message="Не выбран тип питания")
-     */
-    protected $food;
-    
-    /**
      * @var int
      * @Gedmo\Versioned
      * @ODM\Int(name="price")
@@ -449,28 +442,6 @@ class Package extends Base
     public function getEnd()
     {
         return $this->end;
-    }
-
-    /**
-     * Set food
-     *
-     * @param string $food
-     * @return self
-     */
-    public function setFood($food)
-    {
-        $this->food = $food;
-        return $this;
-    }
-
-    /**
-     * Get food
-     *
-     * @return string $food
-     */
-    public function getFood()
-    {
-        return $this->food;
     }
 
     /**

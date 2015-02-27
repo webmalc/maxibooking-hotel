@@ -125,11 +125,10 @@ class Calculation
      * @param \DateTime $date
      * @param int $adults
      * @param int $children
-     * @param string $food
      * @param \MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite $overwrite
      * @return int|null
      */
-    public function getDayPrice($tariff, $roomType, \DateTime $date, $adults, $children, $food, RoomCacheOverwrite $overwrite = null)
+    public function getDayPrice($tariff, $roomType, \DateTime $date, $adults, $children, RoomCacheOverwrite $overwrite = null)
     {
         if (!$tariff instanceof Tariff) {
             $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($tariff);
@@ -144,16 +143,13 @@ class Calculation
             }
         }
         
-        $prices = $this->getRoomPrices($tariff, $roomType, $date);
-        $foodPrice = $this->getFoodPrice($tariff, $food, $date, $roomType->getHotel()->getId(), $overwrite);
-
-        $prices = $this->overwritePrices($prices, $overwrite);
+        $prices = $this->overwritePrices($this->getRoomPrices($tariff, $roomType, $date), $overwrite);
 
         $all = $adults + $children;
         $places = $roomType->getPlaces();
         $price = null;
         
-        if($prices['main'] === null || $foodPrice === null) {
+        if($prices['main'] === null) {
             return null;
         }
         
@@ -188,53 +184,7 @@ class Calculation
             $price += $addsAdults * $prices['adults'] + $addsChildren * $prices['children'];
         }
         
-        if ($price !== null) {
-            $price += round($foodPrice * $all);
-        }
-
         return $price;
-    }
-
-    /**
-     * Get FoodPrice from tariff
-     * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
-     * @param string $food
-     * @param string $hotelId
-     * @return int
-     */
-    public function getFoodPrice(Tariff $tariff, $food, \DateTime $date, $hotelId, RoomCacheOverwrite $overwrite = null)
-    {
-        if ($overwrite && $overwrite->getFoodPrice($food)) {
-            return $overwrite->getFoodPrice($food);
-        }
-
-        if (!$tariff->getIsDefault() && $tariff->getType() == 'rate') {
-
-            $date->setTime(0, 0, 0);
-
-            $defaultTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('s')
-                    ->field('isDefault')->equals(true)
-                    ->field('begin')->lte($date)
-                    ->field('end')->gte($date)
-                    ->field('hotel.id')->equals($hotelId)
-                    ->limit(1)
-                    ->getQuery()
-                    ->getSingleResult()
-            ;
-            
-            if (!$defaultTariff) {
-                return null;
-            }
-            $tariff = $defaultTariff;
-        }
-        foreach ($tariff->getFoodPrices() as $foodPrice) {
-            if ($foodPrice->getType() != $food) {
-                continue;
-            }   
-            return $foodPrice->getPrice();
-        }
-        
-        return null;
     }
 
     /**

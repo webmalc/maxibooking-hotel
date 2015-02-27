@@ -81,14 +81,6 @@ class Hotel extends Base
     protected $prefix;
 
     /**
-     * @var array
-     * @Gedmo\Versioned
-     * @ODM\Collection(name="food")
-     * @Assert\Type(type="array")
-     */
-    protected $food = array();
-
-    /**
      * @var int
      * @Gedmo\Versioned
      * @ODM\Int(name="saleDays")
@@ -297,28 +289,6 @@ class Hotel extends Base
     public function getPrefix()
     {
         return $this->prefix;
-    }
-
-    /**
-     * Set food
-     *
-     * @param array $food
-     * @return self
-     */
-    public function setFood(array $food)
-    {
-        $this->food = $food;
-        return $this;
-    }
-
-    /**
-     * Get food
-     *
-     * @return collection $food
-     */
-    public function getFood()
-    {
-        return $this->food;
     }
 
     /**

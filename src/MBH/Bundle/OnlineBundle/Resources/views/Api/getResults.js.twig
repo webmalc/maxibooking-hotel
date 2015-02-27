@@ -86,14 +86,12 @@ jQuery(document).ready(function () {
             (function() {
                 var show = function(tr) {
                         var tourist = tr.find('.mbh-results-tourists-select'),
-                            select  = tr.find('.mbh-results-food-select'),
-                            selectVal = select.select2('data').id,
                             touristVal = tourist.select2('data').id,
                             per_person = tr.find('.mbh-results-per-person')
                             ;
                         tr.find('ul.mbh-results-prices').hide();
                         tr.find('ul.mbh-results-prices li').hide();
-                        tr.find('ul.mbh-results-prices li.' + touristVal + '_' + selectVal + '_food').show();
+                        tr.find('ul.mbh-results-prices li.' + touristVal).show();
                         tr.find('ul.mbh-results-prices').show();
 
                         if (parseInt(per_person.attr('data-change'), 10)) {
@@ -106,10 +104,10 @@ jQuery(document).ready(function () {
                         }
                     }
                     ;
-                jQuery('.mbh-results-tourists-select, .mbh-results-food-select').click(function() {
+                jQuery('.mbh-results-tourists-select').click(function() {
                     show(jQuery(this).closest('tr'));
                 });
-                jQuery('.mbh-results-tourists-select, .mbh-results-food-select').each(function() {
+                jQuery('.mbh-results-tourists-select').each(function() {
                     show(jQuery(this).closest('tr'));
                 });
             }());
@@ -221,7 +219,7 @@ jQuery(document).ready(function () {
                     }
                     ;
                 calc();
-                jQuery('.mbh-results-tourists-select, .mbh-results-food-select, .mbh-results-packages-count, .mbh-results-services-count').click(function() {
+                jQuery('.mbh-results-tourists-select, .mbh-results-packages-count, .mbh-results-services-count').click(function() {
                     calc();
                 });
             }());
@@ -246,7 +244,6 @@ jQuery(document).ready(function () {
                         if(jQuery(this).val() > 0) {
                             var tr = jQuery(this).closest('tr'),
                                 pricesLi = tr.find('ul.mbh-results-prices li:visible'),
-                                foodSelect = tr.find('select.mbh-results-food-select'),
                                 roomType = tr.find('span.mbh-results-roomType'),
                                 tariff = tr.find('span.mbh-results-tariff')
                             ;
@@ -257,7 +254,6 @@ jQuery(document).ready(function () {
 
                                     requestParams.packages.push({
                                         'price': parseInt(pricesLi.attr('data-value')),
-                                        'food': foodSelect.val(),
                                         'roomType': {id : roomType.attr('data-id'), 'title': roomType.text()},
                                         'tariff': {id: tariff.attr('data-id'), 'title': tariff.text()},
                                         'adults': tourists[0],

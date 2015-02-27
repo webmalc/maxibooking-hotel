@@ -6,13 +6,8 @@
     <table id="prices-overview-table" class="table table-bordered not-auto-datatable table-striped table-hover table-condensed">
         <tbody>
 
-        {% set prices = {'places': {'places': 'Количество номеров'}, 'roomPrices': {}, 'foodPrices': {}} %}
+        {% set prices = {'places': {'places': 'Количество номеров'}, 'roomPrices': {}} %}
         {% set prices = prices|merge({'roomPrices': {'price': 'Основная цена', 'additionalAdultPrice': 'Доп. место взрослый', 'additionalChildPrice': 'Доп. место ребенок'}}) %}
-        {% set foodPrices = {} %}
-        {% for food in hotel.food %}
-            {% set foodPrices = foodPrices|merge({(food): foodTypes[food]}) %}
-        {% endfor %}
-        {% set prices = prices|merge({'foodPrices': (foodPrices)}) %}
 
         {% for tariff in  tariffs %}
 
@@ -59,8 +54,6 @@
                                 </small>
                             </td>
 
-                            {% if priceCategory == 'foodPrices' %}{% set foodPrice = tariff.foodPrice(priceKey) %}{% else %}{% set foodPrice = null %}{% endif %}
-
                             {% for date in period %}
                                 <td class="prices-overview-table-td-price{% if date|date('N') >= 6 %} weekend{% endif %}">
 
@@ -97,25 +90,6 @@
                                                 {% if overwrite and overwrite.prices is not empty and overwrite.prices[(priceKey)] is defined %}
                                                     {% set input = overwrite.prices[(priceKey)] %}
                                                 {% endif %}
-                                            {% endif %}
-                                        {% endif %}
-
-                                        <!-- foodPrices -->
-
-                                        {% if priceCategory == 'foodPrices' %}
-                                            {% if rateTariff %}
-                                                {% set price = {'link': false, 'value': 'нет'} %}
-                                            {% else %}
-                                                {% if foodPrice is not empty %}
-                                                    {% set price = {'link': true, 'value': foodPrice.price } %}
-                                                {% else %}
-                                                    {% set price = {'link': true, 'value': 'нет'} %}
-                                                {% endif %}
-
-                                                {% if overwrite and overwrite.foodPrices is not empty and overwrite.foodPrices[(priceKey)] is defined %}
-                                                    {% set input = overwrite.foodPrices[(priceKey)] %}
-                                                {% endif %}
-
                                             {% endif %}
                                         {% endif %}
 

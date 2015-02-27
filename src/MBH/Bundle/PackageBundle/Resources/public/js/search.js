@@ -56,43 +56,32 @@ $(document).ready(function() {
                                 formatSelection: format
                             });
                         });
-                        $('.search-food-select').each(function () {
-                            $(this).select2({
-                                placeholder: '',
-                                allowClear: false,
-                                minimumResultsForSearch: -1,
-                                width: 'element'
-                            });
-                        });
                     }());
 
                     //search result prices
                     (function() {
                         var show = function(tr) {
                                 var tourist = tr.find('.search-tourists-select'),
-                                    select  = tr.find('.search-food-select'),
-                                    selectVal = select.select2('data').id,
                                     touristVal = tourist.select2('data').id,
                                     touristArr = touristVal.split('_')
                                     ;
                                 tr.find('ul.package-search-prices').hide();
                                 tr.find('ul.package-search-prices li').hide();
-                                tr.find('ul.package-search-prices li.' + touristVal + '_' + selectVal + '_food').show();
+                                tr.find('ul.package-search-prices li.' + touristVal + '_price').show();
                                 tr.find('ul.package-search-prices').show();
                                 var bookLink = tr.find('a.package-search-book'),
                                     oldHref = bookLink.prop('href')
-                                        .replace(/&food=.*?(?=(&|$))/, '')
                                         .replace(/&adults=.*?(?=(&|$))/, '')
                                         .replace(/&children=.*?(?=(&|$))/, '')
                                     ;
 
-                                bookLink.prop('href', oldHref + '&food=' + selectVal + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
+                                bookLink.prop('href', oldHref + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
                             }
                             ;
-                        $('.search-food-select, .search-tourists-select').click(function() {
+                        $('.search-tourists-select').click(function() {
                             show($(this).closest('tr'));
                         });
-                        $('.search-food-select, .search-tourists-select').each(function() {
+                        $('.search-tourists-select').each(function() {
                             show($(this).closest('tr'));
                         });
                     }());

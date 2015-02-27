@@ -130,22 +130,21 @@ class Search
                 continue;
             }
 
-            //Set foods & prices
+            //Set prices
             foreach ($groupedCache as $cache) {
-
                 foreach ($cache->getPrices() as $price) {
-                    $result->addFood($price->getFood(), $price->getPrice())
-                           ->addPrice($price->getFood(), $price->getPrice(), $price->getAdults(), $price->getChildren());
+                    $result->addPrice($price->getPrice(), $price->getAdults(), $price->getChildren());
                 }
             }
 
             if(empty($result->getPrices())) {
                 continue;
             }
-
             $results[] = $result;
         }
 
+        
+        
         return $results;
     }
 

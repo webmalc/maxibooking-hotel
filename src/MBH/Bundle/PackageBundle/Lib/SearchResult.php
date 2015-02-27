@@ -37,11 +37,6 @@ class SearchResult
      * @var Tariff 
      */
     protected $tariff;
-    
-    /**
-     * @var $foods
-     */
-    protected $foods = [];
 
     /**
      * mixed array of prices
@@ -86,14 +81,6 @@ class SearchResult
     public function getTariff()
     {
         return $this->tariff;
-    }
-
-    /**
-     * @return []
-     */
-    public function getFoods()
-    {
-        return $this->foods;
     }
 
     /**
@@ -149,17 +136,6 @@ class SearchResult
     }
 
     /**
-     * @param array $foods
-     * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
-     */
-    public function setFoods(array $foods)
-    {
-        $this->foods = $foods;
-
-        return $this;
-    }
-
-    /**
      * @param array $prices
      * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
      */
@@ -186,27 +162,6 @@ class SearchResult
         return $this->end->diff($this->begin)->format("%a");
     }
 
-    
-    /**
-     * @param string $food
-     * @param mixed $price
-     * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
-     */
-    public function addFood($food, $price)
-    {
-        if ($price === null) {
-            /*if (in_array($food, $this->foods)) {
-                unset($this->foods[array_search($food, $this->foods)]);
-            }*/
-            return $this;
-        }
-        if (!in_array($food, $this->foods)) {
-            $this->foods[] = $food;
-        }
-
-        return $this;
-    }
-
     /**
      * @return int
      */
@@ -227,13 +182,12 @@ class SearchResult
     }
 
     /**
-     * @param string $food
      * @param mixed $price
      * @param mixed $adults
      * @param mixed $children
      * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
      */
-    public function addPrice($food, $price, $adults = null, $children = null)
+    public function addPrice($price, $adults = null, $children = null)
     {
         if ($adults !== null && $children !== null) {
 
@@ -245,21 +199,17 @@ class SearchResult
         }
 
         if($price === null) {
-            if(isset($this->prices[$adults . '_' . $children][$food])) {
-                unset($this->prices[$adults . '_' . $children][$food]);
-
-                if(!count($this->prices[$adults . '_' . $children])) {
-                    unset($this->prices[$adults . '_' . $children]);
-                };
+            if(isset($this->prices[$adults . '_' . $children])) {
+                unset($this->prices[$adults . '_' . $children]);
             }
             return $this;
         }
         
-        if (!isset($this->prices[$adults . '_' . $children][$food])) {
-            $this->prices[$adults . '_' . $children][$food] = 0;
+        if (!isset($this->prices[$adults . '_' . $children])) {
+            $this->prices[$adults . '_' . $children] = 0;
         }
 
-        $this->prices[$adults . '_' . $children][$food] += (int) $price;
+        $this->prices[$adults . '_' . $children] += (int) $price;
 
         return $this;
     }
@@ -303,18 +253,17 @@ class SearchResult
     }
 
     /**
-     * @param string $food
      * @param int $adults
      * @param int $children
      * @return int|null
      */
-    public function getPrice($food, $adults, $children)
+    public function getPrice($adults, $children)
     {
-        if(!isset($this->getPrices()[$adults . '_' . $children][$food])) {
+        if(!isset($this->getPrices()[$adults . '_' . $children])) {
             return null;
         }
         
-        return (int) $this->getPrices()[$adults . '_' . $children][$food];
+        return (int) $this->getPrices()[$adults . '_' . $children];
     }
     
 }

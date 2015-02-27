@@ -309,8 +309,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'entities' => $entities,
             'total' => $entities->count(),
             'draw' => $request->get('draw'),
-            'statuses' => $this->container->getParameter('mbh.package.statuses'),
-            'foodTypes' => $this->container->getParameter('mbh.food.types')
+            'statuses' => $this->container->getParameter('mbh.package.statuses')
         ];
     }
 
@@ -416,7 +415,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     'adults' => $request->get('adults'),
                     'children' => $request->get('children'),
                     'roomType' => $request->get('roomType'),
-                    'food' => $request->get('food'),
                     'tariff' => $request->get('tariff')
                 ]],
                 'status' => 'offline',

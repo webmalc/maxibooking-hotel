@@ -11,7 +11,6 @@
                 <th>Название</th>
                 <th class="td-md text-center">Префикс</th>
                 <th class="td-md text-center">Дни продажи</th>
-                <th class="td-md text-center">Типы питания</th>
                 <th class="td-md text-center">Выбран по умолчанию</th>
                 <th class="td-sm"></th>
             </tr>
@@ -25,9 +24,6 @@
                     </td>
                     <td class="text-center">{{ entity.prefix }}</td>
                     <td class="text-center">{{ entity.saleDays }}</td>
-                    <td class="text-center">
-                        {{ entity.food|join(', ') }}
-                    </td>
                     <td class="text-center">
                         {% if entity.isDefault %}
                             <span class="label label-success">Да</span>

@@ -50,12 +50,6 @@ class Tariff extends Base
     protected $hotel;
     
     /** 
-     * @var FoodPrice[]
-     * @ODM\EmbedMany(targetDocument="FoodPrice")
-     */
-    protected $foodPrices;
-    
-    /** 
      * @var RoomQuota[]
      * @ODM\EmbedMany(targetDocument="RoomQuota")
      */
@@ -463,45 +457,8 @@ class Tariff extends Base
 
     public function __construct()
     {
-        $this->foodPrices = new \Doctrine\Common\Collections\ArrayCollection();
         $this->roomQuotas = new \Doctrine\Common\Collections\ArrayCollection();
         $this->roomPrices = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * @param FoodPrice $foodPrice
-     * @return $this
-     */
-    public function addFoodPrice(\MBH\Bundle\PriceBundle\Document\FoodPrice $foodPrice)
-    {
-        $this->foodPrices[] = $foodPrice;
-
-        return $this;
-    }
-
-    /**
-     * Remove foodPrice
-     *
-     * @param \MBH\Bundle\PriceBundle\Document\FoodPrice $foodPrice
-     */
-    public function removeFoodPrice(\MBH\Bundle\PriceBundle\Document\FoodPrice $foodPrice)
-    {
-        $this->foodPrices->removeElement($foodPrice);
-    }
-    
-    public function removeAllFoodPrices()
-    {
-        $this->foodPrices = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Get foodPrices
-     *
-     * @return Doctrine\Common\Collections\Collection $foodPrices
-     */
-    public function getFoodPrices()
-    {
-        return $this->foodPrices;
     }
 
     /**
@@ -702,17 +659,6 @@ class Tariff extends Base
                 continue;
             }
             return $roomPrice;
-        }
-        return null;
-    }
-
-    public function getFoodPrice($type)
-    {
-        foreach ($this->getFoodPrices() as $foodPrice) {
-            if ($foodPrice->getType() != $type) {
-                continue;
-            }
-            return $foodPrice;
         }
         return null;
     }

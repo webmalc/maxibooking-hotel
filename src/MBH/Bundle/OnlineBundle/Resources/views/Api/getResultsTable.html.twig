@@ -21,7 +21,6 @@
             <tr>
                 <th id="mbh-results-table-th-roomType">Тип номера</th>
                 <th id="mbh-results-table-th-tourist">Гости</th>
-                <th id="mbh-results-table-th-food">Питание</th>
                 <th id="mbh-results-table-th-price">Цена</th>
                 <th id="mbh-results-table-th-amount">Кол-во номеров</th>
             </tr>
@@ -48,7 +47,7 @@
                     </td>
                     <td class="mbh-center">
                         <select class="mbh-results-tourists-select select2 {% if result.prices|length == 1 %}hidden{% endif %}">
-                            {% for priceTourists, priceFoods  in result.prices %}
+                            {% for priceTourists, price  in result.prices %}
                                 {% set arr = priceTourists|split('_') %}
                                 <option value="{{ priceTourists }}">
                                     {% if arr[0] %}{{ arr[0] }} вз.{% endif %}{% if arr[1] and arr[0] %}+{% endif %}{% if arr[1] %}{{ arr[1] }} рб.{% endif %}
@@ -56,29 +55,21 @@
                             {% endfor %}
                         </select>
                         {% if result.prices|length == 1 %}
-                            {% for priceTourists, priceFoods  in result.prices %}
+                            {% for priceTourists, price  in result.prices %}
                                 {% set arr = priceTourists|split('_') %}
                                 {% if arr[0] %}{% for i in 1..arr[0] %}<i class="fa fa-male"></i>&nbsp;{% endfor %}{% endif %}
                                 {% if arr[1] %}{% for k in 1..arr[1] %}<small><i class="fa fa-child"></i></small>&nbsp;{% endfor %}{% endif %}
                             {% endfor %}
                         {% endif %}
                     </td>
-                    <td class="mbh-center">
-                        <select class="mbh-results-food-select select2 {% if result.foods|length == 1 %}hidden{% endif %}">
-                            {% for food in result.foods %}
-                                <option value="{{ food }}">{{ foodTypes[food] }}</option>
-                            {% endfor %}
-                        </select>
-                        {% if result.foods|length == 1 %}{% set food =  result.food|first %}{{ foodTypes[food] }}{% endif %}
-                    </td>
                     <td class="mbh-right">
-                        {% for priceTourists, priceFoods  in result.prices %}
-                            {% for priceFood, price  in priceFoods %}
-                                <ul class="mbh-results-prices">
-                                    <li data-value="{{ price }}"
-                                        class="{{ priceTourists }}_{{ priceFood }}_food">{{ price|number_format }} р.
-                                </ul>
-                            {% endfor %}
+                        {% for priceTourists, price  in result.prices %}
+                            
+                            <ul class="mbh-results-prices">
+                                <li data-value="{{ price }}"
+                                        class="{{ priceTourists }}">{{ price|number_format }} р.
+                            </ul>
+                            
                         {% endfor %}
 
                         <span class="mbh-results-per-person" data-change="{{ result.roomType.calculationType == 'perRoom' ? 0 : 1 }}">цена за номер</span>

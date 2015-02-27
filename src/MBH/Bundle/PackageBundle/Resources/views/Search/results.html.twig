@@ -26,8 +26,6 @@
 
         {% if results != false %}
 
-            {% set queryFood = app.request.query.get('food') %}
-
             <table class="package-search-table table table-striped table-hover table-condensed table-icons table-actions">
                 <thead>
                 <tr>
@@ -38,7 +36,6 @@
                     <th>Отель</th>
                     <th>Тип</th>
                     <th>Тариф</th>
-                    <th class="td-sm">Питание</th>
                     <th class="td-sm">Гости</th>
                     <th class="td-sm">Цена</th>
                     <th class="td-md"></th>
@@ -46,9 +43,8 @@
                 </thead>
                 <tbody>
                 {% for result in results  %}
-                    {% if result.foods|length != 0 %}{% set badResult = false %}{%else%}{% set badResult = true %}{%endif%}
-
-                    <tr {% if badResult %}class="danger"{% endif %}>
+  
+                    <tr>
                         <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
                         <td class="text-center">{{ result.begin|date('d.m.Y') }}</td>
                         <td class="text-center">{{ result.end|date('d.m.Y') }}</td>
@@ -57,15 +53,9 @@
                         <td>{{ result.roomType }}</td>
                         <td>{{ result.tariff}} </td>
                         <td class="text-center">
-                            <select class="form-control plain-html input-sm search-food-select">
-                                {% for food in result.foods %}
-                                    <option value="{{food}}" {% if queryFood is not empty and queryFood == food %} selected="selected"{% endif %}>{{food}}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td class="text-center">
                             <select class="form-control plain-html input-sm search-tourists-select">
-                                {% for priceTourists, priceFoods  in result.prices %}
+                                {% for priceTourists, price  in result.prices %}
+           
                                     {% set arr = priceTourists|split('_') %}
                                     <option value="{{ priceTourists }}">
                                         {% if arr[0] %}{% for i in 1..arr[0] %}A&nbsp;{% endfor %}{% endif %}
@@ -76,24 +66,16 @@
 
                         </td>
                         <td class="text-right">
-                            {% for priceTourists, priceFoods  in result.prices %}
-                                {% for priceFood, price  in priceFoods %}
-                                    <ul class="package-search-prices">
-                                        <li class="{{ priceTourists }}_{{priceFood}}_food">{{ price|number_format}}</li>
-                                    </ul>
-                                {% endfor %}
+                            {% for priceTourists, price  in result.prices %}
+                                <ul class="package-search-prices">
+                                    <li class="{{ priceTourists }}_price">{{ price|number_format}}</li>
+                                </ul>
                             {% endfor %}
                         </td>
                         <td class="text-center">
-
-                            {% if badResult != true %}
-
-                                <a href="{{ path('package_new', app.request.get('s')|merge({roomType: result.roomType.id })) }}" target="_blank" class="btn btn-success btn-xs package-search-book" title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
-                                    <i class="fa fa-pencil-square-o"></i> Бронировать (<span>{{ result.roomsCount }}</span>)
-                                </a>
-                            {% else %}
-                                <a href="#" class="btn btn-danger btn-xs"><i class="fa fa-exclamation-circle"></i> Ошибка!</a>
-                            {% endif %}
+                            <a href="{{ path('package_new', app.request.get('s')|merge({roomType: result.roomType.id })) }}" target="_blank" class="btn btn-success btn-xs package-search-book" title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
+                                <i class="fa fa-pencil-square-o"></i> Бронировать (<span>{{ result.roomsCount }}</span>)
+                            </a>
                         </td>
                     </tr>
                 {% endfor  %}

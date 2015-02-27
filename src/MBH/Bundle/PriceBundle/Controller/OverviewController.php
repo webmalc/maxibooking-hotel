@@ -59,8 +59,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
         $response = $this->redirect($this->generateUrl('prices_overview'));
         $prices = $request->get('prices');
         $helper = $this->container->get('mbh.helper');
-        $request->getSession()->getFlashBag()
-            ->set('success', 'Изменения успешно сохранены. Пересчет цен начнется в течении минуты.');
+        
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $begin = $helper->getDateFromString($request->get('begin'));
@@ -113,9 +112,6 @@ class OverviewController extends Controller implements CheckHotelControllerInter
                     if (isset($dateData['roomPrices']) && is_array($dateData['roomPrices'])) {
                         $doc->setPrices($dateData['roomPrices']);
                     }
-                    if (isset($dateData['foodPrices']) && is_array($dateData['foodPrices'])) {
-                        $doc->setFoodPrices($dateData['foodPrices']);
-                    }
 
                     if (!count($this->container->get('validator')->validate($doc))) {
                         $dm->persist($doc);
@@ -125,6 +121,11 @@ class OverviewController extends Controller implements CheckHotelControllerInter
         }
         $dm->flush();
 
+        $now = new \DateTime();
+        $now->modify('+ 1 minute');
+        $request->getSession()->getFlashBag()
+            ->set('success', 'Изменения успешно сохранены. Автоматический пересчет цен начнется в ' . $now->format('H:i'));
+        
         $this->get('mbh.room.cache.generator')->generateInBackground();
         return $response;
     }
@@ -168,8 +169,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
             'period' => iterator_to_array($period),
             'begin' => $begin,
             'end' => $end,
-            'hotel' => $hotel,
-            'foodTypes' => $this->container->getParameter('mbh.food.types')
+            'hotel' => $hotel
         ];
 
         $qb->field('hotel.id')->equals($hotel->getId())

@@ -4,8 +4,7 @@ namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PriceBundle\Document\RoomQuota;
-use MongoDBODMProxies\__CG__\MBH\Bundle\PriceBundle\Document\FoodPrice;
-use MongoDBODMProxies\__CG__\MBH\Bundle\PriceBundle\Document\RoomPrice;
+use MBH\Bundle\PriceBundle\Document\RoomPrice;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -243,11 +242,6 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $newRoomQuota = new RoomQuota();
             $newRoomQuota->setRoomType($quota->getRoomType())->setNumber($quota->getNumber());
             $new->addRoomQuota($newRoomQuota);
-        }
-        foreach($entity->getFoodPrices() as $foodPrice) {
-            $newFoodPrice = new FoodPrice();
-            $newFoodPrice->setType($foodPrice->getType())->setPrice($foodPrice->getPrice());
-            $new->addFoodPrice($newFoodPrice);
         }
         foreach($entity->getRoomPrices() as $price) {
             $newPrice = new RoomPrice();

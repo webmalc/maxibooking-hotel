@@ -197,7 +197,6 @@ class ApiController extends Controller
         return [
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
-            'foodTypes' => $this->container->getParameter('mbh.food.types'),
             'hotels' => $hotels,
             'tariffResults' => $tariffResults,
             'services' => $services,
@@ -339,7 +338,6 @@ class ApiController extends Controller
                 'end' => $request->end,
                 'adults' => $info->adults,
                 'children' => $info->children,
-                'food' => $info->food,
                 'arrivalTime' => $request->arrival,
                 'departureTime' => $request->departure,
                 'roomType' => $info->roomType->id,

@@ -83,7 +83,7 @@ class HotelController extends Controller
     {
         $entity = new Hotel();
         $entity->setSaleDays(365);
-        $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('mbh.food.types')]);
+        $form = $this->createForm(new HotelType(), $entity);
 
         return array(
             'form' => $form->createView(),
@@ -101,7 +101,7 @@ class HotelController extends Controller
     public function createAction(Request $request)
     {
         $entity = new Hotel();
-        $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('mbh.food.types')]);
+        $form = $this->createForm(new HotelType(), $entity);
         $form->bind($request);
 
         if ($form->isValid()) {
@@ -143,7 +143,7 @@ class HotelController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('mbh.food.types')]);
+        $form = $this->createForm(new HotelType(), $entity);
 
         $form->bind($request);
 
@@ -181,7 +181,7 @@ class HotelController extends Controller
      */
     public function editAction(Hotel $entity)
     {
-        $form = $this->createForm(new HotelType(), $entity, ['food' => $this->container->getParameter('mbh.food.types')]);
+        $form = $this->createForm(new HotelType(), $entity);
 
         return array(
             'entity' => $entity,

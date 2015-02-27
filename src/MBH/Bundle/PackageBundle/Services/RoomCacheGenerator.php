@@ -73,11 +73,18 @@ class RoomCacheGenerator
     }
 
     /**
+     * @param bool $clear
      * @return bool
      */
-    public function generateInBackground()
+    public function generateInBackground($clear = false)
     {
-        if ($this->dm->getRepository('MBHPackageBundle:CacheQueue')->findOneBy(['status' => 'waiting', 'roomType' => null])) {
+        $repo = $this->dm->getRepository('MBHPackageBundle:CacheQueue');
+        
+        if ($clear) {
+            $repo->createQueryBuilder()->remove()->getQuery()->execute();
+        }
+        
+        if ($repo->findOneBy(['status' => 'waiting', 'roomType' => null])) {
             return false;
         }
 
@@ -410,24 +417,19 @@ class RoomCacheGenerator
              ]);
 
         foreach ($roomType->getAdultsChildrenCombinations() as $comb) {
-            foreach ($roomType->getHotel()->getFood() as $food) {
-
-                $price = new PriceCache();
-                $price->setAdults($comb['adults'])
-                    ->setChildren($comb['children'])
-                    ->setFood($food)
-                    ->setPrice($this->calc->getDayPrice(
-                        $tariff->getId(),
-                        $roomType->getId(),
-                        $date,
-                        $comb['adults'],
-                        $comb['children'],
-                        $food,
-                        $overwrite
-                    ))
-                ;
-                $cache->addPrice($price);
-            }
+            $price = new PriceCache();
+            $price->setAdults($comb['adults'])
+                ->setChildren($comb['children'])
+                ->setPrice($this->calc->getDayPrice(
+                    $tariff->getId(),
+                    $roomType->getId(),
+                    $date,
+                    $comb['adults'],
+                    $comb['children'],
+                    $overwrite
+                ))
+            ;
+            $cache->addPrice($price);
         }
         return $cache;
     }

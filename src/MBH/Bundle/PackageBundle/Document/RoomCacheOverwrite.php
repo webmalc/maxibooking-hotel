@@ -70,12 +70,6 @@ class RoomCacheOverwrite extends Base
     protected $prices = [];
 
     /**
-     * @var array
-     * @ODM\Hash()
-     */
-    protected $foodPrices = [];
-
-    /**
      * Set tariff
      *
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
@@ -186,28 +180,6 @@ class RoomCacheOverwrite extends Base
     }
 
     /**
-     * Set foodPrices
-     *
-     * @param array $foodPrices
-     * @return self
-     */
-    public function setFoodPrices($foodPrices)
-    {
-        $this->foodPrices = $foodPrices;
-        return $this;
-    }
-
-    /**
-     * Get foodPrices
-     *
-     * @return array $foodPrices
-     */
-    public function getFoodPrices()
-    {
-        return $this->foodPrices;
-    }
-
-    /**
      * Get price by type
      * @param string $type price type
      * @return float|null
@@ -215,21 +187,6 @@ class RoomCacheOverwrite extends Base
     public function getPrice($type = 'price')
     {
         $prices = $this->getPrices();
-        if (is_array($prices) && isset($prices[$type]) && is_numeric($prices[$type])) {
-            return (float) $prices[$type];
-        }
-
-        return null;
-    }
-
-    /**
-     * Get food price by type
-     * @param string $type food type
-     * @return float|null
-     */
-    public function getFoodPrice($type)
-    {
-        $prices = $this->getFoodPrices();
         if (is_array($prices) && isset($prices[$type]) && is_numeric($prices[$type])) {
             return (float) $prices[$type];
         }

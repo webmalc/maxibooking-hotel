@@ -218,8 +218,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'entity' => $entity,
             'packages' => $packages,
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
-            'logs' => $this->logs($entity),
-            'foodTypes' => $this->container->getParameter('mbh.food.types')
+            'logs' => $this->logs($entity)
         ];
     }
 

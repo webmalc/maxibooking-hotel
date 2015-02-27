@@ -6,8 +6,7 @@
 
 {% if entity.isDefault or (entity.isDefault != true and entity.type == 'price') %}
     {% set menu = menu|merge([
-        {'route': 'room_price', 'title': '<i class="fa fa-ruble"></i> Цены на номера'},
-        {'route': 'food_price', 'title': '<i class="fa fa-ruble"></i> Цены на питание'},
+        {'route': 'room_price', 'title': '<i class="fa fa-ruble"></i> Цены на номера'}
     ])
     %}  
 {% endif %}
@@ -15,10 +14,6 @@
     {% if entity.roomPrices|length == 0 and entity.isDefault %}
         <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> Тариф не используется в поиске, т.к. не добавлено ни одной цены на номера</div>
     {% endif %}
-    {% if entity.foodPrices|length == 0 and ((entity.type == 'price' and entity.isDefault != true) or entity.isDefault) %}
-        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> Тариф не используется в поиске, т.к. не добавлено ни одной цены на питание</div>
-    {% endif %}
-
 
 <ul class="nav nav-tabs" role="tablist">
 {% for item in menu %}

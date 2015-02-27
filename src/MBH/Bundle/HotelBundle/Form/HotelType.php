@@ -32,14 +32,6 @@ class HotelType extends AbstractType
                     'attr' => ['placeholder' => 'HTL'],
                     'help' => 'Название для использования в документах'
                 ])
-                ->add('food', 'choice', [
-                    'label' => 'Типы питания',
-                    'group' => 'Настройки',
-                    'required' => true,
-                    'multiple' => true,
-                    'choices' => $options['food'],
-                    'help' => 'Доступные типы питания в отеле'
-                ])
                 ->add('saleDays', 'text', [
                     'label' => 'Количество дней продажи',
                     'group' => 'Настройки',
@@ -89,7 +81,6 @@ class HotelType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
-            'food' => [],
             'types' => [],
         ));
     }

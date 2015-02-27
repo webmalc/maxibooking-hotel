@@ -7,7 +7,6 @@
                 <th>Начало</th>
                 <th>Конец</th>
                 <th class="td-sm"><i class="fa fa-home"></i> Квоты</th>
-                <th class="td-sm"><i class="fa fa-ruble"></i> Питание</th>
                 <th class="td-sm"><i class="fa fa-ruble"></i> Цены</th>
                 <th class="td-sm"></th>
             </tr>
@@ -22,7 +21,6 @@
                     <td>{{ entity.permanent ? 'нет' : entity.begin|date('d.m.Y') }}</td>
                     <td>{{ entity.permanent ? 'нет' : entity.end|date('d.m.Y') }}</td>
                     <td class="text-center">{{ entity.roomQuotas.count }}</td>
-                    <td class="text-center">{{ entity.foodPrices.count }}</td>
                     <td class="text-center">{{ entity.roomPrices.count }}</td>
                     <td class="table-actions-td text-center">
                         <a href="{{ path('tariff_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title="Редактирование записи" data-toggle="tooltip">

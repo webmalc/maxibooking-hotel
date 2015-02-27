@@ -9,7 +9,6 @@ use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\RoomPrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\PriceBundle\Document\FoodPrice;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -63,7 +62,6 @@ class FixturesCommand extends ContainerAwareCommand
         $hotel->setFullTitle($hotelInfo['hotel_name'])
               ->setIsDefault(true)
               ->setPrefix('HTL')
-              ->setFood(['RO', 'BB'])
               ->setSaleDays(365)
               ->setCreatedBy('demo')
               ->setIsHostel($isHostel)
@@ -75,9 +73,6 @@ class FixturesCommand extends ContainerAwareCommand
         // Tariff
         $tariff = new Tariff();
 
-        $roFood = new FoodPrice();
-        $bbFood = clone $roFood;
-
         $tariff->setCreatedBy('demo')
                ->setHotel($hotel)
                ->setTitle('Основной тариф')
@@ -85,8 +80,6 @@ class FixturesCommand extends ContainerAwareCommand
                ->setBegin($from)
                ->setEnd($to)
                ->setIsOnline(true)
-               ->addFoodPrice($roFood->setType('RO')->setPrice(0))
-               ->addFoodPrice($bbFood->setType('BB')->setPrice(300))
         ;
 
         $packages = [];
@@ -182,7 +175,6 @@ EOF;
                     ->setRoomType($roomType)
                     ->setAdults(1)
                     ->setChildren(0)
-                    ->setFood('RO')
                     ->setIsPaid(false)
                     ->setNote('Демонстрационные брони')
                     ->setNumber($number)

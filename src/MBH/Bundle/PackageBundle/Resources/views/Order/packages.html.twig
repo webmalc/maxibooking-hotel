@@ -41,7 +41,7 @@
                                 {{ package.roomType.hotel }} - {{ package.roomType }}<br><small><a data-toggle='tooltip' title='Перейти к размещению' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'danger' }}'>{% if package.accommodation %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;не размещено&gt;{% endif %}</a></small>
                             </td>
                             <td class="text-center">
-                                {{ package.adults }} + {{ package.children }} / {{ foodTypes[package.food]|default(package.food) }}<br>
+                                {{ package.adults }} + {{ package.children }}<br>
                                 <small>{% for tourist in package.tourists %}{{ tourist.lastNameWithInitials }}{{ loop.last ? '' : ', ' }}{% endfor %}</small>
 
                             </td>
