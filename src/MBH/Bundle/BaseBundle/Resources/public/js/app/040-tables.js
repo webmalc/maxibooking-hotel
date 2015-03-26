@@ -57,7 +57,7 @@ $(document).ready(function() {
         });*/
     }
 
-    if (!$('table.table-striped').hasClass("without-table-tools")  && table.length) {
+    if (!$('table.table-striped').hasClass("without-table-tools") && table.length) {
 
         var tt = new $.fn.dataTable.TableTools(table, {
             "sSwfPath": "/bundles/mbhbase/js/vendor/datatables/swf/copy_csv_xls.swf",

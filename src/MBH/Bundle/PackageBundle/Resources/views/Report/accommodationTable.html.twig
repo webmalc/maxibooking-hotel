@@ -69,9 +69,12 @@
 
                                         {% if day >= package.begin and day <= package.end %}
 
+                                            {% set lateCheckOut = package.lateCheckOut %}
+                                            {% set earlyCheckIn = package.earlyCheckIn %}
+
                                         <a href="{{ path('package_edit', {'id': package.id }) }}" target="_blank" data-toggle="tooltip"
-                                           title="{{ package.numberWithPrefix }}. {{ package.mainTourist.fullName|default('Нет основного гостя') }} ({{ package.adults }}+{{ package.children }}). Цена: {{ package.price }}/{{ package.paid }}. Тип: {{ statuses[package.status].title }}">
-                                            <div class="package text-{% if package.isPaid %}success{% elseif package.paid > 0 %}warning{% else %}danger{% endif %} {% if day == package.end %}package-end{% endif %}{% if day == package.begin %}package-begin{% endif %}">
+                                           title="{{ package.numberWithPrefix }}. {{ package.mainTourist.fullName|default('Нет основного гостя') }} ({{ package.adults }}+{{ package.children }}). Цена: {{ package.price }}/{{ package.paid }}. Тип: {{ statuses[package.status].title }}{{ earlyCheckIn ? '. Ранний заезд' : '' }}{{ lateCheckOut ? '. Поздний выезд' : '' }}">
+                                            <div class="package text-{% if package.isPaid %}success{% elseif package.paid > 0 %}warning{% else %}danger{% endif %} {% if day == package.end %}package-end {{ lateCheckOut ? 'late-check-out' : '' }}{% endif %}{% if day == package.begin %}package-begin {{ earlyCheckIn ? 'early-check-in' : '' }}{% endif %}">
                                                 &nbsp;</div>
                                         </a>
                                         {% endif %}

@@ -39,7 +39,7 @@ class Search
         if (empty($query->end) || empty($query->begin)) {
             return $results;
         }
-
+        
         $qb = $this->dm->getRepository('MBHPackageBundle:RoomCache')
             ->createQueryBuilder('q')
             ->field('date')->lt($query->end)

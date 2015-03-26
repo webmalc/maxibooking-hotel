@@ -80,6 +80,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             $skip,
             $limit
         );
+        
         $rooms = $qb->getQuery()->execute();
 
         //packages

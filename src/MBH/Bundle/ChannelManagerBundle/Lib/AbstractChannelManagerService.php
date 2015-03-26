@@ -68,6 +68,50 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
         return $result;
     }
+    
+    /**
+     * @param BaseInterface $config
+     * @return array
+     */
+    public function getRoomTypes(BaseInterface $config)
+    {
+        $result = [];
+
+        foreach ($config->getRooms() as $room) {
+            $roomType = $room->getRoomType();
+            if (empty($room->getRoomId()) || !$roomType->getIsEnabled() || !empty($roomType->getDeletedAt())) {
+                continue;
+            }
+            $result[$roomType->getId()] = [
+                'syncId' => $room->getRoomId(),
+                'doc' => $roomType
+            ];
+        }
+        return $result;
+    }
+    
+    /**
+     * @param BaseInterface $config
+     * @return array
+     */
+    public function getTariffs(BaseInterface $config)
+    {
+        $result = [];
+
+        foreach ($config->getTariffs() as $configTariff) {
+            $tariff = $configTariff->getTariff();
+            
+            if (empty($configTariff->getTariffId()) || !$tariff->getIsEnabled() || !empty($tariff->getDeletedAt())) {
+                continue;
+            }
+            
+            $result[$tariff->getId()] = [
+                'syncId' => $configTariff->getTariffId(),
+                'doc' =>$tariff
+            ];
+        }
+        return $result;
+    }
 
     /**
      * @param $url

@@ -121,6 +121,7 @@ class ChannelManager
      * @param \DateTime $end
      * @param RoomType $roomType
      * @throw \Exception
+     * @return array
      */
     public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {

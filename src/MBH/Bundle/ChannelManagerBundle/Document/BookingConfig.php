@@ -85,6 +85,12 @@ class BookingConfig extends Base implements BaseInterface
      * @ODM\EmbedMany(targetDocument="Tariff")
      */
     protected $tariffs;
+    
+    /**
+     * @var array
+     * @ODM\EmbedMany(targetDocument="Service")
+     */
+    protected $services;
 
     /**
      * Set hotel
@@ -178,6 +184,7 @@ class BookingConfig extends Base implements BaseInterface
     {
         $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -258,5 +265,45 @@ class BookingConfig extends Base implements BaseInterface
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
 
         return $this;
+    }
+    
+    /**
+     * @return $this
+     */
+    public function removeAllServices()
+    {
+        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
+
+        return $this;
+    }
+
+    /**
+     * Add service
+     *
+     * @param MBH\Bundle\ChannelManagerBundle\Document\Service $service
+     */
+    public function addService(\MBH\Bundle\ChannelManagerBundle\Document\Service $service)
+    {
+        $this->services[] = $service;
+    }
+
+    /**
+     * Remove service
+     *
+     * @param MBH\Bundle\ChannelManagerBundle\Document\Service $service
+     */
+    public function removeService(\MBH\Bundle\ChannelManagerBundle\Document\Service $service)
+    {
+        $this->services->removeElement($service);
+    }
+
+    /**
+     * Get services
+     *
+     * @return Doctrine\Common\Collections\Collection $services
+     */
+    public function getServices()
+    {
+        return $this->services;
     }
 }

@@ -1,4 +1,4 @@
-/*global window, $ */
+/*global window, $, services */
 $(document).ready(function() {
     'use strict';
 
@@ -11,17 +11,15 @@ $(document).ready(function() {
         maxboostedstep: 10,
         postfix: '<i class="fa fa-ruble"></i>'
     });
-
-    //spinners
-    $('#mbh_bundle_packagebundle_package_service_type_amount').TouchSpin({
+    $('#mbh_bundle_packagebundle_package_service_type_amount, \n\
+       #mbh_bundle_packagebundle_package_service_type_nights, \n\
+       #mbh_bundle_packagebundle_package_service_type_persons').TouchSpin({
         min: 1,
         max: 9007199254740992,
         step: 1,
         boostat: 5,
-        maxboostedstep: 10,
+        maxboostedstep: 10
     });
-
-    //spinners
     $('.discount-spinner').TouchSpin({
         min: 1,
         max: 100,
@@ -29,6 +27,14 @@ $(document).ready(function() {
         boostat: 10,
         maxboostedstep: 20,
         postfix: '%'
+    });
+    $('.price-spinner').TouchSpin({
+        min: 0,
+        max: 9999999999999999,
+        step: 1,
+        boostat: 10,
+        maxboostedstep: 20,
+        postfix: '<i class="fa fa-rub"></i>'
     });
 
     //package filter select 2
@@ -51,7 +57,7 @@ $(document).ready(function() {
     }());
 
     //package datatable
-    $('#package-table').dataTable({
+    var pTable = $('#package-table').dataTable({
         "processing": true,
         "serverSide": true,
         "ordering": true,
@@ -79,7 +85,7 @@ $(document).ready(function() {
             null, //dates
             null, //tourists
             null, // price
-            { "bSortable": false } // actions
+            {"bSortable": false} // actions
         ],
         "drawCallback": function(settings, json) {
             $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
@@ -88,6 +94,29 @@ $(document).ready(function() {
             $('.not-confirmed-entry').closest('tr').addClass('info');
         }
     });
+
+    if ($('#package-table').length) {
+        var ptt = new $.fn.dataTable.TableTools(pTable, {
+            "sSwfPath": "/bundles/mbhbase/js/vendor/datatables/swf/copy_csv_xls.swf",
+            "aButtons": [
+                {
+                    "sExtends": "copy",
+                    "sButtonText": '<i class="fa fa-files-o"></i> Скопировать'
+                },
+                {
+                    "sExtends": "csv",
+                    "sButtonText": '<i class="fa fa-file-text-o"></i> CSV'
+                },
+                {
+                    "sExtends": "xls",
+                    "sButtonText": '<i class="fa fa-table"></i> Excel'
+                }
+            ]
+    });
+
+        $('#list-export').append($(ptt.fnContainer()));
+        $('#list-export').find('a').addClass('navbar-btn');
+    }
 
     // package datatable filter
     (function () {
@@ -124,6 +153,81 @@ $(document).ready(function() {
             input.val($(this).attr('data-value'));
             $('#package-table').dataTable().fnDraw();
         });
+    }());
+
+    // package service form
+    (function () {
+        if (!$('#mbh_bundle_packagebundle_package_service_type_nights').length) {
+            return;
+        }
+        var priceInput = $('#mbh_bundle_packagebundle_package_service_type_price'),
+            nightsInput = $('#mbh_bundle_packagebundle_package_service_type_nights'),
+            nightsDiv = nightsInput.closest('div.form-group'),
+            personsInput = $('#mbh_bundle_packagebundle_package_service_type_persons'),
+            personsDiv = personsInput.closest('div.form-group'),
+            dateInput = $('#mbh_bundle_packagebundle_package_service_type_date'),     
+            dateDiv = dateInput.closest('div.form-group'),
+            dateDefault = dateInput.val(),
+            serviceInput =  $('#mbh_bundle_packagebundle_package_service_type_service'),
+            serviceHelp = serviceInput.next('span.help-block'),
+            amountInput = $('#mbh_bundle_packagebundle_package_service_type_amount'),
+            amountHelp = amountInput.closest('div.input-group').next('span.help-block'),
+            hide = function () {
+                nightsDiv.hide();
+                personsDiv.hide();
+                dateDiv.hide();
+                dateInput.val(dateDefault);
+                personsInput.val(1);
+                nightsInput.val(1);
+                amountHelp.html('');
+                serviceHelp.html('<small>Услуга для добавления к броне</small>');
+            },
+            calc = function () {
+
+                var info = services[serviceInput.val()];
+
+                amountHelp.html('');
+                if (serviceInput.val() !== null && typeof info !== 'undefined') {
+                    var nights = nightsInput.val(),
+                        price = priceInput.val() * amountInput.val() * nights * personsInput.val();
+                    amountHelp.html($.number(price) + ' руб. за ' + amountInput.val() + ' шт.');
+                }
+            },
+            show = function (info) {
+                hide();
+                if (info.calcType === 'per_night' || info.calcType === 'per_stay') {
+                    personsInput.val(services.package_guests);
+                    personsDiv.show();
+                }
+                if (info.calcType === 'per_night') {
+                    nightsInput.val(services.package_duration);
+                    nightsDiv.show();
+                }
+                if (info.date) dateDiv.show();
+
+                var peoplesStr = (info.calcType === 'per_night' || info.calcType === 'per_stay') ? ' за 1 человека ' : ' ';
+                serviceHelp.html($.number(info.price) + ' рублей' + peoplesStr + info.calcTypeStr);
+                calc();
+            },
+            hideShow = function () {
+                if (serviceInput.val() !== null) {
+                    var info = services[serviceInput.val()];
+                    if (typeof info === 'undefined') return;
+                    priceInput.val(info.price);
+                    show(info);
+                } else {
+                    hide();
+                }
+            }
+        ;
+        nightsDiv.change(calc);
+        personsDiv.change(calc);
+        amountInput.change(calc);
+        serviceInput.change(calc);
+        priceInput.change(calc);
+        serviceInput.change(hideShow);
+        hideShow();
+        
     }());
 
 });

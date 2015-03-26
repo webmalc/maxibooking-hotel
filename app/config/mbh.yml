@@ -1,4 +1,7 @@
 parameters:
+    #timezone. default - deafult server timezone
+    mbh.timezone: 'default'
+
     mbh.mongodb:
       url: "%mongodb_url%"
       db : "%mongodb_database%"
@@ -64,10 +67,11 @@ parameters:
 
     #mbh services
     mbh.services:
-      units:
-        piece: 'Штука'
-        day: 'Сутки'
-        hour: 'Час'
+      calcTypes:
+        per_stay: 'за весь срок'
+        per_night: 'за cутки'
+        not_applicable: 'за услугу'
+        day_percent: 'за услугу (% от цены за сутки)'
 
     #organization info
     mbh.organization:
@@ -142,6 +146,9 @@ parameters:
 
     #Время заезда по умолчанию
     mbh.package.arrival.time: 12
+    
+    #Просроченные брони
+    mbh.package.notpaid.time: '-5 days'
     
     #Цели приезда
     mbh.package.statuses:

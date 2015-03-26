@@ -92,7 +92,7 @@ class Service extends Base
      *      minMessage="Цена не может быть меньше нуля"
      * )
      */
-    protected $price;
+    protected $price = 0;
     
     /**
      * @var boolean
@@ -106,11 +106,36 @@ class Service extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="unit")
+     * @ODM\String()
      * @Assert\NotNull()
-     * @Assert\Choice(choices = {"hour", "day", "piece"})
+     * @Assert\Choice(choices = {"per_stay", "per_night", "not_applicable", "day_percent"})
      */
-    protected $unit;
+    protected $calcType;
+    
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="code")
+     */
+    protected $code;
+    
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $system = false;
+    
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $date = false;
 
     /**
      * Set category
@@ -256,32 +281,98 @@ class Service extends Base
     }
 
     /**
-     * Set unit
-     *
-     * @param string $unit
-     * @return self
-     */
-    public function setUnit($unit)
-    {
-        $this->unit = $unit;
-        return $this;
-    }
-
-    /**
-     * Get unit
-     *
-     * @return string $unit
-     */
-    public function getUnit()
-    {
-        return $this->unit;
-    }
-
-    /**
      * @return \MBH\Bundle\HotelBundle\Document\Hotel
      */
     public function getHotel()
     {
         return $this->getCategory()->getHotel();
+    }
+
+    /**
+     * Set code
+     *
+     * @param string $code
+     * @return self
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
+        return $this;
+    }
+
+    /**
+     * Get code
+     *
+     * @return string $code
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+    
+    /**
+     * Set system
+     *
+     * @param boolean $system
+     * @return self
+     */
+    public function setSystem($system)
+    {
+        $this->system = $system;
+        return $this;
+    }
+
+    /**
+     * Get system
+     *
+     * @return boolean $system
+     */
+    public function getSystem()
+    {
+        return $this->system;
+    }
+
+    /**
+     * Set calcType
+     *
+     * @param string $calcType
+     * @return self
+     */
+    public function setCalcType($calcType)
+    {
+        $this->calcType = $calcType;
+        return $this;
+    }
+
+    /**
+     * Get calcType
+     *
+     * @return string $calcType
+     */
+    public function getCalcType()
+    {
+        return $this->calcType;
+    }
+
+    /**
+     * Set date
+     *
+     * @param boolean $date
+     * @return self
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+        return $this;
+    }
+
+    /**
+     * Get date
+     *
+     * @return boolean $date
+     */
+    public function getDate()
+    {
+        return $this->date;
     }
 }

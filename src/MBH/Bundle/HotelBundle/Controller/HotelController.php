@@ -114,6 +114,11 @@ class HotelController extends Controller
                     ->set('success', 'Запись успешно создана.')
             ;
             $this->get('mbh.room.cache.generator')->generateInBackground();
+            
+            //todo: create services
+            $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
+            $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'mbh:base:fixtures --no-debug > /dev/null 2>&1 &');
+            $process->run();
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
         }

@@ -27,4 +27,18 @@ interface ChannelManagerServiceInterface
      * @return mixed
      */
     public function sync();
+    
+    /**
+     * Check response from booking service
+     * @param mixed $response
+     * @param array $params
+     * @return boolean
+     */
+    public function checkResponse($response, array $params = null);
+    
+    /**
+     * Close all sales on service
+     * @return boolean
+     */
+    public function closeAll();
 }

@@ -236,6 +236,14 @@ class Package extends Base
     protected $discount;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isCheckIn = false;
+
+    /**
      * Set tariff
      *
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
@@ -308,6 +316,7 @@ class Package extends Base
     public function removeAccommodation()
     {
         $this->accommodation = null;
+        $this->setIsCheckIn(false);
 
         return $this;
     }
@@ -482,6 +491,19 @@ class Package extends Base
     }
 
     /**
+     * Set price
+     *
+     * @param int $price
+     * @return self
+     */
+    public function setPackagePrice($price)
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    /**
      * Get status
      *
      * @return string $status
@@ -579,6 +601,16 @@ class Package extends Base
     public function getIsPaid()
     {
         return $this->getOrder()->getIsPaid();
+    }
+
+    /**
+     * Get order paid
+     *
+     * @return int
+     */
+    public function getPaid()
+    {
+        return $this->getOrder()->getPaid();
     }
     
     /**
@@ -814,5 +846,58 @@ class Package extends Base
     public function getOrder()
     {
         return $this->order;
+    }
+
+    /**
+     * Set isCheckIn
+     *
+     * @param boolean $isCheckIn
+     * @return self
+     */
+    public function setIsCheckIn($isCheckIn)
+    {
+        $this->isCheckIn = $isCheckIn;
+        return $this;
+    }
+
+    /**
+     * Get isCheckIn
+     *
+     * @return boolean $isCheckIn
+     */
+    public function getIsCheckIn()
+    {
+        return $this->isCheckIn;
+    }
+
+    /**
+     * Returns the average price per night.
+     * @return float
+     */
+    public function getOneDayPrice()
+    {
+        return round($this->getPackagePrice()/$this->getNights());
+    }
+
+    public function isEarlyCheckIn()
+    {
+        foreach($this->getServices() as $service) {
+            if ($service->getService()->getCode() == 'Early check-in') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isLateCheckOut()
+    {
+        foreach($this->getServices() as $service) {
+            if ($service->getService()->getCode() == 'Late check-out') {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

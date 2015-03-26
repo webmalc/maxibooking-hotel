@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 
-class BaseListener
+class OnController
 {
 
     /**

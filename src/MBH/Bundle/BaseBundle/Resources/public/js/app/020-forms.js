@@ -2,6 +2,19 @@
 $(document).ready(function () {
     'use strict';
 
+    // input size
+    (function (){
+        var resize = function (el, size) {
+            el.closest('div.col-md-4').removeClass('col-md-4').addClass('col-md-' + size);
+        };
+        $('input.sm').each(function() {
+            resize($(this), 2);
+        });
+        $('input.xs').each(function() {
+            resize($(this), 1);
+        });
+    }());
+
     //Send delete form
     $('#entity-delete-button').click(function (event) {
         event.preventDefault();

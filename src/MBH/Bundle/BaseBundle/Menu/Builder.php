@@ -70,16 +70,21 @@ class Builder extends ContainerAware
         $menu->addChild('hotels', ['route' => '_welcome', 'label' => 'Отели'])
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-building-o'])
         ;
-        $menu['hotels']->addChild('hotelsList', ['route' => 'hotel', 'label' => 'Отели']);
-        $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номера']);
+        $menu['hotels']->addChild('hotelsList', ['route' => 'hotel', 'label' => 'Отели'])
+                ->setAttributes(['icon' => 'fa fa-building']);
+        $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номера'])
+                ->setAttributes(['icon' => 'fa fa-home']);
 
         //Prices links
         $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Цены'])
              ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-ruble'])
         ;
-        $menu['prices']->addChild('tariff', ['route' => 'tariff', 'label' => 'Тарифы']);
-        $menu['prices']->addChild('services', ['route' => 'price_service_category', 'label' => 'Услуги']);
-        $menu['prices']->addChild('overview', ['route' => 'prices_overview', 'label' => 'Обзор цен']);
+        $menu['prices']->addChild('tariff', ['route' => 'tariff', 'label' => 'Тарифы'])
+                ->setAttributes(['icon' => 'fa fa-sliders']);
+        $menu['prices']->addChild('services', ['route' => 'price_service_category', 'label' => 'Услуги'])
+                ->setAttributes(['icon' => 'fa fa-plug']);
+        $menu['prices']->addChild('overview', ['route' => 'prices_overview', 'label' => 'Обзор цен'])
+                        ->setAttributes(['icon' => 'fa fa-ruble']);
         
         //Users links
         $menu->addChild('configs', ['route' => '_welcome', 'label' => 'Настройки'])

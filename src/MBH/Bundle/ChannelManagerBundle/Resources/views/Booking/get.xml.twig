@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <request>
-    <username>{{ config.username }}</username>
-    <password>{{ config.password }}</password>
-    <hotel_id>{{ config.hotelId }}</hotel_id>
+    {% include 'MBHChannelManagerBundle:Booking:credentials.xml.twig' with {'config': config } %}
 </request>

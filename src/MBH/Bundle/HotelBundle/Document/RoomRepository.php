@@ -19,11 +19,9 @@ class RoomRepository extends DocumentRepository
             foreach ($hotel->getRoomTypes() as $hotelRoomType) {
                 $roomTypeIds[] = $hotelRoomType->getId();
             }
-            if (count($roomTypeIds)) {
-                $qb->field('roomType.id')->in($roomTypeIds);
-            }
-
+            $qb->field('roomType.id')->in($roomTypeIds);
         }
+        
         //roomType
         if (!empty($roomType)) {
             if (!$roomType instanceof RoomType) {

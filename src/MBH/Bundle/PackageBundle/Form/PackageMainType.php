@@ -13,55 +13,91 @@ class PackageMainType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         for ($i = 0; $i <= 23; $i++) {
-            $hours[$i] = sprintf('%02d', $i) . ':00';
+            $hours[$i] = sprintf('%02d', $i).':00';
+        }
+
+        if ($options['price']) {
+            $builder->add(
+                'price',
+                'text',
+                [
+                    'label' => 'Цена',
+                    'required' => true,
+                    'error_bubbling' => true,
+                    'property_path' => 'packagePrice',
+                    'attr' => [
+                        'class' => 'price-spinner'
+                    ],
+                ]
+            );
         }
 
         $builder
-                ->add('discount', 'text', [
+            ->add(
+                'discount',
+                'text',
+                [
                     'label' => 'Скидка',
                     'required' => false,
                     'error_bubbling' => true,
                     'attr' => [
                         'class' => 'discount-spinner'
                     ],
-                ])
-                ->add('arrivalTime', 'choice', [
+                ]
+            )
+            ->add(
+                'arrivalTime',
+                'choice',
+                [
                     'label' => 'Время заезда',
                     'required' => false,
                     'multiple' => false,
                     'error_bubbling' => true,
                     'choices' => $hours,
-                ])
-                ->add('departureTime', 'choice', [
+                ]
+            )
+            ->add(
+                'departureTime',
+                'choice',
+                [
                     'label' => 'Время отъезда',
                     'required' => false,
                     'multiple' => false,
                     'error_bubbling' => true,
                     'choices' => $hours,
-                ])
-                ->add('purposeOfArrival', 'choice', [
+                ]
+            )
+            ->add(
+                'purposeOfArrival',
+                'choice',
+                [
                     'label' => 'Цель приезда',
                     'required' => false,
                     'multiple' => false,
                     'error_bubbling' => true,
                     'choices' => $options['arrivals'],
-                ])
-
-                ->add('note', 'textarea', [
+                ]
+            )
+            ->add(
+                'note',
+                'textarea',
+                [
                     'label' => 'Комментарий',
                     'required' => false,
-                ])
-                
-        ;
+                ]
+            );
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
-            'arrivals' => [],
-            'defaultTime' => null
-        ));
+        $resolver->setDefaults(
+            array(
+                'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
+                'arrivals' => [],
+                'defaultTime' => null,
+                'price' => false
+            )
+        );
     }
 
     public function getName()

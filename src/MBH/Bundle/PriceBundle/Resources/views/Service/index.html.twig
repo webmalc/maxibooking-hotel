@@ -10,6 +10,7 @@
             <li {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}class="active"{% endif %}>
                 <a href="#{{entity.id}}" role="tab" data-toggle="tab">
                     <i class="fa fa-plug"></i> {{entity.name}}
+                    {% if entity.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{% endif %}
                 </a>
             </li>
         {% endfor %}
@@ -26,19 +27,24 @@
 
                 <!-- Tab actions -->
                 <div class="btn-list spacer-bottom text-right">
-                    <a href="{{ path('price_service_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="Редактировать категорию услуг <{{entity.name}}>"><i class="fa fa-edit"></i> Редактировать</a>
+                    {% if not entity.system %} 
+                        <a href="{{ path('price_service_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="Редактировать категорию услуг <{{entity.name}}>"><i class="fa fa-edit"></i> Редактировать</a>
+                    {%endif %}
                     <a href="{{ path('price_service_category_entry_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="Создать услугу в категории <{{entity.name}}>"><i class="fa fa-plus"></i> Добавить услугу</a>
-                    <a href="{{ path('price_service_category_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="Удалить категорию услуг <{{entity.name}}>"><i class="fa fa-trash-o"></i> Удалить</a>
+                    {% if not entity.system %} 
+                        <a href="{{ path('price_service_category_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="Удалить категорию услуг <{{entity.name}}>"><i class="fa fa-trash-o"></i> Удалить</a>
+                    {%endif %}
                 </div>
 
                 {% if entity.services.count %}
-                    <table class="table table-striped table-hover table-condensed not-auto-datatable">
+                    <table class="table table-actions table-striped table-hover table-condensed">
                         <thead>
                             <tr>
                                 <th class="td-xs"></th>
                                 <th>Название</th>
                                 <th class="td-xl">Цена</th>
-                                <th class="td-sm">Единица измерения</th>
+                                <th class="td-md">Тип расчета</th>
+                                <th class="td-sm">Дата</th>
                                 <th class="td-md"></th>
                             </tr>
                         </thead>
@@ -46,17 +52,23 @@
                             {% for entry in entity.services %}
                                 <tr {% if entry.isEnabled is empty %} class='danger'{% endif %}>
                                     <td><i class="fa fa-plug"></i></td>
-                                    <td><a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}'>{{ entry.name }}</a></td>
-                                    <td><input name="entries[{{ entry.id }}]" class="form-control spinner price-spinner input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}"></td>
-                                    <td class="text-center">{{ config.units[entry.unit]|default('Штука') }}</td>
+                                    <td><a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entity.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
+                                    <td>
+                                        <span class="hidden">{{ entry.price }}</span>
+                                        <input name="entries[{{ entry.id }}]" class="form-control spinner {{ entry.calcType == 'day_percent' ? 'percent-spinner' : 'price-spinner'}} input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}">
+                                    </td>
+                                    <td class="text-center">{{ config.calcTypes[entry.calcType]|default('Штука') }}</td>
+                                    <td class="text-center">{% if entry.date %}<i class="fa fa-check text-success"></i>{% endif %}</td>
                                     <td class="text-center">
                                         <div class='btn-list'>
                                             <a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
                                                 <i class='fa fa-pencil-square-o'></i>
                                             </a>
+                                            {% if not entity.system %} 
                                             <a href='{{ path('price_service_category_entry_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
                                                 <i class='fa fa-trash-o'></i>
                                             </a>
+                                            {%endif %}    
                                         </div>
                                     </td>
                                 </tr>
@@ -72,7 +84,7 @@
     </div>
 
         <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
-            <div class="container">
+            <div class="container-fluid">
                 <ul class="nav navbar-nav">
                     <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить изменения</button></li>
                     <li><button onclick="location.href = '{{ path('price_service_category_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> Добавить новую категорию</button></li>

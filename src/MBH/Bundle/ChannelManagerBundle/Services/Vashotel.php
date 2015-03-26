@@ -56,6 +56,10 @@ class Vashotel extends Base
         'Pragma: no-cache',
         'SOAPAction: "run"'
     ];
+    
+    public function closeAll() {
+        ;
+    }
 
     public function __construct(ContainerInterface $container)
     {
@@ -87,7 +91,7 @@ class Vashotel extends Base
             true
         );
 
-        if (!$this->checkResponse($sendResult, $script, $config->getKey())) {
+        if (!$this->checkResponse($sendResult, ['script' => $script, 'key' => $config->getKey()])) {
             return false;
         }
 
@@ -137,7 +141,7 @@ class Vashotel extends Base
             true
         );
 
-        if (!$this->checkResponse($sendResult, $script, $config->getKey())) {
+        if (!$this->checkResponse($sendResult, ['script' => $script, 'key' => $config->getKey()])) {
             return false;
         }
         $xml = simplexml_load_string($sendResult);
@@ -249,7 +253,7 @@ class Vashotel extends Base
             true
         );
 
-        if (!$this->checkResponse($sendResult, $script, $config->getKey())) {
+        if (!$this->checkResponse($sendResult, ['script' => $script, 'key' => $config->getKey()])) {
             return false;
         }
 
@@ -356,7 +360,7 @@ class Vashotel extends Base
                     ->createQueryBuilder('q')
                     ->field('roomType.id')->in(array_keys($roomTypes))
                     ->field('tariff.id')->equals($tariff['doc']->getId())
-                    ->where("function() { return this.prices.length > 0; }")
+                    //->where("function() { return this.prices.length > 0; }")
                     ->sort(['roomType.id' => 'asc', 'date' => 'asc']);
 
                 if ($begin) {
@@ -392,7 +396,7 @@ class Vashotel extends Base
                     true
                 );
 
-                $result = $this->checkResponse($sendResult, $script, $config->getKey());
+                $result = $this->checkResponse($sendResult, ['script' => $script, 'key' => $config->getKey()]);
             }
         }
 
@@ -567,12 +571,13 @@ class Vashotel extends Base
 
     /**
      * @param string $response
-     * @param string $script
-     * @param string $key
+     * @param array $params
      * @return bool
      */
-    private function checkResponse($response, $script, $key)
+    public function checkResponse($response, array $params = null)
     {
+        $script = $params['script'];
+        $key = $params['key'];
         if (!$response) {
             return false;
         }
@@ -589,7 +594,7 @@ class Vashotel extends Base
      * @param VashotelConfig $config
      * @return array
      */
-    private function getRoomTypes(VashotelConfig $config)
+    public function getRoomTypes(VashotelConfig $config)
     {
         $result = $keys = [];
 
@@ -617,7 +622,7 @@ class Vashotel extends Base
      * @param VashotelConfig $config
      * @return array
      */
-    private function getTariffs(VashotelConfig $config)
+    public function getTariffs(VashotelConfig $config)
     {
         ($config->getIsBreakfast()) ? $food = 'BB' : $food = 'RO';
 

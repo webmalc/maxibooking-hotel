@@ -85,6 +85,15 @@ class ServiceCategory extends Base
      * )
      */
     protected $description;
+    
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $system = false;
 
     public function __construct()
     {
@@ -218,5 +227,27 @@ class ServiceCategory extends Base
             return $this->title;
         }
         return $this->fullTitle;
+    }
+   
+    /**
+     * Set system
+     *
+     * @param boolean $system
+     * @return self
+     */
+    public function setSystem($system)
+    {
+        $this->system = $system;
+        return $this;
+    }
+
+    /**
+     * Get system
+     *
+     * @return boolean $system
+     */
+    public function getSystem()
+    {
+        return $this->system;
     }
 }

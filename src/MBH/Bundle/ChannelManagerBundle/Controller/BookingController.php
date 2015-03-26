@@ -27,6 +27,8 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      */
     public function indexAction()
     {
+        //$this->get('mbh.channelmanager')->update();
+        
         $doc = $this->get('mbh.hotel.selector')->getSelected()->getBookingConfig();
 
         $form = $this->createForm(
@@ -117,6 +119,27 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      * @Template()
      */
     public function tariffAction()
+    {
+        $doc = $this->get('mbh.hotel.selector')->getSelected()->getBookingConfig();
+
+        if (!$doc) {
+            throw $this->createNotFoundException();
+        }
+
+        return [
+            'doc' => $doc,
+            'logs' => $this->logs($doc)
+        ];
+    }
+    
+    /**
+     * Services configuration page
+     * @Route("/service", name="booking_service")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template()
+     */
+    public function serviceAction()
     {
         $doc = $this->get('mbh.hotel.selector')->getSelected()->getBookingConfig();
 

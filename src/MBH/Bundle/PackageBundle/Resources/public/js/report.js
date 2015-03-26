@@ -1,4 +1,4 @@
-/*global window, $ */
+/*global window, $, document */
 $(document).ready(function() {
     'use strict';
 
@@ -98,7 +98,7 @@ $(document).ready(function() {
         });
     }
     accommodationReportGet();
-    $('.prices-overview-filter').change(function () { accommodationReportGet() });
+    $('.accommodation-report-filter').change(function () { accommodationReportGet() });
 
     // get rooms report content
     var roomsReportGet = function (data) {

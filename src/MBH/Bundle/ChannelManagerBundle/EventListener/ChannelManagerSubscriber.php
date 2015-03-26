@@ -72,7 +72,7 @@ class ChannelManagerSubscriber implements EventSubscriber
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                 var_dump($e); exit();
-            };   
+            }   
         }
     }
 }

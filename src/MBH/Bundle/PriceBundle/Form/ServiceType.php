@@ -26,26 +26,32 @@ class ServiceType extends AbstractType
                     'attr' => ['placeholder' => 'Сейф - лето ' . date('Y')],
                     'help' => 'Название для использования внутри MaxiBooking'
                 ])
-                ->add('unit', 'choice', [
-                    'label' => 'Единица измерения',
-                    'group' => 'Общая информация',
-                    'required' => true,
-                    'empty_value' => '',
-                    'multiple' => false,
-                    'choices' => $options['units'],
-                    'help' => 'Единица в которой измеряется услуга.'
-                ])
                 ->add('description', 'textarea', [
                     'label' => 'Описание',
                     'required' => false,
                     'group' => 'Общая информация',
                     'help' => 'Описание услуги для онлайн бронирования'
                 ])
+                ->add('calcType', 'choice', [
+                    'label' => 'Тип расчета',
+                    'group' => 'Общая информация',
+                    'required' => true,
+                    'empty_value' => '',
+                    'multiple' => false,
+                    'choices' => $options['calcTypes'],
+                ])
                 ->add('price', 'text', [
                     'label' => 'Цена',
                     'group' => 'Общая информация',
                     'required' => false,
                     'attr' => ['placeholder' => 'Услуга не используется', 'class' => 'spinner price-spinner'],
+                ])
+                ->add('date', 'checkbox', [
+                    'label' => 'Дата?',
+                    'group' => 'Настройки',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'Использовать ли дату при добавлении услуги к брони?'
                 ])
                 ->add('isOnline', 'checkbox', [
                     'label' => 'Онлайн?',
@@ -68,7 +74,7 @@ class ServiceType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\PriceBundle\Document\Service',
-            'units' => []
+            'calcTypes' => []
         ));
     }
 

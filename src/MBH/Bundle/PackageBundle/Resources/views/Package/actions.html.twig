@@ -14,10 +14,13 @@
 {% if checkPackagePermissions(entity) %}
 
 <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
-    <div class="container">
+    <div class="container-fluid">
         <ul class="nav navbar-nav">
             <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить и закрыть</button></li>
             <li><button type="submit" name="save" class="btn btn-info navbar-btn"><i class="fa fa-check-square-o"></i> {{ save_text|default('Сохранить') }}</button></li>
+            {% if entity.isCheckIn is empty and entity.accommodation is not empty %}
+                <li><button type="button" onclick="location.href = '{{ path('package_check_in', {'id': entity.id}) }}'" class="btn btn-default navbar-btn"><i class="fa fa-users"></i> Гости заехали</button></li>
+            {% endif %}
             <li><button type="button" onclick="location.href = '{{ path('package_search') }}#{{ {'s': searchQuery}|url_encode }}'" class="btn btn-default navbar-btn"><i class="fa fa-search"></i> Найти похожую</button></li>
             <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
         </ul>

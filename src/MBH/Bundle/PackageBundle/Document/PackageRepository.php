@@ -18,6 +18,7 @@ class PackageRepository extends DocumentRepository
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->getDocumentManager();
         $qb = $this->createQueryBuilder('s');
+        $now = new \DateTime('midnight');
 
         //hotel
         if(isset($data['hotel']) && !empty($data['hotel'])) {
@@ -49,7 +50,7 @@ class PackageRepository extends DocumentRepository
         if(isset($data['status']) && !empty($data['status'])) {
             $qb->field('status')->equals($data['status']);
         }
-
+        
         //paid status
         if(isset($data['paid']) && in_array($data['paid'], ['paid', 'part', 'not_paid'])) {
 
@@ -70,8 +71,6 @@ class PackageRepository extends DocumentRepository
                 default:
                     break;
             }
-
-
         }
 
         //get dates
@@ -94,7 +93,7 @@ class PackageRepository extends DocumentRepository
             if(!$data['end'] instanceof \DateTime) {
                 $data['end'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['end'] . ' 00:00:00');
             }
-
+            
             $qb->field($dateType)->lte($data['end']);
         }
 
@@ -102,8 +101,6 @@ class PackageRepository extends DocumentRepository
         if (isset($data['filter']) && $data['filter'] != null) {
             //live now
             if ($data['filter'] == 'live_now') {
-                $now = new \DateTime();
-                $now->setTime(0,0,0);
                 $qb->field('begin')->lte($now);
                 $qb->field('end')->gte($now);
             }
@@ -113,8 +110,8 @@ class PackageRepository extends DocumentRepository
             }
         }
 
-        if (isset($data['created_by']) && $data['created_by'] != null) {
-            $qb->field('createdBy')->equals($data['created_by']);
+        if (isset($data['createdBy']) && $data['createdBy'] != null) {
+            $qb->field('createdBy')->equals($data['createdBy']);
         }
 
         //confirmed
@@ -149,6 +146,11 @@ class PackageRepository extends DocumentRepository
             }
 
             $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
+        }
+
+        //isCheckIn
+        if(isset($data['checkIn'])) {
+            $qb->field('isCheckIn')->equals(empty($data['checkIn']) ? false : true);
         }
 
         //order

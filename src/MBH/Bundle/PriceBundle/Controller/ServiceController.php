@@ -14,6 +14,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * @Route("service")
@@ -40,16 +41,6 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             ->getQuery()
             ->execute()
         ;
-
-        if (!$entities->count()) {
-            $serviceCategory = new ServiceCategory();
-            $serviceCategory->setFullTitle('Основные')
-                ->setHotel($this->get('mbh.hotel.selector')->getSelected())
-            ;
-            $dm->persist($serviceCategory);
-            $dm->flush();
-            $entities = [$serviceCategory];
-        }
         
         return [
             'entities' => $entities,
@@ -113,7 +104,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $form = $this->createForm(
             new ServiceType(),
             $entry,
-            ['units' => $this->container->getParameter('mbh.services')['units']]
+            ['calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']]
         );
 
         return [
@@ -147,7 +138,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $form = $this->createForm(
             new ServiceType(),
             $entry,
-            ['units' => $this->container->getParameter('mbh.services')['units']]
+            ['calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']]
         );
 
         $form->submit($request);
@@ -197,7 +188,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $form = $this->createForm(
             new ServiceType(),
             $entry,
-            ['units' => $this->container->getParameter('mbh.services')['units']]
+            ['calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']]
         );
 
         return [
@@ -229,7 +220,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $form = $this->createForm(
             new ServiceType(),
             $entry,
-            ['units' => $this->container->getParameter('mbh.services')['units']]
+            ['calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']]
         );
 
         $form->submit($request);
@@ -333,7 +324,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
 
         $entity = $dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
 
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$entity || $entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -363,7 +354,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
 
         $entity = $dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
 
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entry->getHotel())) {
+        if (!$entity || $entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entry->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -400,9 +391,13 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      */
-    public function deleteAction($id)
+    public function deleteAction(ServiceCategory $category)
     {
-        return $this->deleteEntity($id, 'MBHPriceBundle:ServiceCategory', 'price_service_category');
+        if ($category->getSystem()) {
+            throw $this->createNotFoundException();
+        }
+        
+        return $this->deleteEntity($category->getId(), 'MBHPriceBundle:ServiceCategory', 'price_service_category');
     }
 
     /**
@@ -420,7 +415,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
 
             $entity = $dm->getRepository('MBHPriceBundle:Service')->find($id);
 
-            if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+            if (!$entity || $entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
                 throw $this->createNotFoundException();
             }
             $catId = $entity->getCategory()->getId();
@@ -435,7 +430,6 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
                 ->getFlashBag()
                 ->set('danger', $e->getMessage());
         }
-
 
         return $this->redirect($this->generateUrl('price_service_category', ['tab' => $catId]));
     }

@@ -1,4 +1,4 @@
-/*global window */
+/*global window, $ */
 $(document).ready(function() {
     'use strict';
 
@@ -81,6 +81,15 @@ $(document).ready(function() {
         boostat: 5,
         maxboostedstep: 10,
         postfix: '<i class="fa fa-ruble"></i>'
+    });
+
+    $('.percent-spinner').TouchSpin({
+        min: 0,
+        max: 9007199254740992,
+        step: 1,
+        boostat: 5,
+        maxboostedstep: 10,
+        postfix: '%'
     });
     
     $('.quota-spinner').TouchSpin({

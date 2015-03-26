@@ -85,6 +85,11 @@ var checkMessages = function() {
 $(document).ready(function() {
     'use strict';
 
+    //scrolling height
+    $('.scrolling').each(function(){
+        $(this).height(document.documentElement.clientHeight - 280 + 'px');
+    });
+
     //get messages
     checkMessages();
     window.setInterval(function() {

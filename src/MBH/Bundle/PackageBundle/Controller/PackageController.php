@@ -179,51 +179,68 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
+        $now = new \DateTime('midnight');
+        $tomorrow = new \DateTime('midnight +1 day');
 
         //begin today count
         $data = [
             'count' => true,
             'hotel' => $this->get('mbh.hotel.selector')->getSelected()
         ];
-        $now = new \DateTime();
-        $count['begin_today'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
+        $repo = $dm->getRepository('MBHPackageBundle:Package');
+
+        $count['begin_today'] = $repo->fetch(array_merge([
                 'begin' => $now->format('d.m.Y'),
                 'end' => $now->format('d.m.Y'),
                 'dates' => 'begin'
             ], $data)
         );
         //begin tomorrow count
-        $now->modify('+1 day');
-        $count['begin_tomorrow'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
-                    'begin' => $now->format('d.m.Y'),
-                    'end' => $now->format('d.m.Y'),
+        $count['begin_tomorrow'] = $repo->fetch(array_merge([
+                    'begin' => $tomorrow->format('d.m.Y'),
+                    'end' => $tomorrow->format('d.m.Y'),
                     'dates' => 'begin'
                 ], $data)
         );
         //live now count
-        $count['live_now'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
+        $count['live_now'] = $repo->fetch(array_merge([
                     'filter' => 'live_now'
                 ], $data)
         );
         //without-approval count
-        $count['without_approval'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
+        $count['without_approval'] = $repo->fetch(array_merge([
                     'confirmed' => '0'
                 ], $data)
         );
         //without_accommodation count
-        $count['without_accommodation'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
+        $count['without_accommodation'] = $repo->fetch(array_merge([
                     'filter' => 'without_accommodation'
                 ], $data)
         );
         //not_paid count
-        $count['not_paid'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
+        $count['not_paid'] = $repo->fetch(array_merge([
                     'paid' => 'not_paid'
                 ], $data)
         );
+        //not_paid time count
+        $count['not_paid_time'] = $repo->fetch(array_merge([
+            'paid' => 'not_paid',
+            'end' => new \DateTime($this->container->getParameter('mbh.package.notpaid.time')),
+            'dates' => 'createdAt'
+                ], $data)
+        );
         //created_by count
-        $count['created_by'] = $dm->getRepository('MBHPackageBundle:Package')->fetch(array_merge([
+        $count['created_by'] = $repo->fetch(array_merge([
                     'created_by' => $this->getUser()->getUsername()
                 ], $data)
+        );
+        //checkIn count
+        $count['not_check_in'] = $repo->fetch(array_merge([
+                'checkIn' => false,
+                'begin' => $now->format('d.m.Y'),
+                'end' => $now->format('d.m.Y'),
+                'dates' => 'begin'
+            ], $data)
         );
 
         return [
@@ -268,14 +285,14 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         switch ($request->get('quick_link')){
             case 'begin-today':
                 $data['dates'] = 'begin';
-                $now = new \DateTime();
+                $now = new \DateTime('midnight');
                 $data['begin'] = $now->format('d.m.Y');
                 $data['end'] = $now->format('d.m.Y');
                 break;
 
             case 'begin-tomorrow':
                 $data['dates'] = 'begin';
-                $now = new \DateTime();
+                $now = new \DateTime('midnight');
                 $now->modify('+1 day');
                 $data['begin'] = $now->format('d.m.Y');
                 $data['end'] = $now->format('d.m.Y');
@@ -296,9 +313,24 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             case 'not-paid':
                 $data['paid'] = 'not_paid';
                 break;
+            
+            case 'not-paid-time':
+                $notPaidTime = new \DateTime($this->container->getParameter('mbh.package.notpaid.time'));
+                $data['paid'] = 'not_paid';
+                $data['dates'] = 'createdAt';
+                $data['end'] = $notPaidTime->format('d.m.Y');
+                break;
+
+            case 'not-check-in':
+                $data['checkIn'] = false;
+                $data['dates'] = 'begin';
+                $now = new \DateTime('midnight');
+                $data['begin'] = $now->format('d.m.Y');
+                $data['end'] = $now->format('d.m.Y');
+                break;
 
             case 'created-by':
-                $data['created_by'] = $this->getUser()->getUsername();
+                $data['createdBy'] = $this->getUser()->getUsername();
                 break;
             default:
         }
@@ -336,7 +368,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $entity,
             [
                 'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
-                'defaultTime' => $this->container->getParameter('mbh.package.arrival.time')
+                'defaultTime' => $this->container->getParameter('mbh.package.arrival.time'),
+                'price' => $this->get('security.context')->isGranted(['ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER'])
             ]
         );
 
@@ -371,7 +404,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             new PackageMainType(),
             $entity,
             [
-                'arrivals' => $this->container->getParameter('mbh.package.arrivals')
+                'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
+                'price' => $this->get('security.context')->isGranted(['ROLE_BOOKKEEPER'])
             ]
         );
 
@@ -584,8 +618,13 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 $packageService = new PackageService();
                 $packageService->setPackage($entity)
                     ->setService($service)
+                    ->setDate($this->container->get('mbh.helper')->getDateFromString($data['date']))
+                    ->setNights((int)$data['nights'])
+                    ->setPersons((int)$data['persons'])
                     ->setAmount((int)$data['amount'])
-                    ->setPrice($service->getPrice());
+                    ->setPrice((int) $data['price'])
+                    ->setIsCustomPrice((int) $data['price'] != $service->getPrice())
+                    ->setNote(empty($data['note']) ? null : $data['note']);
 
                 $dm->persist($packageService);
                 $dm->flush();
@@ -605,7 +644,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'entity' => $entity,
             'logs' => $this->logs($entity),
             'form' => $form->createView(),
-            'config' => $this->container->getParameter('mbh.services')
+            'config' => $this->container->getParameter('mbh.services'),
         ];
     }
 
@@ -636,6 +675,37 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->set('success', 'Услуга успешно удалена.');
 
         return $this->redirect($this->generateUrl('package_service', ['id' => $id]));
+    }
+
+    /**
+     * Accommodation check-in
+     *
+     * @Route("/{id}/accommodation/check_in", name="package_check_in")
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("order", class="MBHPackageBundle:Package")
+     * @Template()
+     * @param Request $request
+     * @param Package $doc
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function checkInAction(Request $request, Package $doc)
+    {
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($doc) || empty($doc->getAccommodation())) {
+            throw $this->createNotFoundException();
+        }
+
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $doc->setIsCheckIn(true);
+        $dm->persist($doc);
+        $dm->flush();
+
+        $request->getSession()
+            ->getFlashBag()
+            ->set('success', 'Гости заехали.');
+
+        return $this->redirect($this->generateUrl('package_accommodation', ['id' => $doc->getId()]));
     }
 
     /**
@@ -718,7 +788,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             [],
             [
                 'rooms' => $groupedRooms,
-                'isHostel' => $this->get('mbh.hotel.selector')->getSelected()->getIsHostel()
+                'isHostel' => $this->get('mbh.hotel.selector')->getSelected()->getIsHostel(),
+                'guests' => $entity->getIsCheckIn()
             ]);
 
         if ($request->getMethod() == 'PUT'  && $this->container->get('mbh.package.permissions')->check($entity)) {
@@ -726,7 +797,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
             if ($form->isValid()) {
 
-                $entity->setAccommodation($dm->getRepository('MBHHotelBundle:Room')->find($form->getData()['room']));
+                $data = $form->getData();
+
+                $entity->setAccommodation($dm->getRepository('MBHHotelBundle:Room')->find($data['room']))
+                       ->setIsCheckIn($data['isCheckIn'])
+                ;
                 $dm->persist($entity);
                 $dm->flush();
 

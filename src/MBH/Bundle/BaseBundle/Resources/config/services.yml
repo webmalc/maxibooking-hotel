@@ -6,11 +6,17 @@ services:
       tags:
         - { name: validator.constraint_validator, alias: doctrine_odm.mongodb.unique }
 
-    mbh.base_listener:
-            class: MBH\Bundle\BaseBundle\EventListener\BaseListener
+    mbh.base_on_request_listener:
+            class: MBH\Bundle\BaseBundle\EventListener\OnRequest
             arguments: [@service_container]
             tags:
-                - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+                - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+    mbh.base_on_controller_listener:
+                class: MBH\Bundle\BaseBundle\EventListener\OnController
+                arguments: [@service_container]
+                tags:
+                    - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
     mongodb_acl_provider:
             parent: doctrine_mongodb.odm.security.acl.provider

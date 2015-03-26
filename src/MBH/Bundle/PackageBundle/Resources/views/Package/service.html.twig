@@ -31,23 +31,31 @@
                 <tr>
                     <th class="td-xs"></th>
                     <th>Название</th>
+                    <th class="td-sm text-center">Количество суток</th>
+                    <th class="td-sm text-center">Количество гостей</th>
                     <th class="td-xs text-center">Количество</th>
-                    <th class="td-sm text-center">Единица измерения</th>
-                    <th class="td-md text-right">Цена</th>
-                    <th class="td-md text-right">Итог</th>
                     <th class="td-md text-center">Дата</th>
+                    <th class="td-md text-right">Цена</th>
+                    <th class="td-lg">Тип расчета</th>
+                    <th class="td-md text-right">Итог</th>
+                    <th>Комментарий</th>
+                    <th class="td-md text-center">Дата создания</th>
                     <th class="td-sm"></th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for service in entity.services %}
-                    <tr>
+                    <tr {% if service.deletedAt %}class="danger"{% endif %}>
                         <td class="text-center table-icon"><i class="fa fa-plug"></i></td>
                         <td>{{ service.service }}</td>
+                        <td class="text-center">{{ service.calcType == 'per_night' ? service.nights : '' }}</td>
+                        <td class="text-center">{{ service.calcType != 'not_applicable' ? service.persons : '' }}</td>
                         <td class="text-center">{{ service.amount }}</td>
-                        <td class="text-center">{{ config.units[service.service.unit]|default('Штука') }}</td>
+                        <td class="text-center">{{ service.date is null ? '' : service.date|date('d.m.Y') }}</td>
                         <td class="text-right text-success">{{ service.price|number_format }}</td>
+                        <td>{{ config.calcTypes[service.calcType] }}</td>
                         <td class="text-right text-success">{{ service.total|number_format }}</td>
+                        <td>{{ service.note }}</td>
                         <td class="text-center">{{ service.createdAt|date('d.m.Y') }}</td>
                         <td class="table-actions-td text-center">
                             {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
@@ -81,4 +89,27 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    
+    <script>
+        var services = {
+            'package_duration': {{ entity.nights }},
+            'package_guests': {{ entity.children + entity.adults }},
+            'package_one_day_price': {{ entity.oneDayPrice() }},
+            {% for category in entity.tariff.hotel.servicesCategories %}
+                {% for service in category.services %}        
+                    '{{ service.id}}': {
+                        'date': {{ service.date ? 1 : 0}},
+                        'calcType': '{{ service.calcType}}',
+                        'calcTypeStr': '{{ config.calcTypes[service.calcType]}}',
+                        'price': {% if service.calcType == 'day_percent' %}{{ entity.oneDayPrice() }} * {{ service.price}} / 100 {% else %} {{ service.price}} {% endif %}
+                    },
+                {% endfor %}    
+            {% endfor %}
+
+        };
+    </script>
 {% endblock %}

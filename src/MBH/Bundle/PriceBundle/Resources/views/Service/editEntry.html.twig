@@ -6,7 +6,12 @@
 
     {{ form_start(form, {'action': path('price_service_category_entry_update', {'id': entry.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entry, 'delete_route': 'price_service_category_entry_delete' } %}
+    {% if entry.system %}
+        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entry } %}
+    {% else %}
+        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entry, 'delete_route': 'price_service_category_entry_delete' } %}
+    {% endif %}
+    
     {{ form_end(form) }}
     
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entry, 'logs': logs, 'delete_route': 'price_service_category_entry_delete' } %}

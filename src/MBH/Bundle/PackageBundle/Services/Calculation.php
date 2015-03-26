@@ -88,10 +88,13 @@ class Calculation
         }
         foreach ($services as $service) {
 
-            if($removeDoc && $removeDoc->getId() == $service->getId()) {
+            if (!empty($service->getDeletedAt())) {
                 continue;
             }
-            $total += $service->getPrice() * $service->getAmount();
+            if ($removeDoc && $removeDoc->getId() == $service->getId()) {
+                continue;
+            }
+            $total += $service->getTotal();
         }
         $package->setServicesPrice($total);
 

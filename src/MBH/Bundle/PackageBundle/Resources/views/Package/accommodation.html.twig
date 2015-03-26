@@ -12,7 +12,7 @@
         <div class="tab-pane active" id="home">
             {% if entity.accommodation %}
                 <div class="alert alert-warning">
-                    <i class="fa fa-home"></i> Размещение: {{ entity.accommodation.name(true, true) }}
+                    <i class="fa fa-home"></i> Размещение: {{ entity.accommodation.name(true, true) }}, гости {{ entity.isCheckIn ? '' : 'не ' }}заехали
                     {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                         <div class="pull-right">
                             <a href="{{ path('package_accommodation_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">

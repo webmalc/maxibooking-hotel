@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
- * @ODM\Document(collection="RoomCache")
+ * @ODM\Document(collection="RoomCache", repositoryClass="MBH\Bundle\PackageBundle\Document\RoomCacheRepository")
  * @Gedmo\Loggable
  */
 class RoomCache extends Base
@@ -290,4 +290,17 @@ class RoomCache extends Base
     {
         return $this->isOnline;
     }
+    
+    
+    public function getPrice($adults = 1, $children = 0)
+    {
+        foreach ($this->getPrices() as $price)
+        {
+            if ($price->getAdults() == $adults && $price->getChildren() == $children){
+                return $price;
+            }
+        }
+        
+        return null;
+    }        
 }

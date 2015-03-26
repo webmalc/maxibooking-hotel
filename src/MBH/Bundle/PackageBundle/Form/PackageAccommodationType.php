@@ -22,6 +22,13 @@ class PackageAccommodationType extends AbstractType
                     'choices' => $options['rooms'],
                     'constraints' => new NotBlank()
                 ])
+            ->add('isCheckIn', 'checkbox', [
+                'label' => 'Гости заехали?',
+                'value' => true,
+                'required' => false,
+                'data' => $options['guests'],
+                'help' => 'Заехал ли гости в номер?'
+            ])
         ;
     }
 
@@ -29,7 +36,8 @@ class PackageAccommodationType extends AbstractType
     {
         $resolver->setDefaults([
             'rooms' => [],
-            'isHostel' => false
+            'isHostel' => false,
+            'guests' => false
         ]);
     }
 

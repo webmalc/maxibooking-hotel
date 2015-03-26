@@ -52,6 +52,7 @@ class PackageService extends Base
 
     /**
      * @var int
+     * @Gedmo\Versioned
      * @ODM\Int()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -63,6 +64,7 @@ class PackageService extends Base
 
     /**
      * @var int
+     * @Gedmo\Versioned
      * @ODM\Int()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -71,6 +73,54 @@ class PackageService extends Base
      * )
      */
     protected $amount;
+    
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=1,
+     *      minMessage="Количество персон не может быть меньше единицы"
+     * )
+     */
+    protected $persons;
+    
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=1,
+     *      minMessage="Количество ночей не может быть меньше единицы"
+     * )
+     */
+    protected $nights;
+    
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Date()
+     * @Assert\Date()
+     */
+    protected $date;
+    
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="note")
+     */
+    protected $note;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isCustomPrice = false;
+    
 
     /**
      * Set service
@@ -165,6 +215,165 @@ class PackageService extends Base
      */
     public function getTotal()
     {
-        return $this->getPrice() * $this->getAmount();
+        $price = $this->getPrice() * $this->getAmount();
+        
+        if ($this->getCalcType() == 'per_night') {
+            $price *= $this->getNights();
+        }
+
+        if ($this->getCalcType() == 'day_percent' && !$this->getIsCustomPrice()) {
+            $price = $this->getPackage()->getOneDayPrice() * $price / 100;
+        }
+
+        if (!in_array($this->getCalcType(), ['not_applicable', 'day_percent'])) {
+            $price *= $this->getPersons();
+        }
+
+        return $price;
+    }
+
+    /**
+     * Set persons
+     *
+     * @param int $persons
+     * @return self
+     */
+    public function setPersons($persons)
+    {
+        $this->persons = $persons;
+        return $this;
+    }
+
+    /**
+     * Get persons
+     *
+     * @return int $persons
+     */
+    public function getPersons()
+    {
+        return $this->persons;
+    }
+
+    /**
+     * Set nights
+     *
+     * @param int $nights
+     * @return self
+     */
+    public function setNights($nights)
+    {
+        $this->nights = $nights;
+        return $this;
+    }
+
+    /**
+     * Get nights
+     *
+     * @return int $nights
+     */
+    public function getNights()
+    {
+        return $this->nights;
+    }
+
+    /**
+     * Set date
+     *
+     * @param \DateTime $date
+     * @return self
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+        return $this;
+    }
+
+    /**
+     * Get date
+     *
+     * @return \DateTime $date
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+    
+    /**
+     * Set note
+     *
+     * @param string $note
+     * @return self
+     */
+    public function setNote($note)
+    {
+        $this->note = $note;
+        return $this;
+    }
+
+    /**
+     * Get note
+     *
+     * @return string $note
+     */
+    public function getNote()
+    {
+        return $this->note;
+    }
+    
+    /**
+     * @ODM\PrePersist
+     */
+    public function prePersist()
+    {
+        $this->setDefaults();
+    }
+
+    /**
+     * @ODM\preUpdate
+     */
+    public function preUpdate()
+    {
+        $this->setDefaults();
+    }
+
+    public function setDefaults()
+    {
+        $type = $this->service->getCalcType();
+        
+        if ($type == 'per_stay') {
+            $this->setNights(1);
+        }
+        
+        if ($type == 'not_applicable') {
+            $this->setNights(1);
+            $this->setPersons(1);
+        }
+    }
+    
+    public function getCalcType()
+    {
+        return $this->getService()->getCalcType();
+    }        
+
+    /**
+     * Set isCustomPrice
+     *
+     * @param boolean $isCustomPrice
+     * @return self
+     */
+    public function setIsCustomPrice($isCustomPrice)
+    {
+        $this->isCustomPrice = $isCustomPrice;
+        return $this;
+    }
+
+    /**
+     * Get isCustomPrice
+     *
+     * @return boolean $isCustomPrice
+     */
+    public function getIsCustomPrice()
+    {
+        return $this->isCustomPrice;
     }
 }

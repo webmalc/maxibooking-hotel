@@ -11,7 +11,7 @@
             {{ form_start(form, {'action': path('booking_save'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
             <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
-                <div class="container">
+                <div class="container-fluid">
                     <ul class="nav navbar-nav">
                         <li><button type="submit" name="save" class="btn btn-info navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить</button></li>
                         {% if doc %}

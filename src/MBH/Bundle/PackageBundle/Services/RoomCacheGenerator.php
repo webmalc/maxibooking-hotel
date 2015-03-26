@@ -311,7 +311,7 @@ class RoomCacheGenerator
             $this->copyTmpCache();
         }
 
-        $this->container->get('mbh.channelmanager')->update(null, null, $roomType);
+        $this->updateChannelManagerInBackground($roomType, null, null);
         $this->clearMessages();
         return $total;
     }
@@ -528,6 +528,7 @@ class RoomCacheGenerator
      */
     public function recalculateCache(RoomType $roomType, \DateTime $begin, \DateTime $end)
     {
+
         $caches = $this->dm->getRepository('MBHPackageBundle:RoomCache')
             ->createQueryBuilder('q')
             ->field('roomType.id')->equals($roomType->getId())
