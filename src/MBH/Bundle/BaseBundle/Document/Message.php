@@ -33,7 +33,7 @@ class Message extends Base implements \JsonSerializable
      * @var string
      * @ODM\Boolean()
      */
-    protected $autohide;
+    protected $autohide = false;
     
     /**
      * @var \DateTime

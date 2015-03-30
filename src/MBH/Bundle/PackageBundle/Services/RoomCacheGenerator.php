@@ -50,26 +50,16 @@ class RoomCacheGenerator
 
     public function sendMessage()
     {
-        $this->clearMessages();
-        $message = new Message();
-        $message->setFrom('cache')
-                ->setText($this->container->getParameter('mbh.room.cache.message'))
-                ->setType($this->container->getParameter('mbh.room.cache.message.type'))
-        ;
-        $this->dm->persist($message);
-        $this->dm->flush();
+        $this->container->get('mbh.messenger')->send(
+            $this->container->getParameter('mbh.room.cache.message'),
+            'cache',
+            $this->container->getParameter('mbh.room.cache.message.type')
+        );
     }
 
     public function clearMessages()
     {
-        //Remove all old RoomCache with same $roomType
-        $this->dm->getRepository('MBHBaseBundle:Message')
-                ->createQueryBuilder('q')
-                ->remove()
-                ->field('from')->equals('cache')
-                ->getQuery()
-                ->execute()
-        ;
+        $this->container->get('mbh.messenger')->clear('cache');
     }
 
     /**

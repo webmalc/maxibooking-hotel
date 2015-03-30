@@ -27,7 +27,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      */
     public function indexAction()
     {
-        //$this->get('mbh.channelmanager')->update();
+        $this->get('mbh.channelmanager')->update();
         
         $doc = $this->get('mbh.hotel.selector')->getSelected()->getBookingConfig();
 
@@ -78,6 +78,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
                 ->set('success', 'Настройки успешно сохранены.')
             ;
 
+            $this->container->get('mbh.channelmanager')->syncInBackground();
             $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
 
             return $this->redirect($this->generateUrl('booking'));

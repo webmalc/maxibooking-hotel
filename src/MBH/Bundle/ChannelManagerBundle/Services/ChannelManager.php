@@ -71,7 +71,7 @@ class ChannelManager
             try {
                 $service = $this->container->get($info['service']);
 
-                if ($service instanceof ServiceInterface) {
+                if ($service instanceof ServiceInterface && !empty($service->getConfig())) {
 
                     if (!empty($filter) && !in_array($key, $filter)) {
                         continue;
@@ -133,7 +133,21 @@ class ChannelManager
         foreach ($this->services as $service) {
 
             try {
-                $result[$service['key']]['result'] = $service['service']->update($begin, $end, $roomType);
+                $noError = false;
+
+                if(empty($roomType)) {
+                    $noError = $service['service']->closeAll();
+                }
+                if(!empty($roomType) || $noError) {
+                    $noError = $result[$service['key']]['result'] = $service['service']->update($begin, $end, $roomType);
+                }
+
+                if (!$noError) {
+                    $this->container->get('mbh.messenger')->send(
+                        $service['title'] . ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.',
+                        'system', 'danger', false, new \DateTime('+1 minute'), true
+                    );
+                }
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
@@ -143,5 +157,4 @@ class ChannelManager
 
         return $result;
     }
-
 }

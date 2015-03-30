@@ -44,7 +44,7 @@ class ChannelManagerSubscriber implements EventSubscriber
         );
         
         $classes = [
-            '\MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface',
+            //'\MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface',
             '\MBH\Bundle\HotelBundle\Document\RoomType',
             '\MBH\Bundle\PriceBundle\Document\Tariff',
         ];
@@ -61,6 +61,7 @@ class ChannelManagerSubscriber implements EventSubscriber
     public function postFlush(PostFlushEventArgs $eventArgs)
     {
         if (!empty($this->flushedDocs)) {
+            $this->flushedDocs = [];
             $this->sync();
         }
     }

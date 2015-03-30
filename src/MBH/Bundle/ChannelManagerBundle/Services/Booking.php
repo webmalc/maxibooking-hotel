@@ -64,7 +64,7 @@ class Booking extends Base
         
         foreach ($this->getConfig() as $config) {
             $request = $this->templating->render('MBHChannelManagerBundle:Booking:close.xml.twig', [
-                'config' => $config, 'rooms' => $this->getRoomTypes($config)]
+                'config' => $config, 'rooms' => $this->getRoomTypes($config), 'rates' => $this->getTariffs($config)]
             );
             $sendResult = $this->send(static::BASE_URL . 'availability', $request, null, true);
             $result = $this->checkResponse($sendResult);
@@ -77,9 +77,8 @@ class Booking extends Base
      */
     public function update (\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
+
         $result = false;
-        
-        $this->closeAll();
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
@@ -101,11 +100,14 @@ class Booking extends Base
                 $tariffSyncId = $tariffs[$tariff->getId()]['syncId'];
                 $formattedDate = $cache->getDate()->format('Y-m-d');
                 $price = $cache->getPrice()->getPrice();
+
+                if (!is_numeric($price)) {
+                    continue;
+                }
                 
                 $data[$roomTypeSyncId][$formattedDate][$tariffSyncId] = 
                 [
                     'roomstosell' => $cache->getRooms(),
-                    'price1' => $price,
                     'closed' => empty($cache->getRooms()) ? 1 : 0
                 ];
                 
@@ -117,6 +119,8 @@ class Booking extends Base
                 }
                 if ($roomType->getCalculationType() == 'perRoom') {
                     $data[$roomTypeSyncId][$formattedDate][$tariffSyncId]['price'] = $price;
+                } else {
+                    $data[$roomTypeSyncId][$formattedDate][$tariffSyncId]['price1'] = $price;
                 }
             }
             
@@ -126,7 +130,6 @@ class Booking extends Base
             //echo($request); exit();
 
             $sendResult = $this->send(static::BASE_URL . 'availability', $request, null, true);
-
             $result = $this->checkResponse($sendResult);
         }
         
@@ -142,8 +145,8 @@ class Booking extends Base
             return false;
         }
         $xml = simplexml_load_string($response);
-        
-        return count($xml->xpath('/ok')) ? true : false;
+
+        return count($xml->xpath('/ok')) ? true : false;;
     }
 
     /**
