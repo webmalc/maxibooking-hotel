@@ -76,16 +76,20 @@ class Builder extends ContainerAware
                 ->setAttributes(['icon' => 'fa fa-home']);
 
         //Prices links
-        $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Цены'])
+        $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Наличие и цены'])
              ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-ruble'])
         ;
+        $menu['prices']->addChild('room_cache', ['route' => 'room_cache_overview', 'label' => 'Номера в продаже'])
+            ->setAttributes(['icon' => 'fa fa-home']);
+        $menu['prices']->addChild('price_cache', ['route' => 'price_cache_overview', 'label' => 'Цены'])
+            ->setAttributes(['icon' => 'fa fa-ruble']);
+        $menu['prices']->addChild('restrictions', ['route' => 'price_cache_overview', 'label' => 'Условия и ограничения'])
+            ->setAttributes(['icon' => 'fa fa-exclamation-circle']);
         $menu['prices']->addChild('tariff', ['route' => 'tariff', 'label' => 'Тарифы'])
                 ->setAttributes(['icon' => 'fa fa-sliders']);
         $menu['prices']->addChild('services', ['route' => 'price_service_category', 'label' => 'Услуги'])
                 ->setAttributes(['icon' => 'fa fa-plug']);
-        $menu['prices']->addChild('overview', ['route' => 'prices_overview', 'label' => 'Обзор цен'])
-                        ->setAttributes(['icon' => 'fa fa-ruble']);
-        
+
         //Users links
         $menu->addChild('configs', ['route' => '_welcome', 'label' => 'Настройки'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-cogs'])

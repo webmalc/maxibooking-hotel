@@ -4,18 +4,11 @@
 
 {% block content %}
 
-    {% include 'MBHPriceBundle:Tariff:editTabs.html.twig' with {'active': 1 , 'entity': entity} %}
+    {{ form_start(form, {'action': path('tariff_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': entity.isDefault ? null : 'tariff_delete' } %}
+    {{ form_end(form) }}
 
-    <div class="tab-content">
-        <div class="tab-pane active" id="home">
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tariff_delete' } %}
 
-            {{ form_start(form, {'action': path('tariff_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
-            {{ form_widget(form) }}
-            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'tariff_delete' } %}
-            {{ form_end(form) }}
-
-            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tariff_delete' } %}
-        
-        </div>
-    </div>
 {% endblock %}

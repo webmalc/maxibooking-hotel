@@ -1,0 +1,13 @@
+{% extends 'MBHPriceBundle:PriceCache:layout.html.twig' %}
+
+{% set small_title = "генератор" %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('price_cache_generator_save'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+    {{ form_end(form) }}
+
+{% endblock %} 
+

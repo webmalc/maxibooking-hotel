@@ -74,6 +74,10 @@ services:
       class: MBH\Bundle\BaseBundle\Service\Messenger
       arguments: [@service_container]
 
+    mbh.mongo:
+          class: MBH\Bundle\BaseBundle\Service\Mongo
+          arguments: [@service_container]
+
     doctrine_mongo_db_param_converter:
         class: Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\DoctrineParamConverter
         arguments: [@doctrine_mongodb]

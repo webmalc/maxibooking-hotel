@@ -33,13 +33,13 @@ class Hotel extends Base
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -92,30 +92,6 @@ class Hotel extends Base
      * )
      */
     protected $saleDays = 0;
-
-    /**
-     * @var int
-     * @Gedmo\Versioned
-     * @ODM\Int()
-     * @Assert\Type(type="numeric")
-     * @Assert\Range(
-     *      min=1,
-     *      minMessage="Максимальная продолжительность брони не может быть меньше 1"
-     * )
-     */
-    protected $maxPackageDuration;
-
-    /**
-     * @var int
-     * @Gedmo\Versioned
-     * @ODM\Int()
-     * @Assert\Type(type="numeric")
-     * @Assert\Range(
-     *      min=1,
-     *      minMessage="Минимальная продолжительность брони не может быть меньше 1"
-     * )
-     */
-    protected $minPackageDuration;
 
     /**
      * @var boolean
@@ -185,13 +161,13 @@ class Hotel extends Base
      * )
      */
     public $rating;
-    
+
     /** @ODM\ReferenceMany(targetDocument="RoomType", mappedBy="hotel") */
     protected $roomTypes;
-    
+
     /** @ODM\ReferenceMany(targetDocument="Room", mappedBy="hotel") */
     protected $rooms;
-    
+
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff", mappedBy="hotel") */
     protected $tariffs;
 
@@ -224,7 +200,7 @@ class Hotel extends Base
      * @ODM\ReferenceOne(targetDocument="City")
      */
     protected $city;
-    
+
     /**
      * Set fullTitle
      *
@@ -234,6 +210,7 @@ class Hotel extends Base
     public function setFullTitle($fullTitle)
     {
         $this->fullTitle = $fullTitle;
+
         return $this;
     }
 
@@ -256,6 +233,7 @@ class Hotel extends Base
     public function setTitle($title)
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -278,6 +256,7 @@ class Hotel extends Base
     public function setPrefix($prefix)
     {
         $this->prefix = $prefix;
+
         return $this;
     }
 
@@ -299,12 +278,12 @@ class Hotel extends Base
      */
     public function setSaleDays($saleDays)
     {
-        $this->saleDays = (int) $saleDays;
-        
-        if($this->saleDays < 0) {
+        $this->saleDays = (int)$saleDays;
+
+        if ($this->saleDays < 0) {
             $this->saleDays = 0;
         }
-        
+
         return $this;
     }
 
@@ -317,7 +296,7 @@ class Hotel extends Base
     {
         return $this->saleDays;
     }
-    
+
     /**
      * @return string
      */
@@ -326,6 +305,7 @@ class Hotel extends Base
         if (!empty($this->title)) {
             return $this->title;
         }
+
         return $this->fullTitle;
     }
 
@@ -338,6 +318,7 @@ class Hotel extends Base
     public function setIsDefault($isDefault)
     {
         $this->isDefault = $isDefault;
+
         return $this;
     }
 
@@ -357,7 +338,7 @@ class Hotel extends Base
         $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
      * Add roomType
      *
@@ -457,6 +438,7 @@ class Hotel extends Base
     public function setVashotelConfig(\MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig $vashotelConfig)
     {
         $this->vashotelConfig = $vashotelConfig;
+
         return $this;
     }
 
@@ -479,6 +461,7 @@ class Hotel extends Base
     public function setOktogoConfig(\MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig $oktogoConfig)
     {
         $this->oktogoConfig = $oktogoConfig;
+
         return $this;
     }
 
@@ -521,7 +504,7 @@ class Hotel extends Base
     {
         return $this->servicesCategories;
     }
-    
+
     /**
      * Get services list
      * @param boolean $online
@@ -531,7 +514,7 @@ class Hotel extends Base
     public function getServices($enabled = false, $online = false)
     {
         $result = [];
-        
+
         foreach ($this->servicesCategories as $serviceCategory) {
             foreach ($serviceCategory->getServices() as $service) {
                 if ($online && !$service->getIsOnline()) {
@@ -540,57 +523,13 @@ class Hotel extends Base
                 if ($enabled && !$service->getIsEnabled()) {
                     continue;
                 }
-                if ($service->getPrice() !== null) { 
+                if ($service->getPrice() !== null) {
                     $result[] = $service;
                 }
             }
         }
-        
+
         return $result;
-    }
-
-    /**
-     * Set maxPackageDuration
-     *
-     * @param int $maxPackageDuration
-     * @return self
-     */
-    public function setMaxPackageDuration($maxPackageDuration)
-    {
-        $this->maxPackageDuration = $maxPackageDuration;
-        return $this;
-    }
-
-    /**
-     * Get maxPackageDuration
-     *
-     * @return int $maxPackageDuration
-     */
-    public function getMaxPackageDuration()
-    {
-        return $this->maxPackageDuration;
-    }
-
-    /**
-     * Set minPackageDuration
-     *
-     * @param int $minPackageDuration
-     * @return self
-     */
-    public function setMinPackageDuration($minPackageDuration)
-    {
-        $this->minPackageDuration = $minPackageDuration;
-        return $this;
-    }
-
-    /**
-     * Get minPackageDuration
-     *
-     * @return int $minPackageDuration
-     */
-    public function getMinPackageDuration()
-    {
-        return $this->minPackageDuration;
     }
 
     /**
@@ -602,6 +541,7 @@ class Hotel extends Base
     public function setIsHostel($isHostel)
     {
         $this->isHostel = $isHostel;
+
         return $this;
     }
 
@@ -624,6 +564,7 @@ class Hotel extends Base
     public function setCountry(\MBH\Bundle\HotelBundle\Document\Country $country)
     {
         $this->country = $country;
+
         return $this;
     }
 
@@ -646,6 +587,7 @@ class Hotel extends Base
     public function setRegion(\MBH\Bundle\HotelBundle\Document\Region $region)
     {
         $this->region = $region;
+
         return $this;
     }
 
@@ -668,6 +610,7 @@ class Hotel extends Base
     public function setCity(\MBH\Bundle\HotelBundle\Document\City $city)
     {
         $this->city = $city;
+
         return $this;
     }
 
@@ -690,6 +633,7 @@ class Hotel extends Base
     public function setLatitude($latitude)
     {
         $this->latitude = $latitude;
+
         return $this;
     }
 
@@ -712,6 +656,7 @@ class Hotel extends Base
     public function setLongitude($longitude)
     {
         $this->longitude = $longitude;
+
         return $this;
     }
 
@@ -734,6 +679,7 @@ class Hotel extends Base
     public function setType($type)
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -756,6 +702,7 @@ class Hotel extends Base
     public function setTheme($theme)
     {
         $this->theme = $theme;
+
         return $this;
     }
 
@@ -778,6 +725,7 @@ class Hotel extends Base
     public function setFacilities($facilities)
     {
         $this->facilities = $facilities;
+
         return $this;
     }
 
@@ -800,6 +748,7 @@ class Hotel extends Base
     public function setRating($rating)
     {
         $this->rating = $rating;
+
         return $this;
     }
 
@@ -822,6 +771,7 @@ class Hotel extends Base
     public function setBookingConfig(\MBH\Bundle\ChannelManagerBundle\Document\BookingConfig $bookingConfig)
     {
         $this->bookingConfig = $bookingConfig;
+
         return $this;
     }
 

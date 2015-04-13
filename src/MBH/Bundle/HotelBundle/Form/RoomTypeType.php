@@ -59,14 +59,6 @@ class RoomTypeType extends AbstractType
                     'help' => $fileText,
                     'constraints' => [new Image()]
                 ])
-                ->add('calculationType', 'choice', [
-                    'label' => 'Способ расчета',
-                    'group' => 'Настройки',
-                    'required' => true,
-                    'multiple' => false,
-                    'empty_value' => '',
-                    'choices' => $options['calculationTypes']
-                ])
                 ->add('places', 'text', [
                     'label' => 'Основные места',
                     'group' => 'Настройки',
@@ -95,7 +87,6 @@ class RoomTypeType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\HotelBundle\Document\RoomType',
-            'calculationTypes' => [],
             'imageUrl' => null,
             'deleteImageUrl' => null
         ));

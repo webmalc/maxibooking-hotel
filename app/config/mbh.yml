@@ -2,6 +2,8 @@ parameters:
     #timezone. default - deafult server timezone
     mbh.timezone: 'default'
 
+    mbh.weekdays: {1: 'Понедельник', 2: 'Вторник', 3: 'Среда', 4: 'Четверг', 5: 'Пятница', 0: 'Суббота', 6: 'Воскресенье'}
+
     mbh.mongodb:
       url: "%mongodb_url%"
       db : "%mongodb_database%"

@@ -6,7 +6,6 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\Validator\Constraints as Assert;
-use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -16,7 +15,6 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 /**
  * @ODM\Document(collection="Tariffs", repositoryClass="MBH\Bundle\PriceBundle\Document\TariffRepository")
  * @Gedmo\Loggable
- * @MBHValidator\Tariff
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="Такой тариф уже существует")
  * @ODM\HasLifecycleCallbacks
@@ -48,18 +46,6 @@ class Tariff extends Base
      * @Assert\NotNull(message="Не выбран отель")
      */
     protected $hotel;
-    
-    /** 
-     * @var RoomQuota[]
-     * @ODM\EmbedMany(targetDocument="RoomQuota")
-     */
-    protected $roomQuotas;
-
-    /** 
-     * @var RoomPrice[]
-     * @ODM\EmbedMany(targetDocument="RoomPrice")
-     */
-    protected $roomPrices;
     
     /**
      * @var string
@@ -102,42 +88,13 @@ class Tariff extends Base
     protected $description;
     
     /**
-     * @var \DateTime
-     * @Gedmo\Versioned
-     * @ODM\Date(name="begin")
-     * @Assert\NotNull()
-     * @Assert\Date()
-     */
-    protected $begin;
-    
-    /**
-     * @var \DateTime
-     * @Gedmo\Versioned
-     * @ODM\Date(name="end")
-     * @Assert\NotNull()
-     * @Assert\Date()
-     */
-    protected $end;
-    
-    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean(name="isDefault")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
-    protected $isDefault = true;
-    
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="type")
-     * @Assert\Choice(
-     *      choices = {"rate", "price"}, 
-     *      message = "Неверный тип тарифа."
-     * )
-     */
-    protected $type;
+    protected $isDefault = false;
     
     /**
      * @var boolean
@@ -147,60 +104,6 @@ class Tariff extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isOnline = true;
-    
-    /**
-     * @var int
-     * @Gedmo\Versioned
-     * @ODM\Int(name="rate")
-     * @Assert\NotNull()
-     * @Assert\Type(type="numeric")
-     * @Assert\Range(
-     *      min=0,
-     *      minMessage="Скидка/наценка не может быть меньше нуля"
-     * )
-     */
-    protected $rate = 0;
-
-    /**
-     * @var int
-     * @Gedmo\Versioned
-     * @ODM\Int()
-     * @Assert\Type(type="numeric")
-     * @Assert\Range(
-     *      min=1,
-     *      minMessage="Максимальная продолжительность брони не может быть меньше 1"
-     * )
-     */
-    protected $maxPackageDuration;
-
-    /**
-     * @var int
-     * @Gedmo\Versioned
-     * @ODM\Int()
-     * @Assert\Type(type="numeric")
-     * @Assert\Range(
-     *      min=1,
-     *      minMessage="Минимальная продолжительность брони не может быть меньше 1"
-     * )
-     */
-    protected $minPackageDuration;
-
-    /**
-     * @var boolean
-     * @Gedmo\Versioned
-     * @ODM\Boolean()
-     * @Assert\NotNull()
-     * @Assert\Type(type="boolean")
-     */
-    protected $permanent = false;
-
-    /**
-     * @var array
-     * @Gedmo\Versioned
-     * @ODM\Collection
-     * @Assert\Choice(choices = {1, 2, 3, 4, 5, 6, 7}, multiple=true)
-     */
-    protected $weekDays = [];
    
     /**
      * Set hotel
@@ -313,50 +216,6 @@ class Tariff extends Base
     }
 
     /**
-     * Set permanent
-     *
-     * @param boolean $permanent
-     * @return self
-     */
-    public function setPermanent($permanent)
-    {
-        $this->permanent = $permanent;
-        return $this;
-    }
-
-    /**
-     * Get permanent
-     *
-     * @return boolean $permanent
-     */
-    public function getPermanent()
-    {
-        return $this->permanent;
-    }
-
-    /**
-     * Set type
-     *
-     * @param string $type
-     * @return self
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return string $type
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
      * Set isOnline
      *
      * @param boolean $isOnline
@@ -379,72 +238,6 @@ class Tariff extends Base
     }
     
     /**
-     * Set rate
-     *
-     * @param int $rate
-     * @return self
-     */
-    public function setRate($rate)
-    {
-        $this->rate = $rate;
-        return $this;
-    }
-
-    /**
-     * Get rate
-     *
-     * @return int $rate
-     */
-    public function getRate()
-    {
-        return $this->rate;
-    }
-
-    /**
-     * Set begin
-     *
-     * @param \DateTime $begin
-     * @return self
-     */
-    public function setBegin($begin)
-    {
-        $this->begin = $begin;
-        return $this;
-    }
-
-    /**
-     * Get begin
-     *
-     * @return \DateTime $begin
-     */
-    public function getBegin()
-    {
-        return $this->begin;
-    }
-
-    /**
-     * Set end
-     *
-     * @param \DateTime $end
-     * @return self
-     */
-    public function setEnd($end)
-    {
-        $this->end = $end;
-        return $this;
-    }
-
-    /**
-     * Get end
-     *
-     * @return \DateTime $end
-     */
-    public function getEnd()
-    {
-        return $this->end;
-    }
-    
-    /**
      * @return string
      */
     public function getName()
@@ -453,213 +246,5 @@ class Tariff extends Base
             return $this->title;
         }
         return $this->fullTitle;
-    }
-
-    public function __construct()
-    {
-        $this->roomQuotas = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->roomPrices = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Add roomQuota
-     *
-     * @param \MBH\Bundle\PriceBundle\Document\RoomQuota $roomQuota
-     */
-    public function addRoomQuota(\MBH\Bundle\PriceBundle\Document\RoomQuota $roomQuota)
-    {
-        $this->roomQuotas[] = $roomQuota;
-    }
-
-    /**
-     * Remove roomQuota
-     *
-     * @param \MBH\Bundle\PriceBundle\Document\RoomQuota $roomQuota
-     */
-    public function removeRoomQuota(\MBH\Bundle\PriceBundle\Document\RoomQuota $roomQuota)
-    {
-        $this->roomQuotas->removeElement($roomQuota);
-    }
-
-    /**
-     * Get roomQuotas
-     *
-     * @return Doctrine\Common\Collections\Collection $roomQuotas
-     */
-    public function getRoomQuotas()
-    {
-        return $this->roomQuotas;
-    }
-    
-    public function removeAllRoomQuotas()
-    {
-        $this->roomQuotas = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    public function setAllRoomQuotas($roomQuotas)
-    {
-        $this->roomQuotas = $roomQuotas;
-
-        return $this;
-    }
-
-    /**
-     * Add roomPrice
-     *
-     * @param \MBH\Bundle\PriceBundle\Document\RoomPrice $roomPrice
-     */
-    public function addRoomPrice(\MBH\Bundle\PriceBundle\Document\RoomPrice $roomPrice)
-    {
-        $this->roomPrices[] = $roomPrice;
-    }
-
-    /**
-     * Remove roomPrice
-     *
-     * @param \MBH\Bundle\PriceBundle\Document\RoomPrice $roomPrice
-     */
-    public function removeRoomPrice(\MBH\Bundle\PriceBundle\Document\RoomPrice $roomPrice)
-    {
-        $this->roomPrices->removeElement($roomPrice);
-    }
-
-    /**
-     * Get roomPrices
-     *
-     * @return Doctrine\Common\Collections\Collection $roomPrices
-     */
-    public function getRoomPrices()
-    {
-        return $this->roomPrices;
-    }
-    
-    public function removeAllRoomPrices()
-    {
-        $this->roomPrices = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Set maxPackageDuration
-     *
-     * @param int $maxPackageDuration
-     * @return self
-     */
-    public function setMaxPackageDuration($maxPackageDuration)
-    {
-        $this->maxPackageDuration = $maxPackageDuration;
-        return $this;
-    }
-
-    /**
-     * @param bool $hotel
-     * @return int
-     */
-    public function getMaxPackageDuration($hotel = false)
-    {
-        if ($hotel && empty($this->maxPackageDuration)) {
-            return $this->getHotel()->getMaxPackageDuration();
-        }
-        return $this->maxPackageDuration;
-    }
-
-    /**
-     * Set minPackageDuration
-     *
-     * @param int $minPackageDuration
-     * @return self
-     */
-    public function setMinPackageDuration($minPackageDuration)
-    {
-        $this->minPackageDuration = $minPackageDuration;
-        return $this;
-    }
-
-    /**
-     * @param bool $hotel
-     * @return int
-     */
-    public function getMinPackageDuration($hotel = false)
-    {
-        if ($hotel && empty($this->minPackageDuration)) {
-            return $this->getHotel()->getMinPackageDuration();
-        }
-        return $this->minPackageDuration;
-    }
-
-    /**
-     * Set weekDays
-     *
-     * @param collection $weekDays
-     * @return self
-     */
-    public function setWeekDays($weekDays)
-    {
-        $this->weekDays = $weekDays;
-        return $this;
-    }
-
-    /**
-     * Get weekDays
-     *
-     * @return collection $weekDays
-     */
-    public function getWeekDays()
-    {
-        return $this->weekDays;
-    }
-
-    /**
-     * @ODM\PrePersist
-     */
-    public function prePersist()
-    {
-        $this->checkPermanent();
-    }
-
-    /**
-     * @ODM\preUpdate
-     */
-    public function preUpdate()
-    {
-        $this->checkPermanent();
-    }
-
-    /**
-     * @return $this
-     */
-    public function checkPermanent()
-    {
-        if ($this->getPermanent()) {
-            $this->setBegin(\DateTime::createFromFormat('U', 0))->setEnd(\DateTime::createFromFormat('U', 2147483647));
-        }
-
-        return $this;
-    }
-
-    public function getPlaceCount(RoomType $roomType)
-    {
-        $placeCount = $roomType->getRooms()->count();
-
-        foreach ($this->getRoomQuotas() as $quota) {
-            if ($roomType->getId() != $quota->getRoomType()->getId()) {
-                continue;
-            }
-            if ($quota->getNumber() < $placeCount) {
-                $placeCount = $quota->getNumber();
-            }
-        }
-
-        return $placeCount;
-    }
-
-    public function getRoomTypePrices(RoomType $roomType)
-    {
-        foreach ($this->getRoomPrices() as $roomPrice) {
-            if ($roomType->getId() != $roomPrice->getRoomType()->getId()) {
-                continue;
-            }
-            return $roomPrice;
-        }
-        return null;
     }
 }

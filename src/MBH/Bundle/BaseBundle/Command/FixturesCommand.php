@@ -6,9 +6,13 @@ use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Document\Service;
+use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Process\Process;
 
 class FixturesCommand extends ContainerAwareCommand
 {
@@ -16,7 +20,10 @@ class FixturesCommand extends ContainerAwareCommand
      * @var ManagerRegistry 
      */
     private $dm;
-    
+
+    /**
+     * @var array
+     */
     private $serviceCategories = [
       'Питание' => [
           'Breakfast' => ['name' => 'Завтрак', 'calcType' => 'per_night'],
@@ -54,11 +61,27 @@ class FixturesCommand extends ContainerAwareCommand
       ] 
     ];
 
+    /**
+     * @var string
+     */
+    private $user = 'admin';
+
+    /**
+     * @var string
+     */
+    private $hotel = 'Мой отель';
+
+    /**
+     * @var string
+     */
+    private $tariff = 'Основной тариф';
+
     protected function configure()
     {
         $this
             ->setName('mbh:base:fixtures')
             ->setDescription('Install project fixtures')
+            ->addOption('cities', null, InputOption::VALUE_NONE, 'with cities?')
         ;
     }
 
@@ -66,15 +89,109 @@ class FixturesCommand extends ContainerAwareCommand
     {
         $start = new \DateTime();
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-        
-        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
-        
+
+        //Hotel
+        $hotels = $this->createHotel();
+
+        //User
+        $this->createUser();
+
         foreach ($hotels as $hotel) {
+
+            //Services
             $this->createServices($hotel);
+
+            //Tariffs
+            $this->createTariffs($hotel);
+        }
+
+        //Cities
+        if ($input->getOption('cities')) {
+            $this->createCities();
         }
         
         $time = $start->diff(new \DateTime());
         $output->writeln('Installing complete. Elapsed time: ' . $time->format('%H:%I:%S'));
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return Tariff
+     */
+    private function createTariffs(Hotel $hotel)
+    {
+        $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel);
+
+        if ($baseTariff) {
+            return $baseTariff;
+        }
+
+        $tariff = new Tariff();
+        $tariff->setFullTitle($this->tariff)
+            ->setIsDefault(true)
+            ->setIsOnline(true)
+            ->setHotel($hotel)
+        ;
+        $this->dm->persist($tariff);
+        $this->dm->flush();
+
+        return $tariff;
+    }
+
+    /**
+     * @return int
+     */
+    private function createCities()
+    {
+        $process = new Process(
+            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console mbh:city:load --no-debug'
+        );
+        return $process->run();
+    }
+
+    /**
+     * @return array
+     */
+    private function createHotel()
+    {
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+
+        if (count($hotels)) {
+            return $hotels;
+        }
+
+        $hotel = new Hotel();
+        $hotel->setFullTitle($this->hotel)->setSaleDays(365)->setIsDefault(true);
+        $this->dm->persist($hotel);
+        $this->dm->flush();
+
+        return [$hotel];
+    }
+
+    /**
+     * @return User|null
+     */
+    private function createUser()
+    {
+        $repo = $this->dm->getRepository('MBHUserBundle:User');
+
+        if (!count($repo->findAll())) {
+            $user = new User();
+            $user->setUsername($this->user)
+                ->setEmail($this->user . '@example.com')
+                ->addRole('ROLE_ADMIN')
+                ->setPlainPassword($this->user)
+                ->setEnabled(true)
+                ->setLocked(false)
+                ->setSuperAdmin(true)
+            ;
+            $this->dm->persist($user);
+            $this->dm->flush();
+
+            return $user;
+        }
+
+        return null;
     }
     
     /**

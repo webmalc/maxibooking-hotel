@@ -1,4 +1,4 @@
-/*global window */
+/*global window, $, document */
 $(document).ready(function() {
     'use strict';
 
@@ -32,24 +32,5 @@ $(document).ready(function() {
             "ajax": Routing.generate('room_type_room_json', {'id': $(this).attr('data-room-type-id')})
         });
     });
-
-    //hostel
-    if ($('#hotel_is_hostel').length) {
-        (function(){
-            var calcType = $('#mbh_bundle_hotelbundle_room_type_type_calculationType'),
-                places = $('#mbh_bundle_hotelbundle_room_type_type_places'),
-                addPlaces = $('#mbh_bundle_hotelbundle_room_type_type_additionalPlaces'),
-                showHide = function () {
-                    places.closest('.form-group').show();
-                    addPlaces.closest('.form-group').show();
-                    if (calcType.val() == 'customPrices') {
-                        places.val(1).closest('.form-group').hide();
-                        addPlaces.val(0).closest('.form-group').hide();
-                    }
-                }
-            showHide();
-            calcType.change(function(){showHide()});
-        }());
-    }
 });
 

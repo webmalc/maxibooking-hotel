@@ -64,14 +64,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function deleteRoomAction($roomType, $id)
     {
-        $response =  $this->deleteEntity($id, 'MBHHotelBundle:Room', 'room_type', ['tab' => $roomType]);
-        $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground(
-                $this->get('doctrine_mongodb')
-                     ->getManager()
-                     ->getRepository('MBHHotelBundle:RoomType')
-                     ->find($roomType)
-        );
-        return $response;
+        return $this->deleteEntity($id, 'MBHHotelBundle:Room', 'room_type', ['tab' => $roomType]);
     }
 
     /**
@@ -133,13 +126,11 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $dm->persist($entity);
             $dm->flush();
 
-            $this->getRequest()->getSession()->getFlashBag()
+            $request->getSession()->getFlashBag()
                     ->set('success', 'Запись успешно отредактирована.')
             ;
-
-            $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground($entity->getRoomType());
             
-            if ($this->getRequest()->get('save') !== null) {
+            if ($request->get('save') !== null) {
                 return $this->redirect($this->generateUrl('room_type_room_edit', ['id' => $id]));
             }
 
@@ -209,13 +200,11 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $dm->persist($room);
             $dm->flush();
 
-            $this->getRequest()->getSession()->getFlashBag()
+            $request->getSession()->getFlashBag()
                     ->set('success', 'Запись успешно создана.')
             ;
-
-            $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground($entity);
             
-            if ($this->getRequest()->get('save') !== null) {
+            if ($request->get('save') !== null) {
                 return $this->redirect($this->generateUrl('room_type_room_edit', ['id' => $room->getId()]));
             }
 
@@ -276,7 +265,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         }
 
         $form = $this->createForm(new RoomTypeGenerateRoomsType());
-        $form->bind($request);
+        $form->submit($request);
 
         if ($form->isValid()) {
             $data = $form->getData();
@@ -294,10 +283,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             }
 
             $dm->flush();
-            
-            $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground($entity);
-            
-            $this->getRequest()->getSession()->getFlashBag()
+
+            $request->getSession()->getFlashBag()
                     ->set('success', 'Номера успешно сгенерированы.')
             ;
 
@@ -353,13 +340,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $entity = new RoomType();
 
         ($this->get('mbh.hotel.selector')->getSelected()->getIsHostel()) ? $type = 'hostel' : $type = 'hotel';
-        $form = $this->createForm(
-            new RoomTypeType(),
-            $entity,
-            [
-                'calculationTypes' => $this->container->getParameter('mbh.calculation.types')[$type]
-            ]
-        );
+        $form = $this->createForm(new RoomTypeType(), $entity, []);
 
         return array(
             'form' => $form->createView(),
@@ -380,13 +361,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $entity->setHotel($this->get('mbh.hotel.selector')->getSelected());
 
         ($this->get('mbh.hotel.selector')->getSelected()->getIsHostel()) ? $type = 'hostel' : $type = 'hotel';
-        $form = $this->createForm(
-            new RoomTypeType(),
-            $entity,
-            [
-                'calculationTypes' => $this->container->getParameter('mbh.calculation.types')[$type]
-            ]
-        );
+        $form = $this->createForm(new RoomTypeType(), $entity, []);
 
         $form->bind($request);
 
@@ -400,10 +375,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $entity->uploadImage($form['imageFile']->getData());
             $dm->persist($entity);
             $dm->flush();
-
-            $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground($entity);
             
-            $this->getRequest()->getSession()->getFlashBag()
+            $request->getSession()->getFlashBag()
                     ->set('success', 'Запись успешно создана.')
             ;
 
@@ -471,12 +444,11 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         ($this->get('mbh.hotel.selector')->getSelected()->getIsHostel()) ? $type = 'hostel' : $type = 'hotel';
         $form = $this->createForm(
             new RoomTypeType(), $entity, [
-                'calculationTypes' => $this->container->getParameter('mbh.calculation.types')[$type],
                 'imageUrl' => $entity->getImage(true),
                 'deleteImageUrl' => $this->generateUrl('room_type_image_delete', ['id' => $id])
             ]
         );
-        $form->bind($request);
+        $form->submit($request);
 
         if ($form->isValid()) {
 
@@ -486,8 +458,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $dm = $this->get('doctrine_mongodb')->getManager();
             $dm->persist($entity);
             $dm->flush();
-
-            $this->get('mbh.room.cache.generator')->generateForRoomTypeInBackground($entity);
             
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', 'Запись успешно отредактирована.')
@@ -525,7 +495,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         ($this->get('mbh.hotel.selector')->getSelected()->getIsHostel()) ? $type = 'hostel' : $type = 'hotel';
         $form = $this->createForm(
             new RoomTypeType(), $entity, [
-                'calculationTypes' => $this->container->getParameter('mbh.calculation.types')[$type],
                 'imageUrl' => $entity->getImage(true),
                 'deleteImageUrl' => $this->generateUrl('room_type_image_delete', ['id' => $id])
             ]
@@ -547,10 +516,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function deleteAction($id)
     {
-        $response =  $this->deleteEntity($id, 'MBHHotelBundle:RoomType', 'room_type');
-        $this->get('mbh.room.cache.generator')->generateInBackground();
-        
-        return $response;
+        return $this->deleteEntity($id, 'MBHHotelBundle:RoomType', 'room_type');
     }
 
 }

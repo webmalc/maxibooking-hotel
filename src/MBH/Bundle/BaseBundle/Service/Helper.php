@@ -8,6 +8,7 @@ namespace MBH\Bundle\BaseBundle\Service;
  */
 class Helper
 {
+
     /**
      * @param int $length
      * @return string
@@ -122,7 +123,7 @@ class Helper
         $result = [];
 
         foreach ($collection as $object) {
-            $result[] = $object->getId();
+            $result[] = (is_object($object) && method_exists($object, 'getId')) ? $object->getId() : (string) $object;
         }
 
         return $result;

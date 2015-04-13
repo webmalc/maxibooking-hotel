@@ -1,6 +1,14 @@
 services:
-    mbh.tariff.validator:
-        class: MBH\Bundle\PriceBundle\Validator\Constraints\TariffValidator
-        arguments: [@service_container]
-        tags:
-            - { name: validator.constraint_validator, alias: mbh.tariff.validator }
+  mbh.tariff.subscriber:
+    class: MBH\Bundle\PriceBundle\EventListener\TariffSubscriber
+    arguments: [@service_container]
+    tags:
+      - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
+  mbh.room.cache:
+          class: MBH\Bundle\PriceBundle\Services\RoomCache
+          arguments: [@service_container]
+
+  mbh.price.cache:
+          class: MBH\Bundle\PriceBundle\Services\PriceCache
+          arguments: [@service_container]

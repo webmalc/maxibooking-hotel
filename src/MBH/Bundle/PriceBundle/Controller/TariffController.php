@@ -3,15 +3,13 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\PriceBundle\Document\RoomQuota;
-use MBH\Bundle\PriceBundle\Document\RoomPrice;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\PriceBundle\Form\TariffMainType;
+use MBH\Bundle\PriceBundle\Form\TariffType;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 
 /**
@@ -32,39 +30,17 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        
-        $defaults = $dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('s')
-                       ->field('isDefault')->equals(true)
-                       ->field('end')->gte(new \DateTime())
-                       ->field('hotel.id')->equals($hotel->getId())
-                       ->sort(['begin' => 'asc', 'end' => 'asc'])
-                       ->getQuery()
-                       ->execute()
+
+        $entities = $dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('q')
+            ->field('hotel.id')->equals($this->get('mbh.hotel.selector')->getSelected()->getId())
+            ->sort('fullTitle', 'asc')
+            ->getQuery()
+            ->execute()
         ;
-        
-        $others = $dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('s')
-                     ->field('isDefault')->equals(false)
-                     ->field('end')->gte(new \DateTime())
-                     ->field('hotel.id')->equals($hotel->getId())
-                     ->sort(['begin' => 'asc', 'end' => 'asc'])
-                     ->getQuery()
-                     ->execute()
-        ;
-        
-        $old = $dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('s')
-                     ->field('end')->lt(new \DateTime())
-                     ->field('hotel.id')->equals($hotel->getId())
-                     ->sort(['begin' => 'asc', 'end' => 'asc'])
-                     ->getQuery()
-                     ->execute()
-        ;
-        
-        return array(
-            'defaults' => $defaults,
-            'others'   => $others,
-            'old'      => $old
-        );
+
+        return [
+            'entities' => $entities
+        ];
     }
 
     /**
@@ -79,7 +55,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     {   
         $entity = new Tariff();
         $form = $this->createForm(
-                new TariffMainType(), $entity, ['types' => $this->container->getParameter('mbh.tariff.types')]
+                new TariffType(), $entity
         );
 
         return array(
@@ -101,9 +77,9 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $entity->setHotel($this->get('mbh.hotel.selector')->getSelected());
         
         $form = $this->createForm(
-                new TariffMainType(), $entity, ['types' => $this->container->getParameter('mbh.tariff.types')]
+                new TariffType(), $entity
         );
-        $form->bind($request);
+        $form->submit($request);
 
         if ($form->isValid()) {
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
@@ -111,12 +87,9 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $dm->persist($entity);
             $dm->flush();
 
-            $this->getRequest()->getSession()->getFlashBag()
+            $request->getSession()->getFlashBag()
                     ->set('success', 'Тариф успешно создан. Теперь необходимо заполнить цены.')
             ;
-
-            $this->get('mbh.room.cache.generator')->generateInBackground();
-            
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
 
@@ -146,7 +119,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(
-                new TariffMainType(), $entity, ['types' => $this->container->getParameter('mbh.tariff.types')]
+                new TariffType(), $entity
         );
         
         $form->submit($request);
@@ -158,11 +131,9 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $dm->persist($entity);
             $dm->flush();
 
-            $this->getRequest()->getSession()->getFlashBag()
+            $request->getSession()->getFlashBag()
                     ->set('success', 'Запись успешно отредактирована.')
             ;
-
-            $this->get('mbh.room.cache.generator')->generateInBackground();
             
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
@@ -194,7 +165,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(
-                new TariffMainType(), $entity, ['types' => $this->container->getParameter('mbh.tariff.types')]
+                new TariffType(), $entity
         );
 
         return array(
@@ -202,67 +173,6 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         );
-    }
-
-    /**
-     * Displays a form to edit an existing entity.
-     *
-     * @Route("/{id}/clone", name="tariff_clone")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
-     */
-    public function cloneAction($id)
-    {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
-            throw $this->createNotFoundException();
-        }
-
-        $new = clone $entity;
-
-        $new->setTitle('')
-            ->setFullTitle($entity->getFullTitle() . '_копия')
-            ->setIsEnabled(false)
-        ;
-
-        $dm->persist($new);
-        $dm->flush();
-
-        $newId = $new->getId();
-        $dm->clear();
-
-        $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
-        $new = $dm->getRepository('MBHPriceBundle:Tariff')->find($newId);
-
-        foreach($entity->getRoomQuotas() as $quota) {
-            $newRoomQuota = new RoomQuota();
-            $newRoomQuota->setRoomType($quota->getRoomType())->setNumber($quota->getNumber());
-            $new->addRoomQuota($newRoomQuota);
-        }
-        foreach($entity->getRoomPrices() as $price) {
-            $newPrice = new RoomPrice();
-            $newPrice->setRoomType($price->getRoomType())
-                ->setPrice($price->getPrice())
-                ->setAdditionalAdultPrice($price->getAdditionalAdultPrice())
-                ->setAdditionalChildPrice($price->getAdditionalChildPrice())
-            ;
-            $new->addRoomPrice($newPrice);
-        }
-
-        $dm->persist($new);
-        $dm->flush();
-
-        $this->getRequest()->getSession()->getFlashBag()
-            ->set('success', 'Запись успешно скопирована.')
-        ;
-
-        $this->get('mbh.room.cache.generator')->generateInBackground();
-
-        return $this->redirect($this->generateUrl('tariff'));
     }
 
     /**
@@ -274,10 +184,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      */
     public function deleteAction($id)
     {
-        $response = $this->deleteEntity($id, 'MBHPriceBundle:Tariff', 'tariff');
-        $this->get('mbh.room.cache.generator')->generateInBackground();
-        
-        return $response;
+        return $this->deleteEntity($id, 'MBHPriceBundle:Tariff', 'tariff');
     }
 
 }

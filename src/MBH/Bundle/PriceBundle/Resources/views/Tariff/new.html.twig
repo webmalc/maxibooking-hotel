@@ -6,7 +6,7 @@
 
     {{ form_start(form, {'action': path('tariff_create'), 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false, 'save_text': 'Сохранить и продолжить'} %}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
     {{ form_end(form) }}
     
 {% endblock %}

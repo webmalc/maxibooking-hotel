@@ -1,16 +1,16 @@
-/*global window */
+/*global window, document, $ */
 $(document).ready(function () {
     'use strict';
 
     // input size
-    (function (){
+    (function () {
         var resize = function (el, size) {
             el.closest('div.col-md-4').removeClass('col-md-4').addClass('col-md-' + size);
         };
-        $('input.sm').each(function() {
+        $('input.sm').each(function () {
             resize($(this), 2);
         });
-        $('input.xs').each(function() {
+        $('input.xs').each(function () {
             resize($(this), 1);
         });
     }());
@@ -34,7 +34,7 @@ $(document).ready(function () {
         placeholder: "Сделайте выбор",
         allowClear: true,
         width: 'element',
-        formatSelection: function(item, container) {
+        formatSelection: function (item, container) {
             var optgroup = $(item.element).parent('optgroup').attr('label');
             if (!optgroup) {
                 return item.text;
@@ -54,12 +54,12 @@ $(document).ready(function () {
         autoclose: true
     });
 
-    $('.datepicker, #mbh_bundle_packagebundle_touristtype_birthday').keyup(function(e) {
+    $('.datepicker, #mbh_bundle_packagebundle_touristtype_birthday').keyup(function (e) {
 
-        if(e.keyCode == 8 || e.keyCode == 46 || e.keyCode == 37) {
+        if (e.keyCode == 8 || e.keyCode == 46 || e.keyCode == 37) {
             return;
         }
-        var str = $(this).val().replace(/[^0-9]/g,'').substr(0, 8);
+        var str = $(this).val().replace(/[^0-9]/g, '').substr(0, 8);
         if (str.length > 1) {
             var str = [str.slice(0, 2), '.', str.slice(2)].join('');
         }
@@ -68,15 +68,15 @@ $(document).ready(function () {
         }
         $(this).val(str);
 
-        if(str.length == 10) {
+        if (str.length == 10) {
             $(this).datepicker('hide');
         }
 
     }).attr("autocomplete", "off");
 
-    (function(){
+    (function () {
         var begin = $('.begin-datepiker'),
-            end =   $('.end-datepiker'),
+            end = $('.end-datepiker'),
             set = function () {
                 if (!begin.hasClass('not-set-date')) {
                     begin.datepicker('setEndDate', end.datepicker('getDate'));
@@ -85,21 +85,19 @@ $(document).ready(function () {
                     end.datepicker('setStartDate', begin.datepicker('getDate'));
                 }
             };
-
+        set();
+        begin.change(function () {
             set();
-
-            begin.change(function(){
-                set();
-                if (!end.val()) {
-                    end.focus();
-                }
-            });
-            end.change(function(){
-                set();
-                if (!begin.val()) {
-                    begin.focus();
-                }
-            });
+            if (!end.val()) {
+                end.focus();
+            }
+        });
+        end.change(function () {
+            set();
+            if (!begin.val()) {
+                begin.focus();
+            }
+        });
     }());
 
 });

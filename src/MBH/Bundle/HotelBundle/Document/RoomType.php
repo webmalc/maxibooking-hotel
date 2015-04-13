@@ -12,7 +12,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 
 /**
- * @ODM\Document(collection="RoomTypes")
+ * @ODM\Document(collection="RoomTypes", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="Такой тип номера уже существует")
@@ -103,14 +103,6 @@ class RoomType extends Base
     protected $color = '008000';
 
     /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="calculationType")
-     * @Assert\NotNull()
-     */
-    protected $calculationType;
-
-    /**
      * @var int
      * @Gedmo\Versioned
      * @ODM\Int(name="places")
@@ -158,7 +150,7 @@ class RoomType extends Base
     /**
      * Get hotel
      *
-     * @return MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel $hotel
      */
     public function getHotel()
     {
@@ -229,28 +221,6 @@ class RoomType extends Base
     public function getColor()
     {
         return $this->color;
-    }
-
-    /**
-     * Set calculationType
-     *
-     * @param string $calculationType
-     * @return self
-     */
-    public function setCalculationType($calculationType)
-    {
-        $this->calculationType = $calculationType;
-        return $this;
-    }
-
-    /**
-     * Get calculationType
-     *
-     * @return string $calculationType
-     */
-    public function getCalculationType()
-    {
-        return $this->calculationType;
     }
 
     /**

@@ -32,7 +32,7 @@ class Extension extends \Twig_Extension
         $now = new \DateTime();
 
         if ($now->format('Y') != $date->format('Y')) {
-            return $date->format('d.m.Y');
+            return $date->format('d.m.y');
         }
 
         $months = [
