@@ -53,7 +53,8 @@ class RoomCacheRepository extends DocumentRepository
         }
         $result = [];
         foreach ($caches as $cache) {
-            $result[$cache->getRoomType()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
+            $result[$cache->getRoomType()->getId()][!empty($cache->getTariff()) ? $cache->getTariff()->getId() : 0][$cache->getDate()->format('d.m.Y')] = $cache;
+
         }
 
         return $result;

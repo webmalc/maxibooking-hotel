@@ -3,7 +3,7 @@
 $(document).ready(function () {
     'use strict';
     //Show table
-    var processing = false,
+    var pricesProcessing = false,
         showTable = function () {
             var wrapper = $('#price-cache-overview-table-wrapper'),
                 begin = $('#price-cache-overview-filter-begin'),
@@ -25,22 +25,28 @@ $(document).ready(function () {
                             this.value = 0;
                         }
                     });
+                    input.blur(function () {
+                        if ($(this).val() === '') {
+                            $(this).prop('disabled', true);
+                            return;
+                        }
+                    });
                 };
             if (wrapper.length === 0) {
                 return false;
             }
             wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
-            if (!processing) {
+            if (!pricesProcessing) {
                 $.ajax({
                     url: Routing.generate('price_cache_overview_table'),
                     data: data,
-                    beforeSend: function () { processing = true; },
+                    beforeSend: function () { pricesProcessing = true; },
                     success: function (data) {
                         wrapper.html(data);
                         begin.val($('#price-cache-overview-begin').val());
                         end.val($('#price-cache-overview-end').val());
                         inputs();
-                        processing = false;
+                        pricesProcessing = false;
                     },
                     dataType: 'html'
                 });

@@ -29,6 +29,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
         return [
             'roomTypes' => $hotel->getRoomTypes(),
+            'tariffs' => $hotel->getTariffs(),
         ];
     }
 
@@ -77,6 +78,15 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         if (!count($roomTypes)) {
             return array_merge($response, ['error' => 'Типы номеров не найдены']);
         }
+        //get tariffs
+        if (!empty($request->get('tariffs'))) {
+            $tariffs = $dm->getRepository('MBHPriceBundle:Tariff')
+                ->fetch($hotel, $request->get('tariffs'))
+            ;
+        } else {
+            $tariffs = [null];
+        }
+
         //get roomCaches
         $roomCaches = $dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch($begin, $end, $hotel, $request->get('roomTypes'), true)
@@ -84,6 +94,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
         return array_merge($response, [
             'roomTypes' => $roomTypes,
+            'tariffs' => $tariffs,
             'roomCaches' => $roomCaches
         ]);
     }
@@ -114,17 +125,30 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                 continue;
             }
 
-            foreach ($roomTypeArray as $date => $totalRooms) {
-                $newRoomCache = new RoomCache();
-                $newRoomCache->setHotel($hotel)
-                    ->setRoomType($roomType)
-                    ->setDate($helper->getDateFromString($date))
-                    ->setTotalRooms($totalRooms)
-                    ->setPackagesCount(0)
-                ;
+            foreach ($roomTypeArray as $tariffId => $tariffArray) {
 
-                if ($validator->validate($newRoomCache)) {
-                    $dm->persist($newRoomCache);
+                if ($tariffId) {
+                    $tariff = $dm->getRepository('MBHPriceBundle:Tariff')->find($tariffId);
+                    if (!$tariff || $tariff->getHotel() != $hotel) {
+                        continue;
+                    }
+                }
+
+                foreach ($tariffArray as $date => $totalRooms) {
+                    $newRoomCache = new RoomCache();
+                    $newRoomCache->setHotel($hotel)
+                        ->setRoomType($roomType)
+                        ->setDate($helper->getDateFromString($date))
+                        ->setTotalRooms($totalRooms)
+                        ->setPackagesCount(0)
+                    ;
+                    if ($tariffId && $tariff) {
+                        $newRoomCache->setTariff($tariff);
+                    }
+
+                    if ($validator->validate($newRoomCache)) {
+                        $dm->persist($newRoomCache);
+                    }
                 }
             }
         }

@@ -22,6 +22,14 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="input">
+                <i class="fa fa-sliders" title='Квоты по тарифам' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="Квоты по тарифам" id="room-cache-overview-filter-tariff" class="room-cache-overview-filter form-control input-sm">
+                    <option></option>
+                    {% for tariff in tariffs %}
+                        <option value="{{ tariff.id }}" {% if tariff.id in app.request.get('tariffs') and tariffs|length != app.request.get('tariffs')|length %}selected{% endif %}>{{ tariff.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </form>
     </div>
 

@@ -5,46 +5,59 @@
 {% else %}
     <table id="room-cache-overview-table" class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
         <tbody>
+        {% for tariff in tariffs %}
 
-        {% for roomType in roomTypes %}
+            {% if tariff is null %}
+                <tr class="mbh-grid-header1 info">
+                    <td colspan="{{ period|length + 1 }}"><strong>Номера в продаже</strong></td>
+                </tr>
+            {% else %}
+                <tr class="mbh-grid-header1 info">
+                    <td colspan="{{ period|length + 1 }}"><strong>Квоты по тарифам - {{ tariff }}</strong></td>
+                </tr>
+            {% endif %}
 
-            <input type="hidden" name="roomTypes[]" class="hidden" value="{{ roomType.id }}">
+            {% for roomType in roomTypes %}
 
-            <tr class="mbh-grid-header2 warning">
-                <td colspan="{{ period|length + 1 }}"><strong>{{ roomType }}</strong></td>
-            </tr>
+                <input type="hidden" name="roomTypes[]" class="hidden" value="{{ roomType.id }}">
 
-            <tr class="header">
-                <td class="first-th"></td>
-                {% for date in period %}
-                    <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
-                {% endfor %}
-            </tr>
+                <tr class="mbh-grid-header2 warning">
+                    <td colspan="{{ period|length + 1 }}"><strong>{{ roomType }}</strong>&nbsp;-&nbsp;<small>{{ tariff is null ? 'Номера в продаже' : 'Квоты по тарифам - ' ~ tariff}}</small></td>
+                </tr>
 
-            {% for categoryId, category in {'totalRooms': 'В продаже', 'packagesCount': 'Забранировано', 'leftRooms': 'Осталось'} %}
-            <tr>
-                <td class="first-td"><small>{{ category }}</small></td>
+                <tr class="header">
+                    <td class="first-th"></td>
+                    {% for date in period %}
+                        <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
+                    {% endfor %}
+                </tr>
 
-                {% for date in period %}
+                {% for categoryId, category in {'totalRooms': 'В продаже', 'packagesCount': 'Забранировано', 'leftRooms': 'Осталось'} %}
+                <tr>
+                    <td class="first-td"><small>{{ category }}</small></td>
 
-                    {% if roomCaches[roomType.id][date|date('d.m.Y')] is defined %}
-                        {% set roomCache = roomCaches[roomType.id][date|date('d.m.Y')] %}
-                    {% else %}
-                        {% set roomCache = null %}
-                    {% endif %}
+                    {% for date in period %}
 
-                    <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}{% if roomCache and roomCache.leftRooms < 0 %} alert{% endif %}">
-                        {% if categoryId == 'totalRooms' %}
-                            <input name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][' ~ date|date('d.m.Y') ~ ']' : 'updateRoomCaches[' ~ roomCache.id ~']' }}roomCaches[]" disabled type="text" class="mbh-grid-input form-control input-sm" value="{{ roomCache is null ? '' : roomCache.totalRooms }}">
+                        {% if roomCaches[roomType.id][tariff is null ? 0 : tariff.id][date|date('d.m.Y')] is defined %}
+                            {% set roomCache = roomCaches[roomType.id][ tariff is null ? 0 : tariff.id ][date|date('d.m.Y')] %}
                         {% else %}
-                            <small>{{ roomCache is null ? '' : attribute(roomCache, categoryId) }}</small>
+                            {% set roomCache = null %}
                         {% endif %}
 
-                         </td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
+                        <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}{% if roomCache and roomCache.leftRooms < 0 %} alert{% endif %}">
+                            {% if categoryId == 'totalRooms' %}
+                                {% if tariff is null %}{%  set tariffId = 0 %}{% else %}{% set tariffId = tariff.id %}{% endif %}
+                                <input name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][' ~ tariffId ~'][' ~ date|date('d.m.Y') ~ ']' : 'updateRoomCaches[' ~ roomCache.id ~']' }}roomCaches[]" disabled type="text" class="mbh-grid-input form-control input-sm" value="{{ roomCache is null ? '' : roomCache.totalRooms }}">
+                            {% else %}
+                                <small>{{ roomCache is null ? '' : attribute(roomCache, categoryId) }}</small>
+                            {% endif %}
 
+                             </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+
+            {% endfor %}
         {% endfor %}
         </tbody>
     </table>

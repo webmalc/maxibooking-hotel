@@ -12,7 +12,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
  * @ODM\Document(collection="RoomCache", repositoryClass="MBH\Bundle\PriceBundle\Document\RoomCacheRepository")
  * @ODM\HasLifecycleCallbacks
  * @Gedmo\Loggable
- * @MongoDBUnique(fields={"roomType", "date"}, message="RoomCache already exist.")
+ * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="RoomCache already exist.")
  */
 class RoomCache extends Base
 {
@@ -29,6 +29,12 @@ class RoomCache extends Base
      * @Assert\NotNull()
      */
     protected $roomType;
+
+    /**
+     * @var \MBH\Bundle\PriceBundle\Document\Tariff
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
+     */
+    protected $tariff;
 
     /**
      * @var \DateTime
@@ -225,5 +231,27 @@ class RoomCache extends Base
         $this->setLeftRooms($this->getTotalRooms() - $this->getPackagesCount());
 
         return $this;
+    }
+
+    /**
+     * Set tariff
+     *
+     * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     * @return self
+     */
+    public function setTariff(\MBH\Bundle\PriceBundle\Document\Tariff $tariff)
+    {
+        $this->tariff = $tariff;
+        return $this;
+    }
+
+    /**
+     * Get tariff
+     *
+     * @return \MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     */
+    public function getTariff()
+    {
+        return $this->tariff;
     }
 }
