@@ -20,17 +20,20 @@ $(document).ready(function () {
                         $(this).children('input').removeAttr('disabled').focus().select();
                     });
                     input.change(function () {
+                        if (this.value === '') {
+                            return;
+                        }
                         var value = parseInt(this.value, 10);
                         if (value < 0 || isNaN(value)) {
                             this.value = 0;
                         }
                     });
-                    input.on('blur, change, focusout', function () {
+                    /*input.on('blur, change, focusout', function () {
                         if ($(this).val() === '') {
                             $(this).prop('disabled', true);
                             return;
                         }
-                    });
+                    });*/
                 };
 
             if (wrapper.length === 0) {
@@ -59,4 +62,18 @@ $(document).ready(function () {
     $('.room-cache-overview-filter').change(function () {
         showTable();
     });
+    //generator
+    (function () {
+        var rooms = $('input.delete-rooms'),
+            showMessage = function () {
+                rooms.each(function () {
+                    var text = parseInt($(this).val(), 10) === -1 ? 'Дни будет удалены' : '';
+                    $(this).closest('.col-md-4').
+                        next('.col-md-6').
+                        html('<span class="text-danger text-left input-errors">' + text +  '</span>');
+                });
+            };
+        showMessage();
+        rooms.change(showMessage);
+    }());
 });

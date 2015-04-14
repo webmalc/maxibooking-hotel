@@ -89,7 +89,10 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
         //get roomCaches
         $roomCaches = $dm->getRepository('MBHPriceBundle:RoomCache')
-            ->fetch($begin, $end, $hotel, $request->get('roomTypes'), true)
+            ->fetch(
+                $begin, $end, $hotel,
+                $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                false, true)
         ;
 
         return array_merge($response, [
@@ -135,6 +138,11 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                 }
 
                 foreach ($tariffArray as $date => $totalRooms) {
+
+                    if (trim($totalRooms) === '' || $totalRooms === null) {
+                        continue;
+                    }
+
                     $newRoomCache = new RoomCache();
                     $newRoomCache->setHotel($hotel)
                         ->setRoomType($roomType)
@@ -161,6 +169,13 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             if (!$roomCache || $roomCache->getHotel() != $hotel) {
                 continue;
             }
+
+            //delete
+            if (trim($val) === '' || $val === null) {
+                $dm->remove($roomCache);
+                continue;
+            }
+
             $roomCache->setTotalRooms($val);
             if ($validator->validate($roomCache)) {
                 $dm->persist($roomCache);
@@ -228,7 +243,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             $data = $form->getData();
 
             $this->get('mbh.room.cache')->update(
-                $data['begin'], $data['end'], $hotel, $data['rooms'], $data['roomTypes']->toArray(), $data['weekdays']
+                $data['begin'], $data['end'], $hotel, $data['rooms'], $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
             );
 
             if ($request->get('save') !== null) {

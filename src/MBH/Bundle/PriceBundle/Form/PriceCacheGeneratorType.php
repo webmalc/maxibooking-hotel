@@ -96,7 +96,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'attr' => ['class' => 'spinner--1 delete-prices', 'placeholder' => 'оставить цену без изменений'],
                 'help' => 'Цена при бронировании номера на одного человека. Минус один (-1) для удаления цены',
                 'constraints' => [
-                    new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
+                    new Range(['min' => -1, 'minMessage' => 'Цена не может быть меньше минус одного'])
                 ],
             ])
             ->add('additionalChildrenPrice', 'text', [
@@ -107,7 +107,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'help' => 'Минус один (-1) для удаления цены',
                 'attr' => ['class' => 'spinner--1 delete-prices', 'placeholder' => 'оставить цену без изменений'],
                 'constraints' => [
-                    new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
+                    new Range(['min' => -1, 'minMessage' => 'Цена не может быть меньше минус одного'])
                 ],
             ])
             ->add('additionalPrice', 'text', [
@@ -118,7 +118,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'help' => 'Минус один (-1) для удаления цены',
                 'attr' => ['class' => 'spinner--1 delete-prices', 'placeholder' => 'оставить цену без изменений'],
                 'constraints' => [
-                    new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
+                    new Range(['min' => -1, 'minMessage' => 'Цена не может быть меньше минус одного'])
                 ],
             ])
         ;

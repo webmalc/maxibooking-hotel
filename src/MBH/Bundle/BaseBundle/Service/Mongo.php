@@ -53,6 +53,19 @@ class Mongo
      * @param array $data
      * @return null
      */
+    public function remove($collection, array $data)
+    {
+        if (empty($data)) {
+            return null;
+        }
+        return $this->db->$collection->remove($data);
+    }
+
+    /**
+     * @param $collection
+     * @param array $data
+     * @return null
+     */
     public function batchInsert($collection, array $data)
     {
         if (empty($data)) {

@@ -12,10 +12,16 @@ class RoomCacheRepository extends DocumentRepository
      * @param \DateTime $end
      * @param Hotel $hotel
      * @param array $roomTypes
+     * @param mixed $tariffs
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
-    public function fetchQueryBuilder(\DateTime $begin, \DateTime $end, Hotel $hotel = null, $roomTypes = null)
-    {
+    public function fetchQueryBuilder(
+        \DateTime $begin,
+        \DateTime $end,
+        Hotel $hotel = null,
+        array $roomTypes = [],
+        $tariffs = false
+    ) {
         $qb = $this->createQueryBuilder('q');
 
         // hotel
@@ -24,11 +30,17 @@ class RoomCacheRepository extends DocumentRepository
         }
         // begin & end
         $qb->field('date')->gte($begin)
-            ->field('date')->lte($end)
-        ;
+            ->field('date')->lte($end);
         //roomTypes
-        if(!empty($roomTypes) && is_array($roomTypes)) {
+        if (!empty($roomTypes)) {
             $qb->field('roomType.id')->in($roomTypes);
+        }
+        //tariffs
+        if (!empty($tariffs) && is_array($tariffs)) {
+            $qb->field('tariff.id')->in($tariffs);
+        }
+        if ($tariffs === null) {
+            $qb->field('tariff.id')->equals(null);
         }
         //sort
         $qb->sort('date')->sort('hotel.id')->sort('roomType.id');
@@ -41,12 +53,19 @@ class RoomCacheRepository extends DocumentRepository
      * @param \DateTime $end
      * @param Hotel $hotel
      * @param array $roomTypes
+     * @param mixed $tariffs
      * @param boolean $grouped
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
-    public function fetch(\DateTime $begin, \DateTime $end, Hotel $hotel = null, $roomTypes = null, $grouped = false)
-    {
-        $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes)->getQuery()->execute();
+    public function fetch(
+        \DateTime $begin,
+        \DateTime $end,
+        Hotel $hotel = null,
+        array $roomTypes = [],
+        $tariffs = false,
+        $grouped = false
+    ) {
+        $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs)->getQuery()->execute();
 
         if (!$grouped) {
             return $caches;
