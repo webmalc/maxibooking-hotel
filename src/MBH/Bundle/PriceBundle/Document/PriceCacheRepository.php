@@ -15,8 +15,13 @@ class PriceCacheRepository extends DocumentRepository
      * @param array $tariffs
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
-    public function fetchQueryBuilder(\DateTime $begin, \DateTime $end, Hotel $hotel = null, $roomTypes = null, $tariffs = null)
-    {
+    public function fetchQueryBuilder(
+        \DateTime $begin,
+        \DateTime $end,
+        Hotel $hotel = null,
+        array $roomTypes = [],
+        array $tariffs = []
+    ) {
         $qb = $this->createQueryBuilder('q');
 
         // hotel
@@ -25,18 +30,17 @@ class PriceCacheRepository extends DocumentRepository
         }
         // begin & end
         $qb->field('date')->gte($begin)
-            ->field('date')->lte($end)
-        ;
+            ->field('date')->lte($end);
         //roomTypes
-        if(!empty($roomTypes) && is_array($roomTypes)) {
+        if (!empty($roomTypes)) {
             $qb->field('roomType.id')->in($roomTypes);
         }
         //tariffs
-        if(!empty($tariffs) && is_array($tariffs)) {
+        if (!empty($tariffs)) {
             $qb->field('tariff.id')->in($tariffs);
         }
         //sort
-        $qb->sort('date')->sort('hotel.id')->sort('tariff.id')->sort('roomType.id');
+        $qb->sort('date')->sort('hotel.id')->sort('roomType.id')->sort('tariff.id');
 
         return $qb;
     }
@@ -48,10 +52,16 @@ class PriceCacheRepository extends DocumentRepository
      * @param array $roomTypes
      * @param array $tariffs
      * @param boolean $grouped
-     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     * @return array
      */
-    public function fetch(\DateTime $begin, \DateTime $end, Hotel $hotel = null, $roomTypes = null, $tariffs = null, $grouped = false)
-    {
+    public function fetch(
+        \DateTime $begin,
+        \DateTime $end,
+        Hotel $hotel = null,
+        array $roomTypes = [],
+        array $tariffs = [],
+        $grouped = false
+    ) {
         $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs)->getQuery()->execute();
 
         if (!$grouped) {
@@ -59,7 +69,7 @@ class PriceCacheRepository extends DocumentRepository
         }
         $result = [];
         foreach ($caches as $cache) {
-            $result[$cache->getTariff()->getId()][$cache->getRoomType()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
+            $result[$cache->getRoomType()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
         }
 
         return $result;

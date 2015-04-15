@@ -49,30 +49,6 @@ class PriceCache extends Base
      * @var int
      * @ODM\Int()
      * @Assert\Type(type="numeric")
-     * @Assert\Range(min=0)
-     */
-    protected $totalRooms = null;
-
-    /**
-     * @var int
-     * @ODM\Int()
-     * @Assert\NotNull()
-     * @Assert\Type(type="numeric")
-     * @Assert\Range(min=0)
-     */
-    protected $packagesCount = 0;
-
-    /**
-     * @var int
-     * @ODM\Int()
-     * @Assert\Type(type="numeric")
-     */
-    protected $leftRooms;
-
-    /**
-     * @var int
-     * @ODM\Int()
-     * @Assert\Type(type="numeric")
      * @Assert\NotNull()
      * @Assert\Range(min=0)
      */
@@ -178,111 +154,6 @@ class PriceCache extends Base
     }
 
     /**
-     * Set totalRooms
-     *
-     * @param int $totalRooms
-     * @return self
-     */
-    public function setTotalRooms($totalRooms)
-    {
-        if (is_numeric($totalRooms)) {
-            $this->totalRooms = (int) $totalRooms;
-            if ($this->totalRooms < 0) {
-                $this->totalRooms = 0;
-            }
-        } else {
-            $this->totalRooms = null;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get totalRooms
-     *
-     * @return int $totalRooms
-     */
-    public function getTotalRooms()
-    {
-        return $this->totalRooms;
-    }
-
-    /**
-     * Set packagesCount
-     *
-     * @param int $packagesCount
-     * @return self
-     */
-    public function setPackagesCount($packagesCount)
-    {
-        $this->packagesCount = (int) $packagesCount;
-        if ($this->packagesCount < 0) {
-            $this->packagesCount = 0;
-        }
-        return $this;
-    }
-
-    /**
-     * Get packagesCount
-     *
-     * @return int $packagesCount
-     */
-    public function getPackagesCount()
-    {
-        return $this->packagesCount;
-    }
-
-    /**
-     * Set leftRooms
-     *
-     * @param int $leftRooms
-     * @return self
-     */
-    public function setLeftRooms($leftRooms)
-    {
-        $this->leftRooms = (int) $leftRooms;
-        return $this;
-    }
-
-    /**
-     * Get leftRooms
-     *
-     * @return int $leftRooms
-     */
-    public function getLeftRooms()
-    {
-        return $this->leftRooms;
-    }
-
-    /**
-     * @ODM\PrePersist
-     */
-    public function prePersist()
-    {
-        $this->calcLeftRooms();
-    }
-
-    /**
-     * @ODM\preUpdate
-     */
-    public function preUpdate()
-    {
-        $this->calcLeftRooms();
-    }
-
-    /**
-     * @return $this
-     */
-    public function calcLeftRooms()
-    {
-        if (is_numeric($this->getTotalRooms())) {
-            $this->setLeftRooms((int) $this->getTotalRooms() - (int) $this->getPackagesCount());
-        }
-
-        return $this;
-    }
-
-    /**
      * Set tariff
      *
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
@@ -312,7 +183,7 @@ class PriceCache extends Base
      */
     public function setPrice($price)
     {
-        $this->price = $price;
+        $this->price = (int) $price;
         return $this;
     }
 

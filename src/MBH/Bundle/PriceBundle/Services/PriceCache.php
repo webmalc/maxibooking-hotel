@@ -36,20 +36,6 @@ class PriceCache
         $this->helper = $this->container->get('mbh.helper');
     }
 
-
-    /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param Hotel $hotel
-     * @param int $price
-     * @param boolean $isPersonPrice
-     * @param int $singlePrice
-     * @param int $additionalPrice
-     * @param int $additionalChildrenPrice
-     * @param array $availableRoomTypes
-     * @param array $availableTariffs
-     * @param array $weekdays
-     */
     public function update(
         \DateTime $begin,
         \DateTime $end,
@@ -57,7 +43,7 @@ class PriceCache
         $price,
         $isPersonPrice = false,
         $singlePrice = null,
-        $additional79Price = null,
+        $additionalPrice = null,
         $additionalChildrenPrice = null,
         array $availableRoomTypes = [],
         array $availableTariffs = [],
@@ -65,7 +51,11 @@ class PriceCache
     ) {
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
-        $priceCaches = $updateCaches = $updates = [];
+        $priceCaches = $updateCaches = $updates = $remove = [];
+
+        is_numeric($singlePrice) ? $singlePrice = (int) $singlePrice : $singlePrice;
+        is_numeric($additionalPrice) ? $additionalPrice = (int) $additionalPrice : $additionalPrice;
+        is_numeric($additionalChildrenPrice) ? $additionalChildrenPrice = (int) $additionalChildrenPrice : $additionalChildrenPrice;
 
         (empty($availableRoomTypes)) ? $roomTypes = $hotel->getRoomTypes()->toArray() : $roomTypes = $availableRoomTypes;
         (empty($availableTariffs)) ? $tariffs = $hotel->getTariffs()->toArray() : $tariffs = $availableTariffs;
@@ -82,15 +72,20 @@ class PriceCache
 
             $updateCaches[$oldPriceCache->getDate()->format('d.m.Y')][$oldPriceCache->getTariff()->getId()][$oldPriceCache->getRoomType()->getId()] = $oldPriceCache;
 
-            // TODO: save prices as int & boolean personprice
-            /*$updates[] = [
-                'criteria' => ['_id' => new \MongoId($oldRoomCache->getId())],
+            if ($price == -1) {
+                $remove['_id']['$in'][] = new \MongoId($oldPriceCache->getId());
+            }
+
+            $updates[] = [
+                'criteria' => ['_id' => new \MongoId($oldPriceCache->getId())],
                 'values' => [
-                    'packagesCount' => $oldRoomCache->getPackagesCount(),
-                    'totalRooms' => (int) $rooms,
-                    'leftRooms' => (int)$rooms - $oldRoomCache->getPackagesCount()
+                    'price' => (int) $price,
+                    'isPersonPrice' => $isPersonPrice,
+                    'singlePrice' => $singlePrice,
+                    'additionalPrice' => $additionalPrice,
+                    'additionalChildrenPrice' => $additionalChildrenPrice,
                 ]
-            ];*/
+            ];
         }
         foreach ($tariffs as $tariff) {
             foreach ($roomTypes as $roomType) {
@@ -99,26 +94,31 @@ class PriceCache
                     if (isset($updateCaches[$date->format('d.m.Y')][$tariff->getId()][$roomType->getId()])) {
                         continue;
                     }
-
                     if (!empty($weekdays) && !in_array($date->format('w'), $weekdays)) {
                         continue;
                     }
 
-                    // TODO: save prices as int & boolean personprice
-                    /*$roomCaches[] = [
+                    $priceCaches[] = [
                         'hotel' => \MongoDBRef::create('Hotels', new \MongoId($hotel->getId())),
                         'roomType' => \MongoDBRef::create('RoomTypes', new \MongoId($roomType->getId())),
+                        'tariff' => \MongoDBRef::create('Tariffs', new \MongoId($tariff->getId())),
                         'date' => new \MongoDate($date->getTimestamp()),
-                        'totalRooms' => (int)$rooms,
-                        'packagesCount' => (int)0,
-                        'leftRooms' => (int)0
-                    ];*/
-
+                        'price' => (int) $price,
+                        'isPersonPrice' => $isPersonPrice,
+                        'singlePrice' => $singlePrice,
+                        'additionalPrice' => $additionalPrice,
+                        'additionalChildrenPrice' => $additionalChildrenPrice,
+                        'isEnabled' => true
+                    ];
                 }
             }
         }
 
-        $this->container->get('mbh.mongo')->batchInsert('PriceCache', $priceCaches);
-        $this->container->get('mbh.mongo')->update('PriceCache', $updates);
+        if ($price == -1) {
+            $this->container->get('mbh.mongo')->remove('PriceCache', $remove);
+        } else {
+            $this->container->get('mbh.mongo')->batchInsert('PriceCache', $priceCaches);
+            $this->container->get('mbh.mongo')->update('PriceCache', $updates);
+        }
     }
 }

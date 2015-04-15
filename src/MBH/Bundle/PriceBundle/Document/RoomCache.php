@@ -306,7 +306,7 @@ class RoomCache extends Base
 
     public function getPackageCountByTariff(Tariff $tariff)
     {
-        $packageInfo = $this->getPackageInfo();
+        $packageInfo = $this->getPackageInfo($tariff);
 
         if ($packageInfo) {
             return $packageInfo->getPackageCount();

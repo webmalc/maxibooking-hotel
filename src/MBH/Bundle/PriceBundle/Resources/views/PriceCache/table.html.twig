@@ -29,7 +29,7 @@
                     {% endfor %}
                 </tr>
 
-                {% set categories = {'roomPrice': 'Цена', 'isPersonPrice': 'Цена за человека?', 'singlePrice': 'Цена 1-местного размещения'} %}
+                {% set categories = {'price': 'Цена', 'isPersonPrice': 'Цена за человека?', 'singlePrice': 'Цена 1-местного размещения'} %}
 
                 {% if roomType.additionalPlaces > 0 %}
                     {% set categories = categories|merge({'additionalPrice': 'Цена за взрослое доп. место', 'additionalChildrenPrice': 'Цена за детское доп. место' }) %}
@@ -41,11 +41,20 @@
 
                         {% for date in period %}
 
-                            <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}">
+                            <!-- BEGIN: set priceCache -->
+                            {% set priceCache = priceCaches[roomType.id][tariff.id][date|date('d.m.Y')]|default(null) %}
+                            <!-- END: set priceCache -->
+
+                            <!-- BEGIN: set inputName & value -->
+                            {% set inputName = priceCache is null ? 'newPriceCaches[' ~ roomType.id ~ '][' ~ tariff.id ~'][' ~ date|date('d.m.Y') ~ '][' ~ categoryId ~ ']' : 'updatePriceCaches[' ~ priceCache.id ~'][' ~ categoryId ~ ']' %}
+                            {% set inputValue = priceCache is null ? null : attribute(priceCache, categoryId) %}
+                            <!-- END: set inputName & value  -->
+
+                            <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}" data-id="{{ roomType.id }}_{{ tariff.id }}_{{ date|date('d.m.Y') }}">
                                 {% if categoryId == 'isPersonPrice' %}
-                                    <input name="asd" type="checkbox" class="mbh-grid-checkbox" value="1">
+                                    <input name="{{ inputName }}" disabled type="checkbox" class="mbh-grid-checkbox {{ categoryId }}" {{ inputValue ? 'checked' : '' }} value="1">
                                 {% else %}
-                                    <input name="asd" disabled type="text" class="mbh-grid-input form-control input-sm" value="">
+                                    <input name="{{ inputName }}" disabled type="text" class="mbh-grid-input form-control input-sm {{ categoryId }}" value="{{ inputValue }}">
                                 {% endif %}
                             </td>
                         {% endfor %}

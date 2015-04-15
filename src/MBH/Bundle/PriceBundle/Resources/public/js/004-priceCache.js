@@ -17,18 +17,15 @@ $(document).ready(function () {
                 inputs = function () {
                     var input = $('input.mbh-grid-input');
                     input.closest('td').click(function () {
-                        $(this).children('input').removeAttr('disabled').focus().select();
+                        $("td[data-id='" + $(this).attr('data-id') + "']").children('input').removeAttr('disabled');
                     });
                     input.change(function () {
+                        if (this.value === '') {
+                            return;
+                        }
                         var value = parseInt(this.value, 10);
                         if (value < 0 || isNaN(value)) {
                             this.value = 0;
-                        }
-                    });
-                    input.blur(function () {
-                        if ($(this).val() === '') {
-                            $(this).prop('disabled', true);
-                            return;
                         }
                     });
                 };

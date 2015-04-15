@@ -28,12 +28,6 @@ $(document).ready(function () {
                             this.value = 0;
                         }
                     });
-                    /*input.on('blur, change, focusout', function () {
-                        if ($(this).val() === '') {
-                            $(this).prop('disabled', true);
-                            return;
-                        }
-                    });*/
                 };
 
             if (wrapper.length === 0) {

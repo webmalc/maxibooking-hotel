@@ -120,6 +120,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         (empty($request->get('updateRoomCaches'))) ? $updateData = [] : $updateData = $request->get('updateRoomCaches');
         (empty($request->get('newRoomCaches'))) ? $newData = [] : $newData = $request->get('newRoomCaches');
 
+
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
 
