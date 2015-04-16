@@ -1,6 +1,6 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = "размещение" %}
+{% set small_title = 'report.accommodation.placement'|trans({}, 'MBHPackageBundle') %}
 
 {% block content %}
 
@@ -12,10 +12,10 @@
             <div class="well">
                 <form id="accommodation-report-filter" class="form-inline" role="form">
                     <div class="input">
-                        <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp <input value="{{ "now"|date('d.m.Y') }}" type="text" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter form-control input-sm" data-date-format="dd.mm.yyyy">
+                        <i class="fa fa-calendar" title='{{ "report.accommodation.dates"|trans({}, "MBHPackageBundle")}}' data-toggle='tooltip'></i>&nbsp <input value="{{ "now"|date('d.m.Y') }}" type="text" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter form-control input-sm" data-date-format="dd.mm.yyyy">
                     </div>
                     <div class="input">
-                        <i class="fa fa-home" title='Тип номера' data-toggle='tooltip'></i>&nbsp  <select data-placeholder="Тип номера" id="accommodation-report-filter-roomType" class="accommodation-report-filter form-control input-sm">
+                        <i class="fa fa-home" title='{{ "report.accommodation.room_type"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i>&nbsp  <select data-placeholder="Тип номера" id="accommodation-report-filter-roomType" class="accommodation-report-filter form-control input-sm">
                             <option></option>
                             {% for roomType in roomTypes %}
                                 <option value="{{ roomType.id }}">{{ roomType.name }}</option>

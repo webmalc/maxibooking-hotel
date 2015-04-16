@@ -1,6 +1,6 @@
 {% extends 'MBHChannelManagerBundle:Oktogo:layout.html.twig' %}
 
-{% set small_title = "настройки" %}
+{% set small_title = 'views.oktogo.index.settings'|trans({}, 'MBHChannelManagerBundle') %}
 
 {% block content %}
     {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': entity, 'base': 'oktogo'} %}

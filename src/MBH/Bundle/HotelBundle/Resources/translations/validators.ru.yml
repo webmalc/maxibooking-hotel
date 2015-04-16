@@ -1,0 +1,30 @@
+validator.document.city.country_not_selected: Не выбрана страна
+validator.document.city.region_not_selected: Не выбран регион
+validator.document.city.min_name: Слишком короткое имя
+validator.document.city.max_name: Слишком длинное имя
+validator.document.country.min_name: Слишком короткое имя
+validator.document.country.max_name: Слишком длинное имя
+validator.document.hotel.min_name: Слишком короткое имя
+validator.document.hotel.max_name: Слишком длинное имя
+validator.document.hotel.min_prefix: Слишком короткий префикс
+validator.document.hotel.max_prefix: Слишком длинный префикс
+validator.document.hotel.sale_days_amount_less_zero: Количество дней продажи не может быть меньше нуля
+validator.document.hotel.wrong_latitude: Неверный формат координаты широты. Пример: 55.752014
+validator.document.hotel.wrong_longitude: Неверный формат координаты долготы. Пример: 37.617515
+validator.document.hotel.min_stars: Минимальное количество звезд отеля не может быть меньше 1
+validator.document.hotel.max_stars: Максимальое количество звезд отеля не может быть больше 5
+validator.document.region.country_not_selected: Не выбрана страна
+validator.document.region.min_name: Слишком короткое имя
+validator.document.region.max_name: Слишком длинное имя
+validator.document.room.hotel_not_selected: Не выбран отель
+validator.document.room.room_type_not_selected: Не выбран тип номера
+validator.document.room.min_name: Слишком короткое имя
+validator.document.room.max_name: Слишком длинное имя
+validator.document.roomType.min_name: Слишком короткое имя
+validator.document.roomType.max_name: Слишком длинное имя
+validator.document.roomType.min_description: Слишком короткое описание
+validator.document.roomType.max_description: Слишком длинное описание
+validator.document.roomType.min_hex_code: HEX-код цвета должен быть не меньше шести символов
+validator.document.roomType.max_hex_code: HEX-код цвета должен быть не больше шести символов
+validator.document.roomType.min_places_amount: Количество мест не может быть меньше одного
+validator.document.roomType.places_amount_less_zero: Количество мест не может быть меньше нуля

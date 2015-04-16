@@ -1,6 +1,6 @@
 {% extends 'MBHPackageBundle:Search:layout.html.twig' %}
 
-{% set small_title = "поиск" %}    
+{% set small_title = "search.index.search"|trans({}, "MBHPackageBundle") %}
 
 {% block content %}
 
@@ -50,7 +50,7 @@
 
     <div class="row">
         <div id="package-search-results-wrapper" class="col-md-12">
-            <div class="alert alert-info"><i class="fa fa-search"></i> Введите данные для подбора проживания.</div>
+            <div class="alert alert-info"><i class="fa fa-search"></i> {{ "search.index.enter_search_data"|trans({}, "MBHPackageBundle") }}</div>
         </div>
     </div>
 

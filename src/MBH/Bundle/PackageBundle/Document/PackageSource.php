@@ -50,9 +50,9 @@ class PackageSource extends Base
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage= "validator.document.packageSource.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage= "validator.document.packageSource.max_name"
      * )
      */
     protected $fullTitle;
@@ -63,9 +63,9 @@ class PackageSource extends Base
      * @ODM\String(name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage= "validator.document.packageSource.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.packageSource.max_name"
      * )
      */
     protected $title;

@@ -109,7 +109,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     if (in_array($entity->getAccommodation()->getId(), $notIds)) {
                         $request->getSession()
                             ->getFlashBag()
-                            ->set('danger', 'Размещение не перенесено. Номер уже занят.');
+                            ->set('danger', $this->get('translator')->trans('controller.packageController.placement_not_transfered_room_is_in_use') );
                     } else {
                         $package->setAccommodation($entity->getAccommodation());
                     }
@@ -120,7 +120,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
                 $request->getSession()
                     ->getFlashBag()
-                    ->set('success', 'Данные успешно пересены.');
+                    ->set('success', $this->get('translator')->trans('controller.packageController.data_transfer_success'));
 
                 return $this->afterSaveRedirect('package', $entity->getId(), [], '_copy');
             }
@@ -418,7 +418,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $dm->flush();
 
             $this->getRequest()->getSession()->getFlashBag()
-                ->set('success', 'Запись успешно отредактирована.');
+                ->set('success', $this->get('translator')->trans('controller.packageController.record_edited_success'));
 
             return $this->afterSaveRedirect('package', $entity->getId());
         }
@@ -463,7 +463,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $request->getSession()
             ->getFlashBag()
-            ->set('success', 'Заказ успешно создан.');
+            ->set('success', $this->get('translator')->trans('controller.packageController.order_created_success'));
 
         return $this->redirect($this->generateUrl('package_edit', [
             'id' => $order->getPackages()[0]->getId()
@@ -528,7 +528,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
                 $request->getSession()
                     ->getFlashBag()
-                    ->set('success', 'Гость успешно добавлен.');
+                    ->set('success', $this->get('translator')->trans('controller.packageController.guest_added_success'));
 
                 return $this->afterSaveRedirect('package', $entity->getId(), [], '_guest');
             }
@@ -609,7 +609,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                         ->getFlashBag()
                         ->set(
                             'danger',
-                            'Произошла ошибка при добавлении услуги. Обновите страницу и попробуйте еще раз.'
+                            $this->get('translator')->trans('controller.packageController.service_adding_error_refresh_and_try_again')
                         );
 
                     return $this->redirect($this->generateUrl('package_service', ['id' => $id]));
@@ -633,7 +633,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     ->getFlashBag()
                     ->set(
                         'success',
-                        'Услуга успешно добавлена.'
+                        $this->get('translator')->trans('controller.packageController.service_added_success')
                     );
 
                 return $this->afterSaveRedirect('package', $id, [], '_service');
@@ -672,7 +672,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $request->getSession()
             ->getFlashBag()
-            ->set('success', 'Услуга успешно удалена.');
+            ->set('success', $this->get('translator')->trans('controller.packageController.service_deleted_success'));
 
         return $this->redirect($this->generateUrl('package_service', ['id' => $id]));
     }
@@ -807,7 +807,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
                 $request->getSession()
                     ->getFlashBag()
-                    ->set('success', 'Размещение успешно сохранено.');
+                    ->set('success', $this->get('translator')->trans('controller.packageController.placement_saved_success'));
 
                 return $this->afterSaveRedirect('package', $entity->getId(), [], '_accommodation');
             }
@@ -843,7 +843,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $request->getSession()
             ->getFlashBag()
-            ->set('success', 'Размещение успешно удалено.');
+            ->set('success', $this->get('translator')->trans('controller.packageController.placement_deleted_success'));
 
         return $this->redirect($this->generateUrl('package_accommodation', ['id' => $id]));
     }
@@ -871,7 +871,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $request
             ->getSession()
             ->getFlashBag()
-            ->set('success', 'Запись успешно удалена.');
+            ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
 
         if (!empty($request->get('order'))) {
             return $this->redirect($this->generateUrl('package_order_packages', ['id' => $orderId]));

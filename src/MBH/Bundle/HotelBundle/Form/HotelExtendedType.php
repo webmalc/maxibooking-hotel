@@ -13,49 +13,49 @@ class HotelExtendedType extends AbstractType
     {
         $builder
                 ->add('address', 'text', [
-                    'label' => 'Город',
-                    'group' => 'Местоположение',
+                    'label' => 'form.hotelExtendedType.city',
+                    'group' => 'form.hotelExtendedType.location',
                     'mapped' => false,
                     'required' => true,
                     'data' => (empty($options['city'])) ? null : $options['city']->getId(),
-                    'attr' => ['placeholder' => 'Москва, Московская обл., Щелково', 'style' => 'min-width: 500px']
+                    'attr' => ['placeholder' => 'form.hotelExtendedType.placeholder_location', 'style' => 'min-width: 500px']
                 ])
                 ->add('latitude', 'text', [
-                    'label' => 'Широта',
-                    'group' => 'Местоположение',
+                    'label' => 'form.hotelExtendedType.latitude',
+                    'group' => 'form.hotelExtendedType.location',
                     'required' => false,
                     'attr' => ['placeholder' => '55.752014'],
-                    'help' => 'GPS координата широты отеля. <a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">Узнать координаты отеля.</a>'
+                    'help' => 'form.hotelExtendedType.gps_coordinates_latitude <a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>'
                 ])
                 ->add('longitude', 'text', [
-                    'label' => 'Долгота',
-                    'group' => 'Местоположение',
+                    'label' => 'form.hotelExtendedType.longitude',
+                    'group' => 'form.hotelExtendedType.location',
                     'required' => false,
                     'attr' => ['placeholder' => '37.617515'],
-                    'help' => 'GPS координата широты отеля. <a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">Узнать координаты отеля.</a>'
+                    'help' => 'form.hotelExtendedType.gps_coordinates_longitude' .'<a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">'.'form.hotelExtendedType.know_hotel_coordinates</a>'
                 ])
                 ->add('rating', 'text', [
-                    'label' => 'Звездность отеля',
-                    'group' => 'Параметры',
+                    'label' => 'form.hotelExtendedType.how_many_stars_hotel',
+                    'group' => 'form.hotelExtendedType.parameters',
                     'required' => false,
                 ])
                 ->add('type', 'choice', [
-                    'label' => 'Тип отеля',
-                    'group' => 'Параметры',
+                    'label' => 'form.hotelExtendedType.hotel_type',
+                    'group' => 'form.hotelExtendedType.parameters',
                     'required' => false,
                     'choices' => (isset($options['config']['types'])) ? $options['config']['types'] : [],
                     'multiple' => true
                 ])
                 ->add('theme', 'choice', [
-                    'label' => 'Тема отеля',
-                    'group' => 'Параметры',
+                    'label' => 'form.hotelExtendedType.hotel_theme',
+                    'group' => 'form.hotelExtendedType.parameters',
                     'required' => false,
                     'choices' => (isset($options['config']['themes'])) ? $options['config']['themes'] : [],
                     'multiple' => true
                 ])
                 ->add('facilities', 'choice', [
-                    'label' => 'Удобства отеля',
-                    'group' => 'Параметры',
+                    'label' => 'form.hotelExtendedType.hotel_amenities',
+                    'group' => 'form.hotelExtendedType.parameters',
                     'required' => false,
                     'choices' => (isset($options['config']['facilities'])) ? $options['config']['facilities'] : [],
                     'multiple' => true

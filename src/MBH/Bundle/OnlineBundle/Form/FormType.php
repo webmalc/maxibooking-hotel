@@ -16,22 +16,22 @@ class FormType extends AbstractType
                 'enabled',
                 'checkbox',
                 [
-                    'label' => 'Включена?',
-                    'group' => 'Параметры',
+                    'label' => 'form.formType.is_turned_on',
+                    'group' => 'form.formType.parameters',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Использовать ли онлайн форму?'
+                    'help' =>  'form.formType.use_online_form'
                 ]
             )
             ->add(
                 'roomTypes',
                 'checkbox',
                 [
-                    'label' => 'Типы номеров?',
-                    'group' => 'Параметры',
+                    'label' => 'form.formType.room_types',
+                    'group' => 'form.formType.parameters',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Использовать ли поле "Тип номера" в онлайн форме?'
+                    'help' => 'form.formType.should_we_use_room_type_field_in_online_form'
                 ]
             );
         if (!$options['isHostel']) {
@@ -40,11 +40,11 @@ class FormType extends AbstractType
                     'tourists',
                     'checkbox',
                     [
-                        'label' => 'Гости?',
-                        'group' => 'Параметры',
+                        'label' => 'form.formType.are_there_guests',
+                        'group' => 'form.formType.parameters',
                         'value' => true,
                         'required' => false,
-                        'help' => 'Использовать ли поле "Количестов гостей" в онлайн форме?'
+                        'help' => 'form.formType.should_we_use_guests_amount_field_in_online_form'
                     ]
                 )
             ;
@@ -54,22 +54,22 @@ class FormType extends AbstractType
                 'nights',
                 'checkbox',
                 [
-                    'label' => 'Поле "ночи"?',
-                    'group' => 'Параметры',
+                    'label' => 'form.formType.should_we_use_nochi_field?',
+                    'group' => 'form.formType.parameters',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Использовать ли поле дату заезда и количестов ночей или дату заезда/выезда?'
+                    'help' => 'form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date'
                 ]
             )
             ->add(
                 'paymentTypes',
                 'choice',
                 [
-                    'group' => 'Оплата',
+                    'group' => 'form.formType.payment',
                     'choices' => $options['paymentTypes'],
-                    'label' => 'Типы оплаты',
+                    'label' => 'form.formType.payment_type',
                     'multiple' => true,
-                    'help' => 'Типы оплаты при бронировании с помощью онлайн формы'
+                    'help' => 'form.formType.reservation_payment_types_with_online_form'
                 ]
             )
         ;
@@ -80,8 +80,8 @@ class FormType extends AbstractType
                     'robokassaMerchantLogin',
                     'text',
                     [
-                        'group' => 'Сервис ROBOKASSA',
-                        'label' => 'Логин магазина',
+                        'group' => 'form.formType.robokassa_service',
+                        'label' => 'form.formType.shop_login',
                         'required' => false,
                         'attr' => ['class' => 'paysystem-params']
                     ]
@@ -90,8 +90,8 @@ class FormType extends AbstractType
                     'robokassaMerchantPass1',
                     'text',
                     [
-                        'group' => 'Сервис ROBOKASSA',
-                        'label' => 'Пароль 1',
+                        'group' => 'form.formType.robokassa_service',
+                        'label' => 'form.formType.password_one',
                         'required' => false,
                         'attr' => ['class' => 'paysystem-params']
                     ]
@@ -100,8 +100,8 @@ class FormType extends AbstractType
                     'robokassaMerchantPass2',
                     'text',
                     [
-                        'group' => 'Сервис ROBOKASSA',
-                        'label' => 'Пароль 2',
+                        'group' => 'form.formType.robokassa_service',
+                        'label' => 'form.formType.password_two',
                         'required' => false,
                         'attr' => ['class' => 'paysystem-params']
                     ]
@@ -115,8 +115,8 @@ class FormType extends AbstractType
                     'payanywayMntId',
                     'text',
                     [
-                        'group' => 'Сервис PAYANYWAY',
-                        'label' => 'Номер расширенного счета',
+                        'group' => 'form.formType.robokassa_service',
+                        'label' => 'form.formType.extended_account_number',
                         'required' => false,
                         'attr' => ['class' => 'paysystem-params']
                     ]
@@ -125,8 +125,8 @@ class FormType extends AbstractType
                     'payanywayKey',
                     'text',
                     [
-                        'group' => 'Сервис PAYANYWAY',
-                        'label' => 'Код проверки целостности данных',
+                        'group' => 'form.formType.robokassa_service',
+                        'label' => 'form.formType.data_integrity_code',
                         'required' => false,
                         'attr' => ['class' => 'paysystem-params']
                     ]

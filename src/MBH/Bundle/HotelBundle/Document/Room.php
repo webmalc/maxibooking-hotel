@@ -41,14 +41,14 @@ class Room extends Base
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="rooms")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="validator.document.room.hotel_not_selected")
      */
     protected $hotel;
     
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="RoomType", inversedBy="rooms")
-     * @Assert\NotNull(message="Не выбран тип номера")
+     * @Assert\NotNull(message="validator.document.room.room_type_not_selected")
      */
     protected $roomType;
 
@@ -59,9 +59,9 @@ class Room extends Base
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=1,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="validator.document.room.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.room.max_name"
      * )
      */
     protected $fullTitle;
@@ -72,9 +72,9 @@ class Room extends Base
      * @ODM\String(name="title")
      * @Assert\Length(
      *      min=1,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="validator.document.room.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.room.max_name"
      * )
      */
     protected $title;

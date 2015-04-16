@@ -1,9 +1,9 @@
 {% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
 
 {% if entity.hotel.isHostel and entity.calculationType == 'customPrices' %}
-    {% set small_title = "создание койко-места для типа номера <" ~ entity.name ~ "> #" ~ entity.id %}
+    {% set small_title = 'views.roomType.newRoom.create_bed_for_room_type'|trans({}, 'MBHHotelBundle')  ~ entity.name ~ "> #" ~ entity.id %}
 {% else %}
-    {% set small_title = "создание номера для типа номера <" ~ entity.name ~ "> #" ~ entity.id %}
+    {% set small_title = 'views.roomType.newRoom.create_room_for_room_type'|trans({}, 'MBHHotelBundle') ~ entity.name ~ "> #" ~ entity.id %}
 {% endif %}
 
 

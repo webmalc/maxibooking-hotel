@@ -12,10 +12,10 @@
             <div class="well">
                 <form id="rooms-report-filter" class="form-inline" role="form">
                     <div class="input">
-                        <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp <input value="{{ "now"|date('d.m.Y') }}" type="text" id="rooms-report-filter-begin" class="datepicker rooms-report-filter form-control input-sm" data-date-format="dd.mm.yyyy">
+                        <i class="fa fa-calendar" title='{{ "report.room.dates"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i>&nbsp <input value="{{ "now"|date('d.m.Y') }}" type="text" id="rooms-report-filter-begin" class="datepicker rooms-report-filter form-control input-sm" data-date-format="dd.mm.yyyy">
                     </div>
                     <div class="input">
-                        <i class="fa fa-home" title='Тип номера' data-toggle='tooltip'></i>&nbsp  <select data-placeholder="Тип номера" id="rooms-report-filter-roomType" class="rooms-report-filter form-control input-sm">
+                        <i class="fa fa-home" title='{{ "report.room.room_type"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i>&nbsp  <select data-placeholder="{{ "report.room.room_type"|trans({}, "MBHPackageBundle") }}" id="rooms-report-filter-roomType" class="rooms-report-filter form-control input-sm">
                             <option></option>
                             {% for roomType in roomTypes %}
                                 <option value="{{ roomType.id }}">{{ roomType.name }}</option>

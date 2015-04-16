@@ -1,0 +1,288 @@
+analytics.index.sales_date: 'Даты продажи'
+analytics.index.report_type: 'Тип отчета'
+analytics.index.room_type: 'Тип номера'
+analytics.index.all_rooms: Все номера
+analytics.index.cumulative: 'Накопительный?'
+analytics.index.monthly: 'По месяцам?'
+analytics.layout.analytics: 'Аналитика'
+order.cash.order_editing: 'редактирование заказа #'
+order.cash.deleted: удален
+order.cash.paid_price: Оплачено/Цена:
+order.cash.paid: оплачен
+order.cash.not_paid: не оплачен
+order.cash.income: Приход
+order.cash.outcome: Расход
+order.cash.payment_way: Способ оплаты
+order.cash.operation_type: Способ оплаты
+order.cash.date: Дата
+order.cash.removed: Удалена
+order.cash.edit_record: Редактирование записи
+order.cash.remove_record: Удаление записи
+order.cash.confirm_payment: Подтверждение платежа
+order.cash.are_you_sure_to_confirm_payment: Точно подтвердить платеж на сумму
+order.cash.confirm: Подтвердить
+order.cash.cash_documents_not_found: Кассовые документы не найдены.
+order.edit.order_editing: 'редактирование заказа #'
+order.edit.deleted: удален
+order.edit.room: Номер
+order.edit.paid_price: Оплачено/Цена
+order.edit.paid: оплачен
+order.edit.not_paid: не оплачен
+order.edit.order_type: Тип заказа
+order.edit.payer: Плательщик
+order.edit.not_specified: не указан
+order.edit.is_confirmed: Подтвержден?
+order.edit.is_confirmed_yes: да
+order.edit.is_confirmed_no: нет
+order.layout.reservation: Бронирование
+order.navbar.delete_order: 'Удалить заказ'
+order.packages.dates: Даты
+order.packages.placement: Размещение
+order.packages.guests: Гости
+order.packages.price: Стоимость
+order.packages.created: Создана
+order.packages.reservation_type: Тип брони:
+order.packages.deleted: удалена
+order.packages.record_edit: Редактирование записи
+order.packages.noch: 'ночь'
+order.packages.nochi: 'ночи'
+order.packages.nochei: 'ночей'
+order.packages.go_to_placement: Перейти к размещению
+order.packages.edit_reservation: Редактирование брони
+order.packages.delete_reservation: Удаление брони
+order.packages.reservations_not_found: Брони не найдены.
+order.tabs.not_confirmed: '(не подтвержден)'
+order.tabs.order_info: Информация о заказе
+order.tabs.reservations: Брони
+order.tabs.payer: Плательщик
+order.tabs.calculations: Расчеты
+order.touristEdit.edit_order: 'редактирование заказа #'
+order.touristEdit.deleted: удален
+order.touristEdit.payer_not_specified: Плательщик не указан.
+order.touristEdit.fio: ФИО
+order.touristEdit.birth_date: Дата рождения
+order.touristEdit.gender: Пол
+order.touristEdit.phone: Телефон
+order.touristEdit.email: E-mail
+order.touristEdit.address: Адрес
+order.touristEdit.document: Документ
+order.touristEdit.delete_payer: Удалить плательщика
+package.accommodation.edit_reservation: 'редактирование брони'
+package.accommodation.deleted: удалена
+package.accommodation.placement: Размещение:
+package.accommodation.guests: гости
+package.accommodation.stopped: заехали
+package.accommodation.placement_not_specified: Размещение не указано
+package.actions.save_and_close: Сохранить и закрыть
+package.actions.guests_stopped: Гости заехали
+package.actions.find_similar:  Найти похожую
+package.actions.cancel: Отмена
+package.actions.save: 'Сохранить'
+package.actions.delete: Удалить
+package.cash.edit_reservation: 'редактирование брони '
+package.cash.deleted: удалена
+package.cash.paid_price: Оплачено/Цена:
+package.cash.paid: оплачена
+package.cash.not_paid: не оплачена
+package.cash.income: Приход
+package.cash.outcome: Расход
+package.cash.payment_way: Способ оплаты
+package.cash.operation_type: Вид операции
+package.cash.date: Дата
+package.cash.removed: Удалена
+package.cash.edit_record: Редактирование записи
+package.cash.payment_way: Способ оплаты
+package.cash.confirm_payment: Подтверждение платежа
+package.cash.are_you_sure_to_confirm_payment: Точно подтвердить платеж на сумму
+package.cash.confirm: Подтвердить
+package.cash.delete_record: Удаление записи
+package.copy.edit_reservation: 'редактирование брони '
+package.copy.deleted: удалена
+package.copy.edit_reservation: 'редактирование брони '
+package.edit.edit_reservation: 'редактирование брони '
+package.copy.deleted: удалена
+package.edit.dates: Даты
+package.edit.guests: Гости
+package.edit.adults: Взрослых:
+package.edit.children: Детей:
+package.edit.tariff: Тариф
+package.edit.room: Комната
+package.edit.paid: оплачена
+package.edit.not_paid: не оплачена
+package.edit.service_price: Цена услуг
+package.edit.order_type: Тип заказа
+package.edit.deleted: удалена
+package.edit.is_confirmed: Подтверждена?
+package.edit.is_confirmed_yes: да
+package.edit.is_confirmed_no: нет
+package.edit.print_act: Распечатать акт
+package.editTabs.reservation_info: Информация о броне
+package.editTabs.guests: Гости
+package.editTabs.services: Услуги
+package.editTabs.placement: Размещение
+package.editTabs.data_transfer: Перенос данных
+package.editTabs.order: Заказ #
+package.guest.edit_reservation: "редактирование брони "
+package.guest.deleted: удалена
+package.guest.guests_not_added: Не добавлено гостей:
+package.guest.phone: Телефон
+package.guest.email: E-mail
+package.guest.birth_date: Дата рождения
+package.guest.age: Возраст
+package.guest.passport: Паспорт
+package.guest.address: Адрес
+package.guest.main: Основной
+package.guest.edit_record:  Редактирование записи
+package.guest.write_a_client: Написать клиенту
+package.guest.delete_record: Удаление записи
+package.index.reservations_list: "список броней"
+package.index.check_in: Заезд
+package.index.check_out: Выезд
+package.index.create: Создание
+package.index.paid: Оплачена
+package.index.partly_paid: Частично оплачена
+package.index.not_paid: Не оплачена
+package.index.is_confirmed: Подтверждена?
+package.index.is_confirmed_yes: Да
+package.index.is_confirmed_no: Нет
+package.index.check_in_today: заезд сегодня
+package.index.check_in_tomorrow: заезд завтра
+package.index.checked_in_now: живут сейчас
+package.index.not_confirmed: не подтвержденные
+package.index.without_placement: без размещения
+package.index.not_paid: не оплаченные
+package.index.not_paid_in_time: просроченные
+package.index.not_checked_in: не заехавшие
+package.index.my_reservations: мои брони
+package.index.order: Заказ
+package.index.dates: Даты
+package.index.placement: Размещение
+package.index.guests: Гости
+package.index.price: Стоимость
+package.index.created: Создана
+package.index.selection: 'Подбор'
+package.json.reservation_type: Тип брони:
+package.json.edit_record: Редактирование записи
+package.json.deleted: удалена
+package.json.edit_order: Редактирование заказа
+package.json.deleted_order: удален
+package.json.noch: 'ночь'
+package.json.nochi: 'ночи'
+package.json.nochei: 'ночей'
+package.json.go_to_placement: Перейти к размещению
+package.json.not_placed: не размещено
+package.json.go_to_payer: Перейти к плательщику
+package.json.no_payer: нет плательщика
+package.json.go_to_calculations: Перейти к расчетам
+package.json.today: Сегодня,
+package.jsonButtons.confirm_order: Подтверждение заказа
+package.jsonButtons.edit_record: Редактирование записи
+package.jsonButtons.delete_record: Удаление записи
+package.jsonButtons.view_record: Просмотр записи
+package.layout.reservation: "Бронирование"
+package.listTabs.list: Список
+package.listTabs.chess: Шахматка
+package.listTabs.placement: Размещение
+package.listTabs.clients: Клиенты
+package.new.reservation_error: "ошибка бронирования"
+package.new.reservation_error_try_again: При бронировании произошла ошибка. Попробуйте еще раз.
+package.pdf.executor: Исполнитель:
+package.pdf.customer: Заказчик:
+package.pdf.not_specified: 'Не указан'
+package.pdf.services_name: Наименование работ, услуг
+package.pdf.amount: Кол-во
+package.pdf.unit: Ед.
+package.pdf.price: Цена
+package.pdf.sum: Сумма
+package.pdf.living_in_hotel: Проживание в отеле.
+package.pdf.noch: ночь
+package.pdf.conditions: Вышеперечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.
+package.pdf.executor_caps: ИСПОЛНИТЕЛЬ
+package.pdf.customer_caps: ЗАКАЗЧИК
+package.service.edit_reservation: "редактирование брони "
+package.service.paid: оплачена
+package.service.not_paid: не оплачена
+package.service.nights_amount: Количество суток
+package.service.guests_amount: Количество гостей
+package.service.amount: Количество
+package.service.date: Дата
+package.service.price: Цена
+package.service.calculation_type: Тип расчета
+package.service.result: Итог
+package.service.comment: Комментарий
+package.service.creation_date: Дата создания
+package.service.delete_record: Удаление записи
+package.service.add_services: Добавить услуги?
+report.accommodation.placement: "размещение"
+report.accommodation.dates: Даты
+report.accommodation.room_type: Тип номера
+report.accommodationTable.no_room_found: Не найдено номеров у выбранного отеля.
+report.accommodationTable.room: Номер
+report.accommodationTable.no_main_guest: "Нет основного гостя"
+report.accommodationTable.price: . Цена:
+report.accommodationTable.type: . Тип:
+report.accommodationTable.early_check_in: '. Ранний заезд'
+report.accommodationTable.late_check_out: '. Поздний выезд'
+report.room.dates: Даты
+report.room.room_type: Тип номера
+report.roomsCells.rooms_amount: Всего номеров
+report.roomsCells.occupied_rooms_amount: Занято номеров
+report.roomsCells.empty_rooms_amount: Свободно номеров
+report.roomsCells.select_check_in_date_for_reservation: Выбрать дату заезда для бронирования
+report.roomsTable.no_room_types: Нет типов номеров у выбранного отеля.
+report.roomsTable.room: Номер
+report.roomsTable.whole_hotel: 'Весь отель'
+search.index.search: "поиск"
+search.index.enter_search_data: Введите данные для подбора проживания.
+search.layout.room_search: "Подбор проживания"
+search.results.tariff_search: Поиск по тарифам
+search.results.green: зеленый
+search.results.main_tariffs: - основные тарифы
+search.results.blue: синий
+search.results.special_tariffs: - специальные тарифы
+search.results.check_in: Заезд
+search.results.check_out: Отъезд
+search.results.days_and_nights: Дни/ночи
+search.results.hotel: Отель
+search.results.type: Тип
+search.results.tariff: Тариф
+search.results.guests: Гости
+search.results.price: Цена
+search.results.reservate: Бронировать
+search.results.nothing_found_for_your_request:  По вашему запросу ничего не найдено.
+search.results.enter_search_data: Введите данные для подбора проживания.
+source.edit.edit_reservation_source: "редактрирование источники брони #"
+source.index.reservation_source: "источник броней"
+source.index.name: Название
+source.index.inner_name: Внутреннее название
+source.index.created: Создан
+source.index.edit_record: Редактирование записи
+source.index.delete_record: Удаление записи
+eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Невозможно удалить запись с существующими бронями. Брони: '
+controller.analyticsController.services_amount: 'Количество услуг'
+controller.analyticsController.proceeds: 'Выручка'
+controller.analyticsController.percentage: 'Процент'
+controller.analyticsController.package_trips_amount: 'Количество путевок'
+controller.analyticsController.sale_date: 'Даты продажи'
+controller.orderController.cash_register_paper_deleted_success: 'Кассовый документ успешно удален.'
+controller.orderController.add_cash_register_paper: 'Добавить кассовый документ'
+controller.orderController.cash_register_paper_added_success: 'Кассовый документ успешно добавлен.'
+controller.orderController.payer_added_success: 'Плательщик успешно добавлен.'
+controller.orderController.payer_deleted_success: 'Плательщик успешно удален.'
+controller.orderController.record_edited_success: 'Запись успешно отредактирована.'
+controller.orderController.record_deleted_success: 'Запись успешно удалена.'
+controller.packageController.placement_not_transfered_room_is_in_use: 'Размещение не перенесено. Номер уже занят.'
+controller.packageController.data_transfer_success: 'Данные успешно пересены.'
+controller.packageController.record_edited_success: 'Запись успешно отредактирована.'
+controller.packageController.order_created_success:  'Заказ успешно создан.'
+controller.packageController.guest_added_success: 'Гость успешно добавлен.'
+controller.packageController.service_adding_error_refresh_and_try_again:  'Произошла ошибка при добавлении услуги. Обновите страницу и попробуйте еще раз.'
+controller.packageController.service_added_success: 'Услуга успешно добавлена.'
+controller.packageController.service_deleted_success: 'Услуга успешно удалена.'
+controller.packageController.placement_saved_success: 'Размещение успешно сохранено.'
+controller.packageController.placement_deleted_success: 'Размещение успешно удалено.'
+controller.packageController.record_deleted_success: 'Запись успешно удалена.'
+controller.sourceController.record_created_success: 'Запись успешно создана.'
+controller.sourceController.record_edited_success: 'Запись успешно отредактирована.'
+controller.touristController.record_created_success: 'Запись успешно создана.'
+controller.touristController.record_edited_success: 'Запись успешно отредактирована.'

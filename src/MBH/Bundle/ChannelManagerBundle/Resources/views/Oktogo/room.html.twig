@@ -1,6 +1,6 @@
 {% extends 'MBHChannelManagerBundle:Oktogo:layout.html.twig' %}
 
-{% set small_title = "настройки" %}
+{% set small_title = 'views.oktogo.room.settings'|trans({}, 'MBHChannelManagerBundle') %}
 
 {% block content %}
     {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 2, 'entity': entity, 'base': 'oktogo'} %}
@@ -13,8 +13,8 @@
             <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
                 <div class="container">
                     <ul class="nav navbar-nav">
-                        <li><button type="submit" name="save" class="btn btn-info navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить</button></li>
-                        <li><button type="button" data-toggle="tooltip" title="Получить ID номеров из Oktogo.ru" onclick="location.href = '{{ path('oktogo_room_sync') }}'" class="btn btn-success navbar-btn"><i class="fa fa-share-square-o"></i> Синхронизировать</button></li>
+                        <li><button type="submit" name="save" class="btn btn-info navbar-btn"><i class="fa fa-check-square-o"></i>{{ 'views.oktogo.room.save'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
+                        <li><button type="button" data-toggle="tooltip" title={{ 'views.oktogo.room.get_room_ids_from_oktogo'|trans({}, 'MBHChannelManagerBundle') }} onclick="location.href = '{{ path('oktogo_room_sync') }}'" class="btn btn-success navbar-btn"><i class="fa fa-share-square-o"></i>{{ 'views.oktogo.room.sync'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
                         <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
                     </ul>
                 </div>

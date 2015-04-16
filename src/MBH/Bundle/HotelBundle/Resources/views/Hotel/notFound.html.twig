@@ -6,10 +6,10 @@
 
     <div class="alert alert-danger" role="alert">
         {% if is_granted('ROLE_ADMIN') %}
-            <strong>У вас не создано ни одного отеля!</strong> Создайте новый отель для продолжения работы.
-            <a href="{{ path('hotel_new') }}" class="btn btn-success btn-xs"><i class="fa fa-plus"></i> Создать отель</a>
+            <strong>{{ 'views.hotel.notFound.no_hotel_created'|trans({}, 'MBHHotelBundle') }}</strong>{{ 'views.hotel.notFound.create_new_hotel_to_continue'|trans({}, 'MBHHotelBundle') }}
+            <a href="{{ path('hotel_new') }}" class="btn btn-success btn-xs"><i class="fa fa-plus"></i>{{ 'views.hotel.notFound.create_hotel'|trans({}, 'MBHHotelBundle') }}</a>
         {% else %}
-            <strong>У вас нет прав для работы с отелем!</strong> Обратитесь к администратору для получения разрешения.
+            <strong>{{ 'views.hotel.notFound.you_have_no_permissions'|trans({}, 'MBHHotelBundle') }}</strong> {{ 'views.hotel.notFound.ask_admin'|trans({}, 'MBHHotelBundle') }}
         {% endif %}
     </div>
 

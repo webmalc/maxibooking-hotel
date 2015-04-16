@@ -1,8 +1,8 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = "редактирование заказа #" ~ entity.id %}
+{% set small_title =  'order.edit.order_editing'|trans({}, 'MBHPackageBundle') ~ entity.id %}
 
-{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">удален</span>' %}{% endif %}
+{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'order.edit.deleted'|trans({}, 'MBHPackageBundle')~' </span>' %}{% endif %}
 
 {% block content %}
 
@@ -13,38 +13,38 @@
 
             <div class="alert alert-warning package-main-info">
                 <div class="row">
-                    <div class="col-md-2 text-right"><strong>Номер</strong></div>
+                    <div class="col-md-2 text-right"><strong>{{ 'order.edit.room'|trans({}, 'MBHPackageBundle') }}</strong></div>
                     <div class="col-md-10">
                         {{ entity.id }}
                     </div>
                 </div>
                 <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>Оплачено/Цена</strong></div>
+                    <div class="col-md-2 text-right"><strong>{{ 'order.edit.paid_price'|trans({}, 'MBHPackageBundle') }}</strong></div>
                     <div class="col-md-10">
                         {{ entity.paid|number_format }} / {{ entity.price|number_format }}
                         &nbsp;
                         {% if entity.isPaid %}
-                            <small class="text-success"><i class="fa fa-check"></i> оплачен</small>
+                            <small class="text-success"><i class="fa fa-check"></i>{{ 'order.edit.paid'|trans({}, 'MBHPackageBundle') }} </small>
                         {% else %}
-                            <small class="text-danger"><i class="fa fa-times"></i> не оплачен</small>
+                            <small class="text-danger"><i class="fa fa-times"></i>{{ 'order.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>
                         {% endif %}
                     </div>
                 </div>
                 <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>Тип заказа</strong></div>
-                    <div class="col-md-10"><span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}</span>{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"></i> удален</small>{% endif %}</div>
+                    <div class="col-md-2 text-right"><strong>{{ 'order.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong></div>
+                    <div class="col-md-10"><span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}</span>{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"></i> {{ 'order.edit.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}</div>
                 </div>
                 <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>Плательщик</strong></div>
-                    <div class="col-md-10">{% if entity.mainTourist %}{{ entity.mainTourist }} <a class="external" target="_blank" href="{{ path('tourist_edit', {'id': entity.mainTourist.id }) }}"><i class="fa fa-external-link"></i></a>{% else %}<small class="text-danger">не указан</small>{% endif %}</div>
+                    <div class="col-md-2 text-right"><strong>{{ 'order.edit.payer'|trans({}, 'MBHPackageBundle') }}</strong></div>
+                    <div class="col-md-10">{% if entity.mainTourist %}{{ entity.mainTourist }} <a class="external" target="_blank" href="{{ path('tourist_edit', {'id': entity.mainTourist.id }) }}"><i class="fa fa-external-link"></i></a>{% else %}<small class="text-danger">{{ 'order.edit.not_specified'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}</div>
                 </div>
                 <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>Подтвержден?</strong></div>
+                    <div class="col-md-2 text-right"><strong>{{ 'order.edit.is_confirmed'|trans({}, 'MBHPackageBundle') }}</strong></div>
                     <div class="col-md-10">
                         {% if entity.confirmed %}
-                            <small class="text-success"><i class="fa fa-check"></i> да</small>
+                            <small class="text-success"><i class="fa fa-check"></i>{{ 'order.edit.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }} </small>
                         {% else %}
-                            <small class="text-danger"><i class="fa fa-times"></i> нет</small>
+                            <small class="text-danger"><i class="fa fa-times"></i>{{ 'order.edit.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}</small>
                         {% endif %}
                     </div>
                 </div>

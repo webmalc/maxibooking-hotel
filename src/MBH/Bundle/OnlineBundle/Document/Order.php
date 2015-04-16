@@ -57,7 +57,7 @@ class Order extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Сумма заказа не может быть меньше нуля"
+     *      minMessage="validator.document.order_sum_less_zero"
      * )
      */
     protected $total;

@@ -16,10 +16,10 @@ class ClientConfigType extends AbstractType
                 'isSendSms',
                 'checkbox',
                 [
-                    'label' => 'Смс оповещение?',
+                    'label' => 'form.clientConfigType.sms_notification',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Включено ли смс оповещение клиентов?'
+                    'help' => 'form.clientConfigType.is_sms_notification_turned_on'
                 ]
             )
            ;

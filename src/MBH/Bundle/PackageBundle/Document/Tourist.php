@@ -58,12 +58,12 @@ class Tourist extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String(name="firstName")
-     * @Assert\NotNull(message="Имя обязательно для заполнения")
+     * @Assert\NotNull(message= "validator.document.Tourist.name_required")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage= "validator.document.Tourist.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage= "validator.document.Tourist.max_name"
      * )
      */
     protected $firstName;
@@ -72,12 +72,12 @@ class Tourist extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String(name="lastName")
-     * @Assert\NotNull(message="Фамилия обязательна для заполнения")
+     * @Assert\NotNull(message= "validator.document.Tourist.surname_required")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткая фамилия",
+     *      minMessage= "validator.document.Tourist.min_surname",
      *      max=100,
-     *      maxMessage="Слишком длинная фамилия"
+     *      maxMessage= "validator.document.Tourist.max_surname"
      * )
      */
     protected $lastName;
@@ -88,9 +88,9 @@ class Tourist extends Base
      * @ODM\String(name="patronymic")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое отчество",
+     *      minMessage= "validator.document.Tourist.min_second_name",
      *      max=100,
-     *      maxMessage="Слишком длинное отчество"
+     *      maxMessage= "validator.document.Tourist.max_second_name"
      * )
      */
     protected $patronymic;
@@ -116,7 +116,7 @@ class Tourist extends Base
      * @ODM\String(name="sex")
      * @Assert\Choice(
      *      choices = {"male", "female", "unknown"}, 
-     *      message = "Неверный пол."
+     *      message =  "validator.document.Tourist.wrong_gender"
      * )
      */
     protected $sex = 'unknown';
@@ -127,9 +127,9 @@ class Tourist extends Base
      * @ODM\String(name="address")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткий адрес",
+     *      minMessage= "validator.document.Tourist.min_address",
      *      max=100,
-     *      maxMessage="Слишком длинный адрес"
+     *      maxMessage= "validator.document.Tourist.max_address"
      * )
      */
     protected $address;
@@ -140,9 +140,9 @@ class Tourist extends Base
      * @ODM\String(name="document")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткий документ",
+     *      minMessage= "validator.document.Tourist.min_document",
      *      max=100,
-     *      maxMessage="Слишком длинный документ"
+     *      maxMessage= "validator.document.Tourist.max_document"
      * )
      */
     protected $document;
@@ -153,9 +153,9 @@ class Tourist extends Base
      * @ODM\String(name="phone")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткий телефон",
+     *      minMessage= "validator.document.Tourist.min_phone",
      *      max=100,
-     *      maxMessage="Слишком длинный телефон"
+     *      maxMessage= "validator.document.Tourist.max_phone"
      * )
      */
     protected $phone;
@@ -174,9 +174,9 @@ class Tourist extends Base
      * @ODM\String(name="note")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое примечание",
+     *      minMessage= "validator.document.Tourist.min_note",
      *      max=100,
-     *      maxMessage="Слишком длинное примечание"
+     *      maxMessage= "validator.document.Tourist.max_note"
      * )
      */
     protected $note;

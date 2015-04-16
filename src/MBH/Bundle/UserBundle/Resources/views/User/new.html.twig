@@ -1,6 +1,6 @@
 {% extends 'MBHUserBundle:User:layout.html.twig' %}
 
-{% set small_title = "cоздание" %}
+{% set small_title = {{ 'new.create'|trans({}, 'FOSUserBundle') }} %}
 
 {% block content %}
 

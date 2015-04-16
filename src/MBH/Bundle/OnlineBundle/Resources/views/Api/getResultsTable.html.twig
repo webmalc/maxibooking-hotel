@@ -9,7 +9,7 @@
                 <span id="mbh-results-duration-days">{{ results|first.days }}</span>
                 <span id="mbh-results-duration-nights">{{ results|first.nights }}</span>
             </div>
-            Номера в отеле на {{ plural( results|first.nights, 'ночь', 'ночи', 'ночей') }} c <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> по <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>
+            {{ 'views.api.getResultsTable.hotel_rooms_for'|trans({}, 'MBHOnlineBundle') }}{{ plural( results|first.nights, 'views.api.getResultsTable.noch'|trans({}, 'MBHOnlineBundle'),'views.api.getResultsTable.nochi'|trans({}, 'MBHOnlineBundle'), 'views.api.getResultsTable.nochei'|trans({}, 'MBHOnlineBundle')) }} c <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> по <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>
         </div>
         {% if tariffResults|length > 0 %}
             {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
@@ -19,10 +19,10 @@
         <table id="mbh-results-table">
             <thead>
             <tr>
-                <th id="mbh-results-table-th-roomType">Тип номера</th>
-                <th id="mbh-results-table-th-tourist">Гости</th>
-                <th id="mbh-results-table-th-price">Цена</th>
-                <th id="mbh-results-table-th-amount">Кол-во номеров</th>
+                <th id="mbh-results-table-th-roomType">{{ 'views.api.getResultsTable.room_type'|trans({}, 'MBHOnlineBundle') }}</th>
+                <th id="mbh-results-table-th-tourist">{{ 'views.api.getResultsTable.guests'|trans({}, 'MBHOnlineBundle') }}</th>
+                <th id="mbh-results-table-th-price">{{ 'views.api.getResultsTable.price'|trans({}, 'MBHOnlineBundle') }}</th>
+                <th id="mbh-results-table-th-amount">{{ 'views.api.getResultsTable.rooms_amount'|trans({}, 'MBHOnlineBundle') }}</th>
             </tr>
             </thead>
 
@@ -41,7 +41,7 @@
                         {% if result.roomType.description is not empty %}
                             <div class="mbh-results-roomType-description-wrappper">
                                 <a href="#" class="mbh-results-roomType-description-link"> <i
-                                            class="fa fa-angle-right "></i> описание номера</a>
+                                            class="fa fa-angle-right "></i> {{ 'views.api.getResultsTable.room_description'|trans({}, 'MBHOnlineBundle') }}</a>
                             </div>
                         {% endif %}
                     </td>
@@ -72,7 +72,7 @@
                             
                         {% endfor %}
 
-                        <span class="mbh-results-per-person" data-change="{{ result.roomType.calculationType == 'perRoom' ? 0 : 1 }}">цена за номер</span>
+                        <span class="mbh-results-per-person" data-change="{{ result.roomType.calculationType == 'perRoom' ? 0 : 1 }}"> {{ 'views.api.getResultsTable.room_price'|trans({}, 'MBHOnlineBundle') }}</span>
 
                     </td>
                     <td class="mbh-center">
@@ -109,11 +109,11 @@
                 <thead>
                     <tr>
                         {% if hotels|length > 1 %}
-                        <th id="mbh-results-table-services-th-hotel">Отель</th>
+                        <th id="mbh-results-table-services-th-hotel">{{ 'views.api.getResultsTable.hotel'|trans({}, 'MBHOnlineBundle') }}</th>
                         {% endif %}
-                        <th id="mbh-results-table-services-th-service">Тип услуги</th>
-                        <th id="mbh-results-table-services-th-price">Цена</th>
-                        <th id="mbh-results-table-services-th-amount">Количество</th>
+                        <th id="mbh-results-table-services-th-service"> {{ 'views.api.getResultsTable.service_type'|trans({}, 'MBHOnlineBundle') }}</th>
+                        <th id="mbh-results-table-services-th-price">{{ 'views.api.getResultsTable.price'|trans({}, 'MBHOnlineBundle') }}</th>
+                        <th id="mbh-results-table-services-th-amount">{{ 'views.api.getResultsTable.amount'|trans({}, 'MBHOnlineBundle') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -127,7 +127,7 @@
                             <span class="mbh-results-services-prices" data-value="{{ service.price }}">
                                 {{ service.price|number_format }} р.
                             </span><br>
-                            <span class="mbh-results-services-per-service" data-type="{{ service.unit }}">цена за {% if service.unit == 'piece' %}штуку{% elseif service.unit == 'day' %}день{% else %}час{% endif %}</span>
+                            <span class="mbh-results-services-per-service" data-type="{{ service.unit }}"> {{ 'views.api.getResultsTable.price_per'|trans({}, 'MBHOnlineBundle') }}{% if service.unit == 'piece' %}штуку{% elseif service.unit == 'day' %} {{ 'views.api.getResultsTable.day'|trans({}, 'MBHOnlineBundle') }}{% else %}час{% endif %}</span>
                         </td>
                         <td>
                             <select class="mbh-results-services-count select2">
@@ -146,10 +146,10 @@
         {% endif %}
                         
         <div id="mbh-results-actions">
-            <span id="mbh-results-packages-total">Номера: <span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">р.</span></span> &nbsp;
-            <span id="mbh-results-services-total">Услуги: <span id="mbh-results-total-services-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">р.</span></span> &nbsp;
-            <span id="mbh-results-total">Итого: <span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">р.</span></span>
-            <button id="mbh-results-next" class="button">Продолжить
+            <span id="mbh-results-packages-total"> {{ 'views.api.getResultsTable.rooms'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">р.</span></span> &nbsp;
+            <span id="mbh-results-services-total"> {{ 'views.api.getResultsTable.services'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-services-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">р.</span></span> &nbsp;
+            <span id="mbh-results-total">{{ 'views.api.getResultsTable.result'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">р.</span></span>
+            <button id="mbh-results-next" class="button"> {{ 'views.api.getResultsTable.continue'|trans({}, 'MBHOnlineBundle') }}
                 <small><i class="fa fa-chevron-right "></i></small>
             </button>
         </div>
@@ -157,7 +157,7 @@
         {% if tariffResults|length > 0 %}
             {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
         {% endif %}
-        <div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> По вашему запросу ничего не найдено.
+        <div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> {{ 'views.api.getResultsTable.nothing_found_for_your_query'|trans({}, 'MBHOnlineBundle') }}
         </div>
     {% endif %}
             </div>

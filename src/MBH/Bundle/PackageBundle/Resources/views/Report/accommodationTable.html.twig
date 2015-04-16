@@ -1,5 +1,5 @@
 {% if rooms|length <= 0 %}
-    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> Не найдено номеров у выбранного отеля.
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>{{ "report.accommodationTable.no_room_found"|trans({}, "MBHPackageBundle") }}
     </div>
 {% else %}
     <div id="accommodation-report-table-row">
@@ -27,7 +27,7 @@
                     {% endfor %}
                 </tr>
                 <tr>
-                    <th class="text-center">Номер</th>
+                    <th class="text-center">{{ "report.accommodationTable.room"|trans({}, "MBHPackageBundle") }}</th>
 
                     {% for day in period %}
                         <th class="text-center date-th {% if day == begin %}text-warning{% elseif day|date('N') >= 6 %}text-danger{% endif %}">{{ day|date('j') }}</th>
@@ -73,7 +73,7 @@
                                             {% set earlyCheckIn = package.earlyCheckIn %}
 
                                         <a href="{{ path('package_edit', {'id': package.id }) }}" target="_blank" data-toggle="tooltip"
-                                           title="{{ package.numberWithPrefix }}. {{ package.mainTourist.fullName|default('Нет основного гостя') }} ({{ package.adults }}+{{ package.children }}). Цена: {{ package.price }}/{{ package.paid }}. Тип: {{ statuses[package.status].title }}{{ earlyCheckIn ? '. Ранний заезд' : '' }}{{ lateCheckOut ? '. Поздний выезд' : '' }}">
+                                           title="{{ package.numberWithPrefix }}. {{ package.mainTourist.fullName|default( "report.accommodationTable.no_main_guest"|trans({}, "MBHPackageBundle")) }} ({{ package.adults }}+{{ package.children }}){{ "report.accommodationTable.price"|trans({}, "MBHPackageBundle") }}{{ package.price }}/{{ package.paid }}{{ "report.accommodationTable.type"|trans({}, "MBHPackageBundle") }}{{ statuses[package.status].title }}{{ earlyCheckIn ?  "report.accommodationTable.early_check_in"|trans({}, "MBHPackageBundle")  : '' }}{{ lateCheckOut ?  "report.accommodationTable.late_check_out"|trans({}, "MBHPackageBundle")   : '' }}">
                                             <div class="package text-{% if package.isPaid %}success{% elseif package.paid > 0 %}warning{% else %}danger{% endif %} {% if day == package.end %}package-end {{ lateCheckOut ? 'late-check-out' : '' }}{% endif %}{% if day == package.begin %}package-begin {{ earlyCheckIn ? 'early-check-in' : '' }}{% endif %}">
                                                 &nbsp;</div>
                                         </a>

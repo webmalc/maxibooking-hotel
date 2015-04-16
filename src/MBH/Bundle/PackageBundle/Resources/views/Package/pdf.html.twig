@@ -29,12 +29,12 @@
     <hr>
     <table border="0" width="100%">
         <tr>
-            <td width="15%">Исполнитель:</td>
+            <td width="15%">{{ "package.pdf.executor"|trans({}, "MBHPackageBundle") }}</td>
             <td width="85%"><strong>{{ organization.title }}</strong></td>
         </tr>
         <tr>
-            <td>Заказчик:</td>
-            <td><strong>{{ entity.order.mainTourist.fullName|default('Не указан') }}</strong></td>
+            <td>{{ "package.pdf.customer"|trans({}, "MBHPackageBundle") }} </td>
+            <td><strong>{{ entity.order.mainTourist.fullName|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong></td>
         </tr>
     </table>
 
@@ -43,19 +43,19 @@
         <thead>
             <tr>
                 <th style="width: 20px;">№</th>
-                <th>Наименование работ, услуг</th>
-                <th style="width: 30px;">Кол-во</th>
-                <th style="width: 30px;">Ед.</th>
-                <th style="width: 100px;">Цена</th>
-                <th style="width: 100px;">Сумма</th>
+                <th>{{ "package.pdf.services_name"|trans({}, "MBHPackageBundle") }}</th>
+                <th style="width: 30px;">{{ "package.pdf.amount"|trans({}, "MBHPackageBundle") }}</th>
+                <th style="width: 30px;">{{ "package.pdf.unit"|trans({}, "MBHPackageBundle") }}</th>
+                <th style="width: 100px;">{{ "package.pdf.price"|trans({}, "MBHPackageBundle") }}</th>
+                <th style="width: 100px;">{{ "package.pdf.sum"|trans({}, "MBHPackageBundle") }}</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td align="center">1</td>
-                <td>Проживание в отеле.</td>
+                <td>{{ "package.pdf.living_in_hotel"|trans({}, "MBHPackageBundle") }}</td>
                 <td align="center">{{ entity.nights }}</td>
-                <td align="center">ночь</td>
+                <td align="center">{{ "package.pdf.noch"|trans({}, "MBHPackageBundle") }}</td>
                 <td align="right">{{ (entity.packagePrice(true)/entity.nights)|round(1)|number_format }}</td>
                 <td align="right">{{ entity.packagePrice(true)|number_format }}</td>
             </tr>
@@ -87,19 +87,18 @@
     <p>Всего оказано услуг {{ entity.services|length + 1 }}, на сумму {{ entity.price|number_format }} руб.<br>
     <strong>{{ strPrice|capitalize }}</strong></p>
 
-    <p>Вышеперечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания
-    услуг не имеет.</p>
+    <p>{{ "package.pdf.conditions"|trans({}, "MBHPackageBundle") }}</p>
 
     <!-- footer -->
     <table border="0" class="footer" cellpadding="0" cellspacing="0" width="100%">
         <tr>
             <td valign="top" style="border-bottom: 1px solid #000; height: 120px; width: 50%;">
-                <h3>ИСПОЛНИТЕЛЬ</h3>
+                <h3>{{ "package.pdf.executor_caps"|trans({}, "MBHPackageBundle") }}</h3>
                 <p style="font-size: 11px;">{{ organization.position }}</p>
             </td>
             <td style="height: 120px; width: 10%;"></td>
             <td valign="top" style="border-bottom: 1px solid #000; height: 120px; width: 40%">
-                <h3>ЗАКАЗЧИК</h3>
+                <h3>{{ "package.pdf.customer_caps"|trans({}, "MBHPackageBundle") }}</h3>
             </td>
         </tr>
         <tr>

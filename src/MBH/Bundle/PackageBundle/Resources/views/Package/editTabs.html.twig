@@ -1,20 +1,20 @@
 {% set accommodation = entity.accommodation ? '' : '(нет)' %}
 
 {% set menu = [
-    {'route': 'package_edit', 'title': '<i class="fa fa-info-circle"></i> Информация о броне'},
-    {'route': 'package_guest', 'title': '<i class="fa fa-users"></i>  Гости <small>(' ~ entity.tourists|length ~ ')</small>'},
-    {'route': 'package_service', 'title': '<i class="fa fa-plug"></i>  Услуги <small>(' ~ entity.servicesPrice|number_format ~ ')</small>'},
-    {'route': 'package_accommodation', 'title': '<i class="fa fa-home"></i>  Размещение <small>' ~ accommodation ~ '</small>'}
+    {'route': 'package_edit', 'title': '<i class="fa fa-info-circle"></i>'~ 'package.editTabs.reservation_info'|trans({}, 'MBHPackageBundle')},
+    {'route': 'package_guest', 'title': '<i class="fa fa-users"></i> '~'package.editTabs.guests'|trans({}, 'MBHPackageBundle')~'<small>(' ~ entity.tourists|length ~ ')</small>'},
+    {'route': 'package_service', 'title': '<i class="fa fa-plug"></i> '~'package.editTabs.services'|trans({}, 'MBHPackageBundle')~' <small>(' ~ entity.servicesPrice|number_format ~ ')</small>'},
+    {'route': 'package_accommodation', 'title': '<i class="fa fa-home"></i> '~'package.editTabs.placement'|trans({}, 'MBHPackageBundle')~' <small>' ~ accommodation ~ '</small>'}
 ]
 %}
 {% if entity.isDeleted is not empty %}
-    {% set menu = menu|merge([{'route': 'package_copy', 'title': '<i class="fa fa-share"></i>  Перенос данных'}]) %}
+    {% set menu = menu|merge([{'route': 'package_copy', 'title': '<i class="fa fa-share"></i> '~'package.editTabs.data_transfer'|trans({}, 'MBHPackageBundle')}]) %}
 {% endif %}
 
 <ul class="nav nav-tabs" role="tablist">
     <li>
         <a href="{{ path('package_order_edit', { 'id': entity.order.id }) }}">
-            <i class="fa fa-file-text-o"></i> Заказ #{{ entity.order.id }} <small>({{ entity.order.packages|length }})</small>
+            <i class="fa fa-file-text-o"></i>{{ 'package.editTabs.order'|trans({}, 'MBHPackageBundle') }} {{ entity.order.id }} <small>({{ entity.order.packages|length }})</small>
         </a>
     </li>
 {% for item in menu %}

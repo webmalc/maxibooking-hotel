@@ -1,0 +1,24 @@
+views.booking.index.settings: "настройки"
+views.booking.index.booking_com_sync: "Синхронизироваться с Booking.com"
+views.booking.index.save: Сохранить
+views.booking.index.sync: Синхронизировать
+views.booking.index.cancel: Отмена
+views.booking.room.settings: "настройки"
+views.booking.room.room_type: Тип номера
+views.booking.room.booking_com_sync: "Синхронизироваться с Booking.com"
+views.booking.room.sync: Синхронизировать
+views.booking.service.service: Сервис
+views.booking.service.code: Код
+views.booking.service.sync: Синхронизировать
+views.booking.service.cancel: Отмена
+views.booking.tariff.sync: Синхронизировать
+views.booking.tariff.cancel: Отмена
+views.oktogo.index.settings: "настройки"
+views.oktogo.room.settings: "настройки"
+views.oktogo.room.save: Сохранить
+views.oktogo.room.get_room_ids_from_oktogo: "Получить ID номеров из Oktogo.ru"
+views.oktogo.room.sync: Синхронизировать
+views.oktogo.tariff.settings: "настройки"
+views.oktogo.tariff.save: Сохранить
+views.vashhotel.index.settings: "настройки"
+views.vashhotel.layout.you_hotel_ru: "ВашОтель.RU"

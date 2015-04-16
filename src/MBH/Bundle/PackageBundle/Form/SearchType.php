@@ -32,7 +32,7 @@ class SearchType extends AbstractType
                 continue;
             }
 
-            $roomTypes[$hotel->getName()]['allrooms_' . $hotel->getId()] = 'Все номера';
+            $roomTypes[$hotel->getName()]['allrooms_' . $hotel->getId()] = 'form.searchType.all_rooms';
             foreach($hotel->getRoomTypes() as $roomType) {
                 $roomTypes[$hotel->getName()][$roomType->getId()] = $roomType->getName();
             }
@@ -44,7 +44,7 @@ class SearchType extends AbstractType
 
         $builder
                 ->add('roomType', 'choice', [
-                    'label' => 'Тип номера',
+                    'label' => 'form.searchType.room_type',
                     'required' => false,
                     'multiple' => true,
                     'error_bubbling' => true,
@@ -52,7 +52,7 @@ class SearchType extends AbstractType
                     'data' => $data
                 ])
                 ->add('tariff', 'document', [
-                    'label' => 'Тафиф',
+                    'label' => 'form.searchType.tariff',
                     'required' => false,
                     'multiple' => false,
                     'error_bubbling' => true,
@@ -60,14 +60,14 @@ class SearchType extends AbstractType
                     'attr'  => ['class' => 'plain-html']
                 ])
                 ->add('begin', 'date', array(
-                    'label' => 'Заезд',
+                    'label' => 'form.searchType.check_in',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
                     'data' => new \DateTime(),
                     'required' => true,
                     'error_bubbling' => true,
                     'attr' => array('class' => 'datepicker begin-datepiker', 'data-date-format' => 'dd.mm.yyyy'),
-                    'constraints' => [new NotBlank(['message' => 'Не заполнена дата заезда']), new Date()]
+                    'constraints' => [new NotBlank(['message' => 'form.searchType.check_in_date_not_filled']), new Date()]
                 ))
                 ->add('end', 'date', array(
                     'label' => 'Отъезд',
@@ -77,28 +77,28 @@ class SearchType extends AbstractType
                     'required' => true,
                     'error_bubbling' => true,
                     'attr' => array('class' => 'datepicker end-datepiker', 'data-date-format' => 'dd.mm.yyyy'),
-                    'constraints' => [new NotBlank(['message' => 'Не заполнена дата отъезда']), new Date()]
+                    'constraints' => [new NotBlank(['message' => 'form.searchType.check_out_date_not_filled']), new Date()]
                 ))
                 ->add('adults', 'text', [
-                    'label' => 'Взрослые',
+                    'label' => 'form.searchType.adults',
                     'required' => true,
                     'error_bubbling' => true,
                     'data' => 0,
                     'attr' => ['class' => 'spinner'],
                     'constraints' => [
-                        new Range(['min' => 0, 'minMessage' => 'Количество взрослых не может быть меньше нуля']),
-                        new NotBlank(['message' => 'Не заполнено количество взрослых'])
+                        new Range(['min' => 0, 'minMessage' => 'form.searchType.adults_amount_less_zero']),
+                        new NotBlank(['message' => 'form.searchType.adults_amount_not_filled'])
                     ]
                 ])
                 ->add('children', 'text', [
-                    'label' => 'Дети',
+                    'label' => 'form.searchType.children',
                     'required' => true,
                     'error_bubbling' => true,
                     'data' => 0,
                     'attr' => ['class' => 'spinner'],
                     'constraints' => [
-                        new Range(['min' => 0, 'minMessage' => 'Количество детей не может быть меньше нуля']),
-                        new NotBlank(['message' => 'Не заполнено количество детей'])
+                        new Range(['min' => 0, 'minMessage' => 'form.searchType.children_amount_less_zero']),
+                        new NotBlank(['message' => 'form.searchType.children_amount_not_filled'])
                     ]
                 ])
         ;

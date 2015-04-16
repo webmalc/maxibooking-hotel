@@ -1,8 +1,8 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = "редактирование брони " ~ entity.numberWithPrefix %}    
+{% set small_title = 'package.accommodation.edit_reservation'|trans({}, 'MBHPackageBundle') ~ entity.numberWithPrefix %}
 
-{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">удалена</span>' %}{% endif %}
+{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.accommodation.deleted'|trans({}, 'MBHPackageBundle')~'</span>' %}{% endif %}
 
 {% block content %}
 
@@ -12,7 +12,7 @@
         <div class="tab-pane active" id="home">
             {% if entity.accommodation %}
                 <div class="alert alert-warning">
-                    <i class="fa fa-home"></i> Размещение: {{ entity.accommodation.name(true, true) }}, гости {{ entity.isCheckIn ? '' : 'не ' }}заехали
+                    <i class="fa fa-home"></i> {{ 'package.accommodation.placement'|trans({}, 'MBHPackageBundle') }} {{ entity.accommodation.name(true, true) }}, {{ 'package.accommodation.guests'|trans({}, 'MBHPackageBundle') }} {{ entity.isCheckIn ? '' : 'не ' }} {{ 'package.accommodation.stopped'|trans({}, 'MBHPackageBundle') }}
                     {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                         <div class="pull-right">
                             <a href="{{ path('package_accommodation_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
@@ -23,7 +23,7 @@
                 </div>
             {% else %}
                 <div class="alert alert-warning">
-                    <i class="fa fa-exclamation-circle"></i> Размещение не указано
+                    <i class="fa fa-exclamation-circle"></i> {{ 'package.accommodation.placement_not_specified'|trans({}, 'MBHPackageBundle') }}
                 </div>
             {% endif %}
 

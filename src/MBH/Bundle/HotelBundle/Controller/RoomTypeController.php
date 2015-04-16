@@ -127,7 +127,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $dm->flush();
 
             $request->getSession()->getFlashBag()
-                    ->set('success', 'Запись успешно отредактирована.')
+                    ->set('success', $this->get('translator')->trans('controller.roomTypeController.record_edited_success'))
             ;
             
             if ($request->get('save') !== null) {
@@ -285,7 +285,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $dm->flush();
 
             $request->getSession()->getFlashBag()
-                    ->set('success', 'Номера успешно сгенерированы.')
+                    ->set('success', $this->get('translator')->trans('controller.roomTypeController.rooms_generation_success'))
             ;
 
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
@@ -460,7 +460,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $dm->flush();
             
             $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', 'Запись успешно отредактирована.')
+                    ->set('success', $this->get('translator')->trans('controller.roomTypeController.record_edited_success'))
             ;
 
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);

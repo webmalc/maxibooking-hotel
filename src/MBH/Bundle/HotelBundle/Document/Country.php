@@ -48,9 +48,9 @@ class Country extends Base
      * @ODM\String(name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="validator.document.country.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.country.max_name"
      * )
      */
     protected $title;

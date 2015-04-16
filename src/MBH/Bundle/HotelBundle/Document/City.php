@@ -39,14 +39,14 @@ class City extends Base
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Country", inversedBy="cities")
-     * @Assert\NotNull(message="Не выбрана страна")
+     * @Assert\NotNull(message="validator.document.city.country_not_selected")
      */
     protected $country;
 
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Region", inversedBy="cities")
-     * @Assert\NotNull(message="Не выбран регион")
+     * @Assert\NotNull(message="validator.document.city.region_not_selected")
      */
     protected $region;
 
@@ -56,9 +56,9 @@ class City extends Base
      * @ODM\String(name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="validator.document.city.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.city.max_name"
      * )
      */
     protected $title;

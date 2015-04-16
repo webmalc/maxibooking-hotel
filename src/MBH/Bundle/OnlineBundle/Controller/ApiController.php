@@ -261,21 +261,21 @@ class ApiController extends Controller
         if (empty($order)) {
             return new JsonResponse([
                 'success' => false,
-                'message' => 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
+                'message' => $this->get('translator')->trans('controller.apiController.reservation_error_occured_refresh_page_and_try_again')
             ]);
         }
         $packages = iterator_to_array($order->getPackages());
         $this->sendNotifications($packages);
 
         if(count($packages) > 1) {
-            $roomStr = 'Номера успешно забронированы.';
-            $packageStr = 'Номера ваших броней';
+            $roomStr = $this->get('translator')->trans('controller.apiController.reservations_made_success');
+            $packageStr = $this->get('translator')->trans('controller.apiController.your_reservations_numbers');
         } else {
-            $roomStr = 'Номер успешно забронирован.';
-            $packageStr = 'Номер вашей брони';
+            $roomStr = $this->get('translator')->trans('controller.apiController.room_reservation_made_success');
+            $packageStr = $this->get('translator')->trans('controller.apiController.your_reservation_number');
         }
-        $message = 'Большое спасибо. '. $roomStr .' Мы свяжемся с Вами в ближайшее время.<br>';
-        $message .= 'Номер вашего заказа: ' . $order->getId() . '. ';
+        $message = $this->get('translator')->trans('controller.apiController.thank_you') . $roomStr . $this->get('translator')->trans('controller.apiController.we_will_call_you_back_soon') ;
+        $message .= $this->get('translator')->trans('controller.apiController.your_order_number')  . $order->getId() . '. ';
         $message .= $packageStr . ': '. implode(', ', $packages) . '.';
 
         if ($request->paymentType == 'in_hotel') {

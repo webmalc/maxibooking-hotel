@@ -111,7 +111,7 @@ class HotelController extends Controller
             $dm->flush();
 
             $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', 'Запись успешно создана.')
+                    ->set('success', $this->get('translator')->trans('controller.hotelController.record_created_success'))
             ;
             $this->get('mbh.room.cache.generator')->generateInBackground();
             
@@ -160,7 +160,7 @@ class HotelController extends Controller
             $dm->flush();
 
             $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', 'Запись успешно отредактирована.')
+                    ->set('success', $this->get('translator')->trans('controller.hotelController.record_edited_success'))
             ;
             $this->get('mbh.room.cache.generator')->generateInBackground();
             
@@ -255,7 +255,7 @@ class HotelController extends Controller
             $dm->flush();
 
             $request->getSession()->getFlashBag()
-                ->set('success', 'Запись успешно отредактирована.')
+                ->set('success', $this->get('translator')->trans('controller.hotelController.record_edited_success'))
             ;
 
             return $this->afterSaveRedirect('hotel', $entity->getId(), [], '_edit_extended');

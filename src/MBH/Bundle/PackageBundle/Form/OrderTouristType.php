@@ -17,66 +17,66 @@ class OrderTouristType extends AbstractType
     {
         $builder
                 ->add('tourist', 'text', [
-                    'label' => 'ФИО',
+                    'label' => 'form.orderTouristType.fio',
                     'required' => false,
-                    'group' => 'Найти гостя',
-                    'attr' => ['placeholder' => 'Иванов Иван Иванович', 'style' => 'min-width: 500px', 'class' => 'findGuest']
+                    'group' => 'form.orderTouristType.find_guest',
+                    'attr' => ['placeholder' => 'form.orderTouristType.placeholder_fio', 'style' => 'min-width: 500px', 'class' => 'findGuest']
                 ])
                 ->add('lastName', 'text', [
-                    'label' => 'Фамилия',
+                    'label' => 'form.orderTouristType.surname',
                     'required' => true,
-                    'group' => 'Добавить гостя',
-                    'attr' => ['placeholder' => 'Иванов', 'class' => 'guestLastName'],
+                    'group' => 'form.orderTouristType.add_guest',
+                    'attr' => ['placeholder' => 'form.orderTouristType.placeholder_surname', 'class' => 'guestLastName'],
                     'constraints' => [new NotBlank(), new Length([
                         'min' => 2,
                         'max' => 100,
-                        'minMessage' => 'Слишком короткое имя',
-                        'maxMessage' => 'Слишком длинное имя'
+                        'minMessage' => 'form.orderTouristType.min_name',
+                        'maxMessage' => 'form.orderTouristType.max_name'
                     ])]
                 ])
                 ->add('firstName', 'text', [
-                    'label' => 'Имя',
+                    'label' => 'form.orderTouristType.name',
                     'required' => true,
-                    'group' => 'Добавить гостя',
-                    'attr' => ['placeholder' => 'Иван', 'class' => 'guestFirstName'],
+                    'group' => 'form.orderTouristType.add_guest',
+                    'attr' => ['placeholder' => 'form.orderTouristType.placeholder_name', 'class' => 'guestFirstName'],
                     'constraints' => [new NotBlank(), new Length([
                         'min' => 2,
                         'max' => 100,
-                        'minMessage' => 'Слишком короткая фамилия',
-                        'maxMessage' => 'Слишком длинная фамилия'
+                        'minMessage' => 'form.orderTouristType.min_surname',
+                        'maxMessage' => 'form.orderTouristType.max_surname'
                     ])]
                 ])
                 ->add('patronymic', 'text', [
-                    'label' => 'Отчество',
+                    'label' => 'form.orderTouristType.second_name',
                     'required' => false,
-                    'group' => 'Добавить гостя',
-                    'attr' => ['placeholder' => 'Иванович', 'class' => 'guestPatronymic'],
+                    'group' => 'form.orderTouristType.add_guest',
+                    'attr' => ['placeholder' => 'form.orderTouristType.placeholder_second_name', 'class' => 'guestPatronymic'],
                     'constraints' => [new Length([
                         'min' => 2,
                         'max' => 100,
-                        'minMessage' => 'Слишком короткое отчество',
-                        'maxMessage' => 'Слишком длинное отчество'
+                        'minMessage' => 'form.orderTouristType.min_second_name',
+                        'maxMessage' => 'form.orderTouristType.max_second_name'
                     ])]
                 ])
                 ->add('birthday', 'date', array(
-                    'label' => 'Дата рождения',
+                    'label' => 'form.orderTouristType.birth_date',
                     'widget' => 'single_text',
-                    'group' => 'Добавить гостя',
+                    'group' => 'form.orderTouristType.add_guest',
                     'format' => 'dd.MM.yyyy',
                     'required' => false,
                     'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'guestBirthday'),
                     'constraints' => [new Date()]
                 ))
                 ->add('phone', 'text', array(
-                    'label' => 'Телефон',
-                    'group' => 'Добавить гостя',
+                    'label' => 'form.orderTouristType.phone',
+                    'group' => 'form.orderTouristType.add_guest',
                     'required' => false,
                     'attr' => array('class' => 'guestPhone', 'placeholder' => '+7 (987) 654-32-10'),
                     'constraints' => []
                 ))
                 ->add('email', 'email', array(
-                    'label' => 'E-mail',
-                    'group' => 'Добавить гостя',
+                    'label' => 'form.orderTouristType.email',
+                    'group' => 'form.orderTouristType.add_guest',
                     'required' => false,
                     'attr' => array('class' => 'guestEmail'),
                     'constraints' => [new Email()]

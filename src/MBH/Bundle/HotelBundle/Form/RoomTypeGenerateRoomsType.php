@@ -25,29 +25,29 @@ class RoomTypeGenerateRoomsType extends AbstractType
 
         $builder
                 ->add('from', 'text', [
-                    'label' => ($hostel) ? 'Номер первого койко-места' : 'Номер первой комнаты',
+                    'label' => ($hostel) ? 'form.roomTypeGenerateRoomsType.first_bed_number' : 'form.roomTypeGenerateRoomsType.first_room_number',
                     'required' => true,
                     'attr' => ['placeholder' => '1', 'class' => 'spinner'],
                     'constraints' => [
                         new NotBlank(),
-                        new Type(['type' => 'numeric', "message" => 'Поле должно быть числом'])
+                        new Type(['type' => 'numeric', "message" => 'form.roomTypeGenerateRoomsType.field_must_be_number'])
                     ]
                 ])
                 ->add('to', 'text', [
-                    'label' => ($hostel) ? 'Номер последнего койко-места' : 'Номер последней комнаты',
+                    'label' => ($hostel) ? 'form.roomTypeGenerateRoomsType.last_bed_number' : 'form.roomTypeGenerateRoomsType.last_room_number',
                     'required' => true,
                     'attr' => ['placeholder' => '100', 'class' => 'spinner'],
                     'constraints' => [
                         new NotBlank(),
-                        new Type(['type' => 'numeric', "message" => 'Поле должно быть числом'])
+                        new Type(['type' => 'numeric', "message" => 'form.roomTypeGenerateRoomsType.field_must_be_number'])
                     ]
                 ])
                 ->add('prefix', 'text', [
-                    'label' => 'Префикс',
+                    'label' => 'form.roomTypeGenerateRoomsType.prefix',
                     'required' => false,
                     'data' => ($hostel) ? $entity->getName() . '/' : '',
                     'attr' => ['placeholder' => 'HTL'],
-                    'help' => 'Префикс для названия. Пример: HTL-12',
+                    'help' => 'form.roomTypeGenerateRoomsType.prefix_example',
                     'constraints' => new Length(['max' => 20])
                 ])
         ;
@@ -72,11 +72,11 @@ class RoomTypeGenerateRoomsType extends AbstractType
     public static function rangeValidation($data, ExecutionContextInterface $context)
     {
         if ($data['from'] >= $data['to']) {
-            $context->addViolation('Номер первой комнаты не может быть меньше номера последней.');
+            $context->addViolation('form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number');
         }
 
         if ($data['to'] - $data['from'] > 500) {
-            $context->addViolation('Слишком большое количество номеров для генерации.');
+            $context->addViolation('form.roomTypeGenerateRoomsType.too_many_generation_numbers');
         }
     }
 

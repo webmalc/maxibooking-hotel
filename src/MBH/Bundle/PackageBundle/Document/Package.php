@@ -41,7 +41,7 @@ class Package extends Base
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Order", inversedBy="packages")
-     * @Assert\NotNull(message="Не выбран заказ")
+     * @Assert\NotNull(message= "validator.document.package.order_not_selected")
     **/
     protected $order;
 
@@ -51,14 +51,14 @@ class Package extends Base
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
-     * @Assert\NotNull(message="Не выбран тариф")
+     * @Assert\NotNull(message= "validator.document.package.tariff_not_selected")
      */
     protected $tariff;
     
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
-     * @Assert\NotNull(message="Не выбран тип номера")
+     * @Assert\NotNull(message= "validator.document.package.room_type_not_selected")
      */
     protected $roomType;
     
@@ -95,7 +95,7 @@ class Package extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Количество взрослых не может быть меньше нуля"
+     *      minMessage= "validator.document.package.adults_amount_less_zero"
      * )
      */
     protected $adults;
@@ -109,7 +109,7 @@ class Package extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Количество детей не может быть меньше нуля"
+     *      minMessage= "validator.document.package.children_amount_less_zero"
      * )
      */
     protected $children;
@@ -118,7 +118,7 @@ class Package extends Base
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date(name="begin")
-     * @Assert\NotNull(message="Начало не указано")
+     * @Assert\NotNull(message= "validator.document.package.begin_not_specified")
      * @Assert\Date()
      */
     protected $begin;
@@ -127,7 +127,7 @@ class Package extends Base
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date(name="end")
-     * @Assert\NotNull(message="Конец не указан")
+     * @Assert\NotNull(message= "validator.document.package.end_not_specified")
      * @Assert\Date()
      */
     protected $end;
@@ -136,11 +136,11 @@ class Package extends Base
      * @var int
      * @Gedmo\Versioned
      * @ODM\Int(name="price")
-     * @Assert\NotNull(message="Цена не указана")
+     * @Assert\NotNull(message= "validator.document.package.price_not_specified")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Цена не может быть меньше нуля"
+     *      minMessage= "validator.document.package.price_less_zero"
      * )
      */
     protected $price;
@@ -152,7 +152,7 @@ class Package extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Цена услуг не может быть меньше нуля"
+     *      minMessage= "validator.document.package.service_price_less_zero"
      * )
      */
     protected $servicesPrice;
@@ -170,7 +170,7 @@ class Package extends Base
      * @ODM\String(name="purposeOfArrival")
      * @Assert\Choice(
      *      choices = {"tourism", "work", "study", "residence", "other"}, 
-     *      message = "Неверная цель приезда."
+     *      message = "validator.document.package.wrong_arrival_purpose"
      * )
      */
     protected $purposeOfArrival;
@@ -181,7 +181,7 @@ class Package extends Base
      * @ODM\String(name="channelManagerType")
      * @Assert\Choice(
      *      choices = {"vashotel"},
-     *      message = "Неверный тип channel manager`а."
+     *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      */
     protected $channelManagerType;
@@ -200,9 +200,9 @@ class Package extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Время заезда не может быть меньше 0",
+     *      minMessage= "validator.document.package.check_in_time_less_zero",
      *      max=23,
-     *      maxMessage="Время заезда не может быть больше 23",
+     *      maxMessage= "validator.document.package.check_in_time_greater_23",
      * )
      */
     protected $arrivalTime;
@@ -214,9 +214,9 @@ class Package extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Время отъезда не может быть меньше 0",
+     *      minMessage= "validator.document.package.check_out_time_less_zero",
      *      max=23,
-     *      maxMessage="Время отъезда не может быть больше 23",
+     *      maxMessage= "validator.document.package.check_out_time_greater_23",
      * )
      */
     protected $departureTime;
@@ -228,9 +228,9 @@ class Package extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
-     *      minMessage="Скидка не может быть меньше 1%",
+     *      minMessage= "validator.document.package.discount_less_1",
      *      max=100,
-     *      maxMessage="Скидка не может быть больше 100%",
+     *      maxMessage= "validator.document.package.discount_greater_100",
      * )
      */
     protected $discount;

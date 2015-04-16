@@ -1,0 +1,104 @@
+form.orderTouristType.fio: ФИО
+form.orderTouristType.find_guest: Найти гостя
+form.orderTouristType.placeholder_fio: Иванов Иван Иванович
+form.orderTouristType.placeholder_surname: Иванов
+form.orderTouristType.surname: Фамилия
+form.orderTouristType.add_guest: Добавить гостя
+form.orderTouristType.min_name: Слишком короткое имя
+form.orderTouristType.max_name: Слишком длинное имя
+form.orderTouristType.name: Имя
+form.orderTouristType.placeholder_name: Иван
+form.orderTouristType.min_surname: Слишком короткая фамилия
+form.orderTouristType.max_surname: Слишком длинная фамилия
+form.orderTouristType.second_name: Отчество
+form.orderTouristType.placeholder_second_name: Иванович
+form.orderTouristType.min_second_name: Слишком короткое отчество
+form.orderTouristType.max_second_name: Слишком длинное отчество
+form.orderTouristType.birth_date: Дата рождения
+form.orderTouristType.phone: Телефон
+form.orderTouristType.email: E-mail
+form.orderType.source: Источник
+form.orderType.comment: Комментарий
+form.orderType.is_confirmed: Подтвержден?
+form.packageAccommodationType.room_or_bed: Комната/койко-место
+form.packageAccommodationType.room: Комната
+form.packageAccommodationType.choose_placement: Выбрать размещение
+form.packageAccommodationType.are_guests_checked_in: Гости заехали?
+form.packageAccommodationType.are_guests_checked_in_helper: Заехал ли гости в номер?
+form.packageCopyType.reservation: Бронь
+form.packageCopyType.transfer_parameters: Параметры переноса
+form.packageCopyType.data_transfer_reservation: Бронь в которую будет произведен перенос данных.
+form.packageCopyType.no_data_transfer_reservation_selected: Не выбрана бронь для переноса
+form.packageCopyType.packageCopyType: Гости
+form.packageCopyType.should_we_transfer_guests_to_selected_reservation: Перенести ли гостей в выбранную бронь?
+form.packageCopyType.services: Услуги
+form.packageCopyType.should_we_transfer_all_services_to_selected_reservation: Перенести ли все услуги в выбранную бронь?
+form.packageCopyType.placement: Размещение
+form.packageCopyType..should_we_transfer_placement_to_selected_reservation: Перенести ли размещение в выбранную бронь?
+form.packageGuestType.fio: ФИО
+form.packageGuestType.find_guest: Найти гостя
+form.packageGuestType.placeholder_fio: Иванов Иван Иванович
+form.packageGuestType.placeholder_surname: Иванов
+form.packageGuestType.surname: Фамилия
+form.packageGuestType.add_guest: Добавить гостя
+form.packageGuestType.min_name: Слишком короткое имя
+form.packageGuestType.max_name: Слишком длинное имя
+form.packageGuestType.name: Имя
+form.packageGuestType.placeholder_name: Иван
+form.packageGuestType.min_surname: Слишком короткая фамилия
+form.packageGuestType.max_surname: Слишком длинная фамилия
+form.packageGuestType.second_name: Отчество
+form.packageGuestType.placeholder_second_name: Иванович
+form.packageGuestType.min_second_name: Слишком короткое отчество
+form.packageGuestType.max_second_name: Слишком длинное отчество
+form.packageGuestType.birth_date: Дата рождения
+form.packageMainType.price: Цена
+form.packageMainType.discount: Скидка
+form.packageMainType.check_in_time: Время заезда
+form.packageMainType.check_out_time: Время отъезда
+form.packageMainType.arrival_purpose: Цель приезда
+form.packageMainType.comment: Комментарий
+form.packageServiceType.service: Услуга
+form.packageServiceType.add_service: Добавить услугу
+form.packageServiceType.reservation_add_service: Услуга для добавления к броне
+form.packageServiceType.price: Цена
+form.packageServiceType.nights_amount: Количество суток
+form.packageServiceType.guests_amount: Количество гостей
+form.packageServiceType.amount: Количество
+form.packageServiceType.comment: Комментарий
+form.packageSourceType.name: Назавание
+form.packageSourceType.add_source: Добавить источник
+form.packageSourceType.adds: Реклама
+form.packageSourceType.inner_name: Внутреннее название
+form.packageSourceType.inner_maxibooking_name:  Название для использования внутри MaxiBooking
+form.searchType.all_rooms: Все номера
+form.searchType.room_type: Тип номера
+form.searchType.tariff: Тариф
+form.searchType.check_in: Заезд
+form.searchType.check_in_date_not_filled: Не заполнена дата заезда
+form.searchType.check_out_date_not_filled: Не заполнена дата отъезда
+form.searchType.adults: Взрослые
+form.searchType.adults_amount_less_zero: Количество взрослых не может быть меньше нуля
+form.searchType.adults_amount_not_filled: Не заполнено количество взрослых
+form.searchType.children: Дети
+form.searchType.children_amount_less_zero: Количество детей не может быть меньше нуля
+form.searchType.children_amount_not_filled: Не заполнено количество детей
+form.touristType.surname: Фамилия
+form.touristType.general_info: Общаяя информация
+form.touristType.placeholder_surname: Иванов
+form.touristType.name: Имя
+form.touristType.placeholder_name: Иван
+form.touristType.second_name: Отчество
+form.touristType.placeholder_second_name: Иванович
+form.touristType.birth_date: Дата рождения
+form.touristType.gender: Пол
+form.touristType.address: Адрес
+form.touristType.contact_info: Контактная информация
+form.touristType.placeholder_address: г. Москва, пр-кт Мира, д.6
+form.touristType.document: Документ
+form.touristType.placeholder_document: Паспорт: 4545№345678, выдан 28 сентября 2002 г. 2 отделением милиции Г. Москвы
+form.touristType.phone: Телефон
+form.touristType.placeholder_phone: +7(925)3456512
+form.touristType.email: E-mail
+form.touristType.placeholder_email: mail@exapmple.com
+form.touristType.note: Примечание

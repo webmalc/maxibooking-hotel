@@ -1,0 +1,89 @@
+views.api.form.rooms_reservation: Бронирование номеров
+views.api.form.hotel: Отель
+views.api.form.check_in_date: Дата заезда
+views.api.form.check_out_date: Дата выезда
+views.api.form.nights_amount: Количество ночей
+views.api.form.room_type: Тип номера
+views.api.form.adults: Взрослые
+views.api.form.children: Дети
+views.api.form.find_room: Найти номер
+views.api.form.online_reservation_system: система онлайн бронирования
+views.api.getPaymentType.dates: Даты:
+views.api.getPaymentType.days_and_nights: Дни/ночи:
+views.api.getPaymentType.nomerov: Номеров:
+views.api.getPaymentType.order_result: Заказ на сумму:
+views.api.getPaymentType.nomera:  Номера:
+views.api.getPaymentType.services:  Услуги:
+views.api.getPaymentType.tariff: Тариф:
+views.api.getPaymentType.choose_payment_way: Выберите способ оплаты
+views.api.getPaymentType.payment_fine: Оплата по прибытию в гостиницу на стойке размещения, при незаезде или аннуляции штраф не взимается
+views.api.getPaymentType.reservation_guarantee_whole_sum:  Гарантированное бронирование, предоплата 100% всей стоимости проживания до заезда в отель
+views.api.getPaymentType.reservation_guarantee_first_night: Гарантированное бронирование, предоплата стоимости проживания первых суток до заезда в отель
+views.api.getPaymentType.choose_other_rooms: Выбрать другие номера
+views.api.getPaymentType.reservate: Бронировать
+views.api.getPaymentType.reservation_error_try_again: Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.
+views.api.getResultsTable.hotel_rooms_for: Номера в отеле на
+views.api.getResultsTable.noch: 'ночь'
+views.api.getResultsTable.nochi: 'ночи'
+views.api.getResultsTable.nochei: 'ночей'
+views.api.getResultsTable.room_type: Тип номера
+views.api.getResultsTable.guests: Гости
+views.api.getResultsTable.price: Цена
+views.api.getResultsTable.rooms_amount: Кол-во номеров
+views.api.getResultsTable.room_description: описание номера
+views.api.getResultsTable.room_price: цена за номер
+views.api.getResultsTable.hotel: Отель
+views.api.getResultsTable.service_type: Тип услуги
+views.api.getResultsTable.price: Цена
+views.api.getResultsTable.amount: Количество
+views.api.getResultsTable.price_per: цена за
+views.api.getResultsTable.day: день
+views.api.getResultsTable.rooms: Номера:
+views.api.getResultsTable.services: Услуги:
+views.api.getResultsTable.result: Итого:
+views.api.getResultsTable.continue: Продолжить
+views.api.getResultsTable.nothing_found_for_your_query: По вашему запросу ничего не найдено.
+views.api.getUserForm.enter_data_to_continue: Заполните данные для продолжения
+views.api.getUserForm.surname: Фамилия
+views.api.getUserForm.placeholder_surname: "Иванов"
+views.api.getUserForm.name: Имя
+views.api.getUserForm.phone: Телефон
+views.api.getUserForm.email: E-mail
+views.api.getUserForm.placeholder_email: "mail@example.com"
+views.api.getUserForm.birth_date: День рождения
+views.api.getUserForm.check_in_time: Время заезда
+views.api.getUserForm.check_out_time: Время отъезда
+views.api.getUserForm.comment: Комментарий
+views.api.getUserForm.required_fields: - поля обязательные для заполнения
+views.api.getUserForm.choose_other_rooms: Выбрать другие номера
+views.api.getUserForm.continue: Продолжить
+views.api.getUserForm.reservation_error: Произошла ошибка во время бронирования.
+views.api.getUserForm.refresh_page_and_try_again: Обновите страницу и попробуйте еще раз.
+views.api.notification.new_reservations_made_with_online_form: Оформлены новые брони через онлайн форму.
+views.api.notification.hotel: Отель
+views.api.notification.dates: Даты
+views.api.notification.room_type: Тип номера
+views.api.notification.client: Клиент:
+views.api.notification.phone: Телефон:
+views.api.payanyway.make_payment_for_order_id: Оплатить %total% р. Номера заказа: %order_id%
+views.api.robokassa.make_payment_for_order_id: Оплатить %total% р. Номера заказа: %order_id%
+views.api.tariffs.base_tariff: (базовый тариф)
+views.form.index.settings_in_quotes: "настройки"
+views.form.index.settings: Настройки
+views.form.index.site_embed_code: Код для сайта
+views.form.index.settings_required: "Необходимо заполнить основные настройки!"
+views.form.index.site_embed_form_code: Код формы для вставки на сайт
+views.form.index.to_form_place: На место для формы:
+views.form.index.before_closing_tag: Перед закрывающим тегом
+views.form.index.search_page_embed_code: Код страницы поиска для вставки на сайт:
+views.form.index.to_results_place: На место для результатов:
+views.form.layout.online_form: "Онлайн форма"
+controller.apiController.reservation_error_occured_refresh_page_and_try_again: 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
+controller.apiController.reservations_made_success: 'Номера успешно забронированы.'
+controller.apiController.your_reservations_numbers: 'Номера ваших броней'
+controller.apiController.room_reservation_made_success: 'Номер успешно забронирован.'
+controller.apiController.your_reservation_number: 'Номер вашей брони'
+controller.apiController.thank_you: 'Большое спасибо. '
+controller.apiController.we_will_call_you_back_soon: ' Мы свяжемся с Вами в ближайшее время.<br>'
+controller.apiController.your_order_number: 'Номер вашего заказа: '
+controller.formController.settings_saved_success: 'Настройки успешно сохранены.'

@@ -2,39 +2,39 @@
 <div id="mbh-results-global-wrapper">
     {% if request.packages|length %}
         <div id="mbh-user-form">
-            <h4>Заполните данные для продолжения</h4>
+            <h4>{{ 'views.api.getUserForm.enter_data_to_continue'|trans({}, 'MBHOnlineBundle') }}</h4>
             <form id="mbh-user-form-form">
 
                 <div class="mbh-user-form-row">
-                    <label for="mbh-user-form-lastName">Фамилия <sup>*</sup></label>
+                    <label for="mbh-user-form-lastName">{{ 'views.api.getUserForm.surname'|trans({}, 'MBHOnlineBundle') }}<sup>*</sup></label>
                     <input type="text" id="mbh-user-form-lastName" name="lastName" required value=""
-                           placeholder="Иванов">
+                           placeholder= {{ 'views.api.getUserForm.placeholder_surname'|trans({}, 'MBHOnlineBundle') }}>
                 </div>
 
                 <div class="mbh-user-form-row">
-                    <label for="mbh-user-form-firstName">Имя <sup>*</sup></label>
+                    <label for="mbh-user-form-firstName">{{ 'views.api.getUserForm.name'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
                     <input type="text" id="mbh-user-form-firstName" name="firstName" required value=""
                            placeholder="Иван">
                 </div>
 
                 <div class="mbh-user-form-row">
-                    <label for="mbh-user-form-phone">Телефон <sup>*</sup></label>
+                    <label for="mbh-user-form-phone">{{ 'views.api.getUserForm.phone'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
                     <input type="tel" id="mbh-user-form-phone" name="phone" required value=""
                            placeholder="7(925)3456512">
                 </div>
 
                 <div class="mbh-user-form-row">
-                    <label for="mbh-user-form-email">E-mail</label>
-                    <input type="email" id="mbh-user-form-email" name="email" value="" placeholder="mail@example.com">
+                    <label for="mbh-user-form-email">{{ 'views.api.getUserForm.email'|trans({}, 'MBHOnlineBundle') }}</label>
+                    <input type="email" id="mbh-user-form-email" name="email" value="" placeholder= {{ 'views.api.getUserForm.placeholder_email'|trans({}, 'MBHOnlineBundle') }} >
                 </div>
 
                 <div class="mbh-user-form-row">
-                    <label for="mbh-user-form-birthday">День рождения</label>
+                    <label for="mbh-user-form-birthday">{{ 'views.api.getUserForm.birth_date'|trans({}, 'MBHOnlineBundle') }}</label>
                     <input type="text" id="mbh-user-form-birthday" name="birthday" value="" placeholder="27.08.1975">
                 </div>
 
                 <div class="mbh-user-form-row">
-                    <label for="mbh-user-form-arrival">Время заезда</label>
+                    <label for="mbh-user-form-arrival">{{ 'views.api.getUserForm.check_in_time'|trans({}, 'MBHOnlineBundle') }}</label>
                     <select id="mbh-user-form-arrival" name="arrival">
                         <option></option>
                         {% for i in 0..23 %}
@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="mbh-user-form-row">
-                    <label for="mbh-user-form-departure">Время отъезда</label>
+                    <label for="mbh-user-form-departure">{{ 'views.api.getUserForm.check_out_time'|trans({}, 'MBHOnlineBundle') }}</label>
                     <select id="mbh-user-form-departure" name="departure">
                         <option></option>
                         {% for i in 0..23 %}
@@ -58,13 +58,13 @@
                 </div>
 
                 <div class="mbh-user-form-row">
-                    <label for="mbh-user-form-note">Комментарий</label>
+                    <label for="mbh-user-form-note">{{ 'views.api.getUserForm.comment'|trans({}, 'MBHOnlineBundle') }}</label>
                     <textarea id="mbh-user-form-note" name="note"></textarea>
                 </div>
 
 
                 <div class="mbh-user-form-row">
-                    <sup>*</sup> - поля обязательные для заполнения
+                    <sup>*</sup>{{ 'views.api.getUserForm.required_fields'|trans({}, 'MBHOnlineBundle') }}
                 </div>
             </form>
         </div>
@@ -72,16 +72,16 @@
         <div id="mbh-results-actions">
             <button id="mbh-user-form-previous" class="button">
                 <small><i class="fa fa-chevron-left"></i></small>
-                Выбрать другие номера
+                {{ 'views.api.getUserForm.choose_other_rooms'|trans({}, 'MBHOnlineBundle') }}
             </button>
-            <button id="mbh-user-form-next" class="button">Продолжить
+            <button id="mbh-user-form-next" class="button">{{ 'views.api.getUserForm.continue'|trans({}, 'MBHOnlineBundle') }}
                 <small><i class="fa fa-chevron-right "></i></small>
             </button>
         </div>
 
     {% else %}
-        <div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Произошла ошибка во время бронирования.
-            Обновите страницу и попробуйте еще раз.
+        <div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> {{ 'views.api.getUserForm.reservation_error'|trans({}, 'MBHOnlineBundle') }}
+            {{ 'views.api.getUserForm.refresh_page_and_try_again'|trans({}, 'MBHOnlineBundle') }}
         </div>
     {% endif %}
 </div>

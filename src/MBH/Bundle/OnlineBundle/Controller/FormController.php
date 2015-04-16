@@ -90,7 +90,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
             $dm->flush();
 
             $request->getSession()->getFlashBag()
-                ->set('success', 'Настройки успешно сохранены.')
+                ->set('success', $this->get('translator')->trans('controller.formController.settings_saved_success'))
             ;
 
             return $this->redirect($this->generateUrl('online_form'));

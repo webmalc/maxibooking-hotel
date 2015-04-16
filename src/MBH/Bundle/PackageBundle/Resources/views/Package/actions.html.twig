@@ -16,17 +16,17 @@
 <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
     <div class="container-fluid">
         <ul class="nav navbar-nav">
-            <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить и закрыть</button></li>
-            <li><button type="submit" name="save" class="btn btn-info navbar-btn"><i class="fa fa-check-square-o"></i> {{ save_text|default('Сохранить') }}</button></li>
+            <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> {{ 'package.actions.save_and_close'|trans({}, 'MBHPackageBundle') }}</button></li>
+            <li><button type="submit" name="save" class="btn btn-info navbar-btn"><i class="fa fa-check-square-o"></i> {{ save_text|default('package.actions.save'|trans({}, 'MBHPackageBundle')) }}</button></li>
             {% if entity.isCheckIn is empty and entity.accommodation is not empty %}
-                <li><button type="button" onclick="location.href = '{{ path('package_check_in', {'id': entity.id}) }}'" class="btn btn-default navbar-btn"><i class="fa fa-users"></i> Гости заехали</button></li>
+                <li><button type="button" onclick="location.href = '{{ path('package_check_in', {'id': entity.id}) }}'" class="btn btn-default navbar-btn"><i class="fa fa-users"></i>{{ 'package.actions.guests_stopped'|trans({}, 'MBHPackageBundle') }} </button></li>
             {% endif %}
-            <li><button type="button" onclick="location.href = '{{ path('package_search') }}#{{ {'s': searchQuery}|url_encode }}'" class="btn btn-default navbar-btn"><i class="fa fa-search"></i> Найти похожую</button></li>
-            <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
+            <li><button type="button" onclick="location.href = '{{ path('package_search') }}#{{ {'s': searchQuery}|url_encode }}'" class="btn btn-default navbar-btn"><i class="fa fa-search"></i>{{ 'package.actions.find_similar'|trans({}, 'MBHPackageBundle') }}</button></li>
+            <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i>{{ 'package.actions.cancel'|trans({}, 'MBHPackageBundle') }} </button></li>
         </ul>
         {% if entity.isDeleted is empty %}
         <ul class="nav navbar-nav navbar-right">
-            <li><button data-href="{{ path(delete_route, {'id': entity.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i> Удалить</button></li>
+            <li><button data-href="{{ path(delete_route, {'id': entity.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i>{{ 'package.actions.delete'|trans({}, 'MBHPackageBundle') }}</button></li>
         </ul>
         {% endif %}
     </div>

@@ -1,8 +1,8 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = "редактирование брони " ~ entity.numberWithPrefix %}
+{% set small_title = 'package.guest.edit_reservation'|trans({}, 'MBHPackageBundle') ~ entity.numberWithPrefix %}
 
-{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">удалена</span>' %}{% endif %}
+{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.guest.deleted'|trans({}, 'MBHPackageBundle')~'</span>' %}{% endif %}
 
 {% block content %}
 
@@ -17,7 +17,7 @@
                 <div class="alert alert-warning alert-dismissable">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <i class="fa fa-exclamation-circle"></i>
-                    {% if entity.tourists|length < totalGuests %}Не добавлено гостей: {{ totalGuests - entity.tourists|length }}. {% endif %}
+                    {% if entity.tourists|length < totalGuests %} {{ 'package.guest.guests_not_added'|trans({}, 'MBHPackageBundle') }} {{ totalGuests - entity.tourists|length }}. {% endif %}
                 </div>
             {% endif %}
 
@@ -27,13 +27,13 @@
                     <tr>
                         <th class="td-xs"></th>
                         <th>ФИО</th>
-                        <th class="td-md">Телефон</th>
-                        <th class="td-md">E-mail</th>
-                        <th class="td-md">Дата рождения</th>
-                        <th class="td-sm">Возраст</th>
-                        <th class="td-sm">Паспорт</th>
-                        <th class="td-sm">Адрес</th>
-                        <th class="td-sm">Основной</th>
+                        <th class="td-md">{{ 'package.guest.phone'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-md">{{ 'package.guest.email'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-md">{{ 'package.guest.birth_date'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-sm">{{ 'package.guest.age'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-sm">{{ 'package.guest.passport'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-sm">{{ 'package.guest.address'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-sm">{{ 'package.guest.main'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-md"></th>
                     </tr>
                     </thead>
@@ -43,10 +43,10 @@
                             <td class="text-center table-icon"><i class="fa fa-user"></i></td>
                             <td>
                                 <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}" rel="main"
-                                   title="Редактирование записи" data-toggle="tooltip">{{ tourist.fullName }}</a>
+                                   title=" {{ 'package.guest.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">{{ tourist.fullName }}</a>
                             </td>
                             <td>{% if tourist.phone %}{{ tourist.phone }}{% endif %}</td>
-                            <td>{% if tourist.email %}<a href="mailto:{{ tourist.email }}" data-toggle="tooltip" title="Написать клиенту">{{ tourist.email }}</a>{% endif %}</td>
+                            <td>{% if tourist.email %}<a href="mailto:{{ tourist.email }}" data-toggle="tooltip" title="{{ 'package.guest.write_a_client'|trans({}, 'MBHPackageBundle') }}">{{ tourist.email }}</a>{% endif %}</td>
                             <td>{% if tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</td>
                             <td class="text-center">{{ tourist.age }}</td>
                             <td class="text-center">
@@ -73,11 +73,11 @@
                             <td class="table-actions-td text-center">
                                 {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                                 <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}"
-                                   class="btn btn-success btn-xs" title="Редактирование записи" data-toggle="tooltip">
+                                   class="btn btn-success btn-xs" title="{{ 'package.guest.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
                                     <i class="fa fa-pencil-square-o"></i>
                                 </a>
                                 <a href="{{ path('package_guest_delete', { 'id': entity.id, "touristId": tourist.id }) }}"
-                                   class="btn btn-danger btn-xs delete-link " title="Удаление записи"
+                                   class="btn btn-danger btn-xs delete-link " title="{{ 'package.guest.delete_record'|trans({}, 'MBHPackageBundle') }}"
                                    data-toggle="tooltip">
                                     <i class="fa fa-trash-o"></i>
                                 </a>

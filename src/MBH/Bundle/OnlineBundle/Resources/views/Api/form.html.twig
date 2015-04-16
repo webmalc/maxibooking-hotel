@@ -1,11 +1,11 @@
 {% spaceless %}
 <form id="mbh-form" method="get" action="{{ config.result.url }}">
 
-    <h3>Бронирование номеров</h3>
+    <h3>{{ 'views.api.form.rooms_reservation'|trans({}, 'MBHOnlineBundle') }}</h3>
 
     {% if hotels|length > 1 %}
     <div class="mbh-form-row">
-        <label for="mbh-form-hotel">Отель</label>
+        <label for="mbh-form-hotel">{{ 'views.api.form.hotel'|trans({}, 'MBHOnlineBundle') }}</label>
         <select name="hotel" id="mbh-form-hotel">
             <option></option>
             {% for hotel in hotels %}<option value="{{ hotel.id }}">{{ hotel.fullTitle }}</option>{% endfor %}
@@ -14,18 +14,18 @@
     {% endif %}
 
     <div class="mbh-form-row">
-        <label for="mbh-form-begin">Дата заезда</label>
+        <label for="mbh-form-begin"> {{ 'views.api.form.check_in_date'|trans({}, 'MBHOnlineBundle') }}</label>
         <input type="text" id="mbh-form-begin" name="begin" required value="{{ 'now'|date('d.m.Y') }}">
     </div>
 
     <div class="mbh-form-row" {% if formConfig.nights %}style='display: none;'{% endif %}>
-        <label for="mbh-form-end">Дата выезда</label>
+        <label for="mbh-form-end"> {{ 'views.api.form.check_out_date'|trans({}, 'MBHOnlineBundle') }}</label>
         <input type="text" id="mbh-form-end" name="end" required value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
     </div>
 
     {% if formConfig.nights %}
     <div class="mbh-form-row">
-        <label for="mbh-form-nights">Количество ночей</label>
+        <label for="mbh-form-nights"> {{ 'views.api.form.nights_amount'|trans({}, 'MBHOnlineBundle') }}</label>
         <select name="nights" id="mbh-form-nights" required>
         {% for i in 1..100 %}
             <option value="{{ i }}">{{ i }}</option>
@@ -36,7 +36,7 @@
 
     {% if formConfig.roomTypes and hotels|length <= 1 and hotels|first.roomTypes|length %}
     <div class="mbh-form-row">
-        <label for="mbh-form-roomType">Тип номера</label>
+        <label for="mbh-form-roomType"> {{ 'views.api.form.room_type'|trans({}, 'MBHOnlineBundle') }}</label>
         <select id="mbh-form-roomType" name="roomType">
             <option></option>
             {% for roomType in hotels|first.roomTypes %}<option value="{{ roomType.id }}">{{ roomType.fullTitle }}</option>{% endfor %}
@@ -47,12 +47,12 @@
     {% if formConfig.tourists %}
         <div id="mbh-form-adults-children-wrapper">
             <div class="mbh-form-row">
-                <label for="mbh-form-adults">Взрослые</label>
+                <label for="mbh-form-adults"> {{ 'views.api.form.adults'|trans({}, 'MBHOnlineBundle') }}</label>
                 <input type="number" id="mbh-form-adults" name="adults"  value="1">
             </div>
 
             <div class="mbh-form-row">
-                <label for="mbh-form-children">Дети</label>
+                <label for="mbh-form-children"> {{ 'views.api.form.children'|trans({}, 'MBHOnlineBundle') }}</label>
                 <input type="number" id="mbh-form-children" name="children" value="0">
             </div>
         </div>
@@ -60,11 +60,11 @@
     {% endif %}
 
     <div class="mbh-form-row" id="mbh-form-submit-wrapper">
-        <button type="submit" id="mbh-form-submit">Найти номер</button>
+        <button type="submit" id="mbh-form-submit">{{ 'views.api.form.find_room'|trans({}, 'MBHOnlineBundle') }}</button>
     </div>
 
     <div id="mbh-logo-link-wrapper">
-        <a id="mbh-logo-link" href="http://maxi-booking.ru/" target="_blank">система онлайн бронирования</a>
+        <a id="mbh-logo-link" href="http://maxi-booking.ru/" target="_blank"> {{ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') }}</a>
     </div>
 </form>
 

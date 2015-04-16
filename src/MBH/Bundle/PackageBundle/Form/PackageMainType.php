@@ -21,7 +21,7 @@ class PackageMainType extends AbstractType
                 'price',
                 'text',
                 [
-                    'label' => 'Цена',
+                    'label' => 'form.packageMainType.price',
                     'required' => true,
                     'error_bubbling' => true,
                     'property_path' => 'packagePrice',
@@ -37,7 +37,7 @@ class PackageMainType extends AbstractType
                 'discount',
                 'text',
                 [
-                    'label' => 'Скидка',
+                    'label' => 'form.packageMainType.discount',
                     'required' => false,
                     'error_bubbling' => true,
                     'attr' => [
@@ -49,7 +49,7 @@ class PackageMainType extends AbstractType
                 'arrivalTime',
                 'choice',
                 [
-                    'label' => 'Время заезда',
+                    'label' => 'form.packageMainType.check_in_time',
                     'required' => false,
                     'multiple' => false,
                     'error_bubbling' => true,
@@ -60,7 +60,7 @@ class PackageMainType extends AbstractType
                 'departureTime',
                 'choice',
                 [
-                    'label' => 'Время отъезда',
+                    'label' => 'form.packageMainType.check_out_time',
                     'required' => false,
                     'multiple' => false,
                     'error_bubbling' => true,
@@ -71,7 +71,7 @@ class PackageMainType extends AbstractType
                 'purposeOfArrival',
                 'choice',
                 [
-                    'label' => 'Цель приезда',
+                    'label' => 'form.packageMainType.arrival_purpose',
                     'required' => false,
                     'multiple' => false,
                     'error_bubbling' => true,
@@ -82,7 +82,7 @@ class PackageMainType extends AbstractType
                 'note',
                 'textarea',
                 [
-                    'label' => 'Комментарий',
+                    'label' => 'form.packageMainType.comment',
                     'required' => false,
                 ]
             );

@@ -59,7 +59,7 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
             $dm->flush();
 
             $this->getRequest()->getSession()->getFlashBag()
-                ->set('success', 'Запись успешно создана.')
+                ->set('success', $this->get('translator')->trans('controller.sourceController.record_created_success'))
             ;
 
             return $this->redirect($this->generateUrl('package_source'));
@@ -134,7 +134,7 @@ class SourceController extends Controller implements CheckHotelControllerInterfa
 
 
             $this->getRequest()->getSession()->getFlashBag()
-                ->set('success', 'Запись успешно отредактирована.')
+                ->set('success', $this->get('translator')->trans('controller.sourceController.record_edited_success'))
             ;
             return $this->afterSaveRedirect('package_source', $entity->getId());
         }

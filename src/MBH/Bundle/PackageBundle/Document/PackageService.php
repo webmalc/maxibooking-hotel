@@ -39,14 +39,14 @@ class PackageService extends Base
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Service")
-     * @Assert\NotNull(message="Не выбрана услуга")
+     * @Assert\NotNull(message= "validator.document.packageService.no_service_selected")
      */
     protected $service;
 
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Package", inversedBy="services")
-     * @Assert\NotNull(message="Не выбрана бронь")
+     * @Assert\NotNull(message= "validator.document.packageService.no_reservation_selected")
      */
     protected $package;
 
@@ -57,7 +57,7 @@ class PackageService extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Цена не может быть меньше нуля"
+     *      minMessage= "validator.document.packageService.price_less_zero"
      * )
      */
     protected $price;
@@ -69,7 +69,7 @@ class PackageService extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
-     *      minMessage="Количество не может быть меньше единицы"
+     *      minMessage= "validator.document.packageService.amount_less_1"
      * )
      */
     protected $amount;
@@ -81,7 +81,7 @@ class PackageService extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
-     *      minMessage="Количество персон не может быть меньше единицы"
+     *      minMessage= "validator.document.packageService.person_amount_less_1"
      * )
      */
     protected $persons;
@@ -93,7 +93,7 @@ class PackageService extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
-     *      minMessage="Количество ночей не может быть меньше единицы"
+     *      minMessage= "validator.document.packageService.nights_amount_less_1"
      * )
      */
     protected $nights;

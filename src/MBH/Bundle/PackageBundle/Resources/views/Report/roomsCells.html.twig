@@ -6,7 +6,7 @@
 </tr>
 <tr>
     <td class="text-center">
-        <small><strong><i data-toggle="tooltip" title="Всего номеров" class="fa fa-home"></i></strong></small>
+        <small><strong><i data-toggle="tooltip" title="{{ "report.roomsCells.rooms_amount"|trans({}, "MBHPackageBundle") }}" class="fa fa-home"></i></strong></small>
     </td>
     {% for date in period %}
         <td class="text-center cell {% if date == begin %}chosen{% elseif date|date('N') >= 6 %}weekend{% endif %}">
@@ -16,7 +16,7 @@
 </tr>
 <tr>
     <td class="text-center">
-        <small><strong><i data-toggle="tooltip" title="Занято номеров" class="fa fa-home text-success"></i></strong></small>
+        <small><strong><i data-toggle="tooltip" title="{{ "report.roomsCells.occupied_rooms_amount"|trans({}, "MBHPackageBundle") }}" class="fa fa-home text-success"></i></strong></small>
     </td>
     {% for date in period %}
         <td class="text-center cell {% if date == begin %}chosen{% elseif date|date('N') >= 6 %}weekend{% endif %}">
@@ -26,11 +26,11 @@
 </tr>
 <tr>
     <td class="text-center">
-        <small><strong><i data-toggle="tooltip" title="Свободно номеров" class="fa fa-home text-danger"></i></strong></small>
+        <small><strong><i data-toggle="tooltip" title="{{ "report.roomsCells.empty_rooms_amount"|trans({}, "MBHPackageBundle") }}" class="fa fa-home text-danger"></i></strong></small>
     </td>
     {% for date in period %}
         <td data-date="{{ date|date('d.m.Y') }}" data-roomType="{{ id }}" class="text-center black cell cell-empty {% if date == begin %}chosen{% elseif date|date('N') >= 6 %}weekend{% endif %}">
-            <small data-toggle="tooltip" title="Выбрать дату заезда для бронирования">{{ roomsInfo[id][date|date('d.m.Y')].free }}</small>
+            <small data-toggle="tooltip" title="{{ "report.roomsCells.select_check_in_date_for_reservation"|trans({}, "MBHPackageBundle") }}">{{ roomsInfo[id][date|date('d.m.Y')].free }}</small>
         </td>
     {% endfor %}
 </tr>

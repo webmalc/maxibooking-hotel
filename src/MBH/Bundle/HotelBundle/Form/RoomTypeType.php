@@ -24,61 +24,61 @@ class RoomTypeType extends AbstractType
 
         $builder
                 ->add('fullTitle', 'text', [
-                    'label' => 'Название',
+                    'label' => 'form.roomTypeType.name',
                     'required' => true,
-                    'group' => 'Общаяя информация',
-                    'attr' => ['placeholder' => 'Комфорт плюс']
+                    'group' => 'form.roomTypeType.general_info',
+                    'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus']
                 ])
                 ->add('title', 'text', [
-                    'label' => 'Внутреннее название',
+                    'label' => 'form.roomTypeType.inner_name',
                     'required' => false,
                     
-                    'group' => 'Общаяя информация',
-                    'attr' => ['placeholder' => 'Комфорт плюс - номера в новом корпусе'],
+                    'group' => 'form.roomTypeType.general_info',
+                    'attr' => ['placeholder' => 'form.roomTypeType.comport_plus_rooms_in_new_housing'],
                     'help' => 'Название для использования внутри MaxiBooking'
                 ])
                 ->add('description', 'textarea', [
-                     'label' => 'Описание',
-                     'help' => 'Описание типа номера для онлайн бронирования',
+                     'label' => 'form.roomTypeType.description',
+                     'help' => 'form.roomTypeType.online_reservation_room_description',
                      'required' => false,
-                     'group' => 'Общаяя информация',
+                     'group' => 'form.roomTypeType.general_info',
                      'attr' => ['class' => 'big']
                 ])
                 ->add('color', 'text', [
-                    'label' => 'Цвет',
+                    'label' => 'form.roomTypeType.color',
                     'required' => true,
-                    'group' => 'Общаяя информация',
+                    'group' => 'form.roomTypeType.general_info',
                     'attr' => ['placeholder' => '008000'],
-                    'help' => 'Цвет типа номера на шахматке'
+                    'help' => 'form.roomTypeType.chess_room_type_color'
                 ])
                 ->add('imageFile', 'file', [
-                    'label' => 'Изображение',
+                    'label' => 'form.roomTypeType.image',
                     'required' => false,
                     'mapped' => false,
-                    'group' => 'Общаяя информация',
+                    'group' => 'form.roomTypeType.general_info',
                     'help' => $fileText,
                     'constraints' => [new Image()]
                 ])
                 ->add('places', 'text', [
-                    'label' => 'Основные места',
-                    'group' => 'Настройки',
+                    'label' => 'form.roomTypeType.main_places',
+                    'group' => 'form.roomTypeType.settings',
                     'required' => true,
                     'attr' => ['placeholder' => 'hotel', 'class' => 'spinner'],
-                    'help' => 'Количество основных мест в номере'
+                    'help' => 'form.roomTypeType.room_main_places_amount'
                 ])
                 ->add('additionalPlaces', 'text', [
-                    'label' => 'Дополнительные места',
-                    'group' => 'Настройки',
+                    'label' => 'form.roomTypeType.additional_places',
+                    'group' => 'form.roomTypeType.settings',
                     'required' => true,
                     'attr' => ['placeholder' => 'hotel', 'class' => 'spinner'],
-                    'help' => 'Количество дополнительных мест в номере'
+                    'help' => 'form.roomTypeType.room_additional_places_amount'
                 ])
                 ->add('isEnabled', 'checkbox', [
-                    'label' => 'Включен?',
-                    'group' => 'Настройки',
+                    'label' => 'form.roomTypeType.is_included',
+                    'group' => 'form.roomTypeType.settings',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Используется ли тип номера в поиске?'
+                    'help' => 'form.roomTypeType.is_room_included_in_search'
                 ])
         ;
     }

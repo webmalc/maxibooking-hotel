@@ -1,6 +1,6 @@
 {% extends 'MBHChannelManagerBundle:Booking:layout.html.twig' %}
 
-{% set small_title = "настройки" %}
+{% set small_title = 'views.booking.room.settings'|trans({}, 'MBHChannelManagerBundle') %}
 
 {% block content %}
 
@@ -12,7 +12,7 @@
             <table class="table table-striped table-hover table-condensed not-auto-datatable">
                 <thead>
                     <tr>
-                        <th class="td-lg">Тип номера</th>
+                        <th class="td-lg">{{ 'views.booking.room.room_type'|trans({}, 'MBHChannelManagerBundle') }}</th>
                         <th>ID</th>
                     </tr>
                 </thead>
@@ -29,7 +29,7 @@
             <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
                 <div class="container-fluid">
                     <ul class="nav navbar-nav">
-                        <li><button type="button" data-toggle="tooltip" title="Синхронизироваться с Booking.com" onclick="location.href = '{{ path('channel_manager_sync', {'name': 'booking'}) }}'" class="btn btn-success navbar-btn"><i class="fa fa-share-square-o"></i> Синхронизировать</button></li>
+                        <li><button type="button" data-toggle="tooltip" title={{ 'views.booking.room.booking_com_sync'|trans({}, 'MBHChannelManagerBundle') }} onclick="location.href = '{{ path('channel_manager_sync', {'name': 'booking'}) }}'" class="btn btn-success navbar-btn"><i class="fa fa-share-square-o"></i>{{ 'views.booking.room.sync'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
                         <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
                     </ul>
                 </div>

@@ -32,7 +32,7 @@ class CacheQueue extends Base
      * @ODM\String(name="status")
      * @Assert\Choice(
      *      choices = {"complete", "working", "waiting"},
-     *      message = "Неверный статус."
+     *      message = "validator.document.cacheQueue.wrong_status"
      * )
      */
     private $status = 'waiting';

@@ -1,0 +1,67 @@
+form.hotelExtendedType.city: Город
+form.hotelExtendedType.location: Местоположение
+form.hotelExtendedType.placeholder_location: Москва, Московская обл., Щелково
+form.hotelExtendedType.latitude: Широта
+form.hotelExtendedType.gps_coordinates_latitude: GPS координата широты отеля.
+form.hotelExtendedType.know_hotel_coordinates: Узнать координаты отеля.
+form.hotelExtendedType.longitude: Долгота
+form.hotelExtendedType.longitude: GPS координата широты отеля.
+form.hotelExtendedType.how_many_stars_hotel: Звездность отеля
+form.hotelExtendedType.parameters: Параметры
+form.hotelExtendedType.hotel_type: Тип отеля
+form.hotelExtendedType.hotel_theme: Тема отеля
+form.hotelExtendedType.hotel_amenities: Удобства отеля
+form.hotelType.name: Название
+form.hotelType.general_info: Общаяя информация
+form.hotelType.placeholder_my_hotel: Мой отель
+form.hotelType.inner_name: Внутреннее название
+form.hotelType.placeholder_hotel: Отель
+form.hotelType.maxibooking_inner_name: Название для использования внутри MaxiBooking
+form.hotelType.prefix: Прификс
+form.hotelType.document_use_name: Название для использования в документах
+form.hotelType.sale_days_amount: Количество дней продажи
+form.hotelType.settings: Настройки
+form.hotelType.how_long_sale_opened_since_today: На сколько дней открыта продажа от текущего числа
+form.hotelType.hostel: Хостел?
+form.hotelType.hostel_hotel_or_not: Отель хостел или нет?
+form.hotelType.is_default: Выбран по умолчанию?
+form.hotelType.is_default_maxibooking: Выбран по умолчанию при входе в MaxiBooking
+form.roomType.name: Название
+form.roomType.general_info: Общаяя информация
+form.roomType.inner_name: Внутреннее название
+form.roomType.placeholder_27_with_repair: 27 (c ремонтом)
+form.roomType.maxibooking_inner_name: Название для использования внутри MaxiBooking
+form.roomType.is_included: Включен?
+form.roomType.settings: Настройки
+form.roomType.is_room_included_in_search: Используется ли номер в поиске?
+form.roomType.room_type: Тип номера
+form.roomTypeGenerateRoomsType.first_bed_number: Номер первого койко-места
+form.roomTypeGenerateRoomsType.first_room_number: Номер первой комнаты
+form.roomTypeGenerateRoomsType.field_must_be_number: Поле должно быть числом
+form.roomTypeGenerateRoomsType.last_bed_number: Номер последнего койко-места
+form.roomTypeGenerateRoomsType.last_room_number: Номер последней комнаты
+form.roomTypeGenerateRoomsType.prefix: Префикс
+form.roomTypeGenerateRoomsType.prefix_example: Префикс для названия. Пример: HTL-12
+form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: Номер первой комнаты не может быть меньше номера последней.
+form.roomTypeGenerateRoomsType.too_many_generation_numbers: Слишком большое количество номеров для генерации.
+form.roomTypeType.name: Название
+form.roomTypeType.general_info: Общаяя информация
+form.roomTypeType.confmort_plus: Комфорт плюс
+form.roomTypeType.inner_name: Внутреннее название
+form.roomTypeType.comport_plus_rooms_in_new_housing: Комфорт плюс - номера в новом корпусе
+form.roomTypeType.description: Описание
+form.roomTypeType.online_reservation_room_description: Описание типа номера для онлайн бронирования
+form.roomTypeType.chess_room_type_color: Цвет типа номера на шахматке
+form.roomTypeType.image: Изображение
+form.roomTypeType.main_places: Основные места
+form.roomTypeType.settings: Настройки
+form.roomTypeType.room_main_places_amount: Количество основных мест в номере
+form.roomTypeType.additional_places: Дополнительные места
+form.roomTypeType.room_additional_places_amount: Количество дополнительных мест в номере
+form.roomTypeType.is_included: Включен?
+form.roomTypeType.is_room_included_in_search: Используется ли тип номера в поиске?
+controller.hotelController.record_created_success: 'Запись успешно создана.'
+controller.hotelController.record_edited_success: 'Запись успешно отредактирована.'
+controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'
+controller.roomTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
+controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'

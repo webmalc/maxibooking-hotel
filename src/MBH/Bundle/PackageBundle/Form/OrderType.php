@@ -14,7 +14,7 @@ class OrderType extends AbstractType
     {
         $builder
                 ->add('source', 'document', [
-                    'label' => 'Источник',
+                    'label' => 'form.orderType.source',
                     'required' => false,
                     'multiple' => false,
                     'class' => 'MBHPackageBundle:PackageSource',
@@ -26,11 +26,11 @@ class OrderType extends AbstractType
                     },
                 ])
                 ->add('note', 'textarea', [
-                    'label' => 'Комментарий',
+                    'label' => 'form.orderType.comment',
                     'required' => false,
                 ])
                 ->add('confirmed', 'checkbox', [
-                    'label' => 'Подтвержден?',
+                    'label' => 'form.orderType.is_confirmed',
                     'value' => true,
                     'required' => false
                 ])

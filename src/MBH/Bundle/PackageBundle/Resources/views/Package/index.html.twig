@@ -1,6 +1,6 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = "список броней" %}
+{% set small_title = 'package.index.reservations_list'|trans({}, 'MBHPackageBundle')  %}
 
 {% block content %}
 
@@ -19,9 +19,9 @@
             </div>
             <div class="input">
                 <select id="package-filter-dates" class="package-filter form-control input-sm">
-                    <option value="begin">Заезд</option>
-                    <option value="end">Выезд</option>
-                    <option value="createdAt">Создание</option>
+                    <option value="begin">{{ 'package.index.check_in'|trans({}, 'MBHPackageBundle') }}</option>
+                    <option value="end">{{ 'package.index.check_out'|trans({}, 'MBHPackageBundle') }}</option>
+                    <option value="createdAt">{{ 'package.index.create'|trans({}, 'MBHPackageBundle') }}</option>
                 </select>
             </div>
             <div class="input">
@@ -43,16 +43,16 @@
             <div class="input">
                 <i class="fa fa-ruble" title='Статус оплаты' data-toggle='tooltip'></i>&nbsp <select data-placeholder="Статус оплаты" id="package-filter-paid" class="package-filter form-control input-sm">
                     <option></option>
-                    <option value="paid">Оплачена</option>
-                    <option value="part">Частично оплачена</option>
-                    <option value="not_paid">Не оплачена</option>
+                    <option value="paid">{{ 'package.index.paid'|trans({}, 'MBHPackageBundle') }}</option>
+                    <option value="part">{{ 'package.index.partly_paid'|trans({}, 'MBHPackageBundle') }}</option>
+                    <option value="not_paid">{{ 'package.index.not_paid'|trans({}, 'MBHPackageBundle') }}</option>
                 </select>
             </div>
             <div class="input">
-                <i class="fa fa-check" title='Подтверждена?' data-toggle='tooltip'></i>&nbsp <select data-placeholder="Подтверждена?" id="package-filter-confirmed" class="package-filter form-control input-sm">
+                <i class="fa fa-check" title='{{ 'package.index.is_confirmed'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'></i>&nbsp <select data-placeholder="{{ 'package.index.is_confirmed'|trans({}, 'MBHPackageBundle') }}" id="package-filter-confirmed" class="package-filter form-control input-sm">
                     <option></option>
-                    <option value="1">Да</option>
-                    <option value="0">Нет</option>
+                    <option value="1">{{ 'package.index.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }}</option>
+                    <option value="0">{{ 'package.index.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}</option>
                 </select>
             </div>
             {% if environment == 'prod' %}
@@ -68,15 +68,15 @@
 
 
         <ul id="package-table-quick-links">
-            <li><a class="btn btn-xs btn-default" data-value="begin-today" href="#">заезд сегодня (<span class="package-table-quick-links-count">{{ count.begin_today|default('-') }}</span>)</a></li>
-            <li><a class="btn btn-xs btn-default" data-value="begin-tomorrow" href="#">заезд завтра (<span class="package-table-quick-links-count">{{ count.begin_tomorrow|default('-') }}</span>)</a></li>
-            <li><a class="btn btn-xs btn-default" data-value="live-now" href="#">живут сейчас (<span class="package-table-quick-links-count">{{ count.live_now|default('-') }}</span>)</a></li>
-            <li class="package-table-quick-links-margin"><a class="btn btn-xs btn-default" data-value="without-approval" href="#">не подтвержденные (<span class="package-table-quick-links-count">{{ count.without_approval|default('-') }}</span>)</a></li>
-            <li><a class="btn btn-xs btn-default" data-value="without-accommodation" href="#">без размещения (<span class="package-table-quick-links-count">{{ count.without_accommodation|default('-') }}</span>)</a></li>
-            <li><a class="btn btn-xs btn-default" data-value="not-paid" href="#">не оплаченные (<span class="package-table-quick-links-count">{{ count.not_paid|default('-') }}</span>)</a></li>
-            <li><a class="btn btn-xs btn-default" data-value="not-paid-time" href="#">просроченные (<span class="package-table-quick-links-count">{{ count.not_paid_time|default('-') }}</span>)</a></li>
-            <li><a class="btn btn-xs btn-default" data-value="not-check-in" href="#">не заехавшие (<span class="package-table-quick-links-count">{{ count.not_check_in|default('-') }}</span>)</a></li>
-            <li class="package-table-quick-links-margin"><a class="btn btn-xs btn-default" data-value="created-by" href="#">мои брони (<span class="package-table-quick-links-count">{{ count.created_by|default('-') }}</span>)</a></li>
+            <li><a class="btn btn-xs btn-default" data-value="begin-today" href="#">{{ 'package.index.check_in_today'|trans({}, 'MBHPackageBundle') }}(<span class="package-table-quick-links-count">{{ count.begin_today|default('-') }}</span>)</a></li>
+            <li><a class="btn btn-xs btn-default" data-value="begin-tomorrow" href="#">{{ 'package.index.check_in_tomorrow'|trans({}, 'MBHPackageBundle') }}(<span class="package-table-quick-links-count">{{ count.begin_tomorrow|default('-') }}</span>)</a></li>
+            <li><a class="btn btn-xs btn-default" data-value="live-now" href="#">{{ 'package.index.checked_in_now'|trans({}, 'MBHPackageBundle') }}(<span class="package-table-quick-links-count">{{ count.live_now|default('-') }}</span>)</a></li>
+            <li class="package-table-quick-links-margin"><a class="btn btn-xs btn-default" data-value="without-approval" href="#">{{ 'package.index.not_confirmed'|trans({}, 'MBHPackageBundle') }}(<span class="package-table-quick-links-count">{{ count.without_approval|default('-') }}</span>)</a></li>
+            <li><a class="btn btn-xs btn-default" data-value="without-accommodation" href="#">{{ 'package.index.without_placement'|trans({}, 'MBHPackageBundle') }}(<span class="package-table-quick-links-count">{{ count.without_accommodation|default('-') }}</span>)</a></li>
+            <li><a class="btn btn-xs btn-default" data-value="not-paid" href="#">{{ 'package.index.not_paid'|trans({}, 'MBHPackageBundle') }}(<span class="package-table-quick-links-count">{{ count.not_paid|default('-') }}</span>)</a></li>
+            <li><a class="btn btn-xs btn-default" data-value="not-paid-time" href="#">{{ 'package.index.not_paid_in_time'|trans({}, 'MBHPackageBundle') }} (<span class="package-table-quick-links-count">{{ count.not_paid_time|default('-') }}</span>)</a></li>
+            <li><a class="btn btn-xs btn-default" data-value="not-check-in" href="#">{{ 'package.index.not_checked_in'|trans({}, 'MBHPackageBundle') }} (<span class="package-table-quick-links-count">{{ count.not_check_in|default('-') }}</span>)</a></li>
+            <li class="package-table-quick-links-margin"><a class="btn btn-xs btn-default" data-value="created-by" href="#">{{ 'package.index.my_reservations'|trans({}, 'MBHPackageBundle') }} (<span class="package-table-quick-links-count">{{ count.created_by|default('-') }}</span>)</a></li>
             <li><a class="btn btn-xs btn-default" id="package-table-quick-reset" href="#"><i class="fa fa-ban"></i></a></li>
         </ul>
 
@@ -86,12 +86,12 @@
         <tr>
             <th class="td-xxs"></th>
             <th class="td-xs">#</th>
-            <th class="td-xs">Заказ</th>
-            <th class="td-md">Даты</th>
-            <th>Размещение</th>
-            <th class="td-md">Гости</th>
-            <th class="td-sm">Стоимость</th>
-            <th class="td-sm">Создана</th>
+            <th class="td-xs">{{ 'package.index.order'|trans({}, 'MBHPackageBundle') }}</th>
+            <th class="td-md">{{ 'package.index.dates'|trans({}, 'MBHPackageBundle') }}</th>
+            <th>{{ 'package.index.placement'|trans({}, 'MBHPackageBundle') }}</th>
+            <th class="td-md">{{ 'package.index.guests'|trans({}, 'MBHPackageBundle') }}</th>
+            <th class="td-sm">{{ 'package.index.price'|trans({}, 'MBHPackageBundle') }}</th>
+            <th class="td-sm">{{ 'package.index.created'|trans({}, 'MBHPackageBundle') }}</th>
             <th class="td-sm"></th>
         </tr>
         </thead>
@@ -103,5 +103,5 @@
     </div>
 </div>
             
-{% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'package_search', 'icon': 'fa-search', 'text': 'Подбор'} %}
+{% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'package_search', 'icon': 'fa-search', 'text': 'package.index.selection'|trans({}, 'MBHPackageBundle')} %}
 {% endblock content %}

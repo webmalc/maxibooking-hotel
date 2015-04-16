@@ -8,9 +8,9 @@ use Symfony\Component\Validator\Constraint;
  */
 class Package extends Constraint
 {
-    public $beginEndMessage = 'Начало брони не должно быть больше или равно концу брони';
+    public $beginEndMessage = 'validator.begin_end_message';
     
-    public $tariffMessage = 'Даты брони выходят за пределы тарифа';
+    public $tariffMessage = 'validator.begin_end_message';
     
     /**
      * {@inheritDoc}

@@ -52,7 +52,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
 
         $request->getSession()
             ->getFlashBag()
-            ->set('success', 'Кассовый документ успешно удален.');
+            ->set('success', $this->get('translator')->trans('controller.orderController.cash_register_paper_deleted_success'));
 
         return $this->redirect($this->generateUrl('package_order_cash', ['id' => $entity->getId()]));
     }
@@ -94,7 +94,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             [
                 'methods' => $this->container->getParameter('mbh.cash.methods'),
                 'operations' => $this->container->getParameter('mbh.cash.operations'),
-                'groupName' => 'Добавить кассовый документ',
+                'groupName' => $this->get('translator')->trans('controller.orderController.add_cash_register_paper'),
                 'payer' => $entity->getMainTourist()
             ]
         );
@@ -166,7 +166,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
 
             $request->getSession()
                 ->getFlashBag()
-                ->set('success', 'Кассовый документ успешно добавлен.');
+                ->set('success', $this->get('translator')->trans('controller.orderController.cash_register_paper_added_success'));
 
             if ($request->get('save') !== null) {
                 return $this->redirect($this->generateUrl('package_order_cash', ['id' => $entity->getId()]));
@@ -286,7 +286,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
 
             $request->getSession()
                 ->getFlashBag()
-                ->set('success', 'Плательщик успешно добавлен.');
+                ->set('success', $this->get('translator')->trans('controller.orderController.payer_added_success'));
 
             //return $this->afterSaveRedirect('package', $entity->getId());
 
@@ -331,7 +331,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
 
         $request->getSession()
             ->getFlashBag()
-            ->set('success', 'Плательщик успешно удален.');
+            ->set('success', $this->get('translator')->trans('controller.orderController.payer_deleted_success'));
 
         return $this->redirect($this->generateUrl('package_order_tourist_edit', ['id' => $entity->getId()]));
     }
@@ -395,7 +395,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             $dm->flush();
 
             $request->getSession()->getFlashBag()
-                ->set('success', 'Запись успешно отредактирована.');
+                ->set('success', $this->get('translator')->trans('controller.orderController.record_edited_success'));
 
             //return $this->afterSaveRedirect('package', $entity->getId());
 
@@ -438,7 +438,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
 
         $request->getSession()
             ->getFlashBag()
-            ->set('success', 'Запись успешно удалена.');
+            ->set('success', $this->get('translator')->trans('controller.orderController.record_deleted_success'));
 
         return $this->redirect($this->generateUrl('package'));
 

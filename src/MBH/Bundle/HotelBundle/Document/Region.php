@@ -42,7 +42,7 @@ class Region extends Base
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Country", inversedBy="regions")
-     * @Assert\NotNull(message="Не выбрана страна")
+     * @Assert\NotNull(message="validator.document.region.country_not_selected")
      */
     protected $country;
 
@@ -52,9 +52,9 @@ class Region extends Base
      * @ODM\String(name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="validator.document.region.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.region.max_name"
      * )
      */
     protected $title;

@@ -96,7 +96,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             }
         }
 
-        $chart = $this->getChart('Количество услуг');
+        $chart = $this->getChart($this->get('translator')->trans('controller.analyticsController.services_amount'));
         $chart->series($this->getSeries($data, 'getServices'));
 
         return $this->getResponse($chart);
@@ -142,7 +142,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             }
         }
 
-        $chart = $this->getChart('Выручка');
+        $chart = $this->getChart($this->get('translator')->trans('controller.analyticsController.proceeds'));
         $chart->series($this->getSeries($data));
 
         return $this->getResponse($chart);
@@ -187,7 +187,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             }
         }
 
-        $chart = $this->getChart('Процент');
+        $chart = $this->getChart($this->get('translator')->trans('controller.analyticsController.percentage'));
         $chart->series($this->getSeries($newData, 'getRoomTypes', true));
 
         return $this->getResponse($chart);
@@ -234,7 +234,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
 
         }
 
-        $chart = $this->getChart('Количество путевок');
+        $chart = $this->getChart($this->get('translator')->trans('controller.analyticsController.package_trips_amount'));
         $chart->series($this->getSeries($data, 'getManagers'));
 
         return $this->getResponse($chart);
@@ -271,7 +271,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
 
         }
 
-        $chart = $this->getChart('Количество путевок');
+        $chart = $this->getChart($this->get('translator')->trans('controller.analyticsController.package_trips_amount'));
         $chart->series($this->getSeries($data, 'getSources'));
 
         return $this->getResponse($chart);
@@ -302,7 +302,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             $data[$id][$month]++;
         }
 
-        $chart = $this->getChart('Количество путевок');
+        $chart = $this->getChart($this->get('translator')->trans('controller.analyticsController.package_trips_amount'));
         $chart->series($this->getSeries($data));
 
         return $this->getResponse($chart);
@@ -333,7 +333,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             $data[$id][$month]+= $package->getPrice();
         }
 
-        $chart = $this->getChart('Выручка');
+        $chart = $this->getChart($this->get('translator')->trans('controller.analyticsController.proceeds'));
         $chart->series($this->getSeries($data));
 
         return $this->getResponse($chart);
@@ -353,7 +353,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         $chart->chart->renderTo('analytics_filter_content');
         $chart->title->text($this->container->getParameter('mbh.analytics.types')[$request->get('type')]);
         $chart->yAxis->title(['text'  => $y]);
-        $chart->xAxis->title(['text'  => 'Даты продажи']);
+        $chart->xAxis->title(['text'  => $this->get('translator')->trans('controller.analyticsController.sale_date')]);
         $chart->xAxis->type('datetime');
         $chart->xAxis->dateTimeLabelFormats(['month' => '%e. %b','year' => '%b']);
         $chart->chart->zoomType('x');

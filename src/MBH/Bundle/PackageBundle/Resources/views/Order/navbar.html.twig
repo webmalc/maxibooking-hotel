@@ -1,3 +1,3 @@
 {% if entity.deletedAt is empty %}
-    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'package_order_delete', 'delete_title': 'Удалить заказ'} %}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'package_order_delete', 'delete_title': 'order.navbar.delete_order'|trans({}, 'MBHPackageBundle')} %}
 {% endif %}

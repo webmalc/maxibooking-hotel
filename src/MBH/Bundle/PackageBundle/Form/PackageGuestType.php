@@ -16,51 +16,51 @@ class PackageGuestType extends AbstractType
     {
         $builder
                 ->add('tourist', 'text', [
-                    'label' => 'ФИО',
+                    'label' => 'form.packageGuestType.fio',
                     'required' => false,
-                    'group' => 'Найти гостя',
-                    'attr' => ['placeholder' => 'Иванов Иван Иванович', 'style' => 'min-width: 500px']
+                    'group' => 'form.packageGuestType.find_guest',
+                    'attr' => ['placeholder' => 'form.packageGuestType.placeholder_fio', 'style' => 'min-width: 500px']
                 ])
                 ->add('lastName', 'text', [
-                    'label' => 'Фамилия',
+                    'label' => 'form.packageGuestType.surname',
                     'required' => true,
-                    'group' => 'Добавить гостя',
-                    'attr' => ['placeholder' => 'Иванов'],
+                    'group' => 'form.packageGuestType.add_guest',
+                    'attr' => ['placeholder' => 'form.packageGuestType.placeholder_surname'],
                     'constraints' => [new NotBlank(), new Length([
                         'min' => 2,
                         'max' => 100,
-                        'minMessage' => 'Слишком короткое имя',
-                        'maxMessage' => 'Слишком длинное имя'
+                        'minMessage' => 'form.packageGuestType.min_name',
+                        'maxMessage' => 'form.packageGuestType.max_name'
                     ])]
                 ])
                 ->add('firstName', 'text', [
-                    'label' => 'Имя',
+                    'label' => 'form.packageGuestType.name',
                     'required' => true,
-                    'group' => 'Добавить гостя',
-                    'attr' => ['placeholder' => 'Иван'],
+                    'group' => 'form.packageGuestType.add_guest',
+                    'attr' => ['placeholder' => 'form.packageGuestType.placeholder_name'],
                     'constraints' => [new NotBlank(), new Length([
                         'min' => 2,
                         'max' => 100,
-                        'minMessage' => 'Слишком короткая фамилия',
-                        'maxMessage' => 'Слишком длинная фамилия'
+                        'minMessage' => 'form.packageGuestType.min_surname',
+                        'maxMessage' => 'form.packageGuestType.max_surname'
                     ])]
                 ])
                 ->add('patronymic', 'text', [
-                    'label' => 'Отчество',
+                    'label' => 'form.packageGuestType.second_name',
                     'required' => false,
-                    'group' => 'Добавить гостя',
-                    'attr' => ['placeholder' => 'Иванович'],
+                    'group' => 'form.packageGuestType.add_guest',
+                    'attr' => ['placeholder' => 'form.packageGuestType.placeholder_second_name'],
                     'constraints' => [new Length([
                         'min' => 2,
                         'max' => 100,
-                        'minMessage' => 'Слишком короткое отчество',
-                        'maxMessage' => 'Слишком длинное отчество'
+                        'minMessage' => 'form.packageGuestType.min_second_name',
+                        'maxMessage' => 'form.packageGuestType.max_second_name'
                     ])]
                 ])
                 ->add('birthday', 'date', array(
-                    'label' => 'Дата рождения',
+                    'label' => 'form.packageGuestType.birth_date',
                     'widget' => 'single_text',
-                    'group' => 'Добавить гостя',
+                    'group' => 'form.packageGuestType.add_guest',
                     'format' => 'dd.MM.yyyy',
                     'required' => false,
                     'attr' => array('data-date-format' => 'dd.mm.yyyy'),

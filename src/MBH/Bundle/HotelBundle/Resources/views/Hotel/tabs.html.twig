@@ -1,6 +1,6 @@
 {% set menu = [
-    {'route': 'hotel_edit', 'title': '<i class="fa fa-info-circle"></i> Основная информация'},
-    {'route': 'hotel_edit_extended', 'title': '<i class="fa fa-cogs"></i>  Дополнительные настройки'},
+    {'route': 'hotel_edit', 'title': '<i class="fa fa-info-circle"></i> '~ 'views.hotel.tabs.main_info'|trans({}, 'MBHHotelBundle')},
+    {'route': 'hotel_edit_extended', 'title': '<i class="fa fa-cogs"></i>'~ 'views.hotel.tabs.additional_settings'|trans({}, 'MBHHotelBundle')},
 ]
 %}
 
@@ -8,7 +8,7 @@
 {% for item in menu %}
     {% if entity is null and loop.index != 1 %}
         <li class="disabled">
-            <a href="#" role="tab" data-toggle="tooltip" title="Необходимо заполнить основную информацию!">{{item.title|raw}}</a>
+            <a href="#" role="tab" data-toggle="tooltip" title={{ 'views.hotel.tabs.main_info_required'|trans({}, 'MBHHotelBundle') }} >{{item.title|raw}}</a>
         </li>
     {% else  %}
         <li {% if loop.index == active %}class="active"{% endif %}>

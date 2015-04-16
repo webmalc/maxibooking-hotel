@@ -14,20 +14,20 @@ class PackageAccommodationType extends AbstractType
     {
         $builder
             ->add('room', 'choice', [
-                    'label' => ($options['isHostel']) ? 'Комната/койко-место': 'Комната',
+                    'label' => ($options['isHostel']) ? 'form.packageAccommodationType.room_or_bed': 'form.packageAccommodationType.room',
                     'required' => true,
                     'empty_value' => '',
-                    'group' => 'Выбрать размещение',
+                    'group' => 'form.packageAccommodationType.choose_placement',
                     'multiple' => false,
                     'choices' => $options['rooms'],
                     'constraints' => new NotBlank()
                 ])
             ->add('isCheckIn', 'checkbox', [
-                'label' => 'Гости заехали?',
+                'label' => 'form.packageAccommodationType.are_guests_checked_in',
                 'value' => true,
                 'required' => false,
                 'data' => $options['guests'],
-                'help' => 'Заехал ли гости в номер?'
+                'help' => 'form.packageAccommodationType.are_guests_checked_in_help'
             ])
         ;
     }

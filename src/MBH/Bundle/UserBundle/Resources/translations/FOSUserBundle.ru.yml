@@ -45,3 +45,14 @@ form.password: 'Пароль:'
 form.password_confirmation: 'Подтвердите пароль:'
 form.new_password: 'Новый пароль:'
 form.new_password_confirmation: 'Подтвердите пароль:'
+edit.small_title: 'редактирование'
+user.index.small_title: 'список'
+index.login: Логин
+index.permissions: Права
+index.fio: ФИО
+index.status: Статус
+index.disabled: Отключен
+record.index.edit: 'Редактирование записи'
+record.index.remove: 'Удаление записи'
+layout.users: 'Пользователи'
+new.create: 'создание'

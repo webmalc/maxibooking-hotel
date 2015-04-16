@@ -14,32 +14,32 @@ class RoomType extends AbstractType
     {
         $builder
                 ->add('fullTitle', 'text', [
-                    'label' => 'Название',
+                    'label' => 'form.roomType.name',
                     'required' => true,
-                    'group' => 'Общаяя информация',
+                    'group' => 'form.roomType.general_info',
                     'attr' => ['placeholder' => '27']
                 ])
                 ->add('title', 'text', [
-                    'label' => 'Внутреннее название',
+                    'label' => 'form.roomType.inner_name',
                     'required' => false,
-                    'group' => 'Общаяя информация',
-                    'attr' => ['placeholder' => '27 (c ремонтом)'],
-                    'help' => 'Название для использования внутри MaxiBooking'
+                    'group' => 'form.roomType.general_info',
+                    'attr' => ['placeholder' => 'form.roomType.placeholder_27_with_repair'],
+                    'help' => 'form.roomType.maxibooking_inner_name'
                 ])
                 ->add('isEnabled', 'checkbox', [
-                    'label' => 'Включен?',
-                    'group' => 'Настройки',
+                    'label' => 'form.roomType.is_included',
+                    'group' => 'form.roomType.settings',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Используется ли номер в поиске?'
+                    'help' => 'form.roomType.is_room_included_in_search'
                 ])
             ;
 
         if (!$options['isNew']) {
             $builder->add('roomType', 'document', [
-                    'label' => 'Тип номера',
+                    'label' => 'form.roomType.room_type',
                     'class' => 'MBHHotelBundle:RoomType',
-                    'group' => 'Общаяя информация',
+                    'group' => 'form.roomType.general_info',
                     'query_builder' => function(DocumentRepository $dr) use ($options) {
                         return $dr->createQueryBuilder('q')
                             ->field('hotel.id')->equals($options['hotelId'])

@@ -38,21 +38,21 @@ class RoomCacheOverwrite extends Base
     /** 
      * @var \MBH\Bundle\PriceBundle\Document\Tariff
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
-     * @Assert\NotNull(message="Не выбран тариф")
+     * @Assert\NotNull(message= "validator.document.roomCacheOverwrite.no_tariff_selected")
      */
     protected $tariff;
     
     /** 
      * @var \MBH\Bundle\HotelBundle\Document\RoomType
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
-     * @Assert\NotNull(message="Не выбран тип номера")
+     * @Assert\NotNull(message= "validator.document.roomCacheOverwrite.no_room_type_selected")
      */
     protected $roomType;
     
     /**
      * @var \DateTime
      * @ODM\Date()
-     * @Assert\NotNull(message="Дата не указана")
+     * @Assert\NotNull(message= "validator.document.roomCacheOverwrite.date_not_specified")
      * @Assert\Date()
      */
     protected $date;

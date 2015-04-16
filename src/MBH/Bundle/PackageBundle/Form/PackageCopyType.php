@@ -17,8 +17,8 @@ class PackageCopyType extends AbstractType
 
         $builder
             ->add('package', 'document', [
-                    'label' => 'Бронь',
-                    'group' => 'Параметры переноса',
+                    'label' => 'form.packageCopyType.reservation',
+                    'group' => 'form.packageCopyType.transfer_parameters',
                     'class' => 'MBHPackageBundle:Package',
                     'required' => true,
                     'property' => 'numberWithPayer',
@@ -28,31 +28,31 @@ class PackageCopyType extends AbstractType
                             ->sort('createdAt', 'desc');
                     },
                     'empty_value' => '',
-                    'help' => 'Бронь в которую будет произведен перенос данных.',
+                    'help' => 'form.packageCopyType.data_transfer_reservation',
                     'constraints' => [
-                        new NotBlank(['message' => 'Не выбрана бронь для переноса'])
+                        new NotBlank(['message' => 'form.packageCopyType.no_data_transfer_reservation_selected'])
                     ]
                 ])
             ->add('tourists', 'checkbox', [
-                    'label' => 'Гости',
-                    'group' => 'Параметры переноса',
+                    'label' => 'form.packageCopyType.guests',
+                    'group' => 'form.packageCopyType.transfer_parameters',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Перенести ли гостей в выбранную бронь?'
+                    'help' => 'form.packageCopyType.should_we_transfer_guests_to_selected_reservation'
                 ])
             ->add('services', 'checkbox', [
-                    'label' => 'Услуги',
-                    'group' => 'Параметры переноса',
+                    'label' => 'form.packageCopyType.services',
+                    'group' => 'form.packageCopyType.transfer_parameters',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Перенести ли все услуги в выбранную бронь?'
+                    'help' => 'form.packageCopyType.should_we_transfer_all_services_to_selected_reservation'
                 ])
             ->add('accommodation', 'checkbox', [
-                    'label' => 'Размещение',
-                    'group' => 'Параметры переноса',
+                    'label' => 'form.packageCopyType.placement',
+                    'group' => 'form.packageCopyType.transfer_parameters',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Перенести ли размещение в выбранную бронь?'
+                    'help' => 'form.packageCopyType.should_we_transfer_placement_to_selected_reservation'
                 ])
             ;
     }

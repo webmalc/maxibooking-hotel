@@ -107,7 +107,7 @@ class TouristController extends Controller
             $dm->flush();
 
             $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', 'Запись успешно создана.')
+                    ->set('success', $this->get('translator')->trans('controller.touristController.record_created_success'))
             ;
 
             return $this->afterSaveRedirect('tourist', $entity->getId());
@@ -152,7 +152,7 @@ class TouristController extends Controller
             $dm->flush();
 
             $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', 'Запись успешно отредактирована.')
+                    ->set('success', $this->get('translator')->trans('controller.touristController.record_edited_success'))
             ;
             
             return $this->afterSaveRedirect('tourist', $entity->getId());

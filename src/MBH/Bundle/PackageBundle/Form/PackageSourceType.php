@@ -12,16 +12,16 @@ class PackageSourceType extends AbstractType
     {
         $builder
                 ->add('fullTitle', 'text', [
-                    'label' => 'Назавание',
-                    'group' => 'Добавить источник',
+                    'label' => 'form.packageSourceType.name',
+                    'group' => 'form.packageSourceType.add_source',
                     'required' => true,
-                    'attr' => ['placeholder' => 'Реклама']
+                    'attr' => ['placeholder' => 'form.packageSourceType.adds']
                 ])
                 ->add('title', 'text', [
-                    'label' => 'Внутреннее название',
-                    'group' => 'Добавить источник',
+                    'label' => 'form.packageSourceType.inner_name',
+                    'group' => 'form.packageSourceType.add_source',
                     'required' => false,
-                    'attr' => ['placeholder' => 'Название для использования внутри MaxiBooking']
+                    'attr' => ['placeholder' => 'form.packageSourceType.inner_maxibooking_name']
                 ])
         ;
     }

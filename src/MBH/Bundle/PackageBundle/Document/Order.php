@@ -70,7 +70,7 @@ class Order extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Цена не может быть меньше нуля"
+     *      minMessage= "validator.document.order.price_min_message"
      * )
      */
     protected $price;
@@ -82,7 +82,7 @@ class Order extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Оплачено не может быть меньше нуля"
+     *      minMessage= "validator.document.order.payed_sum_min_message"
      * )
      */
     protected $paid = 0;
@@ -109,7 +109,7 @@ class Order extends Base
      * @ODM\String(name="status")
      * @Assert\Choice(
      *      choices = {"offline", "online", "channel_manager"},
-     *      message = "Неверный статус."
+     *      message = "validator.document.order.wrong_status"
      * )
      */
     protected $status;

@@ -5,7 +5,7 @@
     <div class="well">
         <form id="analytics-filter" class="form-inline" role="form">
             <div class="input">
-                <i class="fa fa-calendar" title='Даты продажи' data-toggle='tooltip'></i>&nbsp <input
+                <i class="fa fa-calendar" title={{ 'analytics.index.sales_date'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>&nbsp <input
                         value="{{ "now"|date_modify("-1 month")|date('d.m.Y') }}" type="text"
                         name="begin"
                         id="analytics-filter-begin"
@@ -19,8 +19,8 @@
                               data-date-format="dd.mm.yyyy">
             </div>
             <div class="input">
-                <i class="fa fa-bar-chart-o" title='Тип отчета' data-toggle='tooltip'></i>&nbsp <select
-                        data-placeholder="Тип отчета" id="analytics-filter-type"
+                <i class="fa fa-bar-chart-o" title={{ 'analytics.index.report_type'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder={{ 'analytics.index.report_type'|trans({}, 'MBHPackageBundle') }} id="analytics-filter-type"
                         name="type"
                         class="analytics-filter form-control input-sm">
                     {% for key, type in types %}
@@ -29,8 +29,8 @@
                 </select>
             </div>
             <div class="input">
-                <i class="fa fa-home" title='Тип номера' data-toggle='tooltip'></i>&nbsp <select
-                        data-placeholder="Тип номера" id="analytics-filter-roomType" multiple="multiple"
+                <i class="fa fa-home" title={{ 'analytics.index.room_type'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder={{ 'analytics.index.room_type'|trans({}, 'MBHPackageBundle') }} id="analytics-filter-roomType" multiple="multiple"
                         name="roomType[]"
                         class="analytics-filter form-control input-sm">
                     <option></option>
@@ -38,7 +38,7 @@
 
                         {% if hotel is not defined or hotel.id != roomType.hotel.id %}
                             <optgroup label="{{ roomType.hotel }}">
-                            <option value="allrooms_{{ roomType.hotel.id }}">Все номера</option>
+                            <option value="allrooms_{{ roomType.hotel.id }}">{{ 'analytics.index.all_rooms'|trans({}, 'MBHPackageBundle') }}</option>
                             {% set hotel = roomType.hotel %}
                         {% endif %}
 
@@ -51,12 +51,12 @@
             </div>
 
             <div class="input" id="analytics-filter-cumulative-wrapper">
-                <i class="fa fa-signal" title='Накопительный?' data-toggle='tooltip'></i>&nbsp <input
+                <i class="fa fa-signal" title={{ 'analytics.index.cumulative'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>&nbsp <input
                         type="checkbox" name="cumulative" id="analytics-filter-cumulative" class="analytics-filter"
                         value="1"/>
             </div>
             <div class="input" id="analytics-filter-months-wrapper">
-                <i class="fa fa-calendar" title='По месяцам?' data-toggle='tooltip'></i>&nbsp <input type="checkbox"
+                <i class="fa fa-calendar" title={{ 'analytics.index.monthly'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>&nbsp <input type="checkbox"
                                                                                                      name="months"
                                                                                                      id="analytics-filter-months"
                                                                                                      class="analytics-filter"

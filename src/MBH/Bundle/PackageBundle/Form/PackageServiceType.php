@@ -33,23 +33,23 @@ class PackageServiceType extends AbstractType
                 'service',
                 'choice',
                 [
-                    'label' => 'Услуга',
+                    'label' => 'form.packageServiceType.service',
                     'required' => true,
                     'choices' => $services,
                     'empty_value' => '',
                     'error_bubbling' => true,
-                    'group' => 'Добавить услугу',
+                    'group' => 'form.packageServiceType.add_service',
                     'constraints' => new NotBlank(),
-                    'help' => 'Услуга для добавления к броне'
+                    'help' => 'form.packageServiceType.reservation_add_service'
                 ]
             )
             ->add(
                 'price',
                 'text',
                 [
-                    'label' => 'Цена',
+                    'label' => 'form.packageServiceType.price',
                     'required' => true,
-                    'group' => 'Добавить услугу',
+                    'group' => 'form.packageServiceType.add_service',
                     'error_bubbling' => true,
                     'constraints' => new NotBlank(),
                     'attr' => ['class' => 'price-spinner sm']
@@ -59,10 +59,10 @@ class PackageServiceType extends AbstractType
                 'nights',
                 'text',
                 [
-                    'label' => 'Количество суток',
+                    'label' => 'form.packageServiceType.nights_amount',
                     'required' => true,
                     'data' => 1,
-                    'group' => 'Добавить услугу',
+                    'group' => 'form.packageServiceType.add_service',
                     'error_bubbling' => true,
                     'constraints' => new NotBlank(),
                     'attr' => ['class' => 'spinner sm']
@@ -72,10 +72,10 @@ class PackageServiceType extends AbstractType
                 'persons',
                 'text',
                 [
-                    'label' => 'Количество гостей',
+                    'label' => 'form.packageServiceType.guests_amount',
                     'required' => true,
                     'data' => 1,
-                    'group' => 'Добавить услугу',
+                    'group' => 'form.packageServiceType.add_service',
                     'error_bubbling' => true,
                     'constraints' => new NotBlank(),
                     'attr' => ['class' => 'spinner sm']
@@ -83,7 +83,7 @@ class PackageServiceType extends AbstractType
             )
             ->add('date', 'date', array(
                     'label' => 'Дата',
-                    'group' => 'Добавить услугу',
+                    'group' => 'form.packageServiceType.add_service',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
                     'data' => $options['package']->getBegin(),
@@ -94,10 +94,10 @@ class PackageServiceType extends AbstractType
                 'amount',
                 'text',
                 [
-                    'label' => 'Количество',
+                    'label' => 'form.packageServiceType.amount',
                     'required' => true,
                     'data' => 1,
-                    'group' => 'Добавить услугу',
+                    'group' => 'form.packageServiceType.add_service',
                     'error_bubbling' => true,
                     'constraints' => new NotBlank(),
                     'attr' => ['class' => 'spinner sm'],
@@ -105,7 +105,7 @@ class PackageServiceType extends AbstractType
                 ]
             )
             ->add('note', 'textarea', [
-                    'label' => 'Комментарий',
+                    'label' => 'form.packageServiceType.comment',
                     'required' => false,
             ])
             ;

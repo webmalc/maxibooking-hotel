@@ -1,5 +1,5 @@
 {% if roomTypes|length <= 0 %}
-<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> Нет типов номеров у выбранного отеля.
+<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>{{ "report.roomsTable.no_room_types"|trans({}, "MBHPackageBundle") }}
 </div>
 {% else %}
 
@@ -28,7 +28,7 @@
                 {% endfor %}
             </tr>
             <tr>
-                <th class="text-center">Номер</th>
+                <th class="text-center">{{ "report.roomsTable.room"|trans({}, "MBHPackageBundle") }}</th>
 
                 {% for day in period %}
                     <th class="text-center date-th {% if day == begin %}text-warning{% elseif day|date('N') >= 6 %}text-danger{% endif %}">{{ day|date('j') }}</th>
@@ -39,7 +39,7 @@
             <!-- table content -->
 
             {% if selectedRoomType is null %}
-                {% include 'MBHPackageBundle:Report:roomsCells.html.twig' with {'period': period, 'title': 'Весь отель', 'roomsInfo': roomsInfo, 'roomType': null, 'tariff': tariff} %}
+                {% include 'MBHPackageBundle:Report:roomsCells.html.twig' with {'period': period, 'title': "report.roomsTable.whole_hotel"|trans({}, "MBHPackageBundle") , 'roomsInfo': roomsInfo, 'roomType': null, 'tariff': tariff} %}
             {% endif %}
 
             {% for roomType in roomTypes %}

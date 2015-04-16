@@ -1,15 +1,15 @@
 {% extends 'MBHOnlineBundle:Form:layout.html.twig' %}
 
-{% set small_title = "настройки" %}
+{% set small_title = 'views.form.index.settings_in_quotes'|trans({}, 'MBHOnlineBundle') %}
 
 {% block content %}
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#online-form-config" data-toggle="tab"><i class="fa fa-cog"></i> Настройки</a></li>
+        <li class="active"><a href="#online-form-config" data-toggle="tab"><i class="fa fa-cog"></i>{{ 'views.form.index.settings'|trans({}, 'MBHOnlineBundle') }}</a></li>
 
         {% if entity %}
-            <li><a href="#online-form-code" data-toggle="tab"><i class="fa fa-code"></i> Код для сайта</a></li>
+            <li><a href="#online-form-code" data-toggle="tab"><i class="fa fa-code"></i>{{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
         {% else %}
-            <li class="disabled"><a href="#" data-toggle="tooltip" title="Необходимо заполнить основные настройки!"><i class="fa fa-code"></i> Код для сайта</a></li>
+            <li class="disabled"><a href="#" data-toggle="tooltip" title= <i class="fa fa-code"></i>{{ 'views.form.index.settings_required'|trans({}, 'MBHOnlineBundle') }}><i class="fa fa-code"></i><i class="fa fa-code"></i>{{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
         {%  endif %}
 
     </ul>
@@ -31,7 +31,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Код формы для вставки на сайт</h3>
+                    <h3 class="panel-title">{{ 'views.form.index.site_embed_form_code'|trans({}, 'MBHOnlineBundle') }}</h3>
                 </div>
                 <div class="panel-body">
                     {% set code1  = '<div id="mbh-form-wrapper" style="overflow: hidden; width: ' ~ config.form.width ~'; height: ' ~ config.form.height ~';"><a href="http://maxi-booking.ru/">система онлайн бронирования</a></div>' %}
@@ -39,11 +39,11 @@
                     {% set code3  = '<script>$.isFunction($().datepicker) || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"><\\/script><link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css"/>\')</script>' %}
                     {% set code4  = '<script type="text/javascript" src="' ~ url('online_form_get') ~ '"></script>' %}
                     <div class="row spacer-bottom">
-                        <div class="col-md-3"><small>На место для формы:</small></div>
+                        <div class="col-md-3"><small>{{ 'views.form.index.to_form_place'|trans({}, 'MBHOnlineBundle') }}</small></div>
                         <div class="col-md-9"><span class="text-success">{{ code1 }}</span></div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3"><small>Перед закрывающим тегом &lt;/body&gt;:</small></div>
+                        <div class="col-md-3"><small>{{ 'views.form.index.before_closing_tag'|trans({}, 'MBHOnlineBundle') }}&lt;/body&gt;:</small></div>
                         <div class="col-md-9"><span class="text-success">{{ code2 }}{{ code3 }}{{ code4 }}</span></div>
                     </div>
                 </div>
@@ -51,7 +51,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Код страницы поиска для вставки на сайт:</h3>
+                    <h3 class="panel-title">{{ 'views.form.index.search_page_embed_code'|trans({}, 'MBHOnlineBundle') }}</h3>
                 </div>
                 <div class="panel-body">
                     {% set code0  = '<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">' %}
@@ -62,11 +62,11 @@
                     {% set code5  = '<script>$.isFunction($().cookie) || document.write(\'<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"><\\/script>\')</script>'%}
                     {% set code6  = '<script type="text/javascript" src="' ~ url('online_form_results') ~ '"></script>' %}
                     <div class="row spacer-bottom">
-                        <div class="col-md-3"><small>На место для результатов:</small></div>
+                        <div class="col-md-3"><small>{{ 'views.form.index.to_results_place'|trans({}, 'MBHOnlineBundle') }}</small></div>
                         <div class="col-md-9"><span class="text-success">{{ code0 }}{{ code1 }}</span></div>
                     </div>
                     <div class="row spacer-bottom">
-                        <div class="col-md-3"><small>Перед закрывающим тегом &lt;/body&gt;:</small></div>
+                        <div class="col-md-3"><small>{{ 'views.form.index.before_closing_tag'|trans({}, 'MBHOnlineBundle') }}&lt;/body&gt;:</small></div>
                         <div class="col-md-9"><span class="text-success">{{ code2 }}{{ code3 }}{{ code4 }}{{ code5 }}{{ code6 }}</span></div>
                     </div>
                 </div>

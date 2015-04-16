@@ -1,10 +1,10 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = "ошибка бронирования" %}    
+{% set small_title = "package.new.reservation_error"|trans({}, "MBHPackageBundle")  %}
 
 {% block content %}
 
-    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> При бронировании произошла ошибка. Попробуйте еще раз.</div>
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>{{ "package.new.reservation_error_try_again"|trans({}, "MBHPackageBundle") }} </div>
 
 {% endblock %} 
 

@@ -17,11 +17,11 @@
                     <tr>
                         <th class="td-xs"></th>
                         <th class="td-sm">#</th>
-                        <th class="td-md">Даты</th>
-                        <th >Размещение</th>
-                        <th class="td-md">Гости</th>
-                        <th class="td-md">Стоимость</th>
-                        <th class="td-md">Создана</th>
+                        <th class="td-md">{{ 'order.packages.dates'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th >{{ 'order.packages.placement'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-md">{{ 'order.packages.guests'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-md">{{ 'order.packages.price'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-md">{{ 'order.packages.created'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-sm"></th>
                     </tr>
                 </thead>
@@ -29,16 +29,16 @@
                     {% for package in packages %}
                         <tr {% if package.deletedAt %}class="danger"{% endif %}>
                             <td class="text-center">
-                                <span class='text-{{ statuses[package.status].class }}' data-toggle='tooltip' title='Тип брони: {{ statuses[package.status].title }}'><i class='fa fa fa-paper-plane-o'></i></span>
+                                <span class='text-{{ statuses[package.status].class }}' data-toggle='tooltip' title='{{ 'order.packages.reservation_type'|trans({}, 'MBHPackageBundle') }} {{ statuses[package.status].title }}'><i class='fa fa fa-paper-plane-o'></i></span>
                             </td>
                             <td class="text-center">
-                                <a class='btn btn-sm {% if package.deletedAt %}btn-danger{% else %}btn-default{% endif %}' href='{{ path('package_edit', {'id': package.id}) }}' rel='main' title='Редактирование записи' data-toggle='tooltip'>{{ package.numberWithPrefix }}</a>{% if package.deletedAt %}<br><small><i class='fa fa-trash-o'></i> удалена</small>{% endif %}
+                                <a class='btn btn-sm {% if package.deletedAt %}btn-danger{% else %}btn-default{% endif %}' href='{{ path('package_edit', {'id': package.id}) }}' rel='main' title='{{ 'order.packages.record_edit'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>{{ package.numberWithPrefix }}</a>{% if package.deletedAt %}<br><small><i class='fa fa-trash-o'></i>{{ 'order.packages.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
                             </td>
                             <td>
-                                {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}<br><small>{{ plural(package.nights, 'ночь', 'ночи', 'ночей') }}</small>
+                                {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}<br><small>{{ plural(package.nights, 'order.packages.noch'|trans({}, 'MBHPackageBundle') ,  'order.packages.nochi'|trans({}, 'MBHPackageBundle') ,  'order.packages.nochei'|trans({}, 'MBHPackageBundle') ) }}</small>
                             </td>
                             <td>
-                                {{ package.roomType.hotel }} - {{ package.roomType }}<br><small><a data-toggle='tooltip' title='Перейти к размещению' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'danger' }}'>{% if package.accommodation %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;не размещено&gt;{% endif %}</a></small>
+                                {{ package.roomType.hotel }} - {{ package.roomType }}<br><small><a data-toggle='tooltip' title='{{ 'order.packages.go_to_placement'|trans({}, 'MBHPackageBundle') }}' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'danger' }}'>{% if package.accommodation %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;не размещено&gt;{% endif %}</a></small>
                             </td>
                             <td class="text-center">
                                 {{ package.adults }} + {{ package.children }}<br>
@@ -53,11 +53,11 @@
                             </td>
                             <td>
                                 <div class='btn-list text-right'>
-                                    <a href='{{ path('package_edit', { 'id': package.id }) }}' class='btn btn-success btn-xs' title='Редактирование брони' data-toggle='tooltip'>
+                                    <a href='{{ path('package_edit', { 'id': package.id }) }}' class='btn btn-success btn-xs' title='{{ 'order.packages.edit_reservation'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
                                         <i class='fa fa-pencil-square-o'></i>
                                     </a>
                                     {% if not package.deletedAt %}
-                                    <a href='{{ path('package_delete', { 'id': package.id, 'order': true}) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление брони' data-toggle='tooltip'>
+                                    <a href='{{ path('package_delete', { 'id': package.id, 'order': true}) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'order.packages.delete_reservation'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
                                         <i class='fa fa-trash-o'></i>
                                     </a>
                                     {% endif %}
@@ -71,7 +71,7 @@
                 <div class="alert alert-warning alert-danger">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <i class="fa fa-exclamation-circle"></i>
-                    Брони не найдены.
+                    {{ 'order.packages.reservations_not_found'|trans({}, 'MBHPackageBundle') }}
                 </div>
             {% endif %}
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}

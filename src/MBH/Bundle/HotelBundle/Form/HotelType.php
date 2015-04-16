@@ -13,52 +13,52 @@ class HotelType extends AbstractType
     {
         $builder
                 ->add('fullTitle', 'text', [
-                    'label' => 'Название',
-                    'group' => 'Общаяя информация',
+                    'label' => 'form.hotelType.name',
+                    'group' => 'form.hotelType.general_info',
                     'required' => true,
-                    'attr' => ['placeholder' => 'Мой отель']
+                    'attr' => ['placeholder' => 'form.hotelType.placeholder_my_hotel']
                 ])
                 ->add('title', 'text', [
-                    'label' => 'Внутреннее название',
-                    'group' => 'Общаяя информация',
+                    'label' => 'form.hotelType.inner_name',
+                    'group' => 'form.hotelType.general_info',
                     'required' => false,
-                    'attr' => ['placeholder' => 'Отель'],
-                    'help' => 'Название для использования внутри MaxiBooking'
+                    'attr' => ['placeholder' => 'form.hotelType.placeholder_hotel'],
+                    'help' => 'form.hotelType.maxibooking_inner_name'
                 ])
                 ->add('prefix', 'text', [
-                    'label' => 'Прификс',
-                    'group' => 'Общаяя информация',
+                    'label' => 'form.hotelType.prefix',
+                    'group' => 'form.hotelType.general_info',
                     'required' => false,
                     'attr' => ['placeholder' => 'HTL'],
-                    'help' => 'Название для использования в документах'
+                    'help' => 'form.hotelType.document_use_name'
                 ])
                 ->add('saleDays', 'text', [
-                    'label' => 'Количество дней продажи',
-                    'group' => 'Настройки',
+                    'label' => 'form.hotelType.sale_days_amount',
+                    'group' => 'form.hotelType.settings',
                     'required' => true,
                     'attr' => ['placeholder' => '365', 'class' => 'spinner'],
-                    'help' => 'На сколько дней открыта продажа от текущего числа'
+                    'help' => 'form.hotelType.how_long_sale_opened_since_today'
                 ])
                 ->add('saleDays', 'text', [
-                    'label' => 'Количество дней продажи',
-                    'group' => 'Настройки',
+                    'label' => 'form.hotelType.sale_days_amount',
+                    'group' => 'form.hotelType.settings',
                     'required' => true,
                     'attr' => ['placeholder' => '365', 'class' => 'spinner'],
-                    'help' => 'На сколько дней открыта продажа от текущего числа'
+                    'help' => 'form.hotelType.how_long_sale_opened_since_today'
                 ])
                 ->add('isHostel', 'checkbox', [
-                    'label' => 'Хостел?',
-                    'group' => 'Настройки',
+                    'label' => 'form.hotelType.hostel',
+                    'group' => 'form.hotelType.settings',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Отель хостел или нет?'
+                    'help' => 'form.hotelType.hostel_hotel_or_not'
                 ])
                 ->add('isDefault', 'checkbox', [
-                    'label' => 'Выбран по умолчанию?',
-                    'group' => 'Настройки',
+                    'label' => 'form.hotelType.is_default',
+                    'group' => 'form.hotelType.settings',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Выбран по умолчанию при входе в MaxiBooking'
+                    'help' => 'form.hotelType.is_default_maxibooking'
                 ])
         ;
     }

@@ -17,7 +17,7 @@ use MBH\Bundle\HotelBundle\Validator\Constraints as MBHValidator;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
- * @MBHValidator\Hotel
+
  */
 class Hotel extends Base
 {
@@ -47,9 +47,9 @@ class Hotel extends Base
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="validator.document.hotel.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.hotel.max_name"
      * )
      */
     protected $fullTitle;
@@ -60,9 +60,9 @@ class Hotel extends Base
      * @ODM\String(name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="validator.document.hotel.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.hotel.min_name"
      * )
      */
     protected $title;
@@ -73,9 +73,9 @@ class Hotel extends Base
      * @ODM\String(name="prefix")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткий префикс",
+     *      minMessage="validator.document.hotel.min_prefix",
      *      max=100,
-     *      maxMessage="Слишком длинный префикс"
+     *      maxMessage="validator.document.hotel.max_prefix"
      * )
      */
     protected $prefix;
@@ -88,7 +88,7 @@ class Hotel extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Количество дней продажи не может быть меньше нуля"
+     *      minMessage= "validator.document.hotel.sale_days_amount_less_zero"
      * )
      */
     protected $saleDays = 0;
@@ -115,7 +115,7 @@ class Hotel extends Base
      * @var float
      * @Gedmo\Versioned
      * @ODM\Float()
-     * @Assert\Type(type="numeric", message="Неверный формат координаты широты. Пример: 55.752014")
+     * @Assert\Type(type="numeric", message= "validator.document.hotel.wrong_latitude")
      */
     public $latitude;
 
@@ -123,7 +123,7 @@ class Hotel extends Base
      * @var float
      * @Gedmo\Versioned
      * @ODM\Float()
-     * @Assert\Type(type="numeric", message="Неверный формат координаты долготы. Пример: 37.617515")
+     * @Assert\Type(type="numeric", message="validator.document.hotel.wrong_longitude")
      */
     public $longitude;
 
@@ -155,9 +155,9 @@ class Hotel extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
-     *      minMessage="Минимальное количество звезд отеля не может быть меньше 1",
+     *      minMessage="validator.document.hotel.min_stars",
      *      max=5,
-     *      maxMessage="Максимальое количество звезд отеля не может быть больше 5",
+     *      maxMessage="validator.document.hotel.max_stars",
      * )
      */
     public $rating;

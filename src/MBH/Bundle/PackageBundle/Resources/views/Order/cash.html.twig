@@ -1,8 +1,8 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = "редактирование заказа #" ~ entity.id %}
+{% set small_title = 'order.cash.order_editing'|trans({}, 'MBHPackageBundle') ~ entity.id %}
 
-{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">удален</span>' %}{% endif %}
+{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'  ~ 'order.cash.deleted'|trans({}, 'MBHPackageBundle') ~ '</span>' %}{% endif %}
 
 {% block content %}
 
@@ -13,12 +13,12 @@
 
             <div class="alert alert-warning">
                 <i class="fa fa-ruble"></i>
-                Оплачено/Цена: {{ entity.paid|number_format }} / {{ entity.price|number_format }}
+                {{ 'order.cash.paid_price'|trans({}, 'MBHPackageBundle') }} {{ entity.paid|number_format }} / {{ entity.price|number_format }}
                 &nbsp;
                 {% if entity.isPaid %}
-                    <small class="text-success"><i class="fa fa-check"></i> оплачен</small>
+                    <small class="text-success"><i class="fa fa-check"></i> {{ 'order.cash.paid'|trans({}, 'MBHPackageBundle') }}</small>
                 {% else %}
-                    <small class="text-danger"><i class="fa fa-times"></i> не оплачен</small>
+                    <small class="text-danger"><i class="fa fa-times"></i> {{ 'order.cash.not_paid'|trans({}, 'MBHPackageBundle') }}</small>
                 {% endif %}
             </div>
 
@@ -27,12 +27,12 @@
                     <thead>
                     <tr>
                         <th class="td-xs"></th>
-                        <th class="td-md">Приход</th>
-                        <th class="td-md">Расход</th>
-                        <th class="td-md">Способ оплаты</th>
-                        <th class="td-md">Вид операции</th>
-                        <th class="td-md">Дата</th>
-                        <th class="td-md">Удалена</th>
+                        <th class="td-md">{{ 'order.cash.income'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-md">{{ 'order.cash.outcome'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-md">{{ 'order.cash.payment_way'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-md">{{ 'order.cash.operation_type'|trans({}, 'MBHPackageBundle') }}Вид операции</th>
+                        <th class="td-md">{{ 'order.cash.date'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-md">{{ 'order.cash.removed'|trans({}, 'MBHPackageBundle') }}Удалена</th>
                         <th class="td-md"></th>
                     </tr>
                     </thead>
@@ -42,14 +42,14 @@
                             <td class="text-center"><i class='fa fa-ruble'></i></td>
                             <td class="text-right">
                                 {% if cash.operation not in ['fee', 'out'] %}
-                                    <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' rel='main' class='text-success' title='Редактирование записи' data-toggle='tooltip'>
+                                    <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' rel='main' class='text-success' title='{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
                                         {{ cash.total|number_format }}
                                     </a>
                                 {% endif %}
                             </td>
                             <td class="text-right">
                                 {% if cash.operation in ['fee', 'out'] %}
-                                    <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' rel='main' class='text-danger' title='Редактирование записи' data-toggle='tooltip'>
+                                    <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' rel='main' class='text-danger' title='{{ 'order.cash.remove_record'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
                                         {{ cash.total|number_format }}
                                     </a>
                                 {% endif %}
@@ -61,15 +61,15 @@
                             <td class="table-actions-td text-right">
                                 {% if checkPackagePermissions(entity) %}
                                     {% if cash.isConfirmed == false %}
-                                        <a data-action='cashDocumentConfirmation' data-header='Подтверждение платежа' data-text='Точно подтвердить платеж на сумму <b>{{ cash.total|number_format }} RUR</b>?' data-button='Подтвердить' data-button-icon='fa-check' data-button-class='primary' href='{{ path('cash_confirm', { 'id': cash.id}) }}' class='btn btn-primary btn-xs delete-link' title='Подтверждение платежа' data-toggle='tooltip'>
+                                        <a data-action='cashDocumentConfirmation' data-header='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?' data-button='{{ 'order.cash.confirm'|trans({}, 'MBHPackageBundle') }}' data-button-icon='fa-check' data-button-class='primary' href='{{ path('cash_confirm', { 'id': cash.id}) }}' class='btn btn-primary btn-xs delete-link' title='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
                                             <i class='fa fa-check'></i>
                                         </a>
                                     {% endif %}
-                                    <a target="_blank" href="{{ path('cash_edit', { 'id': cash.id }) }}" class="btn btn-success btn-xs" title="Редактирование записи" data-toggle="tooltip">
+                                    <a target="_blank" href="{{ path('cash_edit', { 'id': cash.id }) }}" class="btn btn-success btn-xs" title="{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
                                         <i class="fa fa-pencil-square-o"></i>
                                     </a>
                                     {% if not cash.deletedAt %}
-                                    <a href="{{ path('package_order_cash_delete', { 'id': entity.id, 'cash': cash.id }) }}" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
+                                    <a href="{{ path('package_order_cash_delete', { 'id': entity.id, 'cash': cash.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ 'order.cash.remove_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
                                         <i class="fa fa-trash-o"></i>
                                     </a>
                                     {% endif %}
@@ -83,7 +83,7 @@
                 <div class="alert alert-warning alert-danger">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <i class="fa fa-exclamation-circle"></i>
-                    Кассовые документы не найдены.
+                    {{ 'order.cash.cash_documents_not_found'|trans({}, 'MBHPackageBundle') }}
                 </div>
             {% endif %}
 

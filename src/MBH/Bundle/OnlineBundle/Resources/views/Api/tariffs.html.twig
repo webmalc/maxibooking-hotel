@@ -13,7 +13,7 @@
                         <input type="radio" disabled><a href="?{{ href }}">{{ tariff.fullTitle }}</a>
                     {% endif %}
                     {% if tariff.isDefault %}&nbsp;
-                        <small>(базовый тариф)</small>{% endif %}
+                        <small>{{ 'views.api.tariffs.base_tariff'|trans({}, 'MBHOnlineBundle') }}</small>{% endif %}
                     {% if app.request.query.get('hotel') is same as('') %} - <small>{{ tariff.hotel.fullTitle }}</small>{% endif %}
                 </p>
                 {% if tariff.description|nl2br %}

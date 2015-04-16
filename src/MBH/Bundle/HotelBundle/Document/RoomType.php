@@ -54,9 +54,9 @@ class RoomType extends Base
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="validator.document.roomType.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.roomType.max_name"
      * )
      */
     protected $fullTitle;
@@ -67,9 +67,9 @@ class RoomType extends Base
      * @ODM\String(name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="validator.document.roomType.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.roomType.max_name"
      * )
      */
     protected $title;
@@ -81,9 +81,9 @@ class RoomType extends Base
      * @ODM\String()
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое описание",
+     *      minMessage="validator.document.roomType.min_description",
      *      max=1000,
-     *      maxMessage="Слишком длинное описание"
+     *      maxMessage="validator.document.roomType.max_description"
      * )
      */
     protected $description;
@@ -95,9 +95,9 @@ class RoomType extends Base
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=6,
-     *      minMessage="HEX-код цвета должен быть не меньше шести символов",
+     *      minMessage="validator.document.roomType.min_hex_code",
      *      max=6,
-     *      maxMessage="HEX-код цвета должен быть не больше шести символов"
+     *      maxMessage="validator.document.roomType.max_hex_code"
      * )
      */
     protected $color = '008000';
@@ -110,7 +110,7 @@ class RoomType extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
-     *      minMessage="Количество мест не может быть меньше одного"
+     *      minMessage="validator.document.roomType.min_places_amount"
      * )
      */
     protected $places = 1;
@@ -123,7 +123,7 @@ class RoomType extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Количество мест не может быть меньше нуля"
+     *      minMessage="validator.document.roomType.places_amount_less_zero"
      * )
      */
     protected $additionalPlaces = 0;

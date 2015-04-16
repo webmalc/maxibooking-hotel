@@ -1,6 +1,6 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = "редактирование брони " ~ entity.numberWithPrefix %}
+{% set small_title = "package.service.edit_reservation"|trans({}, "MBHPackageBundle") ~ entity.numberWithPrefix %}
 
 {% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">удалена</span>' %}{% endif %}
 
@@ -16,9 +16,9 @@
                 Цена: {{ entity.price|number_format }}
                 &nbsp;
                 {% if entity.isPaid %}
-                    <small class="text-success"><i class="fa fa-check"></i> оплачена</small>
+                    <small class="text-success"><i class="fa fa-check"></i>{{ "package.service.paid"|trans({}, "MBHPackageBundle") }}</small>
                 {% else %}
-                    <small class="text-danger"><i class="fa fa-times"></i> не оплачена</small>
+                    <small class="text-danger"><i class="fa fa-times"></i>{{ "package.service.not_paid"|trans({}, "MBHPackageBundle") }}</small>
                 {% endif %}
                 &nbsp;
                 <i class="fa fa-plug"></i>
@@ -31,15 +31,15 @@
                 <tr>
                     <th class="td-xs"></th>
                     <th>Название</th>
-                    <th class="td-sm text-center">Количество суток</th>
-                    <th class="td-sm text-center">Количество гостей</th>
-                    <th class="td-xs text-center">Количество</th>
-                    <th class="td-md text-center">Дата</th>
-                    <th class="td-md text-right">Цена</th>
-                    <th class="td-lg">Тип расчета</th>
-                    <th class="td-md text-right">Итог</th>
-                    <th>Комментарий</th>
-                    <th class="td-md text-center">Дата создания</th>
+                    <th class="td-sm text-center">{{ "package.service.nights_amount"|trans({}, "MBHPackageBundle") }}</th>
+                    <th class="td-sm text-center">{{ "package.service.guests_amount"|trans({}, "MBHPackageBundle") }}</th>
+                    <th class="td-xs text-center">{{ "package.service.amount"|trans({}, "MBHPackageBundle") }}</th>
+                    <th class="td-md text-center">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
+                    <th class="td-md text-right">{{ "package.service.price"|trans({}, "MBHPackageBundle") }}</th>
+                    <th class="td-lg">{{ "package.service.calculation_type"|trans({}, "MBHPackageBundle") }}</th>
+                    <th class="td-md text-right">{{ "package.service.result"|trans({}, "MBHPackageBundle") }}</th>
+                    <th>{{ "package.service.comment"|trans({}, "MBHPackageBundle") }}</th>
+                    <th class="td-md text-center">{{ "package.service.creation_date"|trans({}, "MBHPackageBundle") }}</th>
                     <th class="td-sm"></th>
                 </tr>
                 </thead>
@@ -60,7 +60,7 @@
                         <td class="table-actions-td text-center">
                             {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                                 <a href="{{ path('package_service_delete', { 'id': entity.id, "serviceId": service.id }) }}"
-                                   class="btn btn-danger btn-xs delete-link " title="Удаление записи"
+                                   class="btn btn-danger btn-xs delete-link " title="{{ 'package.service.delete_record'|trans({}, 'MBHPackageBundle')}}"
                                    data-toggle="tooltip">
                                     <i class="fa fa-trash-o"></i>
                                 </a>
@@ -82,7 +82,7 @@
                     {{ form_end(form) }}
 
                 {% else %}
-                    <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> У отеля <{{ entity.tariff.hotel }}> нет ни одной услуги. <a href="{{ path('price_service_category') }}">Добавить услуги?</a></div>
+                    <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> У отеля <{{ entity.tariff.hotel }}> нет ни одной услуги. <a href="{{ path('price_service_category') }}">{{ 'package.service.add_services'|trans({}, 'MBHPackageBundle') }}</a></div>
                 {% endif %}
             {% endif %}
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
