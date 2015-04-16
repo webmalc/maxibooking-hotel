@@ -6,7 +6,7 @@
         {% if form.vars.groups is defined %}
             {% for group,items in form.vars.groups %}
                 <fieldset>
-                    <legend>{{ group }}</legend>
+                    <legend>{{ group|trans }}</legend>
                     {% for item in items %}
                         {{ form_row(form[item]) }}
                     {% endfor %}
@@ -25,7 +25,7 @@
             <div class="col-md-4">
                 {{ form_widget(form) }}
                 {% if help is not null %}
-                    <span class="help-block"><small>{{help|raw}}</small></span>
+                    <span class="help-block"><small>{{help|trans|raw}}</small></span>
                         {%endif%}
             </div>
             <div class="col-md-6">

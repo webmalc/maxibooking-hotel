@@ -17,7 +17,6 @@ use MBH\Bundle\HotelBundle\Validator\Constraints as MBHValidator;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
- * @MBHValidator\Hotel
  */
 class Hotel extends Base
 {
