@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-class PriceCacheGeneratorType extends AbstractType
+class RestrictionGeneratorType extends AbstractType
 {
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -70,56 +70,82 @@ class PriceCacheGeneratorType extends AbstractType
                 'help' => 'Тарифы для готорых будет произведена генерация цен',
                 'attr' => array('placeholder' => $options['hotel'].': все тарифы'),
             ])
-            ->add('price', 'text', [
-                'label' => 'Цена',
-                'group' => 'Цены',
-                'required' => true,
+            ->add('minStayArrival', 'text', [
+                'label' => 'Мин. длина',
+                'group' => 'Длина брони (заезд)',
+                'required' => false,
                 'data' => null,
-                'attr' => ['class' => 'spinner--1 delete-prices'],
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
                 'constraints' => [
-                    new Range(['min' => -1, 'minMessage' => 'Цена не может быть меньше минус одного']),
-                    new NotBlank()
+                    new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
                 ],
             ])
-            ->add('isPersonPrice', 'checkbox', [
-                'label' => 'Цена за человека?',
-                'group' => 'Цены',
+            ->add('maxStayArrival', 'text', [
+                'label' => 'Макс. длина',
+                'group' => 'Длина брони (заезд)',
+                'required' => false,
+                'data' => null,
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'constraints' => [
+                    new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
+                ],
+            ])
+            ->add('minStay', 'text', [
+                'label' => 'Мин. длина',
+                'group' => 'Длина брони (сквозное)',
+                'required' => false,
+                'data' => null,
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'constraints' => [
+                    new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
+                ],
+            ])
+            ->add('maxStay', 'text', [
+                'label' => 'Макс. длина',
+                'group' => 'Длина брони (сквозное)',
+                'required' => false,
+                'data' => null,
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'constraints' => [
+                    new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
+                ],
+            ])
+            ->add('minBeforeArrival', 'text', [
+                'label' => 'Мин. дней до заезда',
+                'group' => 'Раннее/позднее бронирование',
+                'required' => false,
+                'data' => null,
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'constraints' => [
+                    new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
+                ],
+            ])
+            ->add('maxBeforeArrival', 'text', [
+                'label' => 'Макс. дней до заезда',
+                'group' => 'Раннее/позднее бронирование',
+                'required' => false,
+                'data' => null,
+                'attr' => ['class' => 'spinner-1', 'placeholder' => 'данные будут удалены'],
+                'constraints' => [
+                    new Range(['min' => 1, 'minMessage' => 'Период не может быть меньше одного дня'])
+                ],
+            ])
+            ->add('closedOnArrival', 'checkbox', [
+                'label' => 'Нет заезда?',
+                'group' => 'Ограничение заезда/выезда',
                 'value' => true,
                 'required' => false,
-                'help' => 'Цена за человека или за номер?'
+                'attr' => ['placeholder' => 'данные будут удалены']
             ])
-            ->add('singlePrice', 'text', [
-                'label' => 'Цена 1-местного размещения',
-                'group' => 'Цены',
+            ->add('closedOnDeparture', 'checkbox', [
+                'label' => 'Нет выезда?',
+                'group' => 'Ограничение заезда/выезда',
+                'value' => true,
                 'required' => false,
-                'data' => null,
-                'attr' => ['class' => 'spinner-0', 'placeholder' => 'данные будут удалены'],
-                'help' => 'Цена при бронировании номера на одного человека.',
-                'constraints' => [
-                    new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
-                ],
-            ])
-            ->add('additionalChildrenPrice', 'text', [
-                'label' => 'Цена взрослого доп. места',
-                'group' => 'Цены',
-                'required' => false,
-                'data' => null,
-                'attr' => ['class' => 'spinner-0 delete-prices', 'placeholder' => 'данные будут удалены'],
-                'constraints' => [
-                    new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
-                ],
-            ])
-            ->add('additionalPrice', 'text', [
-                'label' => 'Цена детского доп. места',
-                'group' => 'Цены',
-                'required' => false,
-                'data' => null,
-                'attr' => ['class' => 'spinner-0', 'placeholder' => 'данные будут удалены'],
-                'constraints' => [
-                    new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
-                ],
+                'attr' => ['placeholder' => 'данные будут удалены'],
             ])
         ;
+
     }
 
     public function checkDates($data, ExecutionContextInterface $context)
@@ -143,7 +169,7 @@ class PriceCacheGeneratorType extends AbstractType
 
     public function getName()
     {
-        return 'mbh_bundle_pricebundle_price_cache_generator_type';
+        return 'mbh_bundle_pricebundle_restriction_generator_type';
     }
 
 }

@@ -3,21 +3,22 @@
 $(document).ready(function () {
     'use strict';
     //Show table
-    var roomProcessing = false,
+    var pricesProcessing = false,
         showTable = function () {
-            var wrapper = $('#room-cache-overview-table-wrapper'),
-                begin = $('#room-cache-overview-filter-begin'),
-                end = $('#room-cache-overview-filter-end'),
+            var wrapper = $('#price-cache-overview-table-wrapper'),
+                begin = $('#price-cache-overview-filter-begin'),
+                end = $('#price-cache-overview-filter-end'),
                 data = {
                     'begin': begin.val(),
                     'end': end.val(),
-                    'roomTypes': $('#room-cache-overview-filter-roomType').val(),
-                    'tariffs': $('#room-cache-overview-filter-tariff').val()
+                    'roomTypes': $('#price-cache-overview-filter-roomType').val(),
+                    'tariffs': $('#price-cache-overview-filter-tariff').val()
                 },
                 inputs = function () {
                     var input = $('input.mbh-grid-input');
                     input.closest('td').click(function () {
-                        $(this).children('input').removeAttr('disabled').focus().select();
+                        $("td[data-id='" + $(this).attr('data-id') + "']").children('input').removeAttr('disabled');
+                        $(this).children('input').focus();
                     });
                     input.change(function () {
                         if (this.value === '') {
@@ -29,23 +30,21 @@ $(document).ready(function () {
                         }
                     });
                 };
-
             if (wrapper.length === 0) {
                 return false;
             }
             wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
-            if (!roomProcessing) {
+            if (!pricesProcessing) {
                 $.ajax({
-                    url: Routing.generate('room_cache_overview_table'),
+                    url: Routing.generate('price_cache_overview_table'),
                     data: data,
-                    beforeSend: function () {roomProcessing = true; },
+                    beforeSend: function () { pricesProcessing = true; },
                     success: function (data) {
                         wrapper.html(data);
-                        begin.val($('#room-cache-overview-begin').val());
-                        end.val($('#room-cache-overview-end').val());
+                        begin.val($('#price-cache-overview-begin').val());
+                        end.val($('#price-cache-overview-end').val());
                         inputs();
-                        roomProcessing = false;
-
+                        pricesProcessing = false;
                     },
                     dataType: 'html'
                 });
@@ -53,21 +52,22 @@ $(document).ready(function () {
         };
 
     showTable();
-    $('.room-cache-overview-filter').change(function () {
+    $('.price-cache-overview-filter').change(function () {
         showTable();
     });
+
     //generator
     (function () {
-        var rooms = $('input.delete-rooms'),
+        var prices = $('input.delete-prices'),
             showMessage = function () {
-                rooms.each(function () {
-                    var text = parseInt($(this).val(), 10) === -1 ? 'Дни будет удалены' : '';
+                prices.each(function () {
+                    var text = parseInt($(this).val(), 10) === -1 ? 'Цена будет удалена' : '';
                     $(this).closest('.col-md-4').
                         next('.col-md-6').
                         html('<span class="text-danger text-left input-errors">' + text +  '</span>');
                 });
             };
         showMessage();
-        rooms.change(showMessage);
+        prices.change(showMessage);
     }());
 });

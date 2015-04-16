@@ -54,16 +54,27 @@ class RoomCacheGeneratorType extends AbstractType
                     'help' => 'Типы номеров для готорых будет произведена генерация наличия мест',
                     'attr' => array('placeholder' => $options['hotel']. ': все типы номеров'),
                 ])
+                ->add('tariffs', 'document', [
+                    'label' => 'Тарифы',
+                    'required' => false,
+                    'multiple' => true,
+                    'class' => 'MBHPriceBundle:Tariff',
+                    'query_builder' => function (DocumentRepository $dr) use ($options) {
+                        return $dr->fetchQueryBuilder($options['hotel']);
+                    },
+                    'help' => 'Тарифы для готорых будет произведена генерация квот',
+                    'attr' => array('placeholder' => 'Квоты не будут сгенерированы'),
+                ])
                 ->add('rooms', 'text', [
                     'label' => 'Количество мест',
                     'required' => true,
                     'data' => null,
-                    'attr' => ['class' => 'spinner-0'],
+                    'attr' => ['class' => 'spinner--1 delete-rooms'],
                     'constraints' => [
-                        new Range(['min' => 0, 'minMessage' => 'Количество мест не может быть меньше нуля']),
+                        new Range(['min' => -1, 'minMessage' => 'Количество мест не может быть меньше минус одного']),
                         new NotBlank()
                     ],
-                    'help' => 'Количестов мест доступные в выбранные сроки',
+                    'help' => 'Количестов мест доступные в выбранные сроки. Минус один (-1) для удаления дней',
                 ])
         ;
     }

@@ -12,7 +12,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
  * @ODM\Document(collection="RoomCache", repositoryClass="MBH\Bundle\PriceBundle\Document\RoomCacheRepository")
  * @ODM\HasLifecycleCallbacks
  * @Gedmo\Loggable
- * @MongoDBUnique(fields={"roomType", "date"}, message="RoomCache already exist.")
+ * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="RoomCache already exist.")
  */
 class RoomCache extends Base
 {
@@ -29,6 +29,12 @@ class RoomCache extends Base
      * @Assert\NotNull()
      */
     protected $roomType;
+
+    /**
+     * @var \MBH\Bundle\PriceBundle\Document\Tariff
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
+     */
+    protected $tariff;
 
     /**
      * @var \DateTime
@@ -62,6 +68,12 @@ class RoomCache extends Base
      * @Assert\Type(type="numeric")
      */
     protected $leftRooms;
+
+    /**
+     * @var array
+     * @ODM\EmbedMany(targetDocument="PackageInfo")
+     */
+    protected $packageInfo;
 
     /**
      * Set hotel
@@ -223,6 +235,111 @@ class RoomCache extends Base
     public function calcLeftRooms()
     {
         $this->setLeftRooms($this->getTotalRooms() - $this->getPackagesCount());
+
+        return $this;
+    }
+
+    /**
+     * Set tariff
+     *
+     * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     * @return self
+     */
+    public function setTariff(\MBH\Bundle\PriceBundle\Document\Tariff $tariff)
+    {
+        $this->tariff = $tariff;
+        return $this;
+    }
+
+    /**
+     * Get tariff
+     *
+     * @return \MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     */
+    public function getTariff()
+    {
+        return $this->tariff;
+    }
+
+    public function __construct()
+    {
+        $this->packageInfo = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Add packageInfo
+     *
+     * @param \MBH\Bundle\PriceBundle\Document\PackageInfo $packageInfo
+     */
+    public function addPackageInfo(\MBH\Bundle\PriceBundle\Document\PackageInfo $packageInfo)
+    {
+        $this->packageInfo[] = $packageInfo;
+    }
+
+    /**
+     * Remove packageInfo
+     *
+     * @param \MBH\Bundle\PriceBundle\Document\PackageInfo $packageInfo
+     */
+    public function removePackageInfo(\MBH\Bundle\PriceBundle\Document\PackageInfo $packageInfo)
+    {
+        $this->packageInfo->removeElement($packageInfo);
+    }
+
+    /**
+     * @param Tariff $tariff
+     * @return mixed
+     */
+    public function getPackageInfo(Tariff $tariff = null)
+    {
+        if ($tariff == null) {
+            return $this->packageInfo;
+        }
+
+        foreach ($this->packageInfo as $packageInfo) {
+            if ($packageInfo->getTariff()) {
+                return $packageInfo;
+            }
+        }
+        return null;
+    }
+
+    public function getPackageCountByTariff(Tariff $tariff)
+    {
+        $packageInfo = $this->getPackageInfo($tariff);
+
+        if ($packageInfo) {
+            return $packageInfo->getPackageCount();
+        }
+
+        return 0;
+    }
+
+    public function soldRefund(Tariff $tariff, $refund = false)
+    {
+        $newPackageInfo = $this->getPackageInfo($tariff);
+
+        if (!$newPackageInfo) {
+            $newPackageInfo = new PackageInfo();
+            $newPackageInfo->setTariff($tariff)->setPackagesCount(0);
+        }
+
+        if ($refund) {
+            $newPackageInfo->refund();
+        } else {
+            $newPackageInfo->sold();
+        }
+
+        $result = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach ($this->getPackageInfo() as $packageInfo) {
+            if ($newPackageInfo->getTariff()->getId() == $packageInfo->getTariff()->getId()) {
+                continue;
+            }
+            $result[] = $packageInfo;
+        }
+        $result[] = $newPackageInfo;
+
+        $this->packageInfo = $result;
 
         return $this;
     }

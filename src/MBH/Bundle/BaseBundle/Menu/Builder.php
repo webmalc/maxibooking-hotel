@@ -83,7 +83,7 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-home']);
         $menu['prices']->addChild('price_cache', ['route' => 'price_cache_overview', 'label' => 'Цены'])
             ->setAttributes(['icon' => 'fa fa-ruble']);
-        $menu['prices']->addChild('restrictions', ['route' => 'price_cache_overview', 'label' => 'Условия и ограничения'])
+        $menu['prices']->addChild('restrictions', ['route' => 'restriction_overview', 'label' => 'Условия и ограничения'])
             ->setAttributes(['icon' => 'fa fa-exclamation-circle']);
         $menu['prices']->addChild('tariff', ['route' => 'tariff', 'label' => 'Тарифы'])
                 ->setAttributes(['icon' => 'fa fa-sliders']);

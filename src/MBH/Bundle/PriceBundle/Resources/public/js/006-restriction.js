@@ -3,26 +3,35 @@
 $(document).ready(function () {
     'use strict';
     //Show table
-    var processing = false,
+    var pricesProcessing = false,
         showTable = function () {
-            var wrapper = $('#price-cache-overview-table-wrapper'),
-                begin = $('#price-cache-overview-filter-begin'),
-                end = $('#price-cache-overview-filter-end'),
+            var wrapper = $('#restriction-overview-table-wrapper'),
+                begin = $('#restriction-overview-filter-begin'),
+                end = $('#restriction-overview-filter-end'),
                 data = {
                     'begin': begin.val(),
                     'end': end.val(),
-                    'roomTypes': $('#price-cache-overview-filter-roomType').val(),
-                    'tariffs': $('#price-cache-overview-filter-tariff').val()
+                    'roomTypes': $('#restriction-overview-filter-roomType').val(),
+                    'tariffs': $('#restriction-overview-filter-tariff').val()
                 },
                 inputs = function () {
-                    var input = $('input.mbh-grid-input');
+                    var input = $('input[disabled], span.disabled-detector');
                     input.closest('td').click(function () {
-                        $(this).children('input').removeAttr('disabled').focus().select();
+                        var td = $("td[data-id='" + $(this).attr('data-id') + "']"),
+                            ch = $(this).children('span.checkbox').children('input[disabled]');
+                        td.children('input').removeAttr('disabled');
+                        $(this).children('input').focus();
+                        ch.prop('checked', !ch.prop('checked')).css('checkbox-end');
+                        td.children('span.checkbox').children('input').removeAttr('disabled');
+                        td.children('span.checkbox').children('span.disabled-detector').remove();
                     });
                     input.change(function () {
+                        if (this.value === '') {
+                            return;
+                        }
                         var value = parseInt(this.value, 10);
-                        if (value < 0 || isNaN(value)) {
-                            this.value = 0;
+                        if (value < 1 || isNaN(value)) {
+                            this.value = 1;
                         }
                     });
                 };
@@ -30,17 +39,17 @@ $(document).ready(function () {
                 return false;
             }
             wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
-            if (!processing) {
+            if (!pricesProcessing) {
                 $.ajax({
-                    url: Routing.generate('price_cache_overview_table'),
+                    url: Routing.generate('restriction_overview_table'),
                     data: data,
-                    beforeSend: function () { processing = true; },
+                    beforeSend: function () { pricesProcessing = true; },
                     success: function (data) {
                         wrapper.html(data);
-                        begin.val($('#price-cache-overview-begin').val());
-                        end.val($('#price-cache-overview-end').val());
+                        begin.val($('#restriction-overview-begin').val());
+                        end.val($('#restriction-overview-end').val());
                         inputs();
-                        processing = false;
+                        pricesProcessing = false;
                     },
                     dataType: 'html'
                 });
@@ -48,7 +57,7 @@ $(document).ready(function () {
         };
 
     showTable();
-    $('.price-cache-overview-filter').change(function () {
+    $('.restriction-overview-filter').change(function () {
         showTable();
     });
 

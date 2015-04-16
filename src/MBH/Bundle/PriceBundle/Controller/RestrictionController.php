@@ -3,22 +3,22 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\PriceBundle\Document\Restriction;
+use MBH\Bundle\PriceBundle\Form\RestrictionGeneratorType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\PriceBundle\Form\RoomCacheGeneratorType;
 
 /**
- * @Route("room_cache")
+ * @Route("restriction")
  */
-class RoomCacheController extends Controller implements CheckHotelControllerInterface
+class RestrictionController extends Controller implements CheckHotelControllerInterface
 {
     /**
-     * @Route("/", name="room_cache_overview")
+     * @Route("/", name="restriction_overview")
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
@@ -36,7 +36,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     /**
      * @param Request $request
      * @return Response
-     * @Route("/table", name="room_cache_overview_table", options={"expose"=true})
+     * @Route("/table", name="restriction_overview_table", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
@@ -79,34 +79,34 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             return array_merge($response, ['error' => 'Типы номеров не найдены']);
         }
         //get tariffs
-        if (!empty($request->get('tariffs'))) {
-            $tariffs = $dm->getRepository('MBHPriceBundle:Tariff')
-                ->fetch($hotel, $request->get('tariffs'))
-            ;
-        } else {
-            $tariffs = [null];
+        $tariffs = $dm->getRepository('MBHPriceBundle:Tariff')
+            ->fetch($hotel, $request->get('tariffs'))
+        ;
+        if (!count($tariffs)) {
+            return array_merge($response, ['error' => 'Тарифы не найдены']);
         }
 
-        //get roomCaches
-        $roomCaches = $dm->getRepository('MBHPriceBundle:RoomCache')
+        //get restrictions
+        $restrictions = $dm->getRepository('MBHPriceBundle:Restriction')
             ->fetch(
                 $begin, $end, $hotel,
                 $request->get('roomTypes') ? $request->get('roomTypes') : [],
-                false, true)
+                $request->get('tariffs') ? $request->get('tariffs') : [],
+                true)
         ;
 
         return array_merge($response, [
             'roomTypes' => $roomTypes,
             'tariffs' => $tariffs,
-            'roomCaches' => $roomCaches
+            'restrictions' => $restrictions
         ]);
     }
 
     /**
-     * @Route("/save", name="room_cache_overview_save")
+     * @Route("/save", name="restriction_overview_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
-     * @Template("MBHPriceBundle:RoomCache:index.html.twig")
+     * @Template("MBHPriceBundle:PriceCache:index.html.twig")
      * @param Request $request
      * @return array
      */
@@ -117,46 +117,42 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
         $helper = $this->get('mbh.helper');
         $validator = $this->get('validator');
-        (empty($request->get('updateRoomCaches'))) ? $updateData = [] : $updateData = $request->get('updateRoomCaches');
-        (empty($request->get('newRoomCaches'))) ? $newData = [] : $newData = $request->get('newRoomCaches');
-
+        (empty($request->get('updateRestrictions'))) ? $updateData = [] : $updateData = $request->get('updateRestrictions');
+        (empty($request->get('newRestrictions'))) ? $newData = [] : $newData = $request->get('newRestrictions');
 
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
-
             $roomType = $dm->getRepository('MBHHotelBundle:RoomType')->find($roomTypeId);
             if (!$roomType || $roomType->getHotel() != $hotel) {
                 continue;
             }
-
             foreach ($roomTypeArray as $tariffId => $tariffArray) {
-
-                if ($tariffId) {
-                    $tariff = $dm->getRepository('MBHPriceBundle:Tariff')->find($tariffId);
-                    if (!$tariff || $tariff->getHotel() != $hotel) {
-                        continue;
-                    }
+                $tariff = $dm->getRepository('MBHPriceBundle:Tariff')->find($tariffId);
+                if (!$tariff || $tariff->getHotel() != $hotel) {
+                    continue;
                 }
+                foreach ($tariffArray as $date => $values) {
 
-                foreach ($tariffArray as $date => $totalRooms) {
-
-                    if (trim($totalRooms) === '' || $totalRooms === null) {
+                    if (empty(array_filter($values))) {
                         continue;
                     }
-
-                    $newRoomCache = new RoomCache();
-                    $newRoomCache->setHotel($hotel)
+                    $newRestriction = new Restriction();
+                    $newRestriction->setHotel($hotel)
                         ->setRoomType($roomType)
+                        ->setTariff($tariff)
                         ->setDate($helper->getDateFromString($date))
-                        ->setTotalRooms($totalRooms)
-                        ->setPackagesCount(0)
+                        ->setMinStay($values['minStay'] ? (int) $values['minStay'] : null)
+                        ->setMaxStay($values['maxStay'] ? (int) $values['maxStay'] : null)
+                        ->setMinStayArrival($values['minStayArrival'] ? (int) $values['minStayArrival'] : null)
+                        ->setMaxStayArrival($values['maxStayArrival'] ? (int) $values['maxStayArrival'] : null)
+                        ->setMinBeforeArrival($values['minBeforeArrival'] ? (int) $values['minBeforeArrival'] : null)
+                        ->setMaxBeforeArrival($values['maxBeforeArrival'] ? (int) $values['maxBeforeArrival'] : null)
+                        ->setClosedOnArrival(isset($values['closedOnArrival']) ? true : false)
+                        ->setClosedOnDeparture(isset($values['closedOnDeparture']) ? true : false)
                     ;
-                    if ($tariffId && $tariff) {
-                        $newRoomCache->setTariff($tariff);
-                    }
 
-                    if ($validator->validate($newRoomCache)) {
-                        $dm->persist($newRoomCache);
+                    if ($validator->validate($newRestriction)) {
+                        $dm->persist($newRestriction);
                     }
                 }
             }
@@ -164,22 +160,29 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $dm->flush();
 
         //update
-        foreach ($updateData as $roomCacheId => $val) {
+        foreach ($updateData as $restrictionId => $values) {
 
-            $roomCache = $dm->getRepository('MBHPriceBundle:RoomCache')->find($roomCacheId);
-            if (!$roomCache || $roomCache->getHotel() != $hotel) {
+            $restriction = $dm->getRepository('MBHPriceBundle:Restriction')->find($restrictionId);
+            if (!$restriction || $restriction->getHotel() != $hotel) {
+                continue;
+            }
+            if (empty(array_filter($values))) {
+                $dm->remove($restriction);
                 continue;
             }
 
-            //delete
-            if (trim($val) === '' || $val === null) {
-                $dm->remove($roomCache);
-                continue;
-            }
+            $restriction->setMinStay($values['minStay'] ? (int) $values['minStay'] : null)
+                ->setMaxStay($values['maxStay'] ? (int) $values['maxStay'] : null)
+                ->setMinStayArrival($values['minStayArrival'] ? (int) $values['minStayArrival'] : null)
+                ->setMaxStayArrival($values['maxStayArrival'] ? (int) $values['maxStayArrival'] : null)
+                ->setMinBeforeArrival($values['minBeforeArrival'] ? (int) $values['minBeforeArrival'] : null)
+                ->setMaxBeforeArrival($values['maxBeforeArrival'] ? (int) $values['maxBeforeArrival'] : null)
+                ->setClosedOnArrival(isset($values['closedOnArrival']) ? true : false)
+                ->setClosedOnDeparture(isset($values['closedOnDeparture']) ? true : false)
+            ;
 
-            $roomCache->setTotalRooms($val);
-            if ($validator->validate($roomCache)) {
-                $dm->persist($roomCache);
+            if ($validator->validate($restriction)) {
+                $dm->persist($restriction);
             }
         }
         $dm->flush();
@@ -188,15 +191,16 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             ->set('success', 'Изменения успешно сохранены.')
         ;
 
-        return $this->redirect($this->generateUrl('room_cache_overview', [
+        return $this->redirect($this->generateUrl('restriction_overview', [
             'begin' => $request->get('begin'),
             'end' => $request->get('end'),
             'roomTypes' => $request->get('roomTypes'),
+            'tariffs' => $request->get('tariffs'),
         ]));
     }
 
     /**
-     * @Route("/generator", name="room_cache_generator")
+     * @Route("/generator", name="restriction_generator")
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
@@ -206,7 +210,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
         $form = $this->createForm(
-            new RoomCacheGeneratorType(), [], [
+            new RestrictionGeneratorType(), [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
@@ -217,10 +221,10 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     }
 
     /**
-     * @Route("/generator/save", name="room_cache_generator_save")
+     * @Route("/generator/save", name="restriction_generator_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
-     * @Template("MBHPriceBundle:RoomCache:generator.html.twig")
+     * @Template("MBHPriceBundle:PriceCache:generator.html.twig")
      * @param Request $request
      * @return array
      */
@@ -229,7 +233,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
         $form = $this->createForm(
-            new RoomCacheGeneratorType(), [], [
+            new RestrictionGeneratorType(), [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
@@ -243,14 +247,17 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
             $data = $form->getData();
 
-            $this->get('mbh.room.cache')->update(
-                $data['begin'], $data['end'], $hotel, $data['rooms'], $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
+            $this->get('mbh.restriction')->update(
+                $data['begin'], $data['end'], $hotel, $data['minStay'], $data['maxStay'],
+                $data['minStayArrival'], $data['maxStayArrival'], $data['minBeforeArrival'],
+                $data['maxBeforeArrival'], $data['closedOnArrival'], $data['closedOnDeparture'],
+                $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
             );
 
             if ($request->get('save') !== null) {
-                return $this->redirect($this->generateUrl('room_cache_generator'));
+                return $this->redirect($this->generateUrl('restriction_generator'));
             }
-            return $this->redirect($this->generateUrl('room_cache_overview'));
+            return $this->redirect($this->generateUrl('restriction_overview'));
         }
 
         return [

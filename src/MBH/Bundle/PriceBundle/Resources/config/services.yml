@@ -12,3 +12,7 @@ services:
   mbh.price.cache:
           class: MBH\Bundle\PriceBundle\Services\PriceCache
           arguments: [@service_container]
+
+  mbh.restriction:
+            class: MBH\Bundle\PriceBundle\Services\Restriction
+            arguments: [@service_container]

@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -55,7 +56,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         $end = $helper->getDateFromString($request->get('end'));
         if(!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
             $end = clone $begin;
-            $end->modify('+3 months');
+            $end->modify('+45 days');
         }
 
         $to = clone $end;
@@ -85,9 +86,19 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             return array_merge($response, ['error' => 'Тарифы не найдены']);
         }
 
+        //get roomCaches
+        $priceCaches = $dm->getRepository('MBHPriceBundle:PriceCache')
+            ->fetch(
+                $begin, $end, $hotel,
+                $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                $request->get('tariffs') ? $request->get('tariffs') : [],
+                true)
+        ;
+
         return array_merge($response, [
             'roomTypes' => $roomTypes,
-            'tariffs' => $tariffs
+            'tariffs' => $tariffs,
+            'priceCaches' => $priceCaches
         ]);
     }
 
@@ -111,38 +122,63 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
-
             $roomType = $dm->getRepository('MBHHotelBundle:RoomType')->find($roomTypeId);
             if (!$roomType || $roomType->getHotel() != $hotel) {
                 continue;
             }
+            foreach ($roomTypeArray as $tariffId => $tariffArray) {
+                $tariff = $dm->getRepository('MBHPriceBundle:Tariff')->find($tariffId);
+                if (!$tariff || $tariff->getHotel() != $hotel) {
+                    continue;
+                }
+                foreach ($tariffArray as $date => $prices) {
 
-            foreach ($roomTypeArray as $date => $totalRooms) {
-                $newPriceCache = new PriceCache();
-                $newPriceCache->setHotel($hotel)
-                    ->setRoomType($roomType)
-                    ->setDate($helper->getDateFromString($date))
-                    ->setTotalRooms($totalRooms)
-                    ->setPackagesCount(0)
-                ;
+                    if (!isset($prices['price']) || $prices['price'] === '') {
+                        continue;
+                    }
 
-                if ($validator->validate($newPriceCache)) {
-                    $dm->persist($newPriceCache);
+                    $newPriceCache = new PriceCache();
+                    $newPriceCache->setHotel($hotel)
+                        ->setRoomType($roomType)
+                        ->setTariff($tariff)
+                        ->setDate($helper->getDateFromString($date))
+                        ->setPrice($prices['price'])
+                        ->setIsPersonPrice(isset($prices['isPersonPrice']) && $prices['isPersonPrice'] !== '' ? true : false)
+                        ->setSinglePrice(isset($prices['singlePrice']) && $prices['singlePrice'] !== ''  ? $prices['singlePrice'] : null)
+                        ->setAdditionalPrice(isset($prices['additionalPrice']) && $prices['additionalPrice'] !== ''  ? $prices['additionalPrice'] : null)
+                        ->setAdditionalChildrenPrice(isset($prices['additionalChildrenPrice']) && $prices['additionalChildrenPrice'] !== ''  ? $prices['additionalChildrenPrice'] : null)
+                    ;
+
+                    if ($validator->validate($newPriceCache)) {
+                        $dm->persist($newPriceCache);
+                    }
                 }
             }
         }
         $dm->flush();
 
         //update
-        foreach ($updateData as $PriceCacheId => $val) {
+        foreach ($updateData as $priceCacheId => $prices) {
 
-            $PriceCache = $dm->getRepository('MBHPriceBundle:PriceCache')->find($PriceCacheId);
-            if (!$PriceCache || $PriceCache->getHotel() != $hotel) {
+            $priceCache = $dm->getRepository('MBHPriceBundle:PriceCache')->find($priceCacheId);
+            if (!$priceCache || $priceCache->getHotel() != $hotel) {
                 continue;
             }
-            $PriceCache->setTotalRooms($val);
-            if ($validator->validate($PriceCache)) {
-                $dm->persist($PriceCache);
+
+            if (isset($prices['price']) && $prices['price'] === '') {
+                $dm->remove($priceCache);
+                continue;
+            }
+
+            $priceCache->setPrice($prices['price'])
+                ->setIsPersonPrice(isset($prices['isPersonPrice']) ? true : false)
+                ->setSinglePrice(isset($prices['singlePrice']) ? $prices['singlePrice'] : null)
+                ->setAdditionalPrice(isset($prices['additionalPrice']) ? $prices['additionalPrice'] : null)
+                ->setAdditionalChildrenPrice(isset($prices['additionalChildrenPrice']) ? $prices['additionalChildrenPrice'] : null)
+            ;
+
+            if ($validator->validate($priceCache)) {
+                $dm->persist($priceCache);
             }
         }
         $dm->flush();

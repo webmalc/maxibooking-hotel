@@ -1,0 +1,76 @@
+<input type="hidden" name="begin" id="restriction-overview-begin" class="hidden" value="{{ begin|date('d.m.Y') }}">
+<input type="hidden" name="end" id="restriction-overview-end" class="hidden" value="{{ end|date('d.m.Y') }}">
+{% if error is defined and error is not empty  %}
+    <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ error }}</div>
+{% else %}
+    <table id="restriction-overview-table" class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+        <tbody>
+
+        {% for tariff in tariffs %}
+
+            <input type="hidden" name="tariffs[]" class="hidden" value="{{ tariff.id }}">
+
+            <tr class="mbh-grid-header1 info">
+                <td colspan="{{ period|length + 1 }}"><strong>{{ tariff }}</strong></td>
+            </tr>
+
+            {% for roomType in roomTypes %}
+
+                <input type="hidden" name="roomTypes[{{ roomType.id }}]" class="hidden" value="{{ roomType.id }}">
+
+                <tr class="mbh-grid-header2 warning">
+                    <td colspan="{{ period|length + 1 }}"><strong>{{ roomType }}</strong>&nbsp;-&nbsp;<small>{{ tariff }}</small></td>
+                </tr>
+
+                <tr class="header">
+                    <td class="first-th"></td>
+                    {% for date in period %}
+                        <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
+                    {% endfor %}
+                </tr>
+
+                {% set categories = {
+                    'minStayArrival': 'Мин. длина брони (заезд)',
+                    'maxStayArrival': 'Макс. длина брони (заезд)',
+                    'minStay': 'Мин. длина брони (сквозное)',
+                    'maxStay': 'Макс. длина брони (сквозное)',
+                    'minBeforeArrival': 'Мин. дней до заезда',
+                    'maxBeforeArrival': 'Макс. дней до заезда',
+                    'closedOnArrival': 'Нет заезда',
+                    'closedOnDeparture': 'Нет выезда',
+                } %}
+
+                {% for categoryId, category in categories %}
+                    <tr>
+                        <td class="first-td"><small>{{ category }}</small></td>
+
+                        {% for date in period %}
+
+                            <!-- BEGIN: set restriction -->
+                            {% set restriction = restrictions[roomType.id][tariff.id][date|date('d.m.Y')]|default(null) %}
+                            <!-- END: set restriction -->
+
+                            <!-- BEGIN: set inputName & value -->
+                            {% set inputName = restriction is null ? 'newRestrictions[' ~ roomType.id ~ '][' ~ tariff.id ~'][' ~ date|date('d.m.Y') ~ '][' ~ categoryId ~ ']' : 'updateRestrictions[' ~ restriction.id ~'][' ~ categoryId ~ ']' %}
+                            {% set inputValue = restriction is null ? null : attribute(restriction, categoryId) %}
+                            <!-- END: set inputName & value  -->
+
+                            <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}" data-id="{{ roomType.id }}_{{ tariff.id }}_{{ date|date('d.m.Y') }}">
+                                {% if categoryId == 'closedOnArrival' or categoryId == 'closedOnDeparture'%}
+                                    <span class="checkbox">
+                                        <input name="{{ inputName }}" disabled type="checkbox" class="mbh-grid-checkbox {{ categoryId }}" {{ inputValue ? 'checked' : '' }} value="1">
+                                        <span class="disabled-detector"></span>
+                                    </span>
+                                {% else %}
+                                    <input name="{{ inputName }}" disabled type="text" class="mbh-grid-input form-control input-sm {{ categoryId }}" value="{{ inputValue }}">
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

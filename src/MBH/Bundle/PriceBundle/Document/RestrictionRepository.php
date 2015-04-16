@@ -5,14 +5,14 @@ namespace MBH\Bundle\PriceBundle\Document;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 
-class RoomCacheRepository extends DocumentRepository
+class RestrictionRepository extends DocumentRepository
 {
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param Hotel $hotel
      * @param array $roomTypes
-     * @param mixed $tariffs
+     * @param array $tariffs
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
     public function fetchQueryBuilder(
@@ -20,7 +20,7 @@ class RoomCacheRepository extends DocumentRepository
         \DateTime $end,
         Hotel $hotel = null,
         array $roomTypes = [],
-        $tariffs = false
+        array $tariffs = []
     ) {
         $qb = $this->createQueryBuilder('q');
 
@@ -36,14 +36,11 @@ class RoomCacheRepository extends DocumentRepository
             $qb->field('roomType.id')->in($roomTypes);
         }
         //tariffs
-        if (!empty($tariffs) && is_array($tariffs)) {
+        if (!empty($tariffs)) {
             $qb->field('tariff.id')->in($tariffs);
         }
-        if ($tariffs === null) {
-            $qb->field('tariff.id')->equals(null);
-        }
         //sort
-        $qb->sort('date')->sort('hotel.id')->sort('roomType.id');
+        $qb->sort('date')->sort('hotel.id')->sort('roomType.id')->sort('tariff.id');
 
         return $qb;
     }
@@ -53,16 +50,16 @@ class RoomCacheRepository extends DocumentRepository
      * @param \DateTime $end
      * @param Hotel $hotel
      * @param array $roomTypes
-     * @param mixed $tariffs
+     * @param array $tariffs
      * @param boolean $grouped
-     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     * @return array
      */
     public function fetch(
         \DateTime $begin,
         \DateTime $end,
         Hotel $hotel = null,
         array $roomTypes = [],
-        $tariffs = false,
+        array $tariffs = [],
         $grouped = false
     ) {
         $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs)->getQuery()->execute();
@@ -72,8 +69,7 @@ class RoomCacheRepository extends DocumentRepository
         }
         $result = [];
         foreach ($caches as $cache) {
-            $result[$cache->getRoomType()->getId()][!empty($cache->getTariff()) ? $cache->getTariff()->getId() : 0][$cache->getDate()->format('d.m.Y')] = $cache;
-
+            $result[$cache->getRoomType()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
         }
 
         return $result;
