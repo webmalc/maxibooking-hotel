@@ -44,5 +44,28 @@
   }
   .mbh-grid-checkbox {
     width: auto !important;
+    cursor: pointer;
+  }
+
+  span.checkbox {
+    position: relative;
+    cursor: pointer;
+  }
+
+  span.disabled-detector {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+  }
+
+  input.mbh-grid-checkbox+span.disabled-detector {
+    display: none;
+  }
+
+  input.mbh-grid-checkbox[disabled]+span.disabled-detector {
+    display: inline;
   }
 }

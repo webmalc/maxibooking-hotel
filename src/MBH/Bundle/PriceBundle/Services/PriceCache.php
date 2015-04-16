@@ -9,7 +9,7 @@ use \MBH\Bundle\PriceBundle\Document\RoomCache as RoomCacheDoc;
 
 
 /**
- *  RoomCache service
+ *  PriceCache service
  */
 class PriceCache
 {
@@ -36,6 +36,19 @@ class PriceCache
         $this->helper = $this->container->get('mbh.helper');
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param Hotel $hotel
+     * @param $price
+     * @param bool $isPersonPrice
+     * @param null $singlePrice
+     * @param null $additionalPrice
+     * @param null $additionalChildrenPrice
+     * @param array $availableRoomTypes
+     * @param array $availableTariffs
+     * @param array $weekdays
+     */
     public function update(
         \DateTime $begin,
         \DateTime $end,

@@ -12,7 +12,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
  * @ODM\Document(collection="PriceCache", repositoryClass="MBH\Bundle\PriceBundle\Document\PriceCacheRepository")
  * @ODM\HasLifecycleCallbacks
  * @Gedmo\Loggable
- * @MongoDBUnique(fields={"roomType", "date"}, message="PriceCache already exist.")
+ * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="PriceCache already exist.")
  */
 class PriceCache extends Base
 {

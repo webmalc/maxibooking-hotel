@@ -12,7 +12,7 @@
             </div>
             <div class="input">
                 - &nbsp
-                <input type="text" id="room-cache-overview-filter-end" class="datepicker room-cache-overview-filter end-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ? 'now'|date_modify("+3 months")|date('d.m.Y') : app.request.get('end') }}">
+                <input type="text" id="room-cache-overview-filter-end" class="datepicker room-cache-overview-filter end-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ? 'now'|date_modify("+45 days")|date('d.m.Y') : app.request.get('end') }}">
             </div>
             <div class="input">
                 <i class="fa fa-home" title='Тип номера' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="Тип номера" id="room-cache-overview-filter-roomType" class="room-cache-overview-filter form-control input-sm">

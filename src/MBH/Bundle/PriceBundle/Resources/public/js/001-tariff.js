@@ -39,6 +39,14 @@ $(document).ready(function () {
         stepinterval: 50,
         maxboostedstep: 10000000
     });
+    $('.spinner-1').TouchSpin({
+        min: 1,
+        max: 9007199254740992,
+        step: 1,
+        //boostat: 50,
+        stepinterval: 50,
+        maxboostedstep: 10000000
+    });
     $('.spinner--1').TouchSpin({
         min: -1,
         max: 9007199254740992,

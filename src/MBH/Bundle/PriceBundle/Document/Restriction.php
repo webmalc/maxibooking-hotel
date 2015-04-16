@@ -1,0 +1,373 @@
+<?php
+
+namespace MBH\Bundle\PriceBundle\Document;
+
+use MBH\Bundle\BaseBundle\Document\Base;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+
+/**
+ * @ODM\Document(collection="Restriction", repositoryClass="MBH\Bundle\PriceBundle\Document\RestrictionRepository")
+ * @ODM\HasLifecycleCallbacks
+ * @Gedmo\Loggable
+ * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="Restriction already exist.")
+ */
+class Restriction extends Base
+{
+    /**
+     * @var \MBH\Bundle\HotelBundle\Document\Hotel
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
+     * @Assert\NotNull()
+     */
+    protected $hotel;
+
+    /**
+     * @var \MBH\Bundle\HotelBundle\Document\RoomType
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
+     * @Assert\NotNull()
+     */
+    protected $roomType;
+
+    /**
+     * @var \MBH\Bundle\PriceBundle\Document\Tariff
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
+     * @Assert\NotNull()
+     */
+    protected $tariff;
+
+    /**
+     * @var \DateTime
+     * @ODM\Date()
+     * @Assert\Date()
+     * @Assert\NotNull()
+     */
+    protected $date;
+
+    /**
+     * @var int
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=1)
+     */
+    protected $minStay = null;
+
+    /**
+     * @var int
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=1)
+     */
+    protected $maxStay = null;
+
+    /**
+     * @var int
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=1)
+     */
+    protected $minStayArrival = null;
+
+    /**
+     * @var int
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=1)
+     */
+    protected $maxStayArrival = null;
+
+    /**
+     * @var int
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=1)
+     */
+    protected $minBeforeArrival = null;
+
+    /**
+     * @var int
+     * @ODM\Int()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=1)
+     */
+    protected $maxBeforeArrival = null;
+
+    /**
+     * @var boolean
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $closedOnArrival = false;
+
+    /**
+     * @var boolean
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $closedOnDeparture = false;
+
+    /**
+     * Set hotel
+     *
+     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     * @return self
+     */
+    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
+    {
+        $this->hotel = $hotel;
+        return $this;
+    }
+
+    /**
+     * Get hotel
+     *
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     */
+    public function getHotel()
+    {
+        return $this->hotel;
+    }
+
+    /**
+     * Set roomType
+     *
+     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @return self
+     */
+    public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
+    {
+        $this->roomType = $roomType;
+        return $this;
+    }
+
+    /**
+     * Get roomType
+     *
+     * @return \MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     */
+    public function getRoomType()
+    {
+        return $this->roomType;
+    }
+
+    /**
+     * Set tariff
+     *
+     * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     * @return self
+     */
+    public function setTariff(\MBH\Bundle\PriceBundle\Document\Tariff $tariff)
+    {
+        $this->tariff = $tariff;
+        return $this;
+    }
+
+    /**
+     * Get tariff
+     *
+     * @return \MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     */
+    public function getTariff()
+    {
+        return $this->tariff;
+    }
+
+    /**
+     * Set date
+     *
+     * @param date $date
+     * @return self
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+        return $this;
+    }
+
+    /**
+     * Get date
+     *
+     * @return date $date
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     * Set minStay
+     *
+     * @param int $minStay
+     * @return self
+     */
+    public function setMinStay($minStay)
+    {
+        $this->minStay = $minStay;
+        return $this;
+    }
+
+    /**
+     * Get minStay
+     *
+     * @return int $minStay
+     */
+    public function getMinStay()
+    {
+        return $this->minStay;
+    }
+
+    /**
+     * Set maxStay
+     *
+     * @param int $maxStay
+     * @return self
+     */
+    public function setMaxStay($maxStay)
+    {
+        $this->maxStay = $maxStay;
+        return $this;
+    }
+
+    /**
+     * Get maxStay
+     *
+     * @return int $maxStay
+     */
+    public function getMaxStay()
+    {
+        return $this->maxStay;
+    }
+
+    /**
+     * Set minStayArrival
+     *
+     * @param int $minStayArrival
+     * @return self
+     */
+    public function setMinStayArrival($minStayArrival)
+    {
+        $this->minStayArrival = $minStayArrival;
+        return $this;
+    }
+
+    /**
+     * Get minStayArrival
+     *
+     * @return int $minStayArrival
+     */
+    public function getMinStayArrival()
+    {
+        return $this->minStayArrival;
+    }
+
+    /**
+     * Set maxStayArrival
+     *
+     * @param int $maxStayArrival
+     * @return self
+     */
+    public function setMaxStayArrival($maxStayArrival)
+    {
+        $this->maxStayArrival = $maxStayArrival;
+        return $this;
+    }
+
+    /**
+     * Get maxStayArrival
+     *
+     * @return int $maxStayArrival
+     */
+    public function getMaxStayArrival()
+    {
+        return $this->maxStayArrival;
+    }
+
+    /**
+     * Set minBeforeArrival
+     *
+     * @param int $minBeforeArrival
+     * @return self
+     */
+    public function setMinBeforeArrival($minBeforeArrival)
+    {
+        $this->minBeforeArrival = $minBeforeArrival;
+        return $this;
+    }
+
+    /**
+     * Get minBeforeArrival
+     *
+     * @return int $minBeforeArrival
+     */
+    public function getMinBeforeArrival()
+    {
+        return $this->minBeforeArrival;
+    }
+
+    /**
+     * Set maxBeforeArrival
+     *
+     * @param int $maxBeforeArrival
+     * @return self
+     */
+    public function setMaxBeforeArrival($maxBeforeArrival)
+    {
+        $this->maxBeforeArrival = $maxBeforeArrival;
+        return $this;
+    }
+
+    /**
+     * Get maxBeforeArrival
+     *
+     * @return int $maxBeforeArrival
+     */
+    public function getMaxBeforeArrival()
+    {
+        return $this->maxBeforeArrival;
+    }
+
+    /**
+     * Set closedOnArrival
+     *
+     * @param boolean $closedOnArrival
+     * @return self
+     */
+    public function setClosedOnArrival($closedOnArrival)
+    {
+        $this->closedOnArrival = $closedOnArrival;
+        return $this;
+    }
+
+    /**
+     * Get closedOnArrival
+     *
+     * @return boolean $closedOnArrival
+     */
+    public function getClosedOnArrival()
+    {
+        return $this->closedOnArrival;
+    }
+
+    /**
+     * Set closedOnDeparture
+     *
+     * @param boolean $closedOnDeparture
+     * @return self
+     */
+    public function setClosedOnDeparture($closedOnDeparture)
+    {
+        $this->closedOnDeparture = $closedOnDeparture;
+        return $this;
+    }
+
+    /**
+     * Get closedOnDeparture
+     *
+     * @return boolean $closedOnDeparture
+     */
+    public function getClosedOnDeparture()
+    {
+        return $this->closedOnDeparture;
+    }
+}

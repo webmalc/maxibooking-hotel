@@ -56,7 +56,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         $end = $helper->getDateFromString($request->get('end'));
         if(!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
             $end = clone $begin;
-            $end->modify('+3 months');
+            $end->modify('+45 days');
         }
 
         $to = clone $end;
@@ -170,8 +170,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 continue;
             }
 
-            $priceCache->setHotel($hotel)
-                ->setPrice($prices['price'])
+            $priceCache->setPrice($prices['price'])
                 ->setIsPersonPrice(isset($prices['isPersonPrice']) ? true : false)
                 ->setSinglePrice(isset($prices['singlePrice']) ? $prices['singlePrice'] : null)
                 ->setAdditionalPrice(isset($prices['additionalPrice']) ? $prices['additionalPrice'] : null)
