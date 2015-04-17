@@ -72,4 +72,12 @@ class SearchQuery
         }
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getTotalPlaces()
+    {
+        return (int) $this->adults + (int) $this->children;
+    }
 }

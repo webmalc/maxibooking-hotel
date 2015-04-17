@@ -183,7 +183,6 @@ class FixturesCommand extends ContainerAwareCommand
                 ->setPlainPassword($this->user)
                 ->setEnabled(true)
                 ->setLocked(false)
-                ->setSuperAdmin(true)
             ;
             $this->dm->persist($user);
             $this->dm->flush();

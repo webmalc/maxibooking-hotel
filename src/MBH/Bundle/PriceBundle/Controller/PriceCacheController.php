@@ -172,9 +172,9 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
             $priceCache->setPrice($prices['price'])
                 ->setIsPersonPrice(isset($prices['isPersonPrice']) ? true : false)
-                ->setSinglePrice(isset($prices['singlePrice']) ? $prices['singlePrice'] : null)
-                ->setAdditionalPrice(isset($prices['additionalPrice']) ? $prices['additionalPrice'] : null)
-                ->setAdditionalChildrenPrice(isset($prices['additionalChildrenPrice']) ? $prices['additionalChildrenPrice'] : null)
+                ->setSinglePrice(isset($prices['singlePrice']) && $prices['singlePrice'] !== '' ? $prices['singlePrice'] : null)
+                ->setAdditionalPrice(isset($prices['additionalPrice'])  && $prices['additionalPrice'] !== '' ? $prices['additionalPrice'] : null)
+                ->setAdditionalChildrenPrice(isset($prices['additionalChildrenPrice'])  && $prices['additionalChildrenPrice'] !== '' ? $prices['additionalChildrenPrice'] : null)
             ;
 
             if ($validator->validate($priceCache)) {

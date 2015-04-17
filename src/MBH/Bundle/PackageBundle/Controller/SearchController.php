@@ -31,17 +31,17 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $results = $tariffResults = false;
-        
+
         $form = $this->createForm(
-                new SearchType(), [], [
-                    'security'  => $this->container->get('mbh.hotel.selector'),
-                    'dm' => $dm,
-                    'hotel' => $this->get('mbh.hotel.selector')->getSelected()
-                ]
+            new SearchType(), [], [
+                'security' => $this->container->get('mbh.hotel.selector'),
+                'dm' => $dm,
+                'hotel' => $this->get('mbh.hotel.selector')->getSelected()
+            ]
         );
 
         $beginDate = new \DateTime();
-        $beginDate->setTime(0,0,0);
+        $beginDate->setTime(0, 0, 0);
         $beginDate->modify($this->container->getParameter('mbh.room.cache.date.modify'));
 
         return [
@@ -66,7 +66,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
 
         $form = $this->createForm(
             new SearchType(), [], [
-                'security'  => $this->container->get('mbh.hotel.selector'),
+                'security' => $this->container->get('mbh.hotel.selector'),
                 'dm' => $dm,
                 'hotel' => $this->get('mbh.hotel.selector')->getSelected()
             ]
@@ -82,8 +82,8 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                 $query = new SearchQuery();
                 $query->begin = $data['begin'];
                 $query->end = $data['end'];
-                $query->adults = (int) $data['adults'];
-                $query->children = (int) $data['children'];
+                $query->adults = (int)$data['adults'];
+                $query->children = (int)$data['children'];
                 $query->tariff = $data['tariff'];
 
                 foreach ($data['roomType'] as $id) {

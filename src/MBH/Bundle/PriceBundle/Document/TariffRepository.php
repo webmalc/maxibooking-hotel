@@ -30,10 +30,12 @@ class TariffRepository extends DocumentRepository
 
     /**
      * @param Hotel $hotel
-     * @param mixed $tariffs ids array
+     * @param array $tariffs ids array
+     * @param boolean $enabled
+     * @param boolean $online
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
-    public function fetchQueryBuilder(Hotel $hotel = null, $tariffs = null)
+    public function fetchQueryBuilder(Hotel $hotel = null, $tariffs = null, $enabled = false, $online = false)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $qb = $this->createQueryBuilder('s');
@@ -46,6 +48,14 @@ class TariffRepository extends DocumentRepository
         if (!empty($tariffs) && is_array($tariffs)) {
             $qb->field('id')->in($tariffs);
         }
+        //enabled
+        if ($enabled) {
+            $qb->field('isEnabled')->equals(true);
+        }
+        //enabled
+        if ($online) {
+            $qb->field('isOnline')->equals(true);
+        }
         $qb->sort('title', 'asc')->sort('fullTitle', 'asc');;
 
         return $qb;
@@ -53,12 +63,13 @@ class TariffRepository extends DocumentRepository
 
     /**
      * @param Hotel $hotel
-     * @param null $tariffs
+     * @param array $tariffs
+     * @param boolean $enabled
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function fetch(Hotel $hotel = null, $tariffs = null)
+    public function fetch(Hotel $hotel = null, $tariffs = null, $enabled = false, $online = false)
     {
-        return $this->fetchQueryBuilder($hotel, $tariffs)->getQuery()->execute();
+        return $this->fetchQueryBuilder($hotel, $tariffs, $enabled, $online)->getQuery()->execute();
     }
 }

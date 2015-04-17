@@ -32,20 +32,6 @@ class HotelType extends AbstractType
                     'attr' => ['placeholder' => 'HTL'],
                     'help' => 'form.hotelType.document_use_name'
                 ])
-                ->add('saleDays', 'text', [
-                    'label' => 'form.hotelType.sale_days_amount',
-                    'group' => 'form.hotelType.settings',
-                    'required' => true,
-                    'attr' => ['placeholder' => '365', 'class' => 'spinner'],
-                    'help' => 'form.hotelType.how_long_sale_opened_since_today'
-                ])
-                ->add('saleDays', 'text', [
-                    'label' => 'form.hotelType.sale_days_amount',
-                    'group' => 'form.hotelType.settings',
-                    'required' => true,
-                    'attr' => ['placeholder' => '365', 'class' => 'spinner'],
-                    'help' => 'form.hotelType.how_long_sale_opened_since_today'
-                ])
                 ->add('isHostel', 'checkbox', [
                     'label' => 'form.hotelType.hostel',
                     'group' => 'form.hotelType.settings',

@@ -82,7 +82,6 @@ class HotelController extends Controller
     public function newAction()
     {
         $entity = new Hotel();
-        $entity->setSaleDays(365);
         $form = $this->createForm(new HotelType(), $entity);
 
         return array(

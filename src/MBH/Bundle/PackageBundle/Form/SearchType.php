@@ -73,29 +73,29 @@ class SearchType extends AbstractType
                     'label' => 'Отъезд',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
-                    'data' => new \DateTime('+1 day'),
+                    'data' => null,
                     'required' => true,
                     'error_bubbling' => true,
                     'attr' => array('class' => 'datepicker end-datepiker', 'data-date-format' => 'dd.mm.yyyy'),
                     'constraints' => [new NotBlank(['message' => 'form.searchType.check_out_date_not_filled']), new Date()]
                 ))
-                ->add('adults', 'text', [
+                ->add('adults', 'integer', [
                     'label' => 'form.searchType.adults',
                     'required' => true,
                     'error_bubbling' => true,
                     'data' => 0,
-                    'attr' => ['class' => 'spinner'],
+                    'attr' => ['class' => 'input-xxs only-int'],
                     'constraints' => [
                         new Range(['min' => 0, 'minMessage' => 'form.searchType.adults_amount_less_zero']),
                         new NotBlank(['message' => 'form.searchType.adults_amount_not_filled'])
                     ]
                 ])
-                ->add('children', 'text', [
+                ->add('children', 'integer', [
                     'label' => 'form.searchType.children',
                     'required' => true,
                     'error_bubbling' => true,
                     'data' => 0,
-                    'attr' => ['class' => 'spinner'],
+                    'attr' => ['class' => 'input-xxs only-int'],
                     'constraints' => [
                         new Range(['min' => 0, 'minMessage' => 'form.searchType.children_amount_less_zero']),
                         new NotBlank(['message' => 'form.searchType.children_amount_not_filled'])

@@ -2,6 +2,17 @@
 $(document).ready(function () {
     'use strict';
 
+    //only int
+    $('.only-int').change(function () {
+        if (this.value === '') {
+            return;
+        }
+        var value = parseInt(this.value, 10);
+        if (value < 0 || isNaN(value)) {
+            this.value = 0;
+        }
+    });
+
     // input size
     (function () {
         var resize = function (el, size) {

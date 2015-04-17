@@ -1,24 +1,15 @@
-/*global window */
+/*global window, $, Routing, document */
 
-var setSearchDatepickers = function(date){
-    (typeof(date) === 'undefined') ? date = new Date() : date = new Date(date);
+var setSearchDatepickers = function (date) {
+    (date === 'undefined') ? date = new Date() : date = new Date(date);
     $('#s_begin').datepicker('setStartDate', date);
 };
 
-$(document).ready(function() {
+$(document).ready(function () {
     'use strict';
 
-    //spinners
-    $('#s_adults, #s_children').TouchSpin({
-        min: 0,
-        max: 20,
-        step: 1,
-        boostat: 2,
-        maxboostedstep: 4
-    });
-
     //ajax request
-    (function() {
+    (function () {
 
         var send = function (query) {
             var wrapper = $('#package-search-results-wrapper');
@@ -59,8 +50,8 @@ $(document).ready(function() {
                     }());
 
                     //search result prices
-                    (function() {
-                        var show = function(tr) {
+                    (function () {
+                        var show = function (tr) {
                                 var tourist = tr.find('.search-tourists-select'),
                                     touristVal = tourist.select2('data').id,
                                     touristArr = touristVal.split('_')
@@ -78,19 +69,19 @@ $(document).ready(function() {
                                 bookLink.prop('href', oldHref + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
                             }
                             ;
-                        $('.search-tourists-select').click(function() {
+                        $('.search-tourists-select').click(function () {
                             show($(this).closest('tr'));
                         });
-                        $('.search-tourists-select').each(function() {
+                        $('.search-tourists-select').each(function () {
                             show($(this).closest('tr'));
                         });
                     }());
 
                     //tariff chooser
-                    (function() {
-                        var links  = $('#package-search-tariffs li a'),
+                    (function () {
+                        var links = $('#package-search-tariffs li a'),
                             select = $('#s_tariff'),
-                            form   = $('form[name="s"]')
+                            form = $('form[name="s"]')
                             ;
                         links.click(function (e) {
                             e.preventDefault();
@@ -101,7 +92,7 @@ $(document).ready(function() {
                     }());
 
                     //book button
-                    $('.package-search-book').click( function(e) {
+                    $('.package-search-book').click(function (e) {
                         var numWrappper = $(this).find('span');
                         var num = parseInt(numWrappper.text()) - 1;
                         (num <= 0) ? num = 0 : num;
@@ -115,7 +106,7 @@ $(document).ready(function() {
             send(window.location.hash.replace('#', ''));
         }
 
-        $('.search-form').submit(function(e){
+        $('.search-form').submit(function (e) {
             e.preventDefault();
             var wrapper = $('#package-search-results-wrapper');
             window.location.hash = $(this).serialize();

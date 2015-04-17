@@ -6,51 +6,38 @@
 
     <div class="well">
 
-        {{ form_start(form, {'action': path('package_search'), 'method': 'GET', 'attr': {'class': 'form-horizontal search-form'}}) }}
-
+        {{ form_start(form, {'action': path('package_search'), 'method': 'GET', 'attr': {'class': 'form-inline search-form filter-form'}}) }}
         {{ form_errors(form) }}
 
-        <div class="row">
-
-            <div class="col-md-4">
-                <div class="form-group">
-                    <div class="col-md-3">{{ form_label(form.begin) }}</div>
-                    <div class="col-md-9">{{ form_widget(form.begin) }}</div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-3">{{ form_label(form.end) }}</div>
-                    <div class="col-md-9">{{ form_widget(form.end) }}</div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <div class="col-md-3">{{ form_label(form.adults) }}</div>
-                    <div class="col-md-9">{{ form_widget(form.adults) }}</div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-3">{{ form_label(form.children) }}</div>
-                    <div class="col-md-9">{{ form_widget(form.children) }}</div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <div class="col-md-3">{{ form_label(form.roomType) }}</div>
-                    <div class="col-md-9">{{ form_widget(form.roomType) }}</div>
-                </div>
-            </div>
-
-            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': 'Искать'} %}
-
-
-            <div class="hide">{{ form_end(form) }}</div>
-
+        <div class="input">
+            <i class="fa fa-calendar" title='{{ 'form.searchType.check_in'|trans()}}'
+               data-toggle='tooltip'></i>&nbsp{{ form_widget(form.begin) }}
+        </div>
+        <div class="input">
+            - &nbsp{{ form_widget(form.end) }}
+        </div>
+        <div class="input">
+            <i class="fa fa-male" title='{{ 'form.searchType.adults'|trans()}}'
+               data-toggle='tooltip'></i>&nbsp{{ form_widget(form.adults) }}
+        </div>
+        <div class="input">
+            <i class="fa fa-child" title='{{ 'form.searchType.children'|trans()}}'
+               data-toggle='tooltip'></i>&nbsp{{ form_widget(form.children) }}
+        </div>
+        <div class="input">
+            <i class="fa fa-home" title='{{ 'form.searchType.room_type'|trans()}}'
+               data-toggle='tooltip'></i>&nbsp{{ form_widget(form.roomType) }}
         </div>
 
+        {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': 'Искать'} %}
+        <div class="hide">{{ form_end(form) }}</div>
     </div>
 
     <div class="row">
         <div id="package-search-results-wrapper" class="col-md-12">
-            <div class="alert alert-info"><i class="fa fa-search"></i> {{ "search.index.enter_search_data"|trans({}, "MBHPackageBundle") }}</div>
+            <div class="alert alert-info">
+                <i class="fa fa-search"></i> {{ "search.index.enter_search_data"|trans({}, "MBHPackageBundle") }}
+            </div>
         </div>
     </div>
 

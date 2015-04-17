@@ -101,183 +101,90 @@ class Calculation
         return $package;
     }
 
-    public function overwritePrices($prices, RoomCacheOverwrite $overwrite = null)
-    {
-        if (!is_array($prices)) {
-            return $prices;
-        }
-
-        $map = [
-            'main' => 'price',
-            'adults' => 'additionalAdultPrice',
-            'children' => 'additionalChildPrice'
-        ];
-
-        foreach ($map as $key => $value) {
-            if ($overwrite && $overwrite->getPrice($value) !== null && isset($prices[$key])) {
-                $prices[$key] = $overwrite->getPrice($value);
-            }
-        }
-        return $prices;
-    }
 
     /**
-     * Calculate day price
-     * @param mixed $tariff
-     * @param mixed $roomType
-     * @param \DateTime $date
+     * @param RoomType $roomType
+     * @param Tariff $tariff
+     * @param \DateTime $begin
+     * @param \DateTime $end
      * @param int $adults
      * @param int $children
-     * @param \MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite $overwrite
-     * @return int|null
+     * @return array|bool
      */
-    public function getDayPrice($tariff, $roomType, \DateTime $date, $adults, $children, RoomCacheOverwrite $overwrite = null)
+    public function calcPrices(RoomType $roomType, Tariff $tariff, \DateTime $begin, \DateTime $end, $adults = 0, $children = 0)
     {
-        if (!$tariff instanceof Tariff) {
-            $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($tariff);
-            if (!$tariff) {
-                return null;
-            }
-        }
-        if (!$roomType instanceof RoomType) {
-            $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($roomType);
-            if (!$roomType) {
-                return null;
-            }
-        }
-        
-        $prices = $this->overwritePrices($this->getRoomPrices($tariff, $roomType, $date), $overwrite);
-
-        $all = $adults + $children;
+        $prices = [];
         $places = $roomType->getPlaces();
-        $price = null;
-        
-        if($prices['main'] === null) {
-            return null;
+        $hotel = $roomType->getHotel();
+        $roomTypeId = $roomType->getId();
+        $tariffId = $tariff->getId();
+        $duration = $end->diff($begin)->format('%a') + 1;
+        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true);
+
+        if (!isset($priceCaches[$roomTypeId][$tariffId]) || count($priceCaches[$roomTypeId][$tariffId]) != $duration) {
+            return false;
         }
-        
-        // perRoom calculation
-        if($roomType->getCalculationType()  == 'perRoom') {
-            $price = $prices['main'];
+
+        //places
+        if ($adults == 0 & $children == 0) {
+            $combinations = $roomType->getAdultsChildrenCombinations();
+        } else {
+            $combinations = [0 => ['adults' => $adults, 'children' => $children]];
         }
-        // customPrices calculation
-        if($roomType->getCalculationType()  == 'customPrices') {
-            ($all > $places) ? $main = $places : $main = $all;
-            $price = $prices['main'] * $main;
-        }
-        // calc additional places
-        if ($all > $places) {
-            $adds =  $all - $places;
-            
-            if ($adds > $children) {
-                $addsChildren = $children;
-                $addsAdults = $adds - $addsChildren;
-            } else {
-                $addsChildren = $adds;
-                $addsAdults = 0;
-            }
-            
-            if($addsChildren && $prices['children'] === null) {
-                return null;
-            }
-            if($addsAdults && $prices['adults'] === null) {
-                return null;
-            }
-            
-            $price += $addsAdults * $prices['adults'] + $addsChildren * $prices['children'];
-        }
-        
-        return $price;
-    }
 
-    /**
-     * Get RoomPrices from tariff
-     * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
-     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
-     * @param \DateTime $date
-     * @return []
-     */
-    public function getRoomPrices(Tariff $tariff, RoomType $roomType, \DateTime $date)
-    {
-        // Get default tariff
-        if (!$tariff->getIsDefault()) {
-
-            $date->setTime(0, 0, 0);
-
-            $defaultTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('s')
-                    ->field('isDefault')->equals(true)
-                    ->field('begin')->lte($date)
-                    ->field('end')->gte($date)
-                    ->field('hotel.id')->equals($roomType->getHotel()->getId())
-                    ->limit(1)
-                    ->getQuery()
-                    ->getSingleResult()
-            ;
-            
-            if (!$defaultTariff) {
-                return null;
-            }
-                      
-            // Rate tariff
-            if ($tariff->getType() == 'rate') {
-                $rate = $tariff->getRate()/100;
-                return $this->getPricesFromTariff($defaultTariff, $roomType, $rate);
-            }
-            
-            // Price tariff
-            if ($tariff->getType() == 'price') {
-
-                $prices = $this->getPricesFromTariff($tariff, $roomType);
-                
-                if (!$prices || $prices['main'] === null || $prices['adults'] === null || $prices['children'] === null) {
-                    $defaultPrices = $this->getPricesFromTariff($defaultTariff, $roomType);
-
-                    if ($defaultPrices) {
-                        
-                        if (!$prices) {
-                           $prices = ['main' => null, 'adults' => null, 'children' => null];
-                        }
-                        
-                        ($prices['main'] === null) ? $prices['main'] = $defaultPrices['main'] : $prices['main'];
-                        ($prices['adults'] === null) ? $prices['adults'] = $defaultPrices['adults'] : $prices['adults'];
-                        ($prices['children'] === null) ? $prices['children'] = $defaultPrices['children'] : $prices['children'];
-                    }
+        foreach ($combinations as $combination) {
+            $total = 0;
+            $all = $combination['adults'] + $combination['children'];
+            $adds = $all - $places;
+            if ($all > $places) {
+                $mains = $places;
+                if ($adds > $combination['children']) {
+                    $addsChildren = $combination['children'];
+                    $addsAdults = $adds - $addsChildren;
+                } else {
+                    $addsChildren = $adds;
+                    $addsAdults = 0;
                 }
-                return $prices;
+            } else {
+                $mains = $all;
+                $addsAdults = 0;
+                $addsChildren = 0;
             }
-        }
 
-        // Default tariff
-        return $this->getPricesFromTariff($tariff, $roomType);
-    }
-    
-    /**
-     * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
-     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
-     * @param type $rate
-     * @return []
-     */
-    private function getPricesFromTariff(Tariff $tariff, RoomType $roomType, $rate = 1)
-    {
-        foreach ($tariff->getRoomPrices() as $price) {
-            
-            
-            if ($price->getRoomType()->getId() != $roomType->getId()) {
-                continue;
+            $dayPrices = [];
+            foreach ($priceCaches[$roomTypeId][$tariffId] as $day => $cache) {
+                $dayPrice = 0;
+
+                if ($cache->getSinglePrice() !== null && $all == 1) {
+                    $dayPrice += $cache->getSinglePrice();
+                } elseif ($cache->getIsPersonPrice()) {
+                    $dayPrice += $mains * $cache->getPrice();
+                } else {
+                    $dayPrice += $cache->getPrice();
+                }
+
+                //calc adds
+                if($addsChildren && $cache->getAdditionalChildrenPrice() === null) {
+                    continue 2;
+                }
+                if($addsAdults && $cache->getAdditionalPrice() === null) {
+                    continue 2;
+                }
+
+                $dayPrice += $addsAdults * $cache->getAdditionalPrice() + $addsChildren * $cache->getAdditionalChildrenPrice();
+                $dayPrices[$day] = $dayPrice;
+                $total += $dayPrice;
             }
-            
-            ($price->getPrice() === null) ? $main = null : $main = (int) round($price->getPrice() * $rate);
-            ($price->getAdditionalAdultPrice() === null) ? $adults = null : $adults = (int) round($price->getAdditionalAdultPrice() * $rate);
-            ($price->getAdditionalChildPrice() === null) ? $children = null : $children = (int) round($price->getAdditionalChildPrice() * $rate);
 
-            return [
-                'main' => $main,
-                'adults' => $adults,
-                'children' => $children
+            $prices[$combination['adults'] . '_' . $combination['children']] = [
+                'adults' => $combination['adults'],
+                'children' => $combination['children'],
+                'total' => $total,
+                'prices' => $dayPrices
             ];
         }
-        
-        return null;
+
+        return $prices;
     }
 
 }

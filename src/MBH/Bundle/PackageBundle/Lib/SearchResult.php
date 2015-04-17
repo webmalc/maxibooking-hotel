@@ -46,6 +46,13 @@ class SearchResult
     protected $prices = [];
 
     /**
+     * mixed array of pricesByDay
+     *
+     * @var []
+     */
+    protected $pricesByDay = [];
+
+    /**
      * @var int 
      */
     protected $roomsCount = 0;
@@ -67,8 +74,7 @@ class SearchResult
     }
 
     /**
-     * 
-     * @return EoomType
+     * @return RoomType
      */
     public function getRoomType()
     {
@@ -84,7 +90,7 @@ class SearchResult
     }
 
     /**
-     * @return []
+     * @return array
      */
     public function getPrices()
     {
@@ -265,5 +271,31 @@ class SearchResult
         
         return (int) $this->getPrices()[$adults . '_' . $children];
     }
-    
+
+    /**
+     * @param array $prices
+     * @param int $adults
+     * @param int $children
+     * @return self
+     */
+    public function setPricesByDay(array $prices, $adults, $children)
+    {
+        $this->pricesByDay[$adults . '_' . $children] = $prices;
+
+        return $this;
+    }
+
+    /**
+     * @param $adults
+     * @param $children
+     * @return null|array
+     */
+    public function getPricesByDay($adults, $children)
+    {
+        if (isset($this->pricesByDay[$adults . '_' . $children])) {
+            return $this->pricesByDay[$adults . '_' . $children];
+        }
+
+        return null;
+    }
 }

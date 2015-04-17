@@ -80,19 +80,6 @@ class Hotel extends Base
     protected $prefix;
 
     /**
-     * @var int
-     * @Gedmo\Versioned
-     * @ODM\Int(name="saleDays")
-     * @Assert\NotNull()
-     * @Assert\Type(type="numeric")
-     * @Assert\Range(
-     *      min=0,
-     *      minMessage= "validator.document.hotel.sale_days_amount_less_zero"
-     * )
-     */
-    protected $saleDays = 0;
-
-    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -267,33 +254,6 @@ class Hotel extends Base
     public function getPrefix()
     {
         return $this->prefix;
-    }
-
-    /**
-     * Set saleDays
-     *
-     * @param int $saleDays
-     * @return self
-     */
-    public function setSaleDays($saleDays)
-    {
-        $this->saleDays = (int)$saleDays;
-
-        if ($this->saleDays < 0) {
-            $this->saleDays = 0;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get saleDays
-     *
-     * @return collection $saleDays
-     */
-    public function getSaleDays()
-    {
-        return $this->saleDays;
     }
 
     /**
