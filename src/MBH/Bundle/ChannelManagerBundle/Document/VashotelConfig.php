@@ -57,7 +57,7 @@ class VashotelConfig extends Base implements BaseInterface
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="vashotelConfig")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="validator.document.vashhotelConfig.no_hotel_selected")
      */
     protected $hotel;
 
@@ -65,7 +65,7 @@ class VashotelConfig extends Base implements BaseInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\String(name="key")
-     * @Assert\NotNull(message="Не указан ключ API")
+     * @Assert\NotNull(message="validator.document.vashhotelConfig.no_api_key_specified")
      */
     protected $key;
 
@@ -73,7 +73,7 @@ class VashotelConfig extends Base implements BaseInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\String(name="hotelId")
-     * @Assert\NotNull(message="Не указан Id отеля")
+     * @Assert\NotNull(message="validator.document.vashhotelConfig.no_hotel_id_specified")
      */
     protected $hotelId;
 

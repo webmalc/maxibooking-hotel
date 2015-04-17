@@ -44,7 +44,7 @@ class OktogoConfig extends Base implements BaseInterface
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="oktogoConfig")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="validator.document.oktogoConfig.no_hotel_selected")
      */
     protected $hotel;
 
@@ -73,7 +73,7 @@ class OktogoConfig extends Base implements BaseInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\NotNull(message="Не указан логин (login)")
+     * @Assert\NotNull(message="validator.document.oktogoConfig.no_login_specified")
      */
     protected $login;
 
@@ -81,7 +81,7 @@ class OktogoConfig extends Base implements BaseInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\NotNull(message="Не указано имя пользователя (username)")
+     * @Assert\NotNull(message="validator.document.oktogoConfig.no_username_specified")
      */
     protected $username;
 
@@ -89,7 +89,7 @@ class OktogoConfig extends Base implements BaseInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\NotNull(message="Не указан пароль")
+     * @Assert\NotNull(message="validator.document.oktogoConfig.no_password_specified")
      */
     protected $password;
 

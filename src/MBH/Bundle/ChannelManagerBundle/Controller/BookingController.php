@@ -75,7 +75,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $dm->flush();
 
             $request->getSession()->getFlashBag()
-                ->set('success', 'Настройки успешно сохранены.')
+                ->set('success', $this->get('translator')->trans('controller.bookingController.settings_saved_success'))
             ;
 
             $this->container->get('mbh.channelmanager')->syncInBackground();

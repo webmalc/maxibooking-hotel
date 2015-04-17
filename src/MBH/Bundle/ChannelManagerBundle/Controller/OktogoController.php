@@ -84,7 +84,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             }
 
             $request->getSession()->getFlashBag()
-                ->set('success', 'Настройки успешно сохранены.')
+                ->set('success', $this->get('translator')->trans('controller.oktogoController.settings_saved_success'))
             ;
 
             $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
@@ -171,7 +171,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             $dm->flush();
 
             $request->getSession()->getFlashBag()
-                ->set('success', 'Настройки успешно сохранены.')
+                ->set('success', $this->get('translator')->trans('controller.oktogoController.settings_saved_success'))
             ;
             if ($request->get('save') !== null) {
 
@@ -209,7 +209,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
 
         if ($result) {
             $request->getSession()->getFlashBag()
-                ->set('success', 'Номера успешно синхронизированы.')
+                ->set('success', $this->get('translator')->trans('controller.oktogoController.rooms_sync_success'))
             ;
 
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
@@ -220,7 +220,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
         } else {
             $request->getSession()->getFlashBag()
-                ->set('danger', 'Во время синхронизации произошла ошибка. Попробуйте еще раз.')
+                ->set('danger', $this->get('translator')->trans('controller.oktogoController.sync_error'))
             ;
         }
 
@@ -246,7 +246,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
 
         if ($result) {
             $request->getSession()->getFlashBag()
-                ->set('success', 'Тарифы успешно синхронизированы.')
+                ->set('success', $this->get('translator')->trans('controller.oktogoController.tariffs_sync_success'))
             ;
 
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
@@ -257,7 +257,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
             $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
         } else {
             $request->getSession()->getFlashBag()
-                ->set('danger', 'Во время синхронизации произошла ошибка. Попробуйте еще раз.')
+                ->set('danger', $this->get('translator')->trans('controller.oktogoController.sync_error'))
             ;
         }
 

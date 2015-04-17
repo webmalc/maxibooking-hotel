@@ -16,40 +16,40 @@ class OktogoType extends AbstractType
                 'enabled',
                 'checkbox',
                 [
-                    'label' => 'Включен?',
+                    'label' => 'form.oktogoType.is_included',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Использовать ли в Channel manager?'
+                    'help' => 'form.oktogoType.should_we_use_in_channel_manager'
                 ]
             )
             ->add(
                 'login',
                 'text',
                 [
-                    'label' => 'Логин',
+                    'label' => 'form.oktogoType.login',
                     'required' => true,
                     'attr' => ['placeholder' => 'login'],
-                    'help' => 'Логин для доступа к API Oktogo.ru'
+                    'help' => 'form.oktogoType.oktogo_api_login_access'
                 ]
             )
             ->add(
                 'password',
                 'text',
                 [
-                    'label' => 'Пароль',
+                    'label' => 'form.oktogoType.password',
                     'required' => true,
                     'attr' => ['placeholder' => 'password'],
-                    'help' => 'Пароль для доступа к API Oktogo.ru'
+                    'help' => 'form.oktogoType.oktogo_api_password_access'
                 ]
             )
             ->add(
                 'username',
                 'text',
                 [
-                    'label' => 'Имя пользователя',
+                    'label' => 'form.oktogoType.username',
                     'required' => true,
                     'attr' => ['placeholder' => 'username'],
-                    'help' => 'Имя пользователя в Oktogo.ru'
+                    'help' => 'form.oktogoType.oktogo_ru_username'
                 ]
             )
         ;

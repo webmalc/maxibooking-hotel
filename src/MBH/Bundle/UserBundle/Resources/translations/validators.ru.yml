@@ -16,3 +16,7 @@ fos_user.current_password.invalid: 'Вы неправильно ввели Ва�
 fos_user.group.blank: 'Пожалуйста, укажите название группы'
 fos_user.group.short: '[-Inf,Inf]Название группы слишком короткое'
 fos_user.group.long: '[-Inf,Inf]Название группы слишком длинное'
+validator.document.user.min_name: Слишком короткое имя
+validator.document.user.max_name: Слишком длинное имя
+validator.document.user.min_surname: Слишком короткая фамилия
+validator.document.user.max_surname: Слишком длинная фамилия

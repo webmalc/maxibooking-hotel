@@ -22,3 +22,28 @@ views.oktogo.tariff.settings: "настройки"
 views.oktogo.tariff.save: Сохранить
 views.vashhotel.index.settings: "настройки"
 views.vashhotel.layout.you_hotel_ru: "ВашОтель.RU"
+views.vashhotel.room.settings: "настройки"
+views.vashhotel.room.save: Сохранить
+views.vashhotel.room.get_room_ids_from_your_hotel_ru: "Получить ID номеров из ВашОтель.RU"
+views.vashhotel.room.sync: Синхронизировать
+views.vashhotel.room.cancel: Отмена
+views.vashhotel.tariff.settings: "настройки"
+views.vashhotel.tariff.save: Сохранить
+views.vashhotel.tariff.get_tariff_ids: "Получить ID тарифов из ВашОтель.RU"
+views.vashhotel.tariff.cancel: Отмена
+views.tabs.main_settings: ' Основные настройки'
+views.tabs.room_types: ' Типы номеров'
+views.tabs.tariffs: ' Тарифы'
+views.tabs.services: ' Услуги'
+views.tabs.must_fill_main_settings: "Необходимо заполнить основные настройки!"
+services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
+controller.bookingController.settings_saved_success: 'Настройки успешно сохранены.'
+controller.channelManagerController.sync_end: 'Синхронизация окончена.'
+controller.oktogoController.settings_saved_success: 'Настройки успешно сохранены.'
+controller.oktogoController.rooms_sync_success: 'Номера успешно синхронизированы.'
+controller.oktogoController.sync_error: 'Во время синхронизации произошла ошибка. Попробуйте еще раз.'
+controller.oktogoController.tariffs_sync_success: 'Тарифы успешно синхронизированы.'
+controller.vashhotelController.rooms_sync_success: 'Номера успешно синхронизированы.'
+controller.vashhotelController.sync_error: 'Во время синхронизации произошла ошибка. Попробуйте еще раз.'
+controller.vashhotelController.rooms_sync_success: 'Тарифы успешно синхронизированы.'
+controller.vashhotelController.settings_saved_success: 'Настройки успешно сохранены.'

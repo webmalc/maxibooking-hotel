@@ -3,13 +3,13 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" data-default="Подтверждение удаления" id="entity-delete-modal-header">Подтверждение удаления</h4>
+        <h4 class="modal-title" data-default={{ 'views.partials.entityDeleteForm.confirm_delete_quote'|trans({}, 'MBHBaseBundle') }} id="entity-delete-modal-header">{{ 'views.partials.entityDeleteForm.confirm_delete'|trans({}, 'MBHBaseBundle') }}</h4>
       </div>
-      <div class="modal-body" data-default="Точно удалить эту запись?" id="entity-delete-modal-text">
-        Точно удалить эту запись?
+      <div class="modal-body" data-default={{ 'views.partials.entityDeleteForm.are_you_sure_delete_record_quote'|trans({}, 'MBHBaseBundle') }} id="entity-delete-modal-text">
+          {{ 'views.partials.entityDeleteForm.are_you_sure_delete_record'|trans({}, 'MBHBaseBundle') }}
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban"></i> Отмена</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban"></i>{{ 'views.partials.entityDeleteForm.cancel'|trans({}, 'MBHBaseBundle') }}</button>
         <button type="button" id="entity-delete-button" data-default="danger" class="btn btn-danger"><i id="entity-delete-button-icon" data-default="fa-trash-o"  class="fa fa-trash-o"></i>&nbsp;<span data-default="{{ delete_title|default('Удалить') }} " id="entity-delete-button-text">{{ delete_title|default('Удалить') }}</span></button>
       </div>
     </div>

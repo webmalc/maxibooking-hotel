@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraint;
  */
 class CashDocument extends Constraint
 {
-    public $message = 'Сумма расхода по заказу не должна превышать приход. Сумма прихода: %total%';
+    public $message = 'validator.constraints.expense_greater_than_income';
     
     /**
      * {@inheritDoc}

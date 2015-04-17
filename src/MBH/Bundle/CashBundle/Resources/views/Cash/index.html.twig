@@ -1,6 +1,6 @@
 {% extends 'MBHCashBundle:Cash:layout.html.twig' %}
 
-{% set small_title = "список документов" %}    
+{% set small_title = 'views.cash.index.document_list'|trans({}, 'MBHCashBundle') %}
 
 {% block content %}
 
@@ -15,12 +15,12 @@
         <thead>
             <tr>
                 <th class="td-xs"></th>
-                <th class="td-sm">Бронь</th>
-                <th class="td-md">Приход</th>
-                <th class="td-md">Расход</th>
-                <th class="td-md">Способ оплаты</th>
-                <th class="td-md">Вид операции</th>
-                <th class="td-md">Дата</th>
+                <th class="td-sm">{{ 'views.cash.index.reservation'|trans({}, 'MBHCashBundle') }}</th>
+                <th class="td-md">{{ 'views.cash.index.income'|trans({}, 'MBHCashBundle') }}</th>
+                <th class="td-md">{{ 'views.cash.index.expense'|trans({}, 'MBHCashBundle') }}</th>
+                <th class="td-md">{{ 'views.cash.index.payment_way'|trans({}, 'MBHCashBundle') }}</th>
+                <th class="td-md">{{ 'views.cash.index.operation_type'|trans({}, 'MBHCashBundle') }}</th>
+                <th class="td-md">{{ 'views.cash.index.date'|trans({}, 'MBHCashBundle') }}</th>
                 <th class="td-sm"></th>
             </tr>
         </thead>
@@ -29,8 +29,8 @@
         <tfoot>
             <tr>
                 <td colspan="8" class="text-right">
-                    <strong>Приход:</strong>&nbsp;<span id="cash-table-total-in"></span><br>
-                    <strong>Расход:</strong>&nbsp;<span id="cash-table-total-out"></span>
+                    <strong>{{ 'views.cash.index.income'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;<span id="cash-table-total-in"></span><br>
+                    <strong>{{ 'views.cash.index.expense'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;<span id="cash-table-total-out"></span>
                 </td>
             </tr>
         </tfoot>

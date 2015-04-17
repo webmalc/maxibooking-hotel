@@ -16,40 +16,40 @@ class VashotelType extends AbstractType
                 'isEnabled',
                 'checkbox',
                 [
-                    'label' => 'Включен?',
+                    'label' => 'form.vashhotelType.in_included',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Использовать ли в Channel manager?'
+                    'help' => 'form.vashhotelType.should_we_use_in_channel_manager'
                 ]
             )
             ->add(
                 'key',
                 'text',
                 [
-                    'label' => 'Ключ API',
+                    'label' => 'form.vashhotelType.api_key',
                     'required' => true,
                     'attr' => ['placeholder' => 'MySecretKeyForVashotelAPI'],
-                    'help' => 'Ключ, который задается в настройках гостиницы ВашОтель.RU'
+                    'help' => 'form.vashhotelType.vashhotel_ru_settings_key'
                 ]
             )
             ->add(
                 'hotelId',
                 'text',
                 [
-                    'label' => 'ID отеля',
+                    'label' => 'form.vashhotelType.hotel_id',
                     'required' => true,
                     'attr' => ['placeholder' => '1567'],
-                    'help' => 'ID отеля в настройках ВашОтель.RU'
+                    'help' => 'form.vashhotelType.vashhotel_ru_settings_hotel_id'
                 ]
             )
             ->add(
                 'isBreakfast',
                 'checkbox',
                 [
-                    'label' => 'Завтрак?',
+                    'label' => 'form.vashhotelType.breakfast',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Какой тип питания использовать RO или BB?'
+                    'help' => 'form.vashhotelType.r0_or_BB'
                 ]
             )
         ;

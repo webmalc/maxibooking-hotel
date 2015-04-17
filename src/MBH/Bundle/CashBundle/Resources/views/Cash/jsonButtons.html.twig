@@ -1,14 +1,14 @@
 {% spaceless %}
     <div class='btn-list text-right'>
         {% if entity.isConfirmed == false %}
-            <a data-action='cashDocumentConfirmation' data-header='Подтверждение платежа' data-text='Точно подтвердить платеж на сумму <b>{{ entity.total|number_format }} RUR</b>?' data-button='Подтвердить' data-button-icon='fa-check' data-button-class='primary' href='{{ path('cash_confirm', { 'id': entity.id}) }}' class='btn btn-primary btn-xs delete-link' title='Подтверждение платежа' data-toggle='tooltip'>
+            <a data-action='cashDocumentConfirmation' data-header={{ 'views.cash.jsonButtons.confirm_payment'|trans({}, 'MBHCashBundle') }} data-text={{ 'views.cash.jsonButtons.are_you_sure_confirm_payment'|trans({'%total_sum%': entity.total|number_format}, 'MBHCashBundle') }} data-button={{ 'views.cash.jsonButtons.confirm'|trans({}, 'MBHCashBundle') }} data-button-icon='fa-check' data-button-class='primary' href='{{ path('cash_confirm', { 'id': entity.id}) }}' class='btn btn-primary btn-xs delete-link' title={{ 'views.cash.jsonButtons.confirm_payment'|trans({}, 'MBHCashBundle') }} data-toggle='tooltip'>
                 <i class='fa fa-check'></i>
             </a>
         {% endif %}
-        <a href='{{ path('cash_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
+        <a href='{{ path('cash_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title={{ 'views.cash.jsonButtons.edit_record'|trans({}, 'MBHCashBundle') }} data-toggle='tooltip'>
             <i class='fa fa-pencil-square-o'></i>
         </a>
-        <a href='{{ path('cash_delete', { 'id': entity.id}) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
+        <a href='{{ path('cash_delete', { 'id': entity.id}) }}' class='btn btn-danger btn-xs delete-link ' title={{ 'views.cash.jsonButtons.delete_record'|trans({}, 'MBHCashBundle') }} data-toggle='tooltip'>
             <i class='fa fa-trash-o'></i>
         </a>
     </div>

@@ -104,7 +104,7 @@ class BaseController extends Controller
             $this->getRequest()
                 ->getSession()
                 ->getFlashBag()
-                ->set('success', 'Запись успешно удалена.');
+                ->set('success', $this->get('translator')->trans('controller.baseController.delete_record_success'));
 
         } catch (DeleteException $e) {
             $this->getRequest()

@@ -27,13 +27,13 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-                ->add('username', 'text', array('label' => 'Логин', 'group' => 'Данные аутентификации', 'attr' => array('placeholder' => 'ivan'),))
-                ->add('email', 'email', array('label' => 'E-mail', 'group' => 'Данные аутентификации', 'attr' => ['placeholder' => 'ivan@example.com']))
+                ->add('username', 'text', array('label' => 'form.userType.login', 'group' => 'form.userType.authentication_data', 'attr' => array('placeholder' => 'ivan'),))
+                ->add('email', 'email', array('label' => 'E-mail', 'group' => 'form.userType.authentication_data', 'attr' => ['placeholder' => 'ivan@example.com']))
         ;
 
         if ($this->isNew) {
             $builder->add('plainPassword', 'repeated', array(
-                'group' => 'Данные аутентификации',
+                'group' => 'form.userType.authentication_data',
                 'type' => 'password',
                 'options' => array('translation_domain' => 'FOSUserBundle'),
                 'first_options' => array('label' => 'form.password', 'attr' => array('autocomplete' => 'off', 'class' => 'password'),),
@@ -43,13 +43,13 @@ class UserType extends AbstractType
             ));
         } else {
             $builder->add('newPassword', 'repeated', array(
-                'group' => 'Данные аутентификации',
+                'group' => 'form.userType.authentication_data',
                 'type' => 'password',
                 'mapped' => false,
                 'required' => false,
                 'options' => array('translation_domain' => 'FOSUserBundle'),
-                'first_options' => array('label' => 'Новый пароль', 'attr' => array('autocomplete' => 'off', 'class' => 'password'),),
-                'second_options' => array('label' => 'Подтвердите пароль'),
+                'first_options' => array('label' => 'form.userType.new_password', 'attr' => array('autocomplete' => 'off', 'class' => 'password'),),
+                'second_options' => array('label' => 'form.userType.confirm_password'),
                 'invalid_message' => 'fos_user.password.mismatch',
                 'constraints' => new Length(array('min' => 6))
             ));
@@ -57,8 +57,8 @@ class UserType extends AbstractType
 
         $builder
                 ->add('roles', 'choice', array(
-                    'group' => 'Настройки',
-                    'label' => 'Роли',
+                    'group' => 'form.userType.settings',
+                    'label' => 'form.userType.roles',
                     'multiple' => true,
                     'choices' => $this->roles,
                     'translation_domain' => 'MBHUserBundleRoles',
@@ -68,34 +68,34 @@ class UserType extends AbstractType
         if(!$options['admin']) {
 
             $builder->add('hotels', 'document', array(
-                    'group' => 'Настройки',
-                    'label' => 'Отели',
+                    'group' => 'form.userType.settings',
+                    'label' => 'form.userType.hotels',
                     'multiple' => true,
                     'mapped' => false,
                     'data' => $options['hotels'],
                     'class' => 'MBHHotelBundle:Hotel',
                     'property' => 'name',
-                    'help' => 'Отели к которым имеет доступ пользователь.',
+                    'help' => 'form.userType.hotels_user_has_access_to',
                     'attr' => array('class' => "chzn-select")
                 ));
         }
 
         $builder
                 ->add('enabled', 'checkbox', array(
-                    'group' => 'Настройки',
-                    'label' => 'Включен?',
+                    'group' => 'form.userType.settings',
+                    'label' => 'form.userType.is_included',
                     'value' => true,
                     'required' => false,
                 ))
                 ->add('emailNotifications', 'checkbox', array(
-                    'group' => 'Настройки',
-                    'label' => 'Уведомления?',
+                    'group' => 'form.userType.settings',
+                    'label' => 'form.userType.notifications',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Получать ли уведомления на электронную почту?'
+                    'help' => 'form.userType.is_email_notifications'
                 ))
-                ->add('lastName', 'text', array('required' => false, 'label' => 'Фамилия', 'group' => 'Общая информация', 'attr' => ['placeholder' => 'Иванов']))
-                ->add('firstName', 'text', array('required' => false, 'label' => 'Имя', 'group' => 'Общая информация', 'attr' => ['placeholder' => 'Иван']))
+                ->add('lastName', 'text', array('required' => false, 'label' => 'form.userType.surname', 'group' => 'form.userType.general_info', 'attr' => ['placeholder' => 'form.userType.placeholder_surname']))
+                ->add('firstName', 'text', array('required' => false, 'label' => 'form.userType.name', 'group' => 'form.userType.general_info', 'attr' => ['placeholder' => 'form.userType.placeholder_name']))
 
         ;
     }
