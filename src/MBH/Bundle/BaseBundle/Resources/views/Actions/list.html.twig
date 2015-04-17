@@ -1,7 +1,7 @@
 <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
     <div class="container-fluid">
         <ul class="nav navbar-nav">
-            <li><button onclick="location.href = '{{ path(route) }}'" type="submit" class="btn btn-success navbar-btn"><i class="fa {{ icon is defined ? icon : 'fa-plus'}}"></i> {{ text is defined ? text : 'views.actions.list.add'|trans({}, 'MBHBaseBundle')}}</button></li>
+            <li><button onclick="location.href = '{{ path(route) }}'" type="submit" class="btn btn-success navbar-btn"><i class="fa {{ icon is defined ? icon : 'fa-plus'}}"> </i> {{ text is defined ? text : 'views.actions.list.add'|trans({}, 'MBHBaseBundle')}}</button></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
             <li id='list-export'></li>

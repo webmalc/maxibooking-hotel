@@ -46,11 +46,11 @@ class SearchResult
     protected $prices = [];
 
     /**
-     * mixed array of pricesByDay
+     * mixed array of pricesByDate
      *
      * @var []
      */
-    protected $pricesByDay = [];
+    protected $pricesByDate = [];
 
     /**
      * @var int 
@@ -278,9 +278,9 @@ class SearchResult
      * @param int $children
      * @return self
      */
-    public function setPricesByDay(array $prices, $adults, $children)
+    public function setPricesByDate(array $prices, $adults, $children)
     {
-        $this->pricesByDay[$adults . '_' . $children] = $prices;
+        $this->pricesByDate[$adults . '_' . $children] = $prices;
 
         return $this;
     }
@@ -290,10 +290,10 @@ class SearchResult
      * @param $children
      * @return null|array
      */
-    public function getPricesByDay($adults, $children)
+    public function getPricesByDate($adults, $children)
     {
-        if (isset($this->pricesByDay[$adults . '_' . $children])) {
-            return $this->pricesByDay[$adults . '_' . $children];
+        if (isset($this->pricesByDate[$adults . '_' . $children])) {
+            return $this->pricesByDate[$adults . '_' . $children];
         }
 
         return null;

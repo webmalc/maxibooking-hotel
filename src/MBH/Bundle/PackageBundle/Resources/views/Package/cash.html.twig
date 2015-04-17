@@ -16,9 +16,9 @@
                 {{ 'package.cash.paid_price'|trans({}, 'MBHPackageBundle') }}  {{ entity.paid|number_format }} / {{ entity.price|number_format }}
                 &nbsp;
                 {% if entity.isPaid %}
-                    <small class="text-success"><i class="fa fa-check"></i> {{ 'package.cash.paid'|trans({}, 'MBHPackageBundle') }} </small>
+                    <small class="text-success"><i class="fa fa-check"> </i> {{ 'package.cash.paid'|trans({}, 'MBHPackageBundle') }} </small>
                 {% else %}
-                    <small class="text-danger"><i class="fa fa-times"></i>{{ 'package.cash.not_paid'|trans({}, 'MBHPackageBundle') }} </small>
+                    <small class="text-danger"><i class="fa fa-times"> </i> {{ 'package.cash.not_paid'|trans({}, 'MBHPackageBundle') }} </small>
                 {% endif %}
                 &nbsp;
                 <i class="fa fa-plug"></i>

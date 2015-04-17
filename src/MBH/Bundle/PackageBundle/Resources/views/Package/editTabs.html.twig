@@ -14,7 +14,7 @@
 <ul class="nav nav-tabs" role="tablist">
     <li>
         <a href="{{ path('package_order_edit', { 'id': entity.order.id }) }}">
-            <i class="fa fa-file-text-o"></i>{{ 'package.editTabs.order'|trans({}, 'MBHPackageBundle') }} {{ entity.order.id }} <small>({{ entity.order.packages|length }})</small>
+            <i class="fa fa-file-text-o"> </i> {{ 'package.editTabs.order'|trans({}, 'MBHPackageBundle') }} {{ entity.order.id }} <small>({{ entity.order.packages|length }})</small>
         </a>
     </li>
 {% for item in menu %}

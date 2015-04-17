@@ -146,6 +146,14 @@ class Package extends Base
     protected $price;
 
     /**
+     * @var array
+     * @Gedmo\Versioned
+     * @ODM\Hash()
+     * @Assert\Type(type="array")
+     */
+    protected $pricesByDate;
+
+    /**
      * @var int
      * @Gedmo\Versioned
      * @ODM\Int(name="servicesPrice")
@@ -899,5 +907,27 @@ class Package extends Base
         }
 
         return false;
+    }
+
+    /**
+     * Set pricesByDate
+     *
+     * @param array $pricesByDate
+     * @return self
+     */
+    public function setPricesByDate($pricesByDate)
+    {
+        $this->pricesByDate = $pricesByDate;
+        return $this;
+    }
+
+    /**
+     * Get pricesByDate
+     *
+     * @return array $pricesByDate
+     */
+    public function getPricesByDate()
+    {
+        return $this->pricesByDate;
     }
 }

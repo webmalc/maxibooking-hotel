@@ -16,9 +16,9 @@
                 Цена: {{ entity.price|number_format }}
                 &nbsp;
                 {% if entity.isPaid %}
-                    <small class="text-success"><i class="fa fa-check"></i>{{ "package.service.paid"|trans({}, "MBHPackageBundle") }}</small>
+                    <small class="text-success"><i class="fa fa-check"> </i> {{ "package.service.paid"|trans({}, "MBHPackageBundle") }}</small>
                 {% else %}
-                    <small class="text-danger"><i class="fa fa-times"></i>{{ "package.service.not_paid"|trans({}, "MBHPackageBundle") }}</small>
+                    <small class="text-danger"><i class="fa fa-times"> </i> {{ "package.service.not_paid"|trans({}, "MBHPackageBundle") }}</small>
                 {% endif %}
                 &nbsp;
                 <i class="fa fa-plug"></i>

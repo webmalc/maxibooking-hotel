@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Helper service

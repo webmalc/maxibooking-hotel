@@ -24,15 +24,15 @@
                         {{ entity.paid|number_format }} / {{ entity.price|number_format }}
                         &nbsp;
                         {% if entity.isPaid %}
-                            <small class="text-success"><i class="fa fa-check"></i>{{ 'order.edit.paid'|trans({}, 'MBHPackageBundle') }} </small>
+                            <small class="text-success"><i class="fa fa-check"> </i> {{ 'order.edit.paid'|trans({}, 'MBHPackageBundle') }} </small>
                         {% else %}
-                            <small class="text-danger"><i class="fa fa-times"></i>{{ 'order.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>
+                            <small class="text-danger"><i class="fa fa-times"> </i> {{ 'order.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>
                         {% endif %}
                     </div>
                 </div>
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>{{ 'order.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10"><span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}</span>{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"></i> {{ 'order.edit.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}</div>
+                    <div class="col-md-10"><span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}</span>{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"> </i> {{ 'order.edit.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}</div>
                 </div>
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>{{ 'order.edit.payer'|trans({}, 'MBHPackageBundle') }}</strong></div>
@@ -42,9 +42,9 @@
                     <div class="col-md-2 text-right"><strong>{{ 'order.edit.is_confirmed'|trans({}, 'MBHPackageBundle') }}</strong></div>
                     <div class="col-md-10">
                         {% if entity.confirmed %}
-                            <small class="text-success"><i class="fa fa-check"></i>{{ 'order.edit.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }} </small>
+                            <small class="text-success"><i class="fa fa-check"> </i> {{ 'order.edit.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }} </small>
                         {% else %}
-                            <small class="text-danger"><i class="fa fa-times"></i>{{ 'order.edit.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}</small>
+                            <small class="text-danger"><i class="fa fa-times"> </i> {{ 'order.edit.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}</small>
                         {% endif %}
                     </div>
                 </div>

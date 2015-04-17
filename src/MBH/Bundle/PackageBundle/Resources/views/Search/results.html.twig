@@ -74,7 +74,7 @@
                         </td>
                         <td class="text-center">
                             <a href="{{ path('package_new', app.request.get('s')|merge({roomType: result.roomType.id })) }}" target="_blank" class="btn btn-success btn-xs package-search-book" title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
-                                <i class="fa fa-pencil-square-o"></i> {{ "search.results.reservate"|trans({}, "MBHPackageBundle") }}  (<span>{{ result.roomsCount }}</span>)
+                                <i class="fa fa-pencil-square-o"> </i> {{ "search.results.reservate"|trans({}, "MBHPackageBundle") }}  (<span>{{ result.roomsCount }}</span>)
                             </a>
                         </td>
                     </tr>
@@ -83,8 +83,8 @@
             </table>
 
         {% elseif results is iterable and results|length == 0 %}
-            <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i>{{ "search.results.nothing_found_for_your_request"|trans({}, "MBHPackageBundle") }}</div>
+            <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ "search.results.nothing_found_for_your_request"|trans({}, "MBHPackageBundle") }}</div>
         {% else %}
-            <div class="alert alert-info"><i class="fa fa-search"></i>{{ "search.results.enter_search_data"|trans({}, "MBHPackageBundle") }} </div>
+            <div class="alert alert-info"><i class="fa fa-search"> </i> {{ "search.results.enter_search_data"|trans({}, "MBHPackageBundle") }} </div>
         {% endif %}
 </div>

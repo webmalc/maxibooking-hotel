@@ -12,9 +12,9 @@
             <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
                 <div class="container">
                     <ul class="nav navbar-nav">
-                        <li><button type="submit" name="save" class="btn btn-info navbar-btn"><i class="fa fa-check-square-o"></i>{{ 'views.vashhotel.tariff.save'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
+                        <li><button type="submit" name="save" class="btn btn-info navbar-btn"><i class="fa fa-check-square-o"> </i> {{ 'views.vashhotel.tariff.save'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
                         <li><button type="button" data-toggle="tooltip" title={{ 'views.vashhotel.tariff.get_tariff_ids'|trans({}, 'MBHChannelManagerBundle') }} onclick="location.href = '{{ path('vashotel_tariff_sync') }}'" class="btn btn-success navbar-btn"><i class="fa fa-share-square-o"></i> Синхронизировать</button></li>
-                        <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i>{{ 'views.vashhotel.tariff.cancel'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
+                        <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"> </i> {{ 'views.vashhotel.tariff.cancel'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
                     </ul>
                 </div>
             </div>

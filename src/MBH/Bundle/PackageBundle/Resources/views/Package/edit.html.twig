@@ -38,9 +38,9 @@
                         {{ entity.price|number_format }}
                         &nbsp; 
                         {% if entity.isPaid %}
-                            <small class="text-success"><i class="fa fa-check"></i>{{ 'package.edit.paid'|trans({}, 'MBHPackageBundle') }}</small>
+                            <small class="text-success"><i class="fa fa-check"> </i> {{ 'package.edit.paid'|trans({}, 'MBHPackageBundle') }}</small>
                         {% else %}
-                            <small class="text-danger"><i class="fa fa-times"></i>{{ 'package.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>
+                            <small class="text-danger"><i class="fa fa-times"> </i> {{ 'package.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>
                         {% endif %}
                     </div>
                 </div>
@@ -53,22 +53,22 @@
                 </div>
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>{{ 'package.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10"><span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}</span>{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"></i> {{ 'package.edit.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}</div>
+                    <div class="col-md-10"><span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}</span>{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"> </i> {{ 'package.edit.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}</div>
                 </div>
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>{{ 'package.edit.is_confirmed'|trans({}, 'MBHPackageBundle') }}</strong></div>
                     <div class="col-md-10">
                         {% if entity.confirmed %}
-                            <small class="text-success"><i class="fa fa-check"></i> {{ 'package.edit.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }}</small>
+                            <small class="text-success"><i class="fa fa-check"> </i> {{ 'package.edit.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }}</small>
                         {% else %}
-                            <small class="text-danger"><i class="fa fa-times"></i>{{ 'package.edit.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}</small>
+                            <small class="text-danger"><i class="fa fa-times"> </i> {{ 'package.edit.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}</small>
                         {% endif %}
                     </div>
                 </div>
                 <div class="row spacer-top">
                     <div class="col-md-12 text-right">
                         <a target="_blank" class="btn btn-default btn-sm {% if entity.isPaid is empty %}disabled{% endif %}" href="{{ path('package_pdf', {'id': entity.id}) }}">
-                            <i class="fa fa-print"></i>{{ 'package.edit.print_act'|trans({}, 'MBHPackageBundle') }}
+                            <i class="fa fa-print"> </i> {{ 'package.edit.print_act'|trans({}, 'MBHPackageBundle') }}
                         </a>
                     </div>
                 </div>

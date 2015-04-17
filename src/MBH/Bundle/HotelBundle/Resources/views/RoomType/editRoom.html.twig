@@ -10,7 +10,7 @@
         <div class="container">
             {% include 'MBHBaseBundle:Actions:saveButtons.html.twig'%}
             <ul class="nav navbar-nav navbar-right">
-                <li><button data-href="{{ path('room_type_room_delete', {'id': entity.id, 'roomType': entity.roomType.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i>{{ 'views.roomType.editRoom.delete'|trans({}, 'MBHHotelBundle') }}</button></li>
+                <li><button data-href="{{ path('room_type_room_delete', {'id': entity.id, 'roomType': entity.roomType.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"> </i> {{ 'views.roomType.editRoom.delete'|trans({}, 'MBHHotelBundle') }}</button></li>
             </ul>
         </div>
     </div>

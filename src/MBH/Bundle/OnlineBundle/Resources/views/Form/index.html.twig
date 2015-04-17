@@ -4,12 +4,12 @@
 
 {% block content %}
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#online-form-config" data-toggle="tab"><i class="fa fa-cog"></i>{{ 'views.form.index.settings'|trans({}, 'MBHOnlineBundle') }}</a></li>
+        <li class="active"><a href="#online-form-config" data-toggle="tab"><i class="fa fa-cog"> </i> {{ 'views.form.index.settings'|trans({}, 'MBHOnlineBundle') }}</a></li>
 
         {% if entity %}
-            <li><a href="#online-form-code" data-toggle="tab"><i class="fa fa-code"></i>{{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
+            <li><a href="#online-form-code" data-toggle="tab"><i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
         {% else %}
-            <li class="disabled"><a href="#" data-toggle="tooltip" title= <i class="fa fa-code"></i>{{ 'views.form.index.settings_required'|trans({}, 'MBHOnlineBundle') }}><i class="fa fa-code"></i><i class="fa fa-code"></i>{{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
+            <li class="disabled"><a href="#" data-toggle="tooltip" title= <i class="fa fa-code"> </i> {{ 'views.form.index.settings_required'|trans({}, 'MBHOnlineBundle') }}><i class="fa fa-code"></i><i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
         {%  endif %}
 
     </ul>

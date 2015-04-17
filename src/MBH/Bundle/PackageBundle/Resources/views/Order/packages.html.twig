@@ -32,7 +32,7 @@
                                 <span class='text-{{ statuses[package.status].class }}' data-toggle='tooltip' title='{{ 'order.packages.reservation_type'|trans({}, 'MBHPackageBundle') }} {{ statuses[package.status].title }}'><i class='fa fa fa-paper-plane-o'></i></span>
                             </td>
                             <td class="text-center">
-                                <a class='btn btn-sm {% if package.deletedAt %}btn-danger{% else %}btn-default{% endif %}' href='{{ path('package_edit', {'id': package.id}) }}' rel='main' title='{{ 'order.packages.record_edit'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>{{ package.numberWithPrefix }}</a>{% if package.deletedAt %}<br><small><i class='fa fa-trash-o'></i>{{ 'order.packages.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
+                                <a class='btn btn-sm {% if package.deletedAt %}btn-danger{% else %}btn-default{% endif %}' href='{{ path('package_edit', {'id': package.id}) }}' rel='main' title='{{ 'order.packages.record_edit'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>{{ package.numberWithPrefix }}</a>{% if package.deletedAt %}<br><small><i class='fa fa-trash-o'> </i> {{ 'order.packages.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
                             </td>
                             <td>
                                 {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}<br><small>{{ plural(package.nights, 'order.packages.noch'|trans({}, 'MBHPackageBundle') ,  'order.packages.nochi'|trans({}, 'MBHPackageBundle') ,  'order.packages.nochei'|trans({}, 'MBHPackageBundle') ) }}</small>
@@ -46,7 +46,7 @@
 
                             </td>
                             <td class="text-right">
-                                <div class='text-right'><span class='{% if package.order.isPaid %}text-success'{% elseif package.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}>{{ package.price|number_format }}</span><br><small><i class='fa fa-sliders'></i> {{ package.tariff.name }}</small></div>
+                                <div class='text-right'><span class='{% if package.order.isPaid %}text-success'{% elseif package.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}>{{ package.price|number_format }}</span><br><small><i class='fa fa-sliders'> </i> {{ package.tariff.name }}</small></div>
                             </td>
                             <td>
                                 {% if 'now'|date('d.m.Y') == package.createdAt|date('d.m.Y') %}Сегодня, {{ package.createdAt|date('H:i') }}{% else %}{{ package.createdAt|date('d.m.Y H:i') }}{% endif %}<br><small>{{ package.createdBy }}</small>

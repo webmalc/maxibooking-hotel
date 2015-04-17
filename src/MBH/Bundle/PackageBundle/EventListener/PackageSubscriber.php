@@ -41,9 +41,7 @@ class PackageSubscriber implements EventSubscriber
         $doc = $args->getEntity();
 
         if ($doc instanceof Package) {
-            $this->container->get('mbh.room.cache.generator')->recalculateCache(
-                $doc->getRoomType(), $doc->getBegin(), $doc->getEnd()
-            );
+            //TODO: roomCache decrease
         }
     }
 
@@ -52,10 +50,7 @@ class PackageSubscriber implements EventSubscriber
         $doc = $args->getEntity();
 
         if ($doc instanceof Package) {
-
-            $this->container->get('mbh.room.cache.generator')->recalculateCache(
-                $doc->getRoomType(), $doc->getBegin(), $doc->getEnd()
-            );
+            //TODO: roomCache increase
         }
     }
 
