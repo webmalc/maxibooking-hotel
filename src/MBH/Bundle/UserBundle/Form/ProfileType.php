@@ -16,7 +16,7 @@ class ProfileType extends AbstractType
     {
             $builder->add('plainPassword', 'repeated', array(
                 'type' => 'password',
-                'group' => 'Введите новый пароль',
+                'group' => 'form.profileType.enter_new_password',
                 'options' => array('translation_domain' => 'FOSUserBundle'),
                 'first_options' => array('label' => 'form.password', 'attr' => array('autocomplete' => 'off', 'class' => 'password'),),
                 'second_options' => array('label' => 'form.password_confirmation'),
@@ -25,15 +25,15 @@ class ProfileType extends AbstractType
                     new NotBlank(),
                     new Length([
                         'min' => 8,
-                        'minMessage' => 'Пароль не может быть меньше 8 символов'
+                        'minMessage' => 'form.profileType.min_password'
                     ]),
                     new Regex([
                         'pattern' => '/\d/',
-                        'message' => 'Пароль должен содержать хотя бы одну цифру'
+                        'message' => 'form.profileType.min_number_password'
                     ]),
                     new Regex([
                         'pattern' => '/[A-Z]/',
-                        'message' => 'Пароль должен содержать хотя бы одну заглавную букву'
+                        'message' => 'form.profileType.min_capital_letter_password'
                     ])
                 ]
             ));

@@ -53,7 +53,7 @@ class ChannelManagerController extends Controller implements CheckHotelControlle
 
         if ($name) {
             $request->getSession()->getFlashBag()
-                ->set('success', 'Синхронизация окончена.')
+                ->set('success', $this->get('translator')->trans('controller.channelManagerController.sync_end'))
             ;
             return $this->redirect($this->generateUrl($name));
         }

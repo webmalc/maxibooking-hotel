@@ -97,7 +97,7 @@ class UserController extends Controller
             $this->updateAcl($entity, $form);
 
             $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', 'Запись успешно создана.')
+                    ->set('success', $this->get('translator')->trans('controller.profileController.record_saved_success'))
             ;
 
             return $this->afterSaveRedirect('user', $entity->getId());
@@ -204,7 +204,7 @@ class UserController extends Controller
             $this->updateAcl($entity, $form);
 
             $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', 'Запись успешно отредактирована.')
+                    ->set('success', $this->get('translator')->trans('controller.profileController.record_edited_success'))
             ;
             return $this->afterSaveRedirect('user', $entity->getId());
         }

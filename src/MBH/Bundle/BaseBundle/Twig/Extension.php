@@ -36,7 +36,18 @@ class Extension extends \Twig_Extension
         }
 
         $months = [
-            'янв', 'февр', 'март',  'апр',  'май', 'июнь', 'июль', 'авг', 'сент', 'окт', 'нояб', 'дек'
+            $this->get('translator')->trans('twig.extension.jan'),
+            $this->get('translator')->trans('twig.extension.feb'),
+            $this->get('translator')->trans('twig.extension.march'),
+            $this->get('translator')->trans('twig.extension.april'),
+            $this->get('translator')->trans('twig.extension.may'),
+            $this->get('translator')->trans('twig.extension.june'),
+            $this->get('translator')->trans('twig.extension.july'),
+            $this->get('translator')->trans('twig.extension.august'),
+            $this->get('translator')->trans('twig.extension.september'),
+            $this->get('translator')->trans('twig.extension.october'),
+            $this->get('translator')->trans('twig.extension.november'),
+            $this->get('translator')->trans('twig.extension.december')
         ];
 
         return $date->format('d') . ' ' . $months[$date->format('n') - 1] . '.';

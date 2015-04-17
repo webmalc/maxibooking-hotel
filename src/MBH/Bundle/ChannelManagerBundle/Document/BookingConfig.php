@@ -46,7 +46,7 @@ class BookingConfig extends Base implements BaseInterface
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="bookingConfig")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="document.bookingConfig.no_hotel_selected")
      */
     protected $hotel;
 
@@ -54,7 +54,7 @@ class BookingConfig extends Base implements BaseInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\NotNull(message="Не указан логин (username)")
+     * @Assert\NotNull(message= "validator.document.bookingConfig.login_not_specified")
      */
     protected $username;
 
@@ -62,7 +62,7 @@ class BookingConfig extends Base implements BaseInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\NotNull(message="Не указан пароль (password)")
+     * @Assert\NotNull(message="validator.document.bookingConfig.password_not_specified")
      */
     protected $password;
 
@@ -70,7 +70,7 @@ class BookingConfig extends Base implements BaseInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\NotNull(message="Не указан Id отеля")
+     * @Assert\NotNull(message="validator.document.bookingConfig.no_hotel_id_specified")
      */
     protected $hotelId;
 

@@ -30,7 +30,7 @@ class RoomType extends AbstractType
                         'label' => $roomType->getName(),
                         'required' => false,
                         'attr' => [
-                            'placeholder' => 'ID типа номера <'. $roomType->getName() .'> в настройках сервиса',
+                            'placeholder' => 'form.roomType.room_type_id <'. $roomType->getName() .'> form.roomType.in_service_settings',
                         ],
                         'data' => $data
                     ])

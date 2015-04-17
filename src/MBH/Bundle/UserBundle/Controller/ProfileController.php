@@ -52,7 +52,7 @@ class ProfileController extends Controller
             $this->container->get('fos_user.user_manager')->updateUser($entity);
 
             $this->getRequest()->getSession()->getFlashBag()
-                ->set('success', 'Новый пароль успешно сохранен.')
+                ->set('success', $this->get('translator')->trans('controller.profileController.new_password_saved_success'))
             ;
             return $this->redirect($this->generateUrl('user_profile'));
         }

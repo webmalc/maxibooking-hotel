@@ -41,7 +41,7 @@ class TariffType extends AbstractType
                         'label' => $tariff->getName(),
                         'required' => false,
                         'attr' => [
-                            'placeholder' => 'ID тарифа <'. $tariff->getName() .'> в настройках сервиса',
+                            'placeholder' => 'form.tariffType.tariff_id <'. $tariff->getName() .'> form.tariffType.in_service_settings',
                         ],
                         'data' => $data
                     ])

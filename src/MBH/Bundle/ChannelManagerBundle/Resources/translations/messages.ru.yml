@@ -1,0 +1,28 @@
+form.bookingType.is_included: Включен?
+form.bookingType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.bookingType.login: Логин
+form.bookingType.booking_api_com_access_login: Логин (username) для доступа к API Booking.com
+form.bookingType.password: Пароль
+form.bookingType.booking_api_com_password_access: Пароль (password) для доступа к API Booking.com
+form.bookingType.hotel_id: ID отеля
+form.bookingType.hotel_id_in_booking_com: ID отеля в Booking.com
+form.oktogoType.is_included: Включен?
+form.oktogoType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.oktogoType.login: Логин
+form.oktogoType.oktogo_api_login_access: Логин для доступа к API Oktogo.ru
+form.oktogoType.password: Пароль
+form.oktogoType.oktogo_api_password_access: Пароль для доступа к API Oktogo.ru
+form.oktogoType.username: Имя пользователя
+form.oktogoType.oktogo_ru_username: Имя пользователя в Oktogo.ru
+form.roomType.room_type_id: ID типа номера
+form.roomType.in_service_settings: в настройках сервиса
+form.tariffType.tariff_id: ID тарифа
+form.tariffType.in_service_settings: в настройках сервиса
+form.vashhotelType.in_included: Включен?
+form.vashhotelType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.vashhotelType.api_key: Ключ API
+form.vashhotelType.vashhotel_ru_settings_key: Ключ, который задается в настройках гостиницы ВашОтель.RU
+form.vashhotelType.hotel_id: ID отеля
+form.vashhotelType.vashhotel_ru_settings_hotel_id: ID отеля в настройках ВашОтель.RU
+form.vashhotelType.breakfast: Завтрак?
+form.vashhotelType.r0_or_BB: Какой тип питания использовать RO или BB?

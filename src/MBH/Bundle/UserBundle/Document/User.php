@@ -32,9 +32,9 @@ class User extends BaseUser
      * @ODM\String(name="firstName", type="string")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="validator.document.user.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.user.max_name"
      * )
      */
     protected $firstName;
@@ -45,9 +45,9 @@ class User extends BaseUser
      * @ODM\String(name="lastName", type="string")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткая фамилия",
+     *      minMessage="validator.document.user.min_surname",
      *      max=100,
-     *      maxMessage="Слишком длинная фамилия"
+     *      maxMessage="validator.document.user.max_surname"
      * )
      */
     protected $lastName;

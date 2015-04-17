@@ -171,7 +171,7 @@ class CashController extends Controller
             $dm->flush();
 
             $this->getRequest()->getSession()->getFlashBag()
-                ->set('success', 'Запись успешно отредактирована.');
+                ->set('success', $this->get('translator')->trans('controller.cashController.edit_record_success'));
 
             return $this->afterSaveRedirect('cash', $entity->getId());
         }
@@ -222,7 +222,7 @@ class CashController extends Controller
 
         return new JsonResponse([
             'error' => false,
-            'message' => 'Платеж успешно подтвержден'
+            'message' => $this->get('translator')->trans('controller.cashController.payment_confirmed_success')
         ]);
     }
 

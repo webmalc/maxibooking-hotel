@@ -12,21 +12,21 @@ class CashDocumentType extends AbstractType
     {
         $builder
                 ->add('payer_select', 'text', [
-                    'label' => 'Плательщик',
+                    'label' => 'form.cashDocumentType.payer',
                     'required' => false,
                     'mapped' => false,
                     'data' => (empty($options['payer'])) ? null : $options['payer']->getId(),
                     'group' => $options['groupName'],
-                    'attr' => ['placeholder' => 'Иванов Иван Иванович', 'style' => 'min-width: 500px']
+                    'attr' => ['placeholder' => 'form.cashDocumentType.placeholder_fio', 'style' => 'min-width: 500px']
                 ])
                 ->add('total', 'text', [
-                    'label' => 'Сумма',
+                    'label' => 'form.cashDocumentType.sum',
                     'required' => true,
                     'group' => $options['groupName'],
                     'attr' => ['class' => 'spinner'],
                 ])
                 ->add('method', 'choice', [
-                    'label' => 'Способ оплаты',
+                    'label' => 'form.cashDocumentType.payment_way',
                     'required' => true,
                     'multiple' => false,
                     'empty_value' => '',
@@ -34,7 +34,7 @@ class CashDocumentType extends AbstractType
                     'choices' => $options['methods']
                 ])
                 ->add('operation', 'choice', [
-                    'label' => 'Вид операции',
+                    'label' => 'form.cashDocumentType.operation_type',
                     'required' => true,
                     'multiple' => false,
                     'empty_value' => '',
@@ -42,7 +42,7 @@ class CashDocumentType extends AbstractType
                     'choices' => $options['operations']
                 ])
                 ->add('note', 'textarea', [
-                    'label' => 'Комментарий',
+                    'label' => 'form.cashDocumentType.comment',
                     'group' => $options['groupName'],
                     'required' => false,
                 ])

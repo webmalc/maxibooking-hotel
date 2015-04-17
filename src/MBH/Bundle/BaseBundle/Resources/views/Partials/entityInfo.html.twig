@@ -3,27 +3,27 @@
     <div class="panel-body">
 
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#entity-info" data-toggle="tab"><i class="fa fa-info-circle"></i> Информация</a></li>
-            <li><a href="#entity-logs" data-toggle="tab"><i class="fa fa-clock-o"></i> История изменений</a></li>
+            <li class="active"><a href="#entity-info" data-toggle="tab"><i class="fa fa-info-circle"></i>{{ 'views.partials.entityInfo.info'|trans({}, 'MBHBaseBundle') }}</a></li>
+            <li><a href="#entity-logs" data-toggle="tab"><i class="fa fa-clock-o"></i>{{ 'views.partials.entityInfo.changes_history'|trans({}, 'MBHBaseBundle') }}</a></li>
         </ul>
 
         <div class="tab-content">
             <div class="tab-pane fade in active" id="entity-info">
-                Создана {{entity.createdAt|date('d.m.Y H:i')}}{% if entity.createdBy is not null  %} пользователем {{ entity.createdBy}}{% endif %}
+                {{ 'views.partials.entityInfo.created'|trans({}, 'MBHBaseBundle') }}{{entity.createdAt|date('d.m.Y H:i')}}{% if entity.createdBy is not null  %}{{ 'views.partials.entityInfo.by_user'|trans({}, 'MBHBaseBundle') }} {{ entity.createdBy}}{% endif %}
                 {% if entity.updatedAt != null and  entity.getUpdatedBy != null%}
-                    <br />Изменена {{entity.updatedAt|date('d.m.Y H:i')}}{% if entity.updatedBy is not null %} пользователем {{entity.updatedBy}}{% endif %}
+                    <br />{{ 'views.partials.entityInfo.modified'|trans({}, 'MBHBaseBundle') }} {{entity.updatedAt|date('d.m.Y H:i')}}{% if entity.updatedBy is not null %}{{ 'views.partials.entityInfo.by_user'|trans({}, 'MBHBaseBundle') }} {{entity.updatedBy}}{% endif %}
                 {% endif %}
             </div>
             <div class="tab-pane fade"  id="entity-logs">
                 {% if logs is empty %}
-                    <p>Изменений не производилось</p>
+                    <p>{{ 'views.partials.entityInfo.no_changes_made'|trans({}, 'MBHBaseBundle') }}</p>
                 {% else %}
                     <table class="table table-striped table-hover table-condensed without-fixed-header without-table-tools">
                         <thead>
                             <tr>
-                                <th class="td-md">Дата</th>
-                                <th class="td-md">Пользователь</th>
-                                <th>Изменения</th>
+                                <th class="td-md">{{ 'views.partials.entityInfo.date'|trans({}, 'MBHBaseBundle') }}</th>
+                                <th class="td-md">{{ 'views.partials.entityInfo.user'|trans({}, 'MBHBaseBundle') }}</th>
+                                <th>{{ 'views.partials.entityInfo.changes'|trans({}, 'MBHBaseBundle') }}</th>
                             </tr>
                         </thead>
                         <tbody>

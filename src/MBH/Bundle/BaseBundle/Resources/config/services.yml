@@ -65,6 +65,7 @@ services:
 
     mbh.helper:
             class: MBH\Bundle\BaseBundle\Service\Helper
+            arguments: [@service_container]
 
     mbh.mailer:
             class: MBH\Bundle\BaseBundle\Service\Mailer

@@ -43,7 +43,7 @@ class CashDocument extends Base
      * @var \MBH\Bundle\PackageBundle\Document\Order
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Order", inversedBy="cashDocuments")
-     * @Assert\NotNull(message="Не выбран заказ")
+     * @Assert\NotNull(message="validator.document.cashDocument.no_order_selected")
      */
     protected $order;
 
@@ -66,7 +66,7 @@ class CashDocument extends Base
      * @ODM\String()
      * @Assert\Choice(
      *      choices = {"cash", "cashless", "electronic"}, 
-     *      message = "Неверный тип тарифа."
+     *      message = "validator.document.cashDocument.wrong_tariff_type"
      * )
      */
     protected $method;
@@ -78,7 +78,7 @@ class CashDocument extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
-     *      minMessage="Сумма не может быть меньше единицы"
+     *      minMessage="validator.document.cashDocument.min_sum_less_1"
      * )
      */
     protected $total;
@@ -89,7 +89,7 @@ class CashDocument extends Base
      * @ODM\String()
      * @Assert\Choice(
      *      choices = {"in", "out", "fine", "fee"},
-     *      message = "Неверный тип тарифа."
+     *      message = "validator.document.cashDocument.wrong_tariff_type"
      * )
      */
     protected $operation;

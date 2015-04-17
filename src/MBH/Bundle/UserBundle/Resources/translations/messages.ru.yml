@@ -1,0 +1,21 @@
+form.profileType.enter_new_password: Введите новый пароль
+form.profileType.min_password: Пароль не может быть меньше 8 символов
+form.profileType.min_number_password: Пароль должен содержать хотя бы одну цифру
+form.profileType.min_capital_letter_password: Пароль должен содержать хотя бы одну заглавную букву
+form.userType.authentication_data: Данные аутентификации
+form.userType.new_password: Новый пароль
+form.userType.confirm_password: Подтвердите пароль
+form.userType.login: Логин
+form.userType.settings: Настройки
+form.userType.roles: Роли
+form.userType.hotels: Отели
+form.userType.hotels_user_has_access_to: Отели к которым имеет доступ пользователь.
+form.userType.is_included: Включен?
+form.userType.notifications: Уведомления?
+form.userType.is_email_notifications: Получать ли уведомления на электронную почту?
+form.userType.surname: Фамилия
+form.userType.general_info: Общая информация
+form.userType.placeholder_surname: Иванов
+form.userType.name: Имя
+form.userType.general_info: Общая информация
+form.userType.placeholder_name: Иван

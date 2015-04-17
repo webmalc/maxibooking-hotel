@@ -1,10 +1,10 @@
 {% extends 'MBHUserBundle:Profile:layout.html.twig' %}
 
-{% set small_title = "cмена пароля"%}
+{% set small_title = 'views.profile.profile.change_password'|trans({}, 'FOSUserBundle')%}
 
 {% block content %}
 
-    <div class="alert alert-warning"><i class="fa fa-lock"></i> Пароль дожен быть не меньше 8 символов и содержать цифру и заглавную букву!</div>
+    <div class="alert alert-warning"><i class="fa fa-lock"></i>{{ 'views.profile.profile.password_error'|trans({}, 'FOSUserBundle') }}</div>
 
     {{ form_start(form, {'action': path('user_profile_update'), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}

@@ -144,7 +144,7 @@ class ChannelManager
 
                 if (!$noError) {
                     $this->container->get('mbh.messenger')->send(
-                        $service['title'] . ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.',
+                        $service['title'] . $this->get('translator')->trans('services.channelManager.sync_error_check_interaction_settings'),
                         'system', 'danger', false, new \DateTime('+1 minute'), true
                     );
                 }

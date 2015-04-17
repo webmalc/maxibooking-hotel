@@ -35,15 +35,15 @@ views.roomType.generateRooms.generate_rooms: Сгенерировать номе
 views.roomType.generateRooms.cancel: Отмена
 views.roomType.generateRooms.delete: Удалить
 views.roomType.index.new_room_type: Новый тип номера
-views.roomType.index.edit_room_type: "Редактировать тип номера "
+views.roomType.index.edit_room_type: "Редактировать тип номера <%name%>"
 views.roomType.index.edit: Редактировать
-views.roomType.index.create_rooms_for_room_type: "Создать номера для типа номера"
+views.roomType.index.create_rooms_for_room_type: "Создать номера для типа номера <%name%>"
 views.roomType.index.add: Добавить
 views.roomType.index.bed: 'койко-место'
 views.roomType.index.room: 'номер'
-views.roomType.index.generate_rooms_for_room_type: "Сгенерировать номера для типа номера "
+views.roomType.index.generate_rooms_for_room_type: "Сгенерировать номера для типа номера <%name%>"
 views.roomType.index.generate: Сгенерировать
-views.roomType.index.delete_room_type: "Удалить тип номера "
+views.roomType.index.delete_room_type: "Удалить тип номера <%name%>"
 views.roomType.index.delete: Удалить
 views.roomType.index.room_fund: Номерной фонд
 views.roomType.index.name: Название

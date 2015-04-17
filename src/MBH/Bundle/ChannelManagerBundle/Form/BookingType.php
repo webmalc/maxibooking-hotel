@@ -16,40 +16,40 @@ class BookingType extends AbstractType
                 'isEnabled',
                 'checkbox',
                 [
-                    'label' => 'Включен?',
+                    'label' => 'form.bookingType.is_included',
                     'value' => true,
                     'required' => false,
-                    'help' => 'Использовать ли в Channel manager?'
+                    'help' => 'form.bookingType.should_we_use_in_channel_manager'
                 ]
             )
             ->add(
                 'username',
                 'text',
                 [
-                    'label' => 'Логин',
+                    'label' => 'form.bookingType.login',
                     'required' => true,
                     'attr' => ['placeholder' => 'username'],
-                    'help' => 'Логин (username) для доступа к API Booking.com'
+                    'help' => 'form.bookingType.booking_api_com_access_login'
                 ]
             )
             ->add(
                 'password',
                 'text',
                 [
-                    'label' => 'Пароль',
+                    'label' => 'form.bookingType.password',
                     'required' => true,
                     'attr' => ['placeholder' => 'password'],
-                    'help' => 'Пароль (password) для доступа к API Booking.com'
+                    'help' => 'form.bookingType.booking_api_com_password_access'
                 ]
             )
             ->add(
                 'hotelId',
                 'text',
                 [
-                    'label' => 'ID отеля',
+                    'label' => 'form.bookingType.hotel_id',
                     'required' => true,
                     'attr' => ['placeholder' => 'hotel id'],
-                    'help' => 'ID отеля в Booking.com'
+                    'help' => 'form.bookingType.hotel_id_in_booking_com'
                 ]
             )
         ;
