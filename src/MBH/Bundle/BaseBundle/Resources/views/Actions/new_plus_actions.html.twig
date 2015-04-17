@@ -1,0 +1,13 @@
+{% if save_close is not defined %}
+    {% set save_close = true %}
+{% endif %}
+
+<div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+    <div class="container-fluid">
+        {% include 'MBHBaseBundle:Actions:saveButtons.html.twig' with {'save_close': save_close, 'save_text': save_text|default('views.actions.new.save'|trans({}, 'MBHBaseBundle'))}%}
+        <ul class="nav navbar-nav navbar-right">
+            <li id='list-export'></li>
+        </ul>
+    </div>
+
+</div>

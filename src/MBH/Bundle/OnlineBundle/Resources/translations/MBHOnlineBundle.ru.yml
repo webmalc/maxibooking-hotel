@@ -78,12 +78,3 @@ views.form.index.before_closing_tag: Перед закрывающим тего�
 views.form.index.search_page_embed_code: Код страницы поиска для вставки на сайт:
 views.form.index.to_results_place: На место для результатов:
 views.form.layout.online_form: "Онлайн форма"
-controller.apiController.reservation_error_occured_refresh_page_and_try_again: 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
-controller.apiController.reservations_made_success: 'Номера успешно забронированы.'
-controller.apiController.your_reservations_numbers: 'Номера ваших броней'
-controller.apiController.room_reservation_made_success: 'Номер успешно забронирован.'
-controller.apiController.your_reservation_number: 'Номер вашей брони'
-controller.apiController.thank_you: 'Большое спасибо. '
-controller.apiController.we_will_call_you_back_soon: ' Мы свяжемся с Вами в ближайшее время.<br>'
-controller.apiController.your_order_number: 'Номер вашего заказа: '
-controller.formController.settings_saved_success: 'Настройки успешно сохранены.'

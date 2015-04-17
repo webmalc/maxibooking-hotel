@@ -37,7 +37,7 @@
                 </div>
 
                 {% if entity.services.count %}
-                    <table class="table table-actions table-striped table-hover table-condensed">
+                    <table class="table table-actions table-striped table-hover table-condensed service-tables not-auto-datatable">
                         <thead>
                             <tr>
                                 <th class="td-xs"></th>
@@ -79,18 +79,23 @@
                     <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> В этой категории нет ни одной услуги. <a href="{{ path('price_service_category_entry_new', {'id': entity.id }) }}">Добавить услугу?</a></div>
                 {% endif %}
 
+                <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+                    <div class="container-fluid">
+                        <ul class="nav navbar-nav">
+                            <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить изменения</button></li>
+                            <li><button onclick="location.href = '{{ path('price_service_category_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> Добавить новую категорию</button></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+
+                            <li id='list-export-add-{{ loop.index }}'></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         {% endfor %}
     </div>
 
-        <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
-            <div class="container-fluid">
-                <ul class="nav navbar-nav">
-                    <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить изменения</button></li>
-                    <li><button onclick="location.href = '{{ path('price_service_category_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> Добавить новую категорию</button></li>
-                </ul>
-            </div>
-        </div>
+
     </form>
 {% endblock %} 
 
