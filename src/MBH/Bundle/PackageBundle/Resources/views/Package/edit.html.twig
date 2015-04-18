@@ -10,66 +10,76 @@
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
-            
+
             <div class="alert alert-warning package-main-info">
                 <div class="row">
-                    <div class="col-md-2 text-right"><strong>{{ 'package.edit.dates'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10">{{ entity.begin|date('d.m.Y') }} - {{ entity.end|date('d.m.Y') }} ({{ entity.days }}/{{ entity.nights }})</div>
-                </div>
-                <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>{{ 'package.edit.guests'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10">
-                        <span data-toggle="tooltip" title="{{ 'package.edit.adults'|trans({}, 'MBHPackageBundle') }}  {{entity.adults}} {{ 'package.edit.children'|trans({}, 'MBHPackageBundle') }} {{entity.children}}">
-                            {% if entity.adults > 0 %}{% for i in 1..entity.adults %}<i class="fa fa-male"></i>&nbsp;{% endfor %}{% endif %}{% if entity.children > 0 %}<small>{% for i in 1..entity.children %}<i class="fa fa-child"></i>&nbsp;{% endfor %}</small>{% endif %}
-                        </span>
-                    </div>
-                </div>
-                <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>{{ 'package.edit.tariff'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10">{{ entity.tariff.name }}</div>
-                </div>
-                <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>{{ 'package.edit.room'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10">{{ entity.roomType.hotel.name }} - {{ entity.roomType.name }}</div>
-                </div>
-                <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>Цена</strong></div>
-                    <div class="col-md-10">
-                        {{ entity.price|number_format }}
-                        &nbsp; 
-                        {% if entity.isPaid %}
-                            <small class="text-success"><i class="fa fa-check"> </i> {{ 'package.edit.paid'|trans({}, 'MBHPackageBundle') }}</small>
-                        {% else %}
-                            <small class="text-danger"><i class="fa fa-times"> </i> {{ 'package.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>{{ 'package.edit.service_price'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10">
-                        {{ entity.servicesPrice|number_format }}
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>{{ 'package.edit.tariff'|trans({}, 'MBHPackageBundle') }}</strong></div>
+                            <div class="col-md-9">{{ entity.tariff.name }}</div>
+                        </div>
+                        <div class="row spacer-top">
+                            <div class="col-md-3"><strong>Цена</strong></div>
+                            <div class="col-md-9">
+                                {{ entity.price|number_format }}
+                                &nbsp;
+                                {% if entity.isPaid %}
+                                    <small class="text-success"><i
+                                                class="fa fa-check"> </i> {{ 'package.edit.paid'|trans({}, 'MBHPackageBundle') }}
+                                    </small>
+                                {% else %}
+                                    <small class="text-danger"><i
+                                                class="fa fa-times"> </i> {{ 'package.edit.not_paid'|trans({}, 'MBHPackageBundle') }}
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row spacer-top">
+                            <div class="col-md-3">
+                                <strong>{{ 'package.edit.service_price'|trans({}, 'MBHPackageBundle') }}</strong></div>
+                            <div class="col-md-9">
+                                {{ entity.servicesPrice|number_format }}
 
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>{{ 'package.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10"><span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}</span>{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"> </i> {{ 'package.edit.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}</div>
-                </div>
-                <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>{{ 'package.edit.is_confirmed'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10">
-                        {% if entity.confirmed %}
-                            <small class="text-success"><i class="fa fa-check"> </i> {{ 'package.edit.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }}</small>
-                        {% else %}
-                            <small class="text-danger"><i class="fa fa-times"> </i> {{ 'package.edit.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}</small>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="row spacer-top">
-                    <div class="col-md-12 text-right">
-                        <a target="_blank" class="btn btn-default btn-sm {% if entity.isPaid is empty %}disabled{% endif %}" href="{{ path('package_pdf', {'id': entity.id}) }}">
-                            <i class="fa fa-print"> </i> {{ 'package.edit.print_act'|trans({}, 'MBHPackageBundle') }}
-                        </a>
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>{{ 'package.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong></div>
+                            <div class="col-md-8"><span
+                                        class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}</span>{% if entity.deletedAt %} &nbsp;
+                                <small class="text-danger"><i
+                                        class="fa fa-trash-o"> </i> {{ 'package.edit.deleted'|trans({}, 'MBHPackageBundle') }}
+                                </small>{% endif %}</div>
+                        </div>
+                        <div class="row spacer-top">
+                            <div class="col-md-4">
+                                <strong>{{ 'package.edit.is_confirmed'|trans({}, 'MBHPackageBundle') }}</strong></div>
+                            <div class="col-md-8">
+                                {% if entity.confirmed %}
+                                    <small class="text-success"><i
+                                                class="fa fa-check"> </i> {{ 'package.edit.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }}
+                                    </small>
+                                {% else %}
+                                    <small class="text-danger"><i
+                                                class="fa fa-times"> </i> {{ 'package.edit.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row spacer-top">
+                            <div class="col-md-4">
+                                <strong>Акт</strong></div>
+                            <div class="col-md-8">
+                                <a target="_blank"
+                                   class="btn btn-default btn-sm {% if entity.isPaid is empty %}disabled{% endif %}"
+                                   href="{{ path('package_pdf', {'id': entity.id}) }}">
+                                    <i class="fa fa-print"> </i> {{ 'package.edit.print_act'|trans({}, 'MBHPackageBundle') }}
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

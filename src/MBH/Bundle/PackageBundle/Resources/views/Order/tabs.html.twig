@@ -3,8 +3,8 @@
 
 {% set menu = [
     {'route': 'package_order_edit', 'title': '<i class="fa fa-info-circle"></i>' ~ 'order.tabs.order_info'|trans({}, 'MBHPackageBundle')  ~ '<small>' ~ confirmed ~ '</small>'},
-    {'route': 'package_order_packages', 'title': '<i class="fa fa fa-paper-plane-o"></i>' ~ 'order.tabs.reservations'|trans({}, 'MBHPackageBundle')  ~ '<small>(' ~ entity.packages|length ~ ')</small>' },
-    {'route': 'package_order_tourist_edit', 'title': '<i class="fa fa-user"></i>' ~ 'order.tabs.payer'|trans({}, 'MBHPackageBundle')},
+    {'route': 'package_order_packages', 'title': '<i class="fa fa fa-paper-plane-o"></i> ' ~ 'order.tabs.reservations'|trans({}, 'MBHPackageBundle')  ~ '<small>(' ~ entity.packages|length ~ ')</small>' },
+    {'route': 'package_order_tourist_edit', 'title': '<i class="fa fa-user"></i> ' ~ 'order.tabs.payer'|trans({}, 'MBHPackageBundle')},
     {'route': 'package_order_cash', 'title': '<i class="fa fa-ruble"></i> '~'order.tabs.calculations'|trans({}, 'MBHPackageBundle')~'<small>' ~ price ~ '</small>'}
 ]
 %}

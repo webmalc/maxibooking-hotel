@@ -55,7 +55,6 @@ class FixturesCommand extends ContainerAwareCommand
           'WiFi' => ['name' => 'WiFi', 'calcType' => 'per_night'],
           'Internet' => ['name' => 'Интернет', 'calcType' => 'per_night'],
           'Parking space' => ['name' => 'Парковка', 'calcType' => 'per_night'],
-          'Extrabed' => ['name' => 'Дополнительная кровать', 'calcType' => 'per_night'],
           'Babycot' => ['name' => 'Детская кровать', 'calcType' => 'per_night'],
 
       ] 

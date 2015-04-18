@@ -10,7 +10,6 @@
                 <th class="td-xs"></th>
                 <th>{{ 'views.hotel.index.name'|trans({}, 'MBHHotelBundle') }}</th>
                 <th class="td-md text-center">{{ 'views.hotel.index.prefix'|trans({}, 'MBHHotelBundle') }}</th>
-                <th class="td-md text-center">{{ 'views.hotel.index.sale_dates'|trans({}, 'MBHHotelBundle') }}</th>
                 <th class="td-md text-center">{{ 'views.hotel.index.chosen_by_default'|trans({}, 'MBHHotelBundle') }}</th>
                 <th class="td-sm"></th>
             </tr>
@@ -23,7 +22,6 @@
                         <a href="{{ path('hotel_edit', { 'id': entity.id }) }}" rel="main" title= {{ 'views.hotel.index.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">{{ entity.name }}</a>
                     </td>
                     <td class="text-center">{{ entity.prefix }}</td>
-                    <td class="text-center">{{ entity.saleDays }}</td>
                     <td class="text-center">
                         {% if entity.isDefault %}
                             <span class="label label-success">Да</span>

@@ -1,3 +1,40 @@
 {% if entity.deletedAt is empty %}
-    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'package_order_delete', 'delete_title': 'order.navbar.delete_order'|trans({}, 'MBHPackageBundle')} %}
+
+    <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav">
+                <li>
+                    <button type="submit" name="save_close" class="btn btn-success navbar-btn"><i
+                                class="fa fa-check-square-o"> </i> {{ 'package.actions.save_and_close'|trans({}, 'MBHPackageBundle') }}
+                    </button>
+                </li>
+                <li>
+                    <button type="submit" name="save" class="btn btn-info navbar-btn"><i
+                                class="fa fa-check-square-o"> </i> {{ save_text|default('package.actions.save'|trans({}, 'MBHPackageBundle')) }}
+                    </button>
+                </li>
+                <li>
+                    <button type="button" onclick="location.href = '{{ path('package_search', {'order': entity.id}) }}'"
+                            class="btn btn-default navbar-btn"><i
+                                class="fa fa-search"> </i> {{ 'order.package.add'|trans({}, 'MBHPackageBundle') }}</button>
+                </li>
+                <li>
+                    <button type="button" onclick="location.href = '{{ title_url|default(path('_welcome')) }}'"
+                            class="btn btn-default navbar-btn"><i
+                                class="fa fa-ban"> </i> {{ 'package.actions.cancel'|trans({}, 'MBHPackageBundle') }}
+                    </button>
+                </li>
+            </ul>
+            {% if entity.isDeleted is empty %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <button data-href="{{ path('package_order_delete', {'id': entity.id}) }}"
+                                class="btn btn-danger navbar-btn delete-link"><i
+                                    class="fa fa-trash-o"> </i> {{ 'order.navbar.delete_order'|trans({}, 'MBHPackageBundle') }}
+                        </button>
+                    </li>
+                </ul>
+            {% endif %}
+        </div>
+    </div>
 {% endif %}

@@ -1,7 +1,7 @@
 {% set accommodation = entity.accommodation ? '' : '(нет)' %}
 
 {% set menu = [
-    {'route': 'package_edit', 'title': '<i class="fa fa-info-circle"></i>'~ 'package.editTabs.reservation_info'|trans({}, 'MBHPackageBundle')},
+    {'route': 'package_edit', 'title': '<i class="fa fa-info-circle"></i> '~ 'package.editTabs.reservation_info'|trans({}, 'MBHPackageBundle')},
     {'route': 'package_guest', 'title': '<i class="fa fa-users"></i> '~'package.editTabs.guests'|trans({}, 'MBHPackageBundle')~'<small>(' ~ entity.tourists|length ~ ')</small>'},
     {'route': 'package_service', 'title': '<i class="fa fa-plug"></i> '~'package.editTabs.services'|trans({}, 'MBHPackageBundle')~' <small>(' ~ entity.servicesPrice|number_format ~ ')</small>'},
     {'route': 'package_accommodation', 'title': '<i class="fa fa-home"></i> '~'package.editTabs.placement'|trans({}, 'MBHPackageBundle')~' <small>' ~ accommodation ~ '</small>'}

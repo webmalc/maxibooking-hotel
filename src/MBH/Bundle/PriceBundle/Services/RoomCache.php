@@ -4,8 +4,9 @@ namespace MBH\Bundle\PriceBundle\Services;
 
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use \MBH\Bundle\PriceBundle\Document\RoomCache as RoomCacheDoc;
 
 
 /**
@@ -35,6 +36,33 @@ class RoomCache
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->helper = $this->container->get('mbh.helper');
     }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType $roomType
+     * @param Tariff $tariff
+     * @param bool $decrease
+     */
+    public function recalculate(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff, $decrease = true)
+    {
+        $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
+            $begin, $end, $roomType->getHotel(), [$roomType->getId()]
+        );
+
+        foreach ($roomCaches as $roomCache) {
+            if (empty($roomCache->getTariff()) || $roomCache->getTariff()->getId() == $tariff->getId()) {
+                if ($decrease) {
+                    $roomCache->addPackage()->soldRefund($tariff);
+                } else {
+                    $roomCache->removePackage()->soldRefund($tariff, true);
+                }
+                $this->dm->persist($roomCache);
+            }
+        }
+        $this->dm->flush();
+    }
+
 
     /**
      * Create/update RoomCache docs

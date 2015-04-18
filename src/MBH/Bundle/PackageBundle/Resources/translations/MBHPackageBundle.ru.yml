@@ -67,6 +67,7 @@ order.touristEdit.email: E-mail
 order.touristEdit.address: Адрес
 order.touristEdit.document: Документ
 order.touristEdit.delete_payer: Удалить плательщика
+order.package.add: Добавить бронь
 package.accommodation.edit_reservation: 'редактирование брони'
 package.accommodation.deleted: удалена
 package.accommodation.placement: Размещение:
@@ -115,7 +116,7 @@ package.edit.deleted: удалена
 package.edit.is_confirmed: Подтверждена?
 package.edit.is_confirmed_yes: да
 package.edit.is_confirmed_no: нет
-package.edit.print_act: Распечатать акт
+package.edit.print_act: Распечатать
 package.editTabs.reservation_info: Информация о броне
 package.editTabs.guests: Гости
 package.editTabs.services: Услуги
@@ -264,25 +265,3 @@ controller.analyticsController.proceeds: 'Выручка'
 controller.analyticsController.percentage: 'Процент'
 controller.analyticsController.package_trips_amount: 'Количество путевок'
 controller.analyticsController.sale_date: 'Даты продажи'
-controller.orderController.cash_register_paper_deleted_success: 'Кассовый документ успешно удален.'
-controller.orderController.add_cash_register_paper: 'Добавить кассовый документ'
-controller.orderController.cash_register_paper_added_success: 'Кассовый документ успешно добавлен.'
-controller.orderController.payer_added_success: 'Плательщик успешно добавлен.'
-controller.orderController.payer_deleted_success: 'Плательщик успешно удален.'
-controller.orderController.record_edited_success: 'Запись успешно отредактирована.'
-controller.orderController.record_deleted_success: 'Запись успешно удалена.'
-controller.packageController.placement_not_transfered_room_is_in_use: 'Размещение не перенесено. Номер уже занят.'
-controller.packageController.data_transfer_success: 'Данные успешно пересены.'
-controller.packageController.record_edited_success: 'Запись успешно отредактирована.'
-controller.packageController.order_created_success:  'Заказ успешно создан.'
-controller.packageController.guest_added_success: 'Гость успешно добавлен.'
-controller.packageController.service_adding_error_refresh_and_try_again:  'Произошла ошибка при добавлении услуги. Обновите страницу и попробуйте еще раз.'
-controller.packageController.service_added_success: 'Услуга успешно добавлена.'
-controller.packageController.service_deleted_success: 'Услуга успешно удалена.'
-controller.packageController.placement_saved_success: 'Размещение успешно сохранено.'
-controller.packageController.placement_deleted_success: 'Размещение успешно удалено.'
-controller.packageController.record_deleted_success: 'Запись успешно удалена.'
-controller.sourceController.record_created_success: 'Запись успешно создана.'
-controller.sourceController.record_edited_success: 'Запись успешно отредактирована.'
-controller.touristController.record_created_success: 'Запись успешно создана.'
-controller.touristController.record_edited_success: 'Запись успешно отредактирована.'

@@ -28,6 +28,10 @@
             <i class="fa fa-home" title='{{ 'form.searchType.room_type'|trans()}}'
                data-toggle='tooltip'></i>&nbsp{{ form_widget(form.roomType) }}
         </div>
+        <div class="input">
+            <i class="fa fa-file-text-o" title='{{ 'form.searchType.order'|trans()}}'
+               data-toggle='tooltip'></i>&nbsp{{ form_widget(form.order) }}
+        </div>
 
         {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': 'Искать'} %}
         <div class="hide">{{ form_end(form) }}</div>

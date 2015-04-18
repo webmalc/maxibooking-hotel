@@ -121,6 +121,14 @@ class Order extends Base
      */
     protected $note;
 
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    protected $card;
+
+
     public function __construct()
     {
         $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
@@ -400,5 +408,27 @@ class Order extends Base
     public function getSource()
     {
         return $this->source;
+    }
+
+    /**
+     * Set card
+     *
+     * @param string $card
+     * @return self
+     */
+    public function setCard($card)
+    {
+        $this->card = $card;
+        return $this;
+    }
+
+    /**
+     * Get card
+     *
+     * @return string $card
+     */
+    public function getCard()
+    {
+        return $this->card;
     }
 }

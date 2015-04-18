@@ -43,6 +43,13 @@ class SearchType extends AbstractType
         }
 
         $builder
+                ->add('order', 'integer', [
+                    'label' => 'form.searchType.order',
+                    'required' => false,
+                    'error_bubbling' => true,
+                    'data' => $options['orderId'],
+                    'attr' => ['class' => 'input-xs only-int'],
+                ])
                 ->add('roomType', 'choice', [
                     'label' => 'form.searchType.room_type',
                     'required' => false,
@@ -111,6 +118,7 @@ class SearchType extends AbstractType
             'dm' => null,
             'security' => null,
             'hotel' => null,
+            'orderId' => null
         ]);
     }
 

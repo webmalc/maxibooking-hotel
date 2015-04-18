@@ -68,6 +68,7 @@
                                            value="{{ roomCache is null ? '' : roomCache.totalRooms }}">
                                 {% else %}
                                     <small>
+                                        <span class="text-{{ categoryId == 'leftRooms' ? 'success bold' : 'info' }}">
                                         {% if roomCache is not null %}
                                             {{ attribute(roomCache, categoryId) }}
                                         {% elseif roomCache is null and dayRoomCache is not null and categoryId == 'packagesCount' %}
@@ -75,6 +76,7 @@
                                         {% elseif roomCache is null and dayRoomCache is not null and categoryId == 'leftRooms' %}
                                             {{ dayRoomCache.leftRooms }}
                                         {% endif %}
+                                            </span>
                                     </small>
                                 {% endif %}
 

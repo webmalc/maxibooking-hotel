@@ -46,6 +46,52 @@ class Order
         $this->validator = $container->get('validator');
     }
 
+
+    public function updatePackage(Package $old, Package $new)
+    {
+        //check changes
+        if (
+            $old->getBegin() == $new->getBegin() &&
+            $old->getEnd() == $new->getEnd() &&
+            $old->getRoomType()->getId() == $new->getRoomType()->getId()
+        ) {
+            return $new;
+        }
+
+        //search for packages
+        $query = new SearchQuery();
+        $query->begin = $new->getBegin();
+        $query->end = $new->getEnd();
+        $query->adults = $new->getAdults();
+        $query->children = $new->getChildren();
+        $query->tariff = $new->getTariff();
+        $query->addRoomType($new->getRoomType()->getId());
+        $query->addExcludeRoomType($old->getRoomType()->getId());
+        $query->excludeBegin = $old->getBegin();
+        $query->excludeEnd = $old->getEnd()->modify('-1 day');
+
+        $results = $this->container->get('mbh.package.search')->search($query);
+
+        if (count($results) == 1) {
+            //recalculate cache
+            $this->container->get('mbh.room.cache')->recalculate(
+                $old->getBegin(), $old->getEnd(), $old->getRoomType(), $old->getTariff(), false
+            );
+            $end = $new->getEnd();
+            $this->container->get('mbh.room.cache')->recalculate(
+                $new->getBegin(), $end->modify('-1 day'), $new->getRoomType(), $new->getTariff()
+            );
+
+            $new->setPrice($results[0]->getPrice($results[0]->getAdults(), $results[0]->getChildren()))
+                ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
+            ;
+
+            return $new;
+        }
+
+        return false;
+    }
+
     /**
      * @param array $data
      * @param OrderDoc $order
@@ -218,6 +264,7 @@ class Order
             ->setPrice(
                 (isset($data['price'])) ? (int) $data['price'] : $results[0]->getPrice($results[0]->getAdults(), $results[0]->getChildren())
             )
+            ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
         ;
 
         // add MainTourist

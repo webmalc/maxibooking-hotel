@@ -36,7 +36,8 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             new SearchType(), [], [
                 'security' => $this->container->get('mbh.hotel.selector'),
                 'dm' => $dm,
-                'hotel' => $this->get('mbh.hotel.selector')->getSelected()
+                'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
+                'orderId' => $request->get('order')
             ]
         );
 

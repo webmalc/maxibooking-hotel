@@ -15,6 +15,16 @@ class SearchQuery
      * @var \DateTime 
      */
     public $end;
+
+    /**
+     * @var \DateTime
+     */
+    public $excludeBegin = null;
+
+    /**
+     * @var \DateTime
+     */
+    public $excludeEnd = null;
     
     /**
      * @var int
@@ -37,11 +47,18 @@ class SearchQuery
      * @var []
      */
     public $roomTypes = [];
+
+    /**
+     * ExcludeRoomTypes ids
+     *
+     * @var []
+     */
+    public $excludeRoomTypes = [];
     
     /**
      * Tariff id
      * 
-     * @var string
+     * @var mixed
      */
     public $tariff;
     
@@ -49,6 +66,13 @@ class SearchQuery
     {
         if (!in_array($id, $this->roomTypes) && !empty($id)) {
             $this->roomTypes[] = $id;
+        }
+    }
+
+    public function addExcludeRoomType($id)
+    {
+        if (!in_array($id, $this->excludeRoomTypes) && !empty($id)) {
+            $this->excludeRoomTypes[] = $id;
         }
     }
 

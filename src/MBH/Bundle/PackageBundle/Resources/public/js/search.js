@@ -111,7 +111,7 @@ $(document).ready(function () {
             var wrapper = $('#package-search-results-wrapper');
             window.location.hash = $(this).serialize();
             wrapper.html('<div class="alert alert-info"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
-            send($(this).serialize())
+            send($(this).serialize());
 
         });
     }());

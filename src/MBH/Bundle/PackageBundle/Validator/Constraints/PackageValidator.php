@@ -24,11 +24,9 @@ class PackageValidator extends ConstraintValidator
         if($object->getBegin() >= $object->getEnd()) {
             $this->context->addViolation($constraint->beginEndMessage);
         }
-        
-        /*$tariff = $object->getTariff();
-        if($tariff && ($object->getBegin() < $tariff->getBegin() || $object->getBegin() > $tariff->getEnd() || $object->getEnd() < $tariff->getBegin() || $object->getEnd() > $tariff->getEnd())) {
-            $this->context->addViolation($constraint->tariffMessage);
-        }*/
+        if ($object->getRoomType()->getTotalPlaces() < ($object->getAdults() + $object->getChildren())) {
+            $this->context->addViolation($constraint->placesMessage);
+        }
 
         return true;
     }

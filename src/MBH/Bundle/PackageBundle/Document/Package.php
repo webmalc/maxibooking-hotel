@@ -252,6 +252,14 @@ class Package extends Base
     protected $isCheckIn = false;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isSmoking = false;
+
+    /**
      * Set tariff
      *
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
@@ -929,5 +937,27 @@ class Package extends Base
     public function getPricesByDate()
     {
         return $this->pricesByDate;
+    }
+
+    /**
+     * Set isSmoking
+     *
+     * @param boolean $isSmoking
+     * @return self
+     */
+    public function setIsSmoking($isSmoking)
+    {
+        $this->isSmoking = $isSmoking;
+        return $this;
+    }
+
+    /**
+     * Get isSmoking
+     *
+     * @return boolean $isSmoking
+     */
+    public function getIsSmoking()
+    {
+        return $this->isSmoking;
     }
 }

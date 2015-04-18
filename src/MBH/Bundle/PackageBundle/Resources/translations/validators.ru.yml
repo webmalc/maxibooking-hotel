@@ -1,9 +1,11 @@
 validator.begin_end_message: Начало брони не должно быть больше или равно концу брони
+validator.places_message: Недопустимый тип номера для указанного количества гостей
 validator.tariff_message: Даты брони выходят за пределы тарифа
 validator.document.cacheQueue.wrong_status: Неверный статус.
 validator.document.order.price_min_message: Цена не может быть меньше нуля
 validator.document.order.payed_sum_min_message: Оплачено не может быть меньше нуля
 validator.document.order.wrong_status: Неверный статус.
+validator.document.package.order_not_selected: Не выбран заказ
 validator.document.package.order_not_selected: Не выбран заказ
 validator.document.package.tariff_not_selected: Не выбран тариф
 validator.document.package.room_type_not_selected: Не выбран тип номера

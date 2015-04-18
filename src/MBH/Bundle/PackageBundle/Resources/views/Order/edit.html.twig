@@ -48,6 +48,12 @@
                         {% endif %}
                     </div>
                 </div>
+                {% if entity.card %}
+                <div class="row spacer-top">
+                    <div class="col-md-2 text-right"><strong>Карта</strong></div>
+                    <div class="col-md-10">{{ entity.card }}</div>
+                </div>
+                {% endif %}
             </div>
 
             {{ form_start(form, {'action': path('package_order_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}

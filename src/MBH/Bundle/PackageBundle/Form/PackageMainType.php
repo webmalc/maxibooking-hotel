@@ -15,6 +15,78 @@ class PackageMainType extends AbstractType
         for ($i = 0; $i <= 23; $i++) {
             $hours[$i] = sprintf('%02d', $i).':00';
         }
+        for ($i = 0; $i <= 10; $i++) {
+            $places[$i] = $i;
+        }
+
+
+
+        $builder
+            ->add('begin', 'date', array(
+                'label' => 'Заезд',
+                'group' => 'Заезд/отъезд',
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'required' => true,
+                'error_bubbling' => true,
+                'attr' => array('class' => 'datepicker begin-datepiker input-small', 'data-date-format' => 'dd.mm.yyyy'),
+            ))
+            ->add('end', 'date', array(
+                'label' => 'Отъезд',
+                'group' => 'Заезд/отъезд',
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'required' => true,
+                'error_bubbling' => true,
+                'attr' => array('class' => 'datepicker end-datepiker input-small', 'data-date-format' => 'dd.mm.yyyy'),
+            ))
+            ->add('roomType', 'document', [
+                'label' => 'Тип номера',
+                'class' => 'MBHHotelBundle:RoomType',
+                'group' => 'Номер',
+                'query_builder' => function(DocumentRepository $dr) use ($options) {
+                    return $dr->createQueryBuilder('q')
+                        ->field('hotel.id')->equals($options['hotel']->getId())
+                        ->sort(['fullTitle' => 'asc', 'title' => 'asc'])
+                        ;
+                },
+                'required' => true
+            ])
+            ->add(
+                'adults',
+                'choice',
+                [
+                    'label' => 'Взрослых',
+                    'group' => 'Номер',
+                    'required' => true,
+                    'group' => 'Номер',
+                    'multiple' => false,
+                    'choices' => $places,
+                    'attr' => array('class' => 'input-xxs'),
+                ]
+            )
+            ->add(
+                'children',
+                'choice',
+                [
+                    'label' => 'Детей',
+                    'group' => 'Номер',
+                    'required' => true,
+                    'group' => 'Номер',
+                    'multiple' => false,
+                    'choices' => $places,
+                    'attr' => array('class' => 'input-xxs'),
+                ]
+            )
+            ->add(
+                'isSmoking',
+                'checkbox',
+                [
+                    'label' => 'Курящий?',
+                    'required' => false,
+                    'group' => 'Номер',
+                ]
+            );
 
         if ($options['price']) {
             $builder->add(
@@ -23,10 +95,11 @@ class PackageMainType extends AbstractType
                 [
                     'label' => 'form.packageMainType.price',
                     'required' => true,
+                    'group' => 'Цена',
                     'error_bubbling' => true,
                     'property_path' => 'packagePrice',
                     'attr' => [
-                        'class' => 'price-spinner'
+                        'class' => 'price-spinner '
                     ],
                 ]
             );
@@ -39,7 +112,7 @@ class PackageMainType extends AbstractType
                 [
                     'label' => 'form.packageMainType.discount',
                     'required' => false,
-                    'error_bubbling' => true,
+                    'group' => 'Цена',
                     'attr' => [
                         'class' => 'discount-spinner'
                     ],
@@ -51,9 +124,9 @@ class PackageMainType extends AbstractType
                 [
                     'label' => 'form.packageMainType.check_in_time',
                     'required' => false,
+                    'group' => 'Заезд/отъезд',
                     'multiple' => false,
-                    'error_bubbling' => true,
-                    'choices' => $hours,
+                    'attr' => array('class' => 'input-xs'),
                 ]
             )
             ->add(
@@ -62,9 +135,10 @@ class PackageMainType extends AbstractType
                 [
                     'label' => 'form.packageMainType.check_out_time',
                     'required' => false,
+                    'group' => 'Заезд/отъезд',
                     'multiple' => false,
-                    'error_bubbling' => true,
                     'choices' => $hours,
+                    'attr' => array('class' => 'input-xs'),
                 ]
             )
             ->add(
@@ -73,8 +147,8 @@ class PackageMainType extends AbstractType
                 [
                     'label' => 'form.packageMainType.arrival_purpose',
                     'required' => false,
+                    'group' => 'Информация',
                     'multiple' => false,
-                    'error_bubbling' => true,
                     'choices' => $options['arrivals'],
                 ]
             )
@@ -83,6 +157,7 @@ class PackageMainType extends AbstractType
                 'textarea',
                 [
                     'label' => 'form.packageMainType.comment',
+                    'group' => 'Информация',
                     'required' => false,
                 ]
             );
@@ -95,7 +170,8 @@ class PackageMainType extends AbstractType
                 'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
                 'arrivals' => [],
                 'defaultTime' => null,
-                'price' => false
+                'price' => false,
+                'hotel' => null
             )
         );
     }

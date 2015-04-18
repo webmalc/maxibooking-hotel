@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
@@ -34,13 +35,16 @@ class Search
      */
     public function search(SearchQuery $query)
     {
-        $results = $groupedCaches = $deletedCaches = $cachesMin = [];
+        $results = $groupedCaches = $deletedCaches = $cachesMin = $tariffMin = [];
 
         if (empty($query->end) || empty($query->begin) || $query->end <= $query->begin) {
             return $results;
         }
 
         $calc = $this->container->get('mbh.calculation');
+        if (!empty($query->tariff) && !$query->tariff instanceof Tariff) {
+            $query->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($query->tariff);
+        }
         // dates
         $end = clone $query->end;
         $end->modify('-1 day');
@@ -56,13 +60,21 @@ class Search
         //group caches
         foreach ($roomCaches as $roomCache) {
             if ($roomCache->getTariff()) {
+
                 if ((!empty($query->tariff) && $roomCache->getTariff()->getId() == $query->tariff->getId()) || (empty($query->tariff) && $roomCache->getTariff()->getIsDefault())) {
                     $groupedCaches['tariff'][$roomCache->getHotel()->getId()][$roomCache->getRoomType()->getId()][] = $roomCache;
                 }
             } else {
-                if ($roomCache->getLeftRooms() > 0 && $roomCache->getRoomType()->getTotalPlaces() >= $query->getTotalPlaces()) {
+                $skip = false;
+                if (in_array($roomCache->getRoomType()->getId(), $query->excludeRoomTypes) && !empty($query->excludeBegin) && !empty($query->excludeEnd) && $roomCache->getDate() >= $query->excludeBegin && $roomCache->getDate() <= $query->excludeEnd) {
+                    $skip = true;
+                }
+
+                if ($skip || ($roomCache->getLeftRooms() > 0 && $roomCache->getRoomType()->getTotalPlaces() >= $query->getTotalPlaces())) {
                     $groupedCaches['room'][$roomCache->getHotel()->getId()][$roomCache->getRoomType()->getId()][] = $roomCache;
                 }
+
+
             }
         }
         if (!isset($groupedCaches['room'])) {
@@ -76,7 +88,17 @@ class Search
                 $quotes = false;
                 if (isset($groupedCaches['tariff'][$hotelId][$roomTypeId])) {
                     foreach ($groupedCaches['tariff'][$hotelId][$roomTypeId] as $tariffCache) {
-                        if ($tariffCache->getLeftRooms() <= 0) {
+
+                        if (!isset($tariffMin[$hotelId][$roomTypeId]) || $tariffMin[$hotelId][$roomTypeId] > $tariffCache->getLeftRooms()) {
+                            $tariffMin[$hotelId][$roomTypeId] = $tariffCache->getLeftRooms();
+                        }
+
+                        $skip = false;
+                        if (in_array($tariffCache->getRoomType()->getId(), $query->excludeRoomTypes) && !empty($query->excludeBegin) && !empty($query->excludeEnd) && $tariffCache->getDate() >= $query->excludeBegin && $tariffCache->getDate() <= $query->excludeEnd) {
+                            $skip = true;
+                        }
+
+                        if ($tariffCache->getLeftRooms() <= 0 && !$skip) {
                             $quotes = true;
                         }
                     }
@@ -169,6 +191,13 @@ class Search
             }
 
             foreach ($hotelArray as $roomTypeId => $caches) {
+
+                $min = $cachesMin[$hotelId][$roomTypeId];
+
+                if (isset($tariffMin[$hotelId][$roomTypeId]) && $tariffMin[$hotelId][$roomTypeId] < $min) {
+                    $min = $tariffMin[$hotelId][$roomTypeId];
+                }
+
                 $roomType = $caches[0]->getRoomType();
                 $result = new SearchResult();
                 $tourists = $roomType->getAdultsChildrenCombination($query->adults, $query->children);
@@ -176,7 +205,7 @@ class Search
                     ->setEnd($query->end)
                     ->setRoomType($roomType)
                     ->setTariff($tariff)
-                    ->setRoomsCount($cachesMin[$hotelId][$roomTypeId])
+                    ->setRoomsCount($min)
                     ->setAdults($tourists['adults'])
                     ->setChildren($tourists['children'])
                 ;

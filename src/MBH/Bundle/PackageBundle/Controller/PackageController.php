@@ -369,7 +369,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             [
                 'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
                 'defaultTime' => $this->container->getParameter('mbh.package.arrival.time'),
-                'price' => $this->get('security.context')->isGranted(['ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER'])
+                'price' => $this->get('security.context')->isGranted(['ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER']),
+                'hotel' => $entity->getRoomType()->getHotel()
             ]
         );
 
@@ -400,27 +401,35 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
+        $oldPackage = clone $entity;
         $form = $this->createForm(
             new PackageMainType(),
             $entity,
             [
                 'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
-                'price' => $this->get('security.context')->isGranted(['ROLE_BOOKKEEPER'])
+                'price' => $this->get('security.context')->isGranted(['ROLE_BOOKKEEPER']),
+                'hotel' => $entity->getRoomType()->getHotel()
             ]
         );
 
-        $form->bind($request);
-
+        $form->submit($request);
         if ($form->isValid()) {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
 
-            $this->getRequest()->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.packageController.record_edited_success'));
+            //check by search
+            if ($this->container->get('mbh.order')->updatePackage($oldPackage, $entity)) {
+                /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+                $dm = $this->get('doctrine_mongodb')->getManager();
+                $dm->persist($entity);
+                $dm->flush();
 
-            return $this->afterSaveRedirect('package', $entity->getId());
+                $request->getSession()->getFlashBag()
+                    ->set('success', $this->get('translator')->trans('controller.packageController.record_edited_success'));
+
+                return $this->afterSaveRedirect('package', $entity->getId());
+            } else {
+                $request->getSession()->getFlashBag()
+                    ->set('danger', $this->get('translator')->trans('controller.packageController.record_edited_fail'));
+            }
         }
 
         return [
@@ -442,6 +451,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     public function newAction(Request $request)
     {
         try {
+            $order = null;
+            if ($request->get('order')) {
+                /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+                $dm = $this->get('doctrine_mongodb')->getManager();
+                $order = $dm->getRepository('MBHPackageBundle:Order')->find($request->get('order'));
+            }
             $order = $this->container->get('mbh.order')->createPackages([
                 'packages' => [[
                     'begin' => $request->get('begin'),
@@ -449,11 +464,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     'adults' => $request->get('adults'),
                     'children' => $request->get('children'),
                     'roomType' => $request->get('roomType'),
-                    'tariff' => $request->get('tariff')
+                    'tariff' => $request->get('tariff'),
                 ]],
                 'status' => 'offline',
                 'confirmed' => true
-            ], null, $this->getUser());
+            ], $order, $this->getUser());
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                 var_dump($e);

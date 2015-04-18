@@ -297,7 +297,7 @@ class RoomCache extends Base
         }
 
         foreach ($this->packageInfo as $packageInfo) {
-            if ($packageInfo->getTariff()) {
+            if ($packageInfo->getTariff()->getId() == $tariff->getId()) {
                 return $packageInfo;
             }
         }
@@ -309,7 +309,7 @@ class RoomCache extends Base
         $packageInfo = $this->getPackageInfo($tariff);
 
         if ($packageInfo) {
-            return $packageInfo->getPackageCount();
+            return $packageInfo->getPackagesCount();
         }
 
         return 0;
@@ -340,6 +340,25 @@ class RoomCache extends Base
         $result[] = $newPackageInfo;
 
         $this->packageInfo = $result;
+
+        return $this;
+    }
+
+    public function addPackage() {
+
+        if (!is_numeric($this->packagesCount)) {
+            $this->packagesCount = 0;
+        }
+        $this->packagesCount++;
+
+        return $this;
+    }
+
+    public function removePackage() {
+        if (!is_numeric($this->packagesCount)) {
+            $this->packagesCount = 0;
+        }
+        $this->packagesCount--;
 
         return $this;
     }

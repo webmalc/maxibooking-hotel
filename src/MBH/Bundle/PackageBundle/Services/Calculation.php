@@ -172,7 +172,7 @@ class Calculation
                 }
 
                 $dayPrice += $addsAdults * $cache->getAdditionalPrice() + $addsChildren * $cache->getAdditionalChildrenPrice();
-                $dayPrices[$day] = $dayPrice;
+                $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
                 $total += $dayPrice;
             }
 

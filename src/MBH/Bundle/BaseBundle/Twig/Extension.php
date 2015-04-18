@@ -11,9 +11,12 @@ class Extension extends \Twig_Extension
      */
     protected $container;
 
+    protected $translator;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->translator = $this->container->get('translator');
     }
 
     /**
@@ -36,18 +39,18 @@ class Extension extends \Twig_Extension
         }
 
         $months = [
-            $this->get('translator')->trans('twig.extension.jan'),
-            $this->get('translator')->trans('twig.extension.feb'),
-            $this->get('translator')->trans('twig.extension.march'),
-            $this->get('translator')->trans('twig.extension.april'),
-            $this->get('translator')->trans('twig.extension.may'),
-            $this->get('translator')->trans('twig.extension.june'),
-            $this->get('translator')->trans('twig.extension.july'),
-            $this->get('translator')->trans('twig.extension.august'),
-            $this->get('translator')->trans('twig.extension.september'),
-            $this->get('translator')->trans('twig.extension.october'),
-            $this->get('translator')->trans('twig.extension.november'),
-            $this->get('translator')->trans('twig.extension.december')
+            $this->translator->trans('twig.extension.jan', [], 'MBHBaseBundle'),
+            $this->translator->trans('twig.extension.feb', [], 'MBHBaseBundle'),
+            $this->translator->trans('twig.extension.march', [], 'MBHBaseBundle'),
+            $this->translator->trans('twig.extension.april', [], 'MBHBaseBundle'),
+            $this->translator->trans('twig.extension.may', [], 'MBHBaseBundle'),
+            $this->translator->trans('twig.extension.june', [], 'MBHBaseBundle'),
+            $this->translator->trans('twig.extension.july', [], 'MBHBaseBundle'),
+            $this->translator->trans('twig.extension.august', [], 'MBHBaseBundle'),
+            $this->translator->trans('twig.extension.september', [], 'MBHBaseBundle'),
+            $this->translator->trans('twig.extension.october', [], 'MBHBaseBundle'),
+            $this->translator->trans('twig.extension.november', [], 'MBHBaseBundle'),
+            $this->translator->trans('twig.extension.december', [], 'MBHBaseBundle')
         ];
 
         return $date->format('d') . ' ' . $months[$date->format('n') - 1] . '.';

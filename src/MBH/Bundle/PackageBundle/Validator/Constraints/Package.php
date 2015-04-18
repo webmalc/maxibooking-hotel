@@ -9,8 +9,8 @@ use Symfony\Component\Validator\Constraint;
 class Package extends Constraint
 {
     public $beginEndMessage = 'validator.begin_end_message';
-    
-    public $tariffMessage = 'validator.begin_end_message';
+
+    public $placesMessage = 'validator.places_message';
     
     /**
      * {@inheritDoc}
