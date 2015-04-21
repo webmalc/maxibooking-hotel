@@ -84,6 +84,8 @@ class OrderSubscriber implements EventSubscriber
             $entity->setPrice(0);
             $dm->persist($entity);
             $dm->flush();
+
+            $this->container->get('mbh.channelmanager')->updateRoomsInBackground();
         }
 
         //Calc paid

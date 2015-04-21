@@ -31,7 +31,8 @@ $(document).ready(function() {
     $('.price-spinner').TouchSpin({
         min: 0,
         max: 9999999999999999,
-        step: 1,
+        step: 0.1,
+        decimals: 2,
         boostat: 10,
         maxboostedstep: 20,
         postfix: '<i class="fa fa-rub"></i>'
@@ -190,7 +191,7 @@ $(document).ready(function() {
                 if (serviceInput.val() !== null && typeof info !== 'undefined') {
                     var nights = nightsInput.val(),
                         price = priceInput.val() * amountInput.val() * nights * personsInput.val();
-                    amountHelp.html($.number(price) + ' руб. за ' + amountInput.val() + ' шт.');
+                    amountHelp.html($.number(price, 2) + ' руб. за ' + amountInput.val() + ' шт.');
                 }
             },
             show = function (info) {
@@ -206,7 +207,7 @@ $(document).ready(function() {
                 if (info.date) dateDiv.show();
 
                 var peoplesStr = (info.calcType === 'per_night' || info.calcType === 'per_stay') ? ' за 1 человека ' : ' ';
-                serviceHelp.html($.number(info.price) + ' рублей' + peoplesStr + info.calcTypeStr);
+                serviceHelp.html($.number(info.price, 2) + ' рублей' + peoplesStr + info.calcTypeStr);
                 calc();
             },
             hideShow = function () {

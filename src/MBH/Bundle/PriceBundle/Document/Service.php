@@ -85,7 +85,7 @@ class Service extends Base
 
     /**
      * @var int
-     * @ODM\Int(name="price")
+     * @ODM\Float(name="price")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,

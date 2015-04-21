@@ -403,7 +403,6 @@ class RoomType extends Base
         return $this;
     }
 
-
     /**
      * @param bool $url
      * @return null|string

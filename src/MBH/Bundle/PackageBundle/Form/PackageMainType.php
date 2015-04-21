@@ -99,7 +99,7 @@ class PackageMainType extends AbstractType
                     'error_bubbling' => true,
                     'property_path' => 'packagePrice',
                     'attr' => [
-                        'class' => 'price-spinner '
+                        'class' => 'price-spinner'
                     ],
                 ]
             );

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<request>
+    {% include 'MBHChannelManagerBundle:Booking:credentials.xml.twig' with {'config': config } %}
+
+    {% for roomId, roomInfo in data %}
+    <room id="{{ roomId }}">
+        {% for date, dateInfo in roomInfo %}
+            <date value="{{ date }}">
+                <roomstosell>{{ dateInfo.roomstosell }}</roomstosell>
+            </date>
+        {% endfor %}
+    </room>
+    {% endfor %}
+</request>

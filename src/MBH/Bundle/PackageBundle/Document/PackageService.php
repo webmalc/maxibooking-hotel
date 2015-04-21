@@ -53,7 +53,7 @@ class PackageService extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Float()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -61,6 +61,18 @@ class PackageService extends Base
      * )
      */
     protected $price;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Float()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=0,
+     *      minMessage= "validator.document.packageService.price_less_zero"
+     * )
+     */
+    protected $totalOverwrite;
 
     /**
      * @var int
@@ -181,7 +193,7 @@ class PackageService extends Base
     /**
      * Get price
      *
-     * @return int $price
+     * @return float $price
      */
     public function getPrice()
     {
@@ -215,6 +227,10 @@ class PackageService extends Base
      */
     public function getTotal()
     {
+        if (!empty($this->getTotalOverwrite())) {
+            return $this->getTotalOverwrite();
+        }
+
         $price = $this->getPrice() * $this->getAmount();
         
         if ($this->getCalcType() == 'per_night') {
@@ -375,5 +391,27 @@ class PackageService extends Base
     public function getIsCustomPrice()
     {
         return $this->isCustomPrice;
+    }
+
+    /**
+     * Set totalOverwrite
+     *
+     * @param float $totalOverwrite
+     * @return self
+     */
+    public function setTotalOverwrite($totalOverwrite)
+    {
+        $this->totalOverwrite = $totalOverwrite;
+        return $this;
+    }
+
+    /**
+     * Get totalOverwrite
+     *
+     * @return float $totalOverwrite
+     */
+    public function getTotalOverwrite()
+    {
+        return $this->totalOverwrite;
     }
 }

@@ -92,7 +92,7 @@ class PriceCache
             $updates[] = [
                 'criteria' => ['_id' => new \MongoId($oldPriceCache->getId())],
                 'values' => [
-                    'price' => (int) $price,
+                    'price' => (float) $price,
                     'isPersonPrice' => $isPersonPrice,
                     'singlePrice' => $singlePrice,
                     'additionalPrice' => $additionalPrice,
@@ -116,7 +116,7 @@ class PriceCache
                         'roomType' => \MongoDBRef::create('RoomTypes', new \MongoId($roomType->getId())),
                         'tariff' => \MongoDBRef::create('Tariffs', new \MongoId($tariff->getId())),
                         'date' => new \MongoDate($date->getTimestamp()),
-                        'price' => (int) $price,
+                        'price' => (float) $price,
                         'isPersonPrice' => $isPersonPrice,
                         'singlePrice' => $singlePrice,
                         'additionalPrice' => $additionalPrice,

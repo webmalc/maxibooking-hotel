@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<request>
+    {% include 'MBHChannelManagerBundle:Booking:credentials.xml.twig' with {'config': config } %}
+    {% if lastChange is defined and lastChange %}
+    <last_change>{{ 'now'|date_modify('-7 days')|date('d-m-Y H:i:s') }}</last_change>
+    {% endif %}
+</request>

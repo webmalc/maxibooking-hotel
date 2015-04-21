@@ -46,7 +46,7 @@
 
                             </td>
                             <td class="text-right">
-                                <div class='text-right'><span class='{% if package.order.isPaid %}text-success'{% elseif package.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}>{{ package.price|number_format }}</span><br><small><i class='fa fa-sliders'> </i> {{ package.tariff.name }}</small></div>
+                                <div class='text-right'><span class='{% if package.order.isPaid %}text-success'{% elseif package.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}>{{ package.price|number_format(2) }}</span><br><small><i class='fa fa-sliders'> </i> {{ package.tariff.name }}</small></div>
                             </td>
                             <td>
                                 {% if 'now'|date('d.m.Y') == package.createdAt|date('d.m.Y') %}Сегодня, {{ package.createdAt|date('H:i') }}{% else %}{{ package.createdAt|date('d.m.Y H:i') }}{% endif %}<br><small>{{ package.createdBy }}</small>

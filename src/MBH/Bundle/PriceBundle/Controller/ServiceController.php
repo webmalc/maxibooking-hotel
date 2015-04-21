@@ -69,7 +69,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
                 continue;
             }
 
-            $entity->setPrice((empty($price)) ? null : (int) $price);
+            $entity->setPrice((empty($price)) ? null : (float) $price);
             $dm->persist($entity);
 
         }

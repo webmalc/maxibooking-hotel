@@ -16,8 +16,8 @@ class RestrictionRepository extends DocumentRepository
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
     public function fetchQueryBuilder(
-        \DateTime $begin,
-        \DateTime $end,
+        \DateTime $begin = null,
+        \DateTime $end = null,
         Hotel $hotel = null,
         array $roomTypes = [],
         array $tariffs = []
@@ -29,8 +29,13 @@ class RestrictionRepository extends DocumentRepository
             $qb->field('hotel.id')->equals($hotel->getId());
         }
         // begin & end
-        $qb->field('date')->gte($begin)
-            ->field('date')->lte($end);
+        // begin & end
+        if (!empty($begin)) {
+            $qb->field('date')->gte($begin);
+        }
+        if (!empty($end)) {
+            $qb->field('date')->lte($end);
+        }
         //roomTypes
         if (!empty($roomTypes)) {
             $qb->field('roomType.id')->in($roomTypes);
@@ -55,8 +60,8 @@ class RestrictionRepository extends DocumentRepository
      * @return array
      */
     public function fetch(
-        \DateTime $begin,
-        \DateTime $end,
+        \DateTime $begin = null,
+        \DateTime $end = null,
         Hotel $hotel = null,
         array $roomTypes = [],
         array $tariffs = [],

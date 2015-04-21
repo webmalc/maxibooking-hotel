@@ -133,9 +133,9 @@ class Package extends Base
     protected $end;
     
     /**
-     * @var int
+     * @var float
      * @Gedmo\Versioned
-     * @ODM\Int(name="price")
+     * @ODM\Float(name="price")
      * @Assert\NotNull(message= "validator.document.package.price_not_specified")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -144,6 +144,18 @@ class Package extends Base
      * )
      */
     protected $price;
+
+    /**
+     * @var float
+     * @Gedmo\Versioned
+     * @ODM\Float()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=0,
+     *      minMessage= "validator.document.package.price_less_zero"
+     * )
+     */
+    protected $totalOverwrite;
 
     /**
      * @var array
@@ -156,7 +168,7 @@ class Package extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int(name="servicesPrice")
+     * @ODM\Float(name="servicesPrice")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -188,7 +200,7 @@ class Package extends Base
      * @Gedmo\Versioned
      * @ODM\String(name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel"},
+     *      choices = {"vashotel", "booking"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      */
@@ -488,6 +500,10 @@ class Package extends Base
      */
     public function getPrice()
     {
+        if (!empty($this->getTotalOverwrite())) {
+            return $this->getTotalOverwrite();
+        }
+
         return $this->price - $this->price * $this->getDiscount(false) + $this->getServicesPrice();
     }
 
@@ -959,5 +975,27 @@ class Package extends Base
     public function getIsSmoking()
     {
         return $this->isSmoking;
+    }
+
+    /**
+     * Set totalOverwrite
+     *
+     * @param float $totalOverwrite
+     * @return self
+     */
+    public function setTotalOverwrite($totalOverwrite)
+    {
+        $this->totalOverwrite = $totalOverwrite;
+        return $this;
+    }
+
+    /**
+     * Get totalOverwrite
+     *
+     * @return float $totalOverwrite
+     */
+    public function getTotalOverwrite()
+    {
+        return $this->totalOverwrite;
     }
 }

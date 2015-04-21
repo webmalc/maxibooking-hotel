@@ -13,7 +13,7 @@
 
             <div class="alert alert-warning">
                 <i class="fa fa-ruble"></i>
-                {{ 'order.cash.paid_price'|trans({}, 'MBHPackageBundle') }} {{ entity.paid|number_format }} / {{ entity.price|number_format }}
+                {{ 'order.cash.paid_price'|trans({}, 'MBHPackageBundle') }} {{ entity.paid|number_format(2) }} / {{ entity.price|number_format(2) }}
                 &nbsp;
                 {% if entity.isPaid %}
                     <small class="text-success"><i class="fa fa-check"> </i> {{ 'order.cash.paid'|trans({}, 'MBHPackageBundle') }}</small>

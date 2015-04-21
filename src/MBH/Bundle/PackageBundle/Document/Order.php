@@ -66,7 +66,7 @@ class Order extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Float()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -76,9 +76,21 @@ class Order extends Base
     protected $price;
 
     /**
+     * @var float
+     * @Gedmo\Versioned
+     * @ODM\Float()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=0,
+     *      minMessage= "validator.document.package.price_less_zero"
+     * )
+     */
+    protected $totalOverwrite;
+
+    /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Float()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -113,6 +125,31 @@ class Order extends Base
      * )
      */
     protected $status;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="channelManagerType")
+     * @Assert\Choice(
+     *      choices = {"vashotel, booking"},
+     *      message = "validator.document.package.wrong_channel_manager_type"
+     * )
+     */
+    protected $channelManagerType;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="channelManagerId")
+     */
+    protected $channelManagerId;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    protected $channelManagerHumanId;
 
     /**
      * @var string
@@ -201,10 +238,14 @@ class Order extends Base
     /**
      * Get price
      * @param boolean $isFloat
-     * @return int $price
+     * @return float $price
      */
     public function getPrice($isFloat = false)
     {
+        if (!empty($this->getTotalOverwrite())) {
+            return $this->getTotalOverwrite();
+        }
+
         if ($isFloat) {
             return number_format((float) $this->price, 2, '.', '');
         }
@@ -430,5 +471,98 @@ class Order extends Base
     public function getCard()
     {
         return $this->card;
+    }
+
+    /**
+     * Set channelMangerHumanId
+     *
+     * @param string $channelMangerHumanId
+     * @return self
+     */
+    public function setChannelManagerHumanId($channelMangerHumanId)
+    {
+        $this->channelMangerHumanId = $channelMangerHumanId;
+        return $this;
+    }
+
+    /**
+     * Get channelMangerHumanId
+     *
+     * @return string $channelMangerHumanId
+     */
+    public function getChannelManagerHumanId()
+    {
+        return $this->channelMangerHumanId;
+    }
+
+    /**
+     * Set channelManagerType
+     *
+     * @param string $channelManagerType
+     * @return self
+     */
+    public function setChannelManagerType($channelManagerType)
+    {
+        $this->channelManagerType = $channelManagerType;
+        return $this;
+    }
+
+    /**
+     * Get channelManagerType
+     *
+     * @return string $channelManagerType
+     */
+    public function getChannelManagerType()
+    {
+        return $this->channelManagerType;
+    }
+
+    /**
+     * Set channelManagerId
+     *
+     * @param string $channelManagerId
+     * @return self
+     */
+    public function setChannelManagerId($channelManagerId)
+    {
+        $this->channelManagerId = $channelManagerId;
+        return $this;
+    }
+
+    /**
+     * Get channelManagerId
+     *
+     * @return string $channelManagerId
+     */
+    public function getChannelManagerId()
+    {
+        return $this->channelManagerId;
+    }
+
+    /**
+     * Set totalOverwrite
+     *
+     * @param float $totalOverwrite
+     * @return self
+     */
+    public function setTotalOverwrite($totalOverwrite)
+    {
+        $this->totalOverwrite = $totalOverwrite;
+        return $this;
+    }
+
+    /**
+     * Get totalOverwrite
+     *
+     * @return float $totalOverwrite
+     */
+    public function getTotalOverwrite()
+    {
+        return $this->totalOverwrite;
+    }
+
+    public function removeAllPackages()
+    {
+        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
     }
 }

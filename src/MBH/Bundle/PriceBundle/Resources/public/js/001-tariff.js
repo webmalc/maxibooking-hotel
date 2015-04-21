@@ -6,9 +6,10 @@ $(document).ready(function () {
     $('.price-spinner').TouchSpin({
         min: 0,
         max: 9007199254740992,
-        step: 1,
         //boostat: 50,
         stepinterval: 50,
+        decimals: 2,
+        step: 0.1,
         maxboostedstep: 10000000,
         postfix: '<i class="fa fa-ruble"></i>'
     });
@@ -36,6 +37,16 @@ $(document).ready(function () {
         max: 9007199254740992,
         step: 1,
         //boostat: 50,
+        //decimals: 2,
+        stepinterval: 50,
+        maxboostedstep: 10000000
+    });
+    $('.spinner-0f').TouchSpin({
+        min: 0,
+        max: 9007199254740992,
+        step: 0.1,
+        //boostat: 50,
+        decimals: 2,
         stepinterval: 50,
         maxboostedstep: 10000000
     });
@@ -44,6 +55,7 @@ $(document).ready(function () {
         max: 9007199254740992,
         step: 1,
         //boostat: 50,
+        //decimals: 2,
         stepinterval: 50,
         maxboostedstep: 10000000
     });
@@ -52,6 +64,16 @@ $(document).ready(function () {
         max: 9007199254740992,
         step: 1,
         //boostat: 50,
+        //decimals: 2,
+        stepinterval: 50,
+        maxboostedstep: 10000000
+    });
+    $('.spinner--1f').TouchSpin({
+        min: -1,
+        max: 9007199254740992,
+        step: 0.1,
+        //boostat: 50,
+        decimals: 2,
         stepinterval: 50,
         maxboostedstep: 10000000
     });

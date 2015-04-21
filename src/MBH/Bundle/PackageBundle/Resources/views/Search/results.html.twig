@@ -68,7 +68,7 @@
                         <td class="text-right">
                             {% for priceTourists, price  in result.prices %}
                                 <ul class="package-search-prices">
-                                    <li class="{{ priceTourists }}_price">{{ price|number_format}}</li>
+                                    <li class="{{ priceTourists }}_price">{{ price|number_format(2)}}</li>
                                 </ul>
                             {% endfor %}
                         </td>

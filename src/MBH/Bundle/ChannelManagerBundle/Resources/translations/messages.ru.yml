@@ -26,3 +26,14 @@ form.vashhotelType.hotel_id: ID отеля
 form.vashhotelType.vashhotel_ru_settings_hotel_id: ID отеля в настройках ВашОтель.RU
 form.vashhotelType.breakfast: Завтрак?
 form.vashhotelType.r0_or_BB: Какой тип питания использовать RO или BB?
+controller.bookingController.settings_saved_success: 'Настройки успешно сохранены.'
+controller.channelManagerController.sync_end: 'Синхронизация окончена.'
+controller.oktogoController.settings_saved_success: 'Настройки успешно сохранены.'
+controller.oktogoController.rooms_sync_success: 'Номера успешно синхронизированы.'
+controller.oktogoController.sync_error: 'Во время синхронизации произошла ошибка. Попробуйте еще раз.'
+controller.oktogoController.tariffs_sync_success: 'Тарифы успешно синхронизированы.'
+controller.vashhotelController.rooms_sync_success: 'Номера успешно синхронизированы.'
+controller.vashhotelController.sync_error: 'Во время синхронизации произошла ошибка. Попробуйте еще раз.'
+controller.vashhotelController.rooms_sync_success: 'Тарифы успешно синхронизированы.'
+controller.vashhotelController.settings_saved_success: 'Настройки успешно сохранены.'
+services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'

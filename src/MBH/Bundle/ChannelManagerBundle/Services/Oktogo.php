@@ -46,6 +46,36 @@ class Oktogo extends Base
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function pullOrders()
+    {
+
+    }
+
+    public function closeAll() {
+
+    }
+
+    public function sync() {
+
+    }
+
+    public function checkResponse($response, array $params = null) {
+
+    }
+
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null){
+
+    }
+    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null){
+
+    }
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null){
+
+    }
+
+    /**
      * @param OktogoConfig $config
      * @return bool
      */

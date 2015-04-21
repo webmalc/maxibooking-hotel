@@ -637,8 +637,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     ->setNights((int)$data['nights'])
                     ->setPersons((int)$data['persons'])
                     ->setAmount((int)$data['amount'])
-                    ->setPrice((int) $data['price'])
-                    ->setIsCustomPrice((int) $data['price'] != $service->getPrice())
+                    ->setPrice((float) $data['price'])
+                    ->setIsCustomPrice((float) $data['price'] != $service->getPrice())
                     ->setNote(empty($data['note']) ? null : $data['note']);
 
                 $dm->persist($packageService);

@@ -8,6 +8,12 @@
                 <date from ="{{ 'now'|date('Y-m-d') }}" to="{{ 'now'|date_modify("+5 years")|date('Y-m-d') }}">
                     <rate id="{{ rate['syncId'] }}" />
                     <roomstosell>0</roomstosell>
+                    <minimumstay_arrival>0</minimumstay_arrival>
+                    <maximumstay_arrival>0</maximumstay_arrival>
+                    <minimumstay>0</minimumstay>
+                    <maximumstay>0</maximumstay>
+                    <closedonarrival>0</closedonarrival>
+                    <closedondeparture>0</closedondeparture>
                 </date>
             {% endfor %}
         </room>

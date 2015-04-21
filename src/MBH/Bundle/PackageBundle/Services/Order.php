@@ -86,6 +86,8 @@ class Order
                 ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
             ;
 
+            $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
+
             return $new;
         }
 

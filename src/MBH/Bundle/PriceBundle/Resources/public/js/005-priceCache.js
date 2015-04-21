@@ -24,7 +24,7 @@ $(document).ready(function () {
                         if (this.value === '') {
                             return;
                         }
-                        var value = parseInt(this.value, 10);
+                        var value = parseFloat(this.value);
                         if (value < 0 || isNaN(value)) {
                             this.value = 0;
                         }

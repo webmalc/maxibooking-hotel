@@ -27,7 +27,7 @@ class Vashotel extends Base
     /**
      * Update template file
      */
-    const UPDATE_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:update.xml.twig';
+    const UPDATE_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:updateRooms.xml.twig';
 
     /**
      * Create packages template file
@@ -56,6 +56,14 @@ class Vashotel extends Base
         'Pragma: no-cache',
         'SOAPAction: "run"'
     ];
+
+    /**
+     * {@inheritDoc}
+     */
+    public function pullOrders()
+    {
+
+    }
     
     public function closeAll() {
         ;
@@ -64,6 +72,16 @@ class Vashotel extends Base
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
+    }
+
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null){
+
+    }
+    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null){
+
+    }
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null){
+
     }
 
     /**

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<request>
+    {% include 'MBHChannelManagerBundle:Booking:credentials.xml.twig' with {'config': config } %}
+
+    {% for roomId, roomInfo in data %}
+    <room id="{{ roomId }}">
+        {% for date, dateInfo in roomInfo %}
+            {% for rateId, rateInfo in dateInfo %}
+                <date value="{{ date }}">
+                    <rate id="{{rateId}}"/>
+
+                    {% if rateInfo.minimumstay_arrival %}
+                    <minimumstay_arrival>{{rateInfo.minimumstay_arrival}}</minimumstay_arrival>
+                    {% endif %}
+
+                    {% if rateInfo.maximumstay_arrival %}
+                        <maximumstay_arrival>{{rateInfo.maximumstay_arrival}}</maximumstay_arrival>
+                    {% endif %}
+
+                    {% if rateInfo.minimumstay %}
+                        <minimumstay>{{rateInfo.minimumstay}}</minimumstay>
+                    {% endif %}
+
+                    {% if rateInfo.maximumstay %}
+                        <maximumstay>{{rateInfo.maximumstay}}</maximumstay>
+                    {% endif %}
+
+                    <closedonarrival>{{rateInfo.closedonarrival}}</closedonarrival>
+                    <closedondeparture>{{rateInfo.closedondeparture}}</closedondeparture>
+                </date>
+            {% endfor %}
+        {% endfor %}
+    </room>
+    {% endfor %}
+</request>

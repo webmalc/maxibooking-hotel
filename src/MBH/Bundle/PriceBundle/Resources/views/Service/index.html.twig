@@ -55,7 +55,7 @@
                                     <td><a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entity.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
                                     <td>
                                         <span class="hidden">{{ entry.price }}</span>
-                                        <input name="entries[{{ entry.id }}]" class="form-control spinner {{ entry.calcType == 'day_percent' ? 'percent-spinner' : 'price-spinner'}} input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}">
+                                        <input name="entries[{{ entry.id }}]" class="form-control spinner-0f {{ entry.calcType == 'day_percent' ? 'percent-spinner' : 'price-spinner'}} input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}">
                                     </td>
                                     <td class="text-center">{{ config.calcTypes[entry.calcType]|default('Штука') }}</td>
                                     <td class="text-center">{% if entry.date %}<i class="fa fa-check text-success"></i>{% endif %}</td>

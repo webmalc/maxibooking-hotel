@@ -50,6 +50,7 @@ class ChannelManagerController extends Controller implements CheckHotelControlle
     public function syncAction(Request $request, $name = null)
     {
         $this->get('mbh.channelmanager')->sync($name);
+        $this->get('mbh.channelmanager')->updateInBackground();
 
         if ($name) {
             $request->getSession()->getFlashBag()

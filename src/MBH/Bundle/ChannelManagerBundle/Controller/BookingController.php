@@ -27,8 +27,6 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      */
     public function indexAction()
     {
-        $this->get('mbh.channelmanager')->update();
-        
         $doc = $this->get('mbh.hotel.selector')->getSelected()->getBookingConfig();
 
         $form = $this->createForm(

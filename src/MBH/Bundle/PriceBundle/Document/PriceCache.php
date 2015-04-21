@@ -47,7 +47,7 @@ class PriceCache extends Base
 
     /**
      * @var int
-     * @ODM\Int()
+     * @ODM\Float()
      * @Assert\Type(type="numeric")
      * @Assert\NotNull()
      * @Assert\Range(min=0)
@@ -64,7 +64,7 @@ class PriceCache extends Base
 
     /**
      * @var int
-     * @ODM\Int()
+     * @ODM\Float()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
      */
@@ -72,7 +72,7 @@ class PriceCache extends Base
 
     /**
      * @var int
-     * @ODM\Int()
+     * @ODM\Float()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
      */
@@ -80,7 +80,7 @@ class PriceCache extends Base
 
     /**
      * @var int
-     * @ODM\Int()
+     * @ODM\Float()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
      */
@@ -178,19 +178,19 @@ class PriceCache extends Base
     /**
      * Set price
      *
-     * @param int $price
+     * @param float $price
      * @return self
      */
     public function setPrice($price)
     {
-        $this->price = (int) $price;
+        $this->price = (float) $price;
         return $this;
     }
 
     /**
      * Get price
      *
-     * @return int $price
+     * @return float $price
      */
     public function getPrice()
     {

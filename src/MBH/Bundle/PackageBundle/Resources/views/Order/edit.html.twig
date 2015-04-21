@@ -21,7 +21,7 @@
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>{{ 'order.edit.paid_price'|trans({}, 'MBHPackageBundle') }}</strong></div>
                     <div class="col-md-10">
-                        {{ entity.paid|number_format }} / {{ entity.price|number_format }}
+                        {{ entity.paid|number_format(2) }} / {{ entity.price|number_format(2) }}
                         &nbsp;
                         {% if entity.isPaid %}
                             <small class="text-success"><i class="fa fa-check"> </i> {{ 'order.edit.paid'|trans({}, 'MBHPackageBundle') }} </small>

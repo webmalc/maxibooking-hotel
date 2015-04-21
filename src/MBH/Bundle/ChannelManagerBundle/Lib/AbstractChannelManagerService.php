@@ -68,12 +68,13 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
         return $result;
     }
-    
+
     /**
-     * @param BaseInterface $config
+     * @param ChannelManagerConfigInterface $config
+     * @param bool $byService
      * @return array
      */
-    public function getRoomTypes(BaseInterface $config)
+    public function getRoomTypes(BaseInterface $config, $byService = false)
     {
         $result = [];
 
@@ -82,19 +83,30 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             if (empty($room->getRoomId()) || !$roomType->getIsEnabled() || !empty($roomType->getDeletedAt())) {
                 continue;
             }
-            $result[$roomType->getId()] = [
-                'syncId' => $room->getRoomId(),
-                'doc' => $roomType
-            ];
+
+            if ($byService) {
+                $result[$room->getRoomId()] = [
+                    'syncId' => $room->getRoomId(),
+                    'doc' => $roomType
+                ];
+            } else {
+                $result[$roomType->getId()] = [
+                    'syncId' => $room->getRoomId(),
+                    'doc' => $roomType
+                ];
+            }
+
+
         }
         return $result;
     }
-    
+
     /**
-     * @param BaseInterface $config
+     * @param ChannelManagerConfigInterface $config
+     * @param bool $byService
      * @return array
      */
-    public function getTariffs(BaseInterface $config)
+    public function getTariffs(BaseInterface $config, $byService = false)
     {
         $result = [];
 
@@ -104,10 +116,40 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             if (empty($configTariff->getTariffId()) || !$tariff->getIsEnabled() || !empty($tariff->getDeletedAt())) {
                 continue;
             }
-            
-            $result[$tariff->getId()] = [
-                'syncId' => $configTariff->getTariffId(),
-                'doc' =>$tariff
+
+            if ($byService) {
+                $result[$configTariff->getTariffId()] = [
+                    'syncId' => $configTariff->getTariffId(),
+                    'doc' =>$tariff
+                ];
+            } else {
+                $result[$tariff->getId()] = [
+                    'syncId' => $configTariff->getTariffId(),
+                    'doc' =>$tariff
+                ];
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param ChannelManagerConfigInterface $config
+     * @return array
+     */
+    public function getServices(BaseInterface $config)
+    {
+        $result = [];
+
+        foreach ($config->getServices() as $configService) {
+            $service = $configService->getService();
+
+            if (empty($configService->getServiceId()) || !$service->getIsEnabled() || !empty($service->getDeletedAt())) {
+                continue;
+            }
+
+            $result[$configService->getServiceId()] = [
+                'syncId' => $configService->getServiceId(),
+                'doc' =>$service
             ];
         }
         return $result;

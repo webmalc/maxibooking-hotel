@@ -2,6 +2,11 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -23,6 +28,11 @@ class Booking extends Base
      * Base API URL
      */
     const BASE_URL = 'https://supply-xml.booking.com/hotels/xml/';
+
+    /**
+     * Base secure API URL
+     */
+    const BASE_SECURE_URL = 'https://secure-supply-xml.booking.com/hotels/xml/';
     
     public $servicesConfig = [
         1 => 'Breakfast',
@@ -54,7 +64,179 @@ class Booking extends Base
     {
         parent::__construct($container);
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    public function pullOrders()
+    {
+        $result = true;
+
+        foreach ($this->getConfig() as $config) {
+            $request = $this->templating->render('MBHChannelManagerBundle:Booking:reservations.xml.twig', ['config' => $config]);
+            $sendResult = $this->send(static::BASE_SECURE_URL . 'reservations', $request, null, true);
+
+            foreach ($sendResult->reservation as $reservation) {
+
+                //old order
+                $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy([
+                    'channelManagerId' => (string)$reservation->id, 'channelManagerType' => 'booking'
+                ]);
+
+                //new
+                if ((string)$reservation->status == 'new' && !$order) {
+                    $result = $this->createPackage($reservation, $config, $order);
+                }
+                //edit
+                if ((string)$reservation->status == 'modified' && $order) {
+                    $result = $this->createPackage($reservation, $config, $order);
+                }
+                //delete
+                if((string)$reservation->status == 'cancelled' && $order) {
+                    $this->dm->remove($order);
+                    $this->dm->flush();
+                    $result = true;
+                };
+            };
+        }
+        return $result;
+    }
+
+    /**
+     * @param \SimpleXMLElement $reservation
+     * @param ChannelManagerConfigInterface $config
+     * @param Order $order
+     * @return Order
+     */
+    private function createPackage(\SimpleXMLElement $reservation, ChannelManagerConfigInterface $config, Order $order = null)
+    {
+        $helper = $this->container->get('mbh.helper');
+        $roomTypes = $this->getRoomTypes($config, true);
+        $tariffs = $this->getTariffs($config, true);
+        $services = $this->getServices($config);
+
+        //tourist
+        //TODO: company, country, zip
+        $customer = $reservation->customer;
+        $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+            (string)$customer->last_name, (string)$customer->first_name, null, null,
+            empty((string) $customer->email) ? null : (string) $customer->email,
+            empty((string) $customer->telephone) ? null : (string) $customer->telephone,
+            empty((string) $customer->address) ? null : (string) $customer->address,
+            empty((string) $customer->remarks) ? null : (string) $customer->remarks
+        );
+        //order
+        if (!$order) {
+            $order = new Order();
+        } else {
+            foreach($order->getPackages() as $package) {
+                $this->dm->remove($package);
+                $this->dm->flush();
+            }
+        }
+        $order->setChannelManagerType('booking')
+            ->setChannelManagerId((string)$reservation->id)
+            ->setChannelManagerHumanId(empty((string) $customer->loyalty_id) ? null : (string) $customer->loyalty_id)
+            ->setMainTourist($payer)
+            ->setCard('cc_cvc: ' . $customer->cc_cvc . '; cc_expiration_date: ' . $customer->cc_expiration_date . '; cc_name: ' . $customer->cc_name . '; cc_number: ' . $customer->cc_number . '; cc_type: ' . $customer->cc_type)
+            ->setConfirmed(false)
+            ->setStatus('channel_manager')
+            ->setPrice((float)$reservation->totalprice)
+            ->setTotalOverwrite((float)$reservation->totalprice)
+            ->setIsPaid(false)
+        ;
+
+        $this->dm->persist($order);
+        $this->dm->flush();
+
+        //packages
+        foreach ($reservation->room as $room) {
+            //roomType
+            if (!isset($roomTypes[(string) $room->id])) {
+                continue;
+            }
+            $roomType = $roomTypes[(string) $room->id]['doc'];
+
+            //guests
+            if ($payer->getFirstName() . ' ' . $payer->getLastName() == (string) $room->guest_name) {
+                $guest = $payer;
+            } else {
+                $guestArray = explode(' ', (string) $room->guest_name ) ;
+                $guest = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                    $guestArray[1], $guestArray[0]
+                );
+            }
+
+            //prices
+            $total = 0;
+            $tariff = null;
+            $pricesByDate = [];
+            foreach ($room->price as $price) {
+                if (!$tariff && isset($tariffs[(string) $price['rate_id']])) {
+                    $tariff = $tariffs[(string) $price['rate_id']]['doc'];
+                }
+                $total += (float) $price;
+                $date = $helper->getDateFromString((string) (string) $price['date'], 'Y-m-d');
+                $pricesByDate[$date->format('d_m_Y')] = (float) $price;
+            }
+            if (!$tariff) {
+                continue;
+            }
+
+            $package = new Package();
+            $package
+                ->setChannelManagerId((string)$room->roomreservation_id )
+                ->setChannelManagerType('booking')
+                ->setBegin($helper->getDateFromString((string) $room->arrival_date, 'Y-m-d'))
+                ->setEnd($helper->getDateFromString((string) $room->departure_date, 'Y-m-d'))
+                ->setRoomType($roomType)
+                ->setTariff($tariff)
+                ->setAdults((int) $room->numberofguests)
+                ->setChildren(0)
+                ->setIsSmoking((boolean) $room->smoking)
+                ->setPricesByDate($pricesByDate)
+                ->setPrice((float) $total)
+                ->setNote('remarks: ' . $room->remarks . '; extra_info: ' . $room->extra_info . '; facilities: ' . $room->facilities)
+                ->setOrder($order)
+                ->addTourist($guest)
+            ;
+
+            //services
+            $servicesTotal = 0;
+            foreach ($room->addons->addon as $addon) {
+                $servicesTotal += (float) $addon->totalprice;
+                if (!$services[(int) $addon->type]) {
+                    continue;
+                }
+
+                $packageService = new PackageService();
+                $packageService
+                    ->setService($services[(int) $addon->type]['doc'])
+                    ->setIsCustomPrice(true)
+                    ->setNights(empty((string) $addon->nights) ? null : (int) $addon->nights)
+                    ->setPersons(empty((string) $addon->persons) ? null : (int) $addon->persons)
+                    ->setPrice(empty((string) $addon->price_per_unit) ? null : (float) $addon->price_per_unit)
+                    ->setTotalOverwrite((float) $addon->totalprice)
+                    ->setPackage($package);
+                ;
+                $this->dm->persist($packageService);
+                $package->addService($packageService);
+            }
+            $package->setServicesPrice($servicesTotal);
+            $package->setTotalOverwrite((float)$room->totalprice);
+
+            $order->addPackage($package);
+            $this->dm->persist($package);
+            $this->dm->persist($order);
+            $this->dm->flush();
+        }
+        $order->setTotalOverwrite((float)$reservation->totalprice);
+        $this->dm->persist($order);
+        $this->dm->flush();
+
+        return $order;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -75,65 +257,154 @@ class Booking extends Base
     /**
      * {@inheritDoc}
      */
-    public function update (\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
-
         $result = false;
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
-            $tariffs = $this->getTariffs($config);
             $roomTypes = $this->getRoomTypes($config);
-            $caches = $this->dm->getRepository('MBHPackageBundle:RoomCache')
-                    ->fetch($begin, $end, $roomType, array_keys($roomTypes), array_keys($tariffs));
-            
-            if(!$caches->count()) {
+
+            //roomCache
+            $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
+                $begin, $end, $config->getHotel(), $roomType ? [$roomType->getId()] : [], null
+            );
+            if(!$roomCaches->count()) {
                 continue;
             }
-            
-            //group cache
-            $data = [];
-            foreach ($caches as $cache) {
-                $roomType = $cache->getRoomType();
-                $tariff = $cache->getTariff();
-                $roomTypeSyncId = $roomTypes[$roomType->getId()]['syncId'];
-                $tariffSyncId = $tariffs[$tariff->getId()]['syncId'];
-                $formattedDate = $cache->getDate()->format('Y-m-d');
-                $price = $cache->getPrice()->getPrice();
+            //group caches
+            foreach ($roomCaches as $roomCache) {
+                $roomType = $roomCache->getRoomType();
+                isset($roomTypes[$roomType->getId()]) ? $roomTypeSyncId = $roomTypes[$roomType->getId()]['syncId'] : $roomTypeSyncId = null;
+                $formattedDate = $roomCache->getDate()->format('Y-m-d');
 
-                if (!is_numeric($price)) {
-                    continue;
-                }
-                
-                $data[$roomTypeSyncId][$formattedDate][$tariffSyncId] = 
-                [
-                    'roomstosell' => $cache->getRooms(),
-                    'closed' => empty($cache->getRooms()) ? 1 : 0
-                ];
-                
-                if ($tariff->getMinPackageDuration()) {
-                    $data[$roomTypeSyncId][$formattedDate][$tariffSyncId]['minimumstay'] = $tariff->getMinPackageDuration();
-                }
-                if ($tariff->getMaxPackageDuration()) {
-                    $data[$roomTypeSyncId][$formattedDate][$tariffSyncId]['maximumstay'] = $tariff->getMaxPackageDuration();
-                }
-                if ($roomType->getCalculationType() == 'perRoom') {
-                    $data[$roomTypeSyncId][$formattedDate][$tariffSyncId]['price'] = $price;
-                } else {
-                    $data[$roomTypeSyncId][$formattedDate][$tariffSyncId]['price1'] = $price;
+                if ($roomTypeSyncId) {
+                    $data[$roomTypeSyncId][$formattedDate] = [
+                        'roomstosell' => $roomCache->getLeftRooms(),
+                    ];
                 }
             }
-            
-            $request = $this->templating->render('MBHChannelManagerBundle:Booking:update.xml.twig', ['config' => $config, 'data' => $data]);
+            $request = $this->templating->render('MBHChannelManagerBundle:Booking:updateRooms.xml.twig', ['config' => $config, 'data' => $data]);
 
-            //header("Content-type: text/xml; charset=utf-8");
-            //echo($request); exit();
+            /*header("Content-type: text/xml; charset=utf-8");
+            echo($request); exit();*/
 
             $sendResult = $this->send(static::BASE_URL . 'availability', $request, null, true);
+
             $result = $this->checkResponse($sendResult);
         }
-        
+
         return $result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    {
+        $result = false;
+
+        // iterate hotels
+        foreach ($this->getConfig() as $config) {
+            $roomTypes = $this->getRoomTypes($config);
+            $tariffs = $this->getTariffs($config);
+
+            //priceCache with tariffs
+            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                $begin, $end, $config->getHotel(), $roomType ? [$roomType->getId()] : []
+            );
+            if(!$priceCaches->count()) {
+                continue;
+            }
+            //group caches
+            foreach ($priceCaches as $priceCache) {
+                $roomType = $priceCache->getRoomType();
+                $tariff = $priceCache->getTariff();
+                isset($roomTypes[$roomType->getId()]) ? $roomTypeSyncId = $roomTypes[$roomType->getId()]['syncId'] : $roomTypeSyncId = null;
+                isset($tariffs[$tariff->getId()]) ? $tariffSyncId = $tariffs[$tariff->getId()]['syncId'] : $tariffSyncId = null;
+                $formattedDate = $priceCache->getDate()->format('Y-m-d');
+
+                if ($roomTypeSyncId && $tariffSyncId) {
+                    $data[$roomTypeSyncId][$formattedDate][$tariffSyncId] = [
+                        'price' => $priceCache->getPrice(),
+                        'price1' => $priceCache->getSinglePrice() ? $priceCache->getSinglePrice() : null
+                    ];
+                }
+            }
+            $request = $this->templating->render('MBHChannelManagerBundle:Booking:updatePrices.xml.twig', ['config' => $config, 'data' => $data]);
+
+            /*header("Content-type: text/xml; charset=utf-8");
+            echo($request); exit();*/
+
+            $sendResult = $this->send(static::BASE_URL . 'availability', $request, null, true);
+
+            $result = $this->checkResponse($sendResult);
+        }
+
+        return $result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    {
+        $result = false;
+
+        // iterate hotels
+        foreach ($this->getConfig() as $config) {
+            $roomTypes = $this->getRoomTypes($config);
+            $tariffs = $this->getTariffs($config);
+
+            //restrictions
+            $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
+                $begin, $end, $config->getHotel(), $roomType ? [$roomType->getId()] : []
+            );
+            if(!$restrictions->count()) {
+                continue;
+            }
+            //group caches
+            foreach ($restrictions as $restriction) {
+                $roomType = $restriction->getRoomType();
+                $tariff = $restriction->getTariff();
+                isset($roomTypes[$roomType->getId()]) ? $roomTypeSyncId = $roomTypes[$roomType->getId()]['syncId'] : $roomTypeSyncId = null;
+                isset($tariffs[$tariff->getId()]) ? $tariffSyncId = $tariffs[$tariff->getId()]['syncId'] : $tariffSyncId = null;
+                $formattedDate = $restriction->getDate()->format('Y-m-d');
+
+                if ($roomTypeSyncId && $tariffSyncId) {
+                    $data[$roomTypeSyncId][$formattedDate][$tariffSyncId] = [
+                        'minimumstay_arrival' => $restriction->getMinStayArrival(),
+                        'maximumstay_arrival' => $restriction->getMaxStayArrival(),
+                        'minimumstay' => $restriction->getMinStay(),
+                        'maximumstay' => $restriction->getMinStay(),
+                        'closedonarrival' => $restriction->getClosedOnArrival() ? 1 : 0,
+                        'closedondeparture' => $restriction->getClosedOnDeparture() ? 1 : 0,
+                    ];
+                }
+            }
+            $request = $this->templating->render('MBHChannelManagerBundle:Booking:updateRestrictions.xml.twig', ['config' => $config, 'data' => $data]);
+
+            /*header("Content-type: text/xml; charset=utf-8");
+            echo($request); exit();*/
+
+            $sendResult = $this->send(static::BASE_URL . 'availability', $request, null, true);
+
+            $result = $this->checkResponse($sendResult);
+        }
+
+        return $result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function update (\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    {
+        $this->updateRooms($begin, $end, $roomType);
+        $this->updatePrices($begin, $end, $roomType);
+        $this->updateRestrictions($begin, $end, $roomType);
+
+        return true;
     }
     
     /**

@@ -214,8 +214,7 @@ class SearchResult
         if (!isset($this->prices[$adults . '_' . $children])) {
             $this->prices[$adults . '_' . $children] = 0;
         }
-
-        $this->prices[$adults . '_' . $children] += (int) $price;
+        $this->prices[$adults . '_' . $children] += (float) $price;
 
         return $this;
     }
@@ -269,7 +268,7 @@ class SearchResult
             return null;
         }
         
-        return (int) $this->getPrices()[$adults . '_' . $children];
+        return (float) $this->getPrices()[$adults . '_' . $children];
     }
 
     /**

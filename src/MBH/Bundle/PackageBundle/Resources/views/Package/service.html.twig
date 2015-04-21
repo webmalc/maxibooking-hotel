@@ -13,7 +13,7 @@
 
             <div class="alert alert-warning">
                 <i class="fa fa-ruble"></i>
-                Цена: {{ entity.price|number_format }}
+                Цена: {{ entity.price|number_format(2) }}
                 &nbsp;
                 {% if entity.isPaid %}
                     <small class="text-success"><i class="fa fa-check"> </i> {{ "package.service.paid"|trans({}, "MBHPackageBundle") }}</small>
@@ -22,7 +22,7 @@
                 {% endif %}
                 &nbsp;
                 <i class="fa fa-plug"></i>
-                Цена услуг: {{ entity.servicesPrice|number_format }}
+                Цена услуг: {{ entity.servicesPrice|number_format(2) }}
             </div>
 
             {% if entity.services|length > 0 %}
@@ -52,9 +52,9 @@
                         <td class="text-center">{{ service.calcType != 'not_applicable' ? service.persons : '' }}</td>
                         <td class="text-center">{{ service.amount }}</td>
                         <td class="text-center">{{ service.date is null ? '' : service.date|date('d.m.Y') }}</td>
-                        <td class="text-right text-success">{{ service.price|number_format }}</td>
+                        <td class="text-right text-success">{{ service.price|number_format(2) }}</td>
                         <td>{{ config.calcTypes[service.calcType] }}</td>
-                        <td class="text-right text-success">{{ service.total|number_format }}</td>
+                        <td class="text-right text-success">{{ service.total|number_format(2) }}</td>
                         <td>{{ service.note }}</td>
                         <td class="text-center">{{ service.createdAt|date('d.m.Y') }}</td>
                         <td class="table-actions-td text-center">

@@ -75,7 +75,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'Цены',
                 'required' => true,
                 'data' => null,
-                'attr' => ['class' => 'spinner--1 delete-prices'],
+                'attr' => ['class' => 'spinner--1f delete-prices'],
                 'constraints' => [
                     new Range(['min' => -1, 'minMessage' => 'Цена не может быть меньше минус одного']),
                     new NotBlank()
@@ -93,7 +93,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'Цены',
                 'required' => false,
                 'data' => null,
-                'attr' => ['class' => 'spinner-0', 'placeholder' => 'данные будут удалены'],
+                'attr' => ['class' => 'spinner-0f', 'placeholder' => 'данные будут удалены'],
                 'help' => 'Цена при бронировании номера на одного человека.',
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
@@ -104,7 +104,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'Цены',
                 'required' => false,
                 'data' => null,
-                'attr' => ['class' => 'spinner-0 delete-prices', 'placeholder' => 'данные будут удалены'],
+                'attr' => ['class' => 'spinner-0f delete-prices', 'placeholder' => 'данные будут удалены'],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                 ],
@@ -114,7 +114,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'Цены',
                 'required' => false,
                 'data' => null,
-                'attr' => ['class' => 'spinner-0', 'placeholder' => 'данные будут удалены'],
+                'attr' => ['class' => 'spinner-0f', 'placeholder' => 'данные будут удалены'],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                 ],
