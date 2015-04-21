@@ -76,6 +76,11 @@ class RoomCacheGeneratorType extends AbstractType
                     ],
                     'help' => 'Количестов мест доступные в выбранные сроки. Минус один (-1) для удаления дней',
                 ])
+                ->add('isClosed', 'checkbox', [
+                    'label' => 'Закрыто?',
+                    'value' => true,
+                    'required' => false,
+                ])
         ;
     }
 

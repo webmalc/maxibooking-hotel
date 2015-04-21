@@ -139,8 +139,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                 }
 
                 foreach ($tariffArray as $date => $totalRooms) {
-
-                    if (trim($totalRooms) === '' || $totalRooms === null) {
+                    if (trim($totalRooms['rooms']) === '' || $totalRooms['rooms'] === null) {
                         continue;
                     }
 
@@ -148,7 +147,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                     $newRoomCache->setHotel($hotel)
                         ->setRoomType($roomType)
                         ->setDate($helper->getDateFromString($date))
-                        ->setTotalRooms($totalRooms)
+                        ->setTotalRooms((int) $totalRooms['rooms'])
                         ->setPackagesCount(0)
                     ;
                     if ($tariffId && $tariff) {
@@ -165,19 +164,21 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
         //update
         foreach ($updateData as $roomCacheId => $val) {
-
             $roomCache = $dm->getRepository('MBHPriceBundle:RoomCache')->find($roomCacheId);
             if (!$roomCache || $roomCache->getHotel() != $hotel) {
                 continue;
             }
 
             //delete
-            if (trim($val) === '' || $val === null) {
+            if (isset($val['rooms']) && (trim($val['rooms']) === '' || $val['rooms'] === null)) {
                 $dm->remove($roomCache);
                 continue;
             }
 
-            $roomCache->setTotalRooms($val);
+            if (isset($val['rooms'])) {
+                $roomCache->setTotalRooms((int) $val['rooms']);
+            }
+            $roomCache->setIsClosed(isset($val['closed']) && !empty($val['closed']) ? true : false);
             if ($validator->validate($roomCache)) {
                 $dm->persist($roomCache);
             }
@@ -246,7 +247,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             $data = $form->getData();
 
             $this->get('mbh.room.cache')->update(
-                $data['begin'], $data['end'], $hotel, $data['rooms'], $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
+                $data['begin'], $data['end'], $hotel, $data['rooms'], $data['isClosed'],  $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
             );
 
             $this->get('mbh.channelmanager')->updateInBackground();

@@ -65,13 +65,13 @@ class RoomCache
 
 
     /**
-     * Create/update RoomCache docs
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param Hotel $hotel
      * @param int $rooms
+     * @param bool $isClosed
      * @param array $availableRoomTypes
-     * @param mixed $tariffs
+     * @param array $tariffs
      * @param array $weekdays
      */
     public function update(
@@ -79,6 +79,7 @@ class RoomCache
         \DateTime $end,
         Hotel $hotel,
         $rooms = 0,
+        $isClosed = false,
         array $availableRoomTypes = [],
         array $tariffs = [],
         array $weekdays = []
@@ -110,7 +111,8 @@ class RoomCache
                 'values' => [
                     'packagesCount' => $oldRoomCache->getPackagesCount(),
                     'totalRooms' => (int)$rooms,
-                    'leftRooms' => (int)$rooms - $oldRoomCache->getPackagesCount()
+                    'leftRooms' => (int)$rooms - $oldRoomCache->getPackagesCount(),
+                    'isClosed' => $isClosed
                 ]
             ];
         }
@@ -138,6 +140,7 @@ class RoomCache
                         'packagesCount' => (int)0,
                         'leftRooms' => (int)$rooms,
                         'isEnabled' => true,
+                        'isClosed' => $isClosed
                     ];
 
                 }

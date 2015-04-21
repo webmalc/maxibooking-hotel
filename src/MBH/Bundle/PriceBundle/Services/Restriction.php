@@ -48,6 +48,7 @@ class Restriction
      * @param null $maxBeforeArrival
      * @param bool $closedOnArrival
      * @param bool $closedOnDeparture
+     * @param bool $closed
      * @param array $availableRoomTypes
      * @param array $availableTariffs
      * @param array $weekdays
@@ -65,6 +66,7 @@ class Restriction
         $maxBeforeArrival = null,
         $closedOnArrival = false,
         $closedOnDeparture = false,
+        $closed = false,
         array $availableRoomTypes = [],
         array $availableTariffs = [],
         array $weekdays = []
@@ -79,7 +81,7 @@ class Restriction
         if (
             empty($minStay) && empty($maxStay) && empty($minStayArrival) &&
             empty($maxStayArrival) && empty($minBeforeArrival) && empty($maxBeforeArrival) &&
-            empty($closedOnArrival) && empty($closedOnDeparture)
+            empty($closedOnArrival) && empty($closedOnDeparture) && empty($closed)
         ) {
             $empty = true;
         } else {
@@ -113,6 +115,7 @@ class Restriction
                         'maxBeforeArrival' => !empty($maxBeforeArrival) ? (int) $maxBeforeArrival : null,
                         'closedOnArrival' => !empty($closedOnArrival) ? true : false,
                         'closedOnDeparture' => !empty($closedOnDeparture) ? true : false,
+                        'closed' => !empty($closed) ? true : false,
                     ]
                 ];
             }
@@ -145,6 +148,7 @@ class Restriction
                         'maxBeforeArrival' => !empty($maxBeforeArrival) ? (int) $maxBeforeArrival : null,
                         'closedOnArrival' => !empty($closedOnArrival) ? true : null,
                         'closedOnDeparture' => !empty($closedOnDeparture) ? true : null,
+                        'closed' => !empty($closed) ? true : false,
                         'isEnabled' => true
                     ];
                 }

@@ -149,6 +149,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
                         ->setMaxBeforeArrival($values['maxBeforeArrival'] ? (int) $values['maxBeforeArrival'] : null)
                         ->setClosedOnArrival(isset($values['closedOnArrival']) ? true : false)
                         ->setClosedOnDeparture(isset($values['closedOnDeparture']) ? true : false)
+                        ->setClosed(isset($values['closed']) ? true : false)
                     ;
 
                     if ($validator->validate($newRestriction)) {
@@ -179,6 +180,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
                 ->setMaxBeforeArrival($values['maxBeforeArrival'] ? (int) $values['maxBeforeArrival'] : null)
                 ->setClosedOnArrival(isset($values['closedOnArrival']) ? true : false)
                 ->setClosedOnDeparture(isset($values['closedOnDeparture']) ? true : false)
+                ->setClosed(isset($values['closed']) ? true : false)
             ;
 
             if ($validator->validate($restriction)) {
@@ -252,7 +254,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             $this->get('mbh.restriction')->update(
                 $data['begin'], $data['end'], $hotel, $data['minStay'], $data['maxStay'],
                 $data['minStayArrival'], $data['maxStayArrival'], $data['minBeforeArrival'],
-                $data['maxBeforeArrival'], $data['closedOnArrival'], $data['closedOnDeparture'],
+                $data['maxBeforeArrival'], $data['closedOnArrival'], $data['closedOnDeparture'], $data['closed'],
                 $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
             );
 

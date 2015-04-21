@@ -76,6 +76,14 @@ class RoomCache extends Base
     protected $packageInfo;
 
     /**
+     * @var boolean
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     * @Assert\NotNull()
+     */
+    protected $isClosed = false;
+
+    /**
      * Set hotel
      *
      * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
@@ -361,5 +369,27 @@ class RoomCache extends Base
         $this->packagesCount--;
 
         return $this;
+    }
+
+    /**
+     * Set isClosed
+     *
+     * @param boolean $isClosed
+     * @return self
+     */
+    public function setIsClosed($isClosed)
+    {
+        $this->isClosed = $isClosed;
+        return $this;
+    }
+
+    /**
+     * Get isClosed
+     *
+     * @return boolean $isClosed
+     */
+    public function getIsClosed()
+    {
+        return $this->isClosed;
     }
 }

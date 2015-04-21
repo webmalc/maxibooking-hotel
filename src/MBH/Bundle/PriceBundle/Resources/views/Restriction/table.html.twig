@@ -38,6 +38,7 @@
                     'maxBeforeArrival': 'Макс. дней до заезда',
                     'closedOnArrival': 'Нет заезда',
                     'closedOnDeparture': 'Нет выезда',
+                    'closed': 'Закрыто',
                 } %}
 
                 {% for categoryId, category in categories %}
@@ -56,7 +57,7 @@
                             <!-- END: set inputName & value  -->
 
                             <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}" data-id="{{ roomType.id }}_{{ tariff.id }}_{{ date|date('d.m.Y') }}">
-                                {% if categoryId == 'closedOnArrival' or categoryId == 'closedOnDeparture'%}
+                                {% if categoryId == 'closedOnArrival' or categoryId == 'closedOnDeparture' or categoryId == 'closed' %}
                                     <span class="checkbox">
                                         <input name="{{ inputName }}" disabled type="checkbox" class="mbh-grid-checkbox {{ categoryId }}" {{ inputValue ? 'checked' : '' }} value="1">
                                         <span class="disabled-detector"></span>

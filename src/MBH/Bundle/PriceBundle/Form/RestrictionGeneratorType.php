@@ -144,6 +144,13 @@ class RestrictionGeneratorType extends AbstractType
                 'required' => false,
                 'attr' => ['placeholder' => 'данные будут удалены'],
             ])
+            ->add('closed', 'checkbox', [
+                'label' => 'Закрыто?',
+                'group' => 'Ограничение заезда/выезда',
+                'value' => true,
+                'required' => false,
+                'attr' => ['placeholder' => 'данные будут удалены'],
+            ])
         ;
 
     }

@@ -281,6 +281,7 @@ class Booking extends Base
                 if ($roomTypeSyncId) {
                     $data[$roomTypeSyncId][$formattedDate] = [
                         'roomstosell' => $roomCache->getLeftRooms(),
+                        'closed' => $roomCache->getIsClosed()
                     ];
                 }
             }
@@ -379,6 +380,7 @@ class Booking extends Base
                         'maximumstay' => $restriction->getMinStay(),
                         'closedonarrival' => $restriction->getClosedOnArrival() ? 1 : 0,
                         'closedondeparture' => $restriction->getClosedOnDeparture() ? 1 : 0,
+                        'closed' => $restriction->getClosed() ? 1 : 0,
                     ];
                 }
             }

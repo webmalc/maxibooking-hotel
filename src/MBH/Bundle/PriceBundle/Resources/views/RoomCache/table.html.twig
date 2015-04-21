@@ -35,7 +35,12 @@
                     {% endfor %}
                 </tr>
 
-                {% for categoryId, category in {'totalRooms': 'В продаже', 'packagesCount': 'Забранировано', 'leftRooms': 'Осталось'} %}
+                {% set cats = {'totalRooms': 'В продаже', 'packagesCount': 'Забранировано', 'leftRooms': 'Осталось'} %}
+                {% if tariff is null %}
+                    {% set cats = cats|merge({'isClosed': 'Закрыто'}) %}
+                {% endif %}
+
+                {% for categoryId, category in cats %}
                     <tr>
                         <td class="first-td">
                             <small>{{ category }}</small>
@@ -59,13 +64,18 @@
 
                             <!-- END: set roomCache & dayRoomCache -->
 
-                            <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}{% if (roomCache and roomCache.leftRooms < 0) or (tariff is not null and roomCache and dayRoomCache is null)  or (tariff is not null and roomCache and dayRoomCache and roomCache.totalRooms > dayRoomCache.totalRooms)%} alert{% endif %}">
+                            <td data-id="{{ roomType.id }}_{{ date|date('d.m.Y') }}" class="content {% if date|date('N') >= 6 %} weekend{% endif %}{% if (roomCache and roomCache.leftRooms < 0) or (tariff is not null and roomCache and dayRoomCache is null)  or (tariff is not null and roomCache and dayRoomCache and roomCache.totalRooms > dayRoomCache.totalRooms) or (roomCache and roomCache.isClosed)%} alert{% endif %}">
                                 {% if (categoryId == 'totalRooms' and tariff is null) or (tariff is not null and dayRoomCache is not null and categoryId == 'totalRooms') %}
                                     {% if tariff is null %}{% set tariffId = 0 %}{% else %}{% set tariffId = tariff.id %}{% endif %}
                                     <input placeholder="{{ dayRoomCache is null ? '' : dayRoomCache.totalRooms }}"
-                                           name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][' ~ tariffId ~'][' ~ date|date('d.m.Y') ~ ']' : 'updateRoomCaches[' ~ roomCache.id ~']'}}"
+                                           name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][' ~ tariffId ~'][' ~ date|date('d.m.Y') ~ '][rooms]' : 'updateRoomCaches[' ~ roomCache.id ~'][rooms]'}}"
                                            disabled type="text" class="mbh-grid-input form-control input-sm"
                                            value="{{ roomCache is null ? '' : roomCache.totalRooms }}">
+                                {% elseif categoryId == 'isClosed' and tariff is null and roomCache %}
+                                    <span class="checkbox">
+                                        <input name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][0][' ~ date|date('d.m.Y') ~ '][closed]' : 'updateRoomCaches[' ~ roomCache.id ~'][closed]'}}" disabled type="checkbox" class="mbh-grid-checkbox {{ categoryId }}" {{ roomCache.isClosed ? 'checked' : '' }} value="1">
+                                        <span class="disabled-detector"></span>
+                                    </span>
                                 {% else %}
                                     <small>
                                         <span class="text-{{ categoryId == 'leftRooms' ? 'success bold' : 'info' }}">
@@ -76,7 +86,7 @@
                                         {% elseif roomCache is null and dayRoomCache is not null and categoryId == 'leftRooms' %}
                                             {{ dayRoomCache.leftRooms }}
                                         {% endif %}
-                                            </span>
+                                        </span>
                                     </small>
                                 {% endif %}
 

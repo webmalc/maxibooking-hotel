@@ -15,9 +15,15 @@ $(document).ready(function () {
                     'tariffs': $('#room-cache-overview-filter-tariff').val()
                 },
                 inputs = function () {
-                    var input = $('input.mbh-grid-input');
+                    var input = $('input.mbh-grid-input, span.disabled-detector');
                     input.closest('td').click(function () {
-                        $(this).children('input').removeAttr('disabled').focus().select();
+                        var td = $("td[data-id='" + $(this).attr('data-id') + "']"),
+                            ch = $(this).children('span.checkbox').children('input[disabled]');
+                        td.children('input').removeAttr('disabled');
+                        $(this).children('input').focus();
+                        ch.prop('checked', !ch.prop('checked')).css('checkbox-end');
+                        td.children('span.checkbox').children('input').removeAttr('disabled');
+                        td.children('span.checkbox').children('span.disabled-detector').remove();
                     });
                     input.change(function () {
                         if (this.value === '') {

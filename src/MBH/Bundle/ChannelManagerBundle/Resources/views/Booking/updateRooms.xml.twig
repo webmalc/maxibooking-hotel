@@ -7,6 +7,9 @@
         {% for date, dateInfo in roomInfo %}
             <date value="{{ date }}">
                 <roomstosell>{{ dateInfo.roomstosell }}</roomstosell>
+                {% if dateInfo.closed %}
+                <closed>1</closed>
+                {% endif %}
             </date>
         {% endfor %}
     </room>

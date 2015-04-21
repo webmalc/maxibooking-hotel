@@ -108,6 +108,13 @@ class Restriction extends Base
     protected $closedOnDeparture = false;
 
     /**
+     * @var boolean
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $closed = false;
+
+    /**
      * Set hotel
      *
      * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
@@ -369,5 +376,27 @@ class Restriction extends Base
     public function getClosedOnDeparture()
     {
         return $this->closedOnDeparture;
+    }
+
+    /**
+     * Set closedOnDeparture
+     *
+     * @param boolean $closed
+     * @return self
+     */
+    public function setClosed($closed)
+    {
+        $this->closed = $closed;
+        return $this;
+    }
+
+    /**
+     * Get closedOnDeparture
+     *
+     * @return boolean $closedOnDeparture
+     */
+    public function getClosed()
+    {
+        return $this->closed;
     }
 }

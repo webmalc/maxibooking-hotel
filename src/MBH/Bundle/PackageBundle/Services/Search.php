@@ -70,7 +70,7 @@ class Search
                     $skip = true;
                 }
 
-                if ($skip || ($roomCache->getLeftRooms() > 0 && $roomCache->getRoomType()->getTotalPlaces() >= $query->getTotalPlaces())) {
+                if ($skip || ($roomCache->getLeftRooms() > 0 && $roomCache->getRoomType()->getTotalPlaces() >= $query->getTotalPlaces() && !$roomCache->getIsClosed())) {
                     $groupedCaches['room'][$roomCache->getHotel()->getId()][$roomCache->getRoomType()->getId()][] = $roomCache;
                 }
 
@@ -117,6 +117,13 @@ class Search
         foreach ($restrictions as $restriction) {
             $delete = false;
 
+            if ($query->tariff && $query->tariff->getId() != $restriction->getTariff()->getId()) {
+                continue;
+            }
+            if (!$query->tariff && !$restriction->getTariff()->getIsDefault()) {
+                continue;
+            }
+
             //ClosedOnDeparture
             if ($restriction->getDate()->format('d.m.Y') == $query->end->format('d.m.Y')) {
                 if ($restriction->getClosedOnDeparture() && isset($deletedCaches[$restriction->getHotel()->getId()][$restriction->getRoomType()->getId()])) {
@@ -152,6 +159,11 @@ class Search
             if ($restriction->getClosedOnArrival() && $restriction->getDate()->format('d.m.Y') == $query->begin->format('d.m.Y')) {
                 $delete = true;
             }
+            //closed
+            if ($restriction->getClosed()) {
+                $delete = true;
+            }
+
             //delete chain
             if ($delete && isset($deletedCaches[$restriction->getHotel()->getId()][$restriction->getRoomType()->getId()])) {
                 unset($deletedCaches[$restriction->getHotel()->getId()][$restriction->getRoomType()->getId()]);
