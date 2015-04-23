@@ -119,4 +119,5 @@ $(document).ready(function () {
 
     //fancybox
     $('.fancybox').fancybox();
+    $('input[type=file]').bootstrapFileInput();
 });

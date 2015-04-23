@@ -1,14 +1,31 @@
 {% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
 
-{% set small_title = 'views.roomType.layout.create_room_type'|trans({}, 'MBHHotelBundle')  %}
+{% set small_title = 'views.roomType.layout.create_room_type'|trans({}, 'MBHHotelBundle') %}
 
 {% block content %}
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#general_info" role="tab" data-toggle="tab">
+                Общая информация и настройки
+            </a>
+        </li>
+        <li class="disabled">
 
-    {{ form_start(form, {'action': path('room_type_create'), 'attr': {'class': 'form-horizontal'}}) }}
-    {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
-    {{ form_end(form) }}
+            <a href="#images">
+                Фотографии
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="general_info">
+            {{ form_start(form, {'action': path('room_type_create'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+            {{ form_end(form) }}
 
-    {% if selected_hotel().getIsHostel %}<span id="hotel_is_hostel"></span>{% endif %}
-    
+            {% if selected_hotel().getIsHostel %}<span id="hotel_is_hostel"></span>{% endif %}
+        </div>
+        <div class="tab-pane" id="images">
+        </div>
+    </div>
 {% endblock %}
