@@ -36,3 +36,4 @@ views.tabs.room_types: ' Типы номеров'
 views.tabs.tariffs: ' Тарифы'
 views.tabs.services: ' Услуги'
 views.tabs.must_fill_main_settings: "Необходимо заполнить основные настройки!"
+services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'

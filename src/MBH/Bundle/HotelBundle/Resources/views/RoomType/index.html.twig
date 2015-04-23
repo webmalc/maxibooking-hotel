@@ -21,7 +21,6 @@
     <!-- Tabs content -->
     <div class="tab-content">
         {% for entity in entities %}
-
             {% if entity.hotel.isHostel and entity.calculationType == 'customPrices' %}{% set hostel = true %}{% else %}{% set hostel = false %}{% endif %}
 
             <div class="tab-pane {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}active{% endif %}" id="{{entity.id}}">
@@ -33,6 +32,7 @@
                     <a href="{{ path('room_type_generate_rooms', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title={{ 'views.roomType.index.generate_rooms_for_room_type'|trans({'%name%': entity.name}, 'MBHHotelBundle') }}><i class="fa fa-magic"> </i> {{ 'views.roomType.index.generate'|trans({}, 'MBHHotelBundle') }} {{ hostel ? 'views.roomType.index.bed'|trans({}, 'MBHHotelBundle') : 'views.roomType.index.room'|trans({}, 'MBHHotelBundle') }}</a>
                     <a href="{{ path('room_type_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title={{ 'views.roomType.index.delete_room_type'|trans({'%name%': entity.name}, 'MBHHotelBundle')}}><i class="fa fa-trash-o"> </i> {{ 'views.roomType.index.delete'|trans({}, 'MBHHotelBundle')}}</a>
                 </div>
+
 
                 <!-- Rooms list -->
                 <div class="panel panel-default">
@@ -53,10 +53,24 @@
                         </table>
                     </div>
                 </div>
+                <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+                    <div class="container-fluid">
+                        <ul class="nav navbar-nav">
+                            <li><button onclick="location.href = '{{ path('room_type_new') }}'" type="submit" class="btn btn-success navbar-btn"><i class="fa {{ icon is defined ? icon : 'fa-plus'}}"></i> {{ text is defined ? text : 'views.actions.list.add'|trans({}, 'MBHBaseBundle')}}</button></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+
+                            <li id='list-export-add-{{ loop.index }}'></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
+
         {% endfor %}
+
     </div>
 
-    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'room_type_new'} %}
+
+    {#{% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'room_type_new'} %}#}
 
 {% endblock %} 

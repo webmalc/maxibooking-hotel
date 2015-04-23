@@ -35,6 +35,8 @@ form.roomType.is_included: Включен?
 form.roomType.settings: Настройки
 form.roomType.is_room_included_in_search: Используется ли номер в поиске?
 form.roomType.room_type: Тип номера
+form.roomType.housing: Корпус
+form.roomType.floor: Этаж
 form.roomTypeGenerateRoomsType.first_bed_number: Номер первого койко-места
 form.roomTypeGenerateRoomsType.first_room_number: Номер первой комнаты
 form.roomTypeGenerateRoomsType.field_must_be_number: Поле должно быть числом
@@ -60,6 +62,7 @@ form.roomTypeType.additional_places: Дополнительные места
 form.roomTypeType.room_additional_places_amount: Количество дополнительных мест в номере
 form.roomTypeType.is_included: Включен?
 form.roomTypeType.is_room_included_in_search: Используется ли тип номера в поиске?
+form.roomTypeType.room_space: Площадь номера (м2)
 controller.hotelController.record_created_success: 'Запись успешно создана.'
 controller.hotelController.record_edited_success: 'Запись успешно отредактирована.'
 controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'

@@ -4,7 +4,7 @@
 
 {% block content %}
 
-    <table class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+    <table class="table {#not-auto-datatable#} table-striped table-hover table-condensed table-icons table-actions">
         <thead>
         <tr>
             <th class="td-xs"></th>
@@ -38,7 +38,7 @@
 
     {{ form_start(form, {'action': path('package_source'), 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false} %}
+    {% include 'MBHBaseBundle:Actions:new_plus_actions.html.twig' with {'save_close': false} %}
     {{ form_end(form) }}
 
 {% endblock %}

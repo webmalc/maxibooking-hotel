@@ -260,8 +260,3 @@ source.index.created: Создан
 source.index.edit_record: Редактирование записи
 source.index.delete_record: Удаление записи
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Невозможно удалить запись с существующими бронями. Брони: '
-controller.analyticsController.services_amount: 'Количество услуг'
-controller.analyticsController.proceeds: 'Выручка'
-controller.analyticsController.percentage: 'Процент'
-controller.analyticsController.package_trips_amount: 'Количество путевок'
-controller.analyticsController.sale_date: 'Даты продажи'

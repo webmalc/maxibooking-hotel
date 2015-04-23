@@ -19,3 +19,6 @@ form.userType.placeholder_surname: Иванов
 form.userType.name: Имя
 form.userType.general_info: Общая информация
 form.userType.placeholder_name: Иван
+controller.profileController.new_password_saved_success: 'Новый пароль успешно сохранен.'
+controller.profileController.record_saved_success: 'Запись успешно создана.'
+controller.profileController.record_edited_success: 'Запись успешно отредактирована.'

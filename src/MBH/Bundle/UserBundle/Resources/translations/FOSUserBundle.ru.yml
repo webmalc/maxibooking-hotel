@@ -60,6 +60,3 @@ views.profile.layout.user: "Пользователь"
 views.profile.profile.change_password: "cмена пароля"
 views.profile.profile.password_error: Пароль дожен быть не меньше 8 символов и содержать цифру и заглавную букву!
 views.security.login.enter_in: Войти в
-controller.profileController.new_password_saved_success: 'Новый пароль успешно сохранен.'
-controller.profileController.record_saved_success: 'Запись успешно создана.'
-controller.profileController.record_edited_success: 'Запись успешно отредактирована.'

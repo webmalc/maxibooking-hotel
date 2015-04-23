@@ -21,16 +21,3 @@ views.partials.entityInfo.no_changes_made: Изменений не произв�
 views.partials.entityInfo.date: Дата
 views.partials.entityInfo.user: Пользователь
 views.partials.entityInfo.changes: Изменения
-twig.extension.jan: 'янв'
-twig.extension.feb: 'февр'
-twig.extension.march: 'март'
-twig.extension.april: 'апр'
-twig.extension.may: 'май'
-twig.extension.june: 'июнь'
-twig.extension.july: 'июль'
-twig.extension.august: 'авг'
-twig.extension.september: 'сент'
-twig.extension.october: 'окт'
-twig.extension.november: 'нояб'
-twig.extension.december: 'дек'
-controller.baseController.delete_record_success: 'Запись успешно удалена.'

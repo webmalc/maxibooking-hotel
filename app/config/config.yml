@@ -167,3 +167,13 @@ knp_snappy:
 iam_persistent_mongo_db_acl:
     acl_provider:
         default_database: %mongodb_database%
+
+liip_imagine:
+    resolvers:
+        default:
+            web_path: ~
+    filter_sets:
+        thumb_50x50:
+            quality: 100
+            filters:
+                thumbnail: { size: [50, 50], mode: outbound, allow_upscale: true }

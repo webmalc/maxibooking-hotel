@@ -24,7 +24,7 @@ form.packageAccommodationType.room_or_bed: Комната/койко-место
 form.packageAccommodationType.room: Комната
 form.packageAccommodationType.choose_placement: Выбрать размещение
 form.packageAccommodationType.are_guests_checked_in: Гости заехали?
-form.packageAccommodationType.are_guests_checked_in_help: Заехал ли гости в номер?
+form.packageAccommodationType.are_guests_checked_in_helper: Заехал ли гости в номер?
 form.packageCopyType.reservation: Бронь
 form.packageCopyType.transfer_parameters: Параметры переноса
 form.packageCopyType.data_transfer_reservation: Бронь в которую будет произведен перенос данных.
@@ -103,6 +103,11 @@ form.touristType.placeholder_phone: +7(925)3456512
 form.touristType.email: E-mail
 form.touristType.placeholder_email: mail@exapmple.com
 form.touristType.note: Примечание
+controller.analyticsController.services_amount: 'Количество услуг'
+controller.analyticsController.proceeds: 'Выручка'
+controller.analyticsController.percentage: 'Процент'
+controller.analyticsController.package_trips_amount: 'Количество путевок'
+controller.analyticsController.sale_date: 'Даты продажи'
 controller.orderController.cash_register_paper_deleted_success: 'Кассовый документ успешно удален.'
 controller.orderController.add_cash_register_paper: 'Добавить кассовый документ'
 controller.orderController.cash_register_paper_added_success: 'Кассовый документ успешно добавлен.'
@@ -113,7 +118,6 @@ controller.orderController.record_deleted_success: 'Запись успешно 
 controller.packageController.placement_not_transfered_room_is_in_use: 'Размещение не перенесено. Номер уже занят.'
 controller.packageController.data_transfer_success: 'Данные успешно пересены.'
 controller.packageController.record_edited_success: 'Запись успешно отредактирована.'
-controller.packageController.record_edited_fail: 'Запись не сохранена. Нет доступных номеров.'
 controller.packageController.order_created_success:  'Заказ успешно создан.'
 controller.packageController.guest_added_success: 'Гость успешно добавлен.'
 controller.packageController.service_adding_error_refresh_and_try_again:  'Произошла ошибка при добавлении услуги. Обновите страницу и попробуйте еще раз.'

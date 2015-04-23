@@ -3,6 +3,37 @@
 {% set small_title = 'views.roomType.edit.edit_room_type'|trans({}, 'MBHHotelBundle') ~ entity.id %}
 
 {% block content %}
+<ul class="nav nav-tabs" role="tablist">
+    <li class=
+        {% if app.request.query.get("imageTab")=='' %}
+            'active'
+        {% else %}
+            ''
+        {% endif %}>
+
+        <a href="#general_info"  role="tab" data-toggle="tab">
+            Общая информация и настройки
+        </a>
+    </li>
+    <li class=
+        {% if app.request.query.get("imageTab")==''%}
+            ''
+        {% else %}
+            'active'
+        {% endif %}>
+
+        <a href="#images" role="tab" data-toggle="tab">
+            Фотографии
+        </a>
+    </li>
+    </ul>
+<div class="tab-content">
+    <div class =
+        {% if app.request.query.get("imageTab")=='' %}
+            'tab-pane active'
+        {% else %}
+            'tab-pane'
+        {% endif %} id="general_info">
 
         {{ form_start(form, {'action': path('room_type_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
         {{ form_widget(form) }}
@@ -12,5 +43,34 @@
         {% if selected_hotel().getIsHostel %}<span id="hotel_is_hostel"></span>{% endif %}
 
         {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
+    </div>
+    <div class=
+            {% if app.request.query.get("imageTab")==''%}
+                'tab-pane '
+            {% else %}
+                'tab-pane active'
+            {% endif %} id="images">
+        <div class="well">
+        {{ form_start(formImage, {'action': path('room_type_image_room_update', {'id': entity.id, 'imageTab' : 'active'}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_widget(formImage) }}
+        {{ form_end(formImage) }}
+        </div>
+        {%  for image in images %}
+            <a href="{{ asset(image.getPath()) }}" class="fancybox" rel="gallery" data-fancybox-title="{{ image.name }}" class="roomTypeImage">
+                <img src="{{ asset(image.getPath()) | imagine_filter('thumb_50x50') }}" class="img-thumbnail"/>
+            </a>
 
+
+            {% if image.isMain == false %}
+                <a href="{{ path('room_type_image_make_main', {'id': entity.id, 'imageId' : image.getId}) }}" class="btn btn-success btn-xs make-main-image " data-toggle="tooltip" data-original-title="Cделать главной"><i class="fa fa-check"></i></a>
+            {% else %}
+                <a href="#" class="btn btn-primary btn-xs make-main-image main-image"  data-toggle="tooltip" data-original-title="Главная фотография" alt="Главная фотография"><i class="fa fa-check"></i></a>
+
+
+            {% endif %}
+    <a href="{{ path('room_type_image_delete', {'id': entity.id, 'imageId' : image.getId}) }}" class="btn btn-danger btn-xs delete-link delete-image" data-toggle="tooltip" data-original-title="Удалить картинку"><i class="fa fa-trash-o"></i></a>
+        {% endfor %}
+
+        </div>
+    </div>
 {% endblock %}

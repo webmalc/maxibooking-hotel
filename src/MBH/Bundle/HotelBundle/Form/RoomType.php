@@ -26,6 +26,16 @@ class RoomType extends AbstractType
                     'attr' => ['placeholder' => 'form.roomType.placeholder_27_with_repair'],
                     'help' => 'form.roomType.maxibooking_inner_name'
                 ])
+                ->add('housing', 'text', [
+                    'label' => 'form.roomType.housing',
+                    'group' => 'form.roomType.general_info',
+                    'required' => false
+                ])
+                ->add('floor', 'text', [
+                    'label' => 'form.roomType.floor',
+                    'group' => 'form.roomType.general_info',
+                    'required' => false
+                ])
                 ->add('isEnabled', 'checkbox', [
                     'label' => 'form.roomType.is_included',
                     'group' => 'form.roomType.settings',
