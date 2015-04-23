@@ -121,6 +121,7 @@ package.editTabs.reservation_info: Информация о броне
 package.editTabs.guests: Гости
 package.editTabs.services: Услуги
 package.editTabs.placement: Размещение
+package.editTabs.documents: Документы
 package.editTabs.data_transfer: Перенос данных
 package.editTabs.order: Заказ #
 package.guest.edit_reservation: "редактирование брони "
@@ -214,6 +215,9 @@ package.service.comment: Комментарий
 package.service.creation_date: Дата создания
 package.service.delete_record: Удаление записи
 package.service.add_services: Добавить услуги?
+package.document.type_passport: Паспорт
+package.document.type_insurance: Мед. страховка
+package.document.type_birth_certificate: Свидетельство о рождении
 report.accommodation.placement: "размещение"
 report.accommodation.dates: Даты
 report.accommodation.room_type: Тип номера

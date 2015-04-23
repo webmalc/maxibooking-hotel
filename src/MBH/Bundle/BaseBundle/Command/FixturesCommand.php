@@ -160,7 +160,7 @@ class FixturesCommand extends ContainerAwareCommand
         }
 
         $hotel = new Hotel();
-        $hotel->setFullTitle($this->hotel)->setSaleDays(365)->setIsDefault(true);
+        $hotel->setFullTitle($this->hotel)->setIsDefault(true);
         $this->dm->persist($hotel);
         $this->dm->flush();
 

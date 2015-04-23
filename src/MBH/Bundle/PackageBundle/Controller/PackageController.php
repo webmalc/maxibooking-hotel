@@ -3,11 +3,15 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Document\PackageDocument;
 use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PackageBundle\Form\PackageDocumentsType;
+use MBH\Bundle\PackageBundle\Form\PackageDocumentType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -274,6 +278,99 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'statuses' => $this->container->getParameter('mbh.package.statuses')
         ];
     }
+
+    /**
+     * Edits an existing entity.
+     *
+     * @Route("/{id}/documents", name="package_documents")
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function documentsAction(Request $request, $id)
+    {
+        /* @var $dm  \Doctrine\ODM\MongoDB\DocumentManager */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        /** @var Package $entity */
+        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
+
+        if (!$entity || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        $packageDocument = new PackageDocument();
+        $documentTypes = [];
+        foreach(PackageDocument::getTypes() as $type)
+            $documentTypes[$type] = $this->get('translator')->trans('package.document.type_'.$type, [], 'MBHPackageBundle');
+
+        $form = $this->createForm(new PackageDocumentType(), $packageDocument, ['documentTypes' => $documentTypes]);
+
+        if($request->isMethod("PUT")){
+            $form->submit($request);
+            if($form->isValid()){
+
+                $packageDocument->upload();
+
+                $entity->addDocument($packageDocument);
+                $dm->persist($entity);
+                $dm->flush();
+                return $this->redirect($this->generateUrl("package_documents", ['id' => $id]));
+            }
+        }
+
+        return [
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity),
+        ];
+    }
+
+    /**
+     *
+     * @Route("/{id}/removeDocument", name="package_remove_document", options={"expose"=true})
+     * @Method("POST")
+     * @Security("is_granted('ROLE_USER')")
+     *
+     * @param Request $request
+     * @param $id
+     * @return JsonResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     */
+    public function removeDocumentAction(Request $request, $id)
+    {
+        $filename = $request->get('filename');
+
+        /* @var $dm  \Doctrine\ODM\MongoDB\DocumentManager */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        /** @var Package $entity */
+        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
+
+        if (!$entity || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        foreach($entity->getDocuments() as $document){
+            /** @var PackageDocument $document */
+            if($document->getName() == $filename){
+                $entity->removeDocument($document);
+
+                $dm->persist($entity);
+                $dm->flush();
+
+                return new JsonResponse([
+                    'success' => true
+                ]);
+            }
+        }
+
+        return new JsonResponse([
+            'success' => false,
+            'error' => 'File is not found. Filename is '.$filename
+        ]);
+    }
+
 
     /**
      * Edits an existing entity.
