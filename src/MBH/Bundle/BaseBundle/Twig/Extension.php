@@ -36,18 +36,18 @@ class Extension extends \Twig_Extension
         }
 
         $months = [
-            $this->get('translator')->trans('twig.extension.jan'),
-            $this->get('translator')->trans('twig.extension.feb'),
-            $this->get('translator')->trans('twig.extension.march'),
-            $this->get('translator')->trans('twig.extension.april'),
-            $this->get('translator')->trans('twig.extension.may'),
-            $this->get('translator')->trans('twig.extension.june'),
-            $this->get('translator')->trans('twig.extension.july'),
-            $this->get('translator')->trans('twig.extension.august'),
-            $this->get('translator')->trans('twig.extension.september'),
-            $this->get('translator')->trans('twig.extension.october'),
-            $this->get('translator')->trans('twig.extension.november'),
-            $this->get('translator')->trans('twig.extension.december')
+            $this->container->get('translator')->trans('twig.extension.jan'),
+            $this->container->get('translator')->trans('twig.extension.feb'),
+            $this->container->get('translator')->trans('twig.extension.march'),
+            $this->container->get('translator')->trans('twig.extension.april'),
+            $this->container->get('translator')->trans('twig.extension.may'),
+            $this->container->get('translator')->trans('twig.extension.june'),
+            $this->container->get('translator')->trans('twig.extension.july'),
+            $this->container->get('translator')->trans('twig.extension.august'),
+            $this->container->get('translator')->trans('twig.extension.september'),
+            $this->container->get('translator')->trans('twig.extension.october'),
+            $this->container->get('translator')->trans('twig.extension.november'),
+            $this->container->get('translator')->trans('twig.extension.december')
         ];
 
         return $date->format('d') . ' ' . $months[$date->format('n') - 1] . '.';
