@@ -79,12 +79,15 @@ class TouristRepository extends DocumentRepository
         $tourist->setLastName($lastName)
             ->setFirstName($firstName)
             ->setPatronymic($patronymic)
-            ->setBirthday($birthday)
             ->setEmail($email)
             ->setPhone($phone)
             ->setAddress($address)
             ->setNote($note)
         ;
+
+        if ($birthday) {
+            $tourist->setBirthday($birthday);
+        }
 
         $dm->persist($tourist);
         $dm->flush($tourist);

@@ -88,4 +88,35 @@ $(document).ready(function() {
         $('#list-export').append($(tt.fnContainer()));
         $('#list-export').find('a').addClass('navbar-btn');
     }
+
+    window.addExcelButtons = function (table,index){
+        var tt = new $.fn.dataTable.TableTools(table, {
+            "sSwfPath": "/bundles/mbhbase/js/vendor/datatables/swf/copy_csv_xls.swf",
+            "aButtons": [
+                {
+                    "sExtends": "copy",
+                    "sButtonText": '<i class="fa fa-files-o"></i> Скопировать'
+                },
+                {
+                    "sExtends": "csv",
+                    "sButtonText": '<i class="fa fa-file-text-o"></i> CSV'
+                },
+                {
+                    "sExtends": "xls",
+                    "sButtonText": '<i class="fa fa-table"></i> Excel'
+                },
+                /*{
+                 "sExtends": "pdf",
+                 "sButtonText": "PDF "
+                 },*/
+                {
+                    "sExtends": "print",
+                    "sButtonText": '<i class="fa fa-print"></i> Печать'
+                },
+            ]
+        });
+
+        $('#list-export-add-'+index).append($(tt.fnContainer()));
+        $('#list-export-add-'+index).find('a').addClass('navbar-btn');
+    }
 });

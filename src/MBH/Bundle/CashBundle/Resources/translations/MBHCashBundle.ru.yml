@@ -12,5 +12,3 @@ views.cash.jsonButtons.confirm: Подтвердить
 views.cash.jsonButtons.edit_record: 'Редактирование записи'
 views.cash.jsonButtons.delete_record: 'Удаление записи'
 views.cash.layout.cash: Касса
-controller.cashController.edit_record_success: 'Запись успешно отредактирована.'
-controller.cashController.payment_confirmed_success: 'Платеж успешно подтвержден'

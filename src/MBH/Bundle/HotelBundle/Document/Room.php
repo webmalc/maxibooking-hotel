@@ -80,6 +80,32 @@ class Room extends Base
     protected $title;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="housing")
+     * @Assert\Length(
+     *      min=1,
+     *      minMessage="validator.document.room.min_housing",
+     *      max=10,
+     *      maxMessage="validator.document.room.max_housing"
+     * )
+     */
+    protected $housing;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="floor")
+     * @Assert\Length(
+     *      min=1,
+     *      minMessage="validator.document.room.min_floor",
+     *      max=10,
+     *      maxMessage="validator.document.room.max_floor"
+     * )
+     */
+    protected $floor;
+
+    /**
      * Set hotel
      *
      * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
@@ -185,5 +211,49 @@ class Room extends Base
         }
 
         return $name;
+    }
+
+    /**
+     * Set housing
+     *
+     * @param string $housing
+     * @return self
+     */
+    public function setHousing($housing)
+    {
+        $this->housing = $housing;
+        return $this;
+    }
+
+    /**
+     * Get housing
+     *
+     * @return string $housing
+     */
+    public function getHousing()
+    {
+        return $this->housing;
+    }
+
+    /**
+     * Set floor
+     *
+     * @param string $floor
+     * @return self
+     */
+    public function setFloor($floor)
+    {
+        $this->floor = $floor;
+        return $this;
+    }
+
+    /**
+     * Get floor
+     *
+     * @return string $floor
+     */
+    public function getFloor()
+    {
+        return $this->floor;
     }
 }

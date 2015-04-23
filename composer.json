@@ -34,7 +34,8 @@
         "ob/highcharts-bundle": "dev-master",
         "knplabs/knp-snappy-bundle": "dev-master",
         "misd/guzzle-bundle": "~1.1",
-        "iampersistent/mongodb-acl-bundle": "dev-master"
+        "iampersistent/mongodb-acl-bundle": "dev-master",
+        "liip/imagine-bundle": "~1.0@dev"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

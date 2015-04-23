@@ -13,7 +13,7 @@ order.cash.not_paid: не оплачен
 order.cash.income: Приход
 order.cash.outcome: Расход
 order.cash.payment_way: Способ оплаты
-order.cash.operation_type: Способ оплаты
+order.cash.operation_type: Вид операции
 order.cash.date: Дата
 order.cash.removed: Удалена
 order.cash.edit_record: Редактирование записи
@@ -51,7 +51,7 @@ order.packages.go_to_placement: Перейти к размещению
 order.packages.edit_reservation: Редактирование брони
 order.packages.delete_reservation: Удаление брони
 order.packages.reservations_not_found: Брони не найдены.
-order.tabs.not_confirmed: '(не подтвержден)'
+order.tabs.not_confirmed: 'не подтвержден'
 order.tabs.order_info: Информация о заказе
 order.tabs.reservations: Брони
 order.tabs.payer: Плательщик
@@ -67,7 +67,7 @@ order.touristEdit.email: E-mail
 order.touristEdit.address: Адрес
 order.touristEdit.document: Документ
 order.touristEdit.delete_payer: Удалить плательщика
-order.package.add: Добавить бронь
+order.package.add: Добавить в бронь в заказ
 package.accommodation.edit_reservation: 'редактирование брони'
 package.accommodation.deleted: удалена
 package.accommodation.placement: Размещение:
@@ -264,8 +264,3 @@ source.index.created: Создан
 source.index.edit_record: Редактирование записи
 source.index.delete_record: Удаление записи
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Невозможно удалить запись с существующими бронями. Брони: '
-controller.analyticsController.services_amount: 'Количество услуг'
-controller.analyticsController.proceeds: 'Выручка'
-controller.analyticsController.percentage: 'Процент'
-controller.analyticsController.package_trips_amount: 'Количество путевок'
-controller.analyticsController.sale_date: 'Даты продажи'

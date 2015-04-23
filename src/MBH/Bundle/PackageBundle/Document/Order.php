@@ -154,6 +154,13 @@ class Order extends Base
     /**
      * @var string
      * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    protected $channelManagerStatus;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
      * @ODM\String(name="note")
      */
     protected $note;
@@ -476,12 +483,12 @@ class Order extends Base
     /**
      * Set channelMangerHumanId
      *
-     * @param string $channelMangerHumanId
+     * @param string $channelManagerHumanId
      * @return self
      */
-    public function setChannelManagerHumanId($channelMangerHumanId)
+    public function setChannelManagerHumanId($channelManagerHumanId)
     {
-        $this->channelMangerHumanId = $channelMangerHumanId;
+        $this->channelManagerHumanId = $channelManagerHumanId;
         return $this;
     }
 
@@ -506,6 +513,8 @@ class Order extends Base
         $this->channelManagerType = $channelManagerType;
         return $this;
     }
+
+
 
     /**
      * Get channelManagerType
@@ -564,5 +573,27 @@ class Order extends Base
     public function removeAllPackages()
     {
         $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Set $channelManagerStatus
+     *
+     * @param string $channelManagerStatus
+     * @return self
+     */
+    public function setChannelManagerStatus($channelManagerStatus)
+    {
+        $this->channelManagerStatus = $channelManagerStatus;
+        return $this;
+    }
+
+    /**
+     * Get channelMangerHumanId
+     *
+     * @return string $channelManagerStatus
+     */
+    public function getChannelManagerStatus()
+    {
+        return $this->channelManagerStatus;
     }
 }

@@ -14,6 +14,16 @@
             {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'tourist_delete' } %}
             {{ form_end(form) }}
 
+
+            <!-- DELETE -->
+            <div class="alert alert-warning package-main-info">
+            {% for k in entity.note|split(';') %}
+                {% set v = k|split('=') %}
+                <strong>{{ v[0] }}</strong> - {{ v[1] }}<br>
+            {% endfor %}
+            </div>
+            <!-- DELETE -->
+
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tourist_delete' } %}
         
         </div>

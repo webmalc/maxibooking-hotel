@@ -23,7 +23,7 @@ class CashDocumentType extends AbstractType
                     'label' => 'form.cashDocumentType.sum',
                     'required' => true,
                     'group' => $options['groupName'],
-                    'attr' => ['class' => 'spinner'],
+                    'attr' => ['class' => 'price-spinner'],
                 ])
                 ->add('method', 'choice', [
                     'label' => 'form.cashDocumentType.payment_way',

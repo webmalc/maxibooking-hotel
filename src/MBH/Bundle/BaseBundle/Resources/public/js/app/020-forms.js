@@ -110,5 +110,10 @@ $(document).ready(function () {
             }
         });
     }());
+    $('.roomTypeTypeEditor').wysihtml5({
+            "html": false,
+            "stylesheets": false,
+            "image": false
+    });
 
 });

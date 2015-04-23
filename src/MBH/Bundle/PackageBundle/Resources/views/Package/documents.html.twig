@@ -14,33 +14,16 @@
 
 {% block content %}
 
-    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 5 , 'entity': entity} %}
+    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 8 , 'entity': entity} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
 
-            {% set totalGuests = entity.children + entity.adults %}
-
             {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
-                {% if entity.tourists|length < totalGuests %}
                     {{ form_start(form, {'action': path('package_documents', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
                     {{ form_widget(form) }}
                     {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
                     {{ form_end(form) }}
-                {% else %}
-                    <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
-                        <div class="container">
-                            <ul class="nav navbar-nav navbar-right">
-                                <li>
-                                    <button data-href="{{ path('package_delete', {'id': entity.id}) }}"
-                                            class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i>
-                                        Удалить
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                {% endif %}
             {% endif %}
 
             {% if entity.documents.iterator.count > 0 %}
@@ -48,8 +31,10 @@
                     <div class="row">
                         {% for document in entity.documents.iterator %}
                             <div class="package-document col-md-2">
-                                <img src="{{ asset(document.asset) }}" style="width: 40px; float: left; margin: 3px">
-                                <i data-filename="{{ document.name }}" data-package="{{ entity.id }}" class="remove-package-document fa fa-close" style="float: right; cursor: pointer;"></i>
+                                <img src="{{ asset(document.asset) | imagine_filter('thumb_50x50') }}" style="width: 40px; float: left; margin: 3px">
+                                <button data-filename="{{ document.name }}" data-package="{{ entity.id }}" class="btn btn-danger btn-xs remove-package-document" style="float: right">
+                                    <i class="fa fa-trash-o"></i>
+                                </button>
                                 <div>
                                     <i class="fa fa-file"></i>
                                     <strong class="document-name">{{ document.originalName }}</strong>

@@ -54,4 +54,5 @@ mbh_hotel:
     type:     annotation
     prefix:   /management/hotel
 
-
+_liip_imagine:
+    resource: "@LiipImagineBundle/Resources/config/routing.xml"

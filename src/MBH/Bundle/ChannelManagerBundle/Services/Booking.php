@@ -74,7 +74,11 @@ class Booking extends Base
 
         foreach ($this->getConfig() as $config) {
             $request = $this->templating->render('MBHChannelManagerBundle:Booking:reservations.xml.twig', ['config' => $config]);
-            $sendResult = $this->send(static::BASE_SECURE_URL . 'reservations', $request, null, true);
+            //$sendResult = $this->sendXml(static::BASE_SECURE_URL . 'reservations', $request, null, true);
+
+            //$this->log($sendResult->asXML());
+
+            $sendResult = simplexml_load_string('<reservations>   <reservation>     <commissionamount>43.74</commissionamount>     <currencycode>EUR</currencycode>     <customer>       <address>Calle Ciudad</address>       <cc_cvc>123</cc_cvc>       <cc_expiration_date>04/2015</cc_expiration_date>       <cc_name>Torres</cc_name>       <cc_number>5413541354135413</cc_number>       <cc_type>MasterCard</cc_type>       <city>Valencia</city>       <company/>       <countrycode>es</countrycode>       <dc_issue_number/>       <dc_start_date/>       <email>miriam.elmaghraby@booking.com</email>       <first_name>Ћирo</first_name>       <last_name>Блaжebiћ</last_name>       <remarks>Free garden</remarks>       <telephone>+34912388888</telephone>       <zip>87452</zip>     </customer>     <date>2015-04-22</date>     <hotel_id>1189796</hotel_id>     <hotel_name>Potential Provider MaxiBooking , AM Matteo, Status 1</hotel_name>     <id>540022861</id>     <room>       <addons>         <addon>           <name>Парковка</name>           <nights>1</nights>           <persons>2</persons>           <price_mode>3</price_mode>           <price_per_unit>15</price_per_unit>           <totalprice>15</totalprice>           <type>22</type>         </addon>       </addons>       <arrival_date>2015-08-22</arrival_date>       <commissionamount>15</commissionamount>       <currencycode>EUR</currencycode>       <departure_date>2015-08-23</departure_date>       <extra_info>This double room features a minibar, air conditioning and seating area.</extra_info>       <facilities>Мини-бар, Телефон, Кондиционер, Фен, Утюг, Радио, Рабочий стол, Гладильные принадлежности, Гостиный уголок, Отопление, Ванна или душ, Ковровое покрытие, Телевизор с плоским экраном, Будильник, Шкаф/гардероб, Гипоаллергенный , Одеяла с электроподогревом , Кофемашина , Вид на город, Полотенца, Для доступа к верхним этажам работает лифт, Отдельно стоящее, Сушилка для одежды</facilities>       <guest_name>마르코 하드 똥</guest_name>       <id>118979601</id>       <info>Питание не входит в цену данного номера.  Размещение детей и предоставление дополнительных кроватей: Разрешается проживание детей любого возраста. При размещении одного ребёнка младше 4 лет на имеющихся кроватях взимается EUR 20 с человека за ночь. При размещении одного ребёнка старшего возраста или взрослого на дополнительной кровати взимается EUR 50 с человека за ночь. Максимальное количество дополнительных кроватей/детских кроваток в номере -  1.  Предоплата: Предоплата не  взимается.  Порядок отмены бронирования: В случае отмены бронирования в срок до 1 суток до даты заезда  штраф не взимается. </info>       <max_children>0</max_children>       <meal_plan>Питание не входит в цену данного номера. </meal_plan>       <name>Стандартный двухместный номер с 1 кроватью или 2 отдельными кроватями</name>       <numberofguests>2</numberofguests>       <price date="2015-08-22" rate_id="4326892">110</price>       <remarks/>       <roomreservation_id>646097349</roomreservation_id>       <smoking/>       <totalprice>125</totalprice>     </room>     <room>       <arrival_date>2015-08-22</arrival_date>       <commissionamount>18.6</commissionamount>       <currencycode>EUR</currencycode>       <departure_date>2015-08-23</departure_date>       <extra_info>This triple room features air conditioning, seating area and minibar.</extra_info>       <facilities>Мини-бар, Телефон, Кондиционер, Фен, Утюг, Радио, Рабочий стол, Гладильные принадлежности, Гостиный уголок, Отопление, Ванна или душ, Ковровое покрытие, Телевизор с плоским экраном, Будильник, Шкаф/гардероб, Гипоаллергенный , Одеяла с электроподогревом , Кофемашина , Вид на город, Полотенца, Для доступа к верхним этажам работает лифт, Отдельно стоящее, Сушилка для одежды</facilities>       <guest_name>ǼφωϋЉИЪ Ѳэỳїядѐ</guest_name>       <id>118979603</id>       <info>Питание не входит в цену данного номера.  Размещение детей и предоставление дополнительных кроватей: Разрешается проживание детей любого возраста. При размещении одного ребёнка младше 4 лет на имеющихся кроватях взимается EUR 20 с человека за ночь. При размещении одного ребёнка старшего возраста или взрослого на дополнительной кровати взимается EUR 50 с человека за ночь. Максимальное количество дополнительных кроватей/детских кроваток в номере -  1.  Предоплата: Предоплата не  взимается.  Порядок отмены бронирования: В случае отмены бронирования в срок до 1 суток до даты заезда  штраф не взимается. </info>       <max_children>0</max_children>       <meal_plan>Питание не входит в цену данного номера. </meal_plan>       <name>Стандартный трехместный номер</name>       <numberofguests>3</numberofguests>       <price date="2015-08-22" rate_id="4326892">155</price>       <remarks/>       <roomreservation_id>646097354</roomreservation_id>       <smoking/>       <totalprice>155</totalprice>     </room>     <room>       <addons>         <addon>           <name>Интернет</name>           <nights>1</nights>           <persons>1</persons>           <price_mode>3</price_mode>           <price_per_unit>15</price_per_unit>           <totalprice>15</totalprice>           <type>21</type>         </addon>       </addons>       <arrival_date>2015-08-22</arrival_date>       <commissionamount>10.14</commissionamount>       <currencycode>EUR</currencycode>       <departure_date>2015-08-23</departure_date>       <extra_info>This single room has air conditioning, seating area and minibar.</extra_info>       <facilities>Мини-бар, Телефон, Кондиционер, Фен, Утюг, Радио, Рабочий стол, Гладильные принадлежности, Гостиный уголок, Отопление, Ванна или душ, Ковровое покрытие, Телевизор с плоским экраном, Будильник, Шкаф/гардероб, Гипоаллергенный , Одеяла с электроподогревом , Кофемашина , Вид на город, Полотенца, Для доступа к верхним этажам работает лифт, Отдельно стоящее, Сушилка для одежды</facilities>       <guest_name>Ћирo Блaжebiћ</guest_name>       <id>118979602</id>       <info>Питание не входит в цену данного номера.  Размещение детей и предоставление дополнительных кроватей: Разрешается проживание детей любого возраста. При размещении одного ребёнка младше 4 лет на имеющихся кроватях взимается EUR 20 с человека за ночь. При размещении одного ребёнка старшего возраста или взрослого на дополнительной кровати взимается EUR 50 с человека за ночь. Максимальное количество дополнительных кроватей/детских кроваток в номере -  1.  Предоплата: Предоплата не  взимается.  Порядок отмены бронирования: В случае отмены бронирования в срок до 1 суток до даты заезда  штраф не взимается. </info>       <max_children>0</max_children>       <meal_plan>Питание не входит в цену данного номера. </meal_plan>       <name>Одноместный номер</name>       <numberofguests>1</numberofguests>       <price date="2015-08-22" rate_id="4326890">69.50</price>       <remarks/>       <roomreservation_id>646097357</roomreservation_id>       <smoking>1</smoking>       <totalprice>84.5</totalprice>     </room>     <status>new</status>     <time>12:07:20</time>     <totalprice>364.50</totalprice>   </reservation>   <reservation>     <commissionamount>80.82</commissionamount>     <currencycode>EUR</currencycode>     <customer>       <address>Via Rossi</address>       <cc_cvc>541</cc_cvc>       <cc_expiration_date>04/2015</cc_expiration_date>       <cc_name>Luigi</cc_name>       <cc_number>5413541354135413</cc_number>       <cc_type>MasterCard</cc_type>       <city>Rome</city>       <company/>       <countrycode>it</countrycode>       <dc_issue_number/>       <dc_start_date/>       <email>miriam.elmaghraby@booking.com</email>       <first_name>ǼφωϋЉИЪ</first_name>       <last_name>Ѳэỳїядѐ</last_name>       <remarks>free wine</remarks>       <telephone>+3491234888</telephone>       <zip>548745</zip>     </customer>     <date>2015-04-22</date>     <hotel_id>1189796</hotel_id>     <hotel_name>Potential Provider MaxiBooking , AM Matteo, Status 1</hotel_name>     <id>768733951</id>     <room>       <addons>         <addon>           <name>Парковка</name>           <nights>3</nights>           <persons>2</persons>           <price_mode>3</price_mode>           <price_per_unit>15</price_per_unit>           <totalprice>45</totalprice>           <type>22</type>         </addon>       </addons>       <arrival_date>2015-09-22</arrival_date>       <commissionamount>45</commissionamount>       <currencycode>EUR</currencycode>       <departure_date>2015-09-25</departure_date>       <extra_info>This double room features a minibar, air conditioning and seating area.</extra_info>       <facilities>Мини-бар, Телефон, Кондиционер, Фен, Утюг, Радио, Рабочий стол, Гладильные принадлежности, Гостиный уголок, Отопление, Ванна или душ, Ковровое покрытие, Телевизор с плоским экраном, Будильник, Шкаф/гардероб, Гипоаллергенный , Одеяла с электроподогревом , Кофемашина , Вид на город, Полотенца, Для доступа к верхним этажам работает лифт, Отдельно стоящее, Сушилка для одежды</facilities>       <guest_name>马可保罗安纳</guest_name>       <id>118979601</id>       <info>Питание не входит в цену данного номера.  Размещение детей и предоставление дополнительных кроватей: Разрешается проживание детей любого возраста. При размещении одного ребёнка младше 4 лет на имеющихся кроватях взимается EUR 20 с человека за ночь. При размещении одного ребёнка старшего возраста или взрослого на дополнительной кровати взимается EUR 50 с человека за ночь. Максимальное количество дополнительных кроватей/детских кроваток в номере -  1.  Предоплата: Предоплата не  взимается.  Порядок отмены бронирования: В случае отмены бронирования в срок до 1 суток до даты заезда  штраф не взимается. </info>       <max_children>0</max_children>       <meal_plan>Питание не входит в цену данного номера. </meal_plan>       <name>Стандартный двухместный номер с 1 кроватью или 2 отдельными кроватями</name>       <numberofguests>2</numberofguests>       <price date="2015-09-22" rate_id="4326892">110</price>       <price date="2015-09-23" rate_id="4326892">110</price>       <price date="2015-09-24" rate_id="4326892">110</price>       <remarks/>       <roomreservation_id>646098794</roomreservation_id>       <smoking/>       <totalprice>375</totalprice>     </room>     <room>       <addons>         <addon>           <name>Интернет</name>           <nights>3</nights>           <persons>1</persons>           <price_mode>3</price_mode>           <price_per_unit>15</price_per_unit>           <totalprice>45</totalprice>           <type>21</type>         </addon>         <addon>           <name>Парковка</name>           <nights>3</nights>           <persons>1</persons>           <price_mode>3</price_mode>           <price_per_unit>15</price_per_unit>           <totalprice>45</totalprice>           <type>22</type>         </addon>       </addons>       <arrival_date>2015-09-22</arrival_date>       <commissionamount>35.82</commissionamount>       <currencycode>EUR</currencycode>       <departure_date>2015-09-25</departure_date>       <extra_info>This single room has air conditioning, seating area and minibar.</extra_info>       <facilities>Мини-бар, Телефон, Кондиционер, Фен, Утюг, Радио, Рабочий стол, Гладильные принадлежности, Гостиный уголок, Отопление, Ванна или душ, Ковровое покрытие, Телевизор с плоским экраном, Будильник, Шкаф/гардероб, Гипоаллергенный , Одеяла с электроподогревом , Кофемашина , Вид на город, Полотенца, Для доступа к верхним этажам работает лифт, Отдельно стоящее, Сушилка для одежды</facilities>       <guest_name>ǼφωϋЉИЪ Ѳэỳїядѐ</guest_name>       <id>118979602</id>       <info>Питание не входит в цену данного номера.  Размещение детей и предоставление дополнительных кроватей: Разрешается проживание детей любого возраста. При размещении одного ребёнка младше 4 лет на имеющихся кроватях взимается EUR 20 с человека за ночь. При размещении одного ребёнка старшего возраста или взрослого на дополнительной кровати взимается EUR 50 с человека за ночь. Максимальное количество дополнительных кроватей/детских кроваток в номере -  1.  Предоплата: Предоплата не  взимается.  Порядок отмены бронирования: В случае отмены бронирования в срок до 1 суток до даты заезда  штраф не взимается. </info>       <max_children>0</max_children>       <meal_plan>Питание не входит в цену данного номера. </meal_plan>       <name>Одноместный номер</name>       <numberofguests>1</numberofguests>       <price date="2015-09-22" rate_id="4326890">69.50</price>       <price date="2015-09-23" rate_id="4326890">69.50</price>       <price date="2015-09-24" rate_id="4326890">69.50</price>       <remarks/>       <roomreservation_id>646098797</roomreservation_id>       <smoking/>       <totalprice>298.5</totalprice>     </room>     <status>new</status>     <time>12:09:27</time>     <totalprice>673.50</totalprice>   </reservation> <reservation>     <commissionamount>11.94</commissionamount>     <currencycode>EUR</currencycode>     <customer>       <address>Via Venezia</address>       <cc_cvc>123</cc_cvc>       <cc_expiration_date>04/2015</cc_expiration_date>       <cc_name>Željko Torres</cc_name>       <cc_number>5413541354135413</cc_number>       <cc_type>MasterCard</cc_type>       <city>Rome</city>       <company/>       <countrycode>it</countrycode>       <dc_issue_number/>       <dc_start_date/>       <email>miriam.elmaghraby@booking.com</email>       <first_name>Željko</first_name>       <last_name>Torres</last_name>       <remarks>Free dinner</remarks>       <telephone>+34912388888</telephone>       <zip>534100</zip>     </customer>     <date>2015-04-22</date>     <hotel_id>1189796</hotel_id>     <hotel_name>Potential Provider MaxiBooking , AM Matteo, Status 1</hotel_name>     <id>768752129</id>     <room>       <addons>         <addon>           <name>Интернет</name>           <nights>1</nights>           <persons>1</persons>           <price_mode>3</price_mode>           <price_per_unit>15</price_per_unit>           <totalprice>15</totalprice>           <type>21</type>         </addon>         <addon>           <name>Парковка</name>           <nights>1</nights>           <persons>1</persons>           <price_mode>3</price_mode>           <price_per_unit>15</price_per_unit>           <totalprice>15</totalprice>           <type>22</type>         </addon>       </addons>       <arrival_date>2015-05-22</arrival_date>       <commissionamount>11.94</commissionamount>       <currencycode>EUR</currencycode>       <departure_date>2015-05-23</departure_date>       <extra_info>This single room has air conditioning, seating area and minibar.</extra_info>       <facilities>Мини-бар, Телефон, Кондиционер, Фен, Утюг, Радио, Рабочий стол, Гладильные принадлежности, Гостиный уголок, Отопление, Ванна или душ, Ковровое покрытие, Телевизор с плоским экраном, Будильник, Шкаф/гардероб, Гипоаллергенный , Одеяла с электроподогревом , Кофемашина , Вид на город, Полотенца, Для доступа к верхним этажам работает лифт, Отдельно стоящее, Сушилка для одежды</facilities>       <guest_name>Željko Torres</guest_name>       <id>118979602</id>       <info>Питание не входит в цену данного номера.  Размещение детей и предоставление дополнительных кроватей: Разрешается проживание детей любого возраста. При размещении одного ребёнка младше 4 лет на имеющихся кроватях взимается EUR 20 с человека за ночь. При размещении одного ребёнка старшего возраста или взрослого на дополнительной кровати взимается EUR 50 с человека за ночь. Максимальное количество дополнительных кроватей/детских кроваток в номере -  1.  Предоплата: Предоплата не  взимается.  Порядок отмены бронирования: В случае отмены бронирования в срок до 1 суток до даты заезда  штраф не взимается. </info>       <max_children>0</max_children>       <meal_plan>Питание не входит в цену данного номера. </meal_plan>       <name>Одноместный номер</name>       <numberofguests>1</numberofguests>       <price date="2015-05-22" rate_id="4326890">69.50</price>       <remarks/>       <roomreservation_id>646095804</roomreservation_id>       <smoking>1</smoking>       <totalprice>99.5</totalprice>     </room>     <status>new</status>     <time>12:05:04</time>     <totalprice>99.50</totalprice>   </reservation></reservations>');
 
             foreach ($sendResult->reservation as $reservation) {
 
@@ -93,6 +97,10 @@ class Booking extends Base
                 }
                 //delete
                 if((string)$reservation->status == 'cancelled' && $order) {
+                    $order->setChannelManagerStatus('cancelled');
+                    $this->dm->persist($order);
+                    $this->dm->flush();
+
                     $this->dm->remove($order);
                     $this->dm->flush();
                     $result = true;
@@ -116,23 +124,29 @@ class Booking extends Base
         $services = $this->getServices($config);
 
         //tourist
-        //TODO: company, country, zip
         $customer = $reservation->customer;
+
+        $payerNote = 'country=' . (string) $customer->countrycode;
+        $payerNote .= '; city=' . (string) $customer->city;
+        $payerNote .= '; zip=' . (string) $customer->zip;
+        $payerNote .= '; company=' . (string) $customer->company;
         $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
             (string)$customer->last_name, (string)$customer->first_name, null, null,
             empty((string) $customer->email) ? null : (string) $customer->email,
             empty((string) $customer->telephone) ? null : (string) $customer->telephone,
             empty((string) $customer->address) ? null : (string) $customer->address,
-            empty((string) $customer->remarks) ? null : (string) $customer->remarks
+            empty($payerNote) ? null : $payerNote
         );
         //order
         if (!$order) {
             $order = new Order();
+            $order->setChannelManagerStatus('new');
         } else {
             foreach($order->getPackages() as $package) {
                 $this->dm->remove($package);
                 $this->dm->flush();
             }
+            $order->setChannelManagerStatus('modified');
         }
         $order->setChannelManagerType('booking')
             ->setChannelManagerId((string)$reservation->id)
@@ -144,6 +158,7 @@ class Booking extends Base
             ->setPrice((float)$reservation->totalprice)
             ->setTotalOverwrite((float)$reservation->totalprice)
             ->setIsPaid(false)
+            ->setNote('remarks=' . (string) $customer->remarks)
         ;
 
         $this->dm->persist($order);
@@ -163,7 +178,7 @@ class Booking extends Base
             } else {
                 $guestArray = explode(' ', (string) $room->guest_name ) ;
                 $guest = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-                    $guestArray[1], $guestArray[0]
+                    isset($guestArray[1]) ? $guestArray[1]: 'н/д', $guestArray[0]
                 );
             }
 
@@ -183,6 +198,9 @@ class Booking extends Base
                 continue;
             }
 
+            $packageNote = 'remarks: ' . $room->remarks . '; extra_info: ' . $room->extra_info . '; facilities: ' . $room->facilities . '; max_children: ' . $room->max_children;
+            $packageNote . '; commissionamount=' . $room->commissionamount . '; currencycode = ' . $room->currencycode;
+
             $package = new Package();
             $package
                 ->setChannelManagerId((string)$room->roomreservation_id )
@@ -193,35 +211,39 @@ class Booking extends Base
                 ->setTariff($tariff)
                 ->setAdults((int) $room->numberofguests)
                 ->setChildren(0)
-                ->setIsSmoking((boolean) $room->smoking)
+                ->setIsSmoking((int) $room->smoking ? true : false)
                 ->setPricesByDate($pricesByDate)
                 ->setPrice((float) $total)
-                ->setNote('remarks: ' . $room->remarks . '; extra_info: ' . $room->extra_info . '; facilities: ' . $room->facilities)
+                ->setNote($packageNote)
                 ->setOrder($order)
                 ->addTourist($guest)
             ;
 
             //services
             $servicesTotal = 0;
-            foreach ($room->addons->addon as $addon) {
-                $servicesTotal += (float) $addon->totalprice;
-                if (!$services[(int) $addon->type]) {
-                    continue;
-                }
 
-                $packageService = new PackageService();
-                $packageService
-                    ->setService($services[(int) $addon->type]['doc'])
-                    ->setIsCustomPrice(true)
-                    ->setNights(empty((string) $addon->nights) ? null : (int) $addon->nights)
-                    ->setPersons(empty((string) $addon->persons) ? null : (int) $addon->persons)
-                    ->setPrice(empty((string) $addon->price_per_unit) ? null : (float) $addon->price_per_unit)
-                    ->setTotalOverwrite((float) $addon->totalprice)
-                    ->setPackage($package);
-                ;
-                $this->dm->persist($packageService);
-                $package->addService($packageService);
+            if ($room->addons->addon) {
+                foreach ($room->addons->addon as $addon) {
+                    $servicesTotal += (float) $addon->totalprice;
+                    if (!$services[(int) $addon->type]) {
+                        continue;
+                    }
+
+                    $packageService = new PackageService();
+                    $packageService
+                        ->setService($services[(int) $addon->type]['doc'])
+                        ->setIsCustomPrice(true)
+                        ->setNights(empty((string) $addon->nights) ? null : (int) $addon->nights)
+                        ->setPersons(empty((string) $addon->persons) ? null : (int) $addon->persons)
+                        ->setPrice(empty((string) $addon->price_per_unit) ? null : (float) $addon->price_per_unit)
+                        ->setTotalOverwrite((float) $addon->totalprice)
+                        ->setPackage($package);
+                    ;
+                    $this->dm->persist($packageService);
+                    $package->addService($packageService);
+                }
             }
+
             $package->setServicesPrice($servicesTotal);
             $package->setTotalOverwrite((float)$room->totalprice);
 
@@ -377,7 +399,7 @@ class Booking extends Base
                         'minimumstay_arrival' => $restriction->getMinStayArrival(),
                         'maximumstay_arrival' => $restriction->getMaxStayArrival(),
                         'minimumstay' => $restriction->getMinStay(),
-                        'maximumstay' => $restriction->getMinStay(),
+                        'maximumstay' => $restriction->getMaxStay(),
                         'closedonarrival' => $restriction->getClosedOnArrival() ? 1 : 0,
                         'closedondeparture' => $restriction->getClosedOnDeparture() ? 1 : 0,
                         'closed' => $restriction->getClosed() ? 1 : 0,

@@ -7,8 +7,7 @@
 
     $(".remove-package-document").on("click", function(){
         var $this = $(this);
-
-        $this.removeClass("fa-file").addClass("fa-spinner fa-spin").css('cursor', 'point').off("click");
+        $this.addClass("disabled").children("i.fa-trash-o").removeClass("fa-trash-o").addClass("fa-spinner fa-spin");
 
         $.ajax({
             url: Routing.generate('package_remove_document', {id: $this.data('package')}),

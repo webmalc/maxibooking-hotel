@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -78,7 +79,7 @@ class RoomType extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\String(name="description")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.roomType.min_description",
@@ -131,9 +132,19 @@ class RoomType extends Base
     /**
      * @var string
      * @Gedmo\Versioned
+     * @ODM\String(name="roomSpace")
+     */
+    protected $roomSpace;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
      * @ODM\String()
      */
     protected $image;
+
+    /** @ODM\EmbedMany(targetDocument="RoomTypeImage") */
+    private $images = array();
 
     /**
      * Set hotel
@@ -403,65 +414,132 @@ class RoomType extends Base
         return $this;
     }
 
+
+
+
+
+
+//    public function getUploadRootDir()
+//    {
+//        return __DIR__.'/../../../../../web/'.$this->getUploadDir();
+//    }
+//
+//    public function getUploadDir()
+//    {
+//        return 'upload/roomTypes';
+//    }
+//
+//    public function uploadImage(\Symfony\Component\HttpFoundation\File\UploadedFile $image = null)
+//    {
+//        if (empty($image)) {
+//            return;
+//        }
+//
+//        $this->image = null;
+//
+//        $newName = $this->id . '.'. $image->guessExtension();
+//        $image->move($this->getUploadRootDir(), $newName);
+//
+//        $this->image = $newName;
+//    }
+
+
     /**
-     * @param bool $url
-     * @return null|string
+     * Set roomSpace
+     *
+     * @param int $roomSpace
+     * @return self
      */
-    public function getImage($url = false)
+    public function setRoomSpace($roomSpace)
     {
-        if (empty($this->image) || !$url) {
-            return $this->image;
-        }
-        $path = $this->getUploadRootDir() . '/' . $this->image;
-        if (file_exists($path) && is_readable($path)) {
-            return $this->getUploadDir() . '/' . $this->image;
-        }
-
-        return null;
-
-    }
-
-    /**
-     * @return $this
-     */
-    public function imageDelete()
-    {
-        if (empty($this->image)) {
-            return $this;
-        }
-
-        $path = $this->getUploadRootDir() . '/' . $this->image;
-        if (file_exists($path) && is_readable($path)) {
-            unlink($this->getUploadDir() . '/' . $this->image);
-        }
-
-        $this->image = null;
-
+        $this->roomSpace = $roomSpace;
         return $this;
     }
 
-    public function getUploadRootDir()
+    /**
+     * Get roomSpace
+     *
+     * @return int $roomSpace
+     */
+    public function getRoomSpace()
     {
-        return __DIR__.'/../../../../../web/'.$this->getUploadDir();
+        return $this->roomSpace;
     }
 
-    public function getUploadDir()
+    /**
+     * Set editor
+     *
+     * @param string $editor
+     * @return self
+     */
+    public function setEditor($editor)
     {
-        return 'upload/roomTypes';
+        $this->editor = $editor;
+        return $this;
     }
 
-    public function uploadImage(\Symfony\Component\HttpFoundation\File\UploadedFile $image = null)
+    /**
+     * Get editor
+     *
+     * @return string $editor
+     */
+    public function getEditor()
     {
-        if (empty($image)) {
-            return;
+        return $this->editor;
+    }
+
+    /**
+     * Add image
+     *
+     * @param MBH\Bundle\HotelBundle\Document\RoomTypeImage $image
+     */
+    public function addImage(\MBH\Bundle\HotelBundle\Document\RoomTypeImage $image)
+    {
+        $this->images[] = $image;
+    }
+
+    /**
+     * Remove image
+     *
+     * @param MBH\Bundle\HotelBundle\Document\RoomTypeImage $image
+     */
+    public function removeImage(\MBH\Bundle\HotelBundle\Document\RoomTypeImage $image)
+    {
+        $this->images->removeElement($image);
+    }
+
+    /**
+     * Get images
+     *
+     * @return Doctrine\Common\Collections\Collection $images
+     */
+    public function getImages()
+    {
+        return $this->images;
+    }
+
+    public function deleteImageById(RoomType $entity,$imageId){
+        $result = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach($entity->getImages() as $element) {
+            if ($element->getId() == $imageId) {
+                $imagePath = $element->getPath();
+                if (file_exists($imagePath) && is_readable($imagePath)) {
+                    unlink($imagePath);
+                }
+            } else {
+                $result[] = $element;
+            }
         }
-
-        $this->image = null;
-
-        $newName = $this->id . '.'. $image->guessExtension();
-        $image->move($this->getUploadRootDir(), $newName);
-
-        $this->image = $newName;
+        $entity->images = $result;
     }
-
+    public function makeMainImageById(RoomType $entity, $imageId){
+        foreach($entity->getImages() as $element) {
+            if ($element->getId() == $imageId) {
+                /* @var $element \MBH\Bundle\HotelBundle\Document\RoomTypeImage */
+                $element->setIsMain(true);
+            } else {
+                $element->setIsMain(false);
+            }
+        }
+    }
 }

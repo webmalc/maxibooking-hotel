@@ -20,6 +20,10 @@ validator.document.room.hotel_not_selected: Не выбран отель
 validator.document.room.room_type_not_selected: Не выбран тип номера
 validator.document.room.min_name: Слишком короткое имя
 validator.document.room.max_name: Слишком длинное имя
+validator.document.room.min_housing: Слишком короткий номер корпуса
+validator.document.room.max_housing: Слишком длинный номер корпуса
+validator.document.room.min_floor: Слишком короткий номер этажа
+validator.document.room.max_floor: Слишком длинный номер этажа
 validator.document.roomType.min_name: Слишком короткое имя
 validator.document.roomType.max_name: Слишком длинное имя
 validator.document.roomType.min_description: Слишком короткое описание

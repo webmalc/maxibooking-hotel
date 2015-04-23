@@ -26,7 +26,8 @@ class AppKernel extends Kernel
             new Knp\Bundle\SnappyBundle\KnpSnappyBundle(),
             new Misd\GuzzleBundle\MisdGuzzleBundle(),
             new IamPersistent\MongoDBAclBundle\IamPersistentMongoDBAclBundle(),
-            
+            new Liip\ImagineBundle\LiipImagineBundle(),
+
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),
             new MBH\Bundle\UserBundle\MBHUserBundle(),

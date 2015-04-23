@@ -21,16 +21,38 @@ $(document).ready(function() {
 
     //pick-a-color
     $("#mbh_bundle_hotelbundle_room_type_type_color").pickAColor();
+        var counter = 1;
+        //roomType rooms datatables
+        $('.rooms-table').each(function() {
 
-    //roomType rooms datatables
-    $('.rooms-table').each(function() {
-        $(this).dataTable({
-            "processing": true,
-            "serverSide": true,
-            "ordering": false,
-            "bAutoWidth": false,
-            "ajax": Routing.generate('room_type_room_json', {'id': $(this).attr('data-room-type-id')})
+            window.addExcelButtons($(this).dataTable({
+                "processing": true,
+                "serverSide": true,
+                "ordering": false,
+                "bAutoWidth": false,
+                "ajax": Routing.generate('room_type_room_json', {'id': $(this).attr('data-room-type-id')})
+            }), counter);
+            ++counter
+        });
+
+    $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+        var counter = 1;
+        $('.rooms-table').each(function() {
+            $(this).dataTable().fnDestroy();
+            window.addExcelButtons($(this).dataTable({
+                "processing": true,
+                "serverSide": true,
+                "ordering": false,
+                "bAutoWidth": false,
+                "ajax": Routing.generate('room_type_room_json', {'id': $(this).attr('data-room-type-id')})
+            }), counter);
+            ++counter
         });
     });
+
+
+
+
+
 });
 
