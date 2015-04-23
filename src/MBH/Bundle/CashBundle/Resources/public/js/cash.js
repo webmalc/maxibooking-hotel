@@ -17,7 +17,7 @@ var cashDocumentConfirmation = function (link) {
                 }
                 link.remove();
             } else {
-                alert(response.message)
+                alert(response.message);
             }
         },
         dataType: 'json'
@@ -29,9 +29,10 @@ $(document).ready(function () {
 
     //spinners
     $('#mbh_bundle_cashbundle_cashdocumenttype_total').TouchSpin({
-        min: 1,
+        min: 0.1,
         max: 9007199254740992,
-        step: 1,
+        step: 0.1,
+        decimals: 2,
         boostat: 5,
         maxboostedstep: 10,
         postfix: '<i class="fa fa-ruble"></i>'

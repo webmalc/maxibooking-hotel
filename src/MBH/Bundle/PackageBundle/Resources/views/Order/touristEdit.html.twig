@@ -29,7 +29,7 @@
                     <div class="row spacer-top">
                         <div class="col-md-2 text-right"><strong>{{ 'order.touristEdit.birth_date'|trans({}, 'MBHPackageBundle')}}</strong></div>
                         <div class="col-md-10">
-                            {{ entity.mainTourist.birthday|date('d.m.Y')|default('-') }}
+                            {{ entity.mainTourist.birthday ? entity.mainTourist.birthday|date('d.m.Y') : '-'}}
                         </div>
                     </div>
                     <div class="row spacer-top">

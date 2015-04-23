@@ -41,6 +41,11 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     protected $helper;
 
+    /**
+     * @var \Symfony\Bridge\Monolog\Logger
+     */
+    protected $logger;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -48,6 +53,20 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $this->templating = $this->container->get('templating');
         $this->request = $container->get('request');
         $this->helper = $container->get('mbh.helper');
+        $this->logger = $container->get('mbh.channelmanager.logger');
+    }
+
+    /**
+     * @param string $message
+     * @param string $method
+     * @return $this
+     */
+    public function log($message, $method = 'info')
+    {
+        (method_exists($this->logger, $method)) ? $method : $method = 'info';
+        $this->logger->$method((string) $message);
+
+        return $this;
     }
 
     /**

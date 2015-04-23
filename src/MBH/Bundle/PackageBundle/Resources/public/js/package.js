@@ -1,13 +1,14 @@
-/*global window, $, services */
-$(document).ready(function() {
+/*global window, $, services, document */
+$(document).ready(function () {
     'use strict';
 
     //spinners
     $('#mbh_bundle_cashbundle_cashdocumenttype_total').TouchSpin({
         min: 1,
         max: 9007199254740992,
-        step: 1,
         boostat: 5,
+        step: 0.1,
+        decimals: 2,
         maxboostedstep: 10,
         postfix: '<i class="fa fa-ruble"></i>'
     });
@@ -64,7 +65,7 @@ $(document).ready(function() {
         "ordering": true,
         "ajax": {
             "url": Routing.generate('package_json'),
-            "data": function ( d ) {
+            "data": function (d) {
                 d.begin = $('#package-filter-begin').val();
                 d.end = $('#package-filter-end').val();
                 d.roomType = $('#package-filter-roomType').val();
@@ -78,7 +79,7 @@ $(document).ready(function() {
         },
         "order": [[2, 'desc']],
         "aoColumns": [
-            { "bSortable": false }, // icon
+            {"bSortable": false}, // icon
             null, // prefix
             null, // order
             null, // created
@@ -88,7 +89,7 @@ $(document).ready(function() {
             null, // price
             {"bSortable": false} // actions
         ],
-        "drawCallback": function(settings, json) {
+        "drawCallback": function (settings, json) {
             $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
             deleteLink();
             $('.deleted-entry').closest('tr').addClass('danger');
@@ -113,7 +114,7 @@ $(document).ready(function() {
                     "sButtonText": '<i class="fa fa-table"></i> Excel'
                 }
             ]
-    });
+        });
 
         $('#list-export').append($(ptt.fnContainer()));
         $('#list-export').find('a').addClass('navbar-btn');
@@ -124,9 +125,9 @@ $(document).ready(function() {
         $('#package-table-filter').sayt();
 
         $('#package-table-quick-links li').each(function () {
-             if (parseInt($(this).find('.package-table-quick-links-count').text(), 10) === 0) {
-                 $(this).find('a').addClass('disabled');
-             }
+            if (parseInt($(this).find('.package-table-quick-links-count').text(), 10) === 0) {
+                $(this).find('a').addClass('disabled');
+            }
         });
 
         if ($('#package-filter-quick-link').val()) {
@@ -134,10 +135,10 @@ $(document).ready(function() {
                 .removeClass('btn-default').addClass('btn-info');
         }
 
-        $('.package-filter').change(function(){
+        $('.package-filter').change(function () {
             $('#package-table').dataTable().fnDraw();
         });
-        $('#package-filter-deleted').on('switchChange', function() {
+        $('#package-filter-deleted').on('switchChange', function () {
             $('#package-table').dataTable().fnDraw();
         });
         $('#package-table-quick-links a').click(function () {
@@ -166,10 +167,10 @@ $(document).ready(function() {
             nightsDiv = nightsInput.closest('div.form-group'),
             personsInput = $('#mbh_bundle_packagebundle_package_service_type_persons'),
             personsDiv = personsInput.closest('div.form-group'),
-            dateInput = $('#mbh_bundle_packagebundle_package_service_type_date'),     
+            dateInput = $('#mbh_bundle_packagebundle_package_service_type_date'),
             dateDiv = dateInput.closest('div.form-group'),
             dateDefault = dateInput.val(),
-            serviceInput =  $('#mbh_bundle_packagebundle_package_service_type_service'),
+            serviceInput = $('#mbh_bundle_packagebundle_package_service_type_service'),
             serviceHelp = serviceInput.next('span.help-block'),
             amountInput = $('#mbh_bundle_packagebundle_package_service_type_amount'),
             amountHelp = amountInput.closest('div.input-group').next('span.help-block'),
@@ -220,7 +221,7 @@ $(document).ready(function() {
                     hide();
                 }
             }
-        ;
+            ;
         nightsDiv.change(calc);
         personsDiv.change(calc);
         amountInput.change(calc);
@@ -228,8 +229,29 @@ $(document).ready(function() {
         priceInput.change(calc);
         serviceInput.change(hideShow);
         hideShow();
-        
+
     }());
+
+    //order-packages panel
+    (function () {
+        var panel = $('.order-packages-panel'),
+            link = panel.find('.panel-title');
+
+        if ($.cookie('order-packages-panel') === undefined) {
+            $.cookie('order-packages-panel', true);
+        } else {
+            if ($.cookie('order-packages-panel') === 'false') {
+                panel.children('.panel-body').hide();
+                link.children('i.fa').removeClass('fa-caret-up').addClass('fa-caret-down');
+            }
+        }
+        link.click(function () {
+            $(this).closest('.panel-heading').next('.panel-body').toggle(150);
+            $(this).children('i.fa').toggleClass('fa-caret-up').toggleClass('fa-caret-down');
+            var val = $.cookie('order-packages-panel') === 'false' ? 'true' : 'false';
+            $.cookie('order-packages-panel', val);
+        });
+    } ());
 
 });
 

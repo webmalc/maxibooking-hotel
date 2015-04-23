@@ -1,0 +1,63 @@
+{% set packages = entity.order.packages %}
+{% if packages|length > 1 %}
+
+    <div class="panel panel-default order-packages-panel">
+        <div class="panel-heading">
+            <a class="panel-title" href="#">Заказ #{{ entity.order.id }} ({{ packages|length  }})
+                &nbsp;<i class="fa fa-caret-up"></i></a>
+        </div>
+        <div class="panel-body">
+            <table class="package-table table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable">
+                <thead>
+                <tr>
+                    <th class="td-sm text-center">#</th>
+                    <th class="td-md">{{ 'order.packages.dates'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th >{{ 'order.packages.placement'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md">{{ 'order.packages.guests'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md">{{ 'order.packages.price'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md">{{ 'order.packages.created'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-sm"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for package in packages if package.id != entity.id %}
+                    <tr {% if package.deletedAt %}class="danger"{% endif %}>
+                        <td class="text-center">
+                            <a class='btn btn-sm {% if package.deletedAt %}btn-danger{% else %}btn-default{% endif %}' href='{{ path('package_edit', {'id': package.id}) }}' rel='main' title='{{ 'order.packages.record_edit'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>{{ package.numberWithPrefix }}</a>{% if package.deletedAt %}<br><small><i class='fa fa-trash-o'> </i> {{ 'order.packages.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
+                        </td>
+                        <td>
+                            {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}<br><small>{{ plural(package.nights, 'order.packages.noch'|trans({}, 'MBHPackageBundle') ,  'order.packages.nochi'|trans({}, 'MBHPackageBundle') ,  'order.packages.nochei'|trans({}, 'MBHPackageBundle') ) }}</small>
+                        </td>
+                        <td>
+                            {{ package.roomType.hotel }} - {{ package.roomType }}<br><small><a data-toggle='tooltip' title='{{ 'order.packages.go_to_placement'|trans({}, 'MBHPackageBundle') }}' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'danger' }}'>{% if package.accommodation %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;не размещено&gt;{% endif %}</a></small>
+                        </td>
+                        <td class="text-center">
+                            {{ package.adults }} + {{ package.children }}<br>
+                            <small>{% for tourist in package.tourists %}{{ tourist.lastNameWithInitials }}{{ loop.last ? '' : ', ' }}{% endfor %}</small>
+
+                        </td>
+                        <td class="text-right">
+                            <div class='text-right'><span class='{% if package.order.isPaid %}text-success'{% elseif package.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}>{{ package.price|number_format(2) }}</span><br><small><i class='fa fa-sliders'> </i> {{ package.tariff.name }}</small></div>
+                        </td>
+                        <td>
+                            {% if 'now'|date('d.m.Y') == package.createdAt|date('d.m.Y') %}Сегодня, {{ package.createdAt|date('H:i') }}{% else %}{{ package.createdAt|date('d.m.Y H:i') }}{% endif %}<br><small>{{ package.createdBy }}</small>
+                        </td>
+                        <td>
+                            <div class='btn-list text-right'>
+                                <a href='{{ path('package_edit', { 'id': package.id }) }}' class='btn btn-success btn-xs' title='{{ 'order.packages.edit_reservation'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
+                                    <i class='fa fa-pencil-square-o'></i>
+                                </a>
+                                {% if not package.deletedAt %}
+                                    <a href='{{ path('package_delete', { 'id': package.id, 'order': true}) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'order.packages.delete_reservation'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
+                                        <i class='fa fa-trash-o'></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}

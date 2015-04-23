@@ -32,7 +32,10 @@
                 </div>
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>{{ 'order.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10"><span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}</span>{% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"> </i> {{ 'order.edit.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}</div>
+                    <div class="col-md-10">
+                        <span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }} <small>{{ entity.channelManagerType ? '(' ~ entity.channelManagerType ~ ' #' ~ entity.channelManagerId    ~ ' - ' ~ entity.channelManagerStatus ~')' }}</small></span>
+                        {% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"> </i> {{ 'order.edit.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
+                    </div>
                 </div>
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>{{ 'order.edit.payer'|trans({}, 'MBHPackageBundle') }}</strong></div>
@@ -51,9 +54,30 @@
                 {% if entity.card %}
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>Карта</strong></div>
-                    <div class="col-md-10">{{ entity.card }}</div>
+                    <div class="col-md-10">
+                        {% for k in entity.card|split(';') %}
+                            {% set v = k|split(':') %}
+                             {% if v[0]|trim == 'cc_number' %}
+                                <strong>{{ v[0] }}</strong> - {{ v[1]|slice(0,5) }}{% for i in 0..v[1]|length-10 %}*{% endfor %}{{ v[1]|slice(v[1]|length-4, 4) }}<br>
+                             {% elseif v[0]|trim == 'cc_cvc' %}
+                                 <strong>{{ v[0] }}</strong> - ***<br>
+                             {% else %}
+                                <strong>{{ v[0] }}</strong> - {{ v[1] }}<br>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
                 </div>
                 {% endif %}
+
+                <!-- DELETE -->
+                <br><br>
+                {% for k in entity.note|split(';') %}
+                    {% set v = k|split('=') %}
+                    <strong>{{ v[0] }}</strong> - {{ v[1] }}<br>
+                {% endfor %}
+
+                <!-- DELETE -->
+
             </div>
 
             {{ form_start(form, {'action': path('package_order_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}

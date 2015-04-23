@@ -1,12 +1,14 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = "package.service.edit_reservation"|trans({}, "MBHPackageBundle") ~ entity.numberWithPrefix %}
+{% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ entity.numberWithPrefix %}
 
 {% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">удалена</span>' %}{% endif %}
 
 {% block content %}
 
-    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 3 , 'entity': entity} %}
+    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': entity} %}
+
+    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 5 , 'entity': entity} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">

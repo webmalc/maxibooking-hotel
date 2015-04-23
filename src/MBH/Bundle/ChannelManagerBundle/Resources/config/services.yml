@@ -19,4 +19,14 @@ services:
         class: MBH\Bundle\ChannelManagerBundle\EventListener\ChannelManagerSubscriber
         arguments: [@service_container]
         tags:
-            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}            
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
+    mbh.channelmanager.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, [@mbh.channelmanager.logger_handler]]
+
+    mbh.channelmanager.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: [%kernel.logs_dir%/%kernel.environment%.channelmanager.log, 200]

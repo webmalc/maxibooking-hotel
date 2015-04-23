@@ -24,7 +24,7 @@ form.packageAccommodationType.room_or_bed: Комната/койко-место
 form.packageAccommodationType.room: Комната
 form.packageAccommodationType.choose_placement: Выбрать размещение
 form.packageAccommodationType.are_guests_checked_in: Гости заехали?
-form.packageAccommodationType.are_guests_checked_in_helper: Заехал ли гости в номер?
+form.packageAccommodationType.are_guests_checked_in_help: Заехал ли гости в номер?
 form.packageCopyType.reservation: Бронь
 form.packageCopyType.transfer_parameters: Параметры переноса
 form.packageCopyType.data_transfer_reservation: Бронь в которую будет произведен перенос данных.
