@@ -125,6 +125,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $form->bind($request);
 
         if ($form->isValid()) {
+
             $dm->persist($entity);
             $dm->flush();
 

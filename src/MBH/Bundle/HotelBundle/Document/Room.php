@@ -212,15 +212,6 @@ class Room extends Base
 
         return $name;
     }
-//    /**
-//     * @var $id
-//     */
-//    protected $id;
-
-    /**
-     * @var boolean $isEnabled
-     */
-    protected $isEnabled;
 
     /**
      * Set housing
@@ -264,27 +255,5 @@ class Room extends Base
     public function getFloor()
     {
         return $this->floor;
-    }
-
-    /**
-     * Set isEnabled
-     *
-     * @param boolean $isEnabled
-     * @return self
-     */
-    public function setIsEnabled($isEnabled)
-    {
-        $this->isEnabled = $isEnabled;
-        return $this;
-    }
-
-    /**
-     * Get isEnabled
-     *
-     * @return boolean $isEnabled
-     */
-    public function getIsEnabled()
-    {
-        return $this->isEnabled;
     }
 }

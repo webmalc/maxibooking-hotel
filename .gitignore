@@ -17,7 +17,10 @@
 nbproject/
 /web/css/
 /web/js/
-/web/upload/
+/web/upload/roomTypes/*
+/web/media/cache/*
+!/web/upload/roomTypes/.gitkeep
+!/web/media/cache/.gitkeep
 /web/demo
 .idea/
 /parameters.yml
