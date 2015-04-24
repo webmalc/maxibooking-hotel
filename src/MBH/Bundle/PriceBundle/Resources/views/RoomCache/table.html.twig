@@ -67,12 +67,15 @@
                             <td data-id="{{ roomType.id }}_{{ date|date('d.m.Y') }}" class="content {% if date|date('N') >= 6 %} weekend{% endif %}{% if (roomCache and roomCache.leftRooms < 0) or (tariff is not null and roomCache and dayRoomCache is null)  or (tariff is not null and roomCache and dayRoomCache and roomCache.totalRooms > dayRoomCache.totalRooms) or (roomCache and roomCache.isClosed)%} alert{% endif %}">
                                 {% if (categoryId == 'totalRooms' and tariff is null) or (tariff is not null and dayRoomCache is not null and categoryId == 'totalRooms') %}
                                     {% if tariff is null %}{% set tariffId = 0 %}{% else %}{% set tariffId = tariff.id %}{% endif %}
-                                    <input placeholder="{{ dayRoomCache is null ? '' : dayRoomCache.totalRooms }}"
-                                           name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][' ~ tariffId ~'][' ~ date|date('d.m.Y') ~ '][rooms]' : 'updateRoomCaches[' ~ roomCache.id ~'][rooms]'}}"
-                                           disabled type="text" class="mbh-grid-input form-control input-sm"
-                                           value="{{ roomCache is null ? '' : roomCache.totalRooms }}">
+                                    <span class="input">
+                                        <input placeholder="{{ dayRoomCache is null ? '' : dayRoomCache.totalRooms }}"
+                                               name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][' ~ tariffId ~'][' ~ date|date('d.m.Y') ~ '][rooms]' : 'updateRoomCaches[' ~ roomCache.id ~'][rooms]'}}"
+                                               disabled type="text" class="mbh-grid-input form-control input-sm"
+                                               value="{{ roomCache is null ? '' : roomCache.totalRooms }}">
+                                        <span class="disabled-detector"></span>
+                                    </span>
                                 {% elseif categoryId == 'isClosed' and tariff is null and roomCache %}
-                                    <span class="checkbox">
+                                    <span class="input">
                                         <input name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][0][' ~ date|date('d.m.Y') ~ '][closed]' : 'updateRoomCaches[' ~ roomCache.id ~'][closed]'}}" disabled type="checkbox" class="mbh-grid-checkbox {{ categoryId }}" {{ roomCache.isClosed ? 'checked' : '' }} value="1">
                                         <span class="disabled-detector"></span>
                                     </span>

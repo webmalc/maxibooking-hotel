@@ -15,10 +15,19 @@ $(document).ready(function () {
                     'tariffs': $('#price-cache-overview-filter-tariff').val()
                 },
                 inputs = function () {
-                    var input = $('input.mbh-grid-input');
+                    var input = $('input.mbh-grid-input, span.disabled-detector');
                     input.closest('td').click(function () {
-                        $("td[data-id='" + $(this).attr('data-id') + "']").children('input').removeAttr('disabled');
-                        $(this).children('input').focus();
+                        var td = $("td[data-id='" + $(this).attr('data-id') + "']"),
+                            field = $(this).children('span.input').children('input[disabled]');
+
+                        td.children('span.input').children('input').removeAttr('disabled');
+
+                        if (field.prop('type') === 'checkbox') {
+                            field.prop('checked', !field.prop('checked')).css('checkbox-end');
+                        } else {
+                            field.focus();
+                        }
+                        td.children('span.input').children('span.disabled-detector').remove();
                     });
                     input.change(function () {
                         if (this.value === '') {

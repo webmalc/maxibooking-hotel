@@ -176,10 +176,7 @@ class Booking extends Base
             if ($payer->getFirstName() . ' ' . $payer->getLastName() == (string) $room->guest_name) {
                 $guest = $payer;
             } else {
-                $guestArray = explode(' ', (string) $room->guest_name ) ;
-                $guest = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-                    isset($guestArray[1]) ? $guestArray[1]: 'н/д', $guestArray[0]
-                );
+                $guest = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate('н/д', (string) $room->guest_name);
             }
 
             //prices

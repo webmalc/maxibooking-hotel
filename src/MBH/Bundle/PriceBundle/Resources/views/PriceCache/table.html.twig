@@ -51,11 +51,14 @@
                             <!-- END: set inputName & value  -->
 
                             <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}" data-id="{{ roomType.id }}_{{ tariff.id }}_{{ date|date('d.m.Y') }}">
+                                <span class="input">
                                 {% if categoryId == 'isPersonPrice' %}
                                     <input name="{{ inputName }}" disabled type="checkbox" class="mbh-grid-checkbox {{ categoryId }}" {{ inputValue ? 'checked' : '' }} value="1">
                                 {% else %}
                                     <input name="{{ inputName }}" disabled type="text" class="mbh-grid-input form-control input-sm {{ categoryId }}" value="{{ inputValue }}">
                                 {% endif %}
+                                    <span class="disabled-detector"></span>
+                                </span>
                             </td>
                         {% endfor %}
                     </tr>
