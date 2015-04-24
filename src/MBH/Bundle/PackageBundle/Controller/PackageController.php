@@ -589,6 +589,34 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         return $this->redirect($this->generateUrl('package_service', ['id' => $id]));
     }
+    /**
+     * Service document edit
+     *
+     * @Route("/{id}/service/{serviceId}/edit", name="package_service_edit", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     */
+    public function serviceEditAction(Request $request, $id, $serviceId)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
+        $service = $dm->getRepository('MBHPackageBundle:PackageService')->find($serviceId);
+
+        if (!$entity || !$service || !$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        $dm->remove($service);
+        $dm->flush();
+
+        $request->getSession()
+            ->getFlashBag()
+            ->set('success', $this->get('translator')->trans('controller.packageController.service_deleted_success'));
+
+        return $this->redirect($this->generateUrl('package_service', ['id' => $id]));
+    }
 
     /**
      * Accommodation check-in

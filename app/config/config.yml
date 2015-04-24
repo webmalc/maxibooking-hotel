@@ -176,4 +176,8 @@ liip_imagine:
         thumb_50x50:
             quality: 100
             filters:
-                thumbnail: { size: [50, 50], mode: outbound, allow_upscale: true }
+                thumbnail: { size: [100, 100], mode: outbound, allow_upscale: true }
+        scaler:
+            quality: 100
+            filters:
+              relative_resize: { scale: 0.5, allow_upscale: true }
