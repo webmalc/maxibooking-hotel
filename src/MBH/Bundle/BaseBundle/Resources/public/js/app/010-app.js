@@ -1,16 +1,18 @@
-/* global $, alert */
+/* global $, alert, window */
 var getUrlVars = function () {
-    var vars = [], hash;
-    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    'use strict';
+    var vars = [], hash,
+        hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
     for (var i = 0; i < hashes.length; i++) {
         hash = hashes[i].split('=');
         vars.push(hash[0]);
         vars[hash[0]] = hash[1];
     }
     return vars;
-}
+};
 
 var dangerTr = function () {
+    'use strict';
     $('span.danger-tr').closest('tr').addClass('danger');
 }
 
@@ -90,7 +92,7 @@ $(document).ready(function () {
             return null;
         }
         var h = function () {
-            $('.scrolling').height(function(index, height) {
+            $('.scrolling').height(function (index, height) {
                 return $(window).height() - $(this).offset().top - 60;
             });
         };
