@@ -25,8 +25,9 @@
         paging: false,
         pageLength: 10,
         order: [[4, 'desc']],
-        "stateSave": true,
-        "language": {
+        info: false,
+        stateSave: true,
+        language: {
             "sProcessing": "Подождите...",
             "sLengthMenu": "Показать _MENU_ записей",
             "sZeroRecords": "Записи отсутствуют.",

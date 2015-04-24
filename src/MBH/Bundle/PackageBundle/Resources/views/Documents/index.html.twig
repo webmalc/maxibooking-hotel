@@ -22,7 +22,7 @@
                 <thead>
                 <tr>
                     <th class="td-xs"></th>
-                    <th class="td-md">{{ 'controller.documentsController.table_row_type'|trans({}) }}</th>
+                    <th class="td-xl">{{ 'controller.documentsController.table_row_type'|trans({}) }}</th>
                     <th class="td-xl">{{ 'controller.documentsController.table_row_tourist'|trans({}) }}</th>
                     <th>{{ 'controller.documentsController.table_row_comment'|trans({}) }}</th>
                     <th class="td-sm">{{ 'controller.documentsController.table_row_created_by'|trans({}) }}</th>
@@ -45,14 +45,14 @@
                                 'png' : 'fa-file-image-o',
                                 'xls' : 'fa-file-excel-o'
                             } %}
-                                <i class="fa {% if document.extension in extensionIcons|keys %} {{ extensionIcons[document.extension] }} {% endif %}"></i> {{ ('package.document.type_'~document.type) |trans({}, 'MBHPackageBundle') }} <br>
-                            <small style="font-style: italic;">{{ document.originalName }}</small>
+                            {{ ('package.document.type_'~document.type) |trans({}, 'MBHPackageBundle') }} <br>
+                            <i class="fa {% if document.extension in extensionIcons|keys %} {{ extensionIcons[document.extension] }} {% endif %}"></i> <small style="font-style: italic;margin-left: 5px">{{ document.originalName }}</small>
                         </td>
                         <td>
                             {{ document.tourist }}
                         </td>
                         <td>
-                            {{ document.comment }}
+                            {{ document.comment|nl2br }}
                         </td>
                         <td>
                             <div class="text-right">{{ document.createdAt|date("d.m.Y H:i") }}<br>
@@ -62,7 +62,7 @@
                         <td class="table-actions-td text-center">
                             <div style="float: right">
                                 {% if document.isImage %}
-                                    <a href="{{ path('package_document_view', {docname: document.name}) }}" class="btn btn-info btn-xs fancybox" title="view" data-toggle="tooltip">
+                                    <a href="{{ path('package_document_view', {docname: document.name}) }}" class="btn btn-primary btn-xs fancybox" title="view" data-toggle="tooltip">
                                         <i class="fa fa-eye"></i>
                                     </a>
                                 {% endif %}
