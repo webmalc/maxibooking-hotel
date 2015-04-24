@@ -9,10 +9,12 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PackageBundle\Document\PackageDocument;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Validator\Constraints\Length;
 
 class PackageDocumentType extends AbstractType
 {
@@ -23,6 +25,7 @@ class PackageDocumentType extends AbstractType
             'choice',
             [
                 'label' => 'Тип',
+                'group' => 'Добавить документ',
                 'required' => true,
                 'choices' => $options['documentTypes']
             ]
@@ -32,8 +35,26 @@ class PackageDocumentType extends AbstractType
             'file',
             'file',
             [
+                'group' => 'Добавить документ',
                 'label' => 'Файл',
                 'required' => true,
+            ]
+        );
+
+        $touristIds = $options['touristIds'];
+
+        $builder->add(
+            'tourist',
+            'document',
+            [
+                'group' => 'Добавить документ',
+                'label' => 'Клиент',
+                'class' => 'MBHPackageBundle:Tourist',
+                'required' => false,
+                //'choices' => $options['tourists']
+                'query_builder' => function(DocumentRepository $er) use($touristIds) {
+                    return $er->createQueryBuilder()->field('_id')->in($touristIds);
+                },
             ]
         );
 
@@ -41,8 +62,12 @@ class PackageDocumentType extends AbstractType
             'comment',
             'textarea',
             [
+                'group' => 'Добавить документ',
                 'label' => 'Комментарий',
                 'required' => false,
+                'constraints' => [
+                    new Length(['min' => 2, 'max' => 300])
+                ]
             ]
         );
     }
@@ -60,7 +85,8 @@ class PackageDocumentType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults([
-            'documentTypes' => []
+            'documentTypes' => [],
+            'touristIds' => [],
         ]);
     }
 

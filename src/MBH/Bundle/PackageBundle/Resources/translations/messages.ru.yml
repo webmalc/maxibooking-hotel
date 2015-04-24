@@ -130,3 +130,9 @@ controller.sourceController.record_created_success: 'Запись успешно
 controller.sourceController.record_edited_success: 'Запись успешно отредактирована.'
 controller.touristController.record_created_success: 'Запись успешно создана.'
 controller.touristController.record_edited_success: 'Запись успешно отредактирована.'
+
+controller.documentsController.table_row_name: 'Имя'
+controller.documentsController.table_row_comment: 'Комментарий'
+controller.documentsController.table_row_type: 'Тип'
+controller.documentsController.table_row_tourist: 'Клиент'
+controller.documentsController.table_row_created_by: 'Добавил'

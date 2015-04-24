@@ -1,0 +1,95 @@
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+
+{% set small_title = 'package.guest.edit_reservation'|trans({}, 'MBHPackageBundle') ~ entity.numberWithPrefix %}
+
+{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.guest.deleted'|trans({}, 'MBHPackageBundle')~'</span>' %}{% endif %}
+
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/documents/001.js' %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block content %}
+
+    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 8 , 'entity': entity} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+            <table id="documents-table" class="table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable">
+                <thead>
+                <tr>
+                    <th class="td-xs"></th>
+                    <th class="td-md">{{ 'controller.documentsController.table_row_type'|trans({}) }}</th>
+                    <th class="td-xl">{{ 'controller.documentsController.table_row_tourist'|trans({}) }}</th>
+                    <th>{{ 'controller.documentsController.table_row_comment'|trans({}) }}</th>
+                    <th class="td-sm">{{ 'controller.documentsController.table_row_created_by'|trans({}) }}</th>
+                    <th class="td-sm"></th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for document in entity.documents.iterator %}
+                    <tr>
+                        <td class="text-center table-icon">
+                            <i class="fa fa-file"></i>
+                        </td>
+                        <td>
+                            {% set extensionIcons = {
+                                'doc' : 'fa-file-word-o',
+                                'pdf' : 'fa-file-pdf-o',
+                                'jpg' : 'fa-file-image-o',
+                                'jpeg' : 'fa-file-image-o',
+                                'png' : 'fa-file-image-o',
+                                'xls' : 'fa-file-excel-o'
+                            } %}
+                                <i class="fa {% if document.extension in extensionIcons|keys %} {{ extensionIcons[document.extension] }} {% endif %}"></i> {{ ('package.document.type_'~document.type) |trans({}, 'MBHPackageBundle') }} <br>
+                            <small style="font-style: italic;">{{ document.originalName }}</small>
+                        </td>
+                        <td>
+                            {{ document.tourist }}
+                        </td>
+                        <td>
+                            {{ document.comment }}
+                        </td>
+                        <td>
+                            <div class="text-right">{{ document.createdAt|date("d.m.Y H:i") }}<br>
+                                <small>{{ document.createdBy }}</small>
+                            </div>
+                        </td>
+                        <td class="table-actions-td text-center">
+                            <div style="float: right">
+                                {% if document.isImage %}
+                                    <a href="{{ path('package_document_view', {docname: document.name}) }}" class="btn btn-info btn-xs fancybox" title="view" data-toggle="tooltip">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                {% endif %}
+                                <a href="{{ path('package_document_view', {docname: document.name, download: 1}) }}" target="_blank" class="btn btn-success btn-xs" title="download" data-toggle="tooltip">
+                                    <i class="fa fa-download"></i>
+                                </a>
+                                <a href="#" title="{{ 'record.index.remove'|trans({}, 'FOSUserBundle') }}" data-toggle="tooltip" data-filename="{{ document.name }}" data-package="{{ entity.id }}" class="btn btn-danger btn-xs remove-package-document">
+                                    <i class="fa fa-trash-o"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+
+            {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
+                {{ form_start(form, {'action': path('package_documents', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
+                {{ form_widget(form) }}
+                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
+                {{ form_end(form) }}
+            {% endif %}
+
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
+
+        </div>
+    </div>
+
+{% endblock %}

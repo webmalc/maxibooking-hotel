@@ -3,6 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Blameable\Traits\BlameableDocument;
+use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PostRemove;
@@ -14,9 +16,10 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\PostRemove;
  */
 class PackageDocument
 {
-    const TYPE_PASSPORT = 'passport';
-    const TYPE_INSURANCE = 'insurance';
-    const TYPE_BIRTH_CERTIFICATE = 'birth_certificate';
+    use TimestampableDocument;
+
+    use BlameableDocument;
+
 
     /**
      * @var string
@@ -43,6 +46,11 @@ class PackageDocument
     protected $comment;
 
     /**
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Tourist")
+     */
+    protected $tourist;
+
+    /**
      * @var UploadedFile
      * @Assert\File(maxSize="6000000", mimeTypes={
      *          "image/png",
@@ -51,22 +59,19 @@ class PackageDocument
      *          "image/gif",
      *          "application/pdf",
      *          "application/x-pdf",
-     *          "application/msword"
+     *          "application/msword",
+     *          "application/xls",
+     *          "application/xlsx",
+     *          "application/vnd.ms-excel"
      * })
      */
     protected $file;
 
     /**
-     * @return array
+     * @var string
+     * @ODM\String
      */
-    public static function getTypes()
-    {
-        return [
-            self::TYPE_PASSPORT,
-            self::TYPE_INSURANCE,
-            self::TYPE_BIRTH_CERTIFICATE,
-        ];
-    }
+    protected $extension;
 
     /**
      * @return int
@@ -117,19 +122,14 @@ class PackageDocument
     }
 
     /**
-     * @return UploadedFile
+     * @return UploadedFile|null
      */
     public function getFile()
     {
-        if(!$this->file && $this->name)
-            $this->file = new UploadedFile($this->getUploadRootDir().DIRECTORY_SEPARATOR.$this->getName(), $this->getName());
+        if(!$this->file && $this->name && is_file($this->getPath()))
+            $this->file = new UploadedFile($this->getPath(), $this->getName());
 
         return $this->file;
-    }
-
-    public function getAsset()
-    {
-        return 'upload/packageDocuments/'.$this->name;
     }
 
     /**
@@ -141,13 +141,29 @@ class PackageDocument
     }
 
     /**
+     * @return bool
+     */
+    public function isImage()
+    {
+        return in_array($this->extension, ['jpg', 'png', 'jpeg']);
+    }
+
+    /**
      * The absolute directory path where uploaded
      * documents should be saved
      * @return string
      */
     protected function getUploadRootDir()
     {
-        return __DIR__.'/../../../../../web/upload/packageDocuments';
+        return __DIR__.'/../../../../../protectedUpload/packageDocuments';//__DIR__.'/../../../../../web/upload/packageDocuments';
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->getUploadRootDir().DIRECTORY_SEPARATOR.$this->getName();
     }
 
     public function upload()
@@ -158,6 +174,8 @@ class PackageDocument
 
         $this->originalName = $this->getFile()->getClientOriginalName();
         $this->name = uniqid().'.'.$this->getFile()->getClientOriginalExtension();
+
+        $this->extension = $this->getFile()->getClientOriginalExtension();
 
         $this->getFile()->move(
             $this->getUploadRootDir(),
@@ -204,12 +222,8 @@ class PackageDocument
      */
     public function postRemove()
     {
-        $file = $this->getFile()->getPathname();
-
-        if (file_exists($file) && is_writable($file))
-        {
-            unlink($file);
-        }
+        if ($this->getFile() && is_writable($this->getFile()->getPathname()))
+            unlink($this->getFile()->getPathname());
     }
 
     /**
@@ -226,5 +240,37 @@ class PackageDocument
     public function setOriginalName($originalName)
     {
         $this->originalName = $originalName;
+    }
+
+    /**
+     * @return Tourist
+     */
+    public function getTourist()
+    {
+        return $this->tourist;
+    }
+
+    /**
+     * @param Tourist $tourist
+     */
+    public function setTourist(Tourist $tourist)
+    {
+        $this->tourist = $tourist;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExtension()
+    {
+        return $this->extension;
+    }
+
+    /**
+     * @param string $extension
+     */
+    public function setExtension($extension)
+    {
+        $this->extension = $extension;
     }
 }
