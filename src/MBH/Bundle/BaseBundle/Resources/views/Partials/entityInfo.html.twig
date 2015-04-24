@@ -9,9 +9,9 @@
 
         <div class="tab-content">
             <div class="tab-pane fade in active" id="entity-info">
-                {{ 'views.partials.entityInfo.created'|trans({}, 'MBHBaseBundle') }}{{entity.createdAt|date('d.m.Y H:i')}}{% if entity.createdBy is not null  %}{{ 'views.partials.entityInfo.by_user'|trans({}, 'MBHBaseBundle') }} {{ entity.createdBy}}{% endif %}
+                {{ 'views.partials.entityInfo.created'|trans({}, 'MBHBaseBundle') }} {{entity.createdAt|date('d.m.Y H:i')}} {% if entity.createdBy is not null  %}{{ 'views.partials.entityInfo.by_user'|trans({}, 'MBHBaseBundle') }} {{ entity.createdBy}}{% endif %}
                 {% if entity.updatedAt != null and  entity.getUpdatedBy != null%}
-                    <br />{{ 'views.partials.entityInfo.modified'|trans({}, 'MBHBaseBundle') }} {{entity.updatedAt|date('d.m.Y H:i')}}{% if entity.updatedBy is not null %}{{ 'views.partials.entityInfo.by_user'|trans({}, 'MBHBaseBundle') }} {{entity.updatedBy}}{% endif %}
+                    <br />{{ 'views.partials.entityInfo.modified'|trans({}, 'MBHBaseBundle') }} {{entity.updatedAt|date('d.m.Y H:i')}} {% if entity.updatedBy is not null %}{{ 'views.partials.entityInfo.by_user'|trans({}, 'MBHBaseBundle') }} {{entity.updatedBy}}{% endif %}
                 {% endif %}
             </div>
             <div class="tab-pane fade"  id="entity-logs">

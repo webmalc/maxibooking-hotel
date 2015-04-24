@@ -260,3 +260,4 @@ source.index.created: Создан
 source.index.edit_record: Редактирование записи
 source.index.delete_record: Удаление записи
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Невозможно удалить запись с существующими бронями. Брони: '
+analytics.layout.report: Отчеты

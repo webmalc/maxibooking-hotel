@@ -31,7 +31,7 @@
     {'route': 'package_edit', 'order': false, 'title': '<i class="fa fa-info-circle"></i> '~ 'package.editTabs.reservation_info'|trans({}, 'MBHPackageBundle')},
     {'route': 'package_order_tourist_edit', 'order': true, 'title': '<i class="fa fa-user"></i> ' ~ 'order.tabs.payer'|trans({}, 'MBHPackageBundle')},
     {'route': 'package_guest', 'order': false, 'title': '<i class="fa fa-users"></i> '~'package.editTabs.guests'|trans({}, 'MBHPackageBundle')~' <small class="badge">' ~ entity.tourists|length ~ '</small>'},
-    {'route': 'package_service', 'order': false, 'title': '<i class="fa fa-plug"></i> '~'package.editTabs.services'|trans({}, 'MBHPackageBundle')~' <small class="badge">' ~ entity.servicesPrice|length ~ '</small>'},
+    {'route': 'package_service', 'order': false, 'title': '<i class="fa fa-plug"></i> '~'package.editTabs.services'|trans({}, 'MBHPackageBundle')~' <small class="badge">' ~ entity.services|length ~ '</small>'},
     {'route': 'package_accommodation', 'order': false, 'title': '<i class="fa fa-home"></i> '~'package.editTabs.placement'|trans({}, 'MBHPackageBundle')~' <small class="label ' ~ accommodation.class ~ ' label-as-badge">' ~ accommodation.val ~ '</small>'},
     {'route': 'package_order_cash', 'order': true, 'title': '<i class="fa fa-ruble"></i> '~'order.tabs.calculations'|trans({}, 'MBHPackageBundle')~' <small class="label ' ~ price.class ~ ' label-as-badge">' ~ price.val ~  '</i></small>'}
 ]
@@ -39,9 +39,9 @@
 
 <ul class="nav nav-tabs" role="tablist">
 {% for item in menu %}
-    {% set id = item.order ? entity.order.id : entity.id %}
+    {% if item.order %}{% set params = {'id': entity.order.id, 'packageId': entity.id} %}{% else %}{% set params = {'id': entity.id} %}{% endif %}
     <li {% if loop.index == active %}class="active"{% endif %}>
-        <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route, {'id': id}) }}"{% endif %}>{{item.title|raw}}</a>
+        <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route, params) }}"{% endif %}>{{item.title|raw}}</a>
     </li>
 {% endfor %}
 </ul>

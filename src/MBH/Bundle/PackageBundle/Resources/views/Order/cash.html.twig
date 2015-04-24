@@ -1,12 +1,14 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = 'order.cash.order_editing'|trans({}, 'MBHPackageBundle') ~ entity.id %}
+{% set small_title =  'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ package.numberWithPrefix %}
 
-{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'  ~ 'order.cash.deleted'|trans({}, 'MBHPackageBundle') ~ '</span>' %}{% endif %}
+{% if package.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~'</span>' %}{% endif %}
 
 {% block content %}
 
-    {% include 'MBHPackageBundle:Order:tabs.html.twig' with {'active': 4 , 'entity': entity} %}
+    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
+
+    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 7 , 'entity': package} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
@@ -43,14 +45,14 @@
                             <td class="text-right">
                                 {% if cash.operation not in ['fee', 'out'] %}
                                     <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' rel='main' class='text-success' title='{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
-                                        {{ cash.total|number_format }}
+                                        {{ cash.total|number_format(2) }}
                                     </a>
                                 {% endif %}
                             </td>
                             <td class="text-right">
                                 {% if cash.operation in ['fee', 'out'] %}
                                     <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' rel='main' class='text-danger' title='{{ 'order.cash.remove_record'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
-                                        {{ cash.total|number_format }}
+                                        {{ cash.total|number_format(2) }}
                                     </a>
                                 {% endif %}
                             </td>
@@ -69,7 +71,7 @@
                                         <i class="fa fa-pencil-square-o"></i>
                                     </a>
                                     {% if not cash.deletedAt %}
-                                    <a href="{{ path('package_order_cash_delete', { 'id': entity.id, 'cash': cash.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ 'order.cash.remove_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
+                                    <a href="{{ path('package_order_cash_delete', { 'id': entity.id, 'cash': cash.id, 'packageId': package.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ 'order.cash.remove_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
                                         <i class="fa fa-trash-o"></i>
                                     </a>
                                     {% endif %}
@@ -87,7 +89,7 @@
                 </div>
             {% endif %}
 
-            {{ form_start(form, {'action': path('package_order_cash_save', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_start(form, {'action': path('package_order_cash_save', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
             {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity} %}
             {{ form_end(form) }}

@@ -13,7 +13,7 @@ use MBH\Bundle\PriceBundle\Form\TariffType;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 
 /**
- * @Route("tariff")
+ * @Route("management/tariff")
  */
 class TariffController extends Controller implements CheckHotelControllerInterface
 {

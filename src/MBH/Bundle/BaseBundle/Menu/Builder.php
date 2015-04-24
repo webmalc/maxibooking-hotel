@@ -35,6 +35,17 @@ class Builder extends ContainerAware
         $menu->addChild('package', ['route' => 'package', 'label' => 'Брони'])
             ->setAttributes(['icon' => 'fa fa-paper-plane'])
         ;
+        //Prices links
+        $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Номера и цены'])
+            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-ruble']);
+        $menu['prices']->addChild('room_cache', ['route' => 'room_cache_overview', 'label' => 'Номера в продаже'])
+            ->setAttributes(['icon' => 'fa fa-home']);
+        $menu['prices']->addChild('price_cache', ['route' => 'price_cache_overview', 'label' => 'Цены'])
+            ->setAttributes(['icon' => 'fa fa-ruble']);
+        $menu['prices']->addChild('restrictions', ['route' => 'restriction_overview', 'label' => 'Условия и ограничения'])
+            ->setAttributes(['icon' => 'fa fa-exclamation-circle']);
+        $menu['prices']->addChild('services', ['route' => 'price_service_category', 'label' => 'Услуги'])
+            ->setAttributes(['icon' => 'fa fa-plug']);
 
         // cash
         $menu->addChild('cash', ['route' => 'cash', 'label' => 'Касса'])
@@ -42,9 +53,13 @@ class Builder extends ContainerAware
         ;
 
         // report
-        $menu->addChild('report', ['route' => 'analytics', 'label' => 'Аналитика'])
-             ->setAttributes(['icon' => 'fa fa-bar-chart-o'])
-        ;
+        $menu->addChild('reports', ['route' => '_welcome', 'label' => 'Отчеты'])
+             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-tasks']);
+
+        $menu['reports']->addChild('analytics', ['route' => 'analytics', 'label' => 'Аналитика'])
+             ->setAttributes(['icon' => 'fa fa-bar-chart']);
+        $menu['reports']->addChild('clients', ['route' => 'tourist', 'label' => 'Клиенты'])
+            ->setAttributes(['icon' => 'fa fa-users']);
 
         return $this->filterMenu($menu);
     }
@@ -68,27 +83,13 @@ class Builder extends ContainerAware
 
         //Hotels links
         $menu->addChild('hotels', ['route' => '_welcome', 'label' => 'Отели'])
-                ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-building-o'])
-        ;
+                ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-building-o']);
         $menu['hotels']->addChild('hotelsList', ['route' => 'hotel', 'label' => 'Отели'])
                 ->setAttributes(['icon' => 'fa fa-building']);
-        $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номера'])
+        $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номерной фонд'])
                 ->setAttributes(['icon' => 'fa fa-home']);
-
-        //Prices links
-        $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Наличие и цены'])
-             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-ruble'])
-        ;
-        $menu['prices']->addChild('room_cache', ['route' => 'room_cache_overview', 'label' => 'Номера в продаже'])
-            ->setAttributes(['icon' => 'fa fa-home']);
-        $menu['prices']->addChild('price_cache', ['route' => 'price_cache_overview', 'label' => 'Цены'])
-            ->setAttributes(['icon' => 'fa fa-ruble']);
-        $menu['prices']->addChild('restrictions', ['route' => 'restriction_overview', 'label' => 'Условия и ограничения'])
-            ->setAttributes(['icon' => 'fa fa-exclamation-circle']);
-        $menu['prices']->addChild('tariff', ['route' => 'tariff', 'label' => 'Тарифы'])
-                ->setAttributes(['icon' => 'fa fa-sliders']);
-        $menu['prices']->addChild('services', ['route' => 'price_service_category', 'label' => 'Услуги'])
-                ->setAttributes(['icon' => 'fa fa-plug']);
+        $menu['hotels']->addChild('tariff', ['route' => 'tariff', 'label' => 'Тарифы'])
+            ->setAttributes(['icon' => 'fa fa-sliders']);
 
         //Users links
         $menu->addChild('configs', ['route' => '_welcome', 'label' => 'Настройки'])
