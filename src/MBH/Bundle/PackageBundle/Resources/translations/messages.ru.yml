@@ -59,7 +59,8 @@ form.packageMainType.check_out_time: Время отъезда
 form.packageMainType.arrival_purpose: Цель приезда
 form.packageMainType.comment: Комментарий
 form.packageServiceType.service: Услуга
-form.packageServiceType.add_service: Добавить услугу
+form.packageServiceType.add_service: 'Добавить услугу'
+form.packageServiceType.edit_service: 'Редактирование услуги'
 form.packageServiceType.reservation_add_service: Услуга для добавления к броне
 form.packageServiceType.price: Цена
 form.packageServiceType.nights_amount: Количество суток
@@ -130,3 +131,9 @@ controller.sourceController.record_created_success: 'Запись успешно
 controller.sourceController.record_edited_success: 'Запись успешно отредактирована.'
 controller.touristController.record_created_success: 'Запись успешно создана.'
 controller.touristController.record_edited_success: 'Запись успешно отредактирована.'
+
+controller.documentsController.table_row_name: 'Имя'
+controller.documentsController.table_row_comment: 'Комментарий'
+controller.documentsController.table_row_type: 'Тип'
+controller.documentsController.table_row_tourist: 'Клиент'
+controller.documentsController.table_row_created_by: 'Добавил'

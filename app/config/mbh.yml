@@ -121,6 +121,8 @@ parameters:
           service: 'mbh.channelmanager.booking'
           fee: 0.15
 
+
+
     #параметры логов
     mbh.logs.max: 100
 
@@ -157,6 +159,12 @@ parameters:
         offline: { title: "Обычный", class: "info"}
         online: { title: "Онлайн", class: "success"}
         channel_manager: { title: "Channel manager", class: "danger"}
+
+    #Типы документов
+    mbh.package.document.types:
+        passport: passport
+        insurance: insurance
+        birth_certificate: birth_certificate
 
     #Виды способов оплаты
     mbh.cash.methods:

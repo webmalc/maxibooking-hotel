@@ -28,50 +28,55 @@
             </div>
 
             {% if entity.services|length > 0 %}
-            <table class="package-service-table table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable">
-                <thead>
-                <tr>
-                    <th class="td-xs"></th>
-                    <th>Название</th>
-                    <th class="td-sm text-center">{{ "package.service.nights_amount"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-sm text-center">{{ "package.service.guests_amount"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-xs text-center">{{ "package.service.amount"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-md text-center">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-md text-right">{{ "package.service.price"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-lg">{{ "package.service.calculation_type"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-md text-right">{{ "package.service.result"|trans({}, "MBHPackageBundle") }}</th>
-                    <th>{{ "package.service.comment"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-md text-center">{{ "package.service.creation_date"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-sm"></th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for service in entity.services %}
-                    <tr {% if service.deletedAt %}class="danger"{% endif %}>
-                        <td class="text-center table-icon"><i class="fa fa-plug"></i></td>
-                        <td>{{ service.service }}</td>
-                        <td class="text-center">{{ service.calcType == 'per_night' ? service.nights : '' }}</td>
-                        <td class="text-center">{{ service.calcType != 'not_applicable' ? service.persons : '' }}</td>
-                        <td class="text-center">{{ service.amount }}</td>
-                        <td class="text-center">{{ service.date is null ? '' : service.date|date('d.m.Y') }}</td>
-                        <td class="text-right text-success">{{ service.price|number_format(2) }}</td>
-                        <td>{{ config.calcTypes[service.calcType] }}</td>
-                        <td class="text-right text-success">{{ service.total|number_format(2) }}</td>
-                        <td>{{ service.note }}</td>
-                        <td class="text-center">{{ service.createdAt|date('d.m.Y') }}</td>
-                        <td class="table-actions-td text-center">
-                            {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
-                                <a href="{{ path('package_service_delete', { 'id': entity.id, "serviceId": service.id }) }}"
-                                   class="btn btn-danger btn-xs delete-link " title="{{ 'package.service.delete_record'|trans({}, 'MBHPackageBundle')}}"
-                                   data-toggle="tooltip">
-                                    <i class="fa fa-trash-o"></i>
-                                </a>
-                            {% endif %}
-                        </td>
+                <table class="package-service-table table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable">
+                    <thead>
+                    <tr>
+                        <th class="td-xs"></th>
+                        <th>Название</th>
+                        <th class="td-sm text-center">{{ "package.service.nights_amount"|trans({}, "MBHPackageBundle") }}</th>
+                        <th class="td-sm text-center">{{ "package.service.guests_amount"|trans({}, "MBHPackageBundle") }}</th>
+                        <th class="td-xs text-center">{{ "package.service.amount"|trans({}, "MBHPackageBundle") }}</th>
+                        <th class="td-md text-center">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
+                        <th class="td-md text-right">{{ "package.service.price"|trans({}, "MBHPackageBundle") }}</th>
+                        <th class="td-lg">{{ "package.service.calculation_type"|trans({}, "MBHPackageBundle") }}</th>
+                        <th class="td-md text-right">{{ "package.service.result"|trans({}, "MBHPackageBundle") }}</th>
+                        <th>{{ "package.service.comment"|trans({}, "MBHPackageBundle") }}</th>
+                        <th class="td-md text-center">{{ "package.service.creation_date"|trans({}, "MBHPackageBundle") }}</th>
+                        <th class="td-sm"></th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for service in entity.services %}
+                        <tr {% if service.deletedAt %}class="danger"{% endif %}>
+                            <td class="text-center table-icon"><i class="fa fa-plug"></i></td>
+                            <td>{{ service.service }}</td>
+                            <td class="text-center">{{ service.calcType == 'per_night' ? service.nights : '' }}</td>
+                            <td class="text-center">{{ service.calcType != 'not_applicable' ? service.persons : '' }}</td>
+                            <td class="text-center">{{ service.amount }}</td>
+                            <td class="text-center">{{ service.date is null ? '' : service.date|date('d.m.Y') }}</td>
+                            <td class="text-right text-success">{{ service.price|number_format(2) }}</td>
+                            <td>{{ config.calcTypes[service.calcType] }}</td>
+                            <td class="text-right text-success">{{ service.total|number_format(2) }}</td>
+                            <td>{{ service.note }}</td>
+                            <td class="text-center">{{ service.createdAt|date('d.m.Y') }}</td>
+                            <td class="table-actions-td text-center">
+                                {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
+                                    <a href="{{ path('package_service_edit', { 'id': entity.id, "serviceId": service.id }) }}"
+                                       class="btn btn-success btn-xs " title="{{ 'package.service.delete_record'|trans({}, 'MBHPackageBundle')}}"
+                                       data-toggle="tooltip">
+                                        <i class="fa  fa-check"></i>
+                                    </a>
+                                    <a href="{{ path('package_service_delete', { 'id': entity.id, "serviceId": service.id }) }}"
+                                       class="btn btn-danger btn-xs delete-link " title="{{ 'package.service.delete_record'|trans({}, 'MBHPackageBundle')}}"
+                                       data-toggle="tooltip">
+                                        <i class="fa fa-trash-o"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             {% endif %}
 
             {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
@@ -95,23 +100,23 @@
 
 {% block scripts %}
     {{ parent() }}
-    
+
     <script>
         var services = {
-            'package_duration': {{ entity.nights }},
-            'package_guests': {{ entity.children + entity.adults }},
-            'package_one_day_price': {{ entity.oneDayPrice() }},
-            {% for category in entity.tariff.hotel.servicesCategories %}
-                {% for service in category.services %}        
+                    'package_duration': {{ entity.nights }},
+                    'package_guests': {{ entity.children + entity.adults }},
+                    'package_one_day_price': {{ entity.oneDayPrice() }},
+                    {% for category in entity.tariff.hotel.servicesCategories %}
+                    {% for service in category.services %}
                     '{{ service.id}}': {
                         'date': {{ service.date ? 1 : 0}},
                         'calcType': '{{ service.calcType}}',
                         'calcTypeStr': '{{ config.calcTypes[service.calcType]}}',
                         'price': {% if service.calcType == 'day_percent' %}{{ entity.oneDayPrice() }} * {{ service.price}} / 100 {% else %} {{ service.price}} {% endif %}
-                    },
-                {% endfor %}    
-            {% endfor %}
+                },
+                {% endfor %}
+                {% endfor %}
 
-        };
+                };
     </script>
 {% endblock %}

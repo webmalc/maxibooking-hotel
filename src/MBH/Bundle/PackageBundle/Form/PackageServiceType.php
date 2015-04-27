@@ -38,9 +38,11 @@ class PackageServiceType extends AbstractType
                     'choices' => $services,
                     'empty_value' => '',
                     'error_bubbling' => true,
-                    'group' => 'form.packageServiceType.add_service',
+                    'mapped' => false,
+                    'group' => $options['form_label'],
                     'constraints' => new NotBlank(),
-                    'help' => 'form.packageServiceType.reservation_add_service'
+                    'help' => 'form.packageServiceType.reservation_add_service',
+                    'data' => $options['serviceId']
                 ]
             )
             ->add(
@@ -49,7 +51,7 @@ class PackageServiceType extends AbstractType
                 [
                     'label' => 'form.packageServiceType.price',
                     'required' => true,
-                    'group' => 'form.packageServiceType.add_service',
+                    'group' => $options['form_label'],
                     'error_bubbling' => true,
                     'constraints' => new NotBlank(),
                     'attr' => ['class' => 'price-spinner sm']
@@ -62,7 +64,7 @@ class PackageServiceType extends AbstractType
                     'label' => 'form.packageServiceType.nights_amount',
                     'required' => true,
                     'data' => 1,
-                    'group' => 'form.packageServiceType.add_service',
+                    'group' => $options['form_label'],
                     'error_bubbling' => true,
                     'constraints' => new NotBlank(),
                     'attr' => ['class' => 'spinner sm']
@@ -75,7 +77,7 @@ class PackageServiceType extends AbstractType
                     'label' => 'form.packageServiceType.guests_amount',
                     'required' => true,
                     'data' => 1,
-                    'group' => 'form.packageServiceType.add_service',
+                    'group' => $options['form_label'],
                     'error_bubbling' => true,
                     'constraints' => new NotBlank(),
                     'attr' => ['class' => 'spinner sm']
@@ -83,7 +85,7 @@ class PackageServiceType extends AbstractType
             )
             ->add('date', 'date', array(
                     'label' => 'Дата',
-                    'group' => 'form.packageServiceType.add_service',
+                    'group' => $options['form_label'],
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
                     'data' => $options['package']->getBegin(),
@@ -97,7 +99,7 @@ class PackageServiceType extends AbstractType
                     'label' => 'form.packageServiceType.amount',
                     'required' => true,
                     'data' => 1,
-                    'group' => 'form.packageServiceType.add_service',
+                    'group' => $options['form_label'],
                     'error_bubbling' => true,
                     'constraints' => new NotBlank(),
                     'attr' => ['class' => 'spinner sm'],
@@ -115,7 +117,10 @@ class PackageServiceType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'package' => null
+                'package' => null,
+                'serviceId' => null,
+                'form_label' => null,
+                'data_class' => 'MBH\Bundle\PackageBundle\Document\PackageService',
             ]
         );
     }

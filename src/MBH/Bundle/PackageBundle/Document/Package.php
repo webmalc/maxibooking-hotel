@@ -272,6 +272,12 @@ class Package extends Base
     protected $isSmoking = false;
 
     /**
+     * @var array
+     * @ODM\EmbedMany(targetDocument="PackageDocument")
+     */
+    protected $documents = [];
+
+    /**
      * Set tariff
      *
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
@@ -592,6 +598,7 @@ class Package extends Base
     public function __construct()
     {
         $this->tourists = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->documents = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
 
@@ -997,5 +1004,35 @@ class Package extends Base
     public function getTotalOverwrite()
     {
         return $this->totalOverwrite;
+    }
+
+    /**
+     * Add document
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\PackageDocument $document
+     */
+    public function addDocument(\MBH\Bundle\PackageBundle\Document\PackageDocument $document)
+    {
+        $this->documents[] = $document;
+    }
+
+    /**
+     * Remove document
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\PackageDocument $document
+     */
+    public function removeDocument(\MBH\Bundle\PackageBundle\Document\PackageDocument $document)
+    {
+        $this->documents->removeElement($document);
+    }
+
+    /**
+     * Get documents
+     *
+     * @return \Doctrine\Common\Collections\Collection $documents
+     */
+    public function getDocuments()
+    {
+        return $this->documents;
     }
 }

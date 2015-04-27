@@ -3,11 +3,15 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Document\PackageDocument;
 use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PackageBundle\Form\PackageDocumentsType;
+use MBH\Bundle\PackageBundle\Form\PackageDocumentType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -275,6 +279,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         ];
     }
 
+
     /**
      * Edits an existing entity.
      *
@@ -489,6 +494,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function serviceAction(Request $request, $id)
     {
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
@@ -498,21 +504,33 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(
-            new PackageServiceType(),
-            null,
-            ['package' => $entity]
-        );
+        $packageService = new PackageService();
 
-        if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
+        if ($this->container->get('mbh.package.permissions')->check($entity)) {
+            $form = $this->createForm(
+                new PackageServiceType(),
+                $packageService,
+                ['package' => $entity, 'form_label' => $this->container->get('translator')->trans('form.packageServiceType.add_service')]
+            );
+        }
+        if ($request->getMethod() == 'PUT') {
+
+            $packageService->setPackage($entity);
+            $packageService->setService($dm->getRepository('MBHPriceBundle:Service')->find($request->get("mbh_bundle_packagebundle_package_service_type")["service"] ));
+
+
+
+
             $form->submit($request);
+
+//            $form->setData('service')->setService($packageService->getService());
 
             if ($form->isValid()) {
                 $data = $form->getData();
 
-                $service = $dm->getRepository('MBHPriceBundle:Service')->find($data['service']);
+//                $service = $dm->getRepository('MBHPriceBundle:Service')->find($data['service']);
 
-                if (!$service || empty($data['amount'])) {
+                if (!$packageService->getService() || ($form->get('amount')->getData() == '')) {
                     $request->getSession()
                         ->getFlashBag()
                         ->set(
@@ -523,16 +541,16 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     return $this->redirect($this->generateUrl('package_service', ['id' => $id]));
                 }
 
-                $packageService = new PackageService();
-                $packageService->setPackage($entity)
-                    ->setService($service)
-                    ->setDate($this->container->get('mbh.helper')->getDateFromString($data['date']))
-                    ->setNights((int)$data['nights'])
-                    ->setPersons((int)$data['persons'])
-                    ->setAmount((int)$data['amount'])
-                    ->setPrice((float) $data['price'])
-                    ->setIsCustomPrice((float) $data['price'] != $service->getPrice())
-                    ->setNote(empty($data['note']) ? null : $data['note']);
+//                $packageService = new PackageService();
+//                $packageService->setPackage($entity)
+//                    ->setService($service)
+//                    ->setDate($this->container->get('mbh.helper')->getDateFromString($data['date']))
+//                    ->setNights((int)$data['nights'])
+//                    ->setPersons((int)$data['persons'])
+//                    ->setAmount((int)$data['amount'])
+//                    ->setPrice((float) $data['price'])
+//                    ->setIsCustomPrice((float) $data['price'] != $service->getPrice())
+//                    ->setNote(empty($data['note']) ? null : $data['note']);
 
                 $dm->persist($packageService);
                 $dm->flush();
@@ -547,6 +565,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 return $this->afterSaveRedirect('package', $id, [], '_service');
             }
         }
+
+
 
         return [
             'entity' => $entity,
@@ -583,6 +603,78 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->set('success', $this->get('translator')->trans('controller.packageController.service_deleted_success'));
 
         return $this->redirect($this->generateUrl('package_service', ['id' => $id]));
+    }
+    /**
+     * Service document edit
+     *
+     * @Route("/{id}/service/{serviceId}/edit", name="package_service_edit", options={"expose"=true})
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template("MBHPackageBundle:Package:editService.html.twig")
+     */
+    public function serviceEditAction(Request $request, $id, $serviceId)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
+
+        if (!$entity || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        $service = $dm->getRepository('MBHPackageBundle:PackageService')->find($serviceId);
+        if (!$service){
+            throw $this->createNotFoundException();
+        }
+        $form = $this->createForm(
+            new PackageServiceType(),
+            $service,
+            ['package' => $entity, 'serviceId' => $service->getService()->getId(), 'form_label' => $this->container->get('translator')->trans('form.packageServiceType.edit_service')]
+        );
+
+        if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
+            $form->submit($request);
+
+            if ($form->isValid()) {
+                $data = $form->getData();
+
+                $service->setService($dm->getRepository('MBHPriceBundle:Service')->find($request->get("mbh_bundle_packagebundle_package_service_type")["service"] ));
+
+//                if (!$service || empty($data['amount'])) {
+//                    $request->getSession()
+//                        ->getFlashBag()
+//                        ->set(
+//                            'danger',
+//                            $this->get('translator')->trans('controller.packageController.service_adding_error_refresh_and_try_again')
+//                        );
+                $dm->persist($service);
+                $dm->flush();
+
+                $request->getSession()
+                    ->getFlashBag()
+                    ->set(
+                        'success',
+                        $this->get('translator')->trans('controller.packageController.service_added_success')
+                    );
+
+                if ($request->get('save') !== null) {
+
+                    return $this->redirect($this->generateUrl('package_service_edit', ['id' => $id, 'serviceId' => $serviceId]));
+                }
+
+                return $this->redirect($this->generateUrl('package'));
+
+                }
+            }
+
+        return [
+            'entity' => $entity,
+            'service' => $service,
+            'logs' => $this->logs($entity),
+            'form' => $form->createView(),
+            'config' => $this->container->getParameter('mbh.services'),
+        ];
     }
 
     /**

@@ -71,15 +71,6 @@
                 </div>
                 {% endif %}
 
-                <!-- DELETE -->
-                <br><br>
-                {% for k in entity.note|split(';') %}
-                    {% set v = k|split('=') %}
-                    <strong>{{ v[0] }}</strong> - {{ v[1] }}<br>
-                {% endfor %}
-
-                <!-- DELETE -->
-
             </div>
 
             {{ form_start(form, {'action': path('package_order_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}

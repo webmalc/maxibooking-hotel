@@ -36,6 +36,9 @@ class RoomTypeImage
 
     /**
      * @var string
+     * @Assert\File(
+     *  maxSize = "5M",
+     *  maxSizeMessage = "Размер изображения не должен превышать 5MB.")
      * @Gedmo\Versioned
      * @ODM\String()
      */
@@ -47,6 +50,18 @@ class RoomTypeImage
      * @ODM\Boolean(name="isMain")
      */
     protected $isMain = 0;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\String(name="width")
+     */
+    public $width;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\String(name="height")
+     */
+    public $height;
 
     /**
      * Set name
@@ -104,6 +119,10 @@ class RoomTypeImage
         $newName = $date->getTimestamp() . rand(1,1000) . '.'. $image->guessExtension();
         $image->move($this->getUploadRootDir(), $newName);
 
+        list($width, $height) = getimagesize($this->getUploadRootDir() . '/' . $newName);
+
+        $this->setWidth($width);
+        $this->setHeight($height);
 
         $this->image = $newName;
         $this->setName($newName);
@@ -205,5 +224,49 @@ class RoomTypeImage
     public function getIsMain()
     {
         return $this->isMain;
+    }
+
+    /**
+     * Set width
+     *
+     * @param string $width
+     * @return self
+     */
+    public function setWidth($width)
+    {
+        $this->width = $width;
+        return $this;
+    }
+
+    /**
+     * Get width
+     *
+     * @return string $width
+     */
+    public function getWidth()
+    {
+        return $this->width;
+    }
+
+    /**
+     * Set height
+     *
+     * @param string $height
+     * @return self
+     */
+    public function setHeight($height)
+    {
+        $this->height = $height;
+        return $this;
+    }
+
+    /**
+     * Get height
+     *
+     * @return string $height
+     */
+    public function getHeight()
+    {
+        return $this->height;
     }
 }
