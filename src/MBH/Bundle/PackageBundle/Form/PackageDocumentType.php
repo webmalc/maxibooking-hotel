@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mb
- * Date: 22.04.15
- * Time: 20:14
- */
 
 namespace MBH\Bundle\PackageBundle\Form;
-
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PackageBundle\Document\PackageDocument;
@@ -16,16 +9,31 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints\Length;
 
+/**
+ * Class PackageDocumentType
+ * @package MBH\Bundle\PackageBundle\Form
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
 class PackageDocumentType extends AbstractType
 {
+    const SCENARIO_ADD = 'add';
+    const SCENARIO_EDIT = 'edit';
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $mainGroupTitles = [
+            self::SCENARIO_ADD => 'Добавить документ',
+            self::SCENARIO_EDIT => 'Редактировать документ',
+        ];
+
+        $groupTitle = $mainGroupTitles[$options['scenario']];
+
         $builder->add(
             'type',
             'choice',
             [
+                'group' => $groupTitle,
                 'label' => 'Тип',
-                'group' => 'Добавить документ',
                 'required' => true,
                 'choices' => $options['documentTypes']
             ]
@@ -37,7 +45,7 @@ class PackageDocumentType extends AbstractType
             'tourist',
             'document',
             [
-                'group' => 'Добавить документ',
+                'group' => $groupTitle,
                 'label' => 'Клиент',
                 'class' => 'MBHPackageBundle:Tourist',
                 'required' => false,
@@ -52,9 +60,9 @@ class PackageDocumentType extends AbstractType
             'file',
             'file',
             [
-                'group' => 'Добавить документ',
+                'group' => $groupTitle,
                 'label' => 'Файл',
-                'required' => true,
+                'required' => $options['scenario'] == self::SCENARIO_ADD,
             ]
         );
 
@@ -62,7 +70,7 @@ class PackageDocumentType extends AbstractType
             'comment',
             'textarea',
             [
-                'group' => 'Добавить документ',
+                'group' => $groupTitle,
                 'label' => 'Комментарий',
                 'required' => false,
                 'constraints' => [
@@ -87,6 +95,7 @@ class PackageDocumentType extends AbstractType
         $resolver->setDefaults([
             'documentTypes' => [],
             'touristIds' => [],
+            'scenario' => self::SCENARIO_ADD
         ]);
     }
 

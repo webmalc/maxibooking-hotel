@@ -12,14 +12,12 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\PostRemove;
 /**
  * @ODM\EmbeddedDocument
  * @ODM\HasLifecycleCallbacks
- * @author Aleksandr Arofikin
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class PackageDocument
 {
     use TimestampableDocument;
-
     use BlameableDocument;
-
 
     /**
      * @var string
@@ -126,9 +124,15 @@ class PackageDocument
     /**
      * @param UploadedFile $file
      */
-    public function setFile(UploadedFile $file)
+    public function setFile(UploadedFile $file = null)
     {
         $this->file = $file;
+        if($this->file){
+            $this->originalName = $this->file->getClientOriginalName();
+            $this->name = uniqid().'.'.$this->file->getClientOriginalExtension();
+            $this->extension = $this->file->getClientOriginalExtension();
+            $this->mimeType = $this->file->getMimeType();
+        }
     }
 
     /**
@@ -163,15 +167,15 @@ class PackageDocument
             return;
         }
 
-        $this->originalName = $this->getFile()->getClientOriginalName();
-        $this->name = uniqid().'.'.$this->getFile()->getClientOriginalExtension();
-        $this->extension = $this->getFile()->getClientOriginalExtension();
-        $this->mimeType = $this->getFile()->getMimeType();
+        $this->getFile()->move($this->getUploadRootDir(), $this->getName());
+    }
 
-        $this->getFile()->move(
-            $this->getUploadRootDir(),
-            $this->name
-        );
+    /**
+     * @return bool
+     */
+    public function isUploaded()
+    {
+        return is_file($this->getPath());
     }
 
     /**
@@ -211,8 +215,22 @@ class PackageDocument
      */
     public function postRemove()
     {
-        if ($this->getFile() && is_writable($this->getFile()->getPathname()))
-            unlink($this->getFile()->getPathname());
+        $this->deleteFile();
+    }
+
+    /**
+     * @return bool
+     */
+    public function deleteFile()
+    {
+        if ($this->getFile() && is_writable($this->getFile()->getPathname())){
+            $result = unlink($this->getFile()->getPathname());
+            if($result)
+                $this->file = null;
+            return $result;
+        }
+
+        return false;
     }
 
     /**

@@ -73,10 +73,14 @@
                                         </a>
                                     {% endif %}
                                     <a href="{{ path('package_document_view', {docname: document.name, download: 1}) }}"
-                                       class="btn btn-success btn-xs"
+                                       class="btn btn-info btn-xs"
                                        title="{{ 'controller.documentsController.action_download'|trans({}) }}"
                                        data-toggle="tooltip">
                                         <i class="fa fa-download"></i>
+                                    </a>
+                                    <a href="{{ path('package_document_edit', {id : entity.id, docname: document.name}) }}"
+                                       class="btn btn-success btn-xs {#remove-package-document#}">
+                                        <i class="fa fa-pencil-square-o"></i>
                                     </a>
                                     <a href="{{ path('package_remove_document', {id : entity.id, docname: document.name}) }}"
                                        title="{{ 'record.index.remove'|trans({}, 'FOSUserBundle') }}"

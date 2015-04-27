@@ -166,4 +166,66 @@ class DocumentsController extends Controller
 
         return $response;
     }
+
+    /**
+     * @Route("/document/{id}/edit/{docname}", name="package_document_edit", options={"expose"=true}, defaults={"download" = 0})
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("package", class="MBHPackageBundle:Package")
+     * @Template()
+     */
+    public function editAction(Package $package, $docname, Request $request)
+    {
+        $touristIds = $this->get('mbh.helper')->toIds($package->getTourists());
+
+        $packageDocument = null;
+        foreach($package->getDocuments()->getIterator() as $document)
+            /** @var PackageDocument $document */
+            if($document->getName() == $docname)
+                $packageDocument = $document;
+
+        if(!$packageDocument)
+            throw $this->createNotFoundException();
+
+        $documentTypes = [];
+        foreach ($this->container->getParameter('mbh.package.document.types') as $type)
+            $documentTypes[$type] = $this->get('translator')->trans('package.document.type_' . $type, [], 'MBHPackageBundle');
+
+        if($mainTourist = $package->getOrder()->getMainTourist()){
+            $touristIds[] = $mainTourist->getId();
+        }
+
+        $form = $this->createForm(new PackageDocumentType(), $packageDocument, [
+            'documentTypes' => $documentTypes,
+            'touristIds' => $touristIds,
+            'scenario' => PackageDocumentType::SCENARIO_EDIT
+        ]);
+
+        if ($request->isMethod("PUT")) {
+            $oldPackageDocument = clone($packageDocument);
+            $form->submit($request);
+
+            if ($form->isValid()) {
+                if(!$packageDocument->isUploaded()){
+                    $packageDocument->upload();
+                    $oldPackageDocument->deleteFile();
+                }
+                /* @var $dm  \Doctrine\ODM\MongoDB\DocumentManager */
+                $dm = $this->get('doctrine_mongodb')->getManager();
+
+                $dm->persist($packageDocument);
+                $dm->flush();
+
+
+                return $this->redirect($this->generateUrl("package_documents", ['id' => $package->getId()]));
+            }
+        }
+
+        return [
+            'entity' => $package,
+            'document' => $packageDocument,
+            'form' => $form->createView(),
+            'logs' => $this->logs($package),
+        ];
+    }
 }
