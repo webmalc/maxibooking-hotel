@@ -26,6 +26,9 @@ $(document).ready(function () {
                     success: function (data) {
                         wrapper.html(data);
                         pricesProcessing = false;
+                        $('td.alert').each(function () {
+                            $("td[data-id='" + $(this).attr('data-id') + "']").addClass('alert');
+                        });
                     },
                     dataType: 'html'
                 });

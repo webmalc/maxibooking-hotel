@@ -27,11 +27,12 @@
                     {% endfor %}
                 </tr>
 
-                {% set categories = {'price': 'Цена', 'isPersonPrice': 'Цена за человека?', 'singlePrice': 'Цена 1-местного размещения'} %}
-
-                {% if roomType.additionalPlaces > 0 %}
-                    {% set categories = categories|merge({'additionalPrice': 'Цена за взрослое доп. место', 'additionalChildrenPrice': 'Цена за детское доп. место' }) %}
-                {% endif %}
+                {% set categories = {
+                    'rooms': 'Номера в продаже',
+                    'tariff_rooms': 'Квоты по тарифам',
+                    'prices': 'Цены',
+                    'restrictions': 'условия и ограничения',
+                }%}
 
                 {% for categoryId, category in categories %}
                     <tr>
@@ -39,17 +40,50 @@
 
                         {% for date in period %}
 
-                            <!-- BEGIN: set priceCache -->
-                            {% set priceCache = priceCaches[roomType.id][tariff.id][date|date('d.m.Y')]|default(null) %}
-                            <!-- END: set priceCache -->
+                            {% set error = true %}
+                            {% set cell = false %}
+                            {% set roomCache = false %}
+                            {% set tariffRoomCache = false %}
+                            {% set priceCache = false %}
+                            {% set restriction = false %}
 
-                            <!-- BEGIN: set inputName & value -->
-                            {% set inputName = priceCache is null ? 'newPriceCaches[' ~ roomType.id ~ '][' ~ tariff.id ~'][' ~ date|date('d.m.Y') ~ '][' ~ categoryId ~ ']' : 'updatePriceCaches[' ~ priceCache.id ~'][' ~ categoryId ~ ']' %}
-                            {% set inputValue = priceCache is null ? null : attribute(priceCache, categoryId) %}
-                            <!-- END: set inputName & value  -->
+                            {% if roomCaches[roomType.id][0][date|date('d.m.Y')] is defined %}
+                                {% set roomCache = roomCaches[roomType.id][0][date|date('d.m.Y')] %}
+                            {% endif %}
+                            {% if tariffRoomCaches[roomType.id][tariff.id][date|date('d.m.Y')] is defined %}
+                                {% set tariffRoomCache = tariffRoomCaches[roomType.id][tariff.id][date|date('d.m.Y')] %}
+                            {% endif %}
+                            {% if priceCaches[roomType.id][tariff.id][date|date('d.m.Y')] is defined %}
+                                {% set priceCache = priceCaches[roomType.id][tariff.id][date|date('d.m.Y')] %}
+                            {% endif %}
+                            {% if restrictions[roomType.id][tariff.id][date|date('d.m.Y')] is defined %}
+                                {% set restriction = restrictions[roomType.id][tariff.id][date|date('d.m.Y')] %}
+                            {% endif %}
 
-                            <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}" data-id="{{ roomType.id }}_{{ tariff.id }}_{{ date|date('d.m.Y') }}">
-                                <small class="opacity-md"><i class="fa fa-check text-success"></i></small>
+                            {% if roomCache or tariffRoomCache %}
+                                {% set cell = true %}
+                            {% endif %}
+
+                            {% if categoryId == 'rooms' %}
+                                {% if roomCache %}
+                                    {% set error = roomCache.leftRooms > 0 and roomCache.isClosed is empty ? false : true %}
+                                {% endif %}
+                            {% elseif categoryId == 'tariff_rooms' %}
+                                {% if tariffRoomCache %}
+                                    {% set error = tariffRoomCache.leftRooms > 0 ? false : true %}
+                                {% else %}
+                                    {% set error = false %}
+                                {% endif %}
+                            {% elseif categoryId == 'prices' %}
+                                {% set error = priceCache and priceCache.price ? false : true %}
+                            {% elseif categoryId == 'restrictions' %}
+                                {% set error = restriction and restriction.closed ? true : false %}
+                            {% endif %}
+
+                            <td class="content {{ date|date('N') >= 6 ? 'weekend'}} {{ error and cell ? 'alert'}}" data-id="{{ roomType.id }}_{{ tariff.id }}_{{ date|date('d.m.Y') }}">
+                                {% if cell %}
+                                    <small class="{{ error is empty ? 'opacity-md'}}"><i class="fa {{ error is empty ? 'fa-check text-success' : 'fa-times text-danger fa-lg'}}"></i></small>
+                                {% endif %}
                             </td>
                         {% endfor %}
                     </tr>
