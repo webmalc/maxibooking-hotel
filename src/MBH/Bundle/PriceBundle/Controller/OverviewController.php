@@ -86,9 +86,45 @@ class OverviewController extends Controller implements CheckHotelControllerInter
             return array_merge($response, ['error' => 'Тарифы не найдены']);
         }
 
+        //get roomCaches
+        $roomCaches = $dm->getRepository('MBHPriceBundle:RoomCache')
+            ->fetch(
+                $begin, $end, $hotel,
+                $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                null, true)
+        ;
+        //get tariff roomCaches
+        $tariffRoomCaches = $dm->getRepository('MBHPriceBundle:RoomCache')
+            ->fetch(
+                $begin, $end, $hotel,
+                $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                $request->get('tariffs') ? $request->get('tariffs') : [],
+                true)
+        ;
+        //get priceCaches
+        $priceCaches = $dm->getRepository('MBHPriceBundle:PriceCache')
+            ->fetch(
+                $begin, $end, $hotel,
+                $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                $request->get('tariffs') ? $request->get('tariffs') : [],
+                true)
+        ;
+        //get restrictions
+        $restrictions = $dm->getRepository('MBHPriceBundle:Restriction')
+            ->fetch(
+                $begin, $end, $hotel,
+                $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                $request->get('tariffs') ? $request->get('tariffs') : [],
+                true)
+        ;
+
         return array_merge($response, [
             'roomTypes' => $roomTypes,
             'tariffs' => $tariffs,
+            'roomCaches' => $roomCaches,
+            'tariffRoomCaches' => $tariffRoomCaches,
+            'priceCaches' => $priceCaches,
+            'restrictions' => $restrictions
         ]);
     }
 }
