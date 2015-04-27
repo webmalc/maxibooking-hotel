@@ -73,21 +73,12 @@ class PackageDocument
      */
     protected $extension;
 
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
-     * @param int $id
+     * @var string
+     * @ODM\String
      */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
+    protected $mimeType;
 
     /**
      * @return mixed
@@ -155,7 +146,7 @@ class PackageDocument
      */
     protected function getUploadRootDir()
     {
-        return __DIR__.'/../../../../../protectedUpload/packageDocuments';//__DIR__.'/../../../../../web/upload/packageDocuments';
+        return __DIR__.'/../../../../../protectedUpload/packageDocuments';
     }
 
     /**
@@ -174,15 +165,13 @@ class PackageDocument
 
         $this->originalName = $this->getFile()->getClientOriginalName();
         $this->name = uniqid().'.'.$this->getFile()->getClientOriginalExtension();
-
         $this->extension = $this->getFile()->getClientOriginalExtension();
+        $this->mimeType = $this->getFile()->getMimeType();
 
         $this->getFile()->move(
             $this->getUploadRootDir(),
-            $this->name//$this->getFile()->getClientOriginalName()
+            $this->name
         );
-
-        //$this->name = $this->getFile()->getClientOriginalName();
     }
 
     /**
@@ -272,5 +261,21 @@ class PackageDocument
     public function setExtension($extension)
     {
         $this->extension = $extension;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMimeType()
+    {
+        return $this->mimeType;
+    }
+
+    /**
+     * @param string $mimeType
+     */
+    public function setMimeType($mimeType)
+    {
+        $this->mimeType = $mimeType;
     }
 }
