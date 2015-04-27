@@ -63,11 +63,11 @@
                         <td class="table-actions-td text-center">
                             <div style="float: right">
                                 {% if document.isImage %}
-                                    <a href="{{ path('package_document_view', {docname: document.name}) }}" class="btn btn-primary btn-xs fancybox" title="view" data-toggle="tooltip">
+                                    <a href="{{ path('package_document_view', {docname: document.name}) }}" class="btn btn-primary btn-xs fancybox" title="{{ 'controller.documentsController.action_view'|trans({}) }}" data-toggle="tooltip">
                                         <i class="fa fa-eye"></i>
                                     </a>
                                 {% endif %}
-                                <a href="{{ path('package_document_view', {docname: document.name, download: 1}) }}" target="_blank" class="btn btn-success btn-xs" title="download" data-toggle="tooltip">
+                                <a href="{{ path('package_document_view', {docname: document.name, download: 1}) }}" target="_blank" class="btn btn-success btn-xs" title="{{ 'controller.documentsController.action_download'|trans({}) }}" data-toggle="tooltip">
                                     <i class="fa fa-download"></i>
                                 </a>
                                 <a href="{{ path('package_remove_document', {id : entity.id, docname: document.name}) }}" title="{{ 'record.index.remove'|trans({}, 'FOSUserBundle') }}" data-toggle="tooltip" {#data-docname="{{ document.name }}"#} data-package="{{ entity.id }}" class="btn btn-danger btn-xs delete-link  {#remove-package-document#}">
