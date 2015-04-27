@@ -1,0 +1,62 @@
+{% if error is defined and error is not empty  %}
+    <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
+{% else %}
+    <table id="room-overview-table" class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+        <tbody>
+
+        {% for tariff in tariffs %}
+
+            <input type="hidden" name="tariffs[]" class="hidden" value="{{ tariff.id }}">
+
+            <tr class="mbh-grid-header1 info">
+                <td colspan="{{ period|length + 1 }}"><strong>{{ tariff }}</strong></td>
+            </tr>
+
+            {% for roomType in roomTypes %}
+
+                <input type="hidden" name="roomTypes[{{ roomType.id }}]" class="hidden" value="{{ roomType.id }}">
+
+                <tr class="mbh-grid-header2 warning">
+                    <td colspan="{{ period|length + 1 }}"><strong>{{ roomType }}</strong>&nbsp;-&nbsp;<small>{{ tariff }}</small></td>
+                </tr>
+
+                <tr class="header">
+                    <td class="first-th"></td>
+                    {% for date in period %}
+                        <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
+                    {% endfor %}
+                </tr>
+
+                {% set categories = {'price': 'Цена', 'isPersonPrice': 'Цена за человека?', 'singlePrice': 'Цена 1-местного размещения'} %}
+
+                {% if roomType.additionalPlaces > 0 %}
+                    {% set categories = categories|merge({'additionalPrice': 'Цена за взрослое доп. место', 'additionalChildrenPrice': 'Цена за детское доп. место' }) %}
+                {% endif %}
+
+                {% for categoryId, category in categories %}
+                    <tr>
+                        <td class="first-td"><small>{{ category }}</small></td>
+
+                        {% for date in period %}
+
+                            <!-- BEGIN: set priceCache -->
+                            {% set priceCache = priceCaches[roomType.id][tariff.id][date|date('d.m.Y')]|default(null) %}
+                            <!-- END: set priceCache -->
+
+                            <!-- BEGIN: set inputName & value -->
+                            {% set inputName = priceCache is null ? 'newPriceCaches[' ~ roomType.id ~ '][' ~ tariff.id ~'][' ~ date|date('d.m.Y') ~ '][' ~ categoryId ~ ']' : 'updatePriceCaches[' ~ priceCache.id ~'][' ~ categoryId ~ ']' %}
+                            {% set inputValue = priceCache is null ? null : attribute(priceCache, categoryId) %}
+                            <!-- END: set inputName & value  -->
+
+                            <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}" data-id="{{ roomType.id }}_{{ tariff.id }}_{{ date|date('d.m.Y') }}">
+                                <small class="opacity-md"><i class="fa fa-check text-success"></i></small>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

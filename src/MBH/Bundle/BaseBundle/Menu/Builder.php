@@ -38,6 +38,8 @@ class Builder extends ContainerAware
         //Prices links
         $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Номера и цены'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-ruble']);
+        $menu['prices']->addChild('overview', ['route' => 'room_overview', 'label' => 'Обзор'])
+            ->setAttributes(['icon' => 'fa fa-info-circle']);
         $menu['prices']->addChild('room_cache', ['route' => 'room_cache_overview', 'label' => 'Номера в продаже'])
             ->setAttributes(['icon' => 'fa fa-home']);
         $menu['prices']->addChild('price_cache', ['route' => 'price_cache_overview', 'label' => 'Цены'])

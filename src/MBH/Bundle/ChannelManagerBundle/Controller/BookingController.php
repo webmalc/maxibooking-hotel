@@ -78,7 +78,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
                 ->set('success', $this->get('translator')->trans('controller.bookingController.settings_saved_success'))
             ;
 
-            $this->container->get('mbh.channelmanager')->syncInBackground();
+            //$this->container->get('mbh.channelmanager')->syncInBackground();
 
             return $this->redirect($this->generateUrl('booking'));
         }
