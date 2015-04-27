@@ -205,6 +205,10 @@ $(document).ready(function () {
                     nightsInput.val(services.package_duration);
                     nightsDiv.show();
                 }
+                if (services['package_one_day_price'] != 0){priceInput.val(services.package_one_day_price);}
+                priceInput.show();
+                amountInput.val(services.service_amount);
+                amountInput.show();
                 if (info.date) dateDiv.show();
 
                 var peoplesStr = (info.calcType === 'per_night' || info.calcType === 'per_stay') ? ' за 1 человека ' : ' ';

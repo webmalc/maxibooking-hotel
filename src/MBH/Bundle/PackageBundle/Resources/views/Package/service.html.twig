@@ -61,6 +61,11 @@
                             <td class="text-center">{{ service.createdAt|date('d.m.Y') }}</td>
                             <td class="table-actions-td text-center">
                                 {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
+                                    <a href="{{ path('package_service_edit', { 'id': entity.id, "serviceId": service.id }) }}"
+                                       class="btn btn-success btn-xs " title="{{ 'package.service.delete_record'|trans({}, 'MBHPackageBundle')}}"
+                                       data-toggle="tooltip">
+                                        <i class="fa  fa-check"></i>
+                                    </a>
                                     <a href="{{ path('package_service_delete', { 'id': entity.id, "serviceId": service.id }) }}"
                                        class="btn btn-danger btn-xs delete-link " title="{{ 'package.service.delete_record'|trans({}, 'MBHPackageBundle')}}"
                                        data-toggle="tooltip">
