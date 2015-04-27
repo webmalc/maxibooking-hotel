@@ -25,3 +25,6 @@ nbproject/
 .idea/
 /parameters.yml
 parameters.yml
+
+/protectedUpload/*
+!/protectedUpload/packageDocuments/.gitkeep

@@ -3,11 +3,15 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Document\PackageDocument;
 use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PackageBundle\Form\PackageDocumentsType;
+use MBH\Bundle\PackageBundle\Form\PackageDocumentType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -274,6 +278,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'statuses' => $this->container->getParameter('mbh.package.statuses')
         ];
     }
+
 
     /**
      * Edits an existing entity.
