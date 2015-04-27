@@ -31,16 +31,6 @@ class PackageDocumentType extends AbstractType
             ]
         );
 
-        $builder->add(
-            'file',
-            'file',
-            [
-                'group' => 'Добавить документ',
-                'label' => 'Файл',
-                'required' => true,
-            ]
-        );
-
         $touristIds = $options['touristIds'];
 
         $builder->add(
@@ -55,6 +45,16 @@ class PackageDocumentType extends AbstractType
                 'query_builder' => function(DocumentRepository $er) use($touristIds) {
                     return $er->createQueryBuilder()->field('_id')->in($touristIds);
                 },
+            ]
+        );
+
+        $builder->add(
+            'file',
+            'file',
+            [
+                'group' => 'Добавить документ',
+                'label' => 'Файл',
+                'required' => true,
             ]
         );
 

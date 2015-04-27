@@ -63,7 +63,7 @@ class PackageDocument
      *          "application/xls",
      *          "application/xlsx",
      *          "application/vnd.ms-excel"
-     * })
+     * }, mimeTypesMessage="validator.document.PackageDocument.file_type")
      */
     protected $file;
 

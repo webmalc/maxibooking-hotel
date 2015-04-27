@@ -31,7 +31,7 @@
                         <a href="{{ path('hotel_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title={{ 'views.hotel.index.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
                             <i class="fa fa-pencil-square-o"></i>
                         </a>
-                        <a href="{{ path('hotel_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title={{ 'views.hotel.index.delete_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
+                        <a href="{{ path('hotel_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " data-text="{{ 'views.hotel.index.confirm_delete'|trans({'%hotelname%': entity.name}, 'MBHHotelBundle') }}" title={{ 'views.hotel.index.delete_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
                             <i class="fa fa-trash-o"></i>
                         </a>
                     </td>

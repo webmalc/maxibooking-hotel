@@ -131,7 +131,7 @@ controller.sourceController.record_created_success: 'Запись успешно
 controller.sourceController.record_edited_success: 'Запись успешно отредактирована.'
 controller.touristController.record_created_success: 'Запись успешно создана.'
 controller.touristController.record_edited_success: 'Запись успешно отредактирована.'
-
+# Documents Controller
 controller.documentsController.table_row_name: 'Имя'
 controller.documentsController.table_row_comment: 'Комментарий'
 controller.documentsController.table_row_type: 'Тип'
@@ -139,3 +139,5 @@ controller.documentsController.table_row_tourist: 'Клиент'
 controller.documentsController.table_row_created_by: 'Добавил'
 controller.documentsController.action_download: 'Скачать'
 controller.documentsController.action_view: 'Просмотр'
+controller.documentsController.confirm_remove: 'Вы действительно хотите удалить файл "%filename%"?'
+controller.documentsController.alert_no_documents: 'Не загружено ни одного документа.'
