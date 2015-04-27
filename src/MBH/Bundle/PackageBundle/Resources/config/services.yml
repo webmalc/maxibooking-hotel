@@ -1,8 +1,4 @@
 services:
-    mbh.room.cache.generator:
-        class: MBH\Bundle\PackageBundle\Services\RoomCacheGenerator
-        arguments: [@service_container]
-        
     mbh.package.search:
         class: MBH\Bundle\PackageBundle\Services\Search
         arguments: [@service_container]

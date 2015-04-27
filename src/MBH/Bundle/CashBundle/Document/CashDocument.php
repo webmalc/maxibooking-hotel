@@ -74,10 +74,10 @@ class CashDocument extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Float()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
-     *      min=1,
+     *      min=0.1,
      *      minMessage="validator.document.cashDocument.min_sum_less_1"
      * )
      */

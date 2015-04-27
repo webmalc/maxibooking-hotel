@@ -1,20 +1,13 @@
-{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+{% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
 
 {% set small_title = "создание гостя" %}
 
 {% block content %}
 
-    {% include 'MBHPackageBundle:Package:listTabs.html.twig' with {'active': 4 } %}
 
-    <div class="tab-content">
-        <div class="tab-pane active" id="home">
-
-            {{ form_start(form, {'action': path('tourist_create'), 'attr': {'class': 'form-horizontal'}}) }}
-            {{ form_widget(form) }}
-            {% include 'MBHBaseBundle:Actions:new.html.twig' %}
-            {{ form_end(form) }}
-
-        </div>
-    </div>
+    {{ form_start(form, {'action': path('tourist_create'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+    {{ form_end(form) }}
 
 {% endblock %}

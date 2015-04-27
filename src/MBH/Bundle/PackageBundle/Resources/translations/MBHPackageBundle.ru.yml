@@ -215,6 +215,7 @@ package.service.comment: Комментарий
 package.service.creation_date: Дата создания
 package.service.delete_record: Удаление записи
 package.service.add_services: Добавить услуги?
+package.editService.edit_service: "Редактирование услуги "
 package.document.type_passport: Паспорт
 package.document.type_insurance: Мед. страховка
 package.document.type_birth_certificate: Свидетельство о рождении
@@ -264,3 +265,4 @@ source.index.created: Создан
 source.index.edit_record: Редактирование записи
 source.index.delete_record: Удаление записи
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Невозможно удалить запись с существующими бронями. Брони: '
+analytics.layout.report: Отчеты
