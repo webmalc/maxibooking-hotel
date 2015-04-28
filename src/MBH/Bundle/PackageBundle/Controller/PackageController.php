@@ -633,13 +633,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
             $form->submit($request);
 
-//            var_dump($request->get('mbh_bundle_packagebundle_package_service_type')['time']);
-//            var_dump($request->get('mbh_bundle_packagebundle_package_service_type')['date']);
-//
-//            echo date_format($date, 'Y-m-d H:i');
-
-
-
             if ($form->isValid()) {
                 $data = $form->getData();
                 $service->setService($dm->getRepository('MBHPriceBundle:Service')->find($request->get("mbh_bundle_packagebundle_package_service_type")["service"] ));
