@@ -53,6 +53,13 @@ class ServiceType extends AbstractType
                     'required' => false,
                     'help' => 'Использовать ли дату при добавлении услуги к брони?'
                 ])
+                ->add('time', 'checkbox', [
+                    'label' => 'Время?',
+                    'group' => 'Настройки',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'Использовать ли время при добавлении услуги к брони?'
+                ])
                 ->add('isOnline', 'checkbox', [
                     'label' => 'Онлайн?',
                     'value' => true,

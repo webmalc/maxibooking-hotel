@@ -146,6 +146,10 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         if ($form->isValid()) {
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
+            if ($request->get("mbh_bundle_pricebundle_service_type")["time"]){
+                $date = date_create();
+                $entry->setDate(date_format($date, 'U = H:i:s'));
+            }
             $dm->persist($entry);
             $dm->flush();
 
@@ -226,9 +230,9 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $form->submit($request);
 
         if ($form->isValid()) {
-
             /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
             $dm = $this->get('doctrine_mongodb')->getManager();
+
             $dm->persist($entry);
             $dm->flush();
 

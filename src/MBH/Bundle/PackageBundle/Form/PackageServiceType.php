@@ -93,6 +93,18 @@ class PackageServiceType extends AbstractType
                     'attr' => array('class' => 'datepicker sm', 'data-date-format' => 'dd.mm.yyyy'),
             ))
             ->add(
+                'time',
+                'text',
+                [
+                    'label' => 'form.packageServiceType.time',
+                    'required' => true,
+                    'group' => $options['form_label'],
+                    'attr' => ['class' => 'timepicker sm'],
+                    'mapped' => false,
+                    'data' => $options['time']
+                ]
+            )
+            ->add(
                 'amount',
                 'text',
                 [
@@ -120,6 +132,7 @@ class PackageServiceType extends AbstractType
                 'package' => null,
                 'serviceId' => null,
                 'form_label' => null,
+                'time' => null,
                 'data_class' => 'MBH\Bundle\PackageBundle\Document\PackageService',
             ]
         );

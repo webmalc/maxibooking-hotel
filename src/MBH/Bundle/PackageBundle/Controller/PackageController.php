@@ -513,6 +513,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 ['package' => $entity, 'form_label' => $this->container->get('translator')->trans('form.packageServiceType.add_service')]
             );
         }
+        $time = [];
+        foreach($entity->getServices() as $s){
+            $serv =  $dm->getRepository('MBHPriceBundle:Service')->find($s->getService()->getId());
+            $time[] = $serv->getTime();
+        }
         if ($request->getMethod() == 'PUT') {
 
             $packageService->setPackage($entity);
@@ -520,15 +525,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
 
 
-
             $form->submit($request);
-
-//            $form->setData('service')->setService($packageService->getService());
 
             if ($form->isValid()) {
                 $data = $form->getData();
-
-//                $service = $dm->getRepository('MBHPriceBundle:Service')->find($data['service']);
 
                 if (!$packageService->getService() || ($form->get('amount')->getData() == '')) {
                     $request->getSession()
@@ -540,18 +540,13 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
                     return $this->redirect($this->generateUrl('package_service', ['id' => $id]));
                 }
-
-//                $packageService = new PackageService();
-//                $packageService->setPackage($entity)
-//                    ->setService($service)
-//                    ->setDate($this->container->get('mbh.helper')->getDateFromString($data['date']))
-//                    ->setNights((int)$data['nights'])
-//                    ->setPersons((int)$data['persons'])
-//                    ->setAmount((int)$data['amount'])
-//                    ->setPrice((float) $data['price'])
-//                    ->setIsCustomPrice((float) $data['price'] != $service->getPrice())
-//                    ->setNote(empty($data['note']) ? null : $data['note']);
-
+                if ($packageService->getService()->getDate() == false){
+                    $date = date_create($request->get('mbh_bundle_packagebundle_package_service_type')['time']);
+                    $packageService->setDate($date->getTimestamp());
+                } else {
+                    $date = date_create($request->get('mbh_bundle_packagebundle_package_service_type')['date'] . ' ' . $request->get('mbh_bundle_packagebundle_package_service_type')['time']);
+                    $packageService->setDate($date->getTimestamp());
+                }
                 $dm->persist($packageService);
                 $dm->flush();
 
@@ -573,6 +568,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'logs' => $this->logs($entity),
             'form' => $form->createView(),
             'config' => $this->container->getParameter('mbh.services'),
+            'time' => $time
         ];
     }
 
@@ -630,7 +626,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $form = $this->createForm(
             new PackageServiceType(),
             $service,
-            ['package' => $entity, 'serviceId' => $service->getService()->getId(), 'form_label' => $this->container->get('translator')->trans('form.packageServiceType.edit_service')]
+            ['package' => $entity, 'serviceId' => $service->getService()->getId(), 'form_label' => $this->container->get('translator')->trans('form.packageServiceType.edit_service'),
+                'time' => $service->getDate()->format('H:i')]
         );
 
         if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
@@ -638,16 +635,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
             if ($form->isValid()) {
                 $data = $form->getData();
-
                 $service->setService($dm->getRepository('MBHPriceBundle:Service')->find($request->get("mbh_bundle_packagebundle_package_service_type")["service"] ));
-
-//                if (!$service || empty($data['amount'])) {
-//                    $request->getSession()
-//                        ->getFlashBag()
-//                        ->set(
-//                            'danger',
-//                            $this->get('translator')->trans('controller.packageController.service_adding_error_refresh_and_try_again')
-//                        );
+                $date = date_create($request->get('mbh_bundle_packagebundle_package_service_type')['date'] . ' ' . $request->get('mbh_bundle_packagebundle_package_service_type')['time']);
+                $service->setDate($date->getTimestamp());
                 $dm->persist($service);
                 $dm->flush();
 
