@@ -215,6 +215,8 @@ package.service.comment: Комментарий
 package.service.creation_date: Дата создания
 package.service.delete_record: Удаление записи
 package.service.add_services: Добавить услуги?
+package.service.time: Время
+package.service.edit_record: Редактирование записи
 package.editService.edit_service: "Редактирование услуги "
 package.document.type_passport: Паспорт
 package.document.type_insurance: Мед. страховка

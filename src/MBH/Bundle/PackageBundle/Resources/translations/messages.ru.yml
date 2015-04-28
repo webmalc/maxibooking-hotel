@@ -67,6 +67,7 @@ form.packageServiceType.nights_amount: Количество суток
 form.packageServiceType.guests_amount: Количество гостей
 form.packageServiceType.amount: Количество
 form.packageServiceType.comment: Комментарий
+form.packageServiceType.time: Время
 form.packageSourceType.name: Назавание
 form.packageSourceType.add_source: Добавить источник
 form.packageSourceType.adds: Реклама

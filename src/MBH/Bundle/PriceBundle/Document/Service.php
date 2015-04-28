@@ -138,6 +138,15 @@ class Service extends Base
     protected $date = false;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $time = false;
+
+    /**
      * Set category
      *
      * @param \MBH\Bundle\PriceBundle\Document\ServiceCategory $category
@@ -374,5 +383,73 @@ class Service extends Base
     public function getDate()
     {
         return $this->date;
+    }
+
+    /**
+     * Set time
+     *
+     * @param boolean $time
+     * @return self
+     */
+    public function setTime($time)
+    {
+        $this->time = $time;
+        return $this;
+    }
+
+    /**
+     * Get time
+     *
+     * @return boolean $time
+     */
+    public function getTime()
+    {
+        return $this->time;
+    }
+
+
+    /**
+     * Set isEnabled
+     *
+     * @param boolean $isEnabled
+     * @return self
+     */
+    public function setIsEnabled($isEnabled)
+    {
+        $this->isEnabled = $isEnabled;
+        return $this;
+    }
+
+    /**
+     * Get isEnabled
+     *
+     * @return boolean $isEnabled
+     */
+    public function getIsEnabled()
+    {
+        return $this->isEnabled;
+    }
+
+
+    /**
+     * Set updatedBy
+     *
+     * @param string $updatedBy
+     * @return self
+     */
+    public function setUpdatedBy($updatedBy)
+    {
+        $this->updatedBy = $updatedBy;
+        return $this;
+    }
+
+    /**
+     * Get updatedBy
+     *
+     * @return string $updatedBy
+     */
+    public function getUpdatedBy()
+    {
+        return $this->updatedBy;
     }
 }

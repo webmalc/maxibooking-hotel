@@ -38,6 +38,9 @@ $(document).ready(function () {
         maxboostedstep: 20,
         postfix: '<i class="fa fa-rub"></i>'
     });
+    $(".timepicker").timepicker({
+        showMeridian: false
+    });
 
     //package filter select 2
     (function () {
@@ -174,10 +177,14 @@ $(document).ready(function () {
             serviceHelp = serviceInput.next('span.help-block'),
             amountInput = $('#mbh_bundle_packagebundle_package_service_type_amount'),
             amountHelp = amountInput.closest('div.input-group').next('span.help-block'),
+            timeInput = $('#mbh_bundle_packagebundle_package_service_type_time'),
+            timeDiv = timeInput.closest('div.form-group'),
+
             hide = function () {
                 nightsDiv.hide();
                 personsDiv.hide();
                 dateDiv.hide();
+                timeDiv.hide();
                 dateInput.val(dateDefault);
                 personsInput.val(1);
                 nightsInput.val(1);
@@ -210,6 +217,7 @@ $(document).ready(function () {
                 amountInput.val(services.service_amount);
                 amountInput.show();
                 if (info.date) dateDiv.show();
+                if (info.time) timeDiv.show();
 
                 var peoplesStr = (info.calcType === 'per_night' || info.calcType === 'per_stay') ? ' за 1 человека ' : ' ';
                 serviceHelp.html($.number(info.price, 2) + ' рублей' + peoplesStr + info.calcTypeStr);
