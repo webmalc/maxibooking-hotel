@@ -218,9 +218,26 @@ package.service.add_services: Добавить услуги?
 package.service.time: Время
 package.service.edit_record: Редактирование записи
 package.editService.edit_service: "Редактирование услуги "
+
 package.document.type_passport: Паспорт
+package.document.type_foreign_passport: Загран. паспорт
 package.document.type_insurance: Мед. страховка
 package.document.type_birth_certificate: Свидетельство о рождении
+package.document.type_military: Военный билет
+package.document.type_accommodation_voucher: Ваучер на проживание
+package.document.type_shuttle_voucher: Ваучер на трансфер
+package.document.type_sertives_voucher: Ваучер на услуги
+package.document.type_complex: Комплект документов
+package.document.type_congirmation_account: Счет-подтверждение
+package.document.type_invoice_for_payment: Счет на оплату
+package.document.type_contract: Договор
+package.document.type_extra_argument: Доп. соглашение
+package.document.type_air_tickets: Авиабилеты
+package.document.type_train_tickets: Ж/д билеты
+package.document.type_info: Информация
+package.document.type_letter: Письмо
+package.document.type_other: Прочее
+
 report.accommodation.placement: "размещение"
 report.accommodation.dates: Даты
 report.accommodation.room_type: Тип номера
