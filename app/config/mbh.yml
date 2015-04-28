@@ -162,9 +162,24 @@ parameters:
 
     #Типы документов
     mbh.package.document.types:
-        passport: passport
-        insurance: insurance
-        birth_certificate: birth_certificate
+        - passport
+        - foreign_passport
+        - insurance
+        - birth_certificate
+        - military
+        - accommodation_voucher
+        - shuttle_voucher
+        - sertives_voucher
+        - complex
+        - congirmation_account
+        - invoice_for_payment
+        - contract
+        - extra_argument
+        - air_tickets
+        - train_tickets
+        - info
+        - letter
+        - other
 
     #Виды способов оплаты
     mbh.cash.methods:

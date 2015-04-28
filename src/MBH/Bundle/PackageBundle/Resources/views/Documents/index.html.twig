@@ -52,7 +52,12 @@
                                 <small style="font-style: italic;margin-left: 5px">{{ document.originalName }}</small>
                             </td>
                             <td>
-                                {{ document.tourist }}
+                                {% if document.tourist %}
+                                    <div>{{ document.tourist.generateFullName }}</div>
+                                    {% if document.tourist.birthday %}
+                                        <small style="font-style: italic;margin-left: 5px">{{ document.tourist.birthday|date("d.m.Y") }} Возраст: {{ document.tourist.age }}</small>
+                                    {% endif %}
+                                {% endif %}
                             </td>
                             <td>
                                 {{ document.comment|nl2br }}

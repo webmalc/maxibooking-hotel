@@ -49,6 +49,7 @@ class PackageDocumentType extends AbstractType
                 'label' => 'Клиент',
                 'class' => 'MBHPackageBundle:Tourist',
                 'required' => false,
+                'property' => 'generateFullNameWithAge',
                 //'choices' => $options['tourists']
                 'query_builder' => function(DocumentRepository $er) use($touristIds) {
                     return $er->createQueryBuilder()->field('_id')->in($touristIds);
