@@ -170,7 +170,7 @@ $(document).ready(function () {
             nightsDiv = nightsInput.closest('div.form-group'),
             personsInput = $('#mbh_bundle_packagebundle_package_service_type_persons'),
             personsDiv = personsInput.closest('div.form-group'),
-            dateInput = $('#mbh_bundle_packagebundle_package_service_type_date'),
+            dateInput = $('#mbh_bundle_packagebundle_package_service_type_begin'),
             dateDiv = dateInput.closest('div.form-group'),
             dateDefault = dateInput.val(),
             serviceInput = $('#mbh_bundle_packagebundle_package_service_type_service'),

@@ -116,7 +116,15 @@ class PackageService extends Base
      * @ODM\Date()
      * @Assert\Date()
      */
-    protected $date;
+    protected $begin;
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Date()
+     * @Assert\Date()
+     */
+    protected $end;
     
     /**
      * @var string
@@ -292,27 +300,8 @@ class PackageService extends Base
         return $this->nights;
     }
 
-    /**
-     * Set date
-     *
-     * @param \DateTime $date
-     * @return self
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
-        return $this;
-    }
 
-    /**
-     * Get date
-     *
-     * @return \DateTime $date
-     */
-    public function getDate()
-    {
-        return $this->date;
-    }
+
     
     /**
      * Set note
@@ -342,6 +331,16 @@ class PackageService extends Base
     public function prePersist()
     {
         $this->setDefaults();
+        if (empty($this->begin)) {
+            $this->setBegin($this->package->getBegin());
+        }
+        if (empty($this->end) && empty($this->nights)) {
+            $this->setEnd($this->package->getBegin());
+        } elseif (empty($this->end) && !empty($this->nights)) {
+            $end = $this->package->getBegin();
+//            $end->modify('+' . $this->nights . ' days');
+            $this->setEnd($end);
+        }
     }
 
     /**
@@ -350,6 +349,16 @@ class PackageService extends Base
     public function preUpdate()
     {
         $this->setDefaults();
+        if (empty($this->begin)) {
+            $this->begin = $this->package->getBegin();
+        }
+        if (empty($this->end) && empty($this->nights)) {
+            $this->end = $this->package->getBegin();
+        } elseif (empty($this->end) && !empty($this->nights)) {
+            $end = $this->package->getBegin();
+//            $end->modify('+' . $this->nights . ' days');
+            $this->end = $end;
+        }
     }
 
     public function setDefaults()
@@ -414,4 +423,53 @@ class PackageService extends Base
     {
         return $this->totalOverwrite;
     }
+
+
+
+    /**
+     * Set begin
+     *
+     * @param date $begin
+     * @return self
+     */
+    public function setBegin($begin)
+    {
+        $this->begin = $begin;
+        return $this;
+    }
+
+    /**
+     * Get begin
+     *
+     * @return date $begin
+     */
+    public function getBegin()
+    {
+        return $this->begin;
+    }
+
+    /**
+     * Set end
+     *
+     * @param date $end
+     * @return self
+     */
+    public function setEnd($end)
+    {
+        $this->end = $end;
+        return $this;
+    }
+
+    /**
+     * Get end
+     *
+     * @return date $end
+     */
+    public function getEnd()
+    {
+        return $this->end;
+    }
+
+
+
 }
