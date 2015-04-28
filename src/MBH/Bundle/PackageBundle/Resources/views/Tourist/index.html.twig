@@ -1,32 +1,27 @@
-{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+{% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
 
 {% set small_title = "список клиентов" %}    
 
 {% block content %}
 
-    {% include 'MBHPackageBundle:Package:listTabs.html.twig' with {'active': 4 } %}
+    <table id="tourist-table"
+           class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xs"></th>
+            <th>ФИО</th>
+            <th class="td-sm">Брони</th>
+            <th class="td-md">Дата рождения</th>
+            <th class="td-sm">Возраст</th>
+            <th class="td-md">Телефон</th>
+            <th class="td-md">E-mail</th>
+            <th class="td-sm"></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 
-    <div class="tab-content">
-        <div class="tab-pane active" id="home">
-
-            <table id="tourist-table" class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
-                <thead>
-                    <tr>
-                        <th class="td-xs"></th>
-                        <th>ФИО</th>
-                        <th class="td-sm">Брони</th>
-                        <th class="td-md">Дата рождения</th>
-                        <th class="td-sm">Возраст</th>
-                        <th class="td-md">Телефон</th>
-                        <th class="td-md">E-mail</th>
-                        <th class="td-sm"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
 
     {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'tourist_new'} %}
 

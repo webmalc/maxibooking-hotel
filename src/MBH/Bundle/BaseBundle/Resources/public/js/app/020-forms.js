@@ -56,7 +56,7 @@ $(document).ready(function () {
     });
 
     //areYouSure
-    $('.form-horizontal, .form-inline, .are-you-sure').areYouSure({'message': 'Внесенные изменения не сохранены!'});
+    //$('.form-horizontal, .form-inline, .are-you-sure').areYouSure({'message': 'Внесенные изменения не сохранены!'});
 
     //Datepicker configuration
     $('.datepicker').datepicker({
@@ -111,9 +111,9 @@ $(document).ready(function () {
         });
     }());
     $('.roomTypeTypeEditor').wysihtml5({
-            "html": false,
-            "stylesheets": false,
-            "image": false
+        "html": false,
+        "stylesheets": false,
+        "image": false
     });
 
 });

@@ -30,7 +30,7 @@ mbh_package:
 mbh_price:
     resource: "@MBHPriceBundle/Controller/"
     type:     annotation
-    prefix:   /management/price
+    prefix:   /price
 
 mbh_base:
     resource: "@MBHBaseBundle/Controller/"

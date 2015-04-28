@@ -18,12 +18,16 @@ $(document).ready(function () {
                     var input = $('input.mbh-grid-input, span.disabled-detector');
                     input.closest('td').click(function () {
                         var td = $("td[data-id='" + $(this).attr('data-id') + "']"),
-                            ch = $(this).children('span.checkbox').children('input[disabled]');
-                        td.children('input').removeAttr('disabled');
-                        $(this).children('input').focus();
-                        ch.prop('checked', !ch.prop('checked')).css('checkbox-end');
-                        td.children('span.checkbox').children('input').removeAttr('disabled');
-                        td.children('span.checkbox').children('span.disabled-detector').remove();
+                            field = $(this).children('span.input').children('input[disabled]');
+
+                        td.children('span.input').children('input').removeAttr('disabled');
+
+                        if (field.prop('type') === 'checkbox') {
+                            field.prop('checked', !field.prop('checked')).css('checkbox-end');
+                        } else {
+                            field.focus();
+                        }
+                        td.children('span.input').children('span.disabled-detector').remove();
                     });
                     input.change(function () {
                         if (this.value === '') {

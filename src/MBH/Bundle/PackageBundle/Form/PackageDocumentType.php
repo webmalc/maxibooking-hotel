@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mb
- * Date: 22.04.15
- * Time: 20:14
- */
 
 namespace MBH\Bundle\PackageBundle\Form;
-
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PackageBundle\Document\PackageDocument;
@@ -16,28 +9,33 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints\Length;
 
+/**
+ * Class PackageDocumentType
+ * @package MBH\Bundle\PackageBundle\Form
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
 class PackageDocumentType extends AbstractType
 {
+    const SCENARIO_ADD = 'add';
+    const SCENARIO_EDIT = 'edit';
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $mainGroupTitles = [
+            self::SCENARIO_ADD => 'Добавить документ',
+            self::SCENARIO_EDIT => 'Редактировать документ',
+        ];
+
+        $groupTitle = $mainGroupTitles[$options['scenario']];
+
         $builder->add(
             'type',
             'choice',
             [
+                'group' => $groupTitle,
                 'label' => 'Тип',
-                'group' => 'Добавить документ',
                 'required' => true,
                 'choices' => $options['documentTypes']
-            ]
-        );
-
-        $builder->add(
-            'file',
-            'file',
-            [
-                'group' => 'Добавить документ',
-                'label' => 'Файл',
-                'required' => true,
             ]
         );
 
@@ -47,7 +45,7 @@ class PackageDocumentType extends AbstractType
             'tourist',
             'document',
             [
-                'group' => 'Добавить документ',
+                'group' => $groupTitle,
                 'label' => 'Клиент',
                 'class' => 'MBHPackageBundle:Tourist',
                 'required' => false,
@@ -58,11 +56,32 @@ class PackageDocumentType extends AbstractType
             ]
         );
 
+        /** @var PackageDocument $document */
+        $document = $options['document'];
+
+        $typeIcons = [
+            'doc' => 'fa-file-word-o',
+            'pdf' => 'fa-file-pdf-o',
+            'jpg' => 'fa-file-image-o',
+            'jpeg' => 'fa-file-image-o',
+            'png' => 'fa-file-image-o',
+            'xls' => 'fa-file-excel-o'
+        ];
+        $builder->add(
+            'file',
+            'file',
+            [
+                'group' => $groupTitle,
+                'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'Заменить файл' : 'Файл',
+                'required' => $options['scenario'] == self::SCENARIO_ADD,
+            ] + ($options['scenario'] == self::SCENARIO_EDIT ? ['help' => '<i class="fa '.$typeIcons[$document->getExtension()].'"></i> '.$document->getOriginalName()] : [])
+        );
+
         $builder->add(
             'comment',
             'textarea',
             [
-                'group' => 'Добавить документ',
+                'group' => $groupTitle,
                 'label' => 'Комментарий',
                 'required' => false,
                 'constraints' => [
@@ -87,8 +106,8 @@ class PackageDocumentType extends AbstractType
         $resolver->setDefaults([
             'documentTypes' => [],
             'touristIds' => [],
+            'scenario' => self::SCENARIO_ADD,
+            'document' => null,
         ]);
     }
-
-
 }

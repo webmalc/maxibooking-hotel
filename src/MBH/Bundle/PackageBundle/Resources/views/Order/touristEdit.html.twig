@@ -1,12 +1,14 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = 'order.touristEdit.edit_order'|trans({}, 'MBHPackageBundle')  ~ entity.id %}
+{% set small_title =  'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ package.numberWithPrefix %}
 
-{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'order.touristEdit.deleted'|trans({}, 'MBHPackageBundle')~'</span>' %}{% endif %}
+{% if package.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~'</span>' %}{% endif %}
 
 {% block content %}
 
-    {% include 'MBHPackageBundle:Order:tabs.html.twig' with {'active': 3 , 'entity': entity} %}
+    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
+
+    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 3 , 'entity': package} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
@@ -65,14 +67,14 @@
 
                     <div class="row spacer-top">
                         <div class="col-md-12 text-right">
-                            <a data-toggle="tooltip" title="{{ 'order.touristEdit.delete_payer'|trans({}, 'MBHPackageBundle')}}" href="{{ path('package_order_tourist_delete', {'id': entity.id}) }}" class="delete-link btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></a>
+                            <a data-toggle="tooltip" title="{{ 'order.touristEdit.delete_payer'|trans({}, 'MBHPackageBundle')}}" href="{{ path('package_order_tourist_delete', {'id': entity.id, 'packageId': package.id}) }}" class="delete-link btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></a>
                         </div>
                     </div>
 
                 </div>
             {% endif %}
 
-            {{ form_start(form, {'action': path('package_order_tourist_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_start(form, {'action': path('package_order_tourist_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
             {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity} %}
             {{ form_end(form) }}

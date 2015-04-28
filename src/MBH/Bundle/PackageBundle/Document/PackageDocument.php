@@ -12,14 +12,12 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\PostRemove;
 /**
  * @ODM\EmbeddedDocument
  * @ODM\HasLifecycleCallbacks
- * @author Aleksandr Arofikin
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class PackageDocument
 {
     use TimestampableDocument;
-
     use BlameableDocument;
-
 
     /**
      * @var string
@@ -63,7 +61,7 @@ class PackageDocument
      *          "application/xls",
      *          "application/xlsx",
      *          "application/vnd.ms-excel"
-     * })
+     * }, mimeTypesMessage="validator.document.PackageDocument.file_type")
      */
     protected $file;
 
@@ -73,21 +71,12 @@ class PackageDocument
      */
     protected $extension;
 
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
-     * @param int $id
+     * @var string
+     * @ODM\String
      */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
+    protected $mimeType;
 
     /**
      * @return mixed
@@ -135,9 +124,15 @@ class PackageDocument
     /**
      * @param UploadedFile $file
      */
-    public function setFile(UploadedFile $file)
+    public function setFile(UploadedFile $file = null)
     {
         $this->file = $file;
+        if($this->file){
+            $this->originalName = $this->file->getClientOriginalName();
+            $this->name = uniqid().'.'.$this->file->getClientOriginalExtension();
+            $this->extension = $this->file->getClientOriginalExtension();
+            $this->mimeType = $this->file->getMimeType();
+        }
     }
 
     /**
@@ -155,7 +150,7 @@ class PackageDocument
      */
     protected function getUploadRootDir()
     {
-        return __DIR__.'/../../../../../protectedUpload/packageDocuments';//__DIR__.'/../../../../../web/upload/packageDocuments';
+        return __DIR__.'/../../../../../protectedUpload/packageDocuments';
     }
 
     /**
@@ -172,17 +167,15 @@ class PackageDocument
             return;
         }
 
-        $this->originalName = $this->getFile()->getClientOriginalName();
-        $this->name = uniqid().'.'.$this->getFile()->getClientOriginalExtension();
+        $this->getFile()->move($this->getUploadRootDir(), $this->getName());
+    }
 
-        $this->extension = $this->getFile()->getClientOriginalExtension();
-
-        $this->getFile()->move(
-            $this->getUploadRootDir(),
-            $this->name//$this->getFile()->getClientOriginalName()
-        );
-
-        //$this->name = $this->getFile()->getClientOriginalName();
+    /**
+     * @return bool
+     */
+    public function isUploaded()
+    {
+        return is_file($this->getPath());
     }
 
     /**
@@ -222,8 +215,22 @@ class PackageDocument
      */
     public function postRemove()
     {
-        if ($this->getFile() && is_writable($this->getFile()->getPathname()))
-            unlink($this->getFile()->getPathname());
+        $this->deleteFile();
+    }
+
+    /**
+     * @return bool
+     */
+    public function deleteFile()
+    {
+        if ($this->getFile() && is_writable($this->getFile()->getPathname())){
+            $result = unlink($this->getFile()->getPathname());
+            if($result)
+                $this->file = null;
+            return $result;
+        }
+
+        return false;
     }
 
     /**
@@ -272,5 +279,21 @@ class PackageDocument
     public function setExtension($extension)
     {
         $this->extension = $extension;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMimeType()
+    {
+        return $this->mimeType;
+    }
+
+    /**
+     * @param string $mimeType
+     */
+    public function setMimeType($mimeType)
+    {
+        $this->mimeType = $mimeType;
     }
 }

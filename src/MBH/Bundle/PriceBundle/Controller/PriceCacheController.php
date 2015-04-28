@@ -86,7 +86,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             return array_merge($response, ['error' => 'Тарифы не найдены']);
         }
 
-        //get roomCaches
+        //get priceCaches
         $priceCaches = $dm->getRepository('MBHPriceBundle:PriceCache')
             ->fetch(
                 $begin, $end, $hotel,

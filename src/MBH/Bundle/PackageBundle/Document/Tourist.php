@@ -200,6 +200,9 @@ class Tourist extends Base
      */
     public function getFirstName()
     {
+        if ($this->firstName == 'н/д') {
+            return '';
+        }
         return $this->firstName;
     }
     
@@ -240,6 +243,10 @@ class Tourist extends Base
      */
     public function getLastName()
     {
+        if ($this->lastName == 'н/д') {
+            return '';
+        }
+
         return $this->lastName;
     }
 
@@ -463,9 +470,9 @@ class Tourist extends Base
      */
     public function generateFullName()
     {
-        $name = $this->lastName . ' ' . $this->firstName;
+        $name = $this->getLastName() . ' ' . $this->getFirstName();
         
-        return (empty($this->patronymic)) ? $name : $name . ' ' . $this->patronymic;
+        return (empty($this->getPatronymic())) ? $name : $name . ' ' . $this->getPatronymic();
     }
 
     public function __construct()

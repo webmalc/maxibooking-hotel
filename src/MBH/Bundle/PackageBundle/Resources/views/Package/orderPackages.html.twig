@@ -10,6 +10,7 @@
             <table class="package-table table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable">
                 <thead>
                 <tr>
+                    <th class="td-xxs text-center"></th>
                     <th class="td-sm text-center">#</th>
                     <th class="td-md">{{ 'order.packages.dates'|trans({}, 'MBHPackageBundle') }}</th>
                     <th >{{ 'order.packages.placement'|trans({}, 'MBHPackageBundle') }}</th>
@@ -20,8 +21,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for package in packages if package.id != entity.id %}
+                {% for package in packages %}
                     <tr {% if package.deletedAt %}class="danger"{% endif %}>
+                        <td class="text-center">
+                            {% if package.id == entity.id %}<i class="fa fa-caret-right"></i>{% endif %}
+                        </td>
                         <td class="text-center">
                             <a class='btn btn-sm {% if package.deletedAt %}btn-danger{% else %}btn-default{% endif %}' href='{{ path('package_edit', {'id': package.id}) }}' rel='main' title='{{ 'order.packages.record_edit'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>{{ package.numberWithPrefix }}</a>{% if package.deletedAt %}<br><small><i class='fa fa-trash-o'> </i> {{ 'order.packages.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
                         </td>

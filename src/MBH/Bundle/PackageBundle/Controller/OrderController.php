@@ -7,6 +7,7 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Form\CashDocumentType;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\OrderTouristType;
 use MBH\Bundle\PackageBundle\Form\OrderType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -26,17 +27,19 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     /**
      * Cash document delete
      *
-     * @Route("/{id}/cash/{cash}/delete", name="package_order_cash_delete")
+     * @Route("/{id}/cash/{cash}/delete/{packageId}", name="package_order_cash_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
      * @param Order $entity
      * @param CashDocument $cash
      * @param Request $request
+     * @param Package $package
      * @ParamConverter("order", class="MBHPackageBundle:Order")
      * @ParamConverter("cash", class="MBHCashBundle:CashDocument", options={"id" = "cash"})
+     * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @return Response
      */
-    public function cashDeleteAction(Request $request, Order $entity, CashDocument $cash)
+    public function cashDeleteAction(Request $request, Order $entity, CashDocument $cash, Package $package)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
@@ -54,20 +57,22 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             ->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.orderController.cash_register_paper_deleted_success'));
 
-        return $this->redirect($this->generateUrl('package_order_cash', ['id' => $entity->getId()]));
+        return $this->redirect($this->generateUrl('package_order_cash', ['id' => $entity->getId(), 'packageId' => $package->getId()]));
     }
 
     /**
      * Order cash list
      *
-     * @Route("/{id}/cash", name="package_order_cash")
+     * @Route("/{id}/cash/{packageId}", name="package_order_cash")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
+     * @param Package $package
      * @return Response
      * @Template()
      */
-    public function cashAction(Order $entity)
+    public function cashAction(Order $entity, Package $package)
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
@@ -106,21 +111,24 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'docs' => $docs,
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
+            'package' => $package
         ];
     }
 
     /**
      * Order cash list
      *
-     * @Route("/{id}/cash/save", name="package_order_cash_save")
+     * @Route("/{id}/cash/save/{packageId}", name="package_order_cash_save")
      * @Method("PUT")
      * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @Template("MBHPackageBundle:Order:cash.html.twig")
      * @param Order $entity
+     * @param Package $package
      * @param Request $request
      * @return Response
      */
-    public function cashSaveAction(Order $entity, Request $request)
+    public function cashSaveAction(Order $entity, Package $package, Request $request)
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
@@ -169,7 +177,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
                 ->set('success', $this->get('translator')->trans('controller.orderController.cash_register_paper_added_success'));
 
             if ($request->get('save') !== null) {
-                return $this->redirect($this->generateUrl('package_order_cash', ['id' => $entity->getId()]));
+                return $this->redirect($this->generateUrl('package_order_cash', ['id' => $entity->getId(), 'packageId' => $package->getId()]));
             }
 
             return $this->redirect($this->generateUrl('package'));
@@ -182,57 +190,23 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'docs' => $docs,
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
-        ];
-    }
-
-    /**
-     * Order packages list
-     *
-     * @Route("/{id}/packages", name="package_order_packages")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     * @param Order $entity
-     * @return Response
-     * @Template()
-     */
-    public function packagesAction(Order $entity)
-    {
-        $permissions = $this->container->get('mbh.package.permissions');
-
-        if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
-
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        
-        $packages = $dm->getRepository('MBHPackageBundle:Package')
-            ->createQueryBuilder('q')
-            ->field('order.id')->equals($entity->getId())
-            ->sort('number', 'desc')
-            ->getQuery()
-            ->execute()
-        ;
-
-        return [
-            'entity' => $entity,
-            'packages' => $packages,
-            'statuses' => $this->container->getParameter('mbh.package.statuses'),
-            'logs' => $this->logs($entity)
+            'package' => $package
         ];
     }
 
     /**
      * Order tourist edit
      *
-     * @Route("/{id}/tourist/edit", name="package_order_tourist_edit")
+     * @Route("/{id}/tourist/edit/{packageId}", name="package_order_tourist_edit")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
+     * @param Package $package
      * @return Response
      * @Template()
      */
-    public function touristEditAction(Order $entity)
+    public function touristEditAction(Order $entity, Package $package)
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
@@ -246,22 +220,25 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'entity' => $entity,
             'logs' => $this->logs($entity),
             'genders' => $this->container->getParameter('mbh.gender.types'),
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'package' => $package
         ];
     }
 
     /**
      * Order tourist update
      *
-     * @Route("/{id}/tourist/update", name="package_order_tourist_update")
+     * @Route("/{id}/tourist/update/{packageId}", name="package_order_tourist_update")
      * @Method("PUT")
      * @Security("is_granted('ROLE_USER')")
      * @Template("MBHPackageBundle:Order:touristEdit.html.twig")
+     * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
+     * @param Package $package
      * @param Request $request
      * @return Response
      */
-    public function touristUpdateAction(Order $entity, Request $request)
+    public function touristUpdateAction(Order $entity, Package $package, Request $request)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
@@ -288,10 +265,8 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
                 ->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.orderController.payer_added_success'));
 
-            //return $this->afterSaveRedirect('package', $entity->getId());
-
             if ($request->get('save') !== null) {
-                return $this->redirect($this->generateUrl('package_order_tourist_edit', ['id' => $entity->getId()]));
+                return $this->redirect($this->generateUrl('package_order_tourist_edit', ['id' => $entity->getId(), 'packageId' => $package->getId()]));
             }
 
             return $this->redirect($this->generateUrl('package'));
@@ -301,21 +276,24 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'entity' => $entity,
             'logs' => $this->logs($entity),
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'package' => $package
         ];
     }
 
     /**
      * Order tourist delete
      *
-     * @Route("/{id}/tourist/delete", name="package_order_tourist_delete")
+     * @Route("/{id}/tourist/delete/{packageId}", name="package_order_tourist_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
+     * @param Package $package
      * @param Request $request
      * @return Response
      */
-    public function touristDeleteAction(Order $entity, Request $request)
+    public function touristDeleteAction(Order $entity, Package $package, Request $request)
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
@@ -333,21 +311,22 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             ->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.orderController.payer_deleted_success'));
 
-        return $this->redirect($this->generateUrl('package_order_tourist_edit', ['id' => $entity->getId()]));
+        return $this->redirect($this->generateUrl('package_order_tourist_edit', ['id' => $entity->getId(), 'packageId' => $package->getId()]));
     }
 
     /**
      * Order edit
      *
-     * @Route("/{id}/edit", name="package_order_edit")
+     * @Route("/{id}/edit/{packageId}", name="package_order_edit")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
-     * @param Request $request
+     * @param Package $package
      * @return Response
      * @Template()
      */
-    public function editAction(Order $entity, Request $request)
+    public function editAction(Order $entity, Package $package)
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
@@ -361,22 +340,25 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'entity' => $entity,
             'logs' => $this->logs($entity),
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'package' => $package
         ];
     }
 
     /**
      * Order update
      *
-     * @Route("/{id}/update", name="package_order_update")
+     * @Route("/{id}/update/{packageId}", name="package_order_update")
      * @Method("PUT")
      * @Security("is_granted('ROLE_USER')")
      * @Template("MBHPackageBundle:Order:edit.html.twig")
+     * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
+     * @param Package $package
      * @param Request $request
      * @return Response
      */
-    public function updateAction(Order $entity, Request $request)
+    public function updateAction(Order $entity, Package $package, Request $request)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
@@ -397,10 +379,8 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.orderController.record_edited_success'));
 
-            //return $this->afterSaveRedirect('package', $entity->getId());
-
             if ($request->get('save') !== null) {
-                return $this->redirect($this->generateUrl('package_order_edit', ['id' => $entity->getId()]));
+                return $this->redirect($this->generateUrl('package_order_edit', ['id' => $entity->getId(), 'packageId' => $package->getId()]));
             }
 
             return $this->redirect($this->generateUrl('package'));
@@ -410,7 +390,8 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'entity' => $entity,
             'logs' => $this->logs($entity),
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'package' => $package
         ];
     }
 
