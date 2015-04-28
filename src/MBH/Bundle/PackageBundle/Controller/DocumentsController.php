@@ -94,7 +94,6 @@ class DocumentsController extends Controller
         /* @var $dm  \Doctrine\ODM\MongoDB\DocumentManager */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
@@ -198,7 +197,8 @@ class DocumentsController extends Controller
         $form = $this->createForm(new PackageDocumentType(), $packageDocument, [
             'documentTypes' => $documentTypes,
             'touristIds' => $touristIds,
-            'scenario' => PackageDocumentType::SCENARIO_EDIT
+            'scenario' => PackageDocumentType::SCENARIO_EDIT,
+            'document' => $document
         ]);
 
         if ($request->isMethod("PUT")) {

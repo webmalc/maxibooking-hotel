@@ -56,14 +56,25 @@ class PackageDocumentType extends AbstractType
             ]
         );
 
+        /** @var PackageDocument $document */
+        $document = $options['document'];
+
+        $typeIcons = [
+            'doc' => 'fa-file-word-o',
+            'pdf' => 'fa-file-pdf-o',
+            'jpg' => 'fa-file-image-o',
+            'jpeg' => 'fa-file-image-o',
+            'png' => 'fa-file-image-o',
+            'xls' => 'fa-file-excel-o'
+        ];
         $builder->add(
             'file',
             'file',
             [
                 'group' => $groupTitle,
-                'label' => 'Файл',
+                'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'Заменить файл' : 'Файл',
                 'required' => $options['scenario'] == self::SCENARIO_ADD,
-            ]
+            ] + ($options['scenario'] == self::SCENARIO_EDIT ? ['help' => '<i class="fa '.$typeIcons[$document->getExtension()].'"></i> '.$document->getOriginalName()] : [])
         );
 
         $builder->add(
@@ -95,9 +106,8 @@ class PackageDocumentType extends AbstractType
         $resolver->setDefaults([
             'documentTypes' => [],
             'touristIds' => [],
-            'scenario' => self::SCENARIO_ADD
+            'scenario' => self::SCENARIO_ADD,
+            'document' => null,
         ]);
     }
-
-
 }
