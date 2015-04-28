@@ -54,7 +54,8 @@
                             <td class="text-center">{{ service.calcType == 'per_night' ? service.nights : '' }}</td>
                             <td class="text-center">{{ service.calcType != 'not_applicable' ? service.persons : '' }}</td>
                             <td class="text-center">{{ service.amount }}</td>
-                            <td class="text-center">{{ service.date is null ? '' : service.date|date('d.m.Y') }}</td>
+
+                            <td class="text-center">{{ service.service.date ? service.date|date('d.m.Y') : ''  }}</td>
                             <td class="text-center">
                                 {% if time[loop.index-1]==true%}
 

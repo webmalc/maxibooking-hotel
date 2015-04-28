@@ -540,7 +540,13 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
                     return $this->redirect($this->generateUrl('package_service', ['id' => $id]));
                 }
-
+                if ($packageService->getService()->getDate() == false){
+                    $date = date_create($request->get('mbh_bundle_packagebundle_package_service_type')['time']);
+                    $packageService->setDate($date->getTimestamp());
+                } else {
+                    $date = date_create($request->get('mbh_bundle_packagebundle_package_service_type')['date'] . ' ' . $request->get('mbh_bundle_packagebundle_package_service_type')['time']);
+                    $packageService->setDate($date->getTimestamp());
+                }
                 $dm->persist($packageService);
                 $dm->flush();
 

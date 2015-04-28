@@ -148,7 +148,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             $dm = $this->get('doctrine_mongodb')->getManager();
             if ($request->get("mbh_bundle_pricebundle_service_type")["time"]){
                 $date = date_create();
-                $entry->setDate(date_format($date, 'U = Y-m-d H:i:s'));
+                $entry->setDate(date_format($date, 'U = H:i:s'));
             }
             $dm->persist($entry);
             $dm->flush();

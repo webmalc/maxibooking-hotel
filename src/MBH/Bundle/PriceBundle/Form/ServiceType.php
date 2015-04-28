@@ -46,19 +46,19 @@ class ServiceType extends AbstractType
                     'required' => false,
                     'attr' => ['placeholder' => 'Услуга не используется', 'class' => 'spinner price-spinner'],
                 ])
-                ->add('time', 'checkbox', [
-                    'label' => 'Время?',
-                    'group' => 'Настройки',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'Использовать ли время при добавлении услуги к брони?'
-                ])
                 ->add('date', 'checkbox', [
                     'label' => 'Дата?',
                     'group' => 'Настройки',
                     'value' => true,
                     'required' => false,
                     'help' => 'Использовать ли дату при добавлении услуги к брони?'
+                ])
+                ->add('time', 'checkbox', [
+                    'label' => 'Время?',
+                    'group' => 'Настройки',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'Использовать ли время при добавлении услуги к брони?'
                 ])
                 ->add('isOnline', 'checkbox', [
                     'label' => 'Онлайн?',
