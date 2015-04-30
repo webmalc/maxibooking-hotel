@@ -110,6 +110,14 @@ class CashDocument extends Base
     protected $isConfirmed = false;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isPaid = true;
+
+    /**
      * Set method
      *
      * @param string $method
@@ -247,6 +255,28 @@ class CashDocument extends Base
     public function getIsConfirmed()
     {
         return $this->isConfirmed;
+    }
+
+    /**
+     * Set $isPaid
+     *
+     * @param boolean $isPaid
+     * @return self
+     */
+    public function setIsPaid($isPaid)
+    {
+        $this->isPaid = $isPaid;
+        return $this;
+    }
+
+    /**
+     * Get $isPaid
+     *
+     * @return boolean $isPaid
+     */
+    public function getIsPaid()
+    {
+        return $this->isPaid;
     }
 
     /**

@@ -19,6 +19,24 @@ class PackageRepository extends DocumentRepository
         $dm = $this->getDocumentManager();
         $qb = $this->createQueryBuilder('s');
         $now = new \DateTime('midnight');
+        $orderData = [];
+
+        //confirmed
+        if (isset($data['confirmed']) && $data['confirmed'] != null) {
+            $orderData = array_merge($orderData, ['asIdsArray' => true, 'confirmed' => !empty($data['confirmed']) ? true : false]);
+        }
+        //paid status
+        if (isset($data['paid']) && in_array($data['paid'], ['paid', 'part', 'not_paid'])) {
+            $orderData = array_merge($orderData, ['asIdsArray' => true, 'paid' => $data['paid']]);
+        }
+        //status
+        if(isset($data['status']) && !empty($data['status'])) {
+            $orderData = array_merge($orderData, ['asIdsArray' => true, 'status' => $data['status']]);
+        }
+        if (!empty($orderData)) {
+            $orders = $dm->getRepository('MBHPackageBundle:Order')->fetch($orderData);
+            $qb->field('order.id')->in($orders);
+        }
 
         //hotel
         if(isset($data['hotel']) && !empty($data['hotel'])) {
@@ -37,6 +55,17 @@ class PackageRepository extends DocumentRepository
                 $qb->field('roomType.id')->in($roomTypesIds);
             }
         }
+        //order
+        if(isset($data['packageOrder']) && !empty($data['packageOrder'])) {
+            if($data['order'] instanceof Order) {
+                $data['order'] = $data['packageOrder']->getId();
+            }
+            $qb->field('order.id')->equals($data['packageOrder']);
+        }
+        //order ids
+        if(isset($data['packageOrders']) && !empty($data['packageOrders']) && is_array($data['packageOrders'])) {
+            $qb->field('order.id')->in($data['packageOrders']);
+        }
 
         //roomType
         if(isset($data['roomType']) && !empty($data['roomType'])) {
@@ -44,33 +73,6 @@ class PackageRepository extends DocumentRepository
                 $data['roomType'] = $data['roomType']->getId();
             }
             $qb->field('roomType.id')->equals($data['roomType']);
-        }
-
-        //status
-        if(isset($data['status']) && !empty($data['status'])) {
-            $qb->field('status')->equals($data['status']);
-        }
-        
-        //paid status
-        if(isset($data['paid']) && in_array($data['paid'], ['paid', 'part', 'not_paid'])) {
-
-            switch ($data['paid']) {
-                case 'paid':
-                    $qb->field('isPaid')->equals(true);
-                    break;
-                case 'part':
-                    $qb->field('isPaid')->equals(false)
-                       ->field('paid')->gt(0)
-                    ;
-                    break;
-                case 'not_paid':
-                    $qb->field('isPaid')->equals(false)
-                       ->field('paid')->equals(0)
-                    ;
-                    break;
-                default:
-                    break;
-            }
         }
 
         //get dates
@@ -112,17 +114,6 @@ class PackageRepository extends DocumentRepository
 
         if (isset($data['createdBy']) && $data['createdBy'] != null) {
             $qb->field('createdBy')->equals($data['createdBy']);
-        }
-
-        //confirmed
-        if (isset($data['confirmed']) && $data['confirmed'] != null) {
-
-            if ((int) $data['confirmed']) {
-                $qb->field('confirmed')->equals(true);
-            } else {
-                $qb->addOr($qb->expr()->field('confirmed')->exists(false));
-                $qb->addOr($qb->expr()->field('confirmed')->equals(false));
-            }
         }
 
         //query
@@ -177,6 +168,10 @@ class PackageRepository extends DocumentRepository
         if (isset($data['deleted']) && $data['deleted']) {
             if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $dm->getFilterCollection()->disable('softdeleteable');
+            }
+        } else {
+            if (!$dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $dm->getFilterCollection()->enable('softdeleteable');
             }
         }
 

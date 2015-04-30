@@ -79,6 +79,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $now = new \DateTime('midnight');
         $tomorrow = new \DateTime('midnight +1 day');
 
+        $data['deleted'] = false;
+
         //begin today count
         $data = [
             'count' => true,

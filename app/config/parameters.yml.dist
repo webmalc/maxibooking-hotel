@@ -11,3 +11,4 @@ parameters:
     mongodb_url: 'mongodb://mbh:password@localhost:27017/mbh'
     mongodb_database: mbh
     mbh_environment: prod
+    mbh_payment_systems_change: false

@@ -65,8 +65,7 @@ views.api.notification.dates: Даты
 views.api.notification.room_type: Тип номера
 views.api.notification.client: Клиент:
 views.api.notification.phone: Телефон:
-views.api.payanyway.make_payment_for_order_id: Оплатить %total% р. Номера заказа: %order_id%
-views.api.robokassa.make_payment_for_order_id: Оплатить %total% р. Номера заказа: %order_id%
+views.api.make_payment_for_order_id: Оплатить %total% р. Номера заказа: %order_id%
 views.api.tariffs.base_tariff: (базовый тариф)
 views.form.index.settings_in_quotes: "настройки"
 views.form.index.settings: Настройки

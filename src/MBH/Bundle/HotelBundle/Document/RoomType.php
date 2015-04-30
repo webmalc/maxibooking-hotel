@@ -491,7 +491,7 @@ class RoomType extends Base
     /**
      * Add image
      *
-     * @param MBH\Bundle\HotelBundle\Document\RoomTypeImage $image
+     * @param \MBH\Bundle\HotelBundle\Document\RoomTypeImage $image
      */
     public function addImage(\MBH\Bundle\HotelBundle\Document\RoomTypeImage $image)
     {
@@ -501,7 +501,7 @@ class RoomType extends Base
     /**
      * Remove image
      *
-     * @param MBH\Bundle\HotelBundle\Document\RoomTypeImage $image
+     * @param \MBH\Bundle\HotelBundle\Document\RoomTypeImage $image
      */
     public function removeImage(\MBH\Bundle\HotelBundle\Document\RoomTypeImage $image)
     {
@@ -511,11 +511,22 @@ class RoomType extends Base
     /**
      * Get images
      *
-     * @return Doctrine\Common\Collections\Collection $images
+     * @return \Doctrine\Common\Collections\Collection $images
      */
     public function getImages()
     {
         return $this->images;
+    }
+
+    public function getMainImage()
+    {
+        foreach($this->getImages() as $image) {
+            if ($image->getIsMain()) {
+                return $image;
+            }
+        }
+
+        return null;
     }
 
     public function deleteImageById(RoomType $entity,$imageId){
@@ -532,6 +543,7 @@ class RoomType extends Base
         }
         $entity->images = $result;
     }
+
     public function makeMainImageById(RoomType $entity, $imageId){
         foreach($entity->getImages() as $element) {
             if ($element->getId() == $imageId) {

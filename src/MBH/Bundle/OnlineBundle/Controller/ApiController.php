@@ -76,16 +76,42 @@ class ApiController extends Controller
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $paymentSystem = $this->container->getParameter('mbh.online.form')['payment_system'];
-        $logger = $this->get('logger');
+        $logger = $this->get('mbh.online.logger');
         $logger->info('\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP' . $request->getClientIp() . '. Post data: ' . implode('; ', $request->request->all()) . 'Get data: ' . implode('; ', $request->query->all()));
         $test = 0;
+        $fields = [
+            'payanyway' => [
+                'total' => 'MNT_AMOUNT',
+                'order' => 'MNT_TRANSACTION_ID',
+                'sig' => 'MNT_SIGNATURE',
+                'response' => 'SUCCESS'
+            ],
+            'robokassa' => [
+                'total' => 'OutSum',
+                'order' => 'InvId',
+                'sig' => 'SignatureValue',
+                'response' => 'OK'
+            ],
+            'moneymail' => [],[
+                'total' => false,
+                'order' => 'Order_IDP',
+                'sig' => 'Signature',
+                'response' => 'OK'
+            ],
+        ];
 
-        $total = (int) $request->get(($paymentSystem == 'payanyway') ? 'MNT_AMOUNT' : 'OutSum');
-        $orderId = (int) $request->get(($paymentSystem == 'payanyway') ? 'MNT_TRANSACTION_ID' : 'InvId');
-        $sig = mb_strtolower($request->get(($paymentSystem == 'payanyway') ? 'MNT_SIGNATURE' : 'SignatureValue'));
+
+        $total = (int) $request->get($fields[$paymentSystem]['total']);
+        $orderId = (int) $request->get($fields[$paymentSystem]['order']);
+        $sig = mb_strtolower($fields[$paymentSystem]['sig']);
         $config = $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]);
         $order = $dm->getRepository('MBHOnlineBundle:Order')->find($orderId);
-        $response = new Response(($paymentSystem == 'payanyway') ? 'SUCCESS' : 'OK' . $order->getId());
+
+        if (!$order) {
+            throw $this->createNotFoundException();
+        }
+
+        $response = new Response($fields[$paymentSystem]['response']);
 
         if (!$total || !$orderId || !$sig || !$config || !$order) {
             $logger->info('\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Error params not found. total - ' . $total . '; orderId - ' . $orderId . '; sig - ' . $sig);
@@ -95,6 +121,9 @@ class ApiController extends Controller
         $calcSig = md5($total . ':' . $orderId . ':' . $config->getRobokassaMerchantPass2());
         if ($paymentSystem == 'payanyway') {
             $calcSig = md5($config->getPayanywayMntId() . $orderId . $request->get('MNT_OPERATION_ID') . $total . 'RUB' . $request->get('MNT_SUBSCRIBER_ID') . $test . $config->getPayanywayKey());
+        }
+        if ($paymentSystem == 'moneymail') {
+            $calcSig = md5($config->getMoneymailShopIDP() . $orderId . $request->get('MNT_OPERATION_ID') . $total . 'RUB' . $request->get('MNT_SUBSCRIBER_ID') . $test . $config->getPayanywayKey());
         }
 
         if ($calcSig != $sig) {
@@ -198,9 +227,7 @@ class ApiController extends Controller
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
             'hotels' => $hotels,
-            'tariffResults' => $tariffResults,
-            'services' => $services,
-            'servicesConfig' => $this->container->getParameter('mbh.services')
+            'tariffResults' => $tariffResults
         ];
     }
 
@@ -238,6 +265,7 @@ class ApiController extends Controller
         return [
             'config' => $this->container->getParameter('mbh.online.form'),
             'formConfig' => $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]),
+            'clientConfig' => $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig(),
             'env' => $this->container->getParameter('mbh.environment') == 'prod' ? true : false,
             'request' => $request
         ];

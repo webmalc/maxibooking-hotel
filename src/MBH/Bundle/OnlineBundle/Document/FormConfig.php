@@ -81,42 +81,6 @@ class FormConfig extends Base
     protected $paymentTypes = [];
 
     /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
-     */
-    protected $robokassaMerchantLogin;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
-     */
-    protected $robokassaMerchantPass1;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
-     */
-    protected $robokassaMerchantPass2;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
-     */
-    protected $payanywayMntId;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
-     */
-    protected $payanywayKey;
-
-
-    /**
      * Set enabled
      *
      * @param boolean $enabled
@@ -197,10 +161,15 @@ class FormConfig extends Base
     /**
      * Get paymentTypes
      *
+     * @param boolean $online
      * @return collection $paymentTypes
      */
-    public function getPaymentTypes()
+    public function getPaymentTypes($online = true)
     {
+        if (!$online) {
+            $this->paymentTypes = array_diff($this->paymentTypes, ["online_full", "online_first_day"]);
+        }
+
         return $this->paymentTypes;
     }
 
@@ -224,115 +193,5 @@ class FormConfig extends Base
     public function getNights()
     {
         return $this->nights;
-    }
-
-    /**
-     * Set robokassaMerchantLogin
-     *
-     * @param string $robokassaMerchantLogin
-     * @return self
-     */
-    public function setRobokassaMerchantLogin($robokassaMerchantLogin)
-    {
-        $this->robokassaMerchantLogin = $robokassaMerchantLogin;
-        return $this;
-    }
-
-    /**
-     * Get robokassaMerchantLogin
-     *
-     * @return string $robokassaMerchantLogin
-     */
-    public function getRobokassaMerchantLogin()
-    {
-        return $this->robokassaMerchantLogin;
-    }
-
-    /**
-     * Set robokassaMerchantPass1
-     *
-     * @param string $robokassaMerchantPass1
-     * @return self
-     */
-    public function setRobokassaMerchantPass1($robokassaMerchantPass1)
-    {
-        $this->robokassaMerchantPass1 = $robokassaMerchantPass1;
-        return $this;
-    }
-
-    /**
-     * Get robokassaMerchantPass1
-     *
-     * @return string $robokassaMerchantPass1
-     */
-    public function getRobokassaMerchantPass1()
-    {
-        return $this->robokassaMerchantPass1;
-    }
-
-    /**
-     * Set robokassaMerchantPass2
-     *
-     * @param string $robokassaMerchantPass2
-     * @return self
-     */
-    public function setRobokassaMerchantPass2($robokassaMerchantPass2)
-    {
-        $this->robokassaMerchantPass2 = $robokassaMerchantPass2;
-        return $this;
-    }
-
-    /**
-     * Get robokassaMerchantPass2
-     *
-     * @return string $robokassaMerchantPass2
-     */
-    public function getRobokassaMerchantPass2()
-    {
-        return $this->robokassaMerchantPass2;
-    }
-
-    /**
-     * Set payanywayMntId
-     *
-     * @param string $payanywayMntId
-     * @return self
-     */
-    public function setPayanywayMntId($payanywayMntId)
-    {
-        $this->payanywayMntId = $payanywayMntId;
-        return $this;
-    }
-
-    /**
-     * Get payanywayMntId
-     *
-     * @return string $payanywayMntId
-     */
-    public function getPayanywayMntId()
-    {
-        return $this->payanywayMntId;
-    }
-
-    /**
-     * Set payanywayKey
-     *
-     * @param string $payanywayKey
-     * @return self
-     */
-    public function setPayanywayKey($payanywayKey)
-    {
-        $this->payanywayKey = $payanywayKey;
-        return $this;
-    }
-
-    /**
-     * Get payanywayKey
-     *
-     * @return string $payanywayKey
-     */
-    public function getPayanywayKey()
-    {
-        return $this->payanywayKey;
     }
 }

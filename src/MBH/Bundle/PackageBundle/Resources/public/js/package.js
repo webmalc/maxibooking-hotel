@@ -94,6 +94,7 @@ $(document).ready(function () {
             deleteLink();
             $('.deleted-entry').closest('tr').addClass('danger');
             $('.not-confirmed-entry').closest('tr').addClass('info');
+            $('.not-paid-entry').closest('tr').addClass('transparent-tr');
         }
     });
 
@@ -239,21 +240,37 @@ $(document).ready(function () {
     //order-packages panel
     (function () {
         var panel = $('.order-packages-panel'),
-            link = panel.find('.panel-title');
+            link = panel.find('.panel-title'),
+            deleted = $('#order-packages-panel-filter-deleted');
 
-        if ($.cookie('order-packages-panel') === undefined) {
-            $.cookie('order-packages-panel', true);
-        } else {
-            if ($.cookie('order-packages-panel') === 'false') {
-                panel.children('.panel-body').hide();
-                link.children('i.fa').removeClass('fa-caret-up').addClass('fa-caret-down');
-            }
+        if (!panel.length) {
+            return;
+        }
+        if ($.cookie('order-packages-panel') !== undefined) {
+            panel.children('.panel-body').hide();
+            link.children('i.fa').removeClass('fa-caret-up').addClass('fa-caret-down');
         }
         link.click(function () {
             $(this).closest('.panel-heading').next('.panel-body').toggle(150);
             $(this).children('i.fa').toggleClass('fa-caret-up').toggleClass('fa-caret-down');
-            var val = $.cookie('order-packages-panel') === 'false' ? 'true' : 'false';
-            $.cookie('order-packages-panel', val);
+
+            if ($.cookie('order-packages-panel') === undefined) {
+                $.cookie('order-packages-panel', 1, { path: '/' });
+            } else {
+                $.removeCookie('order-packages-panel', { path: '/' });
+            }
+
+        });
+
+        deleted.on('switchChange', function() {
+
+            if ($.cookie('order-packages-panel-deleted') === undefined) {
+                $.cookie('order-packages-panel-deleted', 1, { path: '/' });
+            } else {
+                $.removeCookie('order-packages-panel-deleted', { path: '/' });
+            }
+
+            location.reload();
         });
     } ());
 

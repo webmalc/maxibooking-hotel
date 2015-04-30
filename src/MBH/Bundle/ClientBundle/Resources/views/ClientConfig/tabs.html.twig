@@ -1,0 +1,13 @@
+{% set menu = [
+    {'route': 'client_config', 'title': '<i class="fa fa-cog"></i> '~ 'client.tabs.params'|trans({}, 'MBHClientBundle')},
+    {'route': 'client_payment_system', 'title': '<i class="fa fa-ruble"></i> '~ 'client.tabs.payment_system'|trans({}, 'MBHClientBundle')},
+]
+%}
+
+<ul class="nav nav-tabs" role="tablist">
+{% for item in menu %}
+    <li {% if loop.index == active %}class="active"{% endif %}>
+        <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route) }}"{% endif %}>{{item.title|raw}}</a>
+    </li>
+{% endfor %}
+</ul>

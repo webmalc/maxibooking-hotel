@@ -65,18 +65,20 @@
                         </div>
                     </div>
 
+                    {% if entity.deletedAt is empty and checkPackagePermissions(package) %}
                     <div class="row spacer-top">
                         <div class="col-md-12 text-right">
                             <a data-toggle="tooltip" title="{{ 'order.touristEdit.delete_payer'|trans({}, 'MBHPackageBundle')}}" href="{{ path('package_order_tourist_delete', {'id': entity.id, 'packageId': package.id}) }}" class="delete-link btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></a>
                         </div>
                     </div>
+                    {% endif %}
 
                 </div>
             {% endif %}
 
             {{ form_start(form, {'action': path('package_order_tourist_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity} %}
+            {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity, 'package': package} %}
             {{ form_end(form) }}
 
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}

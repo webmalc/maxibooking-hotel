@@ -49,7 +49,9 @@ class Calculation
         $total = 0;
         $ids = [];
 
-        $this->dm->getFilterCollection()->enable('softdeleteable');
+        if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
+        }
         $cashes = $order->getCashDocuments();
 
         if ($newDoc) {
@@ -57,7 +59,7 @@ class Calculation
         }
         foreach ($cashes as $cash) {
 
-            if (in_array($cash->getId(), $ids)) {
+            if (!$cash->getIsPaid() || in_array($cash->getId(), $ids)) {
                 continue;
             }
             $ids[] = $cash->getId();
@@ -71,6 +73,7 @@ class Calculation
                 $total += $cash->getTotal();
             }
         }
+
         $order->setPaid($total);
         $order->checkPaid();
 

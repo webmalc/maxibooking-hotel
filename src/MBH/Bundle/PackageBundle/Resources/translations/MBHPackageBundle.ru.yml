@@ -12,15 +12,20 @@ order.cash.paid: оплачен
 order.cash.not_paid: не оплачен
 order.cash.income: Приход
 order.cash.outcome: Расход
+order.cash.is_paid: Оплачен
 order.cash.payment_way: Способ оплаты
 order.cash.operation_type: Вид операции
 order.cash.date: Дата
-order.cash.removed: Удалена
+order.cash.removed: Удален
+order.cash.no: нет
 order.cash.edit_record: Редактирование записи
 order.cash.remove_record: Удаление записи
 order.cash.confirm_payment: Подтверждение платежа
+order.cash.pay_payment: Оплата платежа
 order.cash.are_you_sure_to_confirm_payment: Точно подтвердить платеж на сумму
+order.cash.are_you_sure_to_pay_payment: Точно оплатить платеж на сумму
 order.cash.confirm: Подтвердить
+order.cash.pay: Подтвердить
 order.cash.cash_documents_not_found: Кассовые документы не найдены.
 order.edit.order_editing: 'редактирование заказа #'
 order.edit.deleted: удален
@@ -117,7 +122,7 @@ package.edit.is_confirmed: Подтверждена?
 package.edit.is_confirmed_yes: да
 package.edit.is_confirmed_no: нет
 package.edit.print_act: Распечатать
-package.editTabs.reservation_info: Информация о броне
+package.editTabs.reservation_info: Общая информация
 package.editTabs.guests: Гости
 package.editTabs.services: Услуги
 package.editTabs.placement: Размещение

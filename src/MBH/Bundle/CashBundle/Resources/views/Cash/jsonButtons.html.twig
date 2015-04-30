@@ -1,8 +1,14 @@
 {% spaceless %}
+    {% if not entity.deletedAt %}
     <div class='btn-list text-right'>
-        {% if entity.isConfirmed == false %}
+        {% if not entity.isConfirmed and entity.isPaid %}
             <a data-action='cashDocumentConfirmation' data-header={{ 'views.cash.jsonButtons.confirm_payment'|trans({}, 'MBHCashBundle') }} data-text={{ 'views.cash.jsonButtons.are_you_sure_confirm_payment'|trans({'%total_sum%': entity.total|number_format}, 'MBHCashBundle') }} data-button={{ 'views.cash.jsonButtons.confirm'|trans({}, 'MBHCashBundle') }} data-button-icon='fa-check' data-button-class='primary' href='{{ path('cash_confirm', { 'id': entity.id}) }}' class='btn btn-primary btn-xs delete-link' title={{ 'views.cash.jsonButtons.confirm_payment'|trans({}, 'MBHCashBundle') }} data-toggle='tooltip'>
                 <i class='fa fa-check'></i>
+            </a>
+        {% endif %}
+        {% if not entity.isPaid %}
+            <a data-action='cashDocumentPay' data-header='{{ 'order.cash.pay_payment'|trans({}, 'MBHPackageBundle') }}' data-text='{{ 'order.cash.are_you_sure_to_pay_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ entity.total|number_format }} RUR</b>?' data-button='{{ 'order.cash.pay'|trans({}, 'MBHPackageBundle') }}' data-button-icon='fa-check' data-button-class='primary' href='{{ path('cash_pay', { 'id': entity.id}) }}' class='btn btn-warning btn-xs delete-link' title='{{ 'order.cash.pay_payment'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
+                <i class='fa fa-ruble'></i>
             </a>
         {% endif %}
         <a href='{{ path('cash_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title={{ 'views.cash.jsonButtons.edit_record'|trans({}, 'MBHCashBundle') }} data-toggle='tooltip'>
@@ -12,4 +18,5 @@
             <i class='fa fa-trash-o'></i>
         </a>
     </div>
+    {% endif %}
 {% endspaceless %}

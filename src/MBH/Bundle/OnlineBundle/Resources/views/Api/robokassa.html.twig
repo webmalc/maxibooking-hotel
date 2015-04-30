@@ -7,7 +7,7 @@
         <input type="hidden" name="SignatureValue" value="{{ sig|mbh_md5 }}">
 
         <button id="mbh-results-pay-form-button" class="button" type="submit">
-            <i class="fa fa-money"> </i> {{ 'views.api.robokassa.make_payment_for_order_id'|trans({'%total%': total|number_format, '%order_id%': order.id } , 'MBHOnlineBundle') }}
+            <i class="fa fa-money"> </i> {{ 'views.api.make_payment_for_order_id'|trans({'%total%': total|number_format, '%order_id%': order.id } , 'MBHOnlineBundle') }}
         </button>
     </form>
 </div>

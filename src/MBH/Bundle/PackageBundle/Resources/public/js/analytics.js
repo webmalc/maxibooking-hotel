@@ -34,6 +34,11 @@ $(document).ready(function() {
 
                 }
             ;
+
+        if (!wrapper.length) {
+            return ;
+        }
+
         hideFilters();
         wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
         $.ajax({

@@ -91,6 +91,16 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- DELETE -->
+                <br><br>
+                {% for k in entity.note|split(';') %}
+                    {% set v = k|split(':') %}
+                    <strong>{{ v[0] }}</strong> - {{ v[1] is defined ? v[1] }}<br>
+                {% endfor %}
+
+                <!-- DELETE -->
+
             </div>
 
             {{ form_start(form, {'action': path('package_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}

@@ -76,7 +76,7 @@ class OrderSubscriber implements EventSubscriber
             foreach($entity->getPackages() as $package) {
                 $package->setDeletedAt(new \DateTime());
                 $dm->persist($package);
-                $end = $package->getEnd();
+                $end = clone $package->getEnd();
                 $this->container->get('mbh.room.cache')->recalculate(
                     $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff(), false
                 );

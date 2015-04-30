@@ -53,7 +53,7 @@
                         {% endif %}
                     </div>
                 </div>
-                {% if entity.card %}
+                {% if entity.card and entity.deletedAt is empty %}
                 <div class="row spacer-top">
                     <div class="col-md-2 text-right"><strong>Карта</strong></div>
                     <div class="col-md-10">
@@ -75,7 +75,7 @@
 
             {{ form_start(form, {'action': path('package_order_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity} %}
+            {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity, 'package': package} %}
             {{ form_end(form) }}
 
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}

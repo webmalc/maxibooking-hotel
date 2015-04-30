@@ -76,7 +76,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
-        if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
+        if (!$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -210,7 +210,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
-        if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
+        if (!$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -330,7 +330,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
-        if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
+        if (!$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
