@@ -1,0 +1,25 @@
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+
+{% set small_title = 'package.guest.edit_reservation'|trans({}, 'MBHPackageBundle') ~ entity.numberWithPrefix %}
+
+{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.guest.deleted'|trans({}, 'MBHPackageBundle')~'</span>' %}{% endif %}
+
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/documents/001.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block content %}
+    {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
+        {{ form_start(form, {'action': path('package_document_edit', {'id': entity.id, 'docname': document.name}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
+        {{ form_end(form) }}
+    {% endif %}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
+
+{% endblock %}

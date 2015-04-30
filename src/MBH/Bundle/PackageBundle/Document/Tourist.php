@@ -287,7 +287,7 @@ class Tourist extends Base
     /**
      * Get birthday
      *
-     * @return date $birthday
+     * @return \DateTime $birthday
      */
     public function getBirthday()
     {
@@ -473,6 +473,14 @@ class Tourist extends Base
         $name = $this->getLastName() . ' ' . $this->getFirstName();
         
         return (empty($this->getPatronymic())) ? $name : $name . ' ' . $this->getPatronymic();
+    }
+
+    /**
+     * @return string
+     */
+    public function generateFullNameWithAge()
+    {
+        return $this->generateFullName(). ($this->getBirthday() ? ' ('.$this->getBirthday()->format('d.m.Y').'), возраст: '.$this->getAge() : '');
     }
 
     public function __construct()

@@ -29,6 +29,10 @@
         stateSave: true,
 
 
+        /*columnDefs: [
+            { "type": "de_date", targets: 4 }
+        ],*/
+
         /*"sPaginationType": "full_numbers",
         "bFilter": false,
         "bSearchable":false,

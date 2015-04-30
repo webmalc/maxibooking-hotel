@@ -6,4 +6,4 @@ ROLE_MANAGER: Менеджер
 ROLE_SENIOR_MANAGER: Старший менеджер
 ROLE_USER: Пользователь
 ROLE_READ_ONLY: Гость
-
+form.userType.roles: Роли
