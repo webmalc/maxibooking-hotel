@@ -24,43 +24,55 @@ class RoomTypeGenerateRoomsType extends AbstractType
         }
 
         $builder
-                ->add('from', 'text', [
-                    'label' => ($hostel) ? 'form.roomTypeGenerateRoomsType.first_bed_number' : 'form.roomTypeGenerateRoomsType.first_room_number',
-                    'required' => true,
-                    'attr' => ['placeholder' => '1', 'class' => 'spinner'],
-                    'constraints' => [
-                        new NotBlank(),
-                        new Type(['type' => 'numeric', "message" => 'form.roomTypeGenerateRoomsType.field_must_be_number'])
-                    ]
-                ])
-                ->add('to', 'text', [
-                    'label' => ($hostel) ? 'form.roomTypeGenerateRoomsType.last_bed_number' : 'form.roomTypeGenerateRoomsType.last_room_number',
-                    'required' => true,
-                    'attr' => ['placeholder' => '100', 'class' => 'spinner'],
-                    'constraints' => [
-                        new NotBlank(),
-                        new Type(['type' => 'numeric', "message" => 'form.roomTypeGenerateRoomsType.field_must_be_number'])
-                    ]
-                ])
-                ->add('prefix', 'text', [
-                    'label' => 'form.roomTypeGenerateRoomsType.prefix',
-                    'required' => false,
-                    'data' => ($hostel) ? $entity->getName() . '/' : '',
-                    'attr' => ['placeholder' => 'HTL'],
-                    'help' => 'form.roomTypeGenerateRoomsType.prefix_example',
-                    'constraints' => new Length(['max' => 20])
-                ])
-        ;
+            ->add('from', 'text', [
+                'label' => ($hostel) ? 'form.roomTypeGenerateRoomsType.first_bed_number' : 'form.roomTypeGenerateRoomsType.first_room_number',
+                'required' => true,
+                'attr' => ['placeholder' => '1', 'class' => 'spinner'],
+                'constraints' => [
+                    new NotBlank(),
+                    new Type(['type' => 'numeric', "message" => 'form.roomTypeGenerateRoomsType.field_must_be_number'])
+                ]
+            ])
+            ->add('to', 'text', [
+                'label' => ($hostel) ? 'form.roomTypeGenerateRoomsType.last_bed_number' : 'form.roomTypeGenerateRoomsType.last_room_number',
+                'required' => true,
+                'attr' => ['placeholder' => '100', 'class' => 'spinner'],
+                'constraints' => [
+                    new NotBlank(),
+                    new Type(['type' => 'numeric', "message" => 'form.roomTypeGenerateRoomsType.field_must_be_number'])
+                ]
+            ])
+            ->add('housing', 'text', [
+                'label' => 'form.roomTypeGenerateRoomsType.housing',
+                'required' => false,
+                'attr' => ['placeholder' => '2-A'],
+                'constraints' => new Length(['max' => 20])
+            ])
+            ->add('floor', 'text', [
+                'label' => 'form.roomTypeGenerateRoomsType.floor',
+                'required' => false,
+                'attr' => ['placeholder' => '3'],
+                'constraints' => new Length(['max' => 20])
+            ])
+            ->add('prefix', 'text', [
+                'label' => 'form.roomTypeGenerateRoomsType.prefix',
+                'required' => false,
+                'data' => ($hostel) ? $entity->getName().'/' : '',
+                'attr' => ['placeholder' => 'HTL'],
+                'help' => 'form.roomTypeGenerateRoomsType.prefix_example',
+                'constraints' => new Length(['max' => 20])
+            ]);
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(
-                [ 'constraints' => [
-                        new Callback(['methods' => [[get_class($this), 'rangeValidation']]])
-                    ],
-                    'entity' => null
-                ]
+            [
+                'constraints' => [
+                    new Callback(['methods' => [[get_class($this), 'rangeValidation']]])
+                ],
+                'entity' => null
+            ]
         );
     }
 

@@ -15,7 +15,6 @@ use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
  */
 class ReportController extends Controller implements CheckHotelControllerInterface
 {
-
     /**
      * Accommodation report.
      *
@@ -26,6 +25,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function accommodationAction()
     {
+        var_dump($this->dm->getRepository('MBHHotelBundle:Room')->fetchHousings());
+
         return [
             'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes()
         ];
@@ -41,8 +42,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function accommodationTableAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
+        /* @var $this->dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $this->dm = $this->get('doctrine_mongodb')->getManager();
 
         //get dates
         $begin = new \DateTime();
@@ -66,7 +67,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         if ($page > 1) {
             $skip = ($page - 1) * $limit;
         }
-        $qb = $dm->getRepository('MBHHotelBundle:Room')->fetchQuery(
+        $qb = $this->dm->getRepository('MBHHotelBundle:Room')->fetchQuery(
             $this->get('mbh.hotel.selector')->getSelected(),
             $request->get('roomType')
         );
@@ -74,7 +75,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $pages = ceil($total / $limit);
 
         //getRooms
-        $qb = $dm->getRepository('MBHHotelBundle:Room')->fetchQuery(
+        $qb = $this->dm->getRepository('MBHHotelBundle:Room')->fetchQuery(
             $this->get('mbh.hotel.selector')->getSelected(),
             $request->get('roomType'),
             $skip,
@@ -90,7 +91,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         }
         $packages = [];
         if (count($roomIds)) {
-            $qb = $dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('q');
+            $qb = $this->dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('q');
 
             $qb->field('accommodation.id')->in($roomIds)
                 ->addOr($qb->expr()->field('begin')->range($from, $to))

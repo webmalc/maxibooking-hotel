@@ -47,6 +47,8 @@ views.roomType.index.delete_room_type: "Удалить тип номера <%nam
 views.roomType.index.delete: Удалить
 views.roomType.index.room_fund: Номерной фонд
 views.roomType.index.name: Название
+views.roomType.index.housing: Корпус
+views.roomType.index.floor: Этаж
 views.roomType.layout.rooms: "Номера"
 views.roomType.layout.create_room_type: "cоздание типа номера"
 views.roomType.newRoom.create_bed_for_room_type: "создание койко-места для типа номера <"

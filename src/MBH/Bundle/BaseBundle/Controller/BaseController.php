@@ -5,12 +5,25 @@ namespace MBH\Bundle\BaseBundle\Controller;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base Controller
  */
 class BaseController extends Controller
 {
+    /**
+     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry
+     */
+    protected $dm;
+
+    public function setContainer(ContainerInterface $container = null)
+    {
+        parent::setContainer($container);
+
+        $this->dm = $this->get('doctrine_mongodb')->getManager();
+    }
+
     /**
      * Add Access-Control-Allow-Origin header to response
      * @param array $sites
