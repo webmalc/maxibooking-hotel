@@ -65,13 +65,28 @@ class RoomRepository extends DocumentRepository
 
 
     /**
-     * @return mixed
+     * @return \Doctrine\MongoDB\ArrayIterator;
      */
     public function fetchHousings()
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $qb = $this->createQueryBuilder('s');
         $docs = $qb->distinct('housing')
+            ->getQuery()
+            ->execute()
+        ;
+
+        return $docs;
+    }
+
+    /**
+     * @return \Doctrine\MongoDB\ArrayIterator;
+     */
+    public function fetchFloors()
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $qb = $this->createQueryBuilder('s');
+        $docs = $qb->distinct('floors')
             ->getQuery()
             ->execute()
         ;

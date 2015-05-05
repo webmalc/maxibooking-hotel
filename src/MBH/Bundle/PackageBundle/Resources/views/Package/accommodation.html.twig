@@ -14,7 +14,7 @@
         <div class="tab-pane active" id="home">
             {% if entity.accommodation %}
                 <div class="alert alert-warning">
-                    <i class="fa fa-home"> </i> {{ 'package.accommodation.placement'|trans({}, 'MBHPackageBundle') }} {{ entity.accommodation.name(true, true) }}, {{ 'package.accommodation.guests'|trans({}, 'MBHPackageBundle') }} {{ entity.isCheckIn ? '' : 'не ' }} {{ 'package.accommodation.stopped'|trans({}, 'MBHPackageBundle') }}
+                    <i class="fa fa-bed"> </i> {{ 'package.accommodation.placement'|trans({}, 'MBHPackageBundle') }} {{ entity.accommodation.name(true, true) }}, {{ 'package.accommodation.guests'|trans({}, 'MBHPackageBundle') }} {{ entity.isCheckIn ? '' : 'не ' }} {{ 'package.accommodation.stopped'|trans({}, 'MBHPackageBundle') }}
                     {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                         <div class="pull-right">
                             <a href="{{ path('package_accommodation_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">

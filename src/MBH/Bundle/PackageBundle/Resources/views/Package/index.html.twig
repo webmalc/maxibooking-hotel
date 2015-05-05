@@ -25,7 +25,7 @@
                 </select>
             </div>
             <div class="input">
-                <i class="fa fa-home" title='Тип номера' data-toggle='tooltip'></i>&nbsp  <select data-placeholder="Тип номера" id="package-filter-roomType" class="package-filter form-control input-sm">
+                <i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i>&nbsp  <select data-placeholder="Тип номера" id="package-filter-roomType" class="package-filter form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypes %}
                     <option value="{{ roomType.id }}">{{ roomType.name }}</option>

@@ -1,4 +1,4 @@
-/*global window */
+/*global window, $, document */
 $(document).ready(function () {
     'use strict';
 
@@ -7,9 +7,8 @@ $(document).ready(function () {
         var toggleLink = $('#menu-toggle-link a'),
             managementMenu = $('#management-menu'),
             mainMenu = $('#main-menu'),
-            nav = $('#navbar-main-wrapper')
-        ;
-        
+            nav = $('#navbar-main-wrapper');
+
         if (!managementMenu.length) {
             return false;
         }
@@ -21,9 +20,9 @@ $(document).ready(function () {
             nav.toggleClass('navbar-default navbar-inverse');
             toggleLink.parent('li').attr('data-original-title', 'Назад к главному меню');
         }
-        toggleLink.click(function(event){
+        toggleLink.click(function (event) {
             event.preventDefault();
-            
+
             toggleLink.find('i').toggleClass('fa-gears fa-home');
             managementMenu.toggle('fast');
             mainMenu.toggle('fast', function () {

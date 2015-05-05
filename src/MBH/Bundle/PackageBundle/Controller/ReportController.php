@@ -25,10 +25,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function accommodationAction()
     {
-        var_dump($this->dm->getRepository('MBHHotelBundle:Room')->fetchHousings());
-
         return [
-            'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes()
+            'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
+            'housings' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchHousings(),
+            'floors' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchFloors()
         ];
     }
 
@@ -42,9 +42,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function accommodationTableAction(Request $request)
     {
-        /* @var $this->dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $this->dm = $this->get('doctrine_mongodb')->getManager();
-
         //get dates
         $begin = new \DateTime();
         if (!empty($request->get('begin'))) {
