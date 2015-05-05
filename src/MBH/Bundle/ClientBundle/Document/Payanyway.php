@@ -3,11 +3,14 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @ODM\EmbeddedDocument
  */
-class Payanyway
+class Payanyway implements PaymentSystemInterface
 {
     /**
      * @var string
@@ -63,5 +66,23 @@ class Payanyway
     public function getPayanywayKey()
     {
         return $this->payanywayKey;
+    }
+
+    public function getFormData(CashDocument $cashDocument, $url = null)
+    {
+
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSignature(CashDocument $cashDocument, $url = null)
+    {
+        return '';
+    }
+
+    public function checkRequest(Request $request)
+    {
+
     }
 }

@@ -100,7 +100,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
                 'methods' => $this->container->getParameter('mbh.cash.methods'),
                 'operations' => $this->container->getParameter('mbh.cash.operations'),
                 'groupName' => $this->get('translator')->trans('controller.orderController.add_cash_register_paper'),
-                'payer' => $entity->getMainTourist()
+                'payer' => $entity->getMainTourist(),
             ]
         );
 
@@ -111,7 +111,8 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'docs' => $docs,
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
-            'package' => $package
+            'package' => $package,
+            'clientConfig' => $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()
         ];
     }
 
@@ -190,7 +191,8 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'docs' => $docs,
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
-            'package' => $package
+            'package' => $package,
+            'clientConfig' => $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()
         ];
     }
 

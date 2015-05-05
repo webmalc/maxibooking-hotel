@@ -98,11 +98,12 @@ class Order
      * @param array $data
      * @param OrderDoc $order
      * @param bool $user
+     * @param array $cash
      * @return OrderDoc
      * @throws \Exception
      * @throws \Symfony\Component\Security\Acl\Exception\InvalidDomainObjectException
      */
-    public function createPackages(array $data, OrderDoc $order = null, $user = false)
+    public function createPackages(array $data, OrderDoc $order = null, $user = null, $cash = null)
     {
         if (empty($data['packages'])) {
             throw new \Exception('Create packages error: $data["packages"] is empty.');
@@ -153,6 +154,28 @@ class Order
                 $acl->insertObjectAce(UserSecurityIdentity::fromAccount($user), MaskBuilder::MASK_MASTER);
                 $aclProvider->updateAcl($acl);
             }
+        }
+
+        // create cash document
+        if (!empty($cash)) {
+            $cashDocument = new CashDocument();
+            $cashDocument->setIsConfirmed(false)
+                ->setIsPaid(false)
+                ->setMethod(isset($cash['method']) ? $cash['method'] : 'electronic')
+                ->setOperation(isset($cash['operation']) ? $cash['operation'] : 'in')
+                ->setOrder($order)
+                ->setPayer($order->getMainTourist())
+                ->setTotal(isset($cash['total']) ? (float)$cash['total'] : $order->getPrice())
+            ;
+
+            if (!$this->validator->validate($order)) {
+                throw new \Exception('Create cash document error: validation errors.');
+            }
+
+            $order->addCashDocument($cashDocument);
+            $this->dm->persist($cashDocument);
+            $this->dm->persist($order);
+            $this->dm->flush();
         }
 
         // create packages

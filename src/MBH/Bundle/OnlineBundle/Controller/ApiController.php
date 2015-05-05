@@ -35,14 +35,13 @@ class ApiController extends Controller
         $config = $this->container->getParameter('mbh.online.form');
         $formConfig = $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]);
 
-        if(!$formConfig || !$formConfig->getEnabled()) {
+        if (!$formConfig || !$formConfig->getEnabled()) {
             throw $this->createNotFoundException();
         }
 
         $hotelsQb = $dm->getRepository('MBHHotelBundle:Hotel')
             ->createQueryBuilder('q')
-            ->sort('fullTitle', 'asc')
-        ;
+            ->sort('fullTitle', 'asc');
 
         $hotels = [];
         foreach ($hotelsQb->getQuery()->execute() as $hotel) {
@@ -75,96 +74,33 @@ class ApiController extends Controller
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $paymentSystem = $this->container->getParameter('mbh.online.form')['payment_system'];
+        $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $logger = $this->get('mbh.online.logger');
-        $logger->info('\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP' . $request->getClientIp() . '. Post data: ' . implode('; ', $request->request->all()) . 'Get data: ' . implode('; ', $request->query->all()));
-        $test = 0;
-        $fields = [
-            'payanyway' => [
-                'total' => 'MNT_AMOUNT',
-                'order' => 'MNT_TRANSACTION_ID',
-                'sig' => 'MNT_SIGNATURE',
-                'response' => 'SUCCESS'
-            ],
-            'robokassa' => [
-                'total' => 'OutSum',
-                'order' => 'InvId',
-                'sig' => 'SignatureValue',
-                'response' => 'OK'
-            ],
-            'moneymail' => [],[
-                'total' => false,
-                'order' => 'Order_IDP',
-                'sig' => 'Signature',
-                'response' => 'OK'
-            ],
-        ];
+        $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP'.$request->getClientIp().'. Post data: '.implode('; ',
+                $request->request->all()).' Get data: '.implode('; ', $request->query->all());
 
+        if (!$clientConfig) {
+            $logger->info('FAIL. '.$logText);
+            throw $this->createNotFoundException();
+        }
+        $response = $clientConfig->checkRequest($request);
 
-        $total = (int) $request->get($fields[$paymentSystem]['total']);
-        $orderId = (int) $request->get($fields[$paymentSystem]['order']);
-        $sig = mb_strtolower($fields[$paymentSystem]['sig']);
-        $config = $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]);
-        $order = $dm->getRepository('MBHOnlineBundle:Order')->find($orderId);
-
-        if (!$order) {
+        if (!$response) {
+            $logger->info('FAIL. '.$logText);
             throw $this->createNotFoundException();
         }
 
-        $response = new Response($fields[$paymentSystem]['response']);
+        $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($response['doc']);
 
-        if (!$total || !$orderId || !$sig || !$config || !$order) {
-            $logger->info('\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Error params not found. total - ' . $total . '; orderId - ' . $orderId . '; sig - ' . $sig);
-            throw $this->createNotFoundException();
-        }
-
-        $calcSig = md5($total . ':' . $orderId . ':' . $config->getRobokassaMerchantPass2());
-        if ($paymentSystem == 'payanyway') {
-            $calcSig = md5($config->getPayanywayMntId() . $orderId . $request->get('MNT_OPERATION_ID') . $total . 'RUB' . $request->get('MNT_SUBSCRIBER_ID') . $test . $config->getPayanywayKey());
-        }
-        if ($paymentSystem == 'moneymail') {
-            $calcSig = md5($config->getMoneymailShopIDP() . $orderId . $request->get('MNT_OPERATION_ID') . $total . 'RUB' . $request->get('MNT_SUBSCRIBER_ID') . $test . $config->getPayanywayKey());
-        }
-
-        if ($calcSig != $sig) {
-            throw $this->createNotFoundException();
-            $logger->info('\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Error invalid signature. MB sig - '. $calcSig . '; sig - 0' .  $sig);
-        }
-
-        if ($order->getPaid()) {
-            return $response;
-        }
-
-        foreach ($order->getPackages() as $package)
-        {
-            if ($package->getIsPaid() || $total <= 0) {
-                continue;
-            }
-            ($package->getDebt() >= $total) ? $sum = $total : $sum = $package->getDebt();
-
-            $doc = new CashDocument();
-            $doc->setTotal($sum)
-                ->setMethod('electronic')
-                ->setNote('Payment system: order #' . $order->getId())
-                ->setOperation('in')
-                ->setPackage($package)
-                ->setPayer($package->getMainTourist())
-            ;
-            $dm->persist($doc);
+        if ($cashDocument && !$cashDocument->getIsPaid()) {
+            $cashDocument->setIsPaid(true);
+            $dm->persist($cashDocument);
             $dm->flush();
-
-            $this->container->get('mbh.calculation')->setPaid($package);
-            $dm->persist($package);
-            $dm->flush();
-
-            $total -= $sum;
         }
 
-        $order->setPaid(true);
-        $dm->persist($order);
-        $dm->flush();
+        $logger->info('OK. '.$logText);
 
-        return $response;
+        return new Response($response['text']);
     }
 
     /**
@@ -178,10 +114,10 @@ class ApiController extends Controller
         return [
             'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
             'urls' => [
-                'table' => $this->generateUrl('online_form_results_table', [], true ),
-                'user_form'  => $this->generateUrl('online_form_user_form', [], true ),
-                'payment_type'  => $this->generateUrl('online_form_payment_type', [], true ),
-                'results' => $this->generateUrl('online_form_packages_create', [], true ),
+                'table' => $this->generateUrl('online_form_results_table', [], true),
+                'user_form' => $this->generateUrl('online_form_user_form', [], true),
+                'payment_type' => $this->generateUrl('online_form_payment_type', [], true),
+                'results' => $this->generateUrl('online_form_packages_create', [], true),
             ]
         ];
     }
@@ -204,8 +140,8 @@ class ApiController extends Controller
         $query->isOnline = true;
         $query->begin = $helper->getDateFromString($request->get('begin'));
         $query->end = $helper->getDateFromString($request->get('end'));
-        $query->adults = (int) $request->get('adults');
-        $query->children = (int) $request->get('children');
+        $query->adults = (int)$request->get('adults');
+        $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
         $query->addRoomType($request->get('roomType'));
         $query->addHotel($dm->getRepository('MBHHotelBundle:Hotel')->find($request->get('hotel')));
@@ -284,7 +220,7 @@ class ApiController extends Controller
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
         //Create packages
-        $order = $this->createPackages($request);
+        $order = $this->createPackages($request, $request->paymentType != 'in_hotel');
 
         if (empty($order)) {
             return new JsonResponse([
@@ -295,26 +231,30 @@ class ApiController extends Controller
         $packages = iterator_to_array($order->getPackages());
         $this->sendNotifications($packages);
 
-        if(count($packages) > 1) {
+        if (count($packages) > 1) {
             $roomStr = $this->get('translator')->trans('controller.apiController.reservations_made_success');
             $packageStr = $this->get('translator')->trans('controller.apiController.your_reservations_numbers');
         } else {
             $roomStr = $this->get('translator')->trans('controller.apiController.room_reservation_made_success');
             $packageStr = $this->get('translator')->trans('controller.apiController.your_reservation_number');
         }
-        $message = $this->get('translator')->trans('controller.apiController.thank_you') . $roomStr . $this->get('translator')->trans('controller.apiController.we_will_call_you_back_soon') ;
-        $message .= $this->get('translator')->trans('controller.apiController.your_order_number')  . $order->getId() . '. ';
-        $message .= $packageStr . ': '. implode(', ', $packages) . '.';
+        $message = $this->get('translator')->trans('controller.apiController.thank_you').$roomStr.$this->get('translator')->trans('controller.apiController.we_will_call_you_back_soon');
+        $message .= $this->get('translator')->trans('controller.apiController.your_order_number').$order->getId().'. ';
+        $message .= $packageStr.': '.implode(', ', $packages).'.';
 
-        if ($request->paymentType == 'in_hotel') {
+        $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
+        if ($request->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
             $form = false;
         } else {
             $form = $this->container->get('twig')->render(
-                'MBHOnlineBundle:Api:' . $this->container->getParameter('mbh.online.form')['payment_system'] . '.html.twig' , [
-                    'total' => $request->total,
-                    'request' => $request,
-                    'order' => $order,
-                    'config' => $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([])
+                'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig', [
+                    'data' => array_merge(['test' => true,
+                        'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
+                            ['%total%' => number_format($request->total, 2), '%order_id%' => $order->getId()],
+                            'MBHOnlineBundle')
+                    ], $clientConfig->getFormData($order->getCashDocuments()[0],
+                        $this->generateUrl('online_form_check_order', [], true)))
                 ]
             );
         }
@@ -332,10 +272,10 @@ class ApiController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $users = $dm->getRepository('MBHUserBundle:User')->findBy(
-          ['emailNotifications' => true, 'enabled' => true, 'locked' => false]
+            ['emailNotifications' => true, 'enabled' => true, 'locked' => false]
         );
 
-        if(!count($users)) {
+        if (!count($users)) {
             return false;
         }
 
@@ -344,7 +284,9 @@ class ApiController extends Controller
             $recipients[] = [$user->getEmail() => $user->getFullName()];
         }
         try {
-            $this->get('mbh.mailer')->send($recipients, ['packages' => $packages], 'MBHOnlineBundle:Api:notification.html.twig');
+            $this->get('mbh.mailer')->send($recipients, ['packages' => $packages],
+                'MBHOnlineBundle:Api:notification.html.twig');
+
             return true;
         } catch (\Exception $e) {
 
@@ -353,11 +295,12 @@ class ApiController extends Controller
     }
 
     /**
-     * @param $request
+     * @param StdClass $request
+     * @param boolean $cash
      * @return Order|boolean
      *
      */
-    private function createPackages($request)
+    private function createPackages($request, $cash = false)
     {
         $packageData = $servicesData = [];
         foreach ($request->packages as $info) {
@@ -392,11 +335,12 @@ class ApiController extends Controller
                 ],
                 'status' => 'online',
                 'confirmed' => false
-            ], null, null);
+            ], null, null, $cash ? ['total' => (float)$request->total] : null);
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                 var_dump($e);
             };
+
             return false;
         }
 

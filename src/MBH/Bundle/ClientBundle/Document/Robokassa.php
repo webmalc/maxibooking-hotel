@@ -3,11 +3,14 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @ODM\EmbeddedDocument
  */
-class Robokassa
+class Robokassa  implements PaymentSystemInterface
 {
     /**
      * @var string
@@ -91,5 +94,23 @@ class Robokassa
     public function getRobokassaMerchantPass2()
     {
         return $this->robokassaMerchantPass2;
+    }
+
+    public function getFormData(CashDocument $cashDocument, $url = null)
+    {
+
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSignature(CashDocument $cashDocument, $url = null)
+    {
+        return '';
+    }
+
+    public function checkRequest(Request $request)
+    {
+
     }
 }

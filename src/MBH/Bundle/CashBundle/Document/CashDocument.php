@@ -300,13 +300,19 @@ class CashDocument extends Base
     }
 
     /**
-     * Get payer
-     *
-     * @return \MBH\Bundle\PackageBundle\Document\Tourist $payer
+     * @param bool $order
+     * @return mixed
      */
-    public function getPayer()
+    public function getPayer($order = false)
     {
-        return $this->payer;
+        if ($this->payer) {
+            return $this->payer;
+        }
+        if ($this->getOrder()->getMainTourist()) {
+            return $this->getOrder()->getMainTourist();
+        }
+
+        return null;
     }
 
     /**

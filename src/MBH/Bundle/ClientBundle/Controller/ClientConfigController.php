@@ -168,8 +168,8 @@ class ClientConfigController extends Controller  implements CheckHotelController
                     break;
                 case 'moneymail':
                     $moneymail = new Moneymail();
-                    $moneymail->setMoneymailKey($form->get('moneymailShopIDP')->getData())
-                        ->setMoneymailShopIDP($form->get('moneymailKey')->getData())
+                    $moneymail->setMoneymailShopIDP($form->get('moneymailShopIDP')->getData())
+                        ->setMoneymailKey($form->get('moneymailKey')->getData())
                     ;
                     $entity->setMoneymail($moneymail);
                     break;

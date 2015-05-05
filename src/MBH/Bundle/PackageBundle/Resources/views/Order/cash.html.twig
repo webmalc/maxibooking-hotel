@@ -68,9 +68,15 @@
                                         </a>
                                     {% endif %}
                                     {% if not cash.isPaid %}
-                                        <a data-action='cashDocumentPay' data-header='{{ 'order.cash.pay_payment'|trans({}, 'MBHPackageBundle') }}' data-text='{{ 'order.cash.are_you_sure_to_pay_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?' data-button='{{ 'order.cash.pay'|trans({}, 'MBHPackageBundle') }}' data-button-icon='fa-check' data-button-class='primary' href='{{ path('cash_pay', { 'id': cash.id}) }}' class='btn btn-warning btn-xs delete-link' title='{{ 'order.cash.pay_payment'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
-                                            <i class='fa fa-ruble'></i>
-                                        </a>
+                                        {% if cash.operation == 'in' and cash.method == 'electronic' %}
+                                            {% if clientConfig and clientConfig.paymentSystem %}
+                                                {% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': clientConfig.getFormData(cash, url('online_form_check_order'))|merge({'buttonClasses': 'btn-xs', 'test': true})} %}
+                                            {% endif %}
+                                        {% else %}
+                                            <a data-action='cashDocumentPay' data-header='{{ 'order.cash.pay_payment'|trans({}, 'MBHPackageBundle') }}' data-text='{{ 'order.cash.are_you_sure_to_pay_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?' data-button='{{ 'order.cash.pay'|trans({}, 'MBHPackageBundle') }}' data-button-icon='fa-check' data-button-class='primary' href='{{ path('cash_pay', { 'id': cash.id}) }}' class='btn btn-warning btn-xs delete-link' title='{{ 'order.cash.pay_payment'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
+                                                <i class='fa fa-ruble'></i>
+                                            </a>
+                                        {% endif %}
                                     {% endif %}
                                     {% if is_granted('ROLE_BOOKKEEPER') %}
                                     <a target="_blank" href="{{ path('cash_edit', { 'id': cash.id }) }}" class="btn btn-success btn-xs" title="{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">

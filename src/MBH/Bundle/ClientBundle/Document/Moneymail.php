@@ -3,11 +3,14 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @ODM\EmbeddedDocument
  */
-class Moneymail
+class Moneymail implements PaymentSystemInterface
 {
     /**
      * @var string
@@ -63,5 +66,71 @@ class Moneymail
     public function getMoneymailKey()
     {
         return $this->moneymailKey;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFormData(CashDocument $cashDocument, $url = null)
+    {
+        $payer = $cashDocument->getPayer(true);
+        $createdAt = clone $cashDocument->getCreatedAt();
+        $createdAt->modify('+30 minutes');
+
+        return [
+            'action' => 'https://cardpay.krasplat.ru/pay',
+            'testAction' => 'https://testcardpay.krasplat.ru/pay',
+            'shopId' => $this->getMoneymailShopIDP(),
+            'total' => $cashDocument->getTotal(),
+            'orderId' => $cashDocument->getId(),
+            'touristId' => $payer ? $payer->getId() : $cashDocument->getId(),
+            'url' => $url,
+            'time' => 60 * 30,
+            'disabled' => $createdAt <= new \DateTime(),
+            'touristEmail' => $payer ? $payer->getEmail() : null,
+            'comment' => '# ' . $cashDocument->getId(),
+            'signature' => $this->getSignature($cashDocument, $url),
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSignature(CashDocument $cashDocument, $url = null)
+    {
+        $payer = $cashDocument->getPayer(true);
+        $sig = $this->getMoneymailShopIDP() . $cashDocument->getId() . $cashDocument->getTotal();
+        $sig .= $payer ? $payer->getId() : $cashDocument->getId();
+        $sig .= $url . $this->getMoneymailKey();
+
+        return strtoupper(str_replace('-', '', md5($sig)));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function checkRequest(Request $request)
+    {
+        $cashDocumentId = $request->get('Order_IDP');
+        $shopId = $request->get('Shop_IDP');
+        $status = $request->get('Status');
+        $cyberSourceTransactionNumber = $request->get('CyberSourceTransactionNumber');
+        $requestSignature = $request->get('Signature');
+
+        if (!$cashDocumentId || !$shopId || !$status || !$requestSignature || $status != 'AS000') {
+            return false;
+        }
+
+        $signature = $cashDocumentId . $status . $shopId . $cyberSourceTransactionNumber . $this->getMoneymailKey();
+        $signature = strtoupper(str_replace('-', '', md5($signature)));
+
+        if ($signature != $requestSignature) {
+            return false;
+        }
+
+        return [
+            'doc' => $cashDocumentId,
+            'text' => 'OK'
+        ];
     }
 }

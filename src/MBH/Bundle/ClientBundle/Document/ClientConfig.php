@@ -4,6 +4,8 @@ namespace MBH\Bundle\ClientBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -187,5 +189,33 @@ class ClientConfig extends Base
         }
 
         return null;
+    }
+
+    /**
+     * @param CashDocument $cashDocument
+     * @param null $url
+     * @return array
+     */
+    public function getFormData(CashDocument $cashDocument, $url = null)
+    {
+        $doc = $this->getPaymentSystemDoc();
+        if (!$doc || $cashDocument->getOperation() != 'in' || $cashDocument->getMethod() != 'electronic' || $cashDocument->getIsPaid()) {
+            return [];
+        }
+
+        return $doc->getFormData($cashDocument, $url);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function checkRequest(Request $request)
+    {
+        $doc = $this->getPaymentSystemDoc();
+        if (!$doc) {
+            return false;
+        }
+
+        return $doc->checkRequest($request);
     }
 }
