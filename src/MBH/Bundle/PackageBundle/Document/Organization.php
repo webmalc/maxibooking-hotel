@@ -33,6 +33,7 @@ class Organization
     protected $id;
     /**
      * @ODM\String
+     * @Assert\NotBlank
      */
     protected $name;
     /**
@@ -45,6 +46,7 @@ class Organization
     protected $director_fio;
     /**
      * @ODM\String
+     * @Assert\NotBlank
      */
     protected $phone;
     /**
@@ -53,12 +55,14 @@ class Organization
     protected $email;
     /**
      * @ODM\String
+     * @Assert\NotBlank
      * @Assert\Length(min=10,max=12)
      * @Assert\Type(type="digit", message="Значение должно быть числом")
      */
     protected $inn;
     /**
      * @ODM\String
+     * @Assert\NotBlank
      * @Assert\Length(min=9,max=9)
      * @Assert\Type(type="digit", message="Значение должно быть числом")
      */
@@ -102,6 +106,7 @@ class Organization
      */
     protected $region;
     /**
+     * @Assert\NotBlank
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\City")
      */
     protected $city;
@@ -124,7 +129,7 @@ class Organization
     /**
      * @ODM\String
      */
-    protected $index;
+protected $index;
     /**
      * @ODM\String
      */
@@ -143,6 +148,7 @@ class Organization
     protected $checking_account;
     /**
      * @ODM\String
+     * @Assert\NotBlank
      * @Assert\Choice(
      *      choices = {"contragents", "my"}
      * )
