@@ -1,0 +1,18 @@
+{% extends 'MBHPackageBundle:Organization:layout.html.twig' %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/organizations/create.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% set small_title = 'organizations.breadcrumbs.edit'|trans({}, 'MBHPackageBundle') %}
+
+{% block content %}
+    {{ form_start(form, {'action': path('edit_organization', {id: organization.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': organization, 'delete_route': 'organization_delete', confirm_text: 'organizations.confirm_delete'|trans({'%organization_name%': organization.name}, 'MBHPackageBundle')} %}
+    {{ form_end(form) }}
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'MBHPackageBundle:Organization:layout.html.twig' %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/organizations/list.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block content %}
+
+    <ul class="nav nav-tabs" role="tablist" style="margin-bottom: 10px">
+        {% for t, name in types %}
+            <li {% if t == type %} class="active" {% endif %}>
+                <a href="{{ path('organizations', {type: t}) }}">
+                    <i class="fa fa-users"></i> {{ name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <table id="organizations-table" data-type="{{ type }}"
+           class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xxs"></th>
+            <th class="td-md">{{ 'form.organizationType.name'|trans({}) }}</th>
+            <th class="td-md">{{ 'form.organizationType.inn'|trans({}) }}</th>
+            <th class="td-md">{{ 'form.organizationType.address'|trans({}) }}</th>
+            <th class="td-md">{{ 'form.organizationType.phone'|trans({}) }}</th>
+            <th class="td-md">{% if type == 'my' %} {{  'form.organizationType.default_hotels'|trans({}) }} {% else %} {{  'form.organizationType.comment'|trans({}) }} {% endif %}</th>
+            <th class="td-xs"></th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tbody>
+    </table>
+
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'create_organization'} %}
+{% endblock %}

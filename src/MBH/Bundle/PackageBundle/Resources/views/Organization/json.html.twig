@@ -1,0 +1,25 @@
+{% for organization in organizations %}
+    <tr role="row" class="odd">
+        <td>
+            <i class="fa fa-building"></i>
+        </td>
+        <td>
+            {{ organization.name }}
+        </td>
+        <td>
+            {{ organization.inn }}
+        </td>
+        <td>
+            {{ organization.city }}
+        </td>
+        <td>
+            {{ organization.phone }}
+        </td>
+        <td>
+            {{ organization.comment|nl2br }}
+        </td>
+        <td class="text-center">
+            {{ organization.created_at|date('d.m.Y') }}
+        </td>
+    </tr>
+{% endfor %}

@@ -1,0 +1,17 @@
+{% extends 'MBHPackageBundle:Organization:layout.html.twig' %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/organizations/create.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% set small_title = 'organizations.breadcrumbs.add'|trans({}, 'MBHPackageBundle') %}
+
+{% block content %}
+    {{ form_start(form, {'action': path('create_organization'), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+    {{ form_end(form) }}
+{% endblock %}
