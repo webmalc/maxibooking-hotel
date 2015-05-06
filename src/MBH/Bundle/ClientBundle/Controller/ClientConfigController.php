@@ -4,7 +4,11 @@ namespace MBH\Bundle\ClientBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Document\Moneymail;
+use MBH\Bundle\ClientBundle\Document\Payanyway;
+use MBH\Bundle\ClientBundle\Document\Robokassa;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
+use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -72,7 +76,7 @@ class ClientConfigController extends Controller  implements CheckHotelController
             $dm->flush();
 
             $request->getSession()->getFlashBag()
-                ->set('success', 'Параметры успешно сохранены.')
+                ->set('success', $this->get('translator')->trans('controller.clientConfig.params_success_save'))
             ;
 
             return $this->redirect($this->generateUrl('client_config'));
@@ -84,4 +88,110 @@ class ClientConfigController extends Controller  implements CheckHotelController
             'logs' => $this->logs($entity),
         ];
     }
+
+    /**
+     * Payment system configuration page
+     * @Route("/payment_system", name="client_payment_system")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template()
+     */
+    public function paymentSystemAction()
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $entity = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
+        $form = $this->createForm(
+            new ClientPaymentSystemType(),
+            $entity,
+            [
+                'paymentTypes' => $this->container->getParameter('mbh.payment_systems'),
+                'entity' => $entity,
+                'change' => $this->container->getParameter('mbh.payment_systems.change'),
+                'default' => $this->container->getParameter('mbh.payment_systems.default'),
+            ]
+        );
+
+        return [
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        ];
+    }
+
+    /**
+     * Payment system configuration save
+     * @Route("/payment_system/save", name="client_payment_system_save")
+     * @Method("POST")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template("MBHClientBundle:ClientConfig:paymentSystem.html.twig")
+     * @param $request Request
+     * @return array
+     */
+    public function paymentSystemSaveAction(Request $request)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $entity = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
+        $form = $this->createForm(
+            new ClientPaymentSystemType(),
+            $entity,
+            [
+                'paymentTypes' => $this->container->getParameter('mbh.payment_systems'),
+                'entity' => $entity,
+                'change' => $this->container->getParameter('mbh.payment_systems.change'),
+                'default' => $this->container->getParameter('mbh.payment_systems.default'),
+            ]
+        );
+
+        $form->submit($request);
+
+        if ($form->isValid()) {
+
+            switch ($entity->getPaymentSystem()) {
+                case 'robokassa':
+                    $robokassa = new Robokassa();
+                    $robokassa->setRobokassaMerchantLogin($form->get('robokassaMerchantLogin')->getData())
+                        ->setRobokassaMerchantPass1($form->get('robokassaMerchantPass1')->getData())
+                        ->setRobokassaMerchantPass2($form->get('robokassaMerchantPass2')->getData())
+                        ;
+                    $entity->setRobokassa($robokassa);
+                    break;
+                case 'payanyway':
+                    $payanyway = new Payanyway();
+                    $payanyway->setPayanywayKey($form->get('payanywayKey')->getData())
+                        ->setPayanywayMntId($form->get('payanywayMntId')->getData())
+                    ;
+                    $entity->setPayanyway($payanyway);
+                    break;
+                case 'moneymail':
+                    $moneymail = new Moneymail();
+                    $moneymail->setMoneymailShopIDP($form->get('moneymailShopIDP')->getData())
+                        ->setMoneymailKey($form->get('moneymailKey')->getData())
+                    ;
+                    $entity->setMoneymail($moneymail);
+                    break;
+                default:
+                    break;
+            }
+
+            $dm->persist($entity);
+            $dm->flush();
+
+            $request->getSession()->getFlashBag()
+                ->set('success', $this->get('translator')->trans('controller.clientConfig.params_success_save'))
+            ;
+
+            return $this->redirect($this->generateUrl('client_payment_system'));
+        }
+
+        return [
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        ];
+    }
+
 }

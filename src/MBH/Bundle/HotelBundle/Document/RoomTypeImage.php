@@ -140,9 +140,7 @@ class RoomTypeImage
 
     public function getWebPath()
     {
-        return null === $this->path
-            ? null
-            : $this->getUploadDir().'/'.$this->path;
+        return null === $this->path ? null : $this->path;
     }
 
     /**
@@ -174,25 +172,6 @@ class RoomTypeImage
         return null;
 
     }
-
-//    /**
-//     * @return $this
-//     */
-//    public function imageDelete()
-//    {
-//        if (empty($this->image)) {
-//            return $this;
-//        }
-//
-//        $path = $this->getUploadRootDir() . '/' . $this->image;
-//        if (file_exists($path) && is_readable($path)) {
-//            unlink($this->getUploadDir() . '/' . $this->image);
-//        }
-//
-//        $this->image = null;
-//
-//        return $this;
-//    }
 
     /**
      * Get id

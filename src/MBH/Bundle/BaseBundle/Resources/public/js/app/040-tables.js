@@ -42,7 +42,6 @@ window.universalAddExcelButtons = function($table, $container)
 /*global window */
 $(document).ready(function() {
     'use strict';
-
     //Select row
     $('table.table-striped').on('click', 'tbody tr', function() {
         $(this).siblings().removeClass('warning');
@@ -52,7 +51,6 @@ $(document).ready(function() {
     //Dblclick href
     $('table.table-striped').on('dblclick', 'tbody tr', function() {
         var link = $(this).find('a[rel="main"]');
-
         if (link.length) {
             window.location.href = link.attr('href');
         }

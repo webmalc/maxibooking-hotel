@@ -46,6 +46,8 @@ form.roomTypeGenerateRoomsType.prefix: Префикс
 form.roomTypeGenerateRoomsType.prefix_example: Префикс для названия. Пример: HTL-12
 form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: Номер первой комнаты не может быть меньше номера последней.
 form.roomTypeGenerateRoomsType.too_many_generation_numbers: Слишком большое количество номеров для генерации.
+form.roomTypeGenerateRoomsType.housing: Корпус
+form.roomTypeGenerateRoomsType.floor: Этаж
 form.roomTypeType.name: Название
 form.roomTypeType.general_info: Общаяя информация
 form.roomTypeType.comfort_plus: Комфорт плюс

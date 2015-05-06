@@ -110,6 +110,14 @@ class CashDocument extends Base
     protected $isConfirmed = false;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isPaid = true;
+
+    /**
      * Set method
      *
      * @param string $method
@@ -250,6 +258,28 @@ class CashDocument extends Base
     }
 
     /**
+     * Set $isPaid
+     *
+     * @param boolean $isPaid
+     * @return self
+     */
+    public function setIsPaid($isPaid)
+    {
+        $this->isPaid = $isPaid;
+        return $this;
+    }
+
+    /**
+     * Get $isPaid
+     *
+     * @return boolean $isPaid
+     */
+    public function getIsPaid()
+    {
+        return $this->isPaid;
+    }
+
+    /**
      * @return \MBH\Bundle\HotelBundle\Document\Hotel
      */
     public function getHotel()
@@ -270,13 +300,19 @@ class CashDocument extends Base
     }
 
     /**
-     * Get payer
-     *
-     * @return \MBH\Bundle\PackageBundle\Document\Tourist $payer
+     * @param bool $order
+     * @return mixed
      */
-    public function getPayer()
+    public function getPayer($order = false)
     {
-        return $this->payer;
+        if ($this->payer) {
+            return $this->payer;
+        }
+        if ($this->getOrder()->getMainTourist()) {
+            return $this->getOrder()->getMainTourist();
+        }
+
+        return null;
     }
 
     /**

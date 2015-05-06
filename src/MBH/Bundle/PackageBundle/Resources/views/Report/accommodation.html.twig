@@ -9,19 +9,36 @@
     <div class="tab-content">
         <div class="tab-pane active" id="home">
 
-            <div class="well">
-                <form id="accommodation-report-filter" class="form-inline" role="form">
+            <div class="well" id="accommodation-report-filter-well">
+                <form id="accommodation-report-filter" class="form-inline filter-form" role="form">
                     <div class="input">
-                        <i class="fa fa-calendar" title='{{ "report.accommodation.dates"|trans({}, "MBHPackageBundle")}}' data-toggle='tooltip'></i>&nbsp <input value="{{ "now"|date('d.m.Y') }}" type="text" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter form-control input-sm" data-date-format="dd.mm.yyyy">
+                        <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
+                        <input type="text" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
                     </div>
                     <div class="input">
-                        <i class="fa fa-home" title='{{ "report.accommodation.room_type"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i>&nbsp  <select data-placeholder="Тип номера" id="accommodation-report-filter-roomType" class="accommodation-report-filter form-control input-sm">
+                        - &nbsp
+                        <input type="text" id="accommodation-report-filter-end" class="datepicker accommodation-report-filter end-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ? 'now'|date_modify("+45 days")|date('d.m.Y') : app.request.get('end') }}">
+                    </div>
+
+                    <div class="input">
+                        <i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="Тип номера" id="accommodation-report-filter-roomType" class="accommodation-report-filter form-control input-sm">
                             <option></option>
                             {% for roomType in roomTypes %}
-                                <option value="{{ roomType.id }}">{{ roomType.name }}</option>
+                                <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
+
+                    {% if housings|length %}
+                        <div class="input">
+                            <i class="fa fa-bed" title='Корпус' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="Корпус" id="accommodation-report-filter-roomType" class="accommodation-report-filter form-control input-sm">
+                                <option></option>
+                                {% for roomType in roomTypes %}
+                                    <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
                 </form>
             </div>
 

@@ -1,0 +1,7 @@
+<form method="post" action="{{ data.test is defined ? data.testAction|default('') : data.action|default('') }}">
+    <input type="hidden" name="MrchLogin" value="{{ data.shopId|default('') }}">
+    <input type="hidden" name="OutSum" value="{{ data.total|default('') }}">
+    <input type="hidden" name="InvId" value="{{ data.orderId|default('') }}">
+    <input type="hidden" name="SignatureValue" value="{{ data.signature|default('')}}">
+    {% include 'MBHClientBundle:PaymentSystem:button.html.twig' with {'data': data} %}
+</form>

@@ -1,2 +1,14 @@
 form.clientConfigType.sms_notification: Смс оповещение?
 form.clientConfigType.is_sms_notification_turned_on: Включено ли смс оповещение клиентов?
+form.clientPaymentSystemType.payment_system: Платежная система
+form.clientPaymentSystemType.robokassa_service: Сервис ROBOKASSA
+form.clientPaymentSystemType.payanyway_service: Сервис PAYANYWAY
+form.clientPaymentSystemType.moneymail_service: Сервис MoneyMail
+form.clientPaymentSystemType.moneymail_shop_id: ID магазина (Shop_IDP)
+form.clientPaymentSystemType.moneymail_key: Ключ магазина (Key)
+form.clientPaymentSystemType.shop_login: Логин магазина
+form.clientPaymentSystemType.password_one: Пароль 1
+form.clientPaymentSystemType.password_two: Пароль 2
+form.clientPaymentSystemType.extended_account_number: Номер расширенного счета
+form.clientPaymentSystemType.data_integrity_code: Код проверки целостности данных
+controller.clientConfig.params_success_save: 'Параметры успешно сохранены.'

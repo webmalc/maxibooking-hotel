@@ -4,5 +4,6 @@ form.cashDocumentType.sum: Сумма
 form.cashDocumentType.payment_way: Способ оплаты
 form.cashDocumentType.operation_type: Вид операции
 form.cashDocumentType.comment: Комментарий
+form.cashDocumentType.is_paid: Оплачен?
 controller.cashController.edit_record_success: 'Запись успешно отредактирована.'
 controller.cashController.payment_confirmed_success: 'Платеж успешно подтвержден'

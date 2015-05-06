@@ -12,7 +12,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 
 /**
- * @ODM\Document(collection="Order")
+ * @ODM\Document(collection="Order", repositoryClass="MBH\Bundle\PackageBundle\Document\OrderRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks

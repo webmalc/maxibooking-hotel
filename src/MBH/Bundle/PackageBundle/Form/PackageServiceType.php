@@ -83,14 +83,23 @@ class PackageServiceType extends AbstractType
                     'attr' => ['class' => 'spinner sm']
                 ]
             )
-            ->add('date', 'date', array(
-                    'label' => 'Дата',
+            ->add('begin', 'date', array(
+                    'label' => 'Дата начала',
                     'group' => $options['form_label'],
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
-                    'data' => $options['package']->getBegin(),
-                    'required' => true,
+
+                    'required' => false,
                     'attr' => array('class' => 'datepicker sm', 'data-date-format' => 'dd.mm.yyyy'),
+            ))
+            ->add('end', 'date', array(
+                'label' => 'Дата окончания',
+                'group' => $options['form_label'],
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+
+                'required' => false,
+                'attr' => array('class' => 'datepicker sm', 'data-date-format' => 'dd.mm.yyyy'),
             ))
             ->add(
                 'time',

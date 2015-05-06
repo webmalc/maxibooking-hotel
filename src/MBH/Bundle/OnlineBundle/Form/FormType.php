@@ -54,7 +54,7 @@ class FormType extends AbstractType
                 'nights',
                 'checkbox',
                 [
-                    'label' => 'form.formType.should_we_use_nochi_field?',
+                    'label' => 'form.formType.should_we_use_nochi_field',
                     'group' => 'form.formType.parameters',
                     'value' => true,
                     'required' => false,
@@ -73,66 +73,6 @@ class FormType extends AbstractType
                 ]
             )
         ;
-
-        if(empty($options['paymentSystem']) || $options['paymentSystem'] == 'robokassa') {
-            $builder
-                ->add(
-                    'robokassaMerchantLogin',
-                    'text',
-                    [
-                        'group' => 'form.formType.robokassa_service',
-                        'label' => 'form.formType.shop_login',
-                        'required' => false,
-                        'attr' => ['class' => 'paysystem-params']
-                    ]
-                )
-                ->add(
-                    'robokassaMerchantPass1',
-                    'text',
-                    [
-                        'group' => 'form.formType.robokassa_service',
-                        'label' => 'form.formType.password_one',
-                        'required' => false,
-                        'attr' => ['class' => 'paysystem-params']
-                    ]
-                )
-                ->add(
-                    'robokassaMerchantPass2',
-                    'text',
-                    [
-                        'group' => 'form.formType.robokassa_service',
-                        'label' => 'form.formType.password_two',
-                        'required' => false,
-                        'attr' => ['class' => 'paysystem-params']
-                    ]
-                )
-            ;
-        }
-
-        if(!empty($options['paymentSystem']) && $options['paymentSystem'] == 'payanyway') {
-            $builder
-                ->add(
-                    'payanywayMntId',
-                    'text',
-                    [
-                        'group' => 'form.formType.robokassa_service',
-                        'label' => 'form.formType.extended_account_number',
-                        'required' => false,
-                        'attr' => ['class' => 'paysystem-params']
-                    ]
-                )
-                ->add(
-                    'payanywayKey',
-                    'text',
-                    [
-                        'group' => 'form.formType.robokassa_service',
-                        'label' => 'form.formType.data_integrity_code',
-                        'required' => false,
-                        'attr' => ['class' => 'paysystem-params']
-                    ]
-                )
-            ;
-        }
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
@@ -142,7 +82,6 @@ class FormType extends AbstractType
                 'data_class' => 'MBH\Bundle\OnlineBundle\Document\FormConfig',
                 'paymentTypes' => [],
                 'isHostel' => false,
-                'paymentSystem' => null,
             )
         );
     }

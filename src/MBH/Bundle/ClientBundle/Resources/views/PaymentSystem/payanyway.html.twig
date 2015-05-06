@@ -1,0 +1,9 @@
+<form method="post" action="{{ data.test is defined ? data.testAction|default('') : data.action|default('') }}">
+    <input type="hidden" name="MNT_ID" value="{{ data.shopId|default('') }}">
+    <input type="hidden" name="MNT_TRANSACTION_ID" value="{{ data.orderId|default('') }}">
+    <input type="hidden" name="MNT_CURRENCY_CODE" value="RUB">
+    <input type="hidden" name="MNT_TEST_MODE" value="{{ data.test is defined ? 1 : 0}}">
+    <input type="hidden" name="MNT_AMOUNT" value="{{ data.total|default('') }}">
+    <input type="hidden" name="MNT_SIGNATURE" value="{{ data.signature|default('') }}">
+    {% include 'MBHClientBundle:PaymentSystem:button.html.twig' with {'data': data} %}
+</form>

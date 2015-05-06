@@ -1,0 +1,10 @@
+services:
+    mbh.online.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, [@mbh.online.logger_handler]]
+
+    mbh.online.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: [%kernel.logs_dir%/%kernel.environment%.online.log, 200]

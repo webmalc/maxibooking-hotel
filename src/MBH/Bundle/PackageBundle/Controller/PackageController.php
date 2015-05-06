@@ -79,6 +79,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $now = new \DateTime('midnight');
         $tomorrow = new \DateTime('midnight +1 day');
 
+        $data['deleted'] = false;
+
         //begin today count
         $data = [
             'count' => true,
@@ -542,10 +544,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 }
                 if ($packageService->getService()->getDate() == false){
                     $date = date_create($request->get('mbh_bundle_packagebundle_package_service_type')['time']);
-                    $packageService->setDate($date->getTimestamp());
+                    $packageService->setBegin($date->getTimestamp());
                 } else {
-                    $date = date_create($request->get('mbh_bundle_packagebundle_package_service_type')['date'] . ' ' . $request->get('mbh_bundle_packagebundle_package_service_type')['time']);
-                    $packageService->setDate($date->getTimestamp());
+                    $date = date_create($request->get('mbh_bundle_packagebundle_package_service_type')['begin'] . ' ' . $request->get('mbh_bundle_packagebundle_package_service_type')['time']);
+                    $packageService->setBegin($date->getTimestamp());
                 }
                 $dm->persist($packageService);
                 $dm->flush();
@@ -627,7 +629,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             new PackageServiceType(),
             $service,
             ['package' => $entity, 'serviceId' => $service->getService()->getId(), 'form_label' => $this->container->get('translator')->trans('form.packageServiceType.edit_service'),
-                'time' => $service->getDate()->format('H:i')]
+                'time' => $service->getBegin()->format('H:i')]
         );
 
         if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
@@ -636,8 +638,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             if ($form->isValid()) {
                 $data = $form->getData();
                 $service->setService($dm->getRepository('MBHPriceBundle:Service')->find($request->get("mbh_bundle_packagebundle_package_service_type")["service"] ));
-                $date = date_create($request->get('mbh_bundle_packagebundle_package_service_type')['date'] . ' ' . $request->get('mbh_bundle_packagebundle_package_service_type')['time']);
-                $service->setDate($date->getTimestamp());
+                $date = date_create($request->get('mbh_bundle_packagebundle_package_service_type')['begin'] . ' ' . $request->get('mbh_bundle_packagebundle_package_service_type')['time']);
+                $service->setBegin($date->getTimestamp());
                 $dm->persist($service);
                 $dm->flush();
 

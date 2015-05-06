@@ -45,7 +45,7 @@ class PackageSubscriber implements EventSubscriber
             $this->container->get('mbh.room.cache')->recalculate(
                 $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff()
             );
-            //$this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
+            $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
         }
     }
 
@@ -58,7 +58,7 @@ class PackageSubscriber implements EventSubscriber
             $this->container->get('mbh.room.cache')->recalculate(
                 $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff(), false
             );
-            //$this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
+            $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
         }
     }
 

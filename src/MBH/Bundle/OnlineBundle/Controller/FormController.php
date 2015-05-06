@@ -37,8 +37,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
             $entity,
             [
                 'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types'],
-                'isHostel' => $hostel,
-                'paymentSystem' => $this->container->getParameter('mbh.online.form')['payment_system']
+                'isHostel' => $hostel
             ]
         );
 
@@ -74,8 +73,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
             $entity,
             [
                 'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types'],
-                'isHostel' => $hostel,
-                'paymentSystem' => $this->container->getParameter('mbh.online.form')['payment_system']
+                'isHostel' => $hostel
             ]
         );
 

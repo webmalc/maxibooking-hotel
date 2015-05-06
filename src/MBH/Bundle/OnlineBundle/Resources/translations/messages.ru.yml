@@ -6,17 +6,11 @@ form.formType.parameters: Параметры
 form.formType.should_we_use_room_type_field_in_online_form: Использовать ли поле "Тип номера" в онлайн форме?
 form.formType.are_there_guests: Гости?
 form.formType.should_we_use_guests_amount_field_in_online_form: Использовать ли поле "Количестов гостей" в онлайн форме?
-form.formType.should_we_use_nochi_field: Поле "ночи"
+form.formType.should_we_use_nochi_field: Поле "ночи"?
 form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: Использовать ли поле дату заезда и количестов ночей или дату заезда/выезда?
 form.formType.payment: Оплата
 form.formType.payment_type: Типы оплаты
 form.formType.reservation_payment_types_with_online_form: Типы оплаты при бронировании с помощью онлайн формы
-form.formType.robokassa_service: Сервис ROBOKASSA
-form.formType.shop_login: Логин магазина
-form.formType.password_one: Пароль 1
-form.formType.password_two: Пароль 2
-form.formType.extended_account_number: Номер расширенного счета
-form.formType.data_integrity_code: Код проверки целостности данных
 controller.apiController.reservation_error_occured_refresh_page_and_try_again: 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
 controller.apiController.reservations_made_success: 'Номера успешно забронированы.'
 controller.apiController.your_reservations_numbers: 'Номера ваших броней'

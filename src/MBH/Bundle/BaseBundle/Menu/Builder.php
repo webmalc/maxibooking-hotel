@@ -41,7 +41,7 @@ class Builder extends ContainerAware
         $menu['prices']->addChild('overview', ['route' => 'room_overview', 'label' => 'Обзор'])
             ->setAttributes(['icon' => 'fa fa-info-circle']);
         $menu['prices']->addChild('room_cache', ['route' => 'room_cache_overview', 'label' => 'Номера в продаже'])
-            ->setAttributes(['icon' => 'fa fa-home']);
+            ->setAttributes(['icon' => 'fa fa-bed']);
         $menu['prices']->addChild('price_cache', ['route' => 'price_cache_overview', 'label' => 'Цены'])
             ->setAttributes(['icon' => 'fa fa-ruble']);
         $menu['prices']->addChild('restrictions', ['route' => 'restriction_overview', 'label' => 'Условия и ограничения'])
@@ -61,7 +61,7 @@ class Builder extends ContainerAware
         $menu['reports']->addChild('analytics', ['route' => 'analytics', 'label' => 'Аналитика'])
              ->setAttributes(['icon' => 'fa fa-bar-chart']);
         $menu['reports']->addChild('clients', ['route' => 'tourist', 'label' => 'Клиенты'])
-            ->setAttributes(['icon' => 'fa fa-users']);
+            ->setAttributes(['icon' => 'fa fa-male']);
         $menu['reports']->addChild('organizations', ['route' => 'organizations', 'label' => 'Организации'])
             ->setAttributes(['icon' => 'fa fa-users']);
 

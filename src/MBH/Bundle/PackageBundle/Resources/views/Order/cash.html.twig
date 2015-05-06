@@ -29,47 +29,60 @@
                     <thead>
                     <tr>
                         <th class="td-xs"></th>
-                        <th class="td-md">{{ 'order.cash.income'|trans({}, 'MBHPackageBundle') }}</th>
-                        <th class="td-md">{{ 'order.cash.outcome'|trans({}, 'MBHPackageBundle') }}</th>
-                        <th class="td-md">{{ 'order.cash.payment_way'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-md text-right">{{ 'order.cash.income'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-md text-right">{{ 'order.cash.outcome'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-md">{{ 'order.cash.operation_type'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-md">{{ 'order.cash.date'|trans({}, 'MBHPackageBundle') }}</th>
+                        <th class="td-md text-center">{{ 'order.cash.is_paid'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-md">{{ 'order.cash.removed'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-md"></th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for cash in docs %}
-                        <tr {% if cash.deletedAt %}class="danger"{% endif %}>
+                        <tr class="{{ cash.isConfirmed is empty and cash.isPaid ? 'info' }} {{ cash.deletedAt ? 'danger' }} {{ cash.isPaid is empty ? 'transparent-tr' }}">
                             <td class="text-center"><i class='fa fa-ruble'></i></td>
                             <td class="text-right">
                                 {% if cash.operation not in ['fee', 'out'] %}
-                                    <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' rel='main' class='text-success' title='{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
+                                    <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' {{ is_granted('ROLE_BOOKKEEPER') ? 'rel="main"' }} class='text-success' title='{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
                                         {{ cash.total|number_format(2) }}
                                     </a>
                                 {% endif %}
                             </td>
                             <td class="text-right">
                                 {% if cash.operation in ['fee', 'out'] %}
-                                    <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' rel='main' class='text-danger' title='{{ 'order.cash.remove_record'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
+                                    <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' {{ is_granted('ROLE_BOOKKEEPER') ? 'rel="main"' }} class='text-danger' title='{{ 'order.cash.remove_record'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
                                         {{ cash.total|number_format(2) }}
                                     </a>
                                 {% endif %}
                             </td>
-                            <td>{{ methods[cash.method] }}</td>
-                            <td>{{ operations[cash.operation] }}</td>
+                            <td>{{ operations[cash.operation] }}<br><small>{{ methods[cash.method] }}</small></td>
                             <td>{{ cash.createdAt|date('d.m.Y') }}</td>
+                            <td class="text-center">{% if cash.isPaid is empty %}<span class="label label-danger">{{ 'order.cash.no'|trans({}, 'MBHPackageBundle') }}</span>{% endif %}</td>
                             <td>{% if cash.deletedAt %}{{ cash.deletedAt|date('d.m.Y') }}{% endif %}</td>
                             <td class="table-actions-td text-right">
-                                {% if checkPackagePermissions(entity) %}
-                                    {% if cash.isConfirmed == false %}
+                                {% if checkPackagePermissions(entity) and not cash.deletedAt %}
+                                    {% if not cash.isConfirmed and cash.isPaid and is_granted('ROLE_BOOKKEEPER') %}
                                         <a data-action='cashDocumentConfirmation' data-header='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?' data-button='{{ 'order.cash.confirm'|trans({}, 'MBHPackageBundle') }}' data-button-icon='fa-check' data-button-class='primary' href='{{ path('cash_confirm', { 'id': cash.id}) }}' class='btn btn-primary btn-xs delete-link' title='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
                                             <i class='fa fa-check'></i>
                                         </a>
                                     {% endif %}
+                                    {% if not cash.isPaid %}
+                                        {% if cash.operation == 'in' and cash.method == 'electronic' %}
+                                            {% if clientConfig and clientConfig.paymentSystem %}
+                                                {% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': clientConfig.getFormData(cash, url('online_form_check_order'))|merge({'buttonClasses': 'btn-xs', 'test': true})} %}
+                                            {% endif %}
+                                        {% else %}
+                                            <a data-action='cashDocumentPay' data-header='{{ 'order.cash.pay_payment'|trans({}, 'MBHPackageBundle') }}' data-text='{{ 'order.cash.are_you_sure_to_pay_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?' data-button='{{ 'order.cash.pay'|trans({}, 'MBHPackageBundle') }}' data-button-icon='fa-check' data-button-class='primary' href='{{ path('cash_pay', { 'id': cash.id}) }}' class='btn btn-warning btn-xs delete-link' title='{{ 'order.cash.pay_payment'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
+                                                <i class='fa fa-ruble'></i>
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if is_granted('ROLE_BOOKKEEPER') %}
                                     <a target="_blank" href="{{ path('cash_edit', { 'id': cash.id }) }}" class="btn btn-success btn-xs" title="{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
                                         <i class="fa fa-pencil-square-o"></i>
                                     </a>
+                                    {% endif %}
                                     {% if not cash.deletedAt %}
                                     <a href="{{ path('package_order_cash_delete', { 'id': entity.id, 'cash': cash.id, 'packageId': package.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ 'order.cash.remove_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
                                         <i class="fa fa-trash-o"></i>
@@ -91,7 +104,7 @@
 
             {{ form_start(form, {'action': path('package_order_cash_save', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity} %}
+            {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity, 'package': package} %}
             {{ form_end(form) }}
 
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}

@@ -48,8 +48,9 @@ class CashController extends Controller
         $sort = 'createdAt';
         $dir = 'desc';
         $order = $request->get('order')['0'];
-        if (!empty($order['column']) && in_array($order['column'], [2, 3, 6])) {
-            ($order['column'] == 2 || $order['column'] == 3) ? $sort = 'total' : $sort = 'createdAt';
+        if (!empty($order['column']) && in_array($order['column'], [2, 3, 5, 6, 7])) {
+            $sorts = [2 => 'total', 3 => 'total', 5  => 'createdAt', 6  => 'isPaid', 7  => 'deletedAt'];
+            $sort = $sorts[$order['column']];
             $dir = $order['dir'];
         }
         $qb->sort($sort, $dir);
@@ -62,21 +63,25 @@ class CashController extends Controller
             $qb->addOr($qb->expr()->field('prefix')->equals(new \MongoRegex('/.*' . $search . '.*/ui')));
         }
 
-        $begin = $end = null;
+        $begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
+        $end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
         //Dates
-        if (!empty($request->get('begin'))) {
-            $begin = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('begin') . ' 00:00:00');
-            $qb->field('createdAt')->gte($begin);
+        if (!$begin) {
+            $begin = new \DateTime('midnight -7 days');
         }
-
-        if (!empty($request->get('end'))) {
-            $end = \DateTime::createFromFormat('d.m.Y H:i:s', $request->get('end') . ' 00:00:00');
-            $qb->field('createdAt')->lte($end);
+        if (!$end) {
+            $end = new \DateTime('midnight +1 day');
         }
+        $qb->field('createdAt')->gte($begin);
+        $qb->field('createdAt')->lte($end);
 
         $orders = $this->container->get('mbh.package.permissions')->getAvailableOrders();
         $qb->field('order.id')->in($this->container->get('mbh.helper')->toIds($orders));
 
+
+        if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $dm->getFilterCollection()->disable('softdeleteable');
+        }
         $entities = $qb->getQuery()->execute();
 
         return [
@@ -196,13 +201,44 @@ class CashController extends Controller
     }
 
     /**
-     * Delete entity.
+     * Confirm entity.
      *
      * @Route("/{id}/confirm", name="cash_confirm", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_BOOKKEEPER')")
      */
-    public function confirmAction(Request $request, $id)
+    public function confirmAction($id)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $dm->getFilterCollection()->disable('softdeleteable');
+        $entity = $dm->getRepository('MBHCashBundle:CashDocument')->find($id);
+        $dm->getFilterCollection()->enable('softdeleteable');
+
+        if (!$entity || !$entity->getIsPaid() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+            return new JsonResponse([
+                'error' => true,
+                'message' => 'CashDocument not found'
+            ]);
+        }
+        $entity->setIsConfirmed(true);
+        $dm->persist($entity);
+        $dm->flush();
+
+        return new JsonResponse([
+            'error' => false,
+            'message' => $this->get('translator')->trans('controller.cashController.payment_confirmed_success')
+        ]);
+    }
+
+    /**
+     * Pay entity.
+     *
+     * @Route("/{id}/pay", name="cash_pay", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_BOOKKEEPER'])")
+     */
+    public function payAction($id)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
@@ -216,7 +252,7 @@ class CashController extends Controller
                 'message' => 'CashDocument not found'
             ]);
         }
-        $entity->setIsConfirmed(true);
+        $entity->setIsPaid(true);
         $dm->persist($entity);
         $dm->flush();
 

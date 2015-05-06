@@ -1,4 +1,4 @@
-{% if entity.deletedAt is empty %}
+{% if entity.deletedAt is empty and checkPackagePermissions(package) %}
 
     <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
         <div class="container-fluid">

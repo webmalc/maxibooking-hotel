@@ -32,8 +32,8 @@
                     <td class="mbh-left">
                         <span class="mbh-results-tariff"
                               data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
-                        {% if result.roomType.getImage(true) is not empty %}
-                            <img class="mbh-roomType-image" src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}{{ result.roomType.getImage(true) }}">
+                        {% if result.roomType.getMainImage is not empty %}
+                            <img class="mbh-roomType-image" src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}{{ result.roomType.getMainImage.getWebPath }}">
                         {% endif %}
                         <span class="mbh-results-roomType"
                               data-id="{{ result.roomType.id }}">{{ result.roomType.fullTitle }}</span>
@@ -72,7 +72,6 @@
                             
                         {% endfor %}
 
-                        <span class="mbh-results-per-person" data-change="{{ result.roomType.calculationType == 'perRoom' ? 0 : 1 }}"> {{ 'views.api.getResultsTable.room_price'|trans({}, 'MBHOnlineBundle') }}</span>
 
                     </td>
                     <td class="mbh-center">
@@ -100,50 +99,6 @@
             {% endfor %}
         </table>
        </div>
-
-        {% if services|length %}
-        <div id="mbh-results-services-wrapper">
-            <h3>Услуги</h3>
-            <div id="mbh-results-services-table-wrapper">
-            <table id="mbh-results-services-table">
-                <thead>
-                    <tr>
-                        {% if hotels|length > 1 %}
-                        <th id="mbh-results-table-services-th-hotel">{{ 'views.api.getResultsTable.hotel'|trans({}, 'MBHOnlineBundle') }}</th>
-                        {% endif %}
-                        <th id="mbh-results-table-services-th-service"> {{ 'views.api.getResultsTable.service_type'|trans({}, 'MBHOnlineBundle') }}</th>
-                        <th id="mbh-results-table-services-th-price">{{ 'views.api.getResultsTable.price'|trans({}, 'MBHOnlineBundle') }}</th>
-                        <th id="mbh-results-table-services-th-amount">{{ 'views.api.getResultsTable.amount'|trans({}, 'MBHOnlineBundle') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for service in services %}
-                    <tr>
-                        {% if hotels|length > 1 %}
-                            <td class="mbh-left"><span class="mbh-results-services-hotel" data-id="{{ service.category.hotel.id }}">{{ service.category.hotel.fullTitle }}</span></td>
-                        {% endif %}
-                        <td class="mbh-left"><span class="mbh-results-services-name" data-id="{{ service.id }}">{{ service.fullTitle }}<br><small>{{ service.description }}</small></span></td>
-                        <td class="mbh-right">
-                            <span class="mbh-results-services-prices" data-value="{{ service.price }}">
-                                {{ service.price|number_format }} р.
-                            </span><br>
-                            <span class="mbh-results-services-per-service" data-type="{{ service.unit }}"> {{ 'views.api.getResultsTable.price_per'|trans({}, 'MBHOnlineBundle') }}{% if service.unit == 'piece' %}штуку{% elseif service.unit == 'day' %} {{ 'views.api.getResultsTable.day'|trans({}, 'MBHOnlineBundle') }}{% else %}час{% endif %}</span>
-                        </td>
-                        <td>
-                            <select class="mbh-results-services-count select2">
-                                <option value="0" selected="selected">0</option>
-                                {% for i in 1..100 %}
-                                <option value="{{ i }}">{{ i }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            </div>
-        </div>
-        {% endif %}
                         
         <div id="mbh-results-actions">
             <span id="mbh-results-packages-total"> {{ 'views.api.getResultsTable.rooms'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">р.</span></span> &nbsp;

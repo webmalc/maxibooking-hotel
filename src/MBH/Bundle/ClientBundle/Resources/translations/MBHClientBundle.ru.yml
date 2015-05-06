@@ -1,2 +1,4 @@
 views.clientConfig.index.editing: "редактирование"
 views.clientConfig.layout.parameters: "Параметры"
+client.tabs.params: 'Параметры'
+client.tabs.payment_system: 'Платежная система'

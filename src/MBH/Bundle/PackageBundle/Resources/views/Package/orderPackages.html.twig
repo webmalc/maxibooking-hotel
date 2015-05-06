@@ -1,10 +1,17 @@
 {% set packages = entity.order.packages %}
 {% if packages|length > 1 %}
 
+    {% set deleted = app.request.cookies.get('order-packages-panel-deleted') is not empty ? true : false %}
+
     <div class="panel panel-default order-packages-panel">
         <div class="panel-heading">
             <a class="panel-title" href="#">Заказ #{{ entity.order.id }} ({{ packages|length  }})
                 &nbsp;<i class="fa fa-caret-up"></i></a>
+
+            <div class="pull-right">
+                <i class="fa fa-trash-o" title='Удаленные?' data-toggle='tooltip'></i>&nbsp
+                <input type="checkbox" id="order-packages-panel-filter-deleted" class="package-filter" {{ deleted ? 'checked' }} value="1" />
+            </div>
         </div>
         <div class="panel-body">
             <table class="package-table table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable">
@@ -21,7 +28,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for package in packages %}
+                {% for package in packages if package.deletedAt is empty or deleted %}
+
                     <tr {% if package.deletedAt %}class="danger"{% endif %}>
                         <td class="text-center">
                             {% if package.id == entity.id %}<i class="fa fa-caret-right"></i>{% endif %}

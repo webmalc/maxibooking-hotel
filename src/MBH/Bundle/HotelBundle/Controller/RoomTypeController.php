@@ -328,8 +328,10 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             for ($i = (int) round($data['from']); $i <= (int) round($data['to']); $i++) {
                 $room = new Room();
                 $room->setFullTitle($data['prefix'] . $i)
-                        ->setRoomType($entity)
-                        ->setHotel($this->get('mbh.hotel.selector')->getSelected())
+                    ->setRoomType($entity)
+                    ->setHousing(!empty($data['housing']) ? $data['housing'] : null)
+                    ->setFloor(!empty($data['floor']) ? $data['floor'] : null)
+                    ->setHotel($this->get('mbh.hotel.selector')->getSelected())
                 ;
 
                 if (!count($this->get('validator')->validate(($room)))) {
