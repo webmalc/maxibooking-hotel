@@ -10,7 +10,7 @@
                 "{{ organization.location }}",
                 "{{ organization.phone }}",
                 "{% if organization.type == 'my' %} {{ organization.hotels|join(', ') }} {% else %} {{ organization.comment|replace({"\n":' ', "\r":' '}) }} {% endif %}",
-                "<div class='text-center'><a href='{{ path('edit_organization', {id:organization.id}) }}' class='btn btn-success btn-xs' data-toggle='tooltip'><i class='fa fa-pencil-square-o'></i></a><a href='{{ path('organization_delete', {id:organization.id}) }}' data-text='{{ 'organizations.confirm_delete'|trans({'%organization_name%' : organization.name}, 'MBHPackageBundle') }}' class='btn btn-danger btn-xs delete-link' data-toggle='tooltip'><i class='fa fa-trash-o'></i></a><div>"
+                "<div class='text-center btn-list'><a href='{{ path('edit_organization', {id:organization.id}) }}' class='btn btn-success btn-xs' data-toggle='tooltip'><i class='fa fa-pencil-square-o'></i></a><a href='{{ path('organization_delete', {id:organization.id}) }}' data-text='{{ 'organizations.confirm_delete'|trans({'%organization_name%' : organization.name}, 'MBHPackageBundle') }}' class='btn btn-danger btn-xs delete-link' data-toggle='tooltip'><i class='fa fa-trash-o'></i></a><div>"
             ] {% if key + 1 != organizations|length %} , {% endif %}
         {% endfor %}
     ]

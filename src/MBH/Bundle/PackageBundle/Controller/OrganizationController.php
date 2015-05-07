@@ -148,7 +148,8 @@ class OrganizationController extends Controller
 
         $form = $this->createForm(new OrganizationType($dm), $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
-            'id' => $organization->getId()
+            'id' => $organization->getId(),
+            'type' => OrganizationType::TYPE_EDIT
         ]);
 
         if ($request->isMethod('PUT')) {

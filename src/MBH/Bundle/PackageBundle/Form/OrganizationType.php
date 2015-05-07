@@ -22,6 +22,8 @@ class OrganizationType extends AbstractType
     const SCENARIO_FULL = 'sc_full';
     const SCENARIO_SHORT = 'sc_short';
 
+    const TYPE_EDIT = 'tp_edit';
+
     private $documentManager;
 
     public function __construct(\Doctrine\ODM\MongoDB\DocumentManager $documentManager)
@@ -32,6 +34,7 @@ class OrganizationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $scenario = $options['scenario'];
+        $type = $options['type'];
 
         if($scenario == self::SCENARIO_SHORT)
             $builder->add('organization', 'text', [
@@ -188,7 +191,7 @@ class OrganizationType extends AbstractType
             $builder->add('type', 'choice', [
                 'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'Дополнительно',
                 'label' => 'form.organizationType.type',
-                'attr' => ['class' => 'input-small'],
+                'attr' => ['class' => 'input-small', 'disabled' => $type == self::TYPE_EDIT],
                 'choices' => $options['typeList'],
             ]);
 
@@ -198,6 +201,7 @@ class OrganizationType extends AbstractType
                 'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'Дополнительно',
                 'class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
                 'label' => 'form.organizationType.default_hotels',
+                //'attr' => ['disabled' => $type == self::TYPE_EDIT],
                 'help' => 'form.organizationType.default_hotels_help',
                 'multiple' => true,
                 'required' => false,
@@ -237,7 +241,8 @@ class OrganizationType extends AbstractType
         $resolver->setDefaults([
             'typeList' => [],
             'id' => null,
-            'scenario' => self::SCENARIO_FULL
+            'scenario' => self::SCENARIO_FULL,
+            'type' => null,
         ]);
     }
 
