@@ -64,6 +64,7 @@ order.tabs.calculations: Расчеты
 order.touristEdit.edit_order: 'редактирование заказа #'
 order.touristEdit.deleted: удален
 order.touristEdit.payer_not_specified: Плательщик не указан.
+order.touristEdit.organization_not_specified: Организация не указана.
 order.touristEdit.fio: ФИО
 order.touristEdit.birth_date: Дата рождения
 order.touristEdit.gender: Пол

@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 
+use Doctrine\MongoDB\Query\Expr;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 
 use MBH\Bundle\PackageBundle\Document\Organization;
@@ -87,42 +88,17 @@ class OrganizationController extends Controller
         if(isset($column) && isset($order['dir']))
             $sort = [$column => $order['dir'] == 'desc' ? 1 : -1];
 
+
         $organizations = $dm->getRepository('MBHPackageBundle:Organization')->findBy($criteria, $sort, $request->get('length'), $request->get('start'));
-
-        $data = [];
-
-        foreach($organizations as $organization){
-            $hotels = $organization->getHotels();
-            $hotelList = [];
-            foreach($hotels as $h)
-                $hotelList[$h->getId()] = $h->getName();
-
-            $data[] = [
-                '<i class="fa fa-users"></i>',
-                '<a rel="main" href="'.$this->generateUrl('edit_organization', ['id' => $organization->getId()]).'">'.$organization->getName().'</a>',
-                $organization->getInn(),
-                $organization->getLocation(),
-                $organization->getPhone(),
-                $organization->getType() == 'my' ? implode(', ', $hotelList) : nl2br($organization->getComment()),
-                '<div class="text-center"><a href="'.$this->generateUrl('edit_organization', ['id' => $organization->getId()]).'" class="btn btn-success btn-xs" data-toggle="tooltip">
-                    <i class="fa fa-pencil-square-o"></i>
-                 </a>
-                <a href="'.$this->generateUrl('organization_delete', ['id' => $organization->getId()]).'" data-text="'.htmlspecialchars($this->get('translator')->trans('organizations.confirm_delete', ['%organization_name%' => $organization->getName()], 'MBHPackageBundle')).'" class="btn btn-danger btn-xs delete-link "" data-toggle="tooltip">
-                    <i class="fa fa-trash-o"></i>
-                </a><div>'
-            ];
-        }
-
         $recordsTotal = $dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder()->setQueryArray($criteria)->getQuery()->count();
 
-        /*$data = $this->renderView('MBHPackageBundle:Organization:json.html.twig', [
+        $response = $this->render('MBHPackageBundle:Organization:json.json.twig', [
             'organizations' => $organizations,
-        ]);*/
-        return new JsonResponse([
-            'data' => $data,
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsTotal,
         ]);
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
 
     /**
@@ -207,5 +183,75 @@ class OrganizationController extends Controller
         $dm->remove($organization);
         $dm->flush();
         return $this->redirect($this->generateUrl('organizations'));
+    }
+
+
+
+
+    /**
+     * Get city by query
+     *
+     * @Route("/json/list", name="organization_json_list", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @return JsonResponse
+     */
+    public function organizationJsonListAction(Request $request, $id = null)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        if (empty($id) && empty($request->get('query'))) {
+            return new JsonResponse([]);
+        }
+
+        if (!empty($id)) {
+            $organization =  $dm->getRepository('MBHPackageBundle:Organization')->find($id);
+
+            if ($organization) {
+                return new JsonResponse([
+                    'id' => $organization->getId(),
+                    'text' => $organization->getName()
+                ]);
+            }
+        }
+
+        /** @var Organization[] $organizations */
+        $organizations = $dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder('q')
+            ->field('type')->equals('contragents') // criteria only contragents type
+            ->addOr(
+                (new Expr())->field('name')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
+            )
+            ->addOr(
+                (new Expr())->field('inn')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
+            )
+            ->limit(30)
+            ->getQuery()
+            ->execute()
+        ;
+
+        $data = [
+            'list' => []
+        ];
+
+        foreach ($organizations as $organization) {
+            $data['list'][] = [
+                'id' => $organization->getId(),
+                'text' => $organization->getName(),
+            ];
+
+            $data['details'][$organization->getId()] = [
+                'name' => $organization->getName(),
+                'phone' => $organization->getPhone(),
+                'inn' => $organization->getInn(),
+                'kpp' => $organization->getKpp(),
+                'city' => $organization->getCity()->getId(),
+                'street' => $organization->getStreet(),
+                'house' => $organization->getHouse(),
+                'index' => $organization->getIndex(),
+            ];
+        }
+
+        return new JsonResponse($data);
     }
 }

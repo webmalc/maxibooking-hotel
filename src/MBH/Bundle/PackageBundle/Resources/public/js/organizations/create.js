@@ -24,12 +24,14 @@
         dropdownCssClass: "bigdrop"
     });
 
-    $('#organization_registration_date').datepicker({
-        language: "ru",
-        autoclose: true,
-        startView: 2,
-        format: 'dd.mm.yyyy',
-    });
+    var $registrationDate = $('#organization_registration_date');
+    if($registrationDate)
+        $registrationDate.datepicker({
+            language: "ru",
+            autoclose: true,
+            startView: 2,
+            format: 'dd.mm.yyyy',
+        });
 
     var $hotelsInput = $('#organization_hotels');
     var $hotelsGroup = $hotelsInput.closest('.form-group');
@@ -43,4 +45,4 @@
     });
 
     checkDisplayHotelsGroup();
-})(jQuery)
+})(jQuery);

@@ -2,15 +2,13 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-use MBH\Bundle\BaseBundle\Document\Base;
+
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\City;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;

@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class BaseController extends Controller
 {
     /**
-     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry
+     * @var \Doctrine\ODM\MongoDB\DocumentManager
      */
     protected $dm;
 

@@ -7,9 +7,11 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Form\CashDocumentType;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\OrderTouristType;
 use MBH\Bundle\PackageBundle\Form\OrderType;
+use MBH\Bundle\PackageBundle\Form\OrganizationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -227,6 +229,41 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         ];
     }
 
+
+    /**
+     * Order tourist edit
+     *
+     * @Route("/{id}/organization/edit/{packageId}", name="package_order_organization_edit")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
+     * @param Order $entity
+     * @param Package $package
+     * @return Response
+     * @Template()
+     */
+    public function organizationEditAction(Order $entity, Package $package)
+    {
+        $permissions = $this->container->get('mbh.package.permissions');
+
+        if (!$permissions->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(new OrganizationType($this->dm), null, [
+            'scenario' => OrganizationType::SCENARIO_SHORT,
+            'typeList' => $this->container->getParameter('mbh.organization.types'),
+        ]);
+
+        return [
+            'entity' => $entity,
+            'logs' => $this->logs($entity),
+            'genders' => $this->container->getParameter('mbh.gender.types'),
+            'form' => $form->createView(),
+            'package' => $package
+        ];
+    }
+
     /**
      * Order tourist update
      *
@@ -284,6 +321,65 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     }
 
     /**
+     * Order tourist update
+     *
+     * @Route("/{id}/organization/update/{packageId}", name="package_order_organization_update")
+     * @Method("PUT")
+     * @Security("is_granted('ROLE_USER')")
+     * @Template("MBHPackageBundle:Order:organizationEdit.html.twig")
+     * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
+     * @param Order $entity
+     * @param Package $package
+     * @param Request $request
+     * @return Response
+     */
+    public function organizationUpdateAction(Order $entity, Package $package, Request $request)
+    {
+        /*if($request->isMethod("GET"))
+            return $this->redirect()
+        */
+        $permissions = $this->container->get('mbh.package.permissions');
+        if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        $organization = $request->get('organization');
+        $existOrganization = null;
+        if($organization['inn'])
+            $existOrganization = $this->dm->getRepository('MBHPackageBundle:Organization')->findOneByInn($organization['inn']);
+
+        $form = $this->createForm(new OrganizationType($this->dm), $existOrganization ? $existOrganization : new Organization(), [
+            'scenario' => OrganizationType::SCENARIO_SHORT,
+            'typeList' => $this->container->getParameter('mbh.organization.types'),
+        ]);
+
+        $form->submit($request);
+
+        if ($form->isValid()) {
+            /** @var Organization $organization */
+            $organization = $form->getData();
+            $organization->setType('contragents');
+            $entity->setOrganization($organization);
+            $this->dm->persist($organization);
+            $this->dm->persist($entity);
+            $this->dm->flush();
+
+            $request->getSession()
+                ->getFlashBag()
+                ->set('success', $this->get('translator')->trans('controller.orderController.organization_added_success'));
+        }
+
+        //return $this->redirect($this->generateUrl('package_order_tourist_edit', ['id' => $entity->getId(), 'packageId' => $package->getId()]));
+        return [
+            'entity' => $entity,
+            'logs' => $this->logs($entity),
+            'statuses' => $this->container->getParameter('mbh.package.statuses'),
+            'form' => $form->createView(),
+            'package' => $package
+        ];
+    }
+
+    /**
      * Order tourist delete
      *
      * @Route("/{id}/tourist/delete/{packageId}", name="package_order_tourist_delete")
@@ -314,6 +410,39 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             ->set('success', $this->get('translator')->trans('controller.orderController.payer_deleted_success'));
 
         return $this->redirect($this->generateUrl('package_order_tourist_edit', ['id' => $entity->getId(), 'packageId' => $package->getId()]));
+    }
+
+    /**
+     * Order tourist delete
+     *
+     * @Route("/{id}/organization/delete/{packageId}", name="package_order_organization_delete")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
+     * @param Order $entity
+     * @param Package $package
+     * @param Request $request
+     * @return Response
+     */
+    public function organizationDeleteAction(Order $entity, Package $package, Request $request)
+    {
+        $permissions = $this->container->get('mbh.package.permissions');
+
+        if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+        $entity->setOrganization(null);
+        $dm->persist($entity);
+        $dm->flush();
+
+        $request->getSession()
+            ->getFlashBag()
+            ->set('success', $this->get('translator')->trans('controller.orderController.payer_organization_success'));
+
+        return $this->redirect($this->generateUrl('package_order_organization_edit', ['id' => $entity->getId(), 'packageId' => $package->getId()]));
     }
 
     /**
