@@ -217,19 +217,22 @@ class OrganizationController extends Controller
             }
         }
 
-        /** @var Organization[] $organizations */
-        $organizations = $dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder('q')
+        $searchFields = [
+            'name',
+            'director_fio',
+            'inn',
+        ];
+
+         $queryBuilder = $dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder('q')
             ->field('type')->equals('contragents') // criteria only contragents type
-            ->addOr(
-                (new Expr())->field('name')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
-            )
-            ->addOr(
-                (new Expr())->field('inn')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
-            )
-            ->limit(30)
-            ->getQuery()
-            ->execute()
         ;
+
+        $mongoRegex = new \MongoRegex('/.*' . $request->get('query') . '.*/i');
+        foreach($searchFields as $fieldName)
+            $queryBuilder->addOr((new Expr())->field($fieldName)->equals($mongoRegex));
+
+        /** @var Organization[] $organizations */
+        $organizations = $queryBuilder->limit(30)->getQuery()->execute();
 
         $data = [
             'list' => []
@@ -243,6 +246,7 @@ class OrganizationController extends Controller
 
             $data['details'][$organization->getId()] = [
                 'name' => $organization->getName(),
+                'fio' => $organization->getDirectorFio(),
                 'phone' => $organization->getPhone(),
                 'inn' => $organization->getInn(),
                 'kpp' => $organization->getKpp(),

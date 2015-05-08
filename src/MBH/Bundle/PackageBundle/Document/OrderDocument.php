@@ -14,7 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\PostRemove;
  * @ODM\HasLifecycleCallbacks
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class PackageDocument
+class OrderDocument
 {
     use TimestampableDocument;
     use BlameableDocument;
@@ -61,7 +61,7 @@ class PackageDocument
      *          "application/xls",
      *          "application/xlsx",
      *          "application/vnd.ms-excel"
-     * }, mimeTypesMessage="validator.document.PackageDocument.file_type")
+     * }, mimeTypesMessage="validator.document.OrderDocument.file_type")
      */
     protected $file;
 

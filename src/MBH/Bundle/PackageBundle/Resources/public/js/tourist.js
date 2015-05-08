@@ -70,8 +70,9 @@ $(document).ready(function () {
             results: function (data) {
                 details = data.details;
 
+                var detailArray = array_values(details);
                 $.each(data.list, function(k, v){
-                    data.list[k].text = v.text + ' ' + '(Инн ' + array_values(details)[k]['inn'] +')'
+                    data.list[k].text = v.text + ' ' + '(ИНН ' + detailArray[k]['inn'] +')' + (detailArray[k]['fio'] ? ' ' + detailArray[k]['fio'] : '')
                 });
 
                 console.log(data.list)

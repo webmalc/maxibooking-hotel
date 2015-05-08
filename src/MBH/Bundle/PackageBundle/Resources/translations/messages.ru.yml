@@ -156,7 +156,7 @@ form.organizationType.registration_date: 'Дата гос.регистрации
 form.organizationType.registration_number: 'Регистраиционный номер в ПФР'
 form.organizationType.activity_code: 'Код основной деятельности'
 form.organizationType.okpo_code: 'Код по ОКПО'
-form.organizationType.writer_fio: 'ФИО в род. падеже'
+form.organizationType.writer_fio: 'ФИО подписанта в род. падеже'
 form.organizationType.reason: 'Действует на основании'
 form.organizationType.city: 'Город'
 form.organizationType.street: 'Улица'

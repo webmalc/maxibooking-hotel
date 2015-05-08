@@ -188,12 +188,13 @@ class OrganizationType extends AbstractType
 
         if($scenario != self::SCENARIO_SHORT)
         {
-            $builder->add('type', 'choice', [
-                'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'Дополнительно',
-                'label' => 'form.organizationType.type',
-                'attr' => ['class' => 'input-small', 'disabled' => $type == self::TYPE_EDIT],
-                'choices' => $options['typeList'],
-            ]);
+            if($type != self::TYPE_EDIT)
+                $builder->add('type', 'choice', [
+                    'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'Дополнительно',
+                    'label' => 'form.organizationType.type',
+                    //'attr' => ['class' => 'input-small', 'disabled' => $type == self::TYPE_EDIT],
+                    'choices' => $options['typeList'],
+                ]);
 
             $id = $options['id'];
 

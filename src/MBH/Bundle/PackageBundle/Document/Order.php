@@ -178,10 +178,16 @@ class Order extends Base
      */
     protected $card;
 
+    /**
+     * @var array
+     * @ODM\EmbedMany(targetDocument="OrderDocument")
+     */
+    protected $documents = [];
 
     public function __construct()
     {
         $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->documents = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -617,5 +623,35 @@ class Order extends Base
     public function getChannelManagerStatus()
     {
         return $this->channelManagerStatus;
+    }
+
+    /**
+     * Add document
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\OrderDocument $document
+     */
+    public function addDocument(\MBH\Bundle\PackageBundle\Document\OrderDocument $document)
+    {
+        $this->documents[] = $document;
+    }
+
+    /**
+     * Remove document
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\OrderDocument $document
+     */
+    public function removeDocument(\MBH\Bundle\PackageBundle\Document\OrderDocument $document)
+    {
+        $this->documents->removeElement($document);
+    }
+
+    /**
+     * Get documents
+     *
+     * @return \Doctrine\Common\Collections\Collection $documents
+     */
+    public function getDocuments()
+    {
+        return $this->documents;
     }
 }
