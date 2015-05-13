@@ -6,6 +6,23 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 
 class TouristRepository extends DocumentRepository
 {
+    /**
+     * @param Order $order
+     * @return Tourist[]
+     */
+    public function getAllTouristsByOrder(Order $order)
+    {
+        $tourists = [];
+        foreach ($order->getPackages() as $package) {
+            /** @var Package $package */
+            foreach ($package->getTourists() as $tourist) {
+                /** @var Tourist $tourist */
+                $tourists[$tourist->getId()] = $tourist;
+            }
+        }
+
+        return $tourists;
+    }
 
     /**
      * @param string $lastName
@@ -82,8 +99,7 @@ class TouristRepository extends DocumentRepository
             ->setEmail($email)
             ->setPhone($phone)
             ->setAddress($address)
-            ->setNote($note)
-        ;
+            ->setNote($note);
 
         if ($birthday) {
             $tourist->setBirthday($birthday);

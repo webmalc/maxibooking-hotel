@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -16,7 +17,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  */
-class Tourist extends Base
+class Tourist extends Base implements PayerInterface
 {
     /**
      * Hook timestampable behavior
@@ -287,7 +288,7 @@ class Tourist extends Base
     /**
      * Get birthday
      *
-     * @return \DateTime $birthday
+     * @return \DateTime|null $birthday
      */
     public function getBirthday()
     {
@@ -522,7 +523,7 @@ class Tourist extends Base
     /**
      * Add mainPackage
      *
-     * @param MBH\Bundle\PackageBundle\Document\Package $mainPackage
+     * @param \MBH\Bundle\PackageBundle\Document\Package $mainPackage
      */
     public function addMainPackage(\MBH\Bundle\PackageBundle\Document\Package $mainPackage)
     {
@@ -532,7 +533,7 @@ class Tourist extends Base
     /**
      * Remove mainPackage
      *
-     * @param MBH\Bundle\PackageBundle\Document\Package $mainPackage
+     * @param \MBH\Bundle\PackageBundle\Document\Package $mainPackage
      */
     public function removeMainPackage(\MBH\Bundle\PackageBundle\Document\Package $mainPackage)
     {
@@ -542,7 +543,7 @@ class Tourist extends Base
     /**
      * Get mainPackages
      *
-     * @return Doctrine\Common\Collections\Collection $mainPackages
+     * @return \Doctrine\Common\Collections\Collection $mainPackages
      */
     public function getMainPackages()
     {
@@ -565,6 +566,17 @@ class Tourist extends Base
         return null;
     }
 
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->getFullName();
+    }
+
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->getFullName();

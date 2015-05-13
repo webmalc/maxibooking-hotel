@@ -6,6 +6,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\City;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -21,7 +22,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
  * @ODM\HasLifecycleCallbacks
  * @MongoDBUnique(fields="inn", message="Такой ИНН уже существует")
  */
-class Organization
+class Organization implements PayerInterface
 {
     use TimestampableDocument;
     use BlameableDocument;
@@ -127,7 +128,7 @@ class Organization
     /**
      * @ODM\String
      */
-protected $index;
+    protected $index;
     /**
      * @ODM\String
      */
@@ -655,5 +656,13 @@ protected $index;
             $this->setCountry($this->getCity()->getCountry());
             $this->setRegion($this->getCity()->getRegion());
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getName();
     }
 }

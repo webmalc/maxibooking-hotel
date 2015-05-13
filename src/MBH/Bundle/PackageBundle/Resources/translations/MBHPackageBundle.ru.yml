@@ -10,6 +10,7 @@ order.cash.deleted: удален
 order.cash.paid_price: Оплачено/Цена:
 order.cash.paid: оплачен
 order.cash.not_paid: не оплачен
+order.cash.payer: Плательщик
 order.cash.income: Приход
 order.cash.outcome: Расход
 order.cash.is_paid: Оплачен
@@ -26,6 +27,7 @@ order.cash.are_you_sure_to_confirm_payment: Точно подтвердить п
 order.cash.are_you_sure_to_pay_payment: Точно оплатить платеж на сумму
 order.cash.confirm: Подтвердить
 order.cash.pay: Подтвердить
+order.cash.short_pay: Опл.
 order.cash.cash_documents_not_found: Кассовые документы не найдены.
 order.edit.order_editing: 'редактирование заказа #'
 order.edit.deleted: удален

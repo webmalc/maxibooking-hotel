@@ -73,7 +73,7 @@ class Moneymail implements PaymentSystemInterface
      */
     public function getFormData(CashDocument $cashDocument, $url = null)
     {
-        $payer = $cashDocument->getPayer(true);
+        $payer = $cashDocument->getPayer();
         $createdAt = clone $cashDocument->getCreatedAt();
         $createdAt->modify('+30 minutes');
 
@@ -83,7 +83,7 @@ class Moneymail implements PaymentSystemInterface
             'shopId' => $this->getMoneymailShopIDP(),
             'total' => $cashDocument->getTotal(),
             'orderId' => $cashDocument->getId(),
-            'touristId' => $payer ? $payer->getId() : $cashDocument->getId(),
+            'touristId' => $cashDocument->getId(),
             'url' => $url,
             'time' => 60 * 30,
             'disabled' => $createdAt <= new \DateTime(),
@@ -98,7 +98,7 @@ class Moneymail implements PaymentSystemInterface
      */
     public function getSignature(CashDocument $cashDocument, $url = null)
     {
-        $payer = $cashDocument->getPayer(true);
+        $payer = $cashDocument->getPayer();
         $sig = $this->getMoneymailShopIDP() . $cashDocument->getId() . $cashDocument->getTotal();
         $sig .= $payer ? $payer->getId() : $cashDocument->getId();
         $sig .= $url . $this->getMoneymailKey();

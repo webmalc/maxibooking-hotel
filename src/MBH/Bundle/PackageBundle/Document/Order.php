@@ -235,7 +235,7 @@ class Order extends Base
     /**
      * Get mainTourist
      *
-     * @return \MBH\Bundle\PackageBundle\Document\Tourist $mainTourist
+     * @return \MBH\Bundle\PackageBundle\Document\Tourist|null $mainTourist
      */
     public function getMainTourist()
     {

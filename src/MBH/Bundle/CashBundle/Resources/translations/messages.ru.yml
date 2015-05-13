@@ -2,7 +2,10 @@ form.cashDocumentType.payer: Плательщик
 form.cashDocumentType.placeholder_fio: Иванов Иван Иванович
 form.cashDocumentType.sum: Сумма
 form.cashDocumentType.payment_way: Способ оплаты
+form.cashDocumentType.document_date: Дата документа
+form.cashDocumentType.paid_date: Дата оплаты
 form.cashDocumentType.operation_type: Вид операции
+form.cashDocumentType.number: Номер
 form.cashDocumentType.comment: Комментарий
 form.cashDocumentType.is_paid: Оплачен?
 controller.cashController.edit_record_success: 'Запись успешно отредактирована.'
