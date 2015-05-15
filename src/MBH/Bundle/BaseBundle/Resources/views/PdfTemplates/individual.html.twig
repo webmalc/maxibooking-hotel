@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title></title>
+
+</head>
+<body>
+<div align="center">
+    <table class="document" border="1" style="text-align: center" cellpadding="1" cellspacing="0">
+        {% for i in 1..2 %}
+        <tr>
+            <td rowspan="6" class="type">Извещение</td>
+        </tr>
+
+        <tr>
+            <td colspan="3" class="title">
+                <strong>ИНН {{ myOrganization.inn }} КПП {{ myOrganization.kpp }}</strong></br>
+                <strong>{{ myOrganization.name }}</strong></br>
+                <strong>{{ myOrganization.bank }}</strong></br>
+                Расчетный счет № <strong>{{ myOrganization.checkingAccount }}</strong> БИК: <strong>{{ myOrganization.bankBik }}</strong>
+            </td>
+        <tr>
+            <td colspan="3">Корр.счёт: <strong>{{ myOrganization.correspondentAccount }}</strong></td>
+        </tr>
+
+        <tr>
+            <td colspan="3">
+                <div>{{ myOrganization.writerFio }}, {{ myOrganization.location }}</div>
+            </td>
+        <tr>
+        <tr>
+            <td colspan="3">
+                <div class="fio-title">Фамилия И. О., адрес плательщика</div>
+            </td>
+        <tr>
+
+        <tr>
+
+        <tr>
+            <td rowspan="5">Кассир</td>
+        </tr>
+        <tr>
+            <td class="info">Вид платежа</td>
+            <td>Дата</td>
+            <td>Сумма</td>
+        </tr>
+        <tr>
+            <td class="info">
+                <strong style="float: left">
+                    Услуги отеля по счету №{{ cashDocument.number }}. Заказ №{{ cashDocument.order.id }} от {{ cashDocument.documentDate|date('d.m.Y') }} г.
+                </strong>
+            </td>
+            <td>{{ cashDocument.documentDate|date('d.m.Y') }}</td>
+            <td>{{ cashDocument.total }}</td>
+        </tr>
+        <tr>
+            <td rowspan="2" class="info">
+                <span style="float: left">Плательщик:</span>
+            </td>
+            <td>Пеня</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>Всего</td>
+            <td>{{ cashDocument.total }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+</body>
+
+<style>
+    .document {
+        width: 700px;
+    }
+
+    .type {
+        width: 150px;
+    }
+
+    .title {
+        padding: 2px 10px;
+    }
+
+    .fio-title {
+        font-size: 13px;
+    }
+
+    .info {
+        padding: 2px 10px;
+    }
+</style>
+
+</html>

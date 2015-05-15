@@ -52,9 +52,15 @@
                                 <small style="font-style: italic;margin-left: 5px">{{ document.originalName }}</small>
                             </td>
                             <td>
-                                {% if document.tourist %}
+                                {#{% if document.tourist %}
                                     <div>{{ document.tourist.generateFullName }}</div>
                                     {% if document.tourist.birthday %}
+                                        <small style="font-style: italic;margin-left: 5px">{{ document.tourist.birthday|date("d.m.Y") }} Возраст: {{ document.tourist.age }}</small>
+                                    {% endif %}
+                                {% endif %}#}
+                                {% if document.payer %}
+                                    <div>{{ document.payer.name }}</div>
+                                    {% if document.tourist and document.tourist.birthday %}
                                         <small style="font-style: italic;margin-left: 5px">{{ document.tourist.birthday|date("d.m.Y") }} Возраст: {{ document.tourist.age }}</small>
                                     {% endif %}
                                 {% endif %}

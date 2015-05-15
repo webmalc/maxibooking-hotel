@@ -411,7 +411,7 @@ class CashDocument extends Base
     }
 
     /**
-     * @return Organization
+     * @return null|Organization
      */
     public function getOrganizationPayer()
     {
@@ -426,8 +426,10 @@ class CashDocument extends Base
         $this->organizationPayer = $organizationPayer;
     }
 
+
+
     /**
-     * @return Tourist
+     * @return null|Tourist
      */
     public function getTouristPayer()
     {

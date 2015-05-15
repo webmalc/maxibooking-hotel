@@ -61,6 +61,11 @@ class Extension extends \Twig_Extension
         return md5($value);
     }
 
+    public function num2str($value)
+    {
+        return $this->container->get('mbh.helper')->num2str($value);
+    }
+
     /**
      * @return array
      */
@@ -69,6 +74,7 @@ class Extension extends \Twig_Extension
         return [
             'mbh_format' => new \Twig_Filter_Method($this, 'format'),
             'mbh_md5' => new \Twig_Filter_Method($this, 'md5'),
+            'num2str' => new \Twig_Filter_Method($this, 'num2str'),
         ];
     }
 

@@ -38,11 +38,15 @@ class Organization implements PayerInterface
     /**
      * @ODM\String
      */
-    protected $short_name;
+    protected $shortName;
     /**
      * @ODM\String
      */
-    protected $director_fio;
+    protected $directorFio;
+    /**
+     * @ODM\String
+     */
+    protected $accountantFio;
     /**
      * @ODM\String
      * @Assert\NotBlank
@@ -72,25 +76,30 @@ class Organization implements PayerInterface
      * @ODM\Date
      * @Assert\Date()
      */
-    protected $registration_date;
+    protected $registrationDate;
 
     /**
+     * @var string
      * @ODM\String
      */
-    protected $registration_number;
+    protected $registrationNumber;
     /**
+     * @var string
      * @ODM\String
      */
-    protected $activity_code;
+    protected $activityCode;
     /**
+     * @var string
      * @ODM\String
      */
-    protected $okpo_code;
+    protected $okpoCode;
     /**
+     * @var string
      * @ODM\String
      */
-    protected $writer_fio;
+    protected $writerFio;
     /**
+     * @var string
      * @ODM\String
      */
     protected $reason;
@@ -110,41 +119,55 @@ class Organization implements PayerInterface
      */
     protected $city;
     /**
+     * @var string
      * @ODM\String
      */
     protected $street;
     /**
+     * @var string
      * @ODM\String
      */
     protected $house;
     /**
+     * @var string
      * @ODM\String
      */
     protected $corpus;
     /**
+     * @var string
      * @ODM\String
      */
     protected $flat;
     /**
+     * @var string
      * @ODM\String
      */
     protected $index;
     /**
+     * @var string
      * @ODM\String
      */
     protected $bank;
     /**
+     * @var string
      * @ODM\String
      */
-    protected $bank_bik;
+    protected $bankBik;
     /**
+     * @var string
      * @ODM\String
      */
-    protected $bank_address;
+    protected $bankAddress;
     /**
+     * @var string
      * @ODM\String
      */
-    protected $checking_account;
+    protected $correspondentAccount;
+    /**
+     * @var string
+     * @ODM\String
+     */
+    protected $checkingAccount;
     /**
      * @ODM\String
      * @Assert\NotBlank
@@ -194,15 +217,15 @@ class Organization implements PayerInterface
      */
     public function getShortName()
     {
-        return $this->short_name;
+        return $this->shortName;
     }
 
     /**
-     * @param mixed $short_name
+     * @param mixed $shortName
      */
-    public function setShortName($short_name)
+    public function setShortName($shortName)
     {
-        $this->short_name = $short_name;
+        $this->shortName = $shortName;
     }
 
     /**
@@ -210,15 +233,31 @@ class Organization implements PayerInterface
      */
     public function getDirectorFio()
     {
-        return $this->director_fio;
+        return $this->directorFio;
     }
 
     /**
-     * @param mixed $director_fio
+     * @param mixed $directorFio
      */
-    public function setDirectorFio($director_fio)
+    public function setDirectorFio($directorFio)
     {
-        $this->director_fio = $director_fio;
+        $this->directorFio = $directorFio;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAccountantFio()
+    {
+        return $this->accountantFio;
+    }
+
+    /**
+     * @param mixed $accountantFio
+     */
+    public function setAccountantFio($accountantFio)
+    {
+        $this->accountantFio = $accountantFio;
     }
 
     /**
@@ -290,7 +329,7 @@ class Organization implements PayerInterface
      */
     public function getLocation()
     {
-        return $this->getCity(). ', '. $this->getStreet() . ' '. $this->getHouse();
+        return $this->getCity() . ', ' . $this->getStreet() . ' ' . $this->getHouse();
     }
 
     /**
@@ -298,15 +337,15 @@ class Organization implements PayerInterface
      */
     public function getRegistrationDate()
     {
-        return $this->registration_date;
+        return $this->registrationDate;
     }
 
     /**
-     * @param mixed $registration_date
+     * @param mixed $registrationDate
      */
-    public function setRegistrationDate($registration_date)
+    public function setRegistrationDate($registrationDate)
     {
-        $this->registration_date = $registration_date;
+        $this->registrationDate = $registrationDate;
     }
 
     /**
@@ -314,15 +353,15 @@ class Organization implements PayerInterface
      */
     public function getRegistrationNumber()
     {
-        return $this->registration_number;
+        return $this->registrationNumber;
     }
 
     /**
-     * @param mixed $registration_number
+     * @param mixed $registrationNumber
      */
-    public function setRegistrationNumber($registration_number)
+    public function setRegistrationNumber($registrationNumber)
     {
-        $this->registration_number = $registration_number;
+        $this->registrationNumber = $registrationNumber;
     }
 
     /**
@@ -330,15 +369,15 @@ class Organization implements PayerInterface
      */
     public function getActivityCode()
     {
-        return $this->activity_code;
+        return $this->activityCode;
     }
 
     /**
-     * @param mixed $activity_code
+     * @param mixed $activityCode
      */
-    public function setActivityCode($activity_code)
+    public function setActivityCode($activityCode)
     {
-        $this->activity_code = $activity_code;
+        $this->activityCode = $activityCode;
     }
 
     /**
@@ -346,15 +385,15 @@ class Organization implements PayerInterface
      */
     public function getOkpoCode()
     {
-        return $this->okpo_code;
+        return $this->okpoCode;
     }
 
     /**
-     * @param mixed $okpo_code
+     * @param mixed $okpoCode
      */
-    public function setOkpoCode($okpo_code)
+    public function setOkpoCode($okpoCode)
     {
-        $this->okpo_code = $okpo_code;
+        $this->okpoCode = $okpoCode;
     }
 
     /**
@@ -362,15 +401,15 @@ class Organization implements PayerInterface
      */
     public function getWriterFio()
     {
-        return $this->writer_fio;
+        return $this->writerFio;
     }
 
     /**
-     * @param mixed $writer_fio
+     * @param mixed $writerFio
      */
-    public function setWriterFio($writer_fio)
+    public function setWriterFio($writerFio)
     {
-        $this->writer_fio = $writer_fio;
+        $this->writerFio = $writerFio;
     }
 
     /**
@@ -538,15 +577,15 @@ class Organization implements PayerInterface
      */
     public function getBankBik()
     {
-        return $this->bank_bik;
+        return $this->bankBik;
     }
 
     /**
-     * @param mixed $bank_bik
+     * @param mixed $bankBik
      */
-    public function setBankBik($bank_bik)
+    public function setBankBik($bankBik)
     {
-        $this->bank_bik = $bank_bik;
+        $this->bankBik = $bankBik;
     }
 
     /**
@@ -554,31 +593,47 @@ class Organization implements PayerInterface
      */
     public function getBankAddress()
     {
-        return $this->bank_address;
+        return $this->bankAddress;
     }
 
     /**
-     * @param mixed $bank_address
+     * @param mixed $bankAddress
      */
-    public function setBankAddress($bank_address)
+    public function setBankAddress($bankAddress)
     {
-        $this->bank_address = $bank_address;
+        $this->bankAddress = $bankAddress;
     }
 
     /**
-     * @return mixed
+     * @return string
+     */
+    public function getCorrespondentAccount()
+    {
+        return $this->correspondentAccount;
+    }
+
+    /**
+     * @param string $correspondentAccount
+     */
+    public function setCorrespondentAccount($correspondentAccount)
+    {
+        $this->correspondentAccount = $correspondentAccount;
+    }
+
+    /**
+     * @return string
      */
     public function getCheckingAccount()
     {
-        return $this->checking_account;
+        return $this->checkingAccount;
     }
 
     /**
-     * @param mixed $checking_account
+     * @param string $checkingAccount
      */
-    public function setCheckingAccount($checking_account)
+    public function setCheckingAccount($checkingAccount)
     {
-        $this->checking_account = $checking_account;
+        $this->checkingAccount = $checkingAccount;
     }
 
     /**
@@ -652,7 +707,7 @@ class Organization implements PayerInterface
 
     private function fillLocationByCity()
     {
-        if($this->getCity()){
+        if ($this->getCity()) {
             $this->setCountry($this->getCity()->getCountry());
             $this->setRegion($this->getCity()->getRegion());
         }

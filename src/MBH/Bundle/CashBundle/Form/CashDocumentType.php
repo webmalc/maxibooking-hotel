@@ -43,18 +43,16 @@ class CashDocumentType extends AbstractType
                 'mapped' => false,
                 'data' => $options['payer'] ? $options['payer'] : null,
                 'group' => $options['groupName'],
-                'choices' => $payers,
+                'choices' => ['' => ''] + $payers,
                 'attr' => [
                     'placeholder' => 'form.cashDocumentType.placeholder_fio',
                     'style' => 'm  in-width: 500px',
                 ]
             ])
             ->add('organizationPayer', 'hidden', [
-                'label' => 'form.cashDocumentType.operation_type',
                 'required' => false,
             ])
             ->add('touristPayer', 'hidden', [
-                'label' => 'form.cashDocumentType.operation_type',
                 'required' => false,
             ])
             ->add('operation', 'choice', [

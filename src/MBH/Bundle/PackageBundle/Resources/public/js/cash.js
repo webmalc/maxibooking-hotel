@@ -28,6 +28,8 @@
     var $payerSelect = $('#mbh_bundle_cashbundle_cashdocumenttype_payer_select');
     var $organizationPayerInput = $('#mbh_bundle_cashbundle_cashdocumenttype_organizationPayer');
     var $touristPayerInput = $('#mbh_bundle_cashbundle_cashdocumenttype_touristPayer');
+    var $bothPayerInputs = $organizationPayerInput.add($touristPayerInput);
+
 
     if($organizationPayerInput.val()){
         $payerSelect.val('org_' + $organizationPayerInput.val());
@@ -46,13 +48,13 @@
     $payerSelect.on('change', function(){
         /** @type String */
         var value = $(this).val();
+        $bothPayerInputs.val(null);
         if(value){
             value = value.split('_');
             if(value[0] == 'org')
                 $organizationPayerInput.val(value[1])
             else if(value[0] == 'tourist')
                 $touristPayerInput.val(value[1])
-        }else
-            $organizationPayerInput.add($touristPayerInput).val(null);
+        }
     });
 })(window.jQuery)

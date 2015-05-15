@@ -43,7 +43,7 @@ class DocumentsController extends Controller
 
         $packageDocument = new OrderDocument();
         $documentTypes = [];
-        foreach ($this->container->getParameter('mbh.package.document.types') as $type)
+        foreach ($this->container->getParameter('mbh.order.document.types') as $type)
             $documentTypes[$type] = $this->get('translator')->trans('package.document.type_' . $type, [], 'MBHPackageBundle');
 
         $touristIds = $this->get('mbh.helper')->toIds($package->getTourists());
@@ -191,7 +191,7 @@ class DocumentsController extends Controller
             throw $this->createNotFoundException();
 
         $documentTypes = [];
-        foreach ($this->container->getParameter('mbh.package.document.types') as $type)
+        foreach ($this->container->getParameter('mbh.order.document.types') as $type)
             $documentTypes[$type] = $this->get('translator')->trans('package.document.type_' . $type, [], 'MBHPackageBundle');
 
         if($mainTourist = $package->getOrder()->getMainTourist()){

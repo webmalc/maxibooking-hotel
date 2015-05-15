@@ -60,6 +60,11 @@ class OrganizationType extends AbstractType
                 'label' => 'form.organizationType.director_fio',
                 'required' => false,
             ]);
+            $builder->add('accountant_fio', 'text', [
+                'group' => 'Личные данные',
+                'label' => 'form.organizationType.accountant_fio',
+                'required' => false,
+            ]);
         }
 
         $builder->add('phone', 'text', [
@@ -177,6 +182,11 @@ class OrganizationType extends AbstractType
             $builder->add('bank_address', 'text', [
                 'group' => 'Расчётный счёт',
                 'label' => 'form.organizationType.bank_address',
+                'required' => false,
+            ]);
+            $builder->add('correspondent_account', 'text', [
+                'group' => 'Расчётный счёт',
+                'label' => 'form.organizationType.correspondent_account',
                 'required' => false,
             ]);
             $builder->add('checking_account', 'text', [

@@ -562,7 +562,7 @@ class Tourist extends Base implements PayerInterface
             
             return $diff->y;
         }
-        
+
         return null;
     }
 

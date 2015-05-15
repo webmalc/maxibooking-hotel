@@ -101,10 +101,10 @@ $(document).ready(function () {
     }());
 
     //get messages
-    checkMessages();
+    /*checkMessages();
     window.setInterval(function () {
         checkMessages();
-    }, 10000);
+    }, 10000);*/
 
     //Tooltips configuration
     $('[data-toggle="tooltip"]').tooltip();
