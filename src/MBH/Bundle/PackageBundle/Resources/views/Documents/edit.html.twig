@@ -1,22 +1,19 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = 'package.guest.edit_reservation'|trans({}, 'MBHPackageBundle') ~ entity.numberWithPrefix %}
+{% set small_title = 'package.guest.edit_reservation'|trans({}, 'MBHPackageBundle') ~ package.numberWithPrefix %}
 
 {% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.guest.deleted'|trans({}, 'MBHPackageBundle')~'</span>' %}{% endif %}
 
-
-{% block scripts %}
-    {{ parent() }}
-    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/documents/001.js' %}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-{% endblock %}
-
 {% block content %}
+
+    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
+
+    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 8 , 'entity': package} %}
+
     {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
-        {{ form_start(form, {'action': path('order_document_edit', {'id': entity.id, 'docname': document.name}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
+        {{ form_start(form, {'action': path('order_document_edit', {'id': entity.id, 'name': document.name, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
         {{ form_widget(form) }}
-        {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
+        {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity, 'delete_route': 'order_delete' } %}
         {{ form_end(form) }}
     {% endif %}
 

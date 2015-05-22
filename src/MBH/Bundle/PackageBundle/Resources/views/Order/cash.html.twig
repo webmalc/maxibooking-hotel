@@ -76,7 +76,6 @@
                                         {% if cash.operation == 'in' and cash.method == 'electronic' %}
                                             {% if clientConfig and clientConfig.paymentSystem %}
                                                 {% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': data|merge({'buttonClasses': 'btn-xs', 'test': true})} %}
-                                                {% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': clientConfig.getFormData(cash, url('online_form_check_order'))|merge({'buttonClasses': 'btn-xs', 'test': false})} %}
                                             {% endif %}
                                         {% endif %}
                                     {% endif %}

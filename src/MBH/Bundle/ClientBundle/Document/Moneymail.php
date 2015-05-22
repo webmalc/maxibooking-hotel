@@ -98,9 +98,8 @@ class Moneymail implements PaymentSystemInterface
      */
     public function getSignature(CashDocument $cashDocument, $url = null)
     {
-        $payer = $cashDocument->getPayer();
         $sig = $this->getMoneymailShopIDP() . $cashDocument->getId() . $cashDocument->getTotal();
-        $sig .= $payer ? $payer->getId() : $cashDocument->getId();
+        $sig .= $cashDocument->getId();
         $sig .= $url . $this->getMoneymailKey();
 
         return strtoupper(str_replace('-', '', md5($sig)));

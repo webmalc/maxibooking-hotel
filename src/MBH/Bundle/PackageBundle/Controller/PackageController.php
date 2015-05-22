@@ -3,26 +3,19 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Form\PackageDocumentsType;
-use MBH\Bundle\PackageBundle\Form\PackageDocumentType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\PackageMainType;
 use MBH\Bundle\PackageBundle\Form\PackageGuestType;
-use MBH\Bundle\PackageBundle\Form\PackageCopyType;
 use MBH\Bundle\PackageBundle\Form\PackageAccommodationType;
-use MBH\Bundle\CashBundle\Form\CashDocumentType;
-use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;

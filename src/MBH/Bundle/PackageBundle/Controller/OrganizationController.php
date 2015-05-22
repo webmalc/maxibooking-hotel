@@ -56,7 +56,7 @@ class OrganizationController extends Controller
         $search = $request->get('search');
         $searchValue = $search['value'];
 
-        if($searchValue){
+        if ($searchValue) {
             $searchFields = [
                 'name',
                 'short_name',
@@ -70,14 +70,15 @@ class OrganizationController extends Controller
             ];
 
             $criteria = [];
-            foreach($searchFields as $field){
-                $criteria['$or'][] = [$field => new \MongoRegex('/.*' . $searchValue . '.*/ui')];
+            foreach ($searchFields as $field) {
+                $criteria['$or'][] = [$field => new \MongoRegex('/.*'.$searchValue.'.*/ui')];
             }
         }
 
         $type = $request->get('type');
-        if($type)
+        if ($type) {
             $criteria['type'] = $type;
+        }
 
         $sort = null;
 
@@ -85,11 +86,13 @@ class OrganizationController extends Controller
         $order = is_array($order) && $order ? $order[0] : null;
         $cols = [1 => 'name', 2 => 'phone', 3 => 'inn', 4 => 'kpp', 5 => 'city', 6 => 'bank', 7 => 'checking_account'];
         $column = array_key_exists((int)$order['column'], $cols) ? $cols[(int)$order['column']] : null;
-        if(isset($column) && isset($order['dir']))
+        if (isset($column) && isset($order['dir'])) {
             $sort = [$column => $order['dir'] == 'desc' ? 1 : -1];
+        }
 
 
-        $organizations = $dm->getRepository('MBHPackageBundle:Organization')->findBy($criteria, $sort, $request->get('length'), $request->get('start'));
+        $organizations = $dm->getRepository('MBHPackageBundle:Organization')->findBy($criteria, $sort,
+            $request->get('length'), $request->get('start'));
         $recordsTotal = $dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder()->setQueryArray($criteria)->getQuery()->count();
 
         $response = $this->render('MBHPackageBundle:Organization:json.json.twig', [
@@ -98,6 +101,7 @@ class OrganizationController extends Controller
             'recordsFiltered' => $recordsTotal,
         ]);
         $response->headers->set('Content-Type', 'application/json');
+
         return $response;
     }
 
@@ -183,10 +187,9 @@ class OrganizationController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $dm->remove($organization);
         $dm->flush();
+
         return $this->redirect($this->generateUrl('organizations'));
     }
-
-
 
 
     /**
@@ -207,7 +210,7 @@ class OrganizationController extends Controller
         }
 
         if (!empty($id)) {
-            $organization =  $dm->getRepository('MBHPackageBundle:Organization')->find($id);
+            $organization = $dm->getRepository('MBHPackageBundle:Organization')->find($id);
 
             if ($organization) {
                 return new JsonResponse([
@@ -223,13 +226,14 @@ class OrganizationController extends Controller
             'inn',
         ];
 
-         $queryBuilder = $dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder('q')
+        $queryBuilder = $dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder('q')
             ->field('type')->equals('contragents') // criteria only contragents type
         ;
 
-        $mongoRegex = new \MongoRegex('/.*' . $request->get('query') . '.*/i');
-        foreach($searchFields as $fieldName)
+        $mongoRegex = new \MongoRegex('/.*'.$request->get('query').'.*/i');
+        foreach ($searchFields as $fieldName) {
             $queryBuilder->addOr((new Expr())->field($fieldName)->equals($mongoRegex));
+        }
 
         /** @var Organization[] $organizations */
         $organizations = $queryBuilder->limit(30)->getQuery()->execute();

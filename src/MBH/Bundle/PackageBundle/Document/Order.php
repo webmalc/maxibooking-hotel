@@ -656,6 +656,36 @@ class Order extends Base
     }
 
     /**
+     * @param string $name
+     * @return OrderDocument|null
+     */
+    public function getDocument($name)
+    {
+        foreach ($this->getDocuments() as $doc) {
+            if ($doc->getName() == $name) {
+                return $doc;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $name
+     * @return Order
+     */
+    public function removeDocumentByName($name)
+    {
+        $doc = $this->getDocument($name);
+
+        if ($doc) {
+            $this->removeDocument($doc);
+        }
+
+        return $this;
+    }
+
+    /**
      * @return null|string
      */
     public function getPaidStatus()

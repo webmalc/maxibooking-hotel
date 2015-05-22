@@ -52,7 +52,7 @@ class CashDocumentSubscriber implements EventSubscriber
         }
     }
 
-    private function createPdfOrderDocument(CashDocument $document,DocumentManager $dm)
+    private function createPdfOrderDocument(CashDocument $document, DocumentManager $dm)
     {
         if(!$document->getPayer())
             return;

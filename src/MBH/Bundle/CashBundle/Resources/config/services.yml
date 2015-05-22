@@ -1,5 +1,5 @@
 services:
-    mbh.package.subscriber:
+    mbh.cash.document.subscriber:
         class: MBH\Bundle\CashBundle\EventListener\CashDocumentSubscriber
         arguments: [@service_container]
         tags:

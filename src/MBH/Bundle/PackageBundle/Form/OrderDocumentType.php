@@ -10,11 +10,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints\Length;
 
 /**
- * Class PackageDocumentType
+ * Class OrderDocumentType
  * @package MBH\Bundle\PackageBundle\Form
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class PackageDocumentType extends AbstractType
+class OrderDocumentType extends AbstractType
 {
     const SCENARIO_ADD = 'add';
     const SCENARIO_EDIT = 'edit';
@@ -35,6 +35,7 @@ class PackageDocumentType extends AbstractType
                 'group' => $groupTitle,
                 'label' => 'Тип',
                 'required' => true,
+                'empty_value' => '',
                 'choices' => $options['documentTypes']
             ]
         );
@@ -50,7 +51,6 @@ class PackageDocumentType extends AbstractType
                 'class' => 'MBHPackageBundle:Tourist',
                 'required' => false,
                 'property' => 'generateFullNameWithAge',
-                //'choices' => $options['tourists']
                 'query_builder' => function(DocumentRepository $er) use($touristIds) {
                     return $er->createQueryBuilder()->field('_id')->in($touristIds);
                 },
