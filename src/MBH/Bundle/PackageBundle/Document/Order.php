@@ -596,4 +596,30 @@ class Order extends Base
     {
         return $this->channelManagerStatus;
     }
+
+    /**
+     * @return null|string
+     */
+    public function getPaidStatus()
+    {
+        if ($this->getIsPaid()) {
+            return 'success';
+        }
+        if ($this->getPaid() && !$this->getIsPaid()) {
+            return 'warning';
+        }
+        if (!$this->getPaid()) {
+            return 'danger';
+        }
+
+        return null;
+    }
+
+    /**
+     * @return float
+     */
+    public function getDebt()
+    {
+        return $this->getPrice() - $this->getPaid();
+    }
 }

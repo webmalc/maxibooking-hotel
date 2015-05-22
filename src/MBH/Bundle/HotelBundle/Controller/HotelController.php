@@ -59,7 +59,7 @@ class HotelController extends Controller
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        
+
         $entities = $dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('s')
                        ->sort('fullTitle', 'asc')
                        ->getQuery()

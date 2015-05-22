@@ -1,135 +1,422 @@
-{% if rooms|length <= 0 %}
-    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"> </i> {{ "report.accommodationTable.no_room_found"|trans({}, "MBHPackageBundle") }}
-    </div>
-{% else %}
-    <div id="accommodation-report-table-row">
-        <div class="cols arrow arrow-previous"><a href="#"
-                                                  data-begin="{{ begin|date_modify('-1 month')|date('d.m.Y') }}"><i
-                        class="fa fa-caret-left fa-4x"></i></a></div>
-        <div class="cols table-div">
+<input type="hidden" name="begin" id="accommodation-report-begin" class="hidden" value="{{ begin|date('d.m.Y') }}">
+<input type="hidden" name="end" id="accommodation-report-end" class="hidden" value="{{ end|date('d.m.Y') }}">
 
-            <table id="accommodation-report-table"
-                   class="table table-bordered not-auto-datatable table-striped table-hover table-condensed">
+{% if roomsData|length > 0 %}
 
-                <!-- table head -->
-                <thead>
-                <tr>
-                    <th class="month-th"></th>
+    {% set headerWidth = 200 %}
 
-                    {% set i = 1 %}
-                    {% for day in period %}
-                        {% if day|date('n') != day|date_modify('+1 day')|date('n') or loop.last %}
-                            <th class="text-center month-th"
-                                colspan="{{ i }}">{% if i >= 5 %}{{ months[day|date('n')] }}, {{ day|date('Y') }}{% endif %}</th>
-                            {% set i = 0 %}
-                        {% endif %}
-                        {% set i = i + 1 %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th class="text-center">{{ "report.accommodationTable.room"|trans({}, "MBHPackageBundle") }}</th>
+    <div id="calendarWrapper" style="width:{{ totalDays * 47 + headerWidth + 1 }}px;">
 
-                    {% for day in period %}
-                        <th class="text-center date-th {% if day == begin %}text-warning{% elseif day|date('N') >= 6 %}text-danger{% endif %}">{{ day|date('j') }}</th>
-                    {% endfor %}
-                </tr>
-                </thead>
-                <tbody>
-
-                <!-- table content -->
-                {% for room in rooms %}
-
-                    {% if roomTypeId is not defined or roomTypeId != room.roomType.id %}
-                        <tr>
-                            <td class="text-center" colspan="37">
-                                <small><strong>{{ room.roomType }}</strong></small>
-                            </td>
-                            {% set roomTypeId = room.roomType.id %}
-                        </tr>
-                    {% endif %}
-
-                    <tr>
-                        <td class="text-center">
-                            <small>
-                            {% if room.name|length > 5 %}
-                                <span data-toggle="tooltip" title="{{ room.name }}">...{{ room.name[room.name|length - 5:] }}</span>
-                            {% else %}
-                                {{ room.name }}
-                            {% endif %}
-                            </small>
-                        </td>
-                        {% for date in period %}
-                            <td class="cell {% if date == begin %}chosen{% elseif date|date('N') >= 6 %}weekend{% endif %}">
-
-                                {% set day = date %}
-
-                                {% if packages[room.id] is defined %}
-
-                                    {% for package in packages[room.id] %}
-
-                                        {% if day >= package.begin and day <= package.end %}
-
-                                            {% set lateCheckOut = package.lateCheckOut %}
-                                            {% set earlyCheckIn = package.earlyCheckIn %}
-
-                                        <a href="{{ path('package_edit', {'id': package.id }) }}" target="_blank" data-toggle="tooltip"
-                                           title="{{ package.numberWithPrefix }}. {{ package.mainTourist.fullName|default( "report.accommodationTable.no_main_guest"|trans({}, "MBHPackageBundle")) }} ({{ package.adults }}+{{ package.children }}){{ "report.accommodationTable.price"|trans({}, "MBHPackageBundle") }}{{ package.price }}/{{ package.paid }}{{ "report.accommodationTable.type"|trans({}, "MBHPackageBundle") }}{{ statuses[package.status].title }}{{ earlyCheckIn ?  "report.accommodationTable.early_check_in"|trans({}, "MBHPackageBundle")  : '' }}{{ lateCheckOut ?  "report.accommodationTable.late_check_out"|trans({}, "MBHPackageBundle")   : '' }}">
-                                            <div class="package text-{% if package.isPaid %}success{% elseif package.paid > 0 %}warning{% else %}danger{% endif %} {% if day == package.end %}package-end {{ lateCheckOut ? 'late-check-out' : '' }}{% endif %}{% if day == package.begin %}package-begin {{ earlyCheckIn ? 'early-check-in' : '' }}{% endif %}">
-                                                &nbsp;</div>
-                                        </a>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-
-                    </tr>
+        <!---------------------------- MONTHS ------------------------->
+        <div class="clearfix">
+            <ul class="list-unstyled calendarDays">
+                <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
+                    <div class="title">&nbsp;</div>
+                </li>
+                {% for calendarMonth in calendarMonths %}
+                    <li class="tile tile-not-selected tile-free both" style="width:{{ calendarMonth.days * 47 }}px;">
+                        <div class="month" style="width:{{ calendarMonth.days * 47 }}px;">
+                            {{ calendarMonth.days > 2 ? months[calendarMonth.month] ~ ', ' ~ calendarMonth.year }}
+                        </div>
+                    </li>
                 {% endfor %}
-                </tbody>
-            </table>
-
+            </ul>
         </div>
-        <div class="cols arrow arrow-next text-right"><a href="#"
-                                                         data-begin="{{ begin|date_modify('+1 month')|date('d.m.Y') }}"><i
-                        class="fa fa-caret-right fa-4x"></i></a></div>
-    </div>
 
-    <!-- paging -->
-    {% if pages > 1 %}
-        <div class="row" id="accommodation-report-pagination">
-            <div class="col-md-12 text-center">
-                <ul class="pagination">
-                    <li {% if currentPage == 1 %}class="disabled"{% endif %}><a href="#"
-                                                                                data-page="{{ currentPage - 1 }}">&laquo;</a>
+        {% for roomTypeData in roomsData %}
+            <!---------------------------- ROOM TYPES ------------------------->
+            <div class="clearfix">
+                <ul class="list-unstyled calendarDays">
+                    <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
+                        <div class="title"><strong class="text-info"><i class="fa fa-bed"></i> {{ roomTypeData.roomType.getName[0:48] }}</strong></div>
                     </li>
-
-                    {% if currentPage > 3 %}{% set start = currentPage - 3 %}{% else %}{% set start = 1 %}{% endif %}
-                    {% if currentPage < pages  - 3 %}{% set end = currentPage + 3 %}{% else %}{% set end = pages %}{% endif %}
-
-                    {% if currentPage != 1 and start != 1 %}
-                        <li><a href="#" data-page="1">1</a></li>
-                        <li class="active"><span>...<span class="sr-only">(current)</span></span></li>
-                    {% endif %}
-
-                    {% for page in start..end %}
-
-                        {% if page == currentPage %}
-                            <li class="active"><span>{{ page }}<span class="sr-only">(current)</span></span></li>
-                        {% else %}
-                            <li><a href="#" data-page="{{ page }}">{{ page }}</a></li>
-                        {% endif %}
+                    {% for day in roomTypeData['days'] %}
+                        <li class="{{ day|date('N') in [6,7] ? 'weekend' }} {{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'today' }} tile tile-not-selected tile-free both">
+                            <div class="day">
+                                <div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}
+                                    <span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|lower : day|date('Y') }}</span>
+                                </div>
+                            </div>
+                        </li>
                     {% endfor %}
-
-                    {% if currentPage != pages and end != pages %}
-                        <li class="active"><span>...<span class="sr-only">(current)</span></span></li>
-                        <li><a href="#" data-page="{{ pages }}">{{ pages }}</a></li>
-                    {% endif %}
-
-                    <li {% if currentPage == pages %}class="disabled"{% endif %}><a href="#"
-                                                                                    data-page="{{ currentPage + 1 }}">&raquo;</a>
-                    </li>
                 </ul>
             </div>
-        </div>
-    {% endif %}
+
+            <!---------------------------- ROOMS ------------------------->
+            <div class="calendarRows clearfix">
+                {% for key, roomData in roomTypeData['rooms'] %}
+                    <div class="calendarRow clearfix">
+                        <ul class="calendarDates list-unstyled" data-obj="{{ roomData.room.id }}"
+                            data-index="{{ key }}">
+                            <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
+                                <div class="title-sub">{{ roomData.room.getName[0:48] }}</div>
+                            </li>
+
+                            <!---------------------------- PACKAGE INFO ------------------------->
+                            {% for package in roomData['packages'] %}
+                                <li class="tile-title tile-not-selected"
+                                    data-content="{% include 'MBHPackageBundle:Report:accommodationTablePackage.html.twig' with {'data': package } %}"
+                                    data-original-title="{{ package.doc.numberWithPrefix }} {{ package.doc.mainTourist ? package.doc.mainTourist.lastNameWithInitials }}" data-placement="top" data-container="body"
+                                    data-toggle="popover" style="left: {{ headerWidth + package.margin + package.padding }}px; display: list-item;">{{ package.name }}</li>
+                            {% endfor %}
+
+                            {% for day in roomData['days'] %}
+
+                                {% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}
+                                {% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}
+
+                                {% if day.package is empty %}
+                                    <!---------------------------- EMPTY PACKAGES ------------------------->
+                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-free both">
+                                        {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                    </li>
+                                {% else %}
+
+                                    {% if day.package[1] is not defined %}
+
+                                        {% if day.package[0].begin %}
+
+                                            {% if day.package[0].early_check_in %}
+
+                                                {% if day.package[0].isCheckIn %}
+                                                    <!---------------------------- ONE PACKAGE. BEGIN. EARLY CHECK-IN. COMING ------------------------->
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-busy-early tile-{{ day.package[0].status }} left">
+                                                        <div class="tile tile-free left">
+                                                            <div class="tile tile-busy tile-coming">
+                                                                <div class="tile tile-busy tile-{{ day.package[0].status }}-coming left ">
+                                                                    <div class="tile tile-free right-left">
+                                                                        {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                {% else %}
+                                                    <!---------------------------- ONE PACKAGE. BEGIN. EARLY CHECK-IN ------------------------->
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-busy-early tile-{{ day.package[0].status }} left">
+                                                        <div class="tile tile-busy tile-{{ day.package[0].status }} left">
+                                                            {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                        </div>
+                                                    </li>
+                                                {% endif %}
+
+                                            {% else %}
+
+                                                {% if day.package[0].isCheckIn %}
+                                                    <!---------------------------- ONE PACKAGE. BEGIN. COMING ------------------------->
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-free tile-coming right-left">
+                                                        <div class="tile tile-busy tile-{{ day.package[0].status }}-coming left">
+                                                            {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                        </div>
+                                                    </li>
+                                                {% else %}
+                                                    <!---------------------------- ONE PACKAGE. BEGIN ------------------------->
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-{{ day.package[0].status }} left">
+                                                        {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                    </li>
+                                                {% endif %}
+                                            {% endif %}
+
+                                        {% elseif day.package[0].end %}
+
+                                            {% if day.package[0].late_check_out %}
+
+                                                {% if day.package[0].isCheckIn %}
+                                                    <!---------------------------- ONE PACKAGE. LATE CHECK-OUT. COMING ------------------------->
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                        <div class="tile tile-free right-left">
+                                                            <div class="tile tile-busy tile-coming tile-{{ day.package[0].status }}-coming right-left">
+                                                                <div class="tile tile-busy tile-{{ day.package[0].status }}-coming left">
+                                                                    <div class="tile tile-free left">
+                                                                        {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                {% else %}
+                                                    <!---------------------------- ONE PACKAGE. LATE CHECK-OUT ------------------------->
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-busy-early tile-{{ day.package[0].status }} right">
+                                                        <div class="tile tile-busy tile-{{ day.package[0].status }} right">
+                                                            {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                        </div>
+                                                    </li>
+                                                {% endif %}
+                                            {% else %}
+
+                                                {% if day.package[0].isCheckIn %}
+                                                    <!---------------------------- ONE PACKAGE. END. COMING ------------------------->
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-coming tile-{{ day.package[0].status }}-coming right-left">
+                                                        <div class="tile tile-free right">
+                                                            {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                        </div>
+                                                    </li>
+                                                {% else %}
+                                                    <!---------------------------- ONE PACKAGE. END ------------------------->
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-{{ day.package[0].status }} right">
+                                                        {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                    </li>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% else %}
+                                            <!---------------------------- ONE PACKAGE ------------------------->
+                                            <li class="{{ weekend }} {{ today }} tile {{ day.package[0].isCheckIn ? 'tile-coming' }} tile-busy tile-{{ day.package[0].status }}{{ day.package[0].isCheckIn ? '-coming' }} both">
+                                                {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                            </li>
+                                        {% endif %}
+
+                                    {% else %}
+
+                                        {% if day.package[1].early_check_in and day.package[0].late_check_out is empty %}
+
+                                            {% if day.package[0].isCheckIn and day.package[1].isCheckIn is empty %}
+                                                <!---------------------------- TWO PACKAGES. EARLY CHECK-IN. COMING ONE ------------------------->
+
+                                                <li class=" {{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-free left">
+                                                        <div class="tile tile-busy tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-free right-left">
+                                                                <div class="tile tile-busy tile-coming left">
+                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }}-coming right-left">
+                                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                                            <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                                                {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+
+
+                                            {% elseif day.package[1].isCheckIn and day.package[0].isCheckIn is empty %}
+                                                <!---------------------------- TWO PACKAGES. EARLY CHECK-IN. COMING TWO ------------------------->
+
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-free left">
+                                                        <div class="tile tile-busy tile-coming right-left">
+                                                            <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                                <div class="tile tile-busy tile-{{ day.package[0].status }} right">
+                                                                    {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+
+                                            {% elseif day.package[0].isCheckIn and day.package[1].isCheckIn %}
+                                                <!---------------------------- TWO PACKAGES. EARLY CHECK-IN. COMING BOTH ------------------------->
+
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-free left">
+                                                        <div class="tile tile-busy tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-free right-left">
+                                                                <div class="tile tile-busy tile-coming">
+                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }}-coming right-left">
+                                                                        <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                                            {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% else %}
+                                                <!---------------------------- TWO PACKAGES. EARLY CHECK-IN ------------------------->
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-{{ day.package[0].status }} right-left">
+                                                    <div class="tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                        <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                            {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endif %}
+
+                                        {% elseif day.package[0].late_check_out and day.package[1].early_check_in is empty %}
+
+                                            {% if day.package[0].isCheckIn and day.package[1].isCheckIn is empty %}
+                                                <!---------------------------- TWO PACKAGES. LATE CHECK-OUT. COMING ONE ------------------------->
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-free left">
+                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-free right-left">
+                                                                <div class="tile tile-busy tile-coming left">
+                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }}-coming right-left">
+                                                                        <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                                            {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+
+                                            {% elseif day.package[1].isCheckIn and day.package[0].isCheckIn is empty %}
+                                                <!---------------------------- TWO PACKAGES. LATE CHECK-OUT. COMING TWO ------------------------->
+
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-free left">
+                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-free right-left">
+                                                                <div class="tile tile-busy tile-coming right-left">
+                                                                    <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                                        <div class="tile tile-busy tile-{{ day.package[0].status }} right">
+                                                                            <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                                                {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+
+                                            {% elseif day.package[0].isCheckIn and day.package[1].isCheckIn %}
+                                                <!---------------------------- TWO PACKAGES. LATE CHECK-OUT. COMING BOTH ------------------------->
+
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-free left">
+                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-free right-left">
+                                                                <div class="tile tile-busy tile-coming">
+                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }}-coming right-left">
+                                                                        <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                                            {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+
+                                            {% else %}
+                                                <!---------------------------- TWO PACKAGES. LATE CHECK-OUT ------------------------->
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                    <div class="tile tile-busy tile-{{ day.package[0].status }} right-left">
+                                                        <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                            {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endif %}
+
+                                        {% elseif day.package[0].late_check_out and day.package[1].early_check_in %}
+
+                                            {% if day.package[0].isCheckIn and day.package[1].isCheckIn is empty %}
+                                                <!---------------------------- TWO PACKAGES. LATE CHECK-OUT AND EARLY CHECK-IN. COMING ONE ------------------------->
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-free left">
+                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-free right-left">
+                                                                <div class="tile tile-busy tile-coming left">
+                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }}-coming right-left">
+                                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                                            <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                                                {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% elseif day.package[1].isCheckIn and day.package[0].isCheckIn is empty %}
+                                                <!---------------------------- TWO PACKAGES. LATE CHECK-OUT AND EARLY CHECK-IN. COMING TWO ------------------------->
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-free left">
+                                                        <div class="tile tile-busy tile-coming right-left">
+                                                            <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                                <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+
+                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }} right-left">
+                                                                        {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% elseif day.package[0].isCheckIn and day.package[1].isCheckIn %}
+                                                <!---------------------------- TWO PACKAGES. LATE CHECK-OUT AND EARLY CHECK-IN. COMING BOTH ------------------------->
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-free left">
+                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-free right-left">
+                                                                <div class="tile tile-busy tile-coming">
+                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }}-coming right-left">
+                                                                        <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                                            {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% else %}
+                                                <!---------------------------- TWO PACKAGES. LATE CHECK-OUT AND EARLY CHECK-IN ------------------------->
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                    <div class="tile tile-busy tile-{{ day.package[0].status }} right-left">
+                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                            <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                                {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endif %}
+                                        {% else %}
+
+                                            {% if day.package[0].isCheckIn and day.package[1].isCheckIn is empty %}
+                                                <!---------------------------- TWO PACKAGES. COMING ONE ------------------------->
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-coming tile-{{ day.package[0].status }}-coming right-left">
+                                                    <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                        {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                    </div>
+                                                </li>
+                                            {% elseif day.package[1].isCheckIn and day.package[0].isCheckIn is empty %}
+                                                <!---------------------------- TWO PACKAGES. COMING TWO ------------------------->
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-coming tile-{{ day.package[0].status }} right-left">
+                                                    <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                        {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                    </div>
+                                                </li>
+                                            {% elseif day.package[0].isCheckIn and day.package[1].isCheckIn %}
+                                                <!---------------------------- TWO PACKAGES. COMING BOTH ------------------------->
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-coming tile-{{ day.package[0].status }}-coming right-left">
+                                                    <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                        {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                    </div>
+                                                </li>
+                                            {% else %}
+                                                <!---------------------------- TWO PACKAGES ------------------------->
+                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-{{ day.package[0].status }} right-left">
+                                                    <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                        {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
+                                                    </div>
+                                                </li>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+    </div>
+{% else %}
+    <div class="alert alert-danger"><i
+                class="fa fa-exclamation-circle"> </i> {{ "report.accommodationTable.no_room_found"|trans({}, "MBHPackageBundle") }}
+    </div>
 {% endif %}

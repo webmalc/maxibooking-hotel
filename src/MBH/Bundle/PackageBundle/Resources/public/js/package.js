@@ -213,7 +213,6 @@ $(document).ready(function () {
                     nightsInput.val(services.package_duration);
                     nightsDiv.show();
                 }
-                if (services['package_one_day_price'] != 0){priceInput.val(services.package_one_day_price);}
                 priceInput.show();
                 amountInput.val(services.service_amount);
                 amountInput.show();

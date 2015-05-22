@@ -74,7 +74,7 @@ $(document).ready(function () {
             },
             "aoColumns": [
                 {"bSortable": false}, // icon
-                {"bSortable": false}, // prefix
+                null, // prefix
                 null, // in
                 null, // out
                 {"bSortable": false}, //operation

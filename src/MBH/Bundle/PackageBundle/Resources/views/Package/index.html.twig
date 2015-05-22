@@ -4,11 +4,6 @@
 
 {% block content %}
 
-        {% include 'MBHPackageBundle:Package:listTabs.html.twig' with {'active': 1 } %}
-
-<div class="tab-content">
-    <div class="tab-pane active" id="home">
-
     <div class="well" id="package-table-filter-well">
         <form id="package-table-filter" class="form-inline" role="form">
             <div class="input">
@@ -99,9 +94,6 @@
 
         <tbody>
     </table>
-
-    </div>
-</div>
             
 {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'package_search', 'icon': 'fa-search', 'text': 'package.index.selection'|trans({}, 'MBHPackageBundle')} %}
 {% endblock content %}

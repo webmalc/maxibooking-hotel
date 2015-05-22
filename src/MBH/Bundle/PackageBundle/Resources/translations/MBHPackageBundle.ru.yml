@@ -246,7 +246,7 @@ package.document.type_other: Прочее
 report.accommodation.placement: "размещение"
 report.accommodation.dates: Даты
 report.accommodation.room_type: Тип номера
-report.accommodationTable.no_room_found: Не найдено номеров у выбранного отеля.
+report.accommodationTable.no_room_found: Номера не найдены.
 report.accommodationTable.room: Номер
 report.accommodationTable.no_main_guest: "Нет основного гостя"
 report.accommodationTable.price: . Цена:

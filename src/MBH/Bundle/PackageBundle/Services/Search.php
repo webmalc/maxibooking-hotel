@@ -52,6 +52,15 @@ class Search
         $today = new \DateTime('midnight');
         $beforeArrival = $today->diff($query->begin)->format('%a');
 
+        //roomTypes
+        if (empty($query->roomTypes)) {
+            $query->roomTypes = [];
+            $helper = $this->container->get('mbh.helper');
+            foreach( $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
+                $query->roomTypes = array_merge($helper->toIds($hotel->getRoomTypes()), $query->roomTypes);
+            }
+        }
+
         //roomCache with tariffs
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
             $query->begin, $end, null, $query->roomTypes

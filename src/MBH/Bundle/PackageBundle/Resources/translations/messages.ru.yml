@@ -24,7 +24,7 @@ form.packageAccommodationType.room_or_bed: Комната/койко-место
 form.packageAccommodationType.room: Комната
 form.packageAccommodationType.choose_placement: Выбрать размещение
 form.packageAccommodationType.are_guests_checked_in: Гости заехали?
-form.packageAccommodationType.are_guests_checked_in_helper: Заехал ли гости в номер?
+form.packageAccommodationType.are_guests_checked_in_help: Заехал ли гости в номер?
 form.packageCopyType.reservation: Бронь
 form.packageCopyType.transfer_parameters: Параметры переноса
 form.packageCopyType.data_transfer_reservation: Бронь в которую будет произведен перенос данных.
@@ -132,6 +132,8 @@ controller.sourceController.record_created_success: 'Запись успешно
 controller.sourceController.record_edited_success: 'Запись успешно отредактирована.'
 controller.touristController.record_created_success: 'Запись успешно создана.'
 controller.touristController.record_edited_success: 'Запись успешно отредактирована.'
+controller.packageController.record_edited_fail: 'Ошибка при обновлении брони. Нет доступных номеров.'
+controller.packageController.record_edited_fail_accommodation: 'Ошибка при обновлении брони. Номер недоступен для размещения.'
 # Documents Controller
 controller.documentsController.table_row_name: 'Имя'
 controller.documentsController.table_row_comment: 'Комментарий'

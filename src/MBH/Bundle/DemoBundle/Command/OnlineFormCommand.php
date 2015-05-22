@@ -24,8 +24,14 @@ class OnlineFormCommand extends ContainerAwareCommand
         $path = $this->getContainer()->get('kernel')->getRootDir() . '/../web/demo/';
         $indexPath = $path . 'index.html';
         $resultsPath = $path . 'results.html';
-        $hotel = $this->getContainer()->get('mbh.hotel.selector')->getSelected();
+
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+        $hotel = $dm->getRepository('MBHHotelBundle:Hotel')->findOneBy([]);
+
+        if (!$hotel) {
+            $output->writeln('Error. New online form not created. Hotel not found!!!');
+            return false;
+        }
 
         if (!file_exists($indexPath) || !is_readable($indexPath)) {
             $output->writeln('Error. New online form not created. index.html file not exist!!!');

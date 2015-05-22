@@ -1035,4 +1035,24 @@ class Package extends Base
     {
         return $this->documents;
     }
+
+    /**
+     * @param $code
+     * @return \MBH\Bundle\PackageBundle\Document\PackageService|null
+     */
+    public function getService($code)
+    {
+        foreach ($this->getServices() as $service) {
+            if ($service->getService()->getCode() == $code) {
+                return $service;
+            }
+        }
+
+        return null;
+    }
+
+    public function getMainTourist()
+    {
+        return $this->getOrder()->getMainTourist();
+    }
 }

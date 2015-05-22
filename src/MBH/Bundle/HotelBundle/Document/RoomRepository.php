@@ -8,15 +8,81 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 
 class RoomRepository extends DocumentRepository
 {
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param Hotel $hotel
+     * @param null $roomTypes
+     * @param null $rooms
+     * @param null $excludePackages
+     * @param bool $grouped
+     * @return array|mixed
+     */
+    public function fetchAccommodationRooms(\DateTime $begin, \DateTime $end, Hotel $hotel, $roomTypes = null, $rooms = null, $excludePackages = null, $grouped = false)
+    {
+        $dm = $this->getDocumentManager();
+        $roomTypes and !is_array($roomTypes) ? $roomTypes = [$roomTypes] : $roomTypes;
+        $rooms and !is_array($rooms) ? $rooms = [$rooms] : $rooms;
+        $excludePackages and !is_array($excludePackages) ? $excludePackages = [$excludePackages] : $excludePackages;
+        $ids = $groupedRooms = [];
+        $hotelRoomTypes = [];
+        $end = clone $end;
+        $begin = clone $begin;
+
+        foreach ($hotel->getRoomTypes() as $roomType) {
+            if ($roomTypes && !in_array($roomType->getId(), $roomTypes)) {
+                continue;
+            }
+            $hotelRoomTypes[] = $roomType->getId();
+        }
+
+        //packages with accommodation
+        $packages = $dm->getRepository('MBHPackageBundle:Package')->fetchWithAccommodation($begin->modify('+1 day'), $end->modify('-1 day'), $rooms, $excludePackages);
+        foreach ($packages as $package) {
+            $ids[] = $package->getAccommodation()->getId();
+        };
+
+        // rooms
+        $qb = $this->createQueryBuilder('r')
+            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
+            ->field('roomType.id')->in($hotelRoomTypes)
+        ;
+        if (!empty($ids)) {
+            $qb->field('id')->notIn($ids);
+        }
+        if ($rooms) {
+            $qb->field('id')->in($rooms);
+        }
+        $roomDocs = $qb->getQuery()->execute();
+
+        if (!$grouped) {
+            return $roomDocs;
+        }
+        foreach ($roomDocs as $room) {
+            $groupedRooms[$room->getRoomType()->getId()][] = $room;
+        }
+
+        return $groupedRooms;
+    }
+
     /**
      * @param Hotel $hotel
-     * @param null $roomType
-     * @param null $skip
-     * @param null $limit
+     * @param mixed $roomTypes
+     * @param mixed $housing
+     * @param mixed $floor
+     * @param int $skip
+     * @param int $limit
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
-    public function fetchQuery(Hotel $hotel = null, $roomType = null, $skip = null, $limit = null)
-    {
+    public function fetchQuery(
+        Hotel $hotel = null,
+        $roomTypes = null,
+        $housing = null,
+        $floor = null,
+        $skip = null,
+        $limit = null
+    ) {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $qb = $this->createQueryBuilder('s');
 
@@ -28,44 +94,73 @@ class RoomRepository extends DocumentRepository
             }
             $qb->field('roomType.id')->in($roomTypeIds);
         }
-        
-        //roomType
-        if (!empty($roomType)) {
-            if (!$roomType instanceof RoomType) {
-                $qb->field('roomType.id')->equals($roomType);
-            } else {
-                $qb->field('roomType.id')->equals($roomType->getId());
-            }
+
+        //roomTypes
+        if (!empty($roomTypes)) {
+            is_array($roomTypes) ? $roomTypes : $roomTypes = [$roomTypes];
+            $qb->field('roomType.id')->in($roomTypes);
+        }
+
+        //housing
+        if (!empty($housing)) {
+            is_array($housing) ? $housing : $housing = [$housing];
+            $qb->field('housing')->in($housing);
+        }
+
+        //floors
+        if (!empty($floor)) {
+            is_array($floor) ? $floor : $floor = [$floor];
+            $qb->field('floor')->in($floor);
         }
 
         //paging
         if ($skip !== null) {
-            $qb->skip((int) $skip);
+            $qb->skip((int)$skip);
         }
         if ($limit !== null) {
-            $qb->limit((int) $limit);
+            $qb->limit((int)$limit);
         }
-        $qb->sort('roomType', 'asc');
+        $qb->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc']);
 
         return $qb;
     }
 
     /**
      * @param Hotel $hotel
-     * @param null $roomType
-     * @param null $skip
-     * @param null $limit
-     * @return mixed
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @param mixed $roomTypes
+     * @param mixed $housing
+     * @param mixed $floor
+     * @param int $skip
+     * @param int $limit
+     * @param boolean $group
+     * @return array
      */
-    public function fetch(Hotel $hotel = null, $roomType = null, $skip = null, $limit = null)
-    {
-        return $this->fetchQuery($hotel, $roomType, $skip, $limit)->getQuery()->execute();
+    public function fetch(
+        Hotel $hotel = null,
+        $roomTypes = null,
+        $housing = null,
+        $floor = null,
+        $skip = null,
+        $limit = null,
+        $group = false
+    ) {
+        $result = $this->fetchQuery($hotel, $roomTypes, $housing, $floor, $skip, $limit)->getQuery()->execute();
+
+        if ($group) {
+            $grouped = [];
+            foreach ($result as $doc) {
+                $grouped[$doc->getRoomType()->getId()][] = $doc;
+            }
+
+            return $grouped;
+        }
+
+        return $result;
     }
 
 
     /**
-     * @return \Doctrine\MongoDB\ArrayIterator;
+     * @return array
      */
     public function fetchHousings()
     {
@@ -73,23 +168,25 @@ class RoomRepository extends DocumentRepository
         $qb = $this->createQueryBuilder('s');
         $docs = $qb->distinct('housing')
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
+        $docs = iterator_to_array($docs);
+        asort($docs);
 
         return $docs;
     }
 
     /**
-     * @return \Doctrine\MongoDB\ArrayIterator;
+     * @return array;
      */
     public function fetchFloors()
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $qb = $this->createQueryBuilder('s');
-        $docs = $qb->distinct('floors')
+        $docs = $qb->distinct('floor')
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
+        $docs = iterator_to_array($docs);
+        asort($docs);
 
         return $docs;
     }
