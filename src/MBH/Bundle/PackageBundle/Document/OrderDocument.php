@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Blameable\Traits\BlameableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
+use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PostRemove;
@@ -14,7 +15,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\PostRemove;
  * @ODM\HasLifecycleCallbacks
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class PackageDocument
+class OrderDocument
 {
     use TimestampableDocument;
     use BlameableDocument;
@@ -49,6 +50,11 @@ class PackageDocument
     protected $tourist;
 
     /**
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Organization")
+     */
+    protected $organization;
+
+    /**
      * @var UploadedFile
      * @Assert\File(maxSize="6000000", mimeTypes={
      *          "image/png",
@@ -61,7 +67,7 @@ class PackageDocument
      *          "application/xls",
      *          "application/xlsx",
      *          "application/vnd.ms-excel"
-     * }, mimeTypesMessage="validator.document.PackageDocument.file_type")
+     * }, mimeTypesMessage="validator.document.OrderDocument.file_type")
      */
     protected $file;
 
@@ -77,22 +83,6 @@ class PackageDocument
      * @ODM\String
      */
     protected $mimeType;
-
-    /**
-     * @return mixed
-     */
-    public function getPackage()
-    {
-        return $this->package;
-    }
-
-    /**
-     * @param mixed $package
-     */
-    public function setPackage($package)
-    {
-        $this->package = $package;
-    }
 
     /**
      * @return string
@@ -148,7 +138,7 @@ class PackageDocument
      * documents should be saved
      * @return string
      */
-    protected function getUploadRootDir()
+    public function getUploadRootDir()
     {
         return __DIR__.'/../../../../../protectedUpload/packageDocuments';
     }
@@ -250,7 +240,7 @@ class PackageDocument
     }
 
     /**
-     * @return Tourist
+     * @return null|Tourist
      */
     public function getTourist()
     {
@@ -260,9 +250,25 @@ class PackageDocument
     /**
      * @param Tourist $tourist
      */
-    public function setTourist(Tourist $tourist)
+    public function setTourist(Tourist $tourist = null)
     {
         $this->tourist = $tourist;
+    }
+
+    /**
+     * @return null|Organization
+     */
+    public function getOrganization()
+    {
+        return $this->organization;
+    }
+
+    /**
+     * @param null|Organization $organization
+     */
+    public function setOrganization(Organization $organization = null)
+    {
+        $this->organization = $organization;
     }
 
     /**
@@ -295,5 +301,22 @@ class PackageDocument
     public function setMimeType($mimeType)
     {
         $this->mimeType = $mimeType;
+    }
+
+    /**
+     * @see Organization
+     * @see Tourist
+     *
+     * @return PayerInterface|null
+     */
+    public function getPayer()
+    {
+        if ($this->getOrganization()) {
+            return $this->getOrganization();
+        } elseif ($this->getTourist()) {
+            return $this->getTourist();
+        }
+
+        return null;
     }
 }

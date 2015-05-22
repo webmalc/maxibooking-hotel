@@ -10,7 +10,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
-use MBH\Bundle\HotelBundle\Validator\Constraints as MBHValidator;
 
 /**
  * @ODM\Document(collection="Hotels")

@@ -3,6 +3,9 @@
 namespace MBH\Bundle\CashBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\PackageBundle\Document\Organization;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -10,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\CashBundle\Form\CashDocumentType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class CashController extends Controller
 {
@@ -99,86 +103,38 @@ class CashController extends Controller
      * Displays a form to edit an existing entity.
      *
      * @Route("/{id}/edit", name="cash_edit")
-     * @Method("GET")
+     * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_BOOKKEEPER')")
      * @Template()
+     * @ParamConverter("entity", class="MBHCashBundle:CashDocument")
      */
-    public function editAction($id)
+    public function editAction(CashDocument $entity, Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHCashBundle:CashDocument')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel()))
             throw $this->createNotFoundException();
-        }
-        $form = $this->createForm(
-            new CashDocumentType(),
-            $entity,
+
+        $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
+
+        $form = $this->createForm(new CashDocumentType($this->dm), $entity,
             [
                 'methods' => $this->container->getParameter('mbh.cash.methods'),
                 'operations' => $this->container->getParameter('mbh.cash.operations'),
-                'payer' => $entity->getPayer()
+                //'payer' => $entity->getPayer() ? $entity->getPayer()->getId() : null,
+                'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity->getOrder()),
             ]
         );
 
-        return [
-            'entity' => $entity,
-            'form' => $form->createView(),
-            'logs' => $this->logs($entity)
-        ];
-    }
+        if($request->isMethod("PUT")){
+            $form->submit($request);
 
-    /**
-     * Edits an existing entity.
-     *
-     * @Route("/{id}", name="cash_update")
-     * @Method("PUT")
-     * @Security("is_granted('ROLE_BOOKKEEPER')")
-     * @Template("MBHCashBundle:Cash:edit.html.twig")
-     */
-    public function updateAction(Request $request, $id)
-    {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
+            if ($form->isValid()) {
+                $this->dm->persist($entity);
+                $this->dm->flush();
 
-        $entity = $dm->getRepository('MBHCashBundle:CashDocument')->find($id);
+                $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('controller.cashController.edit_record_success'));
 
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
-            throw $this->createNotFoundException();
-        }
-        $form = $this->createForm(
-            new CashDocumentType(),
-            $entity,
-            [
-                'methods' => $this->container->getParameter('mbh.cash.methods'),
-                'operations' => $this->container->getParameter('mbh.cash.operations'),
-                'payer' => $entity->getPayer()
-            ]
-        );
-
-        $form->bind($request);
-
-        if ($form->isValid()) {
-
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-
-            $payer = $dm->getRepository('MBHPackageBundle:Tourist')->find($form['payer_select']->getData());
-            if ($payer) {
-                $entity->setPayer($payer);
-            } else {
-                $entity->removePayer();
+                return $this->afterSaveRedirect('cash', $entity->getId());
             }
-
-            $dm->persist($entity);
-            $dm->flush();
-
-            $this->getRequest()->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.cashController.edit_record_success'));
-
-            return $this->afterSaveRedirect('cash', $entity->getId());
         }
 
         return [

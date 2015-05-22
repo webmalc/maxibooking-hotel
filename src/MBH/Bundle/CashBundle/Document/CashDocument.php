@@ -4,12 +4,18 @@ namespace MBH\Bundle\CashBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PackageBundle\Document\Organization;
+use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 use MBH\Bundle\CashBundle\Validator\Constraints as MBHValidator;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBBundleUnique;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 
 /**
  * @ODM\Document(collection="CashDocuments", repositoryClass="MBH\Bundle\CashBundle\Document\CashDocumentRepository")
@@ -17,6 +23,7 @@ use MBH\Bundle\CashBundle\Validator\Constraints as MBHValidator;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  * @MBHValidator\CashDocument
+ * @MongoDBBundleUnique(fields={"number"})
  */
 class CashDocument extends Base
 {
@@ -48,12 +55,6 @@ class CashDocument extends Base
     protected $order;
 
     /**
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Tourist", inversedBy="cashDocuments")
-     */
-    protected $payer;
-
-    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
@@ -64,8 +65,17 @@ class CashDocument extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
+     * @Assert\Type(type="string")
+     * @Assert\Length(max=40)
+     */
+    protected $number;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
      * @Assert\Choice(
-     *      choices = {"cash", "cashless", "electronic"}, 
+     *      choices = {"cash", "cashless", "electronic"},
      *      message = "validator.document.cashDocument.wrong_tariff_type"
      * )
      */
@@ -116,6 +126,32 @@ class CashDocument extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isPaid = true;
+
+    /**
+     * @var \DateTime
+     * @Gedmo\Versioned
+     * @ODM\Date()
+     */
+    protected $documentDate;
+
+    /**
+     * @var \DateTime
+     * @Gedmo\Versioned
+     * @ODM\Date()
+     */
+    protected $paidDate;
+
+    /**
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Organization")
+     * @var Organization
+     */
+    protected $organizationPayer;
+
+    /**
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Tourist")
+     * @var Tourist
+     */
+    protected $touristPayer;
 
     /**
      * Set method
@@ -206,25 +242,19 @@ class CashDocument extends Base
     }
 
     /**
-     * Set prefix
-     *
-     * @param string $prefix
-     * @return self
+     * @return string
      */
-    public function setPrefix($prefix)
+    public function getNumber()
     {
-        $this->prefix = $prefix;
-        return $this;
+        return $this->number;
     }
 
     /**
-     * Get prefix
-     *
-     * @return string $prefix
+     * @param string $number
      */
-    public function getPrefix()
+    public function setNumber($number)
     {
-        return $this->prefix;
+        $this->number = $number;
     }
 
     /**
@@ -232,7 +262,24 @@ class CashDocument extends Base
      */
     public function prePersist()
     {
-        $this->setPrefix($this->getOrder()->getId());
+        $this->checkDate();
+    }
+
+    /**
+     * @PreUpdate
+     */
+    public function preUpdate()
+    {
+        $this->checkDate();
+    }
+
+
+    private function checkDate()
+    {
+        if(!$this->getIsPaid())
+            $this->setPaidDate(null);
+        elseif(!$this->getPaidDate())
+            $this->setPaidDate(new \DateTime('now'));
     }
 
     /**
@@ -287,42 +334,26 @@ class CashDocument extends Base
         return $this->getOrder()->getPackages()[0]->getRoomType()->getHotel();
     }
 
-    /**
-     * Set payer
-     *
-     * @param \MBH\Bundle\PackageBundle\Document\Tourist $payer
-     * @return self
-     */
-    public function setPayer(\MBH\Bundle\PackageBundle\Document\Tourist $payer)
-    {
-        $this->payer = $payer;
-        return $this;
-    }
 
     /**
-     * @param bool $order
-     * @return mixed
+     * @see Organization
+     * @see Tourist
+     *
+     * @return PayerInterface|null
      */
-    public function getPayer($order = false)
+    public function getPayer()
     {
-        if ($this->payer) {
-            return $this->payer;
-        }
-        if ($this->getOrder()->getMainTourist()) {
+        if ($this->getOrganizationPayer()) {
+            return $this->getOrganizationPayer();
+        } elseif ($this->getTouristPayer()) {
+            return $this->getTouristPayer();
+        } elseif ($this->getOrder()->getOrganization()) {
+            return $this->getOrder()->getOrganization();
+        } elseif ($this->getOrder()->getMainTourist()) {
             return $this->getOrder()->getMainTourist();
         }
 
         return null;
-    }
-
-    /**
-     * @return self $this
-     */
-    public function removePayer()
-    {
-        $this->payer = null;
-
-        return $this;
     }
 
     /**
@@ -345,5 +376,82 @@ class CashDocument extends Base
     public function getOrder()
     {
         return $this->order;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDocumentDate()
+    {
+        return $this->documentDate;
+    }
+
+    /**
+     * @param mixed $documentDate
+     */
+    public function setDocumentDate(\DateTime $documentDate = null)
+    {
+        $this->documentDate = $documentDate;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getPaidDate()
+    {
+        return $this->paidDate;
+    }
+
+    /**
+     * @param \DateTime $paidDate
+     */
+    public function setPaidDate(\DateTime $paidDate = null)
+    {
+        $this->paidDate = $paidDate;
+    }
+
+    /**
+     * @return null|Organization
+     */
+    public function getOrganizationPayer()
+    {
+        return $this->organizationPayer;
+    }
+
+    /**
+     * @param Organization $organizationPayer
+     */
+    public function setOrganizationPayer(Organization $organizationPayer = null)
+    {
+        $this->organizationPayer = $organizationPayer;
+    }
+
+
+
+    /**
+     * @return null|Tourist
+     */
+    public function getTouristPayer()
+    {
+        return $this->touristPayer;
+    }
+
+    /**
+     * @param Tourist $touristPayer
+     */
+    public function setTouristPayer(Tourist $touristPayer = null)
+    {
+        $this->touristPayer = $touristPayer;
+    }
+
+    /**
+     * @Assert\True(message = "validator.document.cashDocument.wrong_valid_date")
+     */
+    public function isValidDate()
+    {
+        if($this->getIsPaid() && $this->getPaidDate())
+            return $this->getPaidDate()->getTimestamp() >= $this->getDocumentDate()->getTimestamp();
+
+        return true;
     }
 }

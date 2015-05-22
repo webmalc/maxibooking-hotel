@@ -10,6 +10,7 @@ order.cash.deleted: удален
 order.cash.paid_price: Оплачено/Цена:
 order.cash.paid: оплачен
 order.cash.not_paid: не оплачен
+order.cash.payer: Плательщик
 order.cash.income: Приход
 order.cash.outcome: Расход
 order.cash.is_paid: Оплачен
@@ -26,6 +27,7 @@ order.cash.are_you_sure_to_confirm_payment: Точно подтвердить п
 order.cash.are_you_sure_to_pay_payment: Точно оплатить платеж на сумму
 order.cash.confirm: Подтвердить
 order.cash.pay: Подтвердить
+order.cash.short_pay: Опл.
 order.cash.cash_documents_not_found: Кассовые документы не найдены.
 order.edit.order_editing: 'редактирование заказа #'
 order.edit.deleted: удален
@@ -64,6 +66,7 @@ order.tabs.calculations: Расчеты
 order.touristEdit.edit_order: 'редактирование заказа #'
 order.touristEdit.deleted: удален
 order.touristEdit.payer_not_specified: Плательщик не указан.
+order.touristEdit.organization_not_specified: Организация не указана.
 order.touristEdit.fio: ФИО
 order.touristEdit.birth_date: Дата рождения
 order.touristEdit.gender: Пол
@@ -72,6 +75,7 @@ order.touristEdit.email: E-mail
 order.touristEdit.address: Адрес
 order.touristEdit.document: Документ
 order.touristEdit.delete_payer: Удалить плательщика
+order.touristEdit.delete_organization: Удалить организацию
 order.package.add: Добавить в бронь в заказ
 package.accommodation.edit_reservation: 'редактирование брони'
 package.accommodation.deleted: удалена
@@ -290,3 +294,8 @@ source.index.edit_record: Редактирование записи
 source.index.delete_record: Удаление записи
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Невозможно удалить запись с существующими бронями. Брони: '
 analytics.layout.report: Отчеты
+# Organizations
+organizations.breadcrumbs.list: Организации
+organizations.breadcrumbs.add: Добавить организацию
+organizations.breadcrumbs.edit: Редактировать организацию
+organizations.confirm_delete: 'Вы действительно хотите удалить организацию "%organization_name%"'

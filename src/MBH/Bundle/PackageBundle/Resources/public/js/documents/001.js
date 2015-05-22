@@ -7,7 +7,7 @@
         $this.addClass("disabled").children("i.fa-trash-o").removeClass("fa-trash-o").addClass("fa-spinner fa-spin");
 
         $.ajax({
-            url: Routing.generate('package_remove_document', {id: $this.data('package')}),
+            url: Routing.generate('order_remove_document', {id: $this.data('package')}),
             data: {docname : $this.data('docname')},
             method: "post",
             success: function (data) {

@@ -14,7 +14,7 @@
 
 {% block content %}
     {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
-        {{ form_start(form, {'action': path('package_document_edit', {'id': entity.id, 'docname': document.name}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
+        {{ form_start(form, {'action': path('order_document_edit', {'id': entity.id, 'docname': document.name}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
         {{ form_widget(form) }}
         {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
         {{ form_end(form) }}

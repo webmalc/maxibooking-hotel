@@ -53,4 +53,4 @@ validator.document.Tourist.max_phone: Слишком длинный телефо
 validator.document.Tourist.min_note: Слишком короткое примечание
 validator.document.Tourist.max_note: Слишком длинное примечание
 
-validator.document.PackageDocument.file_type: Тип файла не поддерживается. Поддерживаемые форматы png, jpeg, jpg, gif, pdf, xls, doc.
+validator.document.OrderDocument.file_type: Тип файла не поддерживается. Поддерживаемые форматы png, jpeg, jpg, gif, pdf, xls, doc.

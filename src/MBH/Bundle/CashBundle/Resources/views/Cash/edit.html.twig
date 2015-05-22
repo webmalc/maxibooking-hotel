@@ -2,9 +2,18 @@
 
 {% set small_title = 'views.cash.edit.edit_document'|trans({}, 'MBHCashBundle') ~ entity.id %}
 
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/cash.js'%}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
 {% block content %}
 
-    {{ form_start(form, {'action': path('cash_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('cash_edit', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'cash_delete' } %}
     {{ form_end(form) }}

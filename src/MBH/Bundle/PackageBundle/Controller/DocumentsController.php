@@ -3,8 +3,9 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Document\OrderRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\Document\PackageDocument;
+use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Form\PackageDocumentType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -29,7 +30,7 @@ class DocumentsController extends Controller
      * @param Package $package
      * @return array|RedirectResponse
      *
-     * @Route("/{id}/documents", name="package_documents")
+     * @Route("/{id}/documents", name="order_documents")
      * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_USER')")
      * @ParamConverter("order", class="MBHPackageBundle:Package")
@@ -40,9 +41,9 @@ class DocumentsController extends Controller
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package))
             throw $this->createNotFoundException();
 
-        $packageDocument = new PackageDocument();
+        $packageDocument = new OrderDocument();
         $documentTypes = [];
-        foreach ($this->container->getParameter('mbh.package.document.types') as $type)
+        foreach ($this->container->getParameter('mbh.order.document.types') as $type)
             $documentTypes[$type] = $this->get('translator')->trans('package.document.type_' . $type, [], 'MBHPackageBundle');
 
         $touristIds = $this->get('mbh.helper')->toIds($package->getTourists());
@@ -65,10 +66,10 @@ class DocumentsController extends Controller
                 /* @var $dm  \Doctrine\ODM\MongoDB\DocumentManager */
                 $dm = $this->get('doctrine_mongodb')->getManager();
 
-                $package->addDocument($packageDocument);
+                $package->getOrder()->addDocument($packageDocument);
                 $dm->persist($package);
                 $dm->flush();
-                return $this->redirect($this->generateUrl("package_documents", ['id' => $package->getId()]));
+                return $this->redirect($this->generateUrl("order_documents", ['id' => $package->getId()]));
             }
         }
 
@@ -84,7 +85,7 @@ class DocumentsController extends Controller
      * @param $docname
      * @return RedirectResponse
      *
-     * @Route("/{id}/removeDocument/{docname}", name="package_remove_document", options={"expose"=true})
+     * @Route("/{id}/removeDocument/{docname}", name="order_remove_document", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
      * @ParamConverter("package", class="MBHPackageBundle:Package")
@@ -98,12 +99,14 @@ class DocumentsController extends Controller
             throw $this->createNotFoundException();
         }
 
-        foreach ($package->getDocuments() as $document) {
-            /** @var PackageDocument $document */
-            if ($document->getName() == $docname) {
-                $package->removeDocument($document);
+        $order = $package->getOrder();
 
-                $dm->persist($package);
+        foreach ($order->getDocuments() as $document) {
+            /** @var OrderDocument $document */
+            if ($document->getName() == $docname) {
+                $order->removeDocument($document);
+
+                $dm->persist($order);
                 $dm->flush();
 
                 break;
@@ -111,13 +114,13 @@ class DocumentsController extends Controller
         }
 
 
-        return new RedirectResponse($this->generateUrl('package_documents', ['id' => $package->getId()]));
+        return new RedirectResponse($this->generateUrl('order_documents', ['id' => $package->getId()]));
     }
 
 
     /**
      *
-     * @Route("/document/{docname}/{download}", name="package_document_view", options={"expose"=true}, defaults={"download" = 0})
+     * @Route("/document/{docname}/{download}", name="order_document_view", options={"expose"=true}, defaults={"download" = 0})
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
      *
@@ -130,19 +133,19 @@ class DocumentsController extends Controller
         //todo $repository->getDocumentByName
         /* @var $dm  \Doctrine\ODM\MongoDB\DocumentManager */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        /** @var PackageRepository $packageRepository */
-        $packageRepository = $dm->getRepository('MBHPackageBundle:Package');
+        /** @var OrderRepository $packageRepository */
+        $orderRepository = $dm->getRepository('MBHPackageBundle:Order');
 
-        /** @var Package $package */
-        $package = $packageRepository->findOneBy(['documents.name' => $docname]);
+        /** @var Order $order */
+        $order = $orderRepository->findOneBy(['documents.name' => $docname]);
 
-        if(!$package)
+        if(!$order)
             throw $this->createNotFoundException();
 
         $document = null;
 
-        foreach($package->getDocuments()->getIterator() as $d)
-            /** @var PackageDocument $d */
+        foreach($order->getDocuments()->getIterator() as $d)
+            /** @var OrderDocument $d */
             if($d->getName() == $docname)
                 $document = $d;
 
@@ -167,7 +170,7 @@ class DocumentsController extends Controller
     }
 
     /**
-     * @Route("/document/{id}/edit/{docname}", name="package_document_edit", options={"expose"=true}, defaults={"download" = 0})
+     * @Route("/document/{id}/edit/{docname}", name="order_document_edit", options={"expose"=true}, defaults={"download" = 0})
      * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_USER')")
      * @ParamConverter("package", class="MBHPackageBundle:Package")
@@ -177,24 +180,25 @@ class DocumentsController extends Controller
     {
         $touristIds = $this->get('mbh.helper')->toIds($package->getTourists());
 
-        $packageDocument = null;
-        foreach($package->getDocuments()->getIterator() as $document)
-            /** @var PackageDocument $document */
+        $orderDocument = null;
+        $order = $package->getOrder();
+        foreach($order->getDocuments()->getIterator() as $document)
+            /** @var OrderDocument $document */
             if($document->getName() == $docname)
-                $packageDocument = $document;
+                $orderDocument = $document;
 
-        if(!$packageDocument)
+        if(!$orderDocument)
             throw $this->createNotFoundException();
 
         $documentTypes = [];
-        foreach ($this->container->getParameter('mbh.package.document.types') as $type)
+        foreach ($this->container->getParameter('mbh.order.document.types') as $type)
             $documentTypes[$type] = $this->get('translator')->trans('package.document.type_' . $type, [], 'MBHPackageBundle');
 
         if($mainTourist = $package->getOrder()->getMainTourist()){
             $touristIds[] = $mainTourist->getId();
         }
 
-        $form = $this->createForm(new PackageDocumentType(), $packageDocument, [
+        $form = $this->createForm(new PackageDocumentType(), $orderDocument, [
             'documentTypes' => $documentTypes,
             'touristIds' => $touristIds,
             'scenario' => PackageDocumentType::SCENARIO_EDIT,
@@ -202,28 +206,28 @@ class DocumentsController extends Controller
         ]);
 
         if ($request->isMethod("PUT")) {
-            $oldPackageDocument = clone($packageDocument);
+            $oldPackageDocument = clone($orderDocument);
             $form->submit($request);
 
             if ($form->isValid()) {
-                if(!$packageDocument->isUploaded()){
-                    $packageDocument->upload();
+                if(!$orderDocument->isUploaded()){
+                    $orderDocument->upload();
                     $oldPackageDocument->deleteFile();
                 }
                 /* @var $dm  \Doctrine\ODM\MongoDB\DocumentManager */
                 $dm = $this->get('doctrine_mongodb')->getManager();
 
-                $dm->persist($packageDocument);
+                $dm->persist($orderDocument);
                 $dm->flush();
 
 
-                return $this->redirect($this->generateUrl("package_documents", ['id' => $package->getId()]));
+                return $this->redirect($this->generateUrl("order_documents", ['id' => $package->getId()]));
             }
         }
 
         return [
             'entity' => $package,
-            'document' => $packageDocument,
+            'document' => $orderDocument,
             'form' => $form->createView(),
             'logs' => $this->logs($package),
         ];

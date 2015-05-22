@@ -5,7 +5,7 @@
 {% set confirmed = entity.order.confirmed ? '' : '<i class="fa fa-check"></i>'  %}
 {% set tourists = entity.tourists|length ? entity.tourists|length : ''  %}
 {% set services = entity.services|length ? entity.services|length : ''  %}
-{% set documents = entity.documents|length ? entity.documents|length : ''  %}
+{% set documents = entity.order.documents|length ? entity.order.documents|length : ''  %}
 
 {% if entity.order.isPaid and  entity.order.price < entity.order.paid %}
     {% set price = {
@@ -37,7 +37,7 @@
     {'route': 'package_service', 'order': false, 'title': '<i class="fa fa-plug"></i> '~'package.editTabs.services'|trans({}, 'MBHPackageBundle')~' <small class="badge">' ~ services ~ '</small>'},
     {'route': 'package_accommodation', 'order': false, 'title': '<i class="fa fa-bed"></i> '~'package.editTabs.placement'|trans({}, 'MBHPackageBundle')~' <small class="label ' ~ accommodation.class ~ ' label-as-badge">' ~ accommodation.val ~ '</small>'},
     {'route': 'package_order_cash', 'order': true, 'title': '<i class="fa fa-ruble"></i> '~'order.tabs.calculations'|trans({}, 'MBHPackageBundle')~' <small class="label ' ~ price.class ~ ' label-as-badge">' ~ price.val ~  '</i></small>'},
-    {'route': 'package_documents', 'order': false, 'title': '<i class="fa fa-file"></i> '~'package.editTabs.documents'|trans({}, 'MBHPackageBundle')~' <small class="badge">' ~ documents ~ '</small>'}
+    {'route': 'order_documents', 'order': false, 'title': '<i class="fa fa-file"></i> '~'package.editTabs.documents'|trans({}, 'MBHPackageBundle')~' <small class="badge">' ~ documents ~ '</small>'}
 ]
 %}
 

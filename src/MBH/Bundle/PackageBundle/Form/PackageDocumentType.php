@@ -3,7 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\PackageBundle\Document\PackageDocument;
+use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
@@ -57,7 +57,7 @@ class PackageDocumentType extends AbstractType
             ]
         );
 
-        /** @var PackageDocument $document */
+        /** @var OrderDocument $document */
         $document = $options['document'];
 
         $typeIcons = [

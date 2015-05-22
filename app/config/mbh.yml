@@ -168,7 +168,7 @@ parameters:
         channel_manager: { title: "Channel manager", class: "danger"}
 
     #Типы документов
-    mbh.package.document.types:
+    mbh.order.document.types:
         - passport
         - foreign_passport
         - insurance
@@ -221,5 +221,6 @@ parameters:
         female: "Женщина"
         unknown: "Неизвестно"
 
-    
-    
+    mbh.organization.types:
+        contragents: 'Контрагенты'
+        my: 'Мои организации'

@@ -67,6 +67,11 @@ services:
             class: MBH\Bundle\BaseBundle\Service\Helper
             arguments: [@service_container]
 
+    mbh.pdf_generator:
+        class: MBH\Bundle\BaseBundle\Service\PdfGenerator
+        calls:
+              - [ setContainer, [ '@service_container' ] ]
+
     mbh.mailer:
             class: MBH\Bundle\BaseBundle\Service\Mailer
             arguments: [@service_container]

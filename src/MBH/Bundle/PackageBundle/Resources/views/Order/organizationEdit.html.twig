@@ -1,0 +1,112 @@
+{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+
+{% set small_title =  'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ package.numberWithPrefix %}
+
+{% if package.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~'</span>' %}{% endif %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/organizations/create.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block content %}
+
+    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
+
+    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 3 , 'entity': package} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+            {% include 'MBHPackageBundle:Order:tabs.html.twig' with {'active': 2, 'entity': entity, 'package': package} %}
+
+            {% if entity.organization is null %}
+                <div class="alert alert-warning alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <i class="fa fa-exclamation-circle"></i>
+                    {{ 'order.touristEdit.organization_not_specified'|trans({}, 'MBHPackageBundle') }}
+                </div>
+            {% else %}
+                <div class="alert alert-warning package-main-info">
+                    <div class="row spacer-top">
+                        <div class="col-md-2 text-right">
+                            <strong>{{ 'form.organizationType.name'|trans({}) }}</strong>
+                        </div>
+                        <div class="col-md-10">
+                            {{ entity.organization.name|default('-') }}
+                        </div>
+                    </div>
+                    <div class="row spacer-top">
+                        <div class="col-md-2 text-right">
+                            <strong>{{ 'form.organizationType.phone'|trans({}) }}</strong>
+                        </div>
+                        <div class="col-md-10">
+                            {{ entity.organization.phone|default('-') }}
+                        </div>
+                    </div>
+                    <div class="row spacer-top">
+                        <div class="col-md-2 text-right">
+                            <strong>{{ 'form.organizationType.email'|trans({}) }}</strong>
+                        </div>
+                        <div class="col-md-10">
+                            {{ entity.organization.email|default('-') }}
+                        </div>
+                    </div>
+                    <div class="row spacer-top">
+                        <div class="col-md-2 text-right">
+                            <strong>{{ 'form.organizationType.inn'|trans({}) }}</strong>
+                        </div>
+                        <div class="col-md-10">
+                            {{ entity.organization.inn|default('-') }}
+                        </div>
+                    </div>
+                    <div class="row spacer-top">
+                        <div class="col-md-2 text-right">
+                            <strong>{{ 'form.organizationType.kpp'|trans({}) }}</strong>
+                        </div>
+                        <div class="col-md-10">
+                            {{ entity.organization.kpp|default('-') }}
+                        </div>
+                    </div>
+                    <div class="row spacer-top">
+                        <div class="col-md-2 text-right">
+                            <strong>{{ 'form.organizationType.address'|trans({}) }}</strong></div>
+                        <div class="col-md-10">
+                            {{ entity.organization.location|default('-') }}
+                        </div>
+                    </div>
+                    <div class="row spacer-top">
+                        <div class="col-md-2 text-right">
+                            <strong>{{ 'form.organizationType.comment'|trans({}) }}</strong></div>
+                        <div class="col-md-10">
+                            {{ entity.organization.comment|default('-') }}
+                        </div>
+                    </div>
+
+                    {% if entity.deletedAt is empty and checkPackagePermissions(package) %}
+                        <div class="row spacer-top">
+                            <div class="col-md-12 text-right btn-list">
+                                <a href="{{ path('edit_organization', {id: entity.organization.id }) }}"
+                                   class="btn btn-success btn-sm" title="" data-toggle="tooltip"
+                                   data-original-title="Редактирование записи"><i class="fa fa-pencil-square-o"></i></a>
+                                <a data-toggle="tooltip"
+                                   title="{{ 'order.touristEdit.delete_organization'|trans({}, 'MBHPackageBundle') }}"
+                                   href="{{ path('package_order_organization_delete', {'id': entity.id, 'packageId': package.id}) }}"
+                                   class="delete-link btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {{ form_start(form, {'action': path('package_order_organization_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity, 'package': package} %}
+            {{ form_end(form) }}
+
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
+        </div>
+
+    </div>
+{% endblock %}

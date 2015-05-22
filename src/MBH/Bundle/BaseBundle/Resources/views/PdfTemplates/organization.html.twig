@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <title></title>
+
+</head>
+
+<body>
+
+<div class="document">
+    <table class="table1" border="1" cellpadding="1" cellspacing="0">
+        <tr>
+            <td rowspan="2" colspan="2">
+                <div>{{ myOrganization.bank }}</div>
+                <div style="font-size: 14px">Банк получателя</div>
+            </td>
+            <td>
+                Бик
+            </td>
+            <td rowspan="2" class="top">
+                <div>{{ myOrganization.bankBik }}</div>
+                <div>{{ myOrganization.correspondentAccount }}</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Cч. №
+            </td>
+        </tr>
+        <tr>
+            <td>
+                ИНН {{ myOrganization.inn }}
+            </td>
+            <td>
+                КПП {{ myOrganization.kpp }}
+            </td>
+            <td rowspan="2" class="top">
+                Cч. №
+            </td>
+            <td rowspan="2" class="top">
+                {{ myOrganization.checkingAccount }}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="top">{{ myOrganization.name }}</div>
+                <div class="bottom" style="font-size: 14px">Получатель</div>
+            </td>
+        </tr>
+    </table>
+
+    <div style="font-size: 24px; font-weight: bold; margin-top: 12px">Счет на оплату № {{ cashDocument.number }} от {{ cashDocument.documentDate|date('d.m.Y') }}</div>
+
+    <hr>
+    <table class="table2">
+        <tr>
+            <td class="top">Поставщик:</td>
+            <td>
+                <strong>
+                    {{ myOrganization.name }}, ИНН {{ myOrganization.inn }}, КПП {{ myOrganization.kpp }}, {{ myOrganization.index }}
+                    {{ myOrganization.location }}, тел.: {{ myOrganization.phone }}
+                </strong>
+            </td>
+        </tr>
+        <tr>
+            <td class="top">Покупатель:</td>
+            <td>
+                <strong>
+                    {{ cashDocument.payer.name }}, ИНН {{ cashDocument.payer.inn }}, КПП {{ cashDocument.payer.kpp }}, {{ cashDocument.payer.index }}
+                    {{ cashDocument.payer.location }}, тел.: {{ cashDocument.payer.phone }}
+                </strong>
+            </td>
+        </tr>
+    </table>
+
+    <table class="table3" border="1" cellpadding="1" cellspacing="0">
+        <thead>
+        <tr>
+            <th>№</th>
+            <th>Товары (работы, услуги)</th>
+            <th>Кол-во</th>
+            <th>Ед.</th>
+            <th>Цена</th>
+            <th>Сумма</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td style="text-align: center;vertical-align: top;font-size: 14px;font-size: 16px">1</td>
+            <td style="max-width: 350px;font-size: 14px">
+                Услуги отеля по счету №{{ cashDocument.number }}. Заказ №{{ cashDocument.order.id }} от {{ cashDocument.documentDate|date('d.m.Y') }} г.
+            </td>
+            <td>1</td>
+            <td>усл.</td>
+            <td><div class="right">{{ cashDocument.total|number_format(2) }}</div></td>
+            <td><div class="right">{{ cashDocument.total|number_format(2) }}</div></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <table class="total-result-table">
+        <tr>
+            <td>
+                <div>Итог:</div>
+            </td>
+            <td>
+                <div>{{ cashDocument.total|number_format(2) }}</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div>Без налога (НДС):</div>
+            </td>
+            <td>
+                <div>-</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="white-space: nowrap;">Всего к оплате:</div>
+            </td>
+            <td>
+                <div>{{ cashDocument.total }}</div>
+            </td>
+        </tr>
+    </table>
+
+    <div style="clear: both"></div>
+
+    <div class="conclusion">
+        <div>Всего наименований 1, на сумму {{ cashDocument.total }} руб</div>
+        <strong>{{ cashDocument.total|num2str|capitalize }}</strong>
+    </div>
+
+    <hr>
+
+    <div class="sign">
+        <div style="width: 395px;" class="inline-block">
+            <strong>Руководитель</strong>
+            <div class="inline-block sign-field" style="width: 250px; position: absolute"><span style="visibility: hidden">%</span></div>
+            <div class="inline-block sign-field right">{{ myOrganization.directorFio }}</div>
+        </div>
+        <div style="width: 395px;" class="inline-block">
+            <strong>Бухгалтер</strong>
+            <div class="inline-block sign-field" style="width: 300px; position: absolute"><span style="visibility: hidden">%</span></div>
+            <div class="inline-block sign-field right">{{ myOrganization.accountantFio }}</div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<style>
+    hr {
+        color: #000000;
+        background-color: #000000;
+        height: 3px;
+        border-width: 0px;
+    }
+
+    .document {
+        width: 800px;
+    }
+
+    .document table {
+        width: 800px;
+    }
+
+    .table1{
+        min-height: 115px;
+    }
+
+    /*div{
+        padding: 1px;
+    }*/
+
+    .inline-block{
+        display: inline-block;
+    }
+
+    .table3{
+        border: solid;
+    }
+
+    .total-result-table{
+        float: right;
+        width: 400px!important;
+    }
+
+    .total-result-table div:first-child{
+        float: right;
+    }
+    .total-result-table{
+        font-weight: bold;
+    }
+
+    .conclusion{
+        width: 800px;
+    }
+
+    .sign{
+        margin-top: 60px;
+        width: 800px;
+        white-space: nowrap;
+    }
+
+    .sign-field{
+        border-bottom: outset 2px #000080;
+    }
+
+    .top{
+        vertical-align: top
+    }
+    .bottom{
+        vertical-align: bottom;
+    }
+    .left{
+        float: left;
+    }
+    .right{
+        float: right;
+    }
+</style>
+
+</html>

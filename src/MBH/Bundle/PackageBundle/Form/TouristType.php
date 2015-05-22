@@ -35,7 +35,7 @@ class TouristType extends AbstractType
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
                     'required' => false,
-                    'attr' => array('data-date-format' => 'dd.mm.yyyy'),
+                    'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small'),
                 ))
                 ->add('sex', 'choice', [
                     'label' => 'form.touristType.gender',
