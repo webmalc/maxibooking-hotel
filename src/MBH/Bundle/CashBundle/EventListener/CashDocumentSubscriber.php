@@ -9,15 +9,13 @@ use MBH\Bundle\BaseBundle\Service\PdfGenerator;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
-use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 
 /**
  * Class CashDocumentSubscriber
  * @package MBH\Bundle\PackageBundle\EventListener
- *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class CashDocumentSubscriber implements EventSubscriber
 {
@@ -26,14 +24,15 @@ class CashDocumentSubscriber implements EventSubscriber
      */
     protected $container;
 
+    /**
+     * @param ContainerInterface $container
+     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
     /**
-     * Returns an array of events this subscriber wants to listen to.
-     *
      * @return array
      */
     public function getSubscribedEvents()
@@ -43,25 +42,38 @@ class CashDocumentSubscriber implements EventSubscriber
         ];
     }
 
+    /**
+     * @param LifecycleEventArgs $args
+     */
     public function postPersist(LifecycleEventArgs $args)
     {
         /** @var CashDocument $document */
         $document = $args->getDocument();
-        if($document instanceof CashDocument && $document->getMethod() == 'cashless' && $document->getOperation() == 'in') { //поступление безнал
-            $this->createPdfOrderDocument($document, $args->getDocumentManager());
+
+        if ($document instanceof CashDocument && $document->getMethod() == 'cashless' && $document->getOperation() == 'in' && $document->getPayer()) {
+
+            try {
+                $this->createPdfOrderDocument($document, $args->getDocumentManager());
+            } catch (Exception $e) {
+                $session = $this->container->get('session');
+                $session->getFlashBag()->add('danger', 'Документ для печати не создан. ' . $e->getMessage());
+            }
         }
     }
 
+    /**
+     * @param CashDocument $document
+     * @param DocumentManager $dm
+     * @return OrderDocument
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
+     */
     private function createPdfOrderDocument(CashDocument $document, DocumentManager $dm)
     {
-        if(!$document->getPayer())
-            return;
-
         $orderDocument = new OrderDocument();
         $orderDocument->setName('Счёт на оплату');
         $orderDocument->setOriginalName('bill_'.$document->getNumber().'_'.$document->getDocumentDate()->format('d.m.Y').'.pdf');
-        $uniqidName = uniqid();
-        $orderDocument->setName($uniqidName.'.pdf');
+        $id = uniqid();
+        $orderDocument->setName($id.'.pdf');
         $orderDocument->setType('invoice_for_payment');
         $orderDocument->setMimeType('application/pdf');
         $orderDocument->setExtension('pdf');
@@ -73,19 +85,27 @@ class CashDocumentSubscriber implements EventSubscriber
         $generator = $this->container->get('mbh.pdf_generator');
         $generator->setPath($orderDocument->getUploadRootDir());
 
-        if($document->getPayer() instanceof Organization) {
+        if ($document->getPayer() instanceof Organization) {
             $template = 'organization';
-        } elseif($document->getPayer() instanceof Tourist) {
+        } elseif ($document->getPayer() instanceof Tourist) {
             $template = 'individual';
-        } else
-            return;
+        }
+        if (!isset($template)) {
+            throw new Exception('CashDocument payer type is unknown.');
+        }
 
         $myOrganization = $dm->getRepository('MBHPackageBundle:Organization')->getOrganizationByOrder($document->getOrder());
 
-        if($myOrganization && $generator->save($uniqidName, $template, ['cashDocument' => $document, 'myOrganization' => $myOrganization])) {
-            $document->getOrder()->addDocument($orderDocument);
-            //$dm->persist($document->getOrder());
-            //$dm->flush();
+        if (!$myOrganization) {
+            throw new Exception('Не найдена организация для этого отеля из раздела "Мои организации".');
         }
+        $generator->save($id, $template, ['cashDocument' => $document, 'myOrganization' => $myOrganization]);
+
+        $order = $document->getOrder();
+        $order->addDocument($orderDocument);
+        $dm->persist($order);
+        $dm->flush();
+
+        return $orderDocument;
     }
 }

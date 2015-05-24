@@ -36,20 +36,21 @@ class OrganizationType extends AbstractType
         $scenario = $options['scenario'];
         $type = $options['type'];
 
-        if($scenario == self::SCENARIO_SHORT)
+        if ($scenario == self::SCENARIO_SHORT) {
             $builder->add('organization', 'text', [
                 'group' => 'Найти организацию',
                 'label' => 'form.organizationType.name',
                 'required' => false,
                 'mapped' => false,
             ]);
+        }
 
         $builder->add('name', 'text', [
             'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'Личные данные',
             'label' => 'form.organizationType.name',
         ]);
 
-        if($scenario == self::SCENARIO_FULL){
+        if ($scenario == self::SCENARIO_FULL) {
             $builder->add('short_name', 'text', [
                 'group' => 'Личные данные',
                 'label' => 'form.organizationType.short_name',
@@ -90,7 +91,7 @@ class OrganizationType extends AbstractType
             'attr' => ['class' => 'input-small'],
         ]);
 
-        if($scenario == self::SCENARIO_FULL) {
+        if ($scenario == self::SCENARIO_FULL) {
             $builder->add('registration_date', 'date', [
                 'widget' => 'single_text',
                 'group' => 'Регистрационные данные',
@@ -136,7 +137,8 @@ class OrganizationType extends AbstractType
             'attr' => ['placeholder' => 'form.hotelExtendedType.placeholder_location'],
         ]);
 
-        $builder->get('city')->addModelTransformer(new EntityToIdTransformer($this->documentManager, 'MBHHotelBundle:City'));
+        $builder->get('city')->addModelTransformer(new EntityToIdTransformer($this->documentManager,
+            'MBHHotelBundle:City'));
 
         $builder->add('street', 'text', [
             'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'form.organizationType.group_location',
@@ -148,7 +150,7 @@ class OrganizationType extends AbstractType
             'attr' => ['class' => 'input-xs'],
         ]);
 
-        if($scenario == self::SCENARIO_FULL) {
+        if ($scenario == self::SCENARIO_FULL) {
             $builder->add('corpus', 'text', [
                 'group' => 'form.organizationType.group_location',
                 'label' => 'form.organizationType.corpus',
@@ -196,15 +198,15 @@ class OrganizationType extends AbstractType
             ]);
         }
 
-        if($scenario != self::SCENARIO_SHORT)
-        {
-            if($type != self::TYPE_EDIT)
+        if ($scenario != self::SCENARIO_SHORT) {
+            if ($type != self::TYPE_EDIT) {
                 $builder->add('type', 'choice', [
                     'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'Дополнительно',
                     'label' => 'form.organizationType.type',
                     //'attr' => ['class' => 'input-small', 'disabled' => $type == self::TYPE_EDIT],
                     'choices' => $options['typeList'],
                 ]);
+            }
 
             $id = $options['id'];
 
@@ -219,32 +221,37 @@ class OrganizationType extends AbstractType
                 'query_builder' => function (DocumentRepository $dr) use ($id) {
                     /** @var \Doctrine\ODM\MongoDB\Cursor $organizations */
                     $queryBuilder = $this->documentManager->getRepository('MBHPackageBundle:Organization')->createQueryBuilder()->select('hotels')->field('type')->equals('my');
-                    if ($id)
+                    if ($id) {
                         $queryBuilder->field('id')->notEqual($id);
+                    }
                     $organizations = $queryBuilder->getQuery()->execute();
                     $hotelIds = [];
-                    foreach ($organizations->getMongoCursor() as $organization)
-                        if (array_key_exists('hotels', $organization))
+                    foreach ($organizations->getMongoCursor() as $organization) {
+                        if (array_key_exists('hotels', $organization)) {
                             $hotelIds += array_column($organization['hotels'], '$id');
+                        }
+                    }
 
                     $hotelIds = array_unique($hotelIds);
 
                     $queryBuilder = $dr->createQueryBuilder('q');
-                    if ($hotelIds)
+                    if ($hotelIds) {
                         $queryBuilder->field('id')->notIn($hotelIds);
+                    }
 
                     return $queryBuilder;
                 },
             ]);
         }
 
-        if($scenario == self::SCENARIO_FULL)
+        if ($scenario == self::SCENARIO_FULL) {
             $builder->add('comment', 'textarea', [
                 'group' => 'Дополнительно',
                 'label' => 'form.organizationType.comment',
                 'required' => false,
                 'constraints' => [new Length(['min' => 2, 'max' => 300])]
             ]);
+        }
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

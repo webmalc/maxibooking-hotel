@@ -2,25 +2,36 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  * Class OrganizationRepository
  * @package MBH\Bundle\PackageBundle\Document
- *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class OrganizationRepository extends DocumentRepository
 {
+
     /**
-     * @param Hotel $hotel
-     * @return Organization/null
+     * @param array $hotels
+     * @return Organization|null
      */
-    public function getOrganizationByDefaultHotel(Hotel $hotel)
+    public function fetchOne(array $hotels)
     {
-        return $this->findOneBy(['hotels.id' => $hotel->getId()]);
+        return $this->getQueryBuilder($hotels)->getQuery()->getSingleResult();
+    }
+
+    /**
+     * @param array $hotels
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     */
+    public function getQueryBuilder(array $hotels)
+    {
+        $qb = $this->createQueryBuilder('q');
+
+        if (empty($hotels)) {
+            $qb->field('hotel.id')->in($hotels);
+        }
+        return $qb;
     }
 
     /**
@@ -31,12 +42,11 @@ class OrganizationRepository extends DocumentRepository
     {
         /** @var Package[] $packages */
         $packages = $order->getPackages();
-
-        foreach($packages as $package){
-            $organization = $this->getOrganizationByDefaultHotel($package->getRoomType()->getHotel());
-            if($organization)
-                return $organization;
+        $ids = [];
+        foreach ($packages as $package) {
+            $ids[] = $package->getRoomType()->getHotel()->getId();
         }
-        return null;
+
+        return $this->fetchOne($ids);
     }
 }

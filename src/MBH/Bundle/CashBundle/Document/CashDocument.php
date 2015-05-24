@@ -58,15 +58,9 @@ class CashDocument extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     */
-    protected $prefix;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
      * @Assert\Type(type="string")
      * @Assert\Length(max=40)
+     *
      */
     protected $number;
 
@@ -130,6 +124,7 @@ class CashDocument extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
+     * @Assert\NotNull()
      * @ODM\Date()
      */
     protected $documentDate;
@@ -162,6 +157,7 @@ class CashDocument extends Base
     public function setMethod($method)
     {
         $this->method = $method;
+
         return $this;
     }
 
@@ -184,6 +180,7 @@ class CashDocument extends Base
     public function setTotal($total)
     {
         $this->total = $total;
+
         return $this;
     }
 
@@ -206,6 +203,7 @@ class CashDocument extends Base
     public function setOperation($operation)
     {
         $this->operation = $operation;
+
         return $this;
     }
 
@@ -228,6 +226,7 @@ class CashDocument extends Base
     public function setNote($note)
     {
         $this->note = $note;
+
         return $this;
     }
 
@@ -276,10 +275,11 @@ class CashDocument extends Base
 
     private function checkDate()
     {
-        if(!$this->getIsPaid())
+        if (!$this->getIsPaid()) {
             $this->setPaidDate(null);
-        elseif(!$this->getPaidDate())
+        } elseif (!$this->getPaidDate()) {
             $this->setPaidDate(new \DateTime('now'));
+        }
     }
 
     /**
@@ -291,6 +291,7 @@ class CashDocument extends Base
     public function setIsConfirmed($isConfirmed)
     {
         $this->isConfirmed = $isConfirmed;
+
         return $this;
     }
 
@@ -313,6 +314,7 @@ class CashDocument extends Base
     public function setIsPaid($isPaid)
     {
         $this->isPaid = $isPaid;
+
         return $this;
     }
 
@@ -336,20 +338,18 @@ class CashDocument extends Base
 
 
     /**
-     * @see Organization
-     * @see Tourist
-     *
-     * @return PayerInterface|null
+     * @param bool $self
+     * @return Organization|Tourist|null
      */
-    public function getPayer()
+    public function getPayer($self = false)
     {
         if ($this->getOrganizationPayer()) {
             return $this->getOrganizationPayer();
         } elseif ($this->getTouristPayer()) {
             return $this->getTouristPayer();
-        } elseif ($this->getOrder()->getOrganization()) {
+        } elseif ($this->getOrder()->getOrganization() && !$self) {
             return $this->getOrder()->getOrganization();
-        } elseif ($this->getOrder()->getMainTourist()) {
+        } elseif ($this->getOrder()->getMainTourist() && !$self) {
             return $this->getOrder()->getMainTourist();
         }
 
@@ -365,6 +365,7 @@ class CashDocument extends Base
     public function setOrder(\MBH\Bundle\PackageBundle\Document\Order $order)
     {
         $this->order = $order;
+
         return $this;
     }
 
@@ -427,7 +428,6 @@ class CashDocument extends Base
     }
 
 
-
     /**
      * @return null|Tourist
      */
@@ -449,8 +449,9 @@ class CashDocument extends Base
      */
     public function isValidDate()
     {
-        if($this->getIsPaid() && $this->getPaidDate())
+        if ($this->getIsPaid() && $this->getPaidDate()) {
             return $this->getPaidDate()->getTimestamp() >= $this->getDocumentDate()->getTimestamp();
+        }
 
         return true;
     }
