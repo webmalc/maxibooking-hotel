@@ -76,13 +76,14 @@ order.touristEdit.address: Адрес
 order.touristEdit.document: Документ
 order.touristEdit.delete_payer: Удалить плательщика
 order.touristEdit.delete_organization: Удалить организацию
-order.package.add: Добавить в бронь в заказ
+order.package.add: Добавить бронь в заказ
 package.accommodation.edit_reservation: 'редактирование брони'
 package.accommodation.deleted: удалена
 package.accommodation.placement: Размещение:
 package.accommodation.guests: гости
 package.accommodation.stopped: заехали
 package.accommodation.placement_not_specified: Размещение не указано
+package.actions: Действия
 package.actions.save_and_close: Сохранить и закрыть
 package.actions.guests_stopped: Гости заехали
 package.actions.find_similar:  Найти похожую
