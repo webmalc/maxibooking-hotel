@@ -179,6 +179,11 @@ class PackageRepository extends DocumentRepository
             $qb->field('isCheckIn')->equals(empty($data['checkIn']) ? false : true);
         }
 
+        //isCheckOut
+        if(isset($data['checkOut'])) {
+            $qb->field('isCheckOut')->equals(empty($data['isCheckOut']) ? false : true);
+        }
+
         //order
         $order = 'createdAt';
         $dir = 'desc';

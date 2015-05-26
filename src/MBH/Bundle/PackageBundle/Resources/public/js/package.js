@@ -281,6 +281,21 @@ $(document).ready(function () {
         });
     } ());
 
+    //prices by day
+    (function () {
+        var href = $('#package-price-by-day-href'),
+            prices = $('#package-price-by-day');
+
+        if (!href.length) {
+            return;
+        }
+        href.click(function () {
+            prices.toggle(100);
+            $(this).find('i').toggleClass('fa-caret-up');
+        });
+
+    }());
+
     //accommodation tab
     (function () {
         var checkIn = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckIn'),
@@ -299,10 +314,15 @@ $(document).ready(function () {
                     departure.closest('.form-group').hide();
                 }
             };
+
+        if (!checkIn.length) {
+            return;
+        }
+
         show();
         checkIn.on('switchChange.bootstrapSwitch', show);
         checkOut.on('switchChange.bootstrapSwitch', show);
-    }())
+    }());
 
 });
 
