@@ -114,6 +114,7 @@ $(document).ready(function () {
         "aoColumns": [
             {"bSortable": false}, // icon
             {"bSortable": false}, // prefix
+            {"bSortable": false}, // payer
             null, // in
             null, // out
             {"bSortable": false}, //operation
