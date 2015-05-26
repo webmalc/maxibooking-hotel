@@ -16,6 +16,9 @@ class PdfGenerator implements ContainerAwareInterface
     /** @var ContainerInterface */
     private $container;
 
+    /**
+     * @var string
+     */
     private $path;
 
     /**

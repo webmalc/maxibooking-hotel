@@ -4,11 +4,13 @@ namespace MBH\Bundle\CashBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\CashBundle\Form\SearchType;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -26,77 +28,100 @@ class CashController extends Controller
      * @Security("is_granted('ROLE_BOOKKEEPER')")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        return [];
+        /*$form = $this->createFormBuilder()->add('begin', 'date', [
+            'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'datepicker end-datepiker form-control input-sm', 'id' => 'begin'],
+            'widget' => 'single_text',
+            'format' => 'dd.MM.yyyy',
+        ])->getForm();*/
+
+        return [
+            'methods' => $this->container->getParameter('mbh.cash.methods'),
+            'operations' => $this->container->getParameter('mbh.cash.operations'),
+            //'form' => $form->createView()
+        ];
     }
 
     /**
+     *
      * Lists all entities as json.
      *
      * @Route("/json", name="cash_json", defaults={"_format"="json"}, options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_BOOKKEEPER')")
      * @Template()
+     *
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function jsonAction(Request $request)
     {
+        $repository = $this->dm->getRepository('MBHCashBundle:CashDocument');
 
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $repo = $dm->getRepository('MBHCashBundle:CashDocument');
-        $qb = $repo->createQueryBuilder('CashDocument')
-            ->skip($request->get('start'))
-            ->limit($request->get('length'));
-        //Order
+        $start = $request->get('start');
+        $length = $request->get('length');
+        $order = $request->get('order')['0'];
+        $search = $request->get('search')['value'];
+        $methods = $request->get('methods');
+        $showNoPaid = $request->get('show_no_paid');
+        $begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
+        $end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
+        $filter = $request->get('filter');
+        $orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
+
+
         $sort = 'createdAt';
         $dir = 'desc';
-        $order = $request->get('order')['0'];
         if (!empty($order['column']) && in_array($order['column'], [2, 3, 5, 6, 7])) {
-            $sorts = [2 => 'total', 3 => 'total', 5  => 'createdAt', 6  => 'isPaid', 7  => 'deletedAt'];
+            $sorts = [2 => 'total', 3 => 'total', 5 => 'createdAt', 6 => 'isPaid', 7 => 'deletedAt'];
             $sort = $sorts[$order['column']];
             $dir = $order['dir'];
         }
-        $qb->sort($sort, $dir);
 
 
-        //Search
-        $search = $request->get('search')['value'];
-        if (!empty($search)) {
-            $qb->addOr($qb->expr()->field('total')->equals((int)$search));
-            $qb->addOr($qb->expr()->field('prefix')->equals(new \MongoRegex('/.*' . $search . '.*/ui')));
+        $totalIn = 0;
+        $totalOut = 0;
+        $recordsTotal = 0;
+        $recordsFiltered = 0;
+
+        if ($request->get('by_day')) {
+            $result = $repository->getListForCash($start, $length, $sort, $dir, $methods, $search, $showNoPaid, $begin, $end,
+                $filter, $orderIds, true);
+
+            //$recordsTotal = $qb->getQuery()->count();
+            $totalIn = $repository->total('in', $search, $begin, $end);
+            $totalOut = $repository->total('out', $search, $begin, $end);
+
+            return $this->render('MBHCashBundle:Cash:jsonByDay.json.twig', [
+                "draw" => $request->get('draw'),
+                'totalIn' => $totalIn,
+                'totalOut' => $totalOut,
+                'recordsTotal' => $recordsTotal,
+                'recordsFiltered' => $recordsFiltered,
+                'data' => $result
+            ]);
+        } else {
+            $entities = $repository->getListForCash($start, $length, $sort, $dir, $methods, $search, $showNoPaid, $begin,
+                $end, $filter, $orderIds, false);
+
+            if(count($entities) > 0){
+                $totalIn = $repository->total('in', $search, $begin, $end);
+                $totalOut = $repository->total('out', $search, $begin, $end);
+            }
+
+            return [
+                'draw' => $request->get('draw'),
+                'totalIn' => $totalIn,
+                'totalOut' => $totalOut,
+                'recordsTotal' => $recordsTotal,
+                'recordsFiltered' => $recordsFiltered,
+                'entities' => $entities,
+                'methods' => $this->container->getParameter('mbh.cash.methods'),
+                'operations' => $this->container->getParameter('mbh.cash.operations'),
+            ];
         }
-
-        $begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
-        $end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
-        //Dates
-        if (!$begin) {
-            $begin = new \DateTime('midnight -7 days');
-        }
-        if (!$end) {
-            $end = new \DateTime('midnight +1 day');
-        }
-        $qb->field('createdAt')->gte($begin);
-        $qb->field('createdAt')->lte($end);
-
-        $orders = $this->container->get('mbh.package.permissions')->getAvailableOrders();
-        $qb->field('order.id')->in($this->container->get('mbh.helper')->toIds($orders));
-
-
-        if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
-            $dm->getFilterCollection()->disable('softdeleteable');
-        }
-        $entities = $qb->getQuery()->execute();
-
-        return [
-            'entities' => $entities,
-            'totalIn' => ($entities->count()) ? $repo->total('in', $search, $begin, $end) : 0,
-            'totalOut' => ($entities->count()) ? $repo->total('out', $search, $begin, $end) : 0,
-            'total' => $entities->count(),
-            'draw' => $request->get('draw'),
-            'methods' => $this->container->getParameter('mbh.cash.methods'),
-            'operations' => $this->container->getParameter('mbh.cash.operations')
-        ];
     }
 
     /**

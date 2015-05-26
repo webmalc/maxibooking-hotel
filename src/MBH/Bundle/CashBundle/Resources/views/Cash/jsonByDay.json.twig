@@ -1,0 +1,18 @@
+{
+    "draw" : "{{ draw }}",
+    "recordsTotal": "{{ recordsTotal }}",
+    "totalIn": "{{ totalIn|number_format }}",
+    "totalOut": "{{ totalOut|number_format }}",
+    "recordsFiltered": "{{ recordsFiltered }}",
+    "data": [
+        {% for item in data %}
+            [
+                "<div class='text-center'><i class='fa fa-ruble'></i></div>",
+                "<div class='text-center'>{% if item.paidDate %} {{ item.paidDate|convertMongoDate|date("d.m.Y") }} {% endif %}</div>",
+                "<div class='text-right'>{{ item.totalIn }} <br><small>{{ item.countIn }} док.</small></div>",
+                "<div class='text-right'>{{ item.totalOut }} <br><small>{{ item.countOut }} док.</small></div>",
+                "<div class='text-right'>{{ item.totalIn - item.totalOut }}</div>"
+            ]{% if loop.index != data|length %},{% endif %}
+        {% endfor %}
+    ]
+}

@@ -43,9 +43,10 @@ var cashDocumentPay = function (link) {
     });
 };
 
+
 $(document).ready(function () {
     'use strict';
-    $('#cash-filter-form').sayt({'recover': true});
+    //$('#cash-filter-form').sayt({'recover': true});
 
     //spinners
     $('#mbh_bundle_cashbundle_cashdocumenttype_total').TouchSpin({
@@ -59,46 +60,114 @@ $(document).ready(function () {
     });
 
     //cash datatable
-    $('#cash-table').each(function () {
-        $(this).dataTable({
-            "processing": true,
-            "serverSide": true,
-            "ordering": true,
-            "autoWidth": false,
-            "ajax": {
-                "url": Routing.generate('cash_json'),
-                "data": function (d) {
-                    d.begin = $('#begin').val();
-                    d.end = $('#end').val();
-                }
-            },
-            "aoColumns": [
-                {"bSortable": false}, // icon
-                {"bSortable": false}, // prefix
-                null, // in
-                null, // out
-                {"bSortable": false}, //operation
-                null, // date
-                null, // isPaid
-                null, // deletedAt
-                {"bSortable": false} // actions
-            ],
-            "drawCallback": function (settings) {
-                $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
-                $('.deleted-entry').closest('tr').addClass('danger');
-                $('.not-confirmed-entry').closest('tr').addClass('info');
-                $('.not-confirmed-entry').closest('tr').addClass('info');
-                deleteLink();
-                $('#cash-table-total-in').html(settings.json.totalIn);
-                $('#cash-table-total-out').html(settings.json.totalOut);
 
+    var $filterSelectElement = $('#filter')//document.getElementById("sort");
+    var $methodSelectElement = $('#method');//document.getElementById("methods_type");
+    var defaultBeginValue = $('#begin').val();
+
+    var $cashTable = $('#cash-table');
+    var $cashTableByDay = $('#cash-table-by-day');
+
+    var getFormData = function()
+    {
+        var data = {};
+        //console.log($('#cash-filter-form').serializeObject())
+        if (!$('#begin').val() && defaultBeginValue)
+            $('#begin').val(defaultBeginValue)
+
+        data.begin = $('#begin').val();
+        data.end = $('#end').val();
+        data.filter = $filterSelectElement.select2('val');
+        data.methods = $methodSelectElement.select2('val');
+        data.show_no_paid = $('#show_no_paid').prop("checked") ? 1 : 0;
+        data.by_day = $('#by_day').prop("checked") ? 1 : 0;
+
+        return data;
+    }
+
+    var drawCallback = function(settings)
+    {
+        $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
+        $('.deleted-entry').closest('tr').addClass('danger');
+        $('.not-confirmed-entry').closest('tr').addClass('info');
+        $('.not-confirmed-entry').closest('tr').addClass('info');
+        deleteLink();
+        updateTotals(settings.json.totalIn, settings.json.totalOut)
+    }
+
+    var updateTotals = function(totalIn, totalOut)
+    {
+        $('.cash-table-total-in').html(totalIn);
+        $('.cash-table-total-out').html(totalOut);
+    }
+
+    var dataTableOptions = {
+        "processing": true,
+        "serverSide": true,
+        "ordering": true,
+        "autoWidth": false,
+        "ajax": {
+            "url": Routing.generate('cash_json'),
+            "data": function (d) {
+                d = $.extend(d, getFormData());
             }
-        });
+        },
+        "aoColumns": [
+            {"bSortable": false}, // icon
+            {"bSortable": false}, // prefix
+            null, // in
+            null, // out
+            {"bSortable": false}, //operation
+            null, // date
+            null, // isPaid
+            null, // deletedAt
+            {"bSortable": false} // actions
+        ],
+        "drawCallback": drawCallback
+    }
+
+    $cashTable.dataTable(dataTableOptions);
+
+
+
+    var tableSwitcher = function()
+    {
+        this.byDay = false;
+        this.initTableByDay = false;
+    }
+    tableSwitcher.prototype.currentTable = function()
+    {
+        return this.byDay ? $cashTableByDay : $cashTable;
+    }
+    tableSwitcher.prototype.switch = function()
+    {
+        this.byDay = !this.byDay
+        $cashTable.parent().css('display', !this.byDay ? 'block' : 'none')
+        $cashTableByDay.parent().css('display', this.byDay ? 'block' : 'none')
+
+        if(this.byDay && !this.initTableByDay){
+            dataTableOptions.aoColumns = [
+                {"bSortable": false},
+                {"bSortable": false},
+                {"bSortable": false},
+                {"bSortable": false},
+                {"bSortable": false}
+            ];
+            $cashTableByDay.dataTable(dataTableOptions);
+            this.initTableByDay = true;
+        }
+        this.currentTable().dataTable().fnDraw()
+    }
+
+    var sw = new tableSwitcher();
+
+    $('#cash-filter-form input,select').not('#by_day').on('switchChange.bootstrapSwitch change', function () {
+        //$('#cash-filter-form').sayt({'savenow': true});
+        sw.currentTable().dataTable().fnDraw();
     });
 
-    $('#begin, #end').change(function () {
-        $('#cash-filter-form').sayt({'savenow': true});
-        $('#cash-table').dataTable().fnDraw();
+    $('#by_day').on('switchChange.bootstrapSwitch', function(event, state) {
+        sw.switch()
     });
 
     //payer select2
