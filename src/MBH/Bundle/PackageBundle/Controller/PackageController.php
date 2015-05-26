@@ -21,6 +21,10 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 
+/**
+ * Class PackageController
+ * @package MBH\Bundle\PackageBundle\Controller
+ */
 class PackageController extends Controller implements CheckHotelControllerInterface, DeletableControllerInterface
 {
     /**
@@ -259,9 +263,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             new PackageMainType(),
             $entity,
             [
-                'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
-                'defaultTime' => $this->container->getParameter('mbh.package.arrival.time'),
-                'price' => $this->get('security.context')->isGranted(['ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER']),
+                'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER']),
                 'hotel' => $entity->getRoomType()->getHotel()
             ]
         );
@@ -697,25 +699,36 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_USER')")
      * @Template()
+     * @param Request $request
+     * @param Package $entity
+     * @return array|\MBH\Bundle\BaseBundle\Controller\Response
      */
     public function accommodationAction(Request $request, Package $entity)
     {
         if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
         $groupedRooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
-            $entity->getBegin(), $entity->getEnd(), $hotel, null, null, null, true
+            $entity->getBegin(), $entity->getEnd(), $this->hotel, null, null, $entity->getId(), true
         );
+
+        if (!$entity->getIsCheckIn()) {
+            $entity->setArrivalTime(new \DateTime());
+        }
+
+        if (!$entity->getIsCheckOut()) {
+            $entity->setDepartureTime(new \DateTime());
+        }
 
         $form = $this->createForm(
             new PackageAccommodationType(),
             $entity,
             [
                 'rooms' => $groupedRooms,
-                'isHostel' => $hotel->getIsHostel(),
+                'isHostel' => $this->hotel->getIsHostel(),
                 'roomType' => $entity->getRoomType(),
+                'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
             ]);
 
         if ($request->getMethod() == 'PUT'  && $this->container->get('mbh.package.permissions')->check($entity)) {

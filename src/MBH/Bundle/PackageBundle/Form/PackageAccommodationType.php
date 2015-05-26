@@ -12,6 +12,7 @@ class PackageAccommodationType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $now = new \DateTime();
         $rooms = [];
         foreach ($options['rooms'] as $roomTypeRooms) {
             $rooms[$roomTypeRooms[0]->getRoomType()->getName()] = [];
@@ -43,12 +44,49 @@ class PackageAccommodationType extends AbstractType
                 'property' => 'name',
                 'constraints' => new NotBlank()
             ])
+            ->add(
+                'purposeOfArrival',
+                'choice',
+                [
+                    'label' => 'form.packageMainType.arrival_purpose',
+                    'required' => false,
+                    'group' => 'form.packageAccommodationType.choose_placement',
+                    'multiple' => false,
+                    'choices' => $options['arrivals'],
+                ]
+            )
             ->add('isCheckIn', 'checkbox', [
                 'label' => 'form.packageAccommodationType.are_guests_checked_in',
                 'value' => true,
+                'group' => 'form.packageAccommodationType.check_in_group',
                 'required' => false,
                 'help' => 'form.packageAccommodationType.are_guests_checked_in_help'
-            ]);
+            ])
+            ->add('arrivalTime', 'datetime', array(
+                'label' => 'form.packageMainType.check_in_time',
+                'html5' => false,
+                'group' => 'form.packageAccommodationType.check_in_group',
+                'required' => false,
+                'time_widget' => 'single_text',
+                'date_widget' => 'single_text',
+                'attr' => array('placeholder' => '12:00', 'class' => 'input-time input-xxs'),
+            ))
+            ->add('isCheckOut', 'checkbox', [
+                'label' => 'form.packageAccommodationType.are_guests_checked_out',
+                'value' => true,
+                'group' => 'form.packageAccommodationType.check_in_group',
+                'required' => false,
+                'help' => 'form.packageAccommodationType.are_guests_checked_out_help'
+            ])
+            ->add('departureTime', 'datetime', array(
+                'label' => 'form.packageMainType.check_out_time',
+                'html5' => false,
+                'group' => 'form.packageAccommodationType.check_in_group',
+                'required' => false,
+                'time_widget' => 'single_text',
+                'date_widget' => 'single_text',
+                'attr' => array('placeholder' => '12:00', 'class' => 'input-time input-xxs'),
+            ));
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
@@ -56,6 +94,7 @@ class PackageAccommodationType extends AbstractType
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
             'rooms' => [],
+            'arrivals' => [],
             'isHostel' => false,
             'roomType' => null
         ]);

@@ -281,5 +281,28 @@ $(document).ready(function () {
         });
     } ());
 
+    //accommodation tab
+    (function () {
+        var checkIn = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckIn'),
+            checkOut = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckOut'),
+            arrival = $('#mbh_bundle_packagebundle_package_accommodation_type_arrivalTime_time'),
+            departure = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_time'),
+            show = function () {
+                if (checkIn.is(':checked')) {
+                    arrival.closest('.form-group ').show();
+                } else {
+                    arrival.closest('.form-group ').hide();
+                }
+                if (checkOut.is(':checked')) {
+                    departure.closest('.form-group').show();
+                } else {
+                    departure.closest('.form-group').hide();
+                }
+            };
+        show();
+        checkIn.on('switchChange.bootstrapSwitch', show);
+        checkOut.on('switchChange.bootstrapSwitch', show);
+    }())
+
 });
 

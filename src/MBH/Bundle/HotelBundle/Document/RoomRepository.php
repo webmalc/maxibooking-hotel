@@ -47,10 +47,10 @@ class RoomRepository extends AbstractBaseRepository
         };
 
         // rooms
-        $qb = $this->createQueryBuilder('r')->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc']);
-        $this->in($qb, 'roomType.id', $hotelRoomTypes)
-             ->NotInNotEmpty($qb, 'id', $ids)
-             ->inNotEmpty($qb, 'id', $rooms)
+        $qb = $this->createQueryBuilder('r')->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
+             ->inToArray('roomType.id', $hotelRoomTypes)
+             ->notInNotEmpty('id', $ids)
+             ->inNotEmpty('id', $rooms)
         ;
 
         $roomDocs = $qb->getQuery()->execute();

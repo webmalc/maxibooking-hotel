@@ -20,6 +20,11 @@ $.fn.serializeObject = function () {
 $(document).ready(function () {
     'use strict';
 
+    $.mask.definitions['2'] = "[0-2]";
+    $.mask.definitions['5'] = "[0-5]";
+    $.mask.definitions['9'] = "[0-9]";
+    $('.input-time, .input-time input:last-child').mask("29:59");
+
     //only int
     $('.only-int').change(function () {
         if (this.value === '') {

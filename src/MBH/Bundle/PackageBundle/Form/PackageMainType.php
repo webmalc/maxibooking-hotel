@@ -119,40 +119,6 @@ class PackageMainType extends AbstractType
                 ]
             )
             ->add(
-                'arrivalTime',
-                'choice',
-                [
-                    'label' => 'form.packageMainType.check_in_time',
-                    'required' => false,
-                    'group' => 'Заезд/отъезд',
-                    'multiple' => false,
-                    'attr' => array('class' => 'input-xs'),
-                ]
-            )
-            ->add(
-                'departureTime',
-                'choice',
-                [
-                    'label' => 'form.packageMainType.check_out_time',
-                    'required' => false,
-                    'group' => 'Заезд/отъезд',
-                    'multiple' => false,
-                    'choices' => $hours,
-                    'attr' => array('class' => 'input-xs'),
-                ]
-            )
-            ->add(
-                'purposeOfArrival',
-                'choice',
-                [
-                    'label' => 'form.packageMainType.arrival_purpose',
-                    'required' => false,
-                    'group' => 'Информация',
-                    'multiple' => false,
-                    'choices' => $options['arrivals'],
-                ]
-            )
-            ->add(
                 'note',
                 'textarea',
                 [
@@ -168,8 +134,6 @@ class PackageMainType extends AbstractType
         $resolver->setDefaults(
             array(
                 'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
-                'arrivals' => [],
-                'defaultTime' => null,
                 'price' => false,
                 'hotel' => null
             )

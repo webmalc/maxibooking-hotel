@@ -436,7 +436,7 @@ class Package extends Base
     /**
      * Set begin
      *
-     * @param /DateTime $begin
+     * @param \DateTime $begin
      * @return self
      */
     public function setBegin($begin)
@@ -448,7 +448,7 @@ class Package extends Base
     /**
      * Get begin
      *
-     * @return date $begin
+     * @return \DateTime $begin
      */
     public function getBegin()
     {
@@ -1029,5 +1029,31 @@ class Package extends Base
     public function getIsCheckOut()
     {
         return $this->isCheckOut;
+    }
+
+    /**
+     * @ODM\PrePersist
+     */
+    public function prePersist()
+    {
+        $this->checkCheckInOut();
+    }
+
+    /**
+     * @ODM\preUpdate
+     */
+    public function preUpdate()
+    {
+        $this->checkCheckInOut();
+    }
+
+    public function checkCheckInOut()
+    {
+        if (!$this->getIsCheckIn()) {
+            $this->setArrivalTime(null);
+        }
+        if (!$this->getIsCheckOut()) {
+            $this->setDepartureTime(null);
+        }
     }
 }
