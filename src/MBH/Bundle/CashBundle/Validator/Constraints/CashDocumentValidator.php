@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\CashBundle\Validator\Constraints;
 
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -9,15 +10,23 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class CashDocumentValidator extends ConstraintValidator
 {
 
-    public function validate($object, Constraint $constraint)
+    /**
+     * @param CashDocument $cashDocument
+     * @param Constraint $constraint
+     * @return bool
+     */
+    public function validate($cashDocument, Constraint $constraint)
     {
-        if ($object->getOperation() == 'out') {
-            $order = $object->getOrder();
+        $order = $cashDocument->getOrder();
 
-            $total = $order->getPaid();
-
-            if ($object->getTotal() >  $total) {
-                $this->context->addViolation($constraint->message, ['%total%' => (int) $total]);
+        /** payer **/
+        if (!$cashDocument->getPayer(true)) {
+            $this->context->addViolation($constraint->messagePayer);
+        }
+        /** expenseGreaterThanIncome */
+        if ($cashDocument->getOperation() == 'out') {
+            if ($cashDocument->getTotal() >  $order->getPaid()) {
+                $this->context->addViolation($constraint->messageExpenseGreaterThanIncome, ['%total%' => (float) $order->getPaid()]);
             }
         }
 

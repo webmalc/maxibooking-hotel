@@ -94,6 +94,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                         if (!$hotel) {
                             continue;
                         }
+
                         foreach ($hotel->getRoomTypes() as $roomType) {
                             $query->addRoomType($roomType->getId());
                         }

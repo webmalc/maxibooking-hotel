@@ -22,9 +22,12 @@ form.orderType.comment: Комментарий
 form.orderType.is_confirmed: Подтвержден?
 form.packageAccommodationType.room_or_bed: Комната/койко-место
 form.packageAccommodationType.room: Комната
-form.packageAccommodationType.choose_placement: Выбрать размещение
+form.packageAccommodationType.choose_placement: Информация о размещении
 form.packageAccommodationType.are_guests_checked_in: Гости заехали?
-form.packageAccommodationType.are_guests_checked_in_helper: Заехал ли гости в номер?
+form.packageAccommodationType.are_guests_checked_in_help: Заехал ли гости в номер?
+form.packageAccommodationType.are_guests_checked_out: Гости выехали?
+form.packageAccommodationType.are_guests_checked_out_help: Выехали ли гости из номера?
+form.packageAccommodationType.check_in_group: Время заезда/выезда
 form.packageCopyType.reservation: Бронь
 form.packageCopyType.transfer_parameters: Параметры переноса
 form.packageCopyType.data_transfer_reservation: Бронь в которую будет произведен перенос данных.
@@ -134,6 +137,8 @@ controller.sourceController.record_created_success: 'Запись успешно
 controller.sourceController.record_edited_success: 'Запись успешно отредактирована.'
 controller.touristController.record_created_success: 'Запись успешно создана.'
 controller.touristController.record_edited_success: 'Запись успешно отредактирована.'
+controller.packageController.record_edited_fail: 'Ошибка при обновлении брони. Нет доступных номеров.'
+controller.packageController.record_edited_fail_accommodation: 'Ошибка при обновлении брони. Номер недоступен для размещения.'
 # Documents Controller
 controller.documentsController.table_row_name: 'Имя'
 controller.documentsController.table_row_comment: 'Комментарий'
@@ -177,3 +182,21 @@ form.organizationType.group_location: 'Адресные данные'
 form.organizationType.address: 'Адрес'
 form.organizationType.default_hotels: 'По умолчанию для'
 form.organizationType.default_hotels_help: 'Отели, для которых эта организация будет использоваться по умолчанию'
+package.document.type_passport: Паспорт
+package.document.type_foreign_passport: Загран. паспорт
+package.document.type_insurance: Мед. страховка
+package.document.type_birth_certificate: Свидетельство о рождении
+package.document.type_military: Военный билет
+package.document.type_accommodation_voucher: Ваучер на проживание
+package.document.type_shuttle_voucher: Ваучер на трансфер
+package.document.type_sertives_voucher: Ваучер на услуги
+package.document.type_complex: Комплект документов
+package.document.type_congirmation_account: Счет-подтверждение
+package.document.type_invoice_for_payment: Счет на оплату
+package.document.type_contract: Договор
+package.document.type_extra_argument: Доп. соглашение
+package.document.type_air_tickets: Авиабилеты
+package.document.type_train_tickets: Ж/д билеты
+package.document.type_info: Информация
+package.document.type_letter: Письмо
+package.document.type_other: Прочее

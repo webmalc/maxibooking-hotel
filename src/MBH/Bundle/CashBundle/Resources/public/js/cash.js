@@ -43,7 +43,6 @@ var cashDocumentPay = function (link) {
     });
 };
 
-
 $(document).ready(function () {
     'use strict';
     //$('#cash-filter-form').sayt({'recover': true});
@@ -58,8 +57,6 @@ $(document).ready(function () {
         maxboostedstep: 10,
         postfix: '<i class="fa fa-ruble"></i>'
     });
-
-    //cash datatable
 
     var $filterSelectElement = $('#filter')//document.getElementById("sort");
     var $methodSelectElement = $('#method');//document.getElementById("methods_type");

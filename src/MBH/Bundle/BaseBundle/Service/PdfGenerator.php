@@ -4,12 +4,11 @@ namespace MBH\Bundle\BaseBundle\Service;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 
 /**
  * Class PdfGenerator
  * @package MBH\Bundle\BaseBundle\Service
- *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class PdfGenerator implements ContainerAwareInterface
 {
@@ -35,10 +34,13 @@ class PdfGenerator implements ContainerAwareInterface
 
     /**
      * @param string $path
+     * @return $this
      */
     public function setPath($path)
     {
         $this->path = $path;
+
+        return $this;
     }
 
     /**
@@ -66,16 +68,26 @@ class PdfGenerator implements ContainerAwareInterface
     }
 
     /**
-     * @param $nameFile without extension
-     * @param $documentType
+     * @param string $nameFile without extension
+     * @param string $documentType
      * @param array $params
-     * @return int
+     * @return bool
+     * @throws \Exception
      */
     public function save($nameFile, $documentType, $params = [])
     {
         $path = $this->path ? $this->path : $this->getDefaultPath();
+
+        if (!file_exists($path) || !is_writable($path)) {
+            throw new Exception($path . ' not exist or not writable.');
+        }
         $resource = $this->output($documentType, $params);
 
-        return file_put_contents($path . DIRECTORY_SEPARATOR . $nameFile . '.pdf', $resource);
+        $filePath = $path . DIRECTORY_SEPARATOR . $nameFile . '.pdf';
+        if (!file_put_contents($filePath, $resource)) {
+            throw new Exception($filePath . ' not saved.');
+        }
+
+        return true;
     }
 }

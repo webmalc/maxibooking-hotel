@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
-use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Order as OrderDoc;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -39,12 +39,12 @@ class Calculation
     }
 
     /**
-     * @param Order $order
+     * @param OrderDoc $order
      * @param CashDocument $newDoc
      * @param CashDocument $removeDoc
-     * @return Order
+     * @return OrderDoc
      */
-    public function setPaid(Order $order, CashDocument $newDoc = null, CashDocument $removeDoc = null)
+    public function setPaid(OrderDoc $order, CashDocument $newDoc = null, CashDocument $removeDoc = null)
     {
         $total = 0;
         $ids = [];

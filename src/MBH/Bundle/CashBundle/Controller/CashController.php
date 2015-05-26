@@ -4,13 +4,11 @@ namespace MBH\Bundle\CashBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\CashBundle\Form\SearchType;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -46,7 +44,6 @@ class CashController extends Controller
     }
 
     /**
-     *
      * Lists all entities as json.
      *
      * @Route("/json", name="cash_json", defaults={"_format"="json"}, options={"expose"=true})
@@ -86,8 +83,9 @@ class CashController extends Controller
 
         $sort = 'createdAt';
         $dir = 'desc';
-        if (!empty($order['column']) && in_array($order['column'], [2, 3, 5, 6, 7])) {
-            $sorts = [2 => 'total', 3 => 'total', 5 => 'createdAt', 6 => 'isPaid', 7 => 'deletedAt'];
+        
+        if (!empty($order['column']) && in_array($order['column'], [1, 2, 3, 5, 6, 7])) {
+            $sorts = [1 => 'prefix', 2 => 'total', 3 => 'total', 5  => 'createdAt', 6  => 'isPaid', 7  => 'deletedAt'];
             $sort = $sorts[$order['column']];
             $dir = $order['dir'];
         }
@@ -272,7 +270,7 @@ class CashController extends Controller
      *
      * @Route("/payer/{id}", name="cash_payer", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_BOOKKEEPER'])")
      * @return JsonResponse
      */
     public function payerAction(Request $request, $id = null)

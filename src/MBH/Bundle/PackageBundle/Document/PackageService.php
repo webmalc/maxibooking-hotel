@@ -470,6 +470,9 @@ class PackageService extends Base
         return $this->end;
     }
 
-
+    public function __toString()
+    {
+        return $this->service->getName();
+    }
 
 }

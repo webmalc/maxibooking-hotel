@@ -1,0 +1,5 @@
+<div class="date">
+    <div>{{ day.date|date('d.m') }}
+        <span>{{ day.date|date('Y') == 'now'|date('Y') ? weekdays[day.date|date('N')]|lower : day.date|date('Y') }}</span>
+    </div>
+</div>

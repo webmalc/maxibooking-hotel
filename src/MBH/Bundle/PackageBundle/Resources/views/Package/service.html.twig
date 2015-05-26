@@ -96,7 +96,7 @@
 
                     {{ form_start(form, {'action': path('package_service', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
                     {{ form_widget(form) }}
-                    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
+                    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity} %}
                     {{ form_end(form) }}
 
                 {% else %}

@@ -58,7 +58,26 @@ class Order
             return $new;
         }
 
+        //check accommodation
+        $accommodation = $old->getAccommodation();
+        if ($accommodation) {
+            $rooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
+                $new->getBegin(),
+                $new->getEnd(),
+                $accommodation->getRoomType()->getHotel(),
+                $accommodation->getRoomType()->getId(),
+                $accommodation->getId(),
+                $new->getId(),
+                false
+            );
+
+            if (!count($rooms)) {
+                return 'controller.packageController.record_edited_fail_accommodation';
+            }
+        }
+
         //search for packages
+        $oldEnd = clone $old->getEnd();
         $query = new SearchQuery();
         $query->begin = $new->getBegin();
         $query->end = $new->getEnd();
@@ -68,14 +87,14 @@ class Order
         $query->addRoomType($new->getRoomType()->getId());
         $query->addExcludeRoomType($old->getRoomType()->getId());
         $query->excludeBegin = $old->getBegin();
-        $query->excludeEnd = $old->getEnd()->modify('-1 day');
+        $query->excludeEnd = $oldEnd->modify('-1 day');
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
         if (count($results) == 1) {
             //recalculate cache
             $this->container->get('mbh.room.cache')->recalculate(
-                $old->getBegin(), $old->getEnd(), $old->getRoomType(), $old->getTariff(), false
+                $old->getBegin(), $oldEnd, $old->getRoomType(), $old->getTariff(), false
             );
             $end = $new->getEnd();
             $this->container->get('mbh.room.cache')->recalculate(
@@ -91,7 +110,7 @@ class Order
             return $new;
         }
 
-        return false;
+        return 'controller.packageController.record_edited_fail';
     }
 
     /**

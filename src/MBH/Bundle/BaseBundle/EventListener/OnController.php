@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\EventListener;
 
+use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -25,19 +26,21 @@ class OnController
     {
         $controller = $event->getController();
 
-        /*
-         * $controller passed can be either a class or a Closure. This is not usual in Symfony2 but it may happen.
-         * If it is a class, it comes in array format
-         */
         if (!is_array($controller)) {
             return;
         }
 
+        if ($controller[0] instanceof BaseController) {
+            //check messages
+            $this->container->get('mbh.system.messenger')->get();
+        }
+
+        //demo version
         if ($controller[0] instanceof EnvironmentInterface && $this->container->getParameter('mbh.environment') != 'prod') {
 
             throw new NotFoundHttpException('Page not found');
         }
-
+        //remove deletable filter
         if ($controller[0] instanceof DeletableControllerInterface) {
 
             $collection = $this->container->get('doctrine_mongodb')->getManager()->getFilterCollection();

@@ -99,7 +99,7 @@ class PriceCacheGeneratorType extends AbstractType
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                 ],
             ])
-            ->add('additionalChildrenPrice', 'text', [
+            ->add('additionalPrice', 'text', [
                 'label' => 'Цена взрослого доп. места',
                 'group' => 'Цены',
                 'required' => false,
@@ -109,7 +109,7 @@ class PriceCacheGeneratorType extends AbstractType
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                 ],
             ])
-            ->add('additionalPrice', 'text', [
+            ->add('additionalChildrenPrice', 'text', [
                 'label' => 'Цена детского доп. места',
                 'group' => 'Цены',
                 'required' => false,

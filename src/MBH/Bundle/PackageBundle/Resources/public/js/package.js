@@ -213,7 +213,6 @@ $(document).ready(function () {
                     nightsInput.val(services.package_duration);
                     nightsDiv.show();
                 }
-                if (services['package_one_day_price'] != 0){priceInput.val(services.package_one_day_price);}
                 priceInput.show();
                 amountInput.val(services.service_amount);
                 amountInput.show();
@@ -281,6 +280,29 @@ $(document).ready(function () {
             location.reload();
         });
     } ());
+
+    //accommodation tab
+    (function () {
+        var checkIn = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckIn'),
+            checkOut = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckOut'),
+            arrival = $('#mbh_bundle_packagebundle_package_accommodation_type_arrivalTime_time'),
+            departure = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_time'),
+            show = function () {
+                if (checkIn.is(':checked')) {
+                    arrival.closest('.form-group ').show();
+                } else {
+                    arrival.closest('.form-group ').hide();
+                }
+                if (checkOut.is(':checked')) {
+                    departure.closest('.form-group').show();
+                } else {
+                    departure.closest('.form-group').hide();
+                }
+            };
+        show();
+        checkIn.on('switchChange.bootstrapSwitch', show);
+        checkOut.on('switchChange.bootstrapSwitch', show);
+    }())
 
 });
 

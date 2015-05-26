@@ -58,15 +58,9 @@ class CashDocument extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     */
-    protected $prefix;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
      * @Assert\Type(type="string")
      * @Assert\Length(max=40)
+     *
      */
     protected $number;
 
@@ -267,10 +261,6 @@ class CashDocument extends Base
     public function prePersist()
     {
         $this->checkDate();
-
-        if (!$this->getDocumentDate()) {
-            $this->setDocumentDate(new \DateTime());
-        }
     }
 
     /**
@@ -284,11 +274,10 @@ class CashDocument extends Base
 
     private function checkDate()
     {
-        if (!$this->getIsPaid()) {
+        if(!$this->getIsPaid())
             $this->setPaidDate(null);
-        } elseif (!$this->getPaidDate()) {
-            $this->setPaidDate(new \DateTime());
-        }
+        elseif(!$this->getPaidDate())
+            $this->setPaidDate(new \DateTime('now'));
     }
 
     /**
@@ -300,7 +289,6 @@ class CashDocument extends Base
     public function setIsConfirmed($isConfirmed)
     {
         $this->isConfirmed = $isConfirmed;
-
         return $this;
     }
 
@@ -323,7 +311,6 @@ class CashDocument extends Base
     public function setIsPaid($isPaid)
     {
         $this->isPaid = $isPaid;
-
         return $this;
     }
 
@@ -376,7 +363,6 @@ class CashDocument extends Base
     public function setOrder(\MBH\Bundle\PackageBundle\Document\Order $order)
     {
         $this->order = $order;
-
         return $this;
     }
 
@@ -439,6 +425,7 @@ class CashDocument extends Base
     }
 
 
+
     /**
      * @return null|Tourist
      */
@@ -460,9 +447,8 @@ class CashDocument extends Base
      */
     public function isValidDate()
     {
-        if ($this->getIsPaid() && $this->getPaidDate()) {
+        if($this->getIsPaid() && $this->getPaidDate())
             return $this->getPaidDate()->getTimestamp() >= $this->getDocumentDate()->getTimestamp();
-        }
 
         return true;
     }

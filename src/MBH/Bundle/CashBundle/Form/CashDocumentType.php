@@ -46,7 +46,7 @@ class CashDocumentType extends AbstractType
                 'choices' => ['' => ''] + $payers,
                 'attr' => [
                     'placeholder' => 'form.cashDocumentType.placeholder_fio',
-                    'style' => 'm  in-width: 500px',
+                    'style' => 'min-width: 500px',
                 ]
             ])
             ->add('organizationPayer', 'hidden', [

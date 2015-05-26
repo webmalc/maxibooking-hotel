@@ -8,7 +8,6 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\PostRemove;
 
 /**
  * @ODM\EmbeddedDocument
@@ -23,6 +22,7 @@ class OrderDocument
     /**
      * @var string
      * @ODM\String
+     * @Assert\NotNull(message="validator.document.OrderDocument.type")
      */
     protected $type;
 
@@ -56,7 +56,7 @@ class OrderDocument
 
     /**
      * @var UploadedFile
-     * @Assert\File(maxSize="6000000", mimeTypes={
+     * @Assert\File(maxSize="6M", mimeTypes={
      *          "image/png",
      *          "image/jpeg",
      *          "image/jpg",
@@ -105,8 +105,9 @@ class OrderDocument
      */
     public function getFile()
     {
-        if(!$this->file && $this->name && is_file($this->getPath()))
+        if (!$this->file && $this->name && is_file($this->getPath())) {
             $this->file = new UploadedFile($this->getPath(), $this->getName());
+        }
 
         return $this->file;
     }
@@ -117,7 +118,7 @@ class OrderDocument
     public function setFile(UploadedFile $file = null)
     {
         $this->file = $file;
-        if($this->file){
+        if ($this->file) {
             $this->originalName = $this->file->getClientOriginalName();
             $this->name = uniqid().'.'.$this->file->getClientOriginalExtension();
             $this->extension = $this->file->getClientOriginalExtension();
@@ -140,7 +141,7 @@ class OrderDocument
      */
     public function getUploadRootDir()
     {
-        return __DIR__.'/../../../../../protectedUpload/packageDocuments';
+        return __DIR__.'/../../../../../protectedUpload/orderDocuments';
     }
 
     /**
@@ -201,22 +202,16 @@ class OrderDocument
     }
 
     /**
-     * @postRemove
-     */
-    public function postRemove()
-    {
-        $this->deleteFile();
-    }
-
-    /**
      * @return bool
      */
     public function deleteFile()
     {
-        if ($this->getFile() && is_writable($this->getFile()->getPathname())){
+        if ($this->getFile() && is_writable($this->getFile()->getPathname())) {
             $result = unlink($this->getFile()->getPathname());
-            if($result)
+            if ($result) {
                 $this->file = null;
+            }
+
             return $result;
         }
 

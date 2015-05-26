@@ -654,4 +654,60 @@ class Order extends Base
     {
         return $this->documents;
     }
+
+    /**
+     * @param string $name
+     * @return OrderDocument|null
+     */
+    public function getDocument($name)
+    {
+        foreach ($this->getDocuments() as $doc) {
+            if ($doc->getName() == $name) {
+                return $doc;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $name
+     * @return Order
+     */
+    public function removeDocumentByName($name)
+    {
+        $doc = $this->getDocument($name);
+
+        if ($doc) {
+            $this->removeDocument($doc);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getPaidStatus()
+    {
+        if ($this->getIsPaid()) {
+            return 'success';
+        }
+        if ($this->getPaid() && !$this->getIsPaid()) {
+            return 'warning';
+        }
+        if (!$this->getPaid()) {
+            return 'danger';
+        }
+
+        return null;
+    }
+
+    /**
+     * @return float
+     */
+    public function getDebt()
+    {
+        return $this->getPrice() - $this->getPaid();
+    }
 }

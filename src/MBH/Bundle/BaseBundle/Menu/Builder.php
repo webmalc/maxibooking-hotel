@@ -57,13 +57,15 @@ class Builder extends ContainerAware
         // report
         $menu->addChild('reports', ['route' => '_welcome', 'label' => 'Отчеты'])
              ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-tasks']);
-
-        $menu['reports']->addChild('analytics', ['route' => 'analytics', 'label' => 'Аналитика'])
-             ->setAttributes(['icon' => 'fa fa-bar-chart']);
-        $menu['reports']->addChild('clients', ['route' => 'tourist', 'label' => 'Клиенты'])
-            ->setAttributes(['icon' => 'fa fa-male']);
+        
+        $menu['reports']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Размещение'])
+            ->setAttributes(['icon' => 'fa fa-table']);
         $menu['reports']->addChild('organizations', ['route' => 'organizations', 'label' => 'Организации'])
             ->setAttributes(['icon' => 'fa fa-users']);
+        $menu['reports']->addChild('clients', ['route' => 'tourist', 'label' => 'Клиенты'])
+            ->setAttributes(['icon' => 'fa fa-male']);
+        $menu['reports']->addChild('analytics', ['route' => 'analytics', 'label' => 'Аналитика'])
+            ->setAttributes(['icon' => 'fa fa-bar-chart']);
 
         return $this->filterMenu($menu);
     }
@@ -91,7 +93,7 @@ class Builder extends ContainerAware
         $menu['hotels']->addChild('hotelsList', ['route' => 'hotel', 'label' => 'Отели'])
                 ->setAttributes(['icon' => 'fa fa-building']);
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номерной фонд'])
-                ->setAttributes(['icon' => 'fa fa-home']);
+                ->setAttributes(['icon' => 'fa fa-bed']);
         $menu['hotels']->addChild('tariff', ['route' => 'tariff', 'label' => 'Тарифы'])
             ->setAttributes(['icon' => 'fa fa-sliders']);
 
@@ -100,7 +102,7 @@ class Builder extends ContainerAware
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-cogs'])
         ;
         $menu['configs']->addChild('users', ['route' => 'user', 'label' => 'Пользователи'])
-            ->setAttributes(['icon' => 'fa fa-users'])
+            ->setAttributes(['icon' => 'fa fa-user'])
         ;
         $menu['configs']->addChild('sources', ['route' => 'package_source', 'label' => 'Источники'])
              ->setAttributes(['icon' => 'fa fa-compass'])

@@ -1,6 +1,29 @@
 /*global window, document, $ */
+
+$.fn.serializeObject = function () {
+    'use strict';
+    var o = {},
+        a = this.serializeArray();
+    $.each(a, function () {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
+
 $(document).ready(function () {
     'use strict';
+
+    $.mask.definitions['2'] = "[0-2]";
+    $.mask.definitions['5'] = "[0-5]";
+    $.mask.definitions['9'] = "[0-9]";
+    $('.input-time, .input-time input:last-child').mask("29:59");
 
     //only int
     $('.only-int').change(function () {

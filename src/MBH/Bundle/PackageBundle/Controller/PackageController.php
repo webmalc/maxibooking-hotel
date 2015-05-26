@@ -3,31 +3,28 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Form\PackageDocumentsType;
-use MBH\Bundle\PackageBundle\Form\PackageDocumentType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\PackageMainType;
 use MBH\Bundle\PackageBundle\Form\PackageGuestType;
-use MBH\Bundle\PackageBundle\Form\PackageCopyType;
 use MBH\Bundle\PackageBundle\Form\PackageAccommodationType;
-use MBH\Bundle\CashBundle\Form\CashDocumentType;
-use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 
+/**
+ * Class PackageController
+ * @package MBH\Bundle\PackageBundle\Controller
+ */
 class PackageController extends Controller implements CheckHotelControllerInterface, DeletableControllerInterface
 {
     /**
@@ -266,9 +263,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             new PackageMainType(),
             $entity,
             [
-                'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
-                'defaultTime' => $this->container->getParameter('mbh.package.arrival.time'),
-                'price' => $this->get('security.context')->isGranted(['ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER']),
+                'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER']),
                 'hotel' => $entity->getRoomType()->getHotel()
             ]
         );
@@ -316,7 +311,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($form->isValid()) {
 
             //check by search
-            if ($this->container->get('mbh.order')->updatePackage($oldPackage, $entity)) {
+            $result = $this->container->get('mbh.order')->updatePackage($oldPackage, $entity);
+            if ($result instanceof Package) {
                 /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
                 $dm = $this->get('doctrine_mongodb')->getManager();
                 $dm->persist($entity);
@@ -328,7 +324,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 return $this->afterSaveRedirect('package', $entity->getId());
             } else {
                 $request->getSession()->getFlashBag()
-                    ->set('danger', $this->get('translator')->trans('controller.packageController.record_edited_fail'));
+                    ->set('danger', $this->get('translator')->trans($result));
             }
         }
 
@@ -516,7 +512,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             );
         }
         $time = [];
-        foreach($entity->getServices() as $s){
+        foreach($entity->getServices() as $s) {
             $serv =  $dm->getRepository('MBHPriceBundle:Service')->find($s->getService()->getId());
             $time[] = $serv->getTime();
         }
@@ -524,8 +520,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
             $packageService->setPackage($entity);
             $packageService->setService($dm->getRepository('MBHPriceBundle:Service')->find($request->get("mbh_bundle_packagebundle_package_service_type")["service"] ));
-
-
 
             $form->submit($request);
 
@@ -562,8 +556,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 return $this->afterSaveRedirect('package', $id, [], '_service');
             }
         }
-
-
 
         return [
             'entity' => $entity,
@@ -707,95 +699,44 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_USER')")
      * @Template()
+     * @param Request $request
+     * @param Package $entity
+     * @return array|\MBH\Bundle\BaseBundle\Controller\Response
      */
-    public function accommodationAction(Request $request, $id)
+    public function accommodationAction(Request $request, Package $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
-        $roomTypes = $dm->getRepository('MBHHotelBundle:RoomType')
-            ->createQueryBuilder('q')
-            ->sort('fullTitle', 'asc')
-            ->field('hotel.id')->equals($entity->getRoomType()->getHotel()->getId())
-            ->getQuery()
-            ->execute()
-            ->toArray();
-        $groupedRooms = [];
+        $groupedRooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
+            $entity->getBegin(), $entity->getEnd(), $this->hotel, null, null, $entity->getId(), true
+        );
 
-        foreach ($roomTypes as $key => $roomType) {
-            if ($roomType->getId() == $entity->getRoomType()->getId()) {
-                unset($roomTypes[$key]);
-                array_unshift($roomTypes, $roomType);
-            }
+        if (!$entity->getIsCheckIn()) {
+            $entity->setArrivalTime(new \DateTime());
         }
 
-        $qb = $dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('q');
-        $qb->field('accommodation')->notEqual(null)
-            ->addOr(
-                $qb->expr()
-                    ->field('begin')->gte($entity->getBegin())
-                    ->field('begin')->lt($entity->getEnd())
-            )
-            ->addOr(
-                $qb->expr()
-                    ->field('end')->gt($entity->getBegin())
-                    ->field('end')->lte($entity->getEnd())
-            )
-            ->addOr(
-                $qb->expr()
-                    ->field('end')->gte($entity->getEnd())
-                    ->field('begin')->lte($entity->getBegin())
-            );
-
-        $notIds = [];
-        foreach ($qb->getQuery()->execute() as $package) {
-            $notIds[] = $package->getAccommodation()->getId();
-        };
-
-        foreach ($roomTypes as $roomType) {
-
-            $rooms = $dm->getRepository('MBHHotelBundle:Room')
-                ->createQueryBuilder('q')
-                ->sort('fullTitle', 'asc')
-                ->field('roomType.id')->equals($roomType->getId())
-                ->field('id')->notIn($notIds)
-                ->getQuery()
-                ->execute();
-            if (!count($rooms)) {
-                continue;
-            }
-            foreach ($rooms as $room) {
-                $groupedRooms[$roomType->getName()][$room->getId()] = $room->getName();
-            }
+        if (!$entity->getIsCheckOut()) {
+            $entity->setDepartureTime(new \DateTime());
         }
 
         $form = $this->createForm(
             new PackageAccommodationType(),
-            [],
+            $entity,
             [
                 'rooms' => $groupedRooms,
-                'isHostel' => $this->get('mbh.hotel.selector')->getSelected()->getIsHostel(),
-                'guests' => $entity->getIsCheckIn()
+                'isHostel' => $this->hotel->getIsHostel(),
+                'roomType' => $entity->getRoomType(),
+                'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
             ]);
 
         if ($request->getMethod() == 'PUT'  && $this->container->get('mbh.package.permissions')->check($entity)) {
-            $form->bind($request);
+            $form->submit($request);
 
             if ($form->isValid()) {
-
-                $data = $form->getData();
-
-                $entity->setAccommodation($dm->getRepository('MBHHotelBundle:Room')->find($data['room']))
-                       ->setIsCheckIn($data['isCheckIn'])
-                ;
-                $dm->persist($entity);
-                $dm->flush();
+                $this->dm->persist($entity);
+                $this->dm->flush();
 
                 $request->getSession()
                     ->getFlashBag()

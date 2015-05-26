@@ -1,4 +1,15 @@
-/* global $, alert, window */
+/*global $, window, document, $ */
+
+var closePopovers = function () {
+    'use strict';
+    $('body').on('click', function (e) {
+        //only buttons
+        if ($(e.target).data('toggle') !== 'popover' && $(e.target).parents('.popover.in').length === 0) {
+            $('[data-toggle="popover"]').popover('hide');
+        }
+    });
+};
+
 var getUrlVars = function () {
     'use strict';
     var vars = [], hash,
@@ -17,6 +28,7 @@ var dangerTr = function () {
 }
 
 var deleteLink = function () {
+    'use strict';
     $('.delete-link').click(function (event) {
         event.preventDefault();
 
@@ -67,22 +79,6 @@ var deleteLink = function () {
     });
 };
 
-var checkMessages = function () {
-    $.getJSON(Routing.generate('message'), function (data) {
-        var container = $('#messages');
-        $('#messages').find('.message').remove();
-
-        if (!data.length) {
-            return;
-        }
-
-        $.each(data, function (index, value) {
-            var autohide = (value.autohide) ? 'autohide' : '';
-            $('#messages').prepend('<div class="' + autohide + ' message alert alert-' + value.type + '"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + value.text + '</div>');
-        });
-    });
-};
-
 $(document).ready(function () {
     'use strict';
 
@@ -100,12 +96,6 @@ $(document).ready(function () {
         setInterval(h, 500);
     }());
 
-    //get messages
-    /*checkMessages();
-    window.setInterval(function () {
-        checkMessages();
-    }, 10000);*/
-
     //Tooltips configuration
     $('[data-toggle="tooltip"]').tooltip();
 
@@ -122,4 +112,8 @@ $(document).ready(function () {
     //fancybox
     $('.fancybox').fancybox();
     $('input[type=file]').bootstrapFileInput();
+
+    //popovers
+    $('[data-toggle="popover"]').popover();
+    closePopovers();
 });

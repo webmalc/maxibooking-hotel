@@ -2,12 +2,47 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Form\RoomType;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class PackageRepository extends DocumentRepository
 {
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param null $rooms
+     * @param null $excludePackages
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function fetchWithAccommodation(\DateTime $begin = null, \DateTime $end = null, $rooms = null, $excludePackages = null)
+    {
+        $qb = $this->createQueryBuilder('s');
+        $qb->field('accommodation')->exists(true)
+            ->field('accommodation')->notEqual(null)
+        ;
+
+        if ($begin) {
+            $qb->field('end')->gte($begin);
+        }
+        if ($end) {
+            $qb->field('begin')->lte($end);
+        }
+        if ($rooms) {
+            is_array($rooms) ? $rooms : $rooms = [$rooms];
+            $qb->field('accommodation.id')->in($rooms);
+        }
+        if ($excludePackages) {
+            is_array($excludePackages) ? $excludePackages : $excludePackages = [$excludePackages];
+            $qb->field('id')->notIn($excludePackages);
+        }
+        $qb->sort('begin', 'asc');
+
+        return $qb->getQuery()->execute();
+    }
+
     /**
      * @param $data
      * @return \MBH\Bundle\PackageBundle\Document\Package[]

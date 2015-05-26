@@ -48,6 +48,14 @@ twig:
           10: 'Октябрь'
           11: 'Ноябрь'
           12: 'Декабрь'
+        weekdays:
+          1: 'Пн'
+          2: 'Вт'
+          3: 'Ср'
+          4: 'Чт'
+          5: 'Пт'
+          6: 'Сб'
+          7: 'Вс'
         environment: "%mbh.environment%"
 
 # Assetic Configuration
@@ -160,7 +168,7 @@ knp_snappy:
         options:    []
     image:
         enabled:    true
-        binary:     /usr/local/bin/wkhtmltoimage
+        binary:     /usr/local/bin/h
         options:    []
 
 # IamPersistentMongoDBAclBundle Configuration

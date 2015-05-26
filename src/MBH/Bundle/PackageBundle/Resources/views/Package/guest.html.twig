@@ -42,7 +42,7 @@
                     <tbody>
                     {% for tourist in entity.tourists %}
                         <tr>
-                            <td class="text-center table-icon"><i class="fa fa-user"></i></td>
+                            <td class="text-center table-icon"><i class="fa fa-male"></i></td>
                             <td>
                                 <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}" rel="main"
                                    title=" {{ 'package.guest.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">{{ tourist.fullName }}</a>
@@ -95,7 +95,7 @@
                 {% if entity.tourists|length < totalGuests %}
                     {{ form_start(form, {'action': path('package_guest', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
                     {{ form_widget(form) }}
-                    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
+                    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity} %}
                     {{ form_end(form) }}
                 {% else %}
                     <div id="actions" class="navbar navbar-default navbar-fixed-bottom">

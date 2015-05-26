@@ -8,7 +8,8 @@ use Symfony\Component\Validator\Constraint;
  */
 class CashDocument extends Constraint
 {
-    public $message = 'validator.constraints.expense_greater_than_income';
+    public $messageExpenseGreaterThanIncome = 'validator.constraints.expense_greater_than_income';
+    public $messagePayer = 'validator.constraints.payer';
     
     /**
      * {@inheritDoc}
