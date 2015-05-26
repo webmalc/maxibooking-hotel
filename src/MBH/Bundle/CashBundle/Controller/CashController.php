@@ -28,16 +28,18 @@ class CashController extends Controller
      * @Security("is_granted('ROLE_BOOKKEEPER')")
      * @Template()
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
-        /*$form = $this->createFormBuilder()->add('begin', 'date', [
-            'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'datepicker end-datepiker form-control input-sm', 'id' => 'begin'],
-            'widget' => 'single_text',
-            'format' => 'dd.MM.yyyy',
-        ])->getForm();*/
+        $methods = [
+            'cash' => "Наличные",
+            'cashless_electronic' => "Безнал (в том числе электронные)",
+            'cashless' => "Безнал",
+            'electronic' =>  "Электронный",
+            'all' => "Все",
+        ];
 
         return [
-            'methods' => $this->container->getParameter('mbh.cash.methods'),
+            'methods' => $methods,//$this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
             //'form' => $form->createView()
         ];
@@ -65,12 +67,22 @@ class CashController extends Controller
         $order = $request->get('order')['0'];
         $search = $request->get('search')['value'];
         $methods = $request->get('methods');
-        $showNoPaid = $request->get('show_no_paid');
+        if($methods == 'cashless_electronic')
+            $methods = ['cashless', 'electronic'];
+        elseif($methods == 'all' || !$methods)
+            $methods = [];
+        else
+            $methods = [$methods];
+
+        $isPaid = !$request->get('show_no_paid');
         $begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
         $end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
-        $filter = $request->get('filter');
+        $filterByRange = $request->get('filter');
         $orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
+        $isByDay = $request->get('by_day');
 
+        if($isByDay)
+            $isPaid = true;
 
         $sort = 'createdAt';
         $dir = 'desc';
@@ -86,35 +98,37 @@ class CashController extends Controller
         $recordsTotal = 0;
         $recordsFiltered = 0;
 
-        if ($request->get('by_day')) {
-            $result = $repository->getListForCash($start, $length, $sort, $dir, $methods, $search, $showNoPaid, $begin, $end,
-                $filter, $orderIds, true);
+        if ($isByDay) {
+            $result = $repository->getListForCash($start, $length, $sort, $dir, $methods, $search, $isPaid, $begin, $end,
+                $filterByRange, $orderIds, true);
 
             //$recordsTotal = $qb->getQuery()->count();
-            $totalIn = $repository->total('in', $search, $begin, $end);
-            $totalOut = $repository->total('out', $search, $begin, $end);
+            $totalIn = $repository->total('in', $search, $begin, $end, $filterByRange, $isPaid, $methods, $orderIds); //@todo consider $search
+            $totalOut = $repository->total('out', $search, $begin, $end, $filterByRange, $isPaid, $methods, $orderIds);
 
             return $this->render('MBHCashBundle:Cash:jsonByDay.json.twig', [
                 "draw" => $request->get('draw'),
                 'totalIn' => $totalIn,
                 'totalOut' => $totalOut,
+                'total' => $totalIn - $totalOut,
                 'recordsTotal' => $recordsTotal,
                 'recordsFiltered' => $recordsFiltered,
                 'data' => $result
             ]);
         } else {
-            $entities = $repository->getListForCash($start, $length, $sort, $dir, $methods, $search, $showNoPaid, $begin,
-                $end, $filter, $orderIds, false);
+            $entities = $repository->getListForCash($start, $length, $sort, $dir, $methods, $search, $isPaid, $begin,
+                $end, $filterByRange, $orderIds, false);
 
             if(count($entities) > 0){
-                $totalIn = $repository->total('in', $search, $begin, $end);
-                $totalOut = $repository->total('out', $search, $begin, $end);
+                $totalIn = $repository->total('in', $search, $begin, $end, $filterByRange, $isPaid, $methods, $orderIds);
+                $totalOut = $repository->total('out', $search, $begin, $end, $filterByRange, $isPaid, $methods, $orderIds);
             }
 
             return [
                 'draw' => $request->get('draw'),
                 'totalIn' => $totalIn,
                 'totalOut' => $totalOut,
+                'total' => $totalIn - $totalOut,
                 'recordsTotal' => $recordsTotal,
                 'recordsFiltered' => $recordsFiltered,
                 'entities' => $entities,

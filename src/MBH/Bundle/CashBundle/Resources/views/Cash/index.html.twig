@@ -33,7 +33,7 @@
                 <i class="fa fa-money" title='Метод оплаты'
                    data-toggle='tooltip'></i>
                 &nbsp
-                <select name="methods" id="method" multiple>
+                <select name="methods" id="method">
                     {% for type, name in methods %}
                         <option value="{{ type }}">{{ name }}</option>
                     {% endfor %}
@@ -67,10 +67,12 @@
         <tfoot>
         <tr>
             <td colspan="7" class="text-right">
-                <strong>{{ 'views.cash.index.income'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;<span
-                        class="cash-table-total-in"></span><br>
-                <strong>{{ 'views.cash.index.expense'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;<span
-                        class="cash-table-total-out"></span>
+                <strong>{{ 'views.cash.index.income'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
+                <span class="cash-table-total-in"></span><br>
+                <strong>{{ 'views.cash.index.expense'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
+                <span class="cash-table-total-out"></span><br>
+                <strong>{{ 'views.cash.index.saldo'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
+                <span class="cash-table-total"></span>
             </td>
             <td>
             </td>
@@ -100,10 +102,13 @@
         <tfoot>
         <tr>
             <td colspan="4" class="text-right">
-                <strong>{{ 'views.cash.index.income'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;<span
-                        class="cash-table-total-in"></span><br>
-                <strong>{{ 'views.cash.index.expense'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;<span
-                        class="cash-table-total-out"></span>
+                <strong>{{ 'views.cash.index.income'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
+                <span class="cash-table-total-in"></span><br>
+                <strong>{{ 'views.cash.index.expense'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
+                <span class="cash-table-total-out"></span><br>
+                <strong>{{ 'views.cash.index.saldo'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
+                <span class="cash-table-total"></span>
+            </td>
             <td></td>
         </tr>
         </tfoot>

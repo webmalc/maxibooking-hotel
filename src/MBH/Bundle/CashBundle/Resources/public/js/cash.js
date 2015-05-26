@@ -68,6 +68,9 @@ $(document).ready(function () {
     var $cashTable = $('#cash-table');
     var $cashTableByDay = $('#cash-table-by-day');
 
+
+    var $showNoPaidCheckbox = $('#show_no_paid');
+    var $byDayCheckbox = $('#by_day');
     var getFormData = function()
     {
         var data = {};
@@ -79,8 +82,8 @@ $(document).ready(function () {
         data.end = $('#end').val();
         data.filter = $filterSelectElement.select2('val');
         data.methods = $methodSelectElement.select2('val');
-        data.show_no_paid = $('#show_no_paid').prop("checked") ? 1 : 0;
-        data.by_day = $('#by_day').prop("checked") ? 1 : 0;
+        data.show_no_paid = $showNoPaidCheckbox.prop("checked") ? 1 : 0;
+        data.by_day = $byDayCheckbox.prop("checked") ? 1 : 0;
 
         return data;
     }
@@ -90,15 +93,11 @@ $(document).ready(function () {
         $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
         $('.deleted-entry').closest('tr').addClass('danger');
         $('.not-confirmed-entry').closest('tr').addClass('info');
-        $('.not-confirmed-entry').closest('tr').addClass('info');
+        $('.no-paid-entry').closest('tr').addClass('transparent-tr');
         deleteLink();
-        updateTotals(settings.json.totalIn, settings.json.totalOut)
-    }
-
-    var updateTotals = function(totalIn, totalOut)
-    {
-        $('.cash-table-total-in').html(totalIn);
-        $('.cash-table-total-out').html(totalOut);
+        $('.cash-table-total-in').html(settings.json.totalIn);
+        $('.cash-table-total-out').html(settings.json.totalOut);
+        $('.cash-table-total').html(settings.json.total);
     }
 
     var dataTableOptions = {
@@ -145,17 +144,24 @@ $(document).ready(function () {
         $cashTable.parent().css('display', !this.byDay ? 'block' : 'none')
         $cashTableByDay.parent().css('display', this.byDay ? 'block' : 'none')
 
-        if(this.byDay && !this.initTableByDay){
-            dataTableOptions.aoColumns = [
-                {"bSortable": false},
-                {"bSortable": false},
-                {"bSortable": false},
-                {"bSortable": false},
-                {"bSortable": false}
-            ];
-            $cashTableByDay.dataTable(dataTableOptions);
-            this.initTableByDay = true;
+        if(this.byDay){
+            $showNoPaidCheckbox.bootstrapSwitch('toggleDisabled');
+            if(!this.initTableByDay) {
+
+                dataTableOptions.aoColumns = [
+                    {"bSortable": false},
+                    {"bSortable": false},
+                    {"bSortable": false},
+                    {"bSortable": false},
+                    {"bSortable": false}
+                ];
+                $cashTableByDay.dataTable(dataTableOptions);
+                this.initTableByDay = true;
+            }
+        }else if($showNoPaidCheckbox.prop('disabled')){
+            $showNoPaidCheckbox.bootstrapSwitch('toggleDisabled');
         }
+
         this.currentTable().dataTable().fnDraw()
     }
 
@@ -166,7 +172,10 @@ $(document).ready(function () {
         sw.currentTable().dataTable().fnDraw();
     });
 
-    $('#by_day').on('switchChange.bootstrapSwitch', function(event, state) {
+    $byDayCheckbox.on('switchChange.bootstrapSwitch', function(event, state) {
+        if(state.value){
+            $showNoPaidCheckbox.bootstrapSwitch('state', false, true);
+        };
         sw.switch()
     });
 

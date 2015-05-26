@@ -41,10 +41,14 @@ class CashDocumentRepository extends DocumentRepository
      * @param $search
      * @param \DateTime $begin
      * @param \DateTime $end
+     * @param boolean $isPaid Only paid
+     * @param string $filterByRange
+     * @param string[] $methods
      * @return int
      * @throws \Exception
      */
-    public function total($type, $search, \DateTime $begin = null, \DateTime $end = null)
+
+    public function total($type, $search, \DateTime $begin = null, \DateTime $end = null, $filterByRange = 'documentDate', $isPaid = false, $methods = [], $orderIds = [])
     {
         if (!in_array($type, ['in', 'out'])) {
             throw new \Exception('Invalid type');
@@ -62,12 +66,24 @@ class CashDocumentRepository extends DocumentRepository
             $qb->field('operation')->in(['out', 'fee']);
         }
 
-        if (!empty($begin)) {
-            $qb->field('createdAt')->gte($begin);
+        if ($begin) {
+            $qb->field($filterByRange)->gte($begin);
         }
 
-        if (!empty($end)) {
-            $qb->field('createdAt')->lte($end);
+        if ($end) {
+            $qb->field($filterByRange)->lte($end);
+        }
+
+        if ($isPaid) {
+            $qb->field('isPaid')->equals(true);
+        }
+
+        if ($methods) {
+            $qb->field('method')->in($methods);
+        }
+
+        if ($orderIds) {
+            $qb->field('order.id')->in($orderIds);
         }
 
         $qb->map('function() { emit(1, this.total); }')
@@ -108,10 +124,10 @@ class CashDocumentRepository extends DocumentRepository
      * @param $dir
      * @param $methods
      * @param $search
-     * @param $showNoPaid
+     * @param $isPaid
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param string $filter
+     * @param string $filterByRange
      * @param string[] $orderIds
      * @param boolean $byDays
      * @return CashDocument[]|array
@@ -125,10 +141,10 @@ class CashDocumentRepository extends DocumentRepository
         $dir,
         $methods,
         $search,
-        $showNoPaid,
+        $isPaid,
         \DateTime $begin = null,
         \DateTime $end = null,
-        $filter = 'documentDate',
+        $filterByRange = 'documentDate',
         $orderIds = [],
         $byDays = false
     ) {
@@ -142,7 +158,7 @@ class CashDocumentRepository extends DocumentRepository
             $qb->field('method')->in($methods);
         }
 
-        if (!$showNoPaid) {
+        if ($isPaid) {
             $qb->field('isPaid')->equals(true);
         }
 
@@ -160,8 +176,8 @@ class CashDocumentRepository extends DocumentRepository
             $end = new \DateTime('midnight +1 day');
         }
 
-        $qb->field($filter)->gte($begin);
-        $qb->field($filter)->lte($end);
+        $qb->field($filterByRange)->gte($begin);
+        $qb->field($filterByRange)->lte($end);
 
         if ($orderIds) {
             $qb->field('order.id')->in($orderIds);
@@ -182,12 +198,22 @@ class CashDocumentRepository extends DocumentRepository
     {
         return $builder
             ->field('paidDate')->type(9)
-            ->group(['paidDate' => 1], ['totalIn' => 0, 'totalOut' => 0, 'countIn' => 0, 'countOut' => 0])
+            ->group(['paidDate' => 1], ['totalIn' => 0, 'totalOut' => 0, 'confirmedTotalIn' => 0, 'confirmedTotalOut' => 0,'noConfirmedTotalIn' => 0, 'noConfirmedTotalOut' => 0, 'countIn' => 0, 'countOut' => 0])
             ->reduce('function (obj, prev) {
                     if (obj.operation == "in") {
+                        if(obj.isConfirmed) {
+                            prev.confirmedTotalIn += obj.total;
+                        } else {
+                            prev.noConfirmedTotalIn += obj.total;
+                        }
                         prev.totalIn += obj.total;
                         prev.countIn++;
                     } else {
+                        if(obj.isConfirmed) {
+                            prev.confirmedTotalOut += obj.total;
+                        } else {
+                            prev.noConfirmedTotalOut += obj.total;
+                        }
                         prev.totalOut += obj.total;
                         prev.countOut++;
                     }
