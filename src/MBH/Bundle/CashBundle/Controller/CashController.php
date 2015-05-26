@@ -4,6 +4,7 @@ namespace MBH\Bundle\CashBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -59,10 +60,22 @@ class CashController extends Controller
     {
         $repository = $this->dm->getRepository('MBHCashBundle:CashDocument');
 
-        $start = $request->get('start');
-        $length = $request->get('length');
+        $queryCriteria = new CashDocumentQueryCriteria();
+
+        $queryCriteria->skip = $request->get('start');
+        $queryCriteria->limit = $request->get('length');
+
         $order = $request->get('order')['0'];
-        $search = $request->get('search')['value'];
+        $queryCriteria->sortBy = 'createdAt';
+        $queryCriteria->sortDirection = -1;//SORT_DESC;
+
+        if (!empty($order['column']) && in_array($order['column'], [1, 2, 3, 5, 6, 7])) {
+            $sorts = [1 => 'prefix', 2 => 'total', 3 => 'total', 5  => 'createdAt', 6  => 'isPaid', 7  => 'deletedAt'];
+            $queryCriteria->sortBy = $sorts[$order['column']];
+            $queryCriteria->sortDirection = $order['dir'];
+        }
+
+        $queryCriteria->search = $request->get('search')['value'];
         $methods = $request->get('methods');
         if($methods == 'cashless_electronic')
             $methods = ['cashless', 'electronic'];
@@ -71,25 +84,26 @@ class CashController extends Controller
         else
             $methods = [$methods];
 
-        $isPaid = !$request->get('show_no_paid');
-        $begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
-        $end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
-        $filterByRange = $request->get('filter');
-        $orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
+        $queryCriteria->methods = $methods;
+
+        $queryCriteria->isPaid = !$request->get('show_no_paid');
+        $queryCriteria->begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
+        $queryCriteria->end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
+
+        if (!$queryCriteria->begin) {
+            $queryCriteria->begin = new \DateTime('midnight -7 days');
+        }
+
+        if (!$queryCriteria->end) {
+            $queryCriteria->end = new \DateTime('midnight +1 day');
+        }
+
+        $queryCriteria->filterByRange = $request->get('filter');
+        $queryCriteria->orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
         $isByDay = $request->get('by_day');
 
         if($isByDay)
-            $isPaid = true;
-
-        $sort = 'createdAt';
-        $dir = 'desc';
-        
-        if (!empty($order['column']) && in_array($order['column'], [1, 2, 3, 5, 6, 7])) {
-            $sorts = [1 => 'prefix', 2 => 'total', 3 => 'total', 5  => 'createdAt', 6  => 'isPaid', 7  => 'deletedAt'];
-            $sort = $sorts[$order['column']];
-            $dir = $order['dir'];
-        }
-
+            $queryCriteria->isPaid = true;
 
         $totalIn = 0;
         $totalOut = 0;
@@ -98,48 +112,33 @@ class CashController extends Controller
         $recordsTotal = 0;
         $recordsFiltered = 0;
 
+        $results = $repository->getListForCash($queryCriteria, $isByDay);
+
+        if(count($results) > 0) {
+            $queryCriteria->isConfirmed = null;
+            $totalIn = $repository->total('in', $queryCriteria);
+            $totalOut = $repository->total('out', $queryCriteria);
+            $queryCriteria->isConfirmed = false;
+            $noConfirmedTotalIn = $repository->total('in', $queryCriteria);
+            $noConfirmedTotalOut = $repository->total('out', $queryCriteria);
+        }
+
+        $params = [
+            "draw" => $request->get('draw'),
+            'totalIn' => $totalIn,
+            'totalOut' => $totalOut,
+            'noConfirmedTotalIn' => $noConfirmedTotalIn,
+            'noConfirmedTotalOut' => $noConfirmedTotalOut,
+            'total' => $totalIn - $totalOut,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+        ];
+
         if ($isByDay) {
-            $result = $repository->getListForCash($start, $length, $sort, $dir, $methods, $search, $isPaid, $begin, $end,
-                $filterByRange, $orderIds, true);
-
-            //$recordsTotal = $qb->getQuery()->count();
-            $totalIn = $repository->total('in', $search, $begin, $end, $filterByRange, $isPaid, null, $methods, $orderIds); //@todo consider $search
-            $totalOut = $repository->total('out', $search, $begin, $end, $filterByRange, $isPaid, null, $methods, $orderIds);
-            $noConfirmedTotalIn = $repository->total('in', $search, $begin, $end, $filterByRange, $isPaid, false, $methods, $orderIds);
-            $noConfirmedTotalOut = $repository->total('out', $search, $begin, $end, $filterByRange, $isPaid, false, $methods, $orderIds);
-
-            return $this->render('MBHCashBundle:Cash:jsonByDay.json.twig', [
-                "draw" => $request->get('draw'),
-                'totalIn' => $totalIn,
-                'totalOut' => $totalOut,
-                'confirmedTotalIn' => $confirmedTotalIn,
-                'confirmedTotalOut' => $confirmedTotalOut,
-                'total' => $totalIn - $totalOut,
-                'recordsTotal' => $recordsTotal,
-                'recordsFiltered' => $recordsFiltered,
-                'data' => $result
-            ]);
+            return $this->render('MBHCashBundle:Cash:jsonByDay.json.twig', $params + ['data' => $results]);
         } else {
-            $entities = $repository->getListForCash($start, $length, $sort, $dir, $methods, $search, $isPaid, $begin,
-                $end, $filterByRange, $orderIds, false);
-
-            if(count($entities) > 0){
-                $totalIn = $repository->total('in', $search, $begin, $end, $filterByRange, $isPaid, null, $methods, $orderIds);
-                $totalOut = $repository->total('out', $search, $begin, $end, $filterByRange, $isPaid, null, $methods, $orderIds);
-                $noConfirmedTotalIn = $repository->total('in', $search, $begin, $end, $filterByRange, $isPaid, false, $methods, $orderIds);
-                $noConfirmedTotalOut = $repository->total('out', $search, $begin, $end, $filterByRange, $isPaid, false, $methods, $orderIds);
-            }
-
-            return [
-                'draw' => $request->get('draw'),
-                'totalIn' => $totalIn,
-                'totalOut' => $totalOut,
-                'noConfirmedTotalIn' => $noConfirmedTotalIn,
-                'noConfirmedTotalOut' => $noConfirmedTotalOut,
-                'total' => $totalIn - $totalOut,
-                'recordsTotal' => $recordsTotal,
-                'recordsFiltered' => $recordsFiltered,
-                'entities' => $entities,
+            return $params + [
+                'entities' => $results,
                 'methods' => $this->container->getParameter('mbh.cash.methods'),
                 'operations' => $this->container->getParameter('mbh.cash.operations'),
             ];

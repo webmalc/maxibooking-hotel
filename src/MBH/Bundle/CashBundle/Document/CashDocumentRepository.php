@@ -38,56 +38,23 @@ class CashDocumentRepository extends DocumentRepository
 
     /**
      * @param $type
-     * @param $search
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param boolean $isPaid Only paid
-     * @param boolean $isConfirmed
-     * @param string $filterByRange
-     * @param string[] $methods
+     * @param CashDocumentQueryCriteria $criteria
      * @return int
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \Exception
      */
-    public function total($type, $search, \DateTime $begin = null, \DateTime $end = null, $filterByRange = 'documentDate', $isPaid = false, $isConfirmed = null, $methods = [], $orderIds = [])
+    public function total($type, CashDocumentQueryCriteria $criteria)
     {
         if (!in_array($type, ['in', 'out'])) {
             throw new \Exception('Invalid type');
         }
 
-        $qb = $this->createQueryBuilder('CashDocument');
+        $qb = $this->queryCriteriaToBuilder($criteria);
 
-        if (!empty($search)) {
-            $qb->addOr($qb->expr()->field('total')->equals((int)$search));
-            $qb->addOr($qb->expr()->field('prefix')->equals(new \MongoRegex('/.*' . $search . '.*/ui')));
-        }
         if ($type == 'in') {
             $qb->field('operation')->notIn(['out', 'fee']);
         } else {
             $qb->field('operation')->in(['out', 'fee']);
-        }
-
-        if ($begin) {
-            $qb->field($filterByRange)->gte($begin);
-        }
-
-        if ($end) {
-            $qb->field($filterByRange)->lte($end);
-        }
-
-        if ($isPaid) {
-            $qb->field('isPaid')->equals(true);
-        }
-
-        if ($methods) {
-            $qb->field('method')->in($methods);
-        }
-
-        if ($orderIds) {
-            $qb->field('order.id')->in($orderIds);
-        }
-
-        if(isset($isConfirmed)){
-            $qb->field('isConfirmed')->equals($isConfirmed);
         }
 
         $qb->map('function() { emit(1, this.total); }')
@@ -120,72 +87,14 @@ class CashDocumentRepository extends DocumentRepository
         return $document->getOrder()->getId() . '-' . (++$number);
     }
 
-
     /**
-     * @param $start
-     * @param $limit
-     * @param $sort
-     * @param $dir
-     * @param $methods
-     * @param $search
-     * @param $isPaid
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param string $filterByRange
-     * @param string[] $orderIds
-     * @param boolean $byDays
+     * @param CashDocumentQueryCriteria $criteria
+     * @param bool $byDays
      * @return CashDocument[]|array
-     *
-     * @todo less arguments, Criteria Filter ...
      */
-    public function getListForCash(
-        $start,
-        $limit,
-        $sort,
-        $dir,
-        $methods,
-        $search,
-        $isPaid,
-        \DateTime $begin = null,
-        \DateTime $end = null,
-        $filterByRange = 'documentDate',
-        $orderIds = [],
-        $byDays = false
-    ) {
-        $qb = $this->createQueryBuilder('CashDocument')
-            ->skip($start)
-            ->limit($limit);
-
-        $qb->sort($sort, $dir);
-
-        if ($methods) {
-            $qb->field('method')->in($methods);
-        }
-
-        if ($isPaid) {
-            $qb->field('isPaid')->equals(true);
-        }
-
-        //Search
-        if (!empty($search)) {
-            $qb->addOr($qb->expr()->field('total')->equals((int)$search));
-            $qb->addOr($qb->expr()->field('prefix')->equals(new \MongoRegex('/.*' . $search . '.*/ui')));
-        }
-
-
-        if (!$begin) {
-            $begin = new \DateTime('midnight -7 days');
-        }
-        if (!$end) {
-            $end = new \DateTime('midnight +1 day');
-        }
-
-        $qb->field($filterByRange)->gte($begin);
-        $qb->field($filterByRange)->lte($end);
-
-        if ($orderIds) {
-            $qb->field('order.id')->in($orderIds);
-        }
+    public function getListForCash(CashDocumentQueryCriteria $criteria, $byDays = false)
+    {
+        $qb = $this->queryCriteriaToBuilder($criteria);
 
         if ($byDays) {
             return $this->getByDays($qb);
@@ -204,23 +113,76 @@ class CashDocumentRepository extends DocumentRepository
             ->field('paidDate')->type(9)
             ->group(['paidDate' => 1], ['totalIn' => 0, 'totalOut' => 0, 'confirmedTotalIn' => 0, 'confirmedTotalOut' => 0,'noConfirmedTotalIn' => 0, 'noConfirmedTotalOut' => 0, 'countIn' => 0, 'countOut' => 0])
             ->reduce('function (obj, prev) {
-                    if (obj.operation == "in") {
-                        if(obj.isConfirmed) {
-                            prev.confirmedTotalIn += obj.total;
-                        } else {
-                            prev.noConfirmedTotalIn += obj.total;
-                        }
-                        prev.totalIn += obj.total;
-                        prev.countIn++;
+                if (obj.operation == "in") {
+                    if(obj.isConfirmed) {
+                        prev.confirmedTotalIn += obj.total;
                     } else {
-                        if(obj.isConfirmed) {
-                            prev.confirmedTotalOut += obj.total;
-                        } else {
-                            prev.noConfirmedTotalOut += obj.total;
-                        }
-                        prev.totalOut += obj.total;
-                        prev.countOut++;
+                        prev.noConfirmedTotalIn += obj.total;
                     }
-                }')->getQuery()->execute()->toArray();
+                    prev.totalIn += obj.total;
+                    prev.countIn++;
+                } else {
+                    if(obj.isConfirmed) {
+                        prev.confirmedTotalOut += obj.total;
+                    } else {
+                        prev.noConfirmedTotalOut += obj.total;
+                    }
+                    prev.totalOut += obj.total;
+                    prev.countOut++;
+                }
+            }')->getQuery()->execute()->toArray();
+    }
+
+    /**
+     * @param CashDocumentQueryCriteria $criteria
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     *
+     * @author Aleksandr Arofikin <sashaaro@gmail.com>
+     */
+    private function queryCriteriaToBuilder(CashDocumentQueryCriteria $criteria)
+    {
+        $qb = $this->createQueryBuilder();
+
+        if($criteria->skip) {
+            $qb->skip($criteria->skip);
+        }
+
+        if($criteria->limit) {
+            $qb->limit($criteria->limit);
+        }
+
+        if(isset($criteria->sortBy) && $criteria->sortDirection)
+            $qb->sort($criteria->sortBy, $criteria->sortDirection);
+
+        if ($criteria->methods) {
+            $qb->field('method')->in($criteria->methods);
+        }
+
+        if ($criteria->isPaid) {
+            $qb->field('isPaid')->equals(true);
+        }
+
+        if ($criteria->search) {
+            $qb->addOr($qb->expr()->field('total')->equals((int)$criteria->search));
+            $qb->addOr($qb->expr()->field('prefix')->equals(new \MongoRegex('/.*' . $criteria->search . '.*/ui')));
+        }
+
+        if(isset($criteria->isConfirmed)){
+            $qb->field('isConfirmed')->equals($criteria->isConfirmed);
+        }
+
+        if($criteria->begin) {
+            $qb->field($criteria->filterByRange)->gte($criteria->begin);
+        }
+
+        if($criteria->end) {
+            $qb->field($criteria->filterByRange)->lte($criteria->end);
+        }
+
+        if ($criteria->orderIds) {
+            $qb->field('order.id')->in($criteria->orderIds);
+        }
+
+        return $qb;
     }
 }
