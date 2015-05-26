@@ -712,7 +712,7 @@ class Package extends Base
      * @param \DateTime $arrivalTime
      * @return self
      */
-    public function setArrivalTime(\DateTime $arrivalTime)
+    public function setArrivalTime(\DateTime $arrivalTime = null)
     {
         $this->arrivalTime = $arrivalTime;
         return $this;
@@ -734,7 +734,7 @@ class Package extends Base
      * @param \DateTime $departureTime
      * @return self
      */
-    public function setDepartureTime(\DateTime $departureTime)
+    public function setDepartureTime(\DateTime $departureTime = null)
     {
         $this->departureTime = $departureTime;
         return $this;
