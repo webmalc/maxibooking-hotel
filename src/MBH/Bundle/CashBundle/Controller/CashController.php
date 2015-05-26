@@ -95,6 +95,8 @@ class CashController extends Controller
 
         $totalIn = 0;
         $totalOut = 0;
+        $noConfirmedTotalIn = 0;
+        $noConfirmedTotalOut = 0;
         $recordsTotal = 0;
         $recordsFiltered = 0;
 
@@ -103,13 +105,17 @@ class CashController extends Controller
                 $filterByRange, $orderIds, true);
 
             //$recordsTotal = $qb->getQuery()->count();
-            $totalIn = $repository->total('in', $search, $begin, $end, $filterByRange, $isPaid, $methods, $orderIds); //@todo consider $search
-            $totalOut = $repository->total('out', $search, $begin, $end, $filterByRange, $isPaid, $methods, $orderIds);
+            $totalIn = $repository->total('in', $search, $begin, $end, $filterByRange, $isPaid, null, $methods, $orderIds); //@todo consider $search
+            $totalOut = $repository->total('out', $search, $begin, $end, $filterByRange, $isPaid, null, $methods, $orderIds);
+            $noConfirmedTotalIn = $repository->total('in', $search, $begin, $end, $filterByRange, $isPaid, false, $methods, $orderIds);
+            $noConfirmedTotalOut = $repository->total('out', $search, $begin, $end, $filterByRange, $isPaid, false, $methods, $orderIds);
 
             return $this->render('MBHCashBundle:Cash:jsonByDay.json.twig', [
                 "draw" => $request->get('draw'),
                 'totalIn' => $totalIn,
                 'totalOut' => $totalOut,
+                'confirmedTotalIn' => $confirmedTotalIn,
+                'confirmedTotalOut' => $confirmedTotalOut,
                 'total' => $totalIn - $totalOut,
                 'recordsTotal' => $recordsTotal,
                 'recordsFiltered' => $recordsFiltered,
@@ -120,14 +126,18 @@ class CashController extends Controller
                 $end, $filterByRange, $orderIds, false);
 
             if(count($entities) > 0){
-                $totalIn = $repository->total('in', $search, $begin, $end, $filterByRange, $isPaid, $methods, $orderIds);
-                $totalOut = $repository->total('out', $search, $begin, $end, $filterByRange, $isPaid, $methods, $orderIds);
+                $totalIn = $repository->total('in', $search, $begin, $end, $filterByRange, $isPaid, null, $methods, $orderIds);
+                $totalOut = $repository->total('out', $search, $begin, $end, $filterByRange, $isPaid, null, $methods, $orderIds);
+                $noConfirmedTotalIn = $repository->total('in', $search, $begin, $end, $filterByRange, $isPaid, false, $methods, $orderIds);
+                $noConfirmedTotalOut = $repository->total('out', $search, $begin, $end, $filterByRange, $isPaid, false, $methods, $orderIds);
             }
 
             return [
                 'draw' => $request->get('draw'),
                 'totalIn' => $totalIn,
                 'totalOut' => $totalOut,
+                'noConfirmedTotalIn' => $noConfirmedTotalIn,
+                'noConfirmedTotalOut' => $noConfirmedTotalOut,
                 'total' => $totalIn - $totalOut,
                 'recordsTotal' => $recordsTotal,
                 'recordsFiltered' => $recordsFiltered,

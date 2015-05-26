@@ -3,12 +3,14 @@
     "recordsTotal": "{{ recordsTotal }}",
     "totalIn": "{{ totalIn|number_format }}",
     "totalOut": "{{ totalOut|number_format }}",
+    "noConfirmedTotalIn": "{{ noConfirmedTotalIn|number_format }}",
+    "noConfirmedTotalOut": "{{ noConfirmedTotalOut|number_format }}",
     "total": "{{ total|number_format }}",
     "recordsFiltered": "{{ recordsFiltered }}",
     "data": [
         {% for entity in entities %}
             [
-                "<div class='text-center {{ entity.isConfirmed is empty and entity.isPaid ? 'not-confirmed-entry' : 'no-paid-entry' }} {{ entity.deletedAt ? 'deleted-entry' }} {{ entity.isPaid is empty ? 'not-paid-entry' }}'><i class='fa fa-ruble'></i></div>",
+                "<div class='text-center {{ entity.isConfirmed is empty and entity.isPaid ? 'not-confirmed-entry' }} {{ entity.deletedAt ? 'deleted-entry' }} {{ entity.isPaid is empty ? 'not-paid-entry' }}'><i class='fa fa-ruble'></i></div>",
                 "<div class='cash-number text-center'>{{ entity.number }}</div>",
                 "<div class='text-center'>{{ entity.payer.name }}</div>",
                 "<div class='text-right'>{% if entity.operation not in ['fee', 'out'] %}<a href='{{ path('cash_edit', { 'id': entity.id }) }}' rel='main' class='text-success' title='Редактирование записи' data-toggle='tooltip'>{{ entity.total|number_format(2) }}</a>{% endif %}</div>",

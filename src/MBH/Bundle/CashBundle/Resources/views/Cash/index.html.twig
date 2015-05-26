@@ -67,15 +67,37 @@
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="7" class="text-right">
-                <strong>{{ 'views.cash.index.income'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
-                <span class="cash-table-total-in"></span><br>
-                <strong>{{ 'views.cash.index.expense'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
-                <span class="cash-table-total-out"></span><br>
-                <strong>{{ 'views.cash.index.saldo'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
-                <span class="cash-table-total"></span>
+            <td colspan="6" class="text-right">
+                <div>
+                    <strong>{{ 'views.cash.index.income'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
+                </div>
+                <div>
+                    <strong>{{ 'views.cash.index.expense'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
+                </div>
+                <div>
+                    <strong>{{ 'views.cash.index.saldo'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
+                </div>
             </td>
-            <td></td>
+            <td class="text-right">
+                <div>
+                    <span class="cash-table-total-in"></span>
+                </div>
+                <div>
+                    <span class="cash-table-total-out"></span>
+                </div>
+                <div>
+                    <span class="cash-table-total"></span>
+                </div>
+            </td>
+            <td class="text-right">
+                <div>
+                    <span class="cash-table-no-confirmed-total-in" style="color: #ff0000;"></span>
+                </div>
+                <div>
+                    <span class="cash-table-no-confirmed-total-out" style="color: #ff0000;"></span>
+                </div>
+                <div></div>
+            </td>
             <td></td>
             <td></td>
         </tr>

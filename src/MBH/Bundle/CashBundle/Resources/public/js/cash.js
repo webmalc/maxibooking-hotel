@@ -93,11 +93,20 @@ $(document).ready(function () {
         $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
         $('.deleted-entry').closest('tr').addClass('danger');
         $('.not-confirmed-entry').closest('tr').addClass('info');
-        $('.no-paid-entry').closest('tr').addClass('transparent-tr');
+        $('.not-paid-entry').closest('tr').addClass('transparent-tr');
         deleteLink();
         $('.cash-table-total-in').html(settings.json.totalIn);
         $('.cash-table-total-out').html(settings.json.totalOut);
         $('.cash-table-total').html(settings.json.total);
+
+        if(parseInt(settings.json.noConfirmedTotalIn) > 0){
+            $('.cash-table-no-confirmed-total-in').html('Не подтверждено: ' + settings.json.noConfirmedTotalIn).show();
+        } else
+            $('.cash-table-no-confirmed-total-in').html('Не подтверждено: ' + settings.json.noConfirmedTotalIn).hide();
+        if(parseInt(settings.json.noConfirmedTotalOut) > 0){
+            $('.cash-table-no-confirmed-total-out').html('Не подтверждено: ' + settings.json.noConfirmedTotalOut).show();
+        } else
+            $('.cash-table-no-confirmed-total-out').html('Не подтверждено: ' + settings.json.noConfirmedTotalOut).hide();
     }
 
     var dataTableOptions = {
@@ -121,7 +130,7 @@ $(document).ready(function () {
             null, // date
             null, // isPaid
             null, // deletedAt
-            {"bSortable": false} // actions
+            {"bSortable": false, "class" : "table-actions-td"} // actions
         ],
         "drawCallback": drawCallback
     }

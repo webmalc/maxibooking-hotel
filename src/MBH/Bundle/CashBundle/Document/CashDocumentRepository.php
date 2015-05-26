@@ -42,13 +42,13 @@ class CashDocumentRepository extends DocumentRepository
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param boolean $isPaid Only paid
+     * @param boolean $isConfirmed
      * @param string $filterByRange
      * @param string[] $methods
      * @return int
      * @throws \Exception
      */
-
-    public function total($type, $search, \DateTime $begin = null, \DateTime $end = null, $filterByRange = 'documentDate', $isPaid = false, $methods = [], $orderIds = [])
+    public function total($type, $search, \DateTime $begin = null, \DateTime $end = null, $filterByRange = 'documentDate', $isPaid = false, $isConfirmed = null, $methods = [], $orderIds = [])
     {
         if (!in_array($type, ['in', 'out'])) {
             throw new \Exception('Invalid type');
@@ -84,6 +84,10 @@ class CashDocumentRepository extends DocumentRepository
 
         if ($orderIds) {
             $qb->field('order.id')->in($orderIds);
+        }
+
+        if(isset($isConfirmed)){
+            $qb->field('isConfirmed')->equals($isConfirmed);
         }
 
         $qb->map('function() { emit(1, this.total); }')
