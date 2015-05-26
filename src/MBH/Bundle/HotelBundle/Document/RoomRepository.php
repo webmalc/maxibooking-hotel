@@ -2,13 +2,16 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\BaseBundle\Document\AbstractBaseRepository;
+use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
 
-class RoomRepository extends DocumentRepository
+class RoomRepository extends AbstractBaseRepository
 {
-
+    public function findByCriteria(QueryCriteriaInterface $criteria)
+    {
+        return;
+    }
+    
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
@@ -44,16 +47,12 @@ class RoomRepository extends DocumentRepository
         };
 
         // rooms
-        $qb = $this->createQueryBuilder('r')
-            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
-            ->field('roomType.id')->in($hotelRoomTypes)
+        $qb = $this->createQueryBuilder('r')->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc']);
+        $this->in($qb, 'roomType.id', $hotelRoomTypes)
+             ->NotInNotEmpty($qb, 'id', $ids)
+             ->inNotEmpty($qb, 'id', $rooms)
         ;
-        if (!empty($ids)) {
-            $qb->field('id')->notIn($ids);
-        }
-        if ($rooms) {
-            $qb->field('id')->in($rooms);
-        }
+
         $roomDocs = $qb->getQuery()->execute();
 
         if (!$grouped) {
