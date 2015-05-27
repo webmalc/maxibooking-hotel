@@ -10,7 +10,6 @@
                 <i class="fa fa-calendar" title="Период"
                    data-toggle='tooltip'></i>
                 &nbsp
-                {# form_widget(form.begin) #}
                 <input type="text" id="begin" name="begin" class="datepicker begin-datepiker form-control input-sm"
                        data-date-format="dd.mm.yyyy" value="{{ "-1 week"|date("d.m.Y") }}">
             </div>
@@ -21,8 +20,6 @@
             </div>
 
             <div class="input">
-                <i class="fa fa-filter" title='Фильтр'
-                   data-toggle='tooltip'></i>&nbsp
                 <select name="filter" id="filter">
                     <option value="paidDate">По поступлению</option>
                     <option value="documentDate">По выставлению</option>
@@ -78,7 +75,7 @@
                     <strong class="cash-table-total-in text-success"></strong>
                 </div>
                 <div>
-                    &nbsp;<small class="cash-table-no-confirmed-total-in" style="color: #ff0000;"></small>
+                    &nbsp;<small class="cash-table-no-confirmed-total-in text-info"></small>
                 </div>
             </td>
             <td class="text-right">
@@ -86,7 +83,7 @@
                     <strong class="cash-table-total-out text-danger"></strong>
                 </div>
                 <div>
-                    &nbsp;<small class="cash-table-no-confirmed-total-out" style="color: #ff0000;"></small>
+                    &nbsp;<small class="cash-table-no-confirmed-total-out text-info"></small>
                 </div>
             </td>
             <td class="text-center">
@@ -126,7 +123,7 @@
                     <strong class="cash-table-total-in text-success"></strong>
                 </div>
                 <div>
-                    &nbsp;<small class="cash-table-no-confirmed-total-in" style="color: #ff0000;"></small>
+                    &nbsp;<small class="cash-table-no-confirmed-total-in text-info"></small>
                 </div>
             </td>
             <td class="text-right">
@@ -134,7 +131,7 @@
                     <strong class="cash-table-total-out text-danger"></strong>
                 </div>
                 <div>
-                    &nbsp;<small class="cash-table-no-confirmed-total-out" style="color: #ff0000;"></small>
+                    &nbsp;<small class="cash-table-no-confirmed-total-out text-info"></small>
                 </div>
             </td>
             <td class="text-right">

@@ -170,8 +170,12 @@ class CashDocumentRepository extends DocumentRepository
             $qb->limit($criteria->limit);
         }
 
-        if (isset($criteria->sortBy) && $criteria->sortDirection) {
-            $qb->sort($criteria->sortBy, $criteria->sortDirection);
+        if (isset($criteria->sortBy) && isset($criteria->sortDirection) && is_array($criteria->sortBy) && is_array($criteria->sortDirection)) {
+            foreach ($criteria->sortBy as $k => $v) {
+                $qb->sort($v, isset($criteria->sortDirection[$k]) ? $criteria->sortDirection[$k] : 1);
+            }
+        } else {
+            $qb->sort('createdAt', -1);
         }
 
         if ($criteria->methods) {

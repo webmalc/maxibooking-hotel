@@ -65,13 +65,11 @@ class CashController extends Controller
         $queryCriteria->limit = $request->get('length');
 
         $order = $request->get('order')['0'];
-        $queryCriteria->sortBy = 'createdAt';
-        $queryCriteria->sortDirection = -1;//SORT_DESC;
 
-        if (!empty($order['column']) && in_array($order['column'], [1, 2, 3, 5, 6, 7])) {
-            $sorts = [1 => 'prefix', 2 => 'total', 3 => 'total', 5 => 'createdAt', 6 => 'isPaid', 7 => 'deletedAt'];
-            $queryCriteria->sortBy = $sorts[$order['column']];
-            $queryCriteria->sortDirection = $order['dir'];
+        if (!empty($order['column']) && in_array($order['column'], [1, 3, 4, 6, 7, 8])) {
+            $sorts = [1 => 'number', 3 => 'total', 4 => 'total', 6 => 'documentDate', 7 => 'paidDate', 8 => 'deletedAt'];
+            $queryCriteria->sortBy[] = $sorts[$order['column']];
+            $queryCriteria->sortDirection[] = $order['dir'];
         }
 
         $queryCriteria->search = $request->get('search')['value'];
@@ -160,7 +158,6 @@ class CashController extends Controller
             [
                 'methods' => $this->container->getParameter('mbh.cash.methods'),
                 'operations' => $this->container->getParameter('mbh.cash.operations'),
-                //'payer' => $entity->getPayer() ? $entity->getPayer()->getId() : null,
                 'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity->getOrder()),
             ]
         );

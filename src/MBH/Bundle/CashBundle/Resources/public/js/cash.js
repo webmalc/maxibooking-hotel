@@ -1,11 +1,10 @@
-/*global window, $, alert, document */
+/*global window, $, alert, document, Routing, deleteLink */
 var cashDocumentConfirmation = function (link) {
     'use strict';
     var icon = link.find('i'),
         number = link.closest('tr').find('div.cash-number');
     $('#entity-delete-confirmation').modal('hide');
     icon.attr('class', 'fa fa-spin fa-spinner');
-
     $.ajax({
         url: link.attr('href'),
         success: function (response) {
@@ -14,8 +13,8 @@ var cashDocumentConfirmation = function (link) {
                     number.removeClass('text-danger');
                     number.find('br').remove();
                     number.find('small').remove();
+                    $('#cash-table').dataTable().fnDraw();
                 }
-                link.remove();
             } else {
                 alert(response.message);
             }
@@ -45,7 +44,6 @@ var cashDocumentPay = function (link) {
 
 $(document).ready(function () {
     'use strict';
-    //$('#cash-filter-form').sayt({'recover': true});
 
     //spinners
     $('#mbh_bundle_cashbundle_cashdocumenttype_total').TouchSpin({
@@ -58,53 +56,46 @@ $(document).ready(function () {
         postfix: '<i class="fa fa-ruble"></i>'
     });
 
-    var $filterSelectElement = $('#filter')//document.getElementById("sort");
-    var $methodSelectElement = $('#method');//document.getElementById("methods_type");
-    var defaultBeginValue = $('#begin').val();
+    var $filterSelectElement = $('#filter'),
+        $methodSelectElement = $('#method'),
+        defaultBeginValue = $('#begin').val(),
+        $cashTable = $('#cash-table'),
+        $cashTableByDay = $('#cash-table-by-day'),
+        $showNoPaidCheckbox = $('#show_no_paid'),
+        $byDayCheckbox = $('#by_day'),
+        getFormData = function () {
+            var data = {};
+            if (!$('#begin').val() && defaultBeginValue) {
+                $('#begin').val(defaultBeginValue);
+            }
+            data.begin = $('#begin').val();
+            data.end = $('#end').val();
+            data.filter = $filterSelectElement.select2('val');
+            data.methods = $methodSelectElement.select2('val');
+            data.show_no_paid = $showNoPaidCheckbox.prop("checked") ? 1 : 0;
+            data.by_day = $byDayCheckbox.prop("checked") ? 1 : 0;
 
-    var $cashTable = $('#cash-table');
-    var $cashTableByDay = $('#cash-table-by-day');
+            return data;
+        },
+        drawCallback = function (settings) {
+            $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
+            $('.deleted-entry').closest('tr').addClass('danger');
+            $('.not-confirmed-entry').closest('tr').addClass('info');
+            $('.not-paid-entry').closest('tr').addClass('transparent-tr');
+            deleteLink();
+            $('.cash-table-total-in').html(settings.json.totalIn);
+            $('.cash-table-total-out').html(settings.json.totalOut);
+            $('.cash-table-total').html(settings.json.total);
 
-
-    var $showNoPaidCheckbox = $('#show_no_paid');
-    var $byDayCheckbox = $('#by_day');
-    var getFormData = function()
-    {
-        var data = {};
-        //console.log($('#cash-filter-form').serializeObject())
-        if (!$('#begin').val() && defaultBeginValue)
-            $('#begin').val(defaultBeginValue)
-
-        data.begin = $('#begin').val();
-        data.end = $('#end').val();
-        data.filter = $filterSelectElement.select2('val');
-        data.methods = $methodSelectElement.select2('val');
-        data.show_no_paid = $showNoPaidCheckbox.prop("checked") ? 1 : 0;
-        data.by_day = $byDayCheckbox.prop("checked") ? 1 : 0;
-
-        return data;
-    }
-
-    var drawCallback = function(settings)
-    {
-        $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
-        $('.deleted-entry').closest('tr').addClass('danger');
-        $('.not-confirmed-entry').closest('tr').addClass('info');
-        $('.not-paid-entry').closest('tr').addClass('transparent-tr');
-        deleteLink();
-        $('.cash-table-total-in').html(settings.json.totalIn);
-        $('.cash-table-total-out').html(settings.json.totalOut);
-        $('.cash-table-total').html(settings.json.total);
-
-        if(parseInt(settings.json.noConfirmedTotalIn) > 0){
-            $('.cash-table-no-confirmed-total-in').html('Не подтверждено: ' + settings.json.noConfirmedTotalIn).show();
-        } else
-            $('.cash-table-no-confirmed-total-in').html('Не подтверждено: ' + settings.json.noConfirmedTotalIn).hide();
-        if(parseInt(settings.json.noConfirmedTotalOut) > 0){
-            $('.cash-table-no-confirmed-total-out').html('Не подтверждено: ' + settings.json.noConfirmedTotalOut).show();
-        } else
-            $('.cash-table-no-confirmed-total-out').html('Не подтверждено: ' + settings.json.noConfirmedTotalOut).hide();
-    }
+            if (parseInt(settings.json.noConfirmedTotalIn) > 0) {
+                $('.cash-table-no-confirmed-total-in').html('Не подтверждено: ' + settings.json.noConfirmedTotalIn).show();
+            } else
+                $('.cash-table-no-confirmed-total-in').html('Не подтверждено: ' + settings.json.noConfirmedTotalIn).hide();
+            if (parseInt(settings.json.noConfirmedTotalOut) > 0) {
+                $('.cash-table-no-confirmed-total-out').html('Не подтверждено: ' + settings.json.noConfirmedTotalOut).show();
+            } else
+                $('.cash-table-no-confirmed-total-out').html('Не подтверждено: ' + settings.json.noConfirmedTotalOut).hide();
+        }
 
     var dataTableOptions = {
         "processing": true,
@@ -119,7 +110,7 @@ $(document).ready(function () {
         },
         "aoColumns": [
             {"bSortable": false}, // icon
-            {"bSortable": false}, // prefix
+            null, // prefix
             {"bSortable": false}, // payer
             null, // in
             null, // out
@@ -127,7 +118,7 @@ $(document).ready(function () {
             null, // date
             null, // isPaid
             null, // deletedAt
-            {"bSortable": false, "class" : "table-actions-td"} // actions
+            {"bSortable": false, "class": "table-actions-td"} // actions
         ],
         "drawCallback": drawCallback
     }
@@ -135,25 +126,21 @@ $(document).ready(function () {
     $cashTable.dataTable(dataTableOptions);
 
 
-
-    var tableSwitcher = function()
-    {
+    var tableSwitcher = function () {
         this.byDay = false;
         this.initTableByDay = false;
     }
-    tableSwitcher.prototype.currentTable = function()
-    {
+    tableSwitcher.prototype.currentTable = function () {
         return this.byDay ? $cashTableByDay : $cashTable;
     }
-    tableSwitcher.prototype.switch = function()
-    {
+    tableSwitcher.prototype.switch = function () {
         this.byDay = !this.byDay
         $cashTable.parent().css('display', !this.byDay ? 'block' : 'none')
         $cashTableByDay.parent().css('display', this.byDay ? 'block' : 'none')
 
-        if(this.byDay){
+        if (this.byDay) {
             $showNoPaidCheckbox.bootstrapSwitch('toggleDisabled');
-            if(!this.initTableByDay) {
+            if (!this.initTableByDay) {
 
                 dataTableOptions.aoColumns = [
                     {"bSortable": false},
@@ -165,11 +152,11 @@ $(document).ready(function () {
                 $cashTableByDay.dataTable(dataTableOptions);
                 this.initTableByDay = true;
             }
-        }else if($showNoPaidCheckbox.prop('disabled')){
+        } else if ($showNoPaidCheckbox.prop('disabled')) {
             $showNoPaidCheckbox.bootstrapSwitch('toggleDisabled');
         }
 
-        this.currentTable().dataTable().fnDraw()
+        this.currentTable().dataTable().fnDraw();
     }
 
     var sw = new tableSwitcher();
@@ -179,40 +166,11 @@ $(document).ready(function () {
         sw.currentTable().dataTable().fnDraw();
     });
 
-    $byDayCheckbox.on('switchChange.bootstrapSwitch', function(event, state) {
-        if(state.value){
+    $byDayCheckbox.on('switchChange.bootstrapSwitch', function (event, state) {
+        if (state.value) {
             $showNoPaidCheckbox.bootstrapSwitch('state', false, true);
-        };
-        sw.switch()
+        }
+        sw.switch();
     });
-
-    //payer select2
-    /*$('#mbh_bundle_cashbundle_cashdocumenttype_payer_select, #mbh_bundle_packagebundle_package_guest_type_tourist, .findGuest').select2({
-        minimumInputLength: 3,
-        allowClear: true,
-        ajax: {
-            url: Routing.generate('cash_payer'),
-            dataType: 'json',
-            data: function (term) {
-                return {
-                    query: term // search term
-                };
-            },
-            results: function (data) {
-                return {results: data};
-            }
-        },
-        initSelection: function (element, callback) {
-            var id = $(element).val();
-            if (id !== "") {
-                $.ajax(Routing.generate('cash_payer') + '/' + id, {
-                    dataType: "json"
-                }).done(function (data) {
-                    callback(data);
-                });
-            }
-        },
-        dropdownCssClass: "bigdrop"
-    });*/
 });
 
