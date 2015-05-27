@@ -20,6 +20,9 @@ class EntityToIdTransformer implements DataTransformerInterface
      */
     protected $className;
 
+    /**
+     * @var \Doctrine\ODM\MongoDB\DocumentManager
+     */
     protected $documentManager;
 
     public function __construct(\Doctrine\ODM\MongoDB\DocumentManager $documentManager, $className)
@@ -28,6 +31,10 @@ class EntityToIdTransformer implements DataTransformerInterface
         $this->className = $className;
     }
 
+    /**
+     * @param object $entity
+     * @return string|int
+     */
     public function transform($entity)
     {
         if (null === $entity) {
@@ -37,6 +44,11 @@ class EntityToIdTransformer implements DataTransformerInterface
         return $entity->getId();
     }
 
+    /**
+     * @param string|int $id
+     * @return null|object
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     */
     public function reverseTransform($id)
     {
         if (!$id) {

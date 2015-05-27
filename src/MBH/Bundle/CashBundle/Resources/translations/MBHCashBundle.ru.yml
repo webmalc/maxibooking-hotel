@@ -3,11 +3,13 @@ views.cash.index.document_list: 'список документов'
 views.cash.index.reservation: Заказ
 views.cash.index.income: Приход
 views.cash.index.expense: Расход
+views.cash.index.saldo: Сальдо
 views.cash.index.is_paid: Оплачен
 views.cash.index.removed: Удален
 views.cash.index.payment_way: 'Способ оплаты'
 views.cash.index.operation_type: 'Вид операции'
 views.cash.index.date: Дата
+views.cash.index.no_confirmed: 'Не подтверждено'
 views.cash.jsonButtons.confirm_payment: 'Подтверждение платежа'
 views.cash.jsonButtons.are_you_sure_confirm_payment: 'Точно подтвердить платеж на сумму <b> %total_sum% RUR</b>?'
 views.cash.jsonButtons.confirm: Подтвердить

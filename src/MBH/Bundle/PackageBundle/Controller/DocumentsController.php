@@ -201,13 +201,13 @@ class DocumentsController extends Controller
         ]);
 
         if ($request->isMethod("PUT")) {
-            $oldPackageDocument = clone($orderDocument);
+            $oldOrderDocument = clone($orderDocument);
             $form->submit($request);
 
             if ($form->isValid()) {
                 if (!$orderDocument->isUploaded()) {
                     $orderDocument->upload();
-                    $oldPackageDocument->deleteFile();
+                    $oldOrderDocument->deleteFile();
                 }
                 $this->dm->persist($orderDocument);
                 $this->dm->flush();
