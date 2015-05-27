@@ -105,7 +105,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         //live now count
         $count['live_now'] = $repo->fetch(array_merge([
                 'filter' => 'live_now',
-                'checkOut' => false
+                'checkOut' => false,
+                'checkIn' => true
             ], $data)
         );
         //without-approval count
@@ -115,7 +116,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         );
         //without_accommodation count
         $count['without_accommodation'] = $repo->fetch(array_merge([
-                'filter' => 'without_accommodation'
+                'filter' => 'without_accommodation',
+                'end' => $now->format('d.m.Y'),
+                'dates' => 'begin'
             ], $data)
         );
         //not_paid count
@@ -204,6 +207,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
             case 'live-now':
                 $data['filter'] = 'live_now';
+                $data['checkIn'] = true;
                 $data['checkOut'] = false;
                 break;
 
@@ -213,6 +217,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
             case 'without-accommodation':
                 $data['filter'] = 'without_accommodation';
+                $data['dates'] = 'begin';
+                $now = new \DateTime('midnight');
+                $data['end'] = $now->format('d.m.Y');
                 break;
 
             case 'not-paid':

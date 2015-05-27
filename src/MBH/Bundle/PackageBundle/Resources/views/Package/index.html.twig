@@ -31,7 +31,7 @@
                 <i class="fa fa-paper-plane" title='Тип брони' data-toggle='tooltip'></i>&nbsp <select data-placeholder="Тип брони" id="package-filter-status" class="package-filter form-control input-sm plain-html">
                     <option></option>
                     {% for key, status in statuses %}
-                        <option value="{{ key }}" data-class="{{ status.class }}">{{ status.title }}</option>
+                        <option value="{{ key }}" data-class="{{ status.class }}" data-icon="{{ status.icon }}">{{ status.title }}</option>
                     {% endfor %}
                 </select>
             </div>

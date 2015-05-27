@@ -1051,9 +1051,13 @@ class Package extends Base
     {
         if (!$this->getIsCheckIn()) {
             $this->setArrivalTime(null);
+        } elseif (!$this->getArrivalTime()) {
+            $this->setArrivalTime(new \DateTime());
         }
         if (!$this->getIsCheckOut()) {
             $this->setDepartureTime(null);
+        } elseif (!$this->getDepartureTime()) {
+            $this->setDepartureTime(new \DateTime());
         }
     }
 }

@@ -47,7 +47,7 @@ $(document).ready(function () {
 
         var format = function (icon) {
             var originalOption = icon.element;
-            return '<span class="text-' + $(originalOption).data('class') + '"><i class="fa fa fa-paper-plane-o"></i> ' + icon.text + '</span>';
+            return '<span><i class="' + $(originalOption).data('icon') + '"></i> ' + icon.text + '</span>';
         };
 
         $('#package-filter-status').each(function () {
@@ -313,6 +313,14 @@ $(document).ready(function () {
                 } else {
                     departure.closest('.form-group').hide();
                 }
+            },
+            showOut = function () {
+                if (checkIn.is(':checked')) {
+                    checkOut.closest('.form-group ').show();
+                } else {
+                    checkOut.prop('checked', false);
+                    checkOut.closest('.form-group ').hide();
+                }
             };
 
         if (!checkIn.length) {
@@ -320,7 +328,9 @@ $(document).ready(function () {
         }
 
         show();
+        showOut();
         checkIn.on('switchChange.bootstrapSwitch', show);
+        checkIn.on('switchChange.bootstrapSwitch', showOut);
         checkOut.on('switchChange.bootstrapSwitch', show);
     }());
 
