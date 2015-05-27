@@ -40,8 +40,11 @@
                 </select>
             </div>
             <div class="input">
-                Показывать неоплаченные <input type="checkbox" name="show_no_paid" id="show_no_paid">
-                По дням <input type="checkbox" name="by_day" id="by_day">
+                <i class="fa fa fa-rub" title="Показать неоплаченные" data-toggle="tooltip" style="opacity: 0.5"></i>
+                &nbsp;
+                <input type="checkbox" name="show_no_paid" id="show_no_paid">
+                &nbsp; <i class="fa fa-calendar" title="По дням" data-toggle="tooltip"></i>&nbsp;
+                <input type="checkbox" name="by_day" id="by_day">
             </div>
         </form>
     </div>
@@ -67,37 +70,30 @@
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="6" class="text-right">
+            <td></td>
+            <td></td>
+            <td class="text-center"><strong>Итого:</strong></td>
+            <td class="text-right">
                 <div>
-                    <strong>{{ 'views.cash.index.income'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
+                    <strong class="cash-table-total-in text-success"></strong>
                 </div>
                 <div>
-                    <strong>{{ 'views.cash.index.expense'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
-                </div>
-                <div>
-                    <strong>{{ 'views.cash.index.saldo'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
+                    &nbsp;<small class="cash-table-no-confirmed-total-in" style="color: #ff0000;"></small>
                 </div>
             </td>
             <td class="text-right">
                 <div>
-                    <span class="cash-table-total-in"></span>
+                    <strong class="cash-table-total-out text-danger"></strong>
                 </div>
                 <div>
-                    <span class="cash-table-total-out"></span>
-                </div>
-                <div>
-                    <span class="cash-table-total"></span>
+                    &nbsp;<small class="cash-table-no-confirmed-total-out" style="color: #ff0000;"></small>
                 </div>
             </td>
-            <td class="text-right">
-                <div>
-                    <span class="cash-table-no-confirmed-total-in" style="color: #ff0000;"></span>
-                </div>
-                <div>
-                    <span class="cash-table-no-confirmed-total-out" style="color: #ff0000;"></span>
-                </div>
-                <div></div>
+            <td class="text-center">
+                <strong>{{ 'views.cash.index.saldo'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp; <strong class="cash-table-total"></strong>
             </td>
+            <td></td>
+            <td></td>
             <td></td>
             <td></td>
         </tr>
@@ -123,36 +119,26 @@
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="3" class="text-right">
+            <td></td>
+            <td class="text-center"><strong>Итого:</strong></td>
+            <td class="text-right">
                 <div>
-                    <strong>{{ 'views.cash.index.income'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
+                    <strong class="cash-table-total-in text-success"></strong>
                 </div>
                 <div>
-                    <strong>{{ 'views.cash.index.expense'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
-                </div>
-                <div>
-                    <strong>{{ 'views.cash.index.saldo'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp;
+                    &nbsp;<small class="cash-table-no-confirmed-total-in" style="color: #ff0000;"></small>
                 </div>
             </td>
             <td class="text-right">
                 <div>
-                    <span class="cash-table-total-in"></span>
+                    <strong class="cash-table-total-out text-danger"></strong>
                 </div>
                 <div>
-                    <span class="cash-table-total-out"></span>
-                </div>
-                <div>
-                    <span class="cash-table-total"></span>
+                    &nbsp;<small class="cash-table-no-confirmed-total-out" style="color: #ff0000;"></small>
                 </div>
             </td>
             <td class="text-right">
-                <div>
-                    <span class="cash-table-no-confirmed-total-in" style="color: #ff0000;"></span>
-                </div>
-                <div>
-                    <span class="cash-table-no-confirmed-total-out" style="color: #ff0000;"></span>
-                </div>
-                <div></div>
+                <strong class="cash-table-total"></strong>
             </td>
         </tr>
         </tfoot>

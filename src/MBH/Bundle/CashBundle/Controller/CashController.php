@@ -59,7 +59,6 @@ class CashController extends Controller
     public function jsonAction(Request $request)
     {
         $repository = $this->dm->getRepository('MBHCashBundle:CashDocument');
-
         $queryCriteria = new CashDocumentQueryCriteria();
 
         $queryCriteria->skip = $request->get('start');
@@ -70,19 +69,20 @@ class CashController extends Controller
         $queryCriteria->sortDirection = -1;//SORT_DESC;
 
         if (!empty($order['column']) && in_array($order['column'], [1, 2, 3, 5, 6, 7])) {
-            $sorts = [1 => 'prefix', 2 => 'total', 3 => 'total', 5  => 'createdAt', 6  => 'isPaid', 7  => 'deletedAt'];
+            $sorts = [1 => 'prefix', 2 => 'total', 3 => 'total', 5 => 'createdAt', 6 => 'isPaid', 7 => 'deletedAt'];
             $queryCriteria->sortBy = $sorts[$order['column']];
             $queryCriteria->sortDirection = $order['dir'];
         }
 
         $queryCriteria->search = $request->get('search')['value'];
         $methods = $request->get('methods');
-        if($methods == 'cashless_electronic')
+        if ($methods == 'cashless_electronic') {
             $methods = ['cashless', 'electronic'];
-        elseif($methods == 'all' || !$methods)
+        } elseif ($methods == 'all' || !$methods) {
             $methods = [];
-        else
+        } else {
             $methods = [$methods];
+        }
 
         $queryCriteria->methods = $methods;
 
@@ -102,37 +102,32 @@ class CashController extends Controller
         $queryCriteria->orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
         $isByDay = $request->get('by_day');
 
-        if($isByDay)
+        if ($isByDay) {
             $queryCriteria->isPaid = true;
-
-        $totalIn = 0;
-        $totalOut = 0;
-        $noConfirmedTotalIn = 0;
-        $noConfirmedTotalOut = 0;
-        $recordsTotal = 0;
-        $recordsFiltered = 0;
+        }
 
         $results = $repository->getListForCash($queryCriteria, $isByDay);
 
-        if(count($results) > 0) {
-            $queryCriteria->isConfirmed = null;
-            $totalIn = $repository->total('in', $queryCriteria);
-            $totalOut = $repository->total('out', $queryCriteria);
-            $queryCriteria->isConfirmed = false;
-            $noConfirmedTotalIn = $repository->total('in', $queryCriteria);
-            $noConfirmedTotalOut = $repository->total('out', $queryCriteria);
-        }
-
         $params = [
             "draw" => $request->get('draw'),
-            'totalIn' => $totalIn,
-            'totalOut' => $totalOut,
-            'noConfirmedTotalIn' => $noConfirmedTotalIn,
-            'noConfirmedTotalOut' => $noConfirmedTotalOut,
-            'total' => $totalIn - $totalOut,
-            'recordsTotal' => $recordsTotal,
-            'recordsFiltered' => $recordsFiltered,
+            'totalIn' => 0,
+            'totalOut' => 0,
+            'noConfirmedTotalIn' => 0,
+            'noConfirmedTotalOut' => 0,
+            'total' => 0,
+            'recordsFiltered' => 0,
         ];
+
+        if (count($results) > 0) {
+            $params['recordsFiltered'] = count($results);
+            $queryCriteria->isConfirmed = null;
+            $params['totalIn'] = $repository->total('in', $queryCriteria);
+            $params['totalOut'] = $repository->total('out', $queryCriteria);
+            $params['total'] = $params['totalIn'] - $params['totalOut'];
+            $queryCriteria->isConfirmed = false;
+            $params['noConfirmedTotalIn'] = $repository->total('in', $queryCriteria);
+            $params['noConfirmedTotalOut'] = $repository->total('out', $queryCriteria);
+        }
 
         if ($isByDay) {
             return $this->render('MBHCashBundle:Cash:jsonByDay.json.twig', $params + ['data' => $results]);

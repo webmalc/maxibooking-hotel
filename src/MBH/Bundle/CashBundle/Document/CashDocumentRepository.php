@@ -9,6 +9,10 @@ use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 
+/**
+ * Class CashDocumentRepository
+ * @package MBH\Bundle\CashBundle\Document
+ */
 class CashDocumentRepository extends DocumentRepository
 {
     /**
@@ -75,6 +79,8 @@ class CashDocumentRepository extends DocumentRepository
     /**
      * @param CashDocument $document
      * @return string
+     *
+     * @author Aleksandr Arofikin <sashaaro@gmail.com>
      */
     public function generateNewNumber(CashDocument $document)
     {
@@ -91,6 +97,8 @@ class CashDocumentRepository extends DocumentRepository
      * @param CashDocumentQueryCriteria $criteria
      * @param bool $byDays
      * @return CashDocument[]|array
+     *
+     * @author Aleksandr Arofikin <sashaaro@gmail.com>
      */
     public function getListForCash(CashDocumentQueryCriteria $criteria, $byDays = false)
     {
@@ -106,12 +114,23 @@ class CashDocumentRepository extends DocumentRepository
     /**
      * @param Builder $builder
      * @return array
+     *
+     * @author Aleksandr Arofikin <sashaaro@gmail.com>
      */
     public function getByDays(Builder $builder)
     {
         return $builder
             ->field('paidDate')->type(9)
-            ->group(['paidDate' => 1], ['totalIn' => 0, 'totalOut' => 0, 'confirmedTotalIn' => 0, 'confirmedTotalOut' => 0,'noConfirmedTotalIn' => 0, 'noConfirmedTotalOut' => 0, 'countIn' => 0, 'countOut' => 0])
+            ->group(['paidDate' => 1], [
+                'totalIn' => 0,
+                'totalOut' => 0,
+                'confirmedTotalIn' => 0,
+                'confirmedTotalOut' => 0,
+                'noConfirmedTotalIn' => 0,
+                'noConfirmedTotalOut' => 0,
+                'countIn' => 0,
+                'countOut' => 0
+            ])
             ->reduce('function (obj, prev) {
                 if (obj.operation == "in") {
                     if(obj.isConfirmed) {
@@ -143,16 +162,17 @@ class CashDocumentRepository extends DocumentRepository
     {
         $qb = $this->createQueryBuilder();
 
-        if($criteria->skip) {
+        if ($criteria->skip) {
             $qb->skip($criteria->skip);
         }
 
-        if($criteria->limit) {
+        if ($criteria->limit) {
             $qb->limit($criteria->limit);
         }
 
-        if(isset($criteria->sortBy) && $criteria->sortDirection)
+        if (isset($criteria->sortBy) && $criteria->sortDirection) {
             $qb->sort($criteria->sortBy, $criteria->sortDirection);
+        }
 
         if ($criteria->methods) {
             $qb->field('method')->in($criteria->methods);
@@ -167,15 +187,15 @@ class CashDocumentRepository extends DocumentRepository
             $qb->addOr($qb->expr()->field('prefix')->equals(new \MongoRegex('/.*' . $criteria->search . '.*/ui')));
         }
 
-        if(isset($criteria->isConfirmed)){
+        if (isset($criteria->isConfirmed)) {
             $qb->field('isConfirmed')->equals($criteria->isConfirmed);
         }
 
-        if($criteria->begin) {
+        if ($criteria->begin) {
             $qb->field($criteria->filterByRange)->gte($criteria->begin);
         }
 
-        if($criteria->end) {
+        if ($criteria->end) {
             $qb->field($criteria->filterByRange)->lte($criteria->end);
         }
 
