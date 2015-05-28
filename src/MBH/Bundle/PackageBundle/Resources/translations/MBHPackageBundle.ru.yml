@@ -223,9 +223,16 @@ package.service.edit_reservation: "редактирование брони "
 package.service.paid: оплачена
 package.service.not_paid: не оплачена
 package.service.name: Название
+package.service: Услуга
+package.service.items: '{% amount %} шт.'
+package.service.per_persons: '{0} на {% persons %} гостей|{1} на {% persons %} гостя|]1,Inf] на {% persons %} гостей'
 package.service.nights_amount: Количество суток
+package.service.nights: Суток
 package.service.guests_amount: Количество гостей
+package.service.guests: Гостей
 package.service.amount: Количество
+package.service.short_amount: Кол.
+package.service.package: Бронь
 package.service.order: Заказ
 package.service.date: Дата
 package.service.price: Цена
@@ -233,6 +240,7 @@ package.service.calculation_type: Тип расчета
 package.service.result: Итог
 package.service.comment: Комментарий
 package.service.creation_date: Дата создания
+package.service.createAt: Создана
 package.service.delete_record: Удаление записи
 package.service.add_services: Добавить услуги?
 package.service.time: Время

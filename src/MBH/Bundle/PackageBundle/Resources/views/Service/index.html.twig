@@ -21,7 +21,7 @@
             </div>
 
             <div class="input">
-                <i class="fa fa-filter" title='{{ "package.service.index.filter"|trans({}, "MBHPackageBundle") }}'
+                <i class="fa fa-plug" title='{{ "package.service.index.filter"|trans({}, "MBHPackageBundle") }}'
                    data-toggle='tooltip'></i>&nbsp
                 <select name="services" id="select-services" id="filter" multiple>
                     {% for group, serviceList in services %}
@@ -45,19 +45,14 @@
            class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
         <thead>
         <tr>
-            <th class="td-xs"></th>
-            <th class="td-md">{{ "package.service.order"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-xss"></th>
+            <th class="td-md">{{ "package.service.package"|trans({}, "MBHPackageBundle") }}</th>
             <th class="td-md text-center">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
-            <th>{{ "package.service.name"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-xs text-center">{{ "package.service.nights_amount"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-sm text-center">{{ "package.service.guests_amount"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-xs text-center">{{ "package.service.amount"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-md text-center">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
+            <th>{{ "package.service"|trans({}, "MBHPackageBundle") }}</th>
             <th class="td-md text-right">{{ "package.service.price"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-md text-right">{{ "package.service.calculation_type"|trans({}, "MBHPackageBundle") }}</th>
             <th class="td-md text-right">{{ "package.service.result"|trans({}, "MBHPackageBundle") }}</th>
             <th>{{ "package.service.comment"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-md text-center">{{ "package.service.creation_date"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-md text-center">{{ "package.service.createAt"|trans({}, "MBHPackageBundle") }}</th>
         </tr>
         </thead>
         <tbody>

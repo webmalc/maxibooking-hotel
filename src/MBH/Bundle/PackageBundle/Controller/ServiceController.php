@@ -36,9 +36,12 @@ class ServiceController extends BaseController
         $serviceCategories = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->findAll();
 
         $services = [];
-        foreach($serviceCategories as $category)
+        foreach($serviceCategories as $category){
+            $group = $category->getHotel()->getName().': '.mb_strtolower($category->getName());
+            $services[$group][$category->getId()] = 'Все услуги';
             foreach($category->getServices() as $service)
-                $services[$category->getHotel()->getName().': '.mb_strtolower($category->getName())][$service->getId()] = $service->getName();
+                $services[$group][$service->getId()] = $service->getName();
+        }
 
         return [
             'services' => $services
@@ -80,12 +83,8 @@ class ServiceController extends BaseController
         $tableParams->setSortColumnFields([
             1 => 'order',
             2 => 'begin',
-            4 => 'nights',
-            5 => 'persons',
-            6 => 'amount',
-            7 => 'begin',
-            8 => 'price',
-            12 => 'createdAt',
+            4 => 'price',
+            7 => 'createdAt',
         ]);
 
         $qb->skip($tableParams->getStart())->limit($tableParams->getLength());
@@ -95,6 +94,12 @@ class ServiceController extends BaseController
         }
 
         if($services) {
+            /** @var ServiceCategory[] $categories */
+            $categories = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->createQueryBuilder()->field('id')->in($services)->getQuery()->execute();
+            foreach($categories as $category)
+                foreach($category->getServices() as $service)
+                    $services[] = $service->getId();
+
             $qb->field('service.id')->in($services);
         }
 
@@ -112,7 +117,7 @@ class ServiceController extends BaseController
         return [
             'results' => $results,
             'recordsFiltered' => count($results),
-            'config' => $this->container->getParameter('mbh.services')
+            'config' => $this->container->getParameter('mbh.services'),
         ];
     }
 }
