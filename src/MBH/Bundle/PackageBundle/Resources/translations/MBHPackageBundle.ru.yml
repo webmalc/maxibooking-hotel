@@ -222,9 +222,11 @@ package.pdf.customer_caps: ЗАКАЗЧИК
 package.service.edit_reservation: "редактирование брони "
 package.service.paid: оплачена
 package.service.not_paid: не оплачена
+package.service.name: Название
 package.service.nights_amount: Количество суток
 package.service.guests_amount: Количество гостей
 package.service.amount: Количество
+package.service.order: Заказ
 package.service.date: Дата
 package.service.price: Цена
 package.service.calculation_type: Тип расчета
@@ -236,6 +238,14 @@ package.service.add_services: Добавить услуги?
 package.service.time: Время
 package.service.edit_record: Редактирование записи
 package.editService.edit_service: "Редактирование услуги "
+
+package.service.index.show_deleted: Показать удаленные
+package.service.index.filter: Фильтр
+package.service.index.period: Период
+package.service.index.byDay: По дням
+package.service.index.result: Итого
+
+
 report.accommodation.placement: "размещение"
 report.accommodation.dates: Даты
 report.accommodation.room_type: Тип номера

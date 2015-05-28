@@ -24,6 +24,12 @@ class CashDocumentQueryCriteria extends AbstractQueryCriteria
     public $isPaid;
 
     /**
+     * with deleted
+     * @var bool
+     */
+    public $deleted;
+
+    /**
      * @var bool
      */
     public $isConfirmed;

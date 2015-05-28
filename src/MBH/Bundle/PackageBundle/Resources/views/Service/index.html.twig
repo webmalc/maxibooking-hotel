@@ -7,7 +7,7 @@
     <div class="well">
         <form class="form-inline search-form filter-form" id="service-filter" role="form">
             <div class="input">
-                <i class="fa fa-calendar" title="Период"
+                <i class="fa fa-calendar" title="{{ "package.service.index.period"|trans({}, "MBHPackageBundle") }}"
                    data-toggle='tooltip'></i>
                 &nbsp
                 {# form_widget(form.begin) #}
@@ -21,7 +21,7 @@
             </div>
 
             <div class="input">
-                <i class="fa fa-filter" title='Фильтр'
+                <i class="fa fa-filter" title='{{ "package.service.index.filter"|trans({}, "MBHPackageBundle") }}'
                    data-toggle='tooltip'></i>&nbsp
                 <select name="services" id="select-services" id="filter" multiple>
                     {% for group, serviceList in services %}
@@ -33,7 +33,7 @@
                     {% endfor %}
                 </select>
                 &nbsp;
-                <i class="fa fa-trash-o" title='Показать удаленные' data-toggle='tooltip'></i>
+                <i class="fa fa-trash-o" title='{{ "package.service.index.show_deleted"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i>
                 &nbsp;
                 <input name="deleted" type="checkbox">
             </div>
@@ -46,9 +46,9 @@
         <thead>
         <tr>
             <th class="td-xs"></th>
-            <th class="td-md">Заказ</th>
+            <th class="td-md">{{ "package.service.order"|trans({}, "MBHPackageBundle") }}</th>
             <th class="td-md text-center">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
-            <th>Название</th>
+            <th>{{ "package.service.name"|trans({}, "MBHPackageBundle") }}</th>
             <th class="td-xs text-center">{{ "package.service.nights_amount"|trans({}, "MBHPackageBundle") }}</th>
             <th class="td-sm text-center">{{ "package.service.guests_amount"|trans({}, "MBHPackageBundle") }}</th>
             <th class="td-xs text-center">{{ "package.service.amount"|trans({}, "MBHPackageBundle") }}</th>

@@ -7,7 +7,7 @@
     <div class="well">
         <form class="form-inline search-form filter-form" id="cash-filter-form" role="form">
             <div class="input">
-                <i class="fa fa-calendar" title="Период"
+                <i class="fa fa-calendar" title="{{ 'views.cash.index.period'|trans({}, 'MBHCashBundle') }}"
                    data-toggle='tooltip'></i>
                 &nbsp
                 <input type="text" id="begin" name="begin" class="datepicker begin-datepiker form-control input-sm"
@@ -21,13 +21,13 @@
 
             <div class="input">
                 <select name="filter" id="filter">
-                    <option value="paidDate">По поступлению</option>
-                    <option value="documentDate">По выставлению</option>
+                    <option value="paidDate">{{ 'views.cash.index.filter.byPaidDate'|trans({}, 'MBHCashBundle') }}</option>
+                    <option value="documentDate">{{ 'views.cash.index.filter.byDocumentDate'|trans({}, 'MBHCashBundle') }}</option>
                 </select>
             </div>
 
             <div class="input">
-                <i class="fa fa-money" title='Метод оплаты'
+                <i class="fa fa-money" title='{{ 'views.cash.index.payment_way'|trans({}, 'MBHCashBundle') }}'
                    data-toggle='tooltip'></i>
                 &nbsp
                 <select name="methods" id="method">
@@ -37,10 +37,14 @@
                 </select>
             </div>
             <div class="input">
-                <i class="fa fa fa-rub" title="Показать неоплаченные" data-toggle="tooltip" style="opacity: 0.5"></i>
+                <i class="fa fa fa-rub" title="{{ 'views.cash.index.show_no_paid'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip" style="opacity: 0.5"></i>
                 &nbsp;
                 <input type="checkbox" name="show_no_paid" id="show_no_paid">
-                &nbsp; <i class="fa fa-calendar" title="По дням" data-toggle="tooltip"></i>&nbsp;
+
+                &nbsp; <i class="fa fa-trash-o" title="{{ 'views.cash.index.show_deleted'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"></i>&nbsp;
+                <input type="checkbox" name="deleted" id="deleted-checkbox">
+
+                &nbsp; <i class="fa fa-calendar" title="{{ 'views.cash.index.byDay'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"></i>&nbsp;
                 <input type="checkbox" name="by_day" id="by_day">
             </div>
         </form>
@@ -69,7 +73,7 @@
         <tr>
             <td></td>
             <td></td>
-            <td class="text-center"><strong>Итого:</strong></td>
+            <td class="text-center"><strong>{{  'views.cash.index.result'|trans({}, 'MBHCashBundle') }}:</strong></td>
             <td class="text-right">
                 <div>
                     <strong class="cash-table-total-in text-success"></strong>
@@ -117,7 +121,7 @@
         <tfoot>
         <tr>
             <td></td>
-            <td class="text-center"><strong>Итого:</strong></td>
+            <td class="text-center"><strong>{{ 'views.cash.index.saldo'|trans({}, 'MBHCashBundle') }}:</strong></td>
             <td class="text-right">
                 <div>
                     <strong class="cash-table-total-in text-success"></strong>

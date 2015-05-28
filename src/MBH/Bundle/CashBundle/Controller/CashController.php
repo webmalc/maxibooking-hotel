@@ -97,6 +97,8 @@ class CashController extends Controller
         $queryCriteria->filterByRange = $request->get('filter');
         $queryCriteria->orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
 
+        $queryCriteria->deleted = $request->get('deleted');
+
         return $queryCriteria;
     }
 
@@ -144,6 +146,8 @@ class CashController extends Controller
             $params['noConfirmedTotalIn'] = $repository->total('in', $queryCriteria);
             $params['noConfirmedTotalOut'] = $repository->total('out', $queryCriteria);
         }
+
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         if ($isByDay) {
             return $this->render('MBHCashBundle:Cash:jsonByDay.json.twig', $params + ['data' => $results]);

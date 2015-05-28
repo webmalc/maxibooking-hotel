@@ -62,6 +62,7 @@ $(document).ready(function () {
         $cashTable = $('#cash-table'),
         $cashTableByDay = $('#cash-table-by-day'),
         $showNoPaidCheckbox = $('#show_no_paid'),
+        $deletedCheckbox = $('#deleted-checkbox'),
         $byDayCheckbox = $('#by_day'),
         getFormData = function () {
             var data = {};
@@ -74,6 +75,7 @@ $(document).ready(function () {
             data.methods = $methodSelectElement.select2('val');
             data.show_no_paid = $showNoPaidCheckbox.prop("checked") ? 1 : 0;
             data.by_day = $byDayCheckbox.prop("checked") ? 1 : 0;
+            data.deleted = $deletedCheckbox.prop("checked") ? 1 : 0;
 
             return data;
         },
@@ -140,6 +142,7 @@ $(document).ready(function () {
 
         if (this.byDay) {
             $showNoPaidCheckbox.bootstrapSwitch('toggleDisabled');
+            $deletedCheckbox.bootstrapSwitch('toggleDisabled');
             if (!this.initTableByDay) {
 
                 dataTableOptions.aoColumns = [
@@ -152,8 +155,13 @@ $(document).ready(function () {
                 $cashTableByDay.dataTable(dataTableOptions);
                 this.initTableByDay = true;
             }
-        } else if ($showNoPaidCheckbox.prop('disabled')) {
-            $showNoPaidCheckbox.bootstrapSwitch('toggleDisabled');
+        } else {
+            if ($showNoPaidCheckbox.prop('disabled')) {
+                $showNoPaidCheckbox.bootstrapSwitch('toggleDisabled');
+            }
+            if ($deletedCheckbox.prop('disabled')) {
+                $deletedCheckbox.bootstrapSwitch('toggleDisabled');
+            }
         }
 
         this.currentTable().dataTable().fnDraw();
@@ -169,6 +177,7 @@ $(document).ready(function () {
     $byDayCheckbox.on('switchChange.bootstrapSwitch', function (event, state) {
         if (state.value) {
             $showNoPaidCheckbox.bootstrapSwitch('state', false, true);
+            $deletedCheckbox.bootstrapSwitch('state', false, true);
         }
         sw.switch();
     });
