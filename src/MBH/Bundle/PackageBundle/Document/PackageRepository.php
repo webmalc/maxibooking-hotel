@@ -177,12 +177,20 @@ class PackageRepository extends DocumentRepository
 
         //isCheckIn
         if(isset($data['checkIn'])) {
-            $qb->field('isCheckIn')->equals(empty($data['checkIn']) ? false : true);
+            if (!empty($data['checkIn'])) {
+                $qb->field('isCheckIn')->equals(true);
+            } else {
+                $qb->field('isCheckIn')->notEqual(true);
+            }
         }
 
         //isCheckOut
         if(isset($data['checkOut'])) {
-            $qb->field('isCheckOut')->equals(empty($data['isCheckOut']) ? false : true);
+            if (!empty($data['checkOut'])) {
+                $qb->field('isCheckOut')->equals(true);
+            } else {
+                $qb->field('isCheckOut')->notEqual(true);
+            }
         }
 
         //order
