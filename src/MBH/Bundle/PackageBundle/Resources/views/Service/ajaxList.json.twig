@@ -1,0 +1,23 @@
+{
+    "recordsTotal": "{{ recordsFiltered }}",
+    "recordsFiltered": "{{ recordsFiltered }}",
+    "data": [
+        {% for item in results %}
+            [
+                "<i class='fa fa-plug'></i>",
+                "{{ item.package.order.id }}. {% if item.package.order.payer %} {{ item.package.order.payer.name }} {% else %} Не указан {% endif %}",
+                "{% if item.begin|mbh_format == item.end|mbh_format %} {{ item.begin|mbh_format }} {% else %} {{ item.begin|mbh_format }} - {{ item.end|mbh_format }} {% endif %} {% if item.nights and item.nights > 0 %} <br><small> {{ plural(item.nights, 'order.packages.noch'|trans({}, 'MBHPackageBundle') ,  'order.packages.nochi'|trans({}, 'MBHPackageBundle') ,  'order.packages.nochei'|trans({}, 'MBHPackageBundle') ) }} </small> {% endif %}",
+                "{{ item.service.name }}",
+                "{{ item.nights }}",
+                "{{ item.persons }}",
+                "{{ item.amount }}",
+                "{{ item.begin|date("d.m.Y") }}",
+                "<div class='text-right {% if item.deleted %} mark-deleted {% endif %}'>{{ item.price|number_format(2) }}</div>",
+                "<div class='text-right'>{{ config.calcTypes[item.calcType] }}</div>",
+                "<div class='text-right'>{{ item.total|number_format(2) }}</div>",
+                "{{ item.note }}",
+                "{{ item.createdAt|date("d.m.Y") }}"
+            ] {% if loop.index != results|length %} , {% endif %}
+        {% endfor %}
+    ]
+}

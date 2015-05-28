@@ -1,0 +1,69 @@
+{% extends 'MBHPackageBundle:Service:layout.html.twig' %}
+
+{% set small_title = "source.index.services"|trans({}, "MBHPackageBundle") %}
+
+{% block content %}
+
+    <div class="well">
+        <form class="form-inline search-form filter-form" id="service-filter" role="form">
+            <div class="input">
+                <i class="fa fa-calendar" title="Период"
+                   data-toggle='tooltip'></i>
+                &nbsp
+                {# form_widget(form.begin) #}
+                <input type="text" name="begin" class="datepicker begin-datepiker  form-control input-sm"
+                       data-date-format="dd.mm.yyyy" value="{{ "-1 week"|date("d.m.Y") }}">
+            </div>
+            <div class="input">
+                - &nbsp
+                <input type="text" name="end" class="datepicker end-datepiker form-control input-sm"
+                       data-date-format="dd.mm.yyyy" value="{{ "now"|date("d.m.Y") }}">
+            </div>
+
+            <div class="input">
+                <i class="fa fa-filter" title='Фильтр'
+                   data-toggle='tooltip'></i>&nbsp
+                <select name="services" id="select-services" id="filter" multiple>
+                    {% for group, serviceList in services %}
+                        <optgroup label="{{ group }}">
+                            {% for key, service in serviceList %}
+                                <option value="{{ key }}">{{ service }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+                &nbsp;
+                <i class="fa fa-trash-o" title='Показать удаленные' data-toggle='tooltip'></i>
+                &nbsp;
+                <input name="deleted" type="checkbox">
+            </div>
+        </form>
+    </div>
+
+
+    <table id="service-table"
+           class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xs"></th>
+            <th class="td-md">Заказ</th>
+            <th class="td-md text-center">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
+            <th>Название</th>
+            <th class="td-xs text-center">{{ "package.service.nights_amount"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-sm text-center">{{ "package.service.guests_amount"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-xs text-center">{{ "package.service.amount"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-md text-center">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-md text-right">{{ "package.service.price"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-md text-right">{{ "package.service.calculation_type"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-md text-right">{{ "package.service.result"|trans({}, "MBHPackageBundle") }}</th>
+            <th>{{ "package.service.comment"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-md text-center">{{ "package.service.creation_date"|trans({}, "MBHPackageBundle") }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+
+{% endblock %}

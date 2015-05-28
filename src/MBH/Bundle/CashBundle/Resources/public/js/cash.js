@@ -121,7 +121,7 @@ $(document).ready(function () {
             {"bSortable": false}, // icon
             {"bSortable": false}, // prefix
             {"bSortable": false}, // payer
-            null, // in
+            {"bSortable": false}null, // in
             null, // out
             {"bSortable": false}, //operation
             null, // date

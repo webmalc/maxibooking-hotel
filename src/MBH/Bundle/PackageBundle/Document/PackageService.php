@@ -179,7 +179,7 @@ class PackageService extends Base
     /**
      * Get package
      *
-     * @return MBH\Bundle\PackageBundle\Document\Package $package
+     * @return \MBH\Bundle\PackageBundle\Document\Package $package
      */
     public function getPackage()
     {
@@ -429,7 +429,7 @@ class PackageService extends Base
     /**
      * Set begin
      *
-     * @param date $begin
+     * @param \DateTime $begin
      * @return self
      */
     public function setBegin($begin)
@@ -441,7 +441,7 @@ class PackageService extends Base
     /**
      * Get begin
      *
-     * @return date $begin
+     * @return \DateTime $begin
      */
     public function getBegin()
     {
@@ -451,7 +451,7 @@ class PackageService extends Base
     /**
      * Set end
      *
-     * @param date $end
+     * @param \DateTime $end
      * @return self
      */
     public function setEnd($end)
@@ -463,7 +463,7 @@ class PackageService extends Base
     /**
      * Get end
      *
-     * @return date $end
+     * @return \DateTime $end
      */
     public function getEnd()
     {

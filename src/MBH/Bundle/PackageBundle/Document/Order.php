@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -709,5 +710,19 @@ class Order extends Base
     public function getDebt()
     {
         return $this->getPrice() - $this->getPaid();
+    }
+
+    /**
+     * @return PayerInterface|null
+     */
+    public function getPayer()
+    {
+        if ($this->getOrganization()) {
+            return $this->getOrganization();
+        } elseif ($this->getMainTourist()) {
+            return $this->getMainTourist();
+        } else {
+            null;
+        }
     }
 }
