@@ -54,15 +54,9 @@
                             <td class="text-center">{{ service.calcType == 'per_night' ? service.nights : '' }}</td>
                             <td class="text-center">{{ service.calcType != 'not_applicable' ? service.persons : '' }}</td>
                             <td class="text-center">{{ service.amount }}</td>
-
                             <td class="text-center">{{ service.service.date ? service.begin|date('d.m.Y') : ''  }}</td>
                             <td class="text-center">
-                                {% if time[loop.index-1]==true%}
-
-                                    {{ service.begin|date('H:i') }}
-                                {% else %}
-
-                                {% endif %}
+                                {{ service.service.time ? service.time|date('H:i') : ''  }}
                             </td>
                             <td class="text-right text-success">{{ service.price|number_format(2) }}</td>
                             <td>{{ config.calcTypes[service.calcType] }}</td>
@@ -71,7 +65,8 @@
                             <td class="text-center">{{ service.createdAt|date('d.m.Y') }}</td>
 
                             <td class="table-actions-td text-center">
-                                {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
+
+                                {% if entity.deletedAt is empty and checkPackagePermissions(entity) and service.deletedAt is empty %}
                                     <a href="{{ path('package_service_edit', { 'id': entity.id, "serviceId": service.id }) }}"
                                        class="btn btn-success btn-xs " title="{{ 'package.service.edit_record'|trans({}, 'MBHPackageBundle')}}"
                                        data-toggle="tooltip">

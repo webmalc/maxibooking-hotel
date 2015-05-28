@@ -37,6 +37,7 @@ class PackageService extends Base
     use BlameableDocument;
 
     /**
+     * @var \MBH\Bundle\PriceBundle\Document\Service
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Service")
      * @Assert\NotNull(message= "validator.document.packageService.no_service_selected")
@@ -44,6 +45,7 @@ class PackageService extends Base
     protected $service;
 
     /**
+     * @var Package
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Package", inversedBy="services")
      * @Assert\NotNull(message= "validator.document.packageService.no_reservation_selected")
@@ -55,6 +57,7 @@ class PackageService extends Base
      * @Gedmo\Versioned
      * @ODM\Float()
      * @Assert\Type(type="numeric")
+     * @Assert\NotNull()
      * @Assert\Range(
      *      min=0,
      *      minMessage= "validator.document.packageService.price_less_zero"
@@ -83,6 +86,7 @@ class PackageService extends Base
      *      min=1,
      *      minMessage= "validator.document.packageService.amount_less_1"
      * )
+     * @Assert\NotNull()
      */
     protected $amount;
     
@@ -111,15 +115,24 @@ class PackageService extends Base
     protected $nights;
     
     /**
-     * @var int
+     * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date()
      * @Assert\Date()
+     * @Assert\NotNull()
      */
     protected $begin;
 
     /**
-     * @var int
+     * @var \DateTime
+     * @Gedmo\Versioned
+     * @ODM\Date()
+     * @Assert\DateTime()
+     */
+    protected $time;
+
+    /**
+     * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date()
      * @Assert\Date()
@@ -299,9 +312,6 @@ class PackageService extends Base
     {
         return $this->nights;
     }
-
-
-
     
     /**
      * Set note
@@ -331,16 +341,6 @@ class PackageService extends Base
     public function prePersist()
     {
         $this->setDefaults();
-        if (empty($this->begin)) {
-            $this->setBegin($this->package->getBegin());
-        }
-        if (empty($this->end) && empty($this->nights)) {
-            $this->setEnd($this->package->getBegin());
-        } elseif (empty($this->end) && !empty($this->nights)) {
-            $end = $this->package->getBegin();
-//            $end->modify('+' . $this->nights . ' days');
-            $this->setEnd($end);
-        }
     }
 
     /**
@@ -349,30 +349,27 @@ class PackageService extends Base
     public function preUpdate()
     {
         $this->setDefaults();
-        if (empty($this->begin)) {
-            $this->begin = $this->package->getBegin();
-        }
-        if (empty($this->end) && empty($this->nights)) {
-            $this->end = $this->package->getBegin();
-        } elseif (empty($this->end) && !empty($this->nights)) {
-            $end = $this->package->getBegin();
-//            $end->modify('+' . $this->nights . ' days');
-            $this->end = $end;
-        }
     }
 
     public function setDefaults()
     {
-        $type = $this->service->getCalcType();
-        
-        if ($type == 'per_stay') {
+        $service  = $this->getService();
+        if ($service->getCalcType() == 'per_stay') {
             $this->setNights(1);
         }
-        
-        if ($type == 'not_applicable') {
+        if ($service->getCalcType() == 'not_applicable') {
             $this->setNights(1);
             $this->setPersons(1);
         }
+        if (!$this->getBegin() || !$service->getDate()) {
+            $this->setBegin($this->getPackage()->getBegin());
+        }
+        if (!$service->getTime()) {
+            $this->setTime(null);
+        }
+        $nights = clone $this->getBegin();
+        $nights->modify('+' . $this->getNights() . ' days');
+        $this->setEnd($nights);
     }
     
     public function getCalcType()
@@ -424,15 +421,13 @@ class PackageService extends Base
         return $this->totalOverwrite;
     }
 
-
-
     /**
      * Set begin
      *
      * @param \DateTime $begin
      * @return self
      */
-    public function setBegin($begin)
+    public function setBegin(\DateTime $begin = null)
     {
         $this->begin = $begin;
         return $this;
@@ -454,7 +449,7 @@ class PackageService extends Base
      * @param \DateTime $end
      * @return self
      */
-    public function setEnd($end)
+    public function setEnd(\DateTime $end = null)
     {
         $this->end = $end;
         return $this;
@@ -468,6 +463,28 @@ class PackageService extends Base
     public function getEnd()
     {
         return $this->end;
+    }
+
+    /**
+     * Set time
+     *
+     * @param \DateTime $time
+     * @return self
+     */
+    public function setTime(\DateTime $time = null)
+    {
+        $this->time = $time;
+        return $this;
+    }
+
+    /**
+     * Get time
+     *
+     * @return \DateTime $time
+     */
+    public function getTime()
+    {
+        return $this->time;
     }
 
     public function __toString()

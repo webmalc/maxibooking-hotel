@@ -160,12 +160,12 @@ parameters:
     
     #Просроченные брони
     mbh.package.notpaid.time: '-5 days'
-    
+
     #Цели приезда
     mbh.package.statuses:
-        offline: { title: "Обычный", class: "info"}
-        online: { title: "Онлайн", class: "success"}
-        channel_manager: { title: "Channel manager", class: "danger"}
+        offline: { title: "Обычная", class: "info", icon: "fa fa-paper-plane-o"}
+        online: { title: "Онлайн", class: "success", icon: "fa fa-globe"}
+        channel_manager: { title: "Channel manager", class: "danger", icon: "fa fa-cloud-download"}
 
     #Типы документов
     mbh.order.document.types:

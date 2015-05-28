@@ -50,13 +50,13 @@ class CashController extends Controller
         $queryCriteria = new CashDocumentQueryCriteria();
         $clientDataTableParams = ClientDataTableParams::createFromRequest($request);
         $clientDataTableParams->setSortColumnFields([
-                1 => 'prefix',
-                2 => 'total',
-                3 => 'total',
-                5 => 'createdAt',
-                6 => 'isPaid',
-                7 => 'deletedAt']
-        );
+            1 => 'number',
+            3 => 'total',
+            4 => 'total',
+            6 => 'documentDate',
+            7 => 'paidDate',
+            8 => 'deletedAt'
+        ]);
 
         $queryCriteria->skip = $clientDataTableParams->getStart();
         $queryCriteria->limit = $clientDataTableParams->getLength();
@@ -65,8 +65,8 @@ class CashController extends Controller
         $queryCriteria->sortDirection = -1;//SORT_DESC;
 
         if ($getFirstSort = $clientDataTableParams->getFirstSort()) {
-            $queryCriteria->sortBy = $getFirstSort[0];
-            $queryCriteria->sortDirection = $getFirstSort[1];
+            $queryCriteria->sortBy = [$getFirstSort[0]];
+            $queryCriteria->sortDirection = [$getFirstSort[1]];
         }
 
         $queryCriteria->search = $clientDataTableParams->getSearch();
@@ -176,7 +176,6 @@ class CashController extends Controller
             [
                 'methods' => $this->container->getParameter('mbh.cash.methods'),
                 'operations' => $this->container->getParameter('mbh.cash.operations'),
-                //'payer' => $entity->getPayer() ? $entity->getPayer()->getId() : null,
                 'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity->getOrder()),
             ]
         );

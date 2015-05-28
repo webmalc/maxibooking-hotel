@@ -3,9 +3,9 @@
     "recordsTotal": "{{ recordsFiltered }}",
     "totalIn": "{{ totalIn|number_format(2) }}",
     "totalOut": "{{ totalOut|number_format(2) }}",
-    "noConfirmedTotalIn": "{{ noConfirmedTotalIn|number_format }}",
-    "noConfirmedTotalOut": "{{ noConfirmedTotalOut|number_format }}",
-    "total": "{{ total|number_format }}",
+    "noConfirmedTotalIn": "{{ noConfirmedTotalIn|number_format(2) }}",
+    "noConfirmedTotalOut": "{{ noConfirmedTotalOut|number_format(2) }}",
+    "total": "{{ total|number_format(2) }}",
     "recordsFiltered": "{{ recordsFiltered }}",
     "data": [
         {% for entity in entities %}

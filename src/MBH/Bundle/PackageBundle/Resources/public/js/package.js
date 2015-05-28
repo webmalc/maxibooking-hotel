@@ -38,16 +38,13 @@ $(document).ready(function () {
         maxboostedstep: 20,
         postfix: '<i class="fa fa-rub"></i>'
     });
-    $(".timepicker").timepicker({
-        showMeridian: false
-    });
 
     //package filter select 2
     (function () {
 
         var format = function (icon) {
             var originalOption = icon.element;
-            return '<span class="text-' + $(originalOption).data('class') + '"><i class="fa fa fa-paper-plane-o"></i> ' + icon.text + '</span>';
+            return '<span><i class="' + $(originalOption).data('icon') + '"></i> ' + icon.text + '</span>';
         };
 
         $('#package-filter-status').each(function () {
@@ -281,6 +278,21 @@ $(document).ready(function () {
         });
     } ());
 
+    //prices by day
+    (function () {
+        var href = $('#package-price-by-day-href'),
+            prices = $('#package-price-by-day');
+
+        if (!href.length) {
+            return;
+        }
+        href.click(function () {
+            prices.toggle(100);
+            $(this).find('i').toggleClass('fa-caret-up');
+        });
+
+    }());
+
     //accommodation tab
     (function () {
         var checkIn = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckIn'),
@@ -298,11 +310,27 @@ $(document).ready(function () {
                 } else {
                     departure.closest('.form-group').hide();
                 }
+            },
+            showOut = function () {
+                if (checkIn.is(':checked')) {
+                    checkOut.closest('.form-group ').show();
+                } else {
+                    checkOut.prop('checked', false);
+                    checkOut.closest('.form-group ').hide();
+                }
             };
+
+        if (!checkIn.length) {
+            return;
+        }
+        arrival.timepicker({showMeridian: false});
+        departure.timepicker({showMeridian: false});
         show();
+        showOut();
         checkIn.on('switchChange.bootstrapSwitch', show);
+        checkIn.on('switchChange.bootstrapSwitch', showOut);
         checkOut.on('switchChange.bootstrapSwitch', show);
-    }())
+    }());
 
 });
 

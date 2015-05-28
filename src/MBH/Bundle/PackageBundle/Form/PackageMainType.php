@@ -62,7 +62,7 @@ class PackageMainType extends AbstractType
                     'group' => 'Номер',
                     'multiple' => false,
                     'choices' => $places,
-                    'attr' => array('class' => 'input-xxs'),
+                    'attr' => array('class' => 'input-xxs plain-html'),
                 ]
             )
             ->add(
@@ -75,7 +75,7 @@ class PackageMainType extends AbstractType
                     'group' => 'Номер',
                     'multiple' => false,
                     'choices' => $places,
-                    'attr' => array('class' => 'input-xxs'),
+                    'attr' => array('class' => 'input-xxs plain-html'),
                 ]
             )
             ->add(

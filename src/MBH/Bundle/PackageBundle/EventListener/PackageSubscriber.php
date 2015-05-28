@@ -5,13 +5,10 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\CashBundle\Document\CashDocument;
 
 class PackageSubscriber implements EventSubscriber
 {
@@ -32,7 +29,8 @@ class PackageSubscriber implements EventSubscriber
             'prePersist',
             'preRemove',
             'postPersist',
-            'postSoftDelete'
+            'postSoftDelete',
+            'onFlush'
         );
     }
 
@@ -46,6 +44,30 @@ class PackageSubscriber implements EventSubscriber
                 $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff()
             );
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
+        }
+    }
+
+    public function onFlush(OnFlushEventArgs $args)
+    {
+        $dm = $args->getDocumentManager();
+        $uow = $dm->getUnitOfWork();
+
+        $docs = array_merge(
+            $uow->getScheduledDocumentUpdates()
+        );
+
+        foreach ($docs as $doc) {
+            if ($doc instanceof PackageService) {
+
+                try {
+                    $package = $doc->getPackage();
+                    $this->container->get('mbh.calculation')->setServicesPrice($package);
+                    $meta = $dm->getClassMetadata(get_class($package));
+                    $uow->recomputeSingleDocumentChangeSet($meta, $package);
+                } catch (\Exception $e) {
+
+                }
+            }
         }
     }
 

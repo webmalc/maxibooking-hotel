@@ -65,16 +65,14 @@ class CashDocumentQueryCriteria extends AbstractQueryCriteria
     public $limit;
 
     /**
-     * SORT_ASC
-     * SORT_DESC
-     * @var int
+     * @var array
      */
-    public $sortDirection;
+    public $sortDirection = [];
 
     /**
-     * @var string
+     * @var array
      */
-    public $sortBy;
+    public $sortBy = [];
 
     /**
      * @var string

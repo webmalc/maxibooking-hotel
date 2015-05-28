@@ -54,7 +54,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $end = $helper->getDateFromString($request->get('end'));
         if(!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
             $end = clone $begin;
-            $end->modify('+45 days');
+            $end->modify('+40 days');
         }
         $to = clone $end;
         $to->modify('+1 day');
@@ -119,6 +119,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                                 'end' => $package->getEnd()->format('d.m.Y') == $day->format('d.m.Y'),
                                 'status' => $package->getOrder()->getPaidStatus(),
                                 'isCheckIn' => $package->getIsCheckIn(),
+                                'isCheckOut' => $package->getIsCheckOut(),
                                 'early_check_in' => $package->getService('Early check-in'),
                                 'late_check_out' => $package->getService('Late check-out'),
                             ];

@@ -86,6 +86,12 @@ package.accommodation.placement_not_specified: Размещение не ука�
 package.actions: Действия
 package.actions.save_and_close: Сохранить и закрыть
 package.actions.guests_stopped: Гости заехали
+package.actions.guests_check_out: Гости выехали
+package.actions.accommodation: Размещение
+package.actions.search: Поиск
+package.actions.delete: Удаление
+package.actions.docs: Генерация документов
+package.actions.act: Акт
 package.actions.find_similar:  Найти похожую
 package.actions.cancel: Отмена
 package.actions.save: 'Сохранить'
@@ -112,6 +118,8 @@ package.copy.deleted: удалена
 package.copy.edit_reservation: 'редактирование брони '
 package.edit.edit_reservation: 'редактирование брони '
 package.copy.deleted: удалена
+package.edit.price: Цена
+package.edit.price_by_day: Цена по дням
 package.edit.dates: Даты
 package.edit.guests: Гости
 package.edit.adults: Взрослых:
@@ -153,7 +161,7 @@ package.index.check_out: Выезд
 package.index.create: Создание
 package.index.paid: Оплачена
 package.index.partly_paid: Частично оплачена
-package.index.not_paid: Не оплачена
+package.index.not_paid: не оплачена
 package.index.is_confirmed: Подтверждена?
 package.index.is_confirmed_yes: Да
 package.index.is_confirmed_no: Нет
