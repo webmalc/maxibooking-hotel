@@ -318,8 +318,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             new PackageMainType(),
             $entity,
             [
-                'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
-                'price' => $this->get('security.context')->isGranted(['ROLE_BOOKKEEPER']),
+                'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_BOOKKEEPER']),
                 'hotel' => $entity->getRoomType()->getHotel()
             ]
         );
@@ -507,67 +506,45 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * Services
      *
+     * @param Request $request
+     * @param Package $entity
+     * @return array|\MBH\Bundle\BaseBundle\Controller\Response
+     * @throws \Doctrine\ODM\MongoDB\LockException
      * @Route("/{id}/services", name="package_service")
      * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_USER')")
      * @Template()
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
-    public function serviceAction(Request $request, $id)
+    public function serviceAction(Request $request, Package $entity)
     {
-
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
         $packageService = new PackageService();
+        $packageService
+            ->setBegin($entity->getBegin())
+            ->setTime($entity->getBegin())
+            ->setPackage($entity);
 
-        if ($this->container->get('mbh.package.permissions')->check($entity)) {
-            $form = $this->createForm(
-                new PackageServiceType(),
-                $packageService,
-                [
-                    'package' => $entity,
-                    'form_label' => $this->container->get('translator')->trans('form.packageServiceType.add_service')
-                ]
-            );
-        }
-        $time = [];
-        foreach ($entity->getServices() as $s) {
-            $serv = $dm->getRepository('MBHPriceBundle:Service')->find($s->getService()->getId());
-            $time[] = $serv->getTime();
-        }
-        if ($request->getMethod() == 'PUT') {
 
-            $packageService->setPackage($entity);
-            $packageService->setService($dm->getRepository('MBHPriceBundle:Service')->find($request->get("mbh_bundle_packagebundle_package_service_type")["service"]));
+        $form = $this->createForm(
+            new PackageServiceType(),
+            $packageService,
+            [
+                'package' => $entity,
+            ]
+        );
+
+        if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
 
             $form->submit($request);
 
             if ($form->isValid()) {
-                $data = $form->getData();
-
-                if (!$packageService->getService() || ($form->get('amount')->getData() == '')) {
-                    $request->getSession()
-                        ->getFlashBag()
-                        ->set(
-                            'danger',
-                            $this->get('translator')->trans('controller.packageController.service_adding_error_refresh_and_try_again')
-                        );
-
-                    return $this->redirect($this->generateUrl('package_service', ['id' => $id]));
-                }
-                if ($packageService->getService()->getDate() == false) {
-                    $date = date_create($request->get('mbh_bundle_packagebundle_package_service_type')['time']);
-                    $packageService->setBegin($date->getTimestamp());
-                } else {
-                    $date = date_create($request->get('mbh_bundle_packagebundle_package_service_type')['begin'].' '.$request->get('mbh_bundle_packagebundle_package_service_type')['time']);
-                    $packageService->setBegin($date->getTimestamp());
-                }
                 $dm->persist($packageService);
                 $dm->flush();
 
@@ -578,7 +555,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                         $this->get('translator')->trans('controller.packageController.service_added_success')
                     );
 
-                return $this->afterSaveRedirect('package', $id, [], '_service');
+                return $this->afterSaveRedirect('package', $entity->getId(), [], '_service');
             }
         }
 
@@ -587,37 +564,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'logs' => $this->logs($entity),
             'form' => $form->createView(),
             'config' => $this->container->getParameter('mbh.services'),
-            'time' => $time
         ];
-    }
-
-    /**
-     * Service document delete
-     *
-     * @Route("/{id}/service/{serviceId}/delete", name="package_service_delete")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     */
-    public function serviceDeleteAction(Request $request, $id, $serviceId)
-    {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-        $service = $dm->getRepository('MBHPackageBundle:PackageService')->find($serviceId);
-
-        if (!$entity || !$service || !$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
-
-        $dm->remove($service);
-        $dm->flush();
-
-        $request->getSession()
-            ->getFlashBag()
-            ->set('success', $this->get('translator')->trans('controller.packageController.service_deleted_success'));
-
-        return $this->redirect($this->generateUrl('package_service', ['id' => $id]));
     }
 
     /**
@@ -627,30 +574,33 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_USER')")
      * @Template("MBHPackageBundle:Package:editService.html.twig")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     * @ParamConverter("service", class="MBHPackageBundle:PackageService", options={"id" = "serviceId"})
+     * @param Request $request
+     * @param Package $entity
+     * @param PackageService $service
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     *
      */
-    public function serviceEditAction(Request $request, $id, $serviceId)
+    public function serviceEditAction(Request $request, Package $entity, PackageService $service)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
-        $service = $dm->getRepository('MBHPackageBundle:PackageService')->find($serviceId);
-        if (!$service) {
-            throw $this->createNotFoundException();
+        if (!$service->getTime()) {
+            $service->setTime($entity->getBegin());
         }
+
         $form = $this->createForm(
             new PackageServiceType(),
             $service,
             [
                 'package' => $entity,
-                'serviceId' => $service->getService()->getId(),
-                'form_label' => $this->container->get('translator')->trans('form.packageServiceType.edit_service'),
-                'time' => $service->getBegin()->format('H:i')
             ]
         );
 
@@ -658,10 +608,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $form->submit($request);
 
             if ($form->isValid()) {
-                $data = $form->getData();
-                $service->setService($dm->getRepository('MBHPriceBundle:Service')->find($request->get("mbh_bundle_packagebundle_package_service_type")["service"]));
-                $date = date_create($request->get('mbh_bundle_packagebundle_package_service_type')['begin'].' '.$request->get('mbh_bundle_packagebundle_package_service_type')['time']);
-                $service->setBegin($date->getTimestamp());
+
                 $dm->persist($service);
                 $dm->flush();
 
@@ -669,17 +616,14 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     ->getFlashBag()
                     ->set(
                         'success',
-                        $this->get('translator')->trans('controller.packageController.service_added_success')
+                        $this->get('translator')->trans('controller.packageController.service_edit_success')
                     );
 
                 if ($request->get('save') !== null) {
-
                     return $this->redirect($this->generateUrl('package_service_edit',
-                        ['id' => $id, 'serviceId' => $serviceId]));
+                        ['id' => $entity->getId(), 'serviceId' => $service->getId()]));
                 }
-
-                return $this->redirect($this->generateUrl('package'));
-
+                return $this->redirect($this->generateUrl('package_service', ['id' => $entity->getId()]));
             }
         }
 
@@ -690,6 +634,34 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'form' => $form->createView(),
             'config' => $this->container->getParameter('mbh.services'),
         ];
+    }
+
+    /**
+     * Service document delete
+     *
+     * @Route("/{id}/service/{serviceId}/delete", name="package_service_delete")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     * @ParamConverter("service", class="MBHPackageBundle:PackageService", options={"id" = "serviceId"})
+     */
+    public function serviceDeleteAction(Request $request, Package $entity, PackageService $service)
+    {
+        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        $dm = $this->get('doctrine_mongodb')->getManager();
+
+        if (!$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        $dm->remove($service);
+        $dm->flush();
+
+        $request->getSession()
+            ->getFlashBag()
+            ->set('success', $this->get('translator')->trans('controller.packageController.service_deleted_success'));
+
+        return $this->redirect($this->generateUrl('package_service', ['id' => $entity->getId()]));
     }
 
     /**

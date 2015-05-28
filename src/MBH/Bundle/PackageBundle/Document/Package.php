@@ -217,7 +217,7 @@ class Package extends Base
      * @var int
      * @Gedmo\Versioned
      * @ODM\Date()
-     * @Assert\Date()
+     * @Assert\DateTime()
      */
     protected $arrivalTime;
 
@@ -225,7 +225,7 @@ class Package extends Base
      * @var int
      * @Gedmo\Versioned
      * @ODM\Date()
-     * @Assert\Date()
+     * @Assert\DateTime()
      */
     protected $departureTime;
 

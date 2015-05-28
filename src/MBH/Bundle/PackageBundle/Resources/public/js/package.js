@@ -38,9 +38,6 @@ $(document).ready(function () {
         maxboostedstep: 20,
         postfix: '<i class="fa fa-rub"></i>'
     });
-    $(".timepicker").timepicker({
-        showMeridian: false
-    });
 
     //package filter select 2
     (function () {
@@ -326,7 +323,8 @@ $(document).ready(function () {
         if (!checkIn.length) {
             return;
         }
-
+        arrival.timepicker({showMeridian: false});
+        departure.timepicker({showMeridian: false});
         show();
         showOut();
         checkIn.on('switchChange.bootstrapSwitch', show);

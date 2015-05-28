@@ -129,6 +129,7 @@ controller.packageController.order_created_success:  'Заказ успешно 
 controller.packageController.guest_added_success: 'Гость успешно добавлен.'
 controller.packageController.service_adding_error_refresh_and_try_again:  'Произошла ошибка при добавлении услуги. Обновите страницу и попробуйте еще раз.'
 controller.packageController.service_added_success: 'Услуга успешно добавлена.'
+controller.packageController.service_edit_success: 'Услуга успешно отредактирована.'
 controller.packageController.service_deleted_success: 'Услуга успешно удалена.'
 controller.packageController.placement_saved_success: 'Размещение успешно сохранено.'
 controller.packageController.placement_deleted_success: 'Размещение успешно удалено.'

@@ -24,25 +24,21 @@ class PackageServiceType extends AbstractType
                         continue;
                 }
 
-                $services[$cat->getName()][$service->getId()] = $service->getName();
+                $services[$cat->getName()][$service->getId()] = $service;
             }
         }
 
         $builder
             ->add(
                 'service',
-                'choice',
+                'document',
                 [
                     'label' => 'form.packageServiceType.service',
-                    'required' => true,
+                    'class' => 'MBHPriceBundle:Service',
                     'choices' => $services,
                     'empty_value' => '',
-                    'error_bubbling' => true,
-                    'mapped' => false,
-                    'group' => $options['form_label'],
-                    'constraints' => new NotBlank(),
+                    'group' => 'form.packageServiceType.add_service',
                     'help' => 'form.packageServiceType.reservation_add_service',
-                    'data' => $options['serviceId']
                 ]
             )
             ->add(
@@ -51,8 +47,7 @@ class PackageServiceType extends AbstractType
                 [
                     'label' => 'form.packageServiceType.price',
                     'required' => true,
-                    'group' => $options['form_label'],
-                    'error_bubbling' => true,
+                    'group' => 'form.packageServiceType.add_service',
                     'constraints' => new NotBlank(),
                     'attr' => ['class' => 'price-spinner sm']
                 ]
@@ -64,7 +59,7 @@ class PackageServiceType extends AbstractType
                     'label' => 'form.packageServiceType.nights_amount',
                     'required' => true,
                     'data' => 1,
-                    'group' => $options['form_label'],
+                    'group' => 'form.packageServiceType.add_service',
                     'error_bubbling' => true,
                     'constraints' => new NotBlank(),
                     'attr' => ['class' => 'spinner sm']
@@ -77,40 +72,30 @@ class PackageServiceType extends AbstractType
                     'label' => 'form.packageServiceType.guests_amount',
                     'required' => true,
                     'data' => 1,
-                    'group' => $options['form_label'],
+                    'group' => 'form.packageServiceType.add_service',
                     'error_bubbling' => true,
                     'constraints' => new NotBlank(),
                     'attr' => ['class' => 'spinner sm']
                 ]
             )
             ->add('begin', 'date', array(
-                    'label' => 'Дата начала',
-                    'group' => $options['form_label'],
+                    'label' => 'Дата',
+                    'group' => 'form.packageServiceType.add_service',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
-
-                    'required' => false,
                     'attr' => array('class' => 'datepicker sm', 'data-date-format' => 'dd.mm.yyyy'),
-            ))
-            ->add('end', 'date', array(
-                'label' => 'Дата окончания',
-                'group' => $options['form_label'],
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-
-                'required' => false,
-                'attr' => array('class' => 'datepicker sm', 'data-date-format' => 'dd.mm.yyyy'),
             ))
             ->add(
                 'time',
-                'text',
+                'datetime',
                 [
                     'label' => 'form.packageServiceType.time',
-                    'required' => true,
-                    'group' => $options['form_label'],
-                    'attr' => ['class' => 'timepicker sm'],
-                    'mapped' => false,
-                    'data' => $options['time']
+                    'required' => false,
+                    'group' => 'form.packageServiceType.add_service',
+                    'attr' => ['class' => 'sm'],
+                    'time_widget' => 'single_text',
+                    'date_widget' => 'single_text',
+                    'html5' => false,
                 ]
             )
             ->add(
@@ -120,7 +105,7 @@ class PackageServiceType extends AbstractType
                     'label' => 'form.packageServiceType.amount',
                     'required' => true,
                     'data' => 1,
-                    'group' => $options['form_label'],
+                    'group' => 'form.packageServiceType.add_service',
                     'error_bubbling' => true,
                     'constraints' => new NotBlank(),
                     'attr' => ['class' => 'spinner sm'],
@@ -139,9 +124,6 @@ class PackageServiceType extends AbstractType
         $resolver->setDefaults(
             [
                 'package' => null,
-                'serviceId' => null,
-                'form_label' => null,
-                'time' => null,
                 'data_class' => 'MBH\Bundle\PackageBundle\Document\PackageService',
             ]
         );

@@ -56,7 +56,7 @@ class SearchType extends AbstractType
                     'multiple' => true,
                     'error_bubbling' => true,
                     'choices' => $roomTypes,
-                    'data' => $data
+                    'data' => $data,
                 ])
                 ->add('tariff', 'document', [
                     'label' => 'form.searchType.tariff',
