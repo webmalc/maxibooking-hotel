@@ -221,6 +221,6 @@ parameters:
         female: "Женщина"
         unknown: "Неизвестно"
 
-    mbh.order.document.types:
+    mbh.organization.types:
         contragents: 'Контрагенты'
         my: 'Мои организации'
