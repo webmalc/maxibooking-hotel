@@ -23,6 +23,7 @@
                 <select name="filter" id="filter">
                     <option value="paidDate">{{ 'views.cash.index.filter.byPaidDate'|trans({}, 'MBHCashBundle') }}</option>
                     <option value="documentDate">{{ 'views.cash.index.filter.byDocumentDate'|trans({}, 'MBHCashBundle') }}</option>
+                    <option value="deletedAt">{{ 'views.cash.index.filter.byDeletedDate'|trans({}, 'MBHCashBundle') }}</option>
                 </select>
             </div>
 
@@ -31,8 +32,9 @@
                    data-toggle='tooltip'></i>
                 &nbsp
                 <select name="methods" id="method">
+                    <option></option>
                     {% for type, name in methods %}
-                        <option value="{{ type }}">{{ name }}</option>
+                        <option {% if type == 'cash' %} selected {% endif %} value="{{ type }}">{{ name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -73,7 +75,10 @@
         <tr>
             <td></td>
             <td></td>
-            <td class="text-center"><strong>{{  'views.cash.index.result'|trans({}, 'MBHCashBundle') }}:</strong></td>
+            <td class="text-center">
+                <strong>{{  'views.cash.index.result'|trans({}, 'MBHCashBundle') }}:</strong>
+                <div>&nbsp;</div>
+            </td>
             <td class="text-right">
                 <div>
                     <strong class="cash-table-total-in text-success"></strong>
@@ -92,6 +97,7 @@
             </td>
             <td class="text-center">
                 <strong>{{ 'views.cash.index.saldo'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp; <strong class="cash-table-total"></strong>
+                <div>&nbsp;</div>
             </td>
             <td></td>
             <td></td>

@@ -89,6 +89,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         $cash->setOrder($entity);
 
         $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
+        /** @var CashDocument[] $docs */
         $docs = $cashDocumentRepository
             ->createQueryBuilder('q')
             ->field('order.id')->equals($entity->getId())

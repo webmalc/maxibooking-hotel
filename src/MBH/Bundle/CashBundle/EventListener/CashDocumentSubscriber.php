@@ -81,10 +81,6 @@ class CashDocumentSubscriber implements EventSubscriber
         $orderDocument->setTourist($document->getTouristPayer());
         $orderDocument->setOrganization($document->getOrganizationPayer());
 
-        /** @var PdfGenerator $generator */
-        $generator = $this->container->get('mbh.pdf_generator');
-        $generator->setPath($orderDocument->getUploadRootDir());
-
         if ($document->getPayer() instanceof Organization) {
             $template = 'organization';
         } elseif ($document->getPayer() instanceof Tourist) {
@@ -99,7 +95,35 @@ class CashDocumentSubscriber implements EventSubscriber
         if (!$myOrganization) {
             throw new Exception('Не найдена организация для этого отеля из раздела "Мои организации".');
         }
+
+        if(!$myOrganization->getBank())
+            throw new Exception('Не установлен "Банк получателя".');
+
+        if(!$myOrganization->getBankBik())
+            throw new Exception('Не установлен "Бик банка".');
+
+        if(!$myOrganization->getCorrespondentAccount())
+            throw new Exception('Не установлен "Корр. счёт".');
+
+        if(!$myOrganization->getInn())
+            throw new Exception('Не установлен "ИНН".');
+
+        if(!$myOrganization->getKpp())
+            throw new Exception('Не установлен "КПП".');
+
+        if(!$myOrganization->getCheckingAccount())
+            throw new Exception('Не установлен "Расчётный счёт".');
+
+        if(!$myOrganization->getName())
+            throw new Exception('Не установлено "Название организации".');
+
+        /** @var PdfGenerator $generator */
+        $generator = $this->container->get('mbh.pdf_generator');
+        $generator->setPath($orderDocument->getUploadRootDir());
         $generator->save($id, $template, ['cashDocument' => $document, 'myOrganization' => $myOrganization]);
+
+        $orderDocument->setCashDocument($document);
+        //$document->setOrderDocument($orderDocument);
 
         $order = $document->getOrder();
         $order->addDocument($orderDocument);

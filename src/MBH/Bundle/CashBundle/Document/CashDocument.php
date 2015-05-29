@@ -4,6 +4,7 @@ namespace MBH\Bundle\CashBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
@@ -146,6 +147,12 @@ class CashDocument extends Base
      * @var Tourist
      */
     protected $touristPayer;
+
+
+    /**
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\OrderDocument", inversedBy="cashDocuments")
+     */
+    protected $orderDocument;
 
     /**
      * Set method
@@ -452,4 +459,26 @@ class CashDocument extends Base
 
         return true;
     }
+
+    /**
+     * @return OrderDocument|null
+     */
+    public function getOrderDocument()
+    {
+        foreach($this->getOrder()->getDocuments() as $document){
+            if($document->getCashDocument() == $this)
+                return $document;
+        }
+
+        return null;
+        //return $this->orderDocument;
+    }
+
+    /**
+     * @param OrderDocument $orderDocument
+     */
+    /*public function setOrderDocument(OrderDocument $orderDocument = null)
+    {
+        $this->orderDocument = $orderDocument;
+    }*/
 }

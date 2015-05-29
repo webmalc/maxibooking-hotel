@@ -56,7 +56,7 @@ class CashDocumentQueryCriteria extends AbstractQueryCriteria
     public $orderIds;
 
     /**
-     * @var string
+     * @var string[]
      */
     public $methods;
 
