@@ -2,16 +2,14 @@
 
 namespace MBH\Bundle\CashBundle\Validator\Constraints;
 
-use MBH\Bundle\CashBundle\Document\CashDocument;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class CashDocumentValidator extends ConstraintValidator
 {
 
     /**
-     * @param CashDocument $cashDocument
+     * @param \MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
      * @param Constraint $constraint
      * @return bool
      */

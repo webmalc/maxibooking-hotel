@@ -134,7 +134,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         );
         //created_by count
         $count['created_by'] = $repo->fetch(array_merge([
-                'created_by' => $this->getUser()->getUsername()
+                'createdBy' => $this->getUser()->getUsername()
             ], $data)
         );
         //checkIn count
@@ -240,7 +240,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 break;
 
             case 'created-by':
-                $data['createdBy'] = $this->getUser()->getUsername();
+                $data['created_by'] = $this->getUser()->getUsername();
                 break;
             default:
         }

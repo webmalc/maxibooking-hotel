@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\Validator\Constraints;
 
-use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -21,7 +20,7 @@ class PackageValidator extends ConstraintValidator
     }
 
     /**
-     * @param Package $package
+     * @param \MBH\Bundle\PackageBundle\Document\Package $package
      * @param Constraint $constraint
      * @return bool
      */
