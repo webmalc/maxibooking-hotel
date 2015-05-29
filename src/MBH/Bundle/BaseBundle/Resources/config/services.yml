@@ -72,18 +72,6 @@ services:
         calls:
               - [ setContainer, [ '@service_container' ] ]
 
-    mbh.mailer:
-            class: MBH\Bundle\BaseBundle\Service\Mailer
-            arguments: [@service_container]
-
-    mbh.messenger:
-      class: MBH\Bundle\BaseBundle\Service\Messenger
-      arguments: [@service_container]
-
-    mbh.system.messenger:
-          class: MBH\Bundle\BaseBundle\Service\Messenger
-          arguments: [@service_container]
-
     mbh.mongo:
           class: MBH\Bundle\BaseBundle\Service\Mongo
           arguments: [@service_container]
@@ -93,3 +81,20 @@ services:
         arguments: [@doctrine_mongodb]
         tags:
           - { name: request.param_converter, converter: doctrine.odm }
+
+
+    #Notifiers
+    mbh.notifier:
+      class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
+      calls:
+        - [attach, ["@mbh.system.messenger"]]
+        - [attach, ["@mbh.mailer"]]
+      arguments: [@service_container]
+
+    mbh.mailer:
+      class: MBH\Bundle\BaseBundle\Service\Messenger\Mailer
+      arguments: [@service_container]
+
+    mbh.system.messenger:
+      class: MBH\Bundle\BaseBundle\Service\Messenger\Messenger
+      arguments: [@service_container]

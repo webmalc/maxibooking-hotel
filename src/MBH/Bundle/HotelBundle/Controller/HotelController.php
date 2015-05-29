@@ -15,7 +15,7 @@ use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class HotelController extends Controller
-{   
+{
     /**
      * Select hotel.
      *
@@ -28,7 +28,7 @@ class HotelController extends Controller
     {
         return [];
     }
-    
+
     /**
      * Select hotel.
      *
@@ -39,14 +39,14 @@ class HotelController extends Controller
     public function selectHotelAction(Request $request, $id)
     {
         $this->get('mbh.hotel.selector')->setSelected($id);
-        
+
         if ($request->get('url')) {
             return $this->redirect($request->get('url'));
         }
-        
+
         return $this->redirect($this->generateUrl('_welcome'));
     }
-    
+
     /**
      * Lists all entities.
      *
@@ -57,6 +57,17 @@ class HotelController extends Controller
      */
     public function indexAction()
     {
+        $notifier = $this->container->get('mbh.notifier');
+        $message = $notifier::createMessage();
+        $message->setText('asddddddddddddddddddddddddddddddasd a asddasd asddddddddddddddddddddddddddd')
+            ->setFrom('system')
+            ->setType('danger')
+        ;
+        $notifier
+            ->setMessage($message)
+            ->notify()
+        ;
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
@@ -70,7 +81,7 @@ class HotelController extends Controller
             'entities' => $entities,
         );
     }
-    
+
     /**
      * Displays a form to create a new entity.
      *
@@ -88,7 +99,7 @@ class HotelController extends Controller
             'form' => $form->createView(),
         );
     }
-    
+
     /**
      * Creates a new entity.
      *
@@ -112,7 +123,7 @@ class HotelController extends Controller
             $this->getRequest()->getSession()->getFlashBag()
                     ->set('success', $this->get('translator')->trans('controller.hotelController.record_created_success'))
             ;
-            
+
             //todo: create services
             $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
             $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'mbh:base:fixtures --no-debug > /dev/null 2>&1 &');
@@ -169,7 +180,7 @@ class HotelController extends Controller
             'logs' => $this->logs($entity)
         );
     }
-    
+
     /**
      * Displays a form to edit an existing entity.
      *
@@ -326,7 +337,7 @@ class HotelController extends Controller
 
         return new JsonResponse($data);
     }
-    
+
     /**
      * Delete entity.
      *
