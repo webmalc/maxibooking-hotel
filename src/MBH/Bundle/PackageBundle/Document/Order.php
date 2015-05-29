@@ -649,7 +649,7 @@ class Order extends Base
     /**
      * Get documents
      *
-     * @return \Doctrine\Common\Collections\Collection $documents
+     * @return \Doctrine\Common\Collections\Collection|OrderDocument[] $documents
      */
     public function getDocuments()
     {

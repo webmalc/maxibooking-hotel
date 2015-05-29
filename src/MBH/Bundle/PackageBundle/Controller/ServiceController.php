@@ -82,7 +82,7 @@ class ServiceController extends BaseController
 
         $tableParams = ClientDataTableParams::createFromRequest($request);
         $tableParams->setSortColumnFields([
-            1 => 'order',
+            1 => 'package.id',
             2 => 'begin',
             4 => 'price',
             7 => 'createdAt',

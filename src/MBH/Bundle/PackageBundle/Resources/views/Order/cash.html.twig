@@ -67,6 +67,11 @@
                             <td>{% if cash.deletedAt %}{{ cash.deletedAt|date('d.m.Y') }}{% endif %}</td>
                             <td class="table-actions-td text-right">
                                 {% if checkPackagePermissions(entity) and not cash.deletedAt %}
+                                    {% if cash.orderDocument %}
+                                        <a href="{{ path('order_document_view', {name: cash.orderDocument.name, download: 1}) }}" class="btn btn-info btn-xs" title="" data-toggle="tooltip" data-original-title="Скачать">
+                                            <i class="fa fa-download"></i>
+                                        </a>
+                                    {% endif %}
                                     {% if not cash.isConfirmed and cash.isPaid and is_granted('ROLE_BOOKKEEPER') %}
                                         <a data-action='cashDocumentConfirmation' data-header='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?' data-button='{{ 'order.cash.confirm'|trans({}, 'MBHPackageBundle') }}' data-button-icon='fa-check' data-button-class='primary' href='{{ path('cash_confirm', { 'id': cash.id}) }}' class='btn btn-primary btn-xs delete-link' title='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
                                             <i class='fa fa-check'></i>

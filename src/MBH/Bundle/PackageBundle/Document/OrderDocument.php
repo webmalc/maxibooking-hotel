@@ -55,6 +55,11 @@ class OrderDocument
     protected $organization;
 
     /**
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument")
+     */
+    protected $cashDocument;
+
+    /**
      * @var UploadedFile
      * @Assert\File(maxSize="6M", mimeTypes={
      *          "image/png",
@@ -313,5 +318,21 @@ class OrderDocument
         }
 
         return null;
+    }
+
+    /**
+     * @return \MBH\Bundle\CashBundle\Document\CashDocument
+     */
+    public function getCashDocument()
+    {
+        return $this->cashDocument;
+    }
+
+    /**
+     * @param mixed $cashDocument
+    /* */
+    public function setCashDocument(\MBH\Bundle\CashBundle\Document\CashDocument $cashDocument = null)
+    {
+        $this->cashDocument = $cashDocument;
     }
 }

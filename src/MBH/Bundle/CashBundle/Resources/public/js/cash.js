@@ -29,11 +29,15 @@ var cashDocumentPay = function (link) {
     $('#entity-delete-confirmation').modal('hide');
     icon.attr('class', 'fa fa-spin fa-spinner');
 
+    var paidDate = $('#entity-delete-confirmation').find('input[name=paidDate]').val();
+
     $.ajax({
         url: link.attr('href'),
+        data: {paidDate: paidDate},
         success: function (response) {
             if (!response.error) {
-                location.reload();
+                //location.reload();
+                $('#cash-table').dataTable().fnDraw();
             } else {
                 alert(response.message);
             }
@@ -72,7 +76,7 @@ $(document).ready(function () {
             data.begin = $('#begin').val();
             data.end = $('#end').val();
             data.filter = $filterSelectElement.select2('val');
-            data.methods = $methodSelectElement.select2('val');
+            data.method = $methodSelectElement.select2('val');
             data.show_no_paid = $showNoPaidCheckbox.prop("checked") ? 1 : 0;
             data.by_day = $byDayCheckbox.prop("checked") ? 1 : 0;
             data.deleted = $deletedCheckbox.prop("checked") ? 1 : 0;
@@ -172,6 +176,34 @@ $(document).ready(function () {
     $('#cash-filter-form input,select').not('#by_day').on('switchChange.bootstrapSwitch change', function () {
         //$('#cash-filter-form').sayt({'savenow': true});
         sw.currentTable().dataTable().fnDraw();
+    });
+
+    /**
+     * @TODO create tableProcessing = false, too much ajax request
+     */
+    var isAutoSwitchDeletedCheckbox = false;
+    $filterSelectElement.on('change', function(){
+        var value = $filterSelectElement.select2('val');
+        var isDeletedValue = value == 'deletedAt';
+
+        if ($deletedCheckbox.prop('disabled')) {
+            $deletedCheckbox.bootstrapSwitch('toggleDisabled'); //enable
+        }
+
+        if(isDeletedValue) {
+            if (!$deletedCheckbox.bootstrapSwitch('state')){
+                $deletedCheckbox.bootstrapSwitch('state', true);
+                isAutoSwitchDeletedCheckbox = true;
+            } else {
+                isAutoSwitchDeletedCheckbox = false;
+            }
+        } else if ($deletedCheckbox.bootstrapSwitch('state') && isAutoSwitchDeletedCheckbox) {
+            $deletedCheckbox.bootstrapSwitch('state', false);
+        }
+
+        if (isDeletedValue === !$deletedCheckbox.prop('disabled')) {
+            $deletedCheckbox.bootstrapSwitch('toggleDisabled');
+        }
     });
 
     $byDayCheckbox.on('switchChange.bootstrapSwitch', function (event, state) {

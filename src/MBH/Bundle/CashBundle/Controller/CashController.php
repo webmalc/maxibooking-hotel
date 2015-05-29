@@ -30,13 +30,9 @@ class CashController extends Controller
      */
     public function indexAction()
     {
-        $methods = [
-            'cash' => "Наличные",
-            'cashless_electronic' => "Безнал (в том числе электронные)",
-            'cashless' => "Безнал",
-            'electronic' =>  "Электронный",
-            'all' => "Все",
-        ];
+        $methods = $this->container->getParameter('mbh.cash.methods');
+        $addingMethods = ['cashless_electronic' => "Безнал (в т.ч. электронные)"];
+        array_splice($methods, 2, 0, $addingMethods);
 
         return [
             'methods' => $methods,//$this->container->getParameter('mbh.cash.methods'),
@@ -71,16 +67,16 @@ class CashController extends Controller
 
         $queryCriteria->search = $clientDataTableParams->getSearch();
 
-        $methods = $request->get('methods');
-        if ($methods == 'cashless_electronic') {
-            $methods = ['cashless', 'electronic'];
-        } elseif ($methods == 'all' || !$methods) {
-            $methods = [];
-        } else {
-            $methods = [$methods];
-        }
+        $method = $request->get('method');
+        $availableMethods = $this->container->getParameter('mbh.cash.methods');
 
-        $queryCriteria->methods = $methods;
+        if ($method) {
+            if (array_key_exists($method, $availableMethods)) {
+                $queryCriteria->methods = [$method];
+            } elseif ($method == 'cashless_electronic') {
+                $queryCriteria->methods = ['cashless', 'electronic'];
+            }
+        }
 
         $queryCriteria->isPaid = !$request->get('show_no_paid');
         $queryCriteria->begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
@@ -254,13 +250,11 @@ class CashController extends Controller
      * @Method("GET")
      * @Security("is_granted(['ROLE_MANAGER', 'ROLE_BOOKKEEPER'])")
      */
-    public function payAction($id)
+    public function payAction($id, Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $dm->getFilterCollection()->disable('softdeleteable');
-        $entity = $dm->getRepository('MBHCashBundle:CashDocument')->find($id);
-        $dm->getFilterCollection()->enable('softdeleteable');
+        $this->dm->getFilterCollection()->disable('softdeleteable');
+        $entity = $this->dm->getRepository('MBHCashBundle:CashDocument')->find($id);
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             return new JsonResponse([
@@ -268,9 +262,23 @@ class CashController extends Controller
                 'message' => 'CashDocument not found'
             ]);
         }
+
+        $paidDate = \DateTime::createFromFormat('d.m.Y', $request->get('paidDate'));
+        if(!$paidDate)
+            $paidDate = new \DateTime();
+
+        $entity->setPaidDate($paidDate);
         $entity->setIsPaid(true);
-        $dm->persist($entity);
-        $dm->flush();
+
+        $violationList = $this->get('validator')->validate($entity);
+        if($violationList->count() > 0){
+            return new JsonResponse([
+                'error' => false,
+                'message' => (string) $violationList
+            ]);
+        }
+        $this->dm->persist($entity);
+        $this->dm->flush();
 
         return new JsonResponse([
             'error' => false,

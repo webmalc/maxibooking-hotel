@@ -75,6 +75,12 @@ var deleteLink = function () {
             $('#entity-delete-button').attr('class', 'btn btn-' + $('#entity-delete-button').attr('data-default'));
         }
 
+        $('.datepicker').datepicker({
+            language: "ru",
+            todayHighlight: true,
+            autoclose: true
+        });
+
         $('#entity-delete-confirmation').modal();
     });
 };
