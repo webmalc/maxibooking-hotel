@@ -57,17 +57,6 @@ class HotelController extends Controller
      */
     public function indexAction()
     {
-        $notifier = $this->container->get('mbh.notifier');
-        $message = $notifier::createMessage();
-        $message->setText('asddddddddddddddddddddddddddddddasd a asddasd asddddddddddddddddddddddddddd')
-            ->setFrom('system')
-            ->setType('danger')
-        ;
-        $notifier
-            ->setMessage($message)
-            ->notify()
-        ;
-
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
