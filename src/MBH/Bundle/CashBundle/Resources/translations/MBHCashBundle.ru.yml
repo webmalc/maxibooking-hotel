@@ -1,4 +1,7 @@
 views.cash.edit.edit_document: 'редактирование документа #'
+views.cash.index.period: 'Период'
+views.cash.index.filter.byPaidDate: 'По поступлению'
+views.cash.index.filter.byDocumentDate: 'По выставлению'
 views.cash.index.document_list: 'список документов'
 views.cash.index.reservation: Заказ
 views.cash.index.income: Приход
@@ -16,3 +19,8 @@ views.cash.jsonButtons.confirm: Подтвердить
 views.cash.jsonButtons.edit_record: 'Редактирование записи'
 views.cash.jsonButtons.delete_record: 'Удаление записи'
 views.cash.layout.cash: Касса
+
+views.cash.index.show_no_paid: Показать неоплаченные
+views.cash.index.show_deleted: Показать удаленные
+views.cash.index.byDay: По дням
+views.cash.index.result: Итого

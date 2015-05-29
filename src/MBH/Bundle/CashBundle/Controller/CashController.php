@@ -3,6 +3,7 @@
 namespace MBH\Bundle\CashBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Organization;
@@ -44,35 +45,32 @@ class CashController extends Controller
         ];
     }
 
-    /**
-     * Lists all entities as json.
-     *
-     * @Route("/json", name="cash_json", defaults={"_format"="json"}, options={"expose"=true})
-     * @Method("GET")
-     * @Security("is_granted('ROLE_BOOKKEEPER')")
-     * @Template()
-     *
-     * @param Request $request
-     * @return array|\Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
-     */
-    public function jsonAction(Request $request)
+    private function requestToCashCriteria(Request $request)
     {
-        $repository = $this->dm->getRepository('MBHCashBundle:CashDocument');
         $queryCriteria = new CashDocumentQueryCriteria();
+        $clientDataTableParams = ClientDataTableParams::createFromRequest($request);
+        $clientDataTableParams->setSortColumnFields([
+            1 => 'number',
+            3 => 'total',
+            4 => 'total',
+            6 => 'documentDate',
+            7 => 'paidDate',
+            8 => 'deletedAt'
+        ]);
 
-        $queryCriteria->skip = $request->get('start');
-        $queryCriteria->limit = $request->get('length');
+        $queryCriteria->skip = $clientDataTableParams->getStart();
+        $queryCriteria->limit = $clientDataTableParams->getLength();
 
-        $order = $request->get('order')['0'];
+        $queryCriteria->sortBy = 'createdAt';
+        $queryCriteria->sortDirection = -1;//SORT_DESC;
 
-        if (!empty($order['column']) && in_array($order['column'], [1, 3, 4, 6, 7, 8])) {
-            $sorts = [1 => 'number', 3 => 'total', 4 => 'total', 6 => 'documentDate', 7 => 'paidDate', 8 => 'deletedAt'];
-            $queryCriteria->sortBy[] = $sorts[$order['column']];
-            $queryCriteria->sortDirection[] = $order['dir'];
+        if ($getFirstSort = $clientDataTableParams->getFirstSort()) {
+            $queryCriteria->sortBy = [$getFirstSort[0]];
+            $queryCriteria->sortDirection = [$getFirstSort[1]];
         }
 
-        $queryCriteria->search = $request->get('search')['value'];
+        $queryCriteria->search = $clientDataTableParams->getSearch();
+
         $methods = $request->get('methods');
         if ($methods == 'cashless_electronic') {
             $methods = ['cashless', 'electronic'];
@@ -98,8 +96,30 @@ class CashController extends Controller
 
         $queryCriteria->filterByRange = $request->get('filter');
         $queryCriteria->orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
-        $isByDay = $request->get('by_day');
 
+        $queryCriteria->deleted = $request->get('deleted');
+
+        return $queryCriteria;
+    }
+
+    /**
+     * Lists all entities as json.
+     *
+     * @Route("/json", name="cash_json", defaults={"_format"="json"}, options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_BOOKKEEPER')")
+     * @Template()
+     *
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
+    public function jsonAction(Request $request)
+    {
+        $repository = $this->dm->getRepository('MBHCashBundle:CashDocument');
+
+        $queryCriteria = $this->requestToCashCriteria($request);
+        $isByDay = $request->get('by_day');
         if ($isByDay) {
             $queryCriteria->isPaid = true;
         }
@@ -126,6 +146,8 @@ class CashController extends Controller
             $params['noConfirmedTotalIn'] = $repository->total('in', $queryCriteria);
             $params['noConfirmedTotalOut'] = $repository->total('out', $queryCriteria);
         }
+
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         if ($isByDay) {
             return $this->render('MBHCashBundle:Cash:jsonByDay.json.twig', $params + ['data' => $results]);

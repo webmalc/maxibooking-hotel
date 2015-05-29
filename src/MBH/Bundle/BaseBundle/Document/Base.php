@@ -31,7 +31,7 @@ class Base
     /**
      * Get id
      *
-     * @return id $id
+     * @return string $id
      */
     public function getId()
     {
