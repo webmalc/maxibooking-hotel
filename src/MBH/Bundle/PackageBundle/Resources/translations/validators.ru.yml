@@ -1,6 +1,8 @@
 validator.begin_end_message: Начало брони не должно быть больше или равно концу брони
 validator.places_message: Недопустимый тип номера для указанного количества гостей
 validator.tariff_message: Даты брони выходят за пределы тарифа
+validator.package.check_in_out_message: Нельзя заселить/выселить гостей без указания комнаты
+validator.package.check_out_message: Нельзя выселить гостей без заселения
 validator.document.cacheQueue.wrong_status: Неверный статус.
 validator.document.order.price_min_message: Цена не может быть меньше нуля
 validator.document.order.payed_sum_min_message: Оплачено не может быть меньше нуля

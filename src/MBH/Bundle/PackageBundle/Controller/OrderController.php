@@ -89,6 +89,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         $cash->setOrder($entity);
 
         $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
+        /** @var CashDocument[] $docs */
         $docs = $cashDocumentRepository
             ->createQueryBuilder('q')
             ->field('order.id')->equals($entity->getId())
@@ -283,9 +284,6 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      */
     public function organizationUpdateAction(Order $entity, Package $package, Request $request)
     {
-        /*if($request->isMethod("GET"))
-            return $this->redirect()
-        */
         $permissions = $this->container->get('mbh.package.permissions');
         if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
@@ -296,9 +294,13 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         if ($organization['inn']) {
             $existOrganization = $this->dm->getRepository('MBHPackageBundle:Organization')->findOneByInn($organization['inn']);
         }
+        if (!$existOrganization) {
+            $existOrganization = new Organization();
+            $existOrganization->setType('contragents');
+        }
 
         $form = $this->createForm(new OrganizationType($this->dm),
-            $existOrganization ? $existOrganization : new Organization(), [
+            $existOrganization, [
                 'scenario' => OrganizationType::SCENARIO_SHORT,
                 'typeList' => $this->container->getParameter('mbh.organization.types'),
             ]);
@@ -327,8 +329,6 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             return $this->redirect($this->generateUrl('package',
                 ['id' => $entity->getId(), 'packageId' => $package->getId()]));
         }
-
-        //return $this->redirect($this->generateUrl('package_order_tourist_edit', ['id' => $entity->getId(), 'packageId' => $package->getId()]));
         return [
             'entity' => $entity,
             'logs' => $this->logs($entity),

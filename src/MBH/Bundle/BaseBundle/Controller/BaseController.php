@@ -17,11 +17,17 @@ class BaseController extends Controller
      */
     protected $dm;
 
+    /**
+     * @var \MBH\Bundle\HotelBundle\Document\Hotel
+     */
+    protected $hotel;
+
     public function setContainer(ContainerInterface $container = null)
     {
         parent::setContainer($container);
 
         $this->dm = $this->get('doctrine_mongodb')->getManager();
+        $this->hotel = $this->get('mbh.hotel.selector')->getSelected();
     }
 
     /**

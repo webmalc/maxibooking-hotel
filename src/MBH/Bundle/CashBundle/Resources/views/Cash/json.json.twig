@@ -1,20 +1,24 @@
 {
     "draw" : "{{ draw }}",
-    "recordsTotal": "{{ total }}",
-    "totalIn": "{{ totalIn|number_format }}",
-    "totalOut": "{{ totalOut|number_format }}",
-    "recordsFiltered": "{{ total }}",
+    "recordsTotal": "{{ recordsFiltered }}",
+    "totalIn": "{{ totalIn|number_format(2) }}",
+    "totalOut": "{{ totalOut|number_format(2) }}",
+    "noConfirmedTotalIn": "{{ noConfirmedTotalIn|number_format(2) }}",
+    "noConfirmedTotalOut": "{{ noConfirmedTotalOut|number_format(2) }}",
+    "total": "{{ total|number_format(2) }}",
+    "recordsFiltered": "{{ recordsFiltered }}",
     "data": [
         {% for entity in entities %}
             [
                 "<div class='text-center {{ entity.isConfirmed is empty and entity.isPaid ? 'not-confirmed-entry' }} {{ entity.deletedAt ? 'deleted-entry' }} {{ entity.isPaid is empty ? 'not-paid-entry' }}'><i class='fa fa-ruble'></i></div>",
                 "<div class='cash-number text-center'>{{ entity.number }}</div>",
+                "<div class='text-center'>{{ entity.payer.name }}</div>",
                 "<div class='text-right'>{% if entity.operation not in ['fee', 'out'] %}<a href='{{ path('cash_edit', { 'id': entity.id }) }}' rel='main' class='text-success' title='Редактирование записи' data-toggle='tooltip'>{{ entity.total|number_format(2) }}</a>{% endif %}</div>",
                 "<div class='text-right'>{% if entity.operation in ['fee', 'out'] %}<a href='{{ path('cash_edit', { 'id': entity.id }) }}' rel='main' class='text-danger' title='Редактирование записи' data-toggle='tooltip'>{{ entity.total|number_format(2) }}</a>{% endif %}</div>",
                 "{{ operations[entity.operation] }}<br><small>{{ methods[entity.method] }}</small>",
-                "{{ entity.createdAt|date('d.m.Y') }}",
-                "<div class='text-center'>{% if not entity.isPaid %}<span class='label label-danger'>{{ 'order.cash.no'|trans({}, 'MBHPackageBundle') }}</span>{% endif %}</div>",
-                "{{ entity.deletedAt ? entity.deletedAt|date('d.m.Y') }}",
+                "{{ entity.documentDate|date('d.m.Y') }}",
+                "<div class='text-center'>{% if entity.isPaid %} {{ entity.paidDate|date('d.m.Y') }} {% else %} <span class='label label-danger'>{{ 'order.cash.no'|trans({}, 'MBHPackageBundle') }}</span>{% endif %}</div>",
+                "{{ entity.deletedAt ? entity.documentDate|date('d.m.Y') }}",
                 "{% include 'MBHCashBundle:Cash:jsonButtons.html.twig' with {'entity': entity} %}"
             ]{% if loop.index != entities.count(true) %},{% endif %}
         {% endfor %}

@@ -143,7 +143,8 @@ class PackageRepository extends DocumentRepository
             }
             // without accommodation
             if ($data['filter'] == 'without_accommodation') {
-                $qb->field('accommodation')->equals(null);
+                $qb->addOr($qb->expr()->field('accommodation')->exists(false));
+                $qb->addOr($qb->expr()->field('accommodation')->equals(null));
             }
         }
 
@@ -176,7 +177,20 @@ class PackageRepository extends DocumentRepository
 
         //isCheckIn
         if(isset($data['checkIn'])) {
-            $qb->field('isCheckIn')->equals(empty($data['checkIn']) ? false : true);
+            if (!empty($data['checkIn'])) {
+                $qb->field('isCheckIn')->equals(true);
+            } else {
+                $qb->field('isCheckIn')->notEqual(true);
+            }
+        }
+
+        //isCheckOut
+        if(isset($data['checkOut'])) {
+            if (!empty($data['checkOut'])) {
+                $qb->field('isCheckOut')->equals(true);
+            } else {
+                $qb->field('isCheckOut')->notEqual(true);
+            }
         }
 
         //order

@@ -20,6 +20,10 @@ $.fn.serializeObject = function () {
 $(document).ready(function () {
     'use strict';
 
+    $(".timepicker").timepicker({
+        showMeridian: false
+    });
+
     //only int
     $('.only-int').change(function () {
         if (this.value === '') {

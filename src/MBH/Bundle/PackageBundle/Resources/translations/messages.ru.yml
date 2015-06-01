@@ -22,9 +22,12 @@ form.orderType.comment: Комментарий
 form.orderType.is_confirmed: Подтвержден?
 form.packageAccommodationType.room_or_bed: Комната/койко-место
 form.packageAccommodationType.room: Комната
-form.packageAccommodationType.choose_placement: Выбрать размещение
+form.packageAccommodationType.choose_placement: Информация о размещении
 form.packageAccommodationType.are_guests_checked_in: Гости заехали?
 form.packageAccommodationType.are_guests_checked_in_help: Заехал ли гости в номер?
+form.packageAccommodationType.are_guests_checked_out: Гости выехали?
+form.packageAccommodationType.are_guests_checked_out_help: Выехали ли гости из номера?
+form.packageAccommodationType.check_in_group: Время заезда/выезда
 form.packageCopyType.reservation: Бронь
 form.packageCopyType.transfer_parameters: Параметры переноса
 form.packageCopyType.data_transfer_reservation: Бронь в которую будет произведен перенос данных.
@@ -126,6 +129,7 @@ controller.packageController.order_created_success:  'Заказ успешно 
 controller.packageController.guest_added_success: 'Гость успешно добавлен.'
 controller.packageController.service_adding_error_refresh_and_try_again:  'Произошла ошибка при добавлении услуги. Обновите страницу и попробуйте еще раз.'
 controller.packageController.service_added_success: 'Услуга успешно добавлена.'
+controller.packageController.service_edit_success: 'Услуга успешно отредактирована.'
 controller.packageController.service_deleted_success: 'Услуга успешно удалена.'
 controller.packageController.placement_saved_success: 'Размещение успешно сохранено.'
 controller.packageController.placement_deleted_success: 'Размещение успешно удалено.'

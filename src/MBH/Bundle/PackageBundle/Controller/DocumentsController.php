@@ -99,8 +99,6 @@ class DocumentsController extends Controller
      */
     public function removeAction(Order $entity, Package $package, $name)
     {
-        /* @var $this->dm  \Doctrine\ODM\MongoDB\DocumentManager */
-        $this->dm = $this->get('doctrine_mongodb')->getManager();
         $permissions = $this->container->get('mbh.package.permissions');
 
         if (!$permissions->checkHotel($entity) || !$permissions->check($entity)) {
@@ -121,16 +119,12 @@ class DocumentsController extends Controller
      * @Route("/document/{name}/{download}", name="order_document_view", options={"expose"=true}, defaults={"download" = 0})
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
-     *
      * @param $name
      * @param $download
      * @return Response
      */
     public function viewAction($name, $download = 0)
     {
-        //todo $repository->getDocumentByName
-        /* @var $this->dm  \Doctrine\ODM\MongoDB\DocumentManager */
-        $this->dm = $this->get('doctrine_mongodb')->getManager();
         /** @var OrderRepository $packageRepository */
         $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
 
@@ -192,12 +186,6 @@ class DocumentsController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $documentTypes = [];
-        foreach ($this->container->getParameter('mbh.order.document.types') as $type) {
-            $documentTypes[$type] = $this->get('translator')->trans('package.document.type_'.$type, [],
-                'MBHPackageBundle');
-        }
-
         $touristIds = $this->get('mbh.helper')->toIds($package->getTourists());
 
         if ($mainTourist = $package->getMainTourist()) {
@@ -213,17 +201,16 @@ class DocumentsController extends Controller
         ]);
 
         if ($request->isMethod("PUT")) {
-            $oldPackageDocument = clone($orderDocument);
+            $oldOrderDocument = clone($orderDocument);
             $form->submit($request);
 
             if ($form->isValid()) {
                 if (!$orderDocument->isUploaded()) {
                     $orderDocument->upload();
-                    $oldPackageDocument->deleteFile();
+                    $oldOrderDocument->deleteFile();
                 }
                 $this->dm->persist($orderDocument);
                 $this->dm->flush();
-
 
                 return $this->redirect($this->generateUrl("order_documents", ['id' => $entity->getId(), 'packageId' => $package->getId()]));
             }

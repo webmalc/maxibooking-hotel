@@ -3,6 +3,7 @@
     <small class='text-danger'><i class='fa fa-times'></i> {{ 'order.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}</small><br>
 <b>Даты:</b> {{ data.doc.begin|date('d.m.Y') }} - {{ data.doc.end|date('d.m.Y') }}<br>
 <b>Заехали:</b> {{ data.doc.isCheckIn ? 'да' : 'нет' }}<br>
+<b>Выехали:</b> {{ data.doc.isCheckOut ? 'да' : 'нет' }}<br>
 <b>Гости:</b> {{ data.doc.adults }}+{{ data.doc.children }}<br>
 <b>Стоимость:</b> {{ data.doc.order.price }} руб.<br>
 <b>Долг:</b> {{ data.doc.order.debt }} руб.<br>

@@ -123,7 +123,7 @@ class ServiceCategory extends Base
     /**
      * Get services
      *
-     * @return \Doctrine\Common\Collections\Collection $services
+     * @return \MBH\Bundle\PriceBundle\Document\Service[] $services
      */
     public function getServices()
     {

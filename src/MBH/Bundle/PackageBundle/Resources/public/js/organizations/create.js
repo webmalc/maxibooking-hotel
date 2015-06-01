@@ -1,3 +1,6 @@
+/**
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
 (function($){
     $('#organization_city').select2({
         minimumInputLength: 3,
@@ -39,10 +42,19 @@
     var checkDisplayHotelsGroup = function() {
         $typeInput.val() == 'my' ? $hotelsGroup.show() : $hotelsGroup.hide();
     }
-    $typeInput.on('change', function(){
-        checkDisplayHotelsGroup();
-        $hotelsInput.select2({width: 'resolve'});
-    });
 
-    checkDisplayHotelsGroup();
+    if($typeInput.length > 0) {
+        $typeInput.on('change', function(){
+            checkDisplayHotelsGroup();
+            $hotelsInput.select2({width: 'resolve'});
+        });
+
+        checkDisplayHotelsGroup();
+    } else {
+        $hotelsGroup.show()
+    }
+
+    $("#organization_inn").mask("9999999999?99");
+    $("#organization_kpp").mask("999999999");
+
 })(jQuery);

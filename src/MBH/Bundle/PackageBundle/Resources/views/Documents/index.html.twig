@@ -106,7 +106,7 @@
             {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                 {{ form_start(form, {'action': path('order_documents', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
                 {{ form_widget(form) }}
-                {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity, 'delete_route': 'order_delete' } %}
+                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package} %}
                 {{ form_end(form) }}
             {% endif %}
 

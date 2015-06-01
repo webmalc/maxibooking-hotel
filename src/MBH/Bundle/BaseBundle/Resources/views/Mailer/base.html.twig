@@ -1,6 +1,62 @@
 {% spaceless %}
-    <h1 style="color:#00005a; font-size:19px; border-bottom: 1px solid #e1e1f9; margin:0 0 30px 0;padding:10px 0;font-family:Open Sans,Lucida Grande,Segoe UI,Arial,Verdana,Lucida Sans Unicode,Tahoma,Sans Serif;">
-        {{subject|default('')}}
-    </h1>
-    <p>{{text|default('')|raw}}</p>
+    {% set color = '#dddddd' %}
+    {% if type is defined and type == 'danger' %}
+        {% set color = '#bc1a20' %}
+    {% endif %}
+
+    <div style="width:750px;margin:50px auto;">
+        <div style="width:720px;height:6px;margin:3px auto; height: 5px;">
+            <img src="{{ app.request.uriForPath('/bundles/mbhbase/images/linet.png')|replace({'app_dev.php/': ''}) }}" border="0"
+                                                                                                        style="width:720px;height:5px;">
+        </div>
+        <div style="width:750px;border:1px solid {{ color }};">
+            <div style="width:650px;min-height:400px;margin:25px 50px 30px;">
+
+                <div style="border-bottom:1px solid {{ color }};">
+
+                    <table cellpadding="0" cellspacing="0" border="0"
+                           style="border-collapse:collapse;width:650px;min-height:100px;margin-bottom:15px;">
+                        <tr valign="middle">
+                            <td style="width:15%;">
+                                <img src="{{ app.request.uriForPath('/bundles/mbhbase/images/empty_logo.png')|replace({'app_dev.php/': ''}) }}" border="0"
+                                     alt="MaxiBooking"
+                                     style="width:130px;height:110px;margin-bottom:1px;">
+                            </td>
+                            <td style="width:5%;">
+                            </td>
+                            <td style="width:80%;">
+                                <h2 style="margin:5px 0;font-family:Tahoma,Arial;font-size:30px;line-height:30px;color:#004071;font-weight:bold;">
+                                    MaxiBooking</h2>
+
+                                <p style="margin:5px 0;font-family:Tahoma,Arial;font-size:14px;line-height:19px;color:#999;">
+                                    Система управления отелем</p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h2 style="margin:35px 0 45px;font-family:Tahoma,Arial;font-size:26px;line-height:30px;color:#000;font-weight:normal;">
+                    {{ subject|default('') }}
+                </h2>
+
+                <p style="margin:5px 0;font-family:Tahoma,Arial;font-size:14px;line-height:19px;color:#666;">
+                    {{ text|default('')|raw }}</p>
+                <br>
+
+            </div>
+        </div>
+        <div style="width:720px; height:6px; margin:3px auto; height: 5px;">
+            <img src="{{ app.request.uriForPath('/bundles/mbhbase/images/lineb.png')|replace({'app_dev.php/': ''}) }}" border="0"
+                 style="width:720px;height:5px;">
+        </div>
+
+        <div style="margin:25px 0 0;font-family:Tahoma,Arial;font-size:11px;line-height:14px;color:#ccc;text-align:center;">
+            Письмо сгенерировано автоматически системой управления отелем «МаксиБукинг» <a
+                    href="http://maxi-booking.ru/" target="_blank">
+                <img src="{{ app.request.uriForPath('/bundles/mbhbase/images/maxibooking.png')|replace({'app_dev.php/': ''}) }}" border="0"
+                     alt="MAXIBOOKING"
+                     style="width:78px;height:18px;margin-left:3px;vertical-align:middle;"></a>
+        </div>
+
+    </div>
 {% endspaceless %}

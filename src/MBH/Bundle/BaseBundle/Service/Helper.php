@@ -39,7 +39,7 @@ class Helper
     /**
      * @param mixed $date
      * @param string $format
-     * @return \DateTime
+     * @return \DateTime|null
      */
     public function getDateFromString($date, $format = "d.m.Y")
     {

@@ -22,7 +22,7 @@
                             <div class="col-md-9">{{ entity.tariff.name }}</div>
                         </div>
                         <div class="row spacer-top">
-                            <div class="col-md-3"><strong>Цена</strong></div>
+                            <div class="col-md-3"><strong>{{ 'package.edit.price'|trans({}, 'MBHPackageBundle') }}</strong></div>
                             <div class="col-md-9">
                                 {{ entity.price|number_format(2) }}
                                 &nbsp;
@@ -37,24 +37,32 @@
                                 {% endif %}
 
                                 <div class="spacer-top">
+                                    <small>
+                                        <a href="#" id="package-price-by-day-href">
+                                            {{ 'package.edit.price_by_day'|trans({}, 'MBHPackageBundle')|lower }}&nbsp;
+                                            <i class="fa fa-caret-down"></i>
+                                        </a>
+                                    </small>
+                                </div>
+
+                                <div class="spacer-top" id="package-price-by-day">
                                 {% for date, price in entity.pricesByDate %}
                                     <small>{{ date|replace({'_': '.'}) }} - <strong>{{ price }}</strong></small><br>
                                 {% endfor %}
-
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row spacer-top">
-                            <div class="col-md-3">
-                                <strong>{{ 'package.edit.service_price'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                            <div class="col-md-9">
-                                {{ entity.servicesPrice|number_format(2) }}
-
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="row">
+                            <div class="col-md-4">
+                                <strong>{{ 'package.edit.service_price'|trans({}, 'MBHPackageBundle') }}</strong></div>
+                            <div class="col-md-8">
+                                {{ entity.servicesPrice|number_format(2) }}
+
+                            </div>
+                        </div>
+                        <div class="row spacer-top">
                             <div class="col-md-4">
                                 <strong>{{ 'package.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong></div>
                             <div class="col-md-8"><span
@@ -78,35 +86,15 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="row spacer-top">
-                            <div class="col-md-4">
-                                <strong>Акт</strong></div>
-                            <div class="col-md-8">
-                                <a target="_blank"
-                                   class="btn btn-default btn-sm {% if entity.isPaid is empty %}disabled{% endif %}"
-                                   href="{{ path('package_pdf', {'id': entity.id}) }}">
-                                    <i class="fa fa-print"> </i> {{ 'package.edit.print_act'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </div>
-                        </div>
                     </div>
                 </div>
-
-                <!-- DELETE -->
-                <br><br>
-                {% for k in entity.note|split(';') %}
-                    {% set v = k|split(':') %}
-                    <strong>{{ v[0] }}</strong> - {{ v[1] is defined ? v[1] }}<br>
-                {% endfor %}
-
-                <!-- DELETE -->
 
             </div>
 
             {{ form_start(form, {'action': path('package_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
             {% if entity.deletedAt is empty %}
-                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'delete_route': 'package_delete' } %}
+                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity} %}
             {% endif %}
             {{ form_end(form) }}
 

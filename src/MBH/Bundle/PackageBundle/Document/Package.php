@@ -216,28 +216,16 @@ class Package extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
-     * @Assert\Type(type="numeric")
-     * @Assert\Range(
-     *      min=0,
-     *      minMessage= "validator.document.package.check_in_time_less_zero",
-     *      max=23,
-     *      maxMessage= "validator.document.package.check_in_time_greater_23",
-     * )
+     * @ODM\Date()
+     * @Assert\DateTime()
      */
     protected $arrivalTime;
 
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
-     * @Assert\Type(type="numeric")
-     * @Assert\Range(
-     *      min=0,
-     *      minMessage= "validator.document.package.check_out_time_less_zero",
-     *      max=23,
-     *      maxMessage= "validator.document.package.check_out_time_greater_23",
-     * )
+     * @ODM\Date()
+     * @Assert\DateTime()
      */
     protected $departureTime;
 
@@ -262,6 +250,14 @@ class Package extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isCheckIn = false;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isCheckOut = false;
 
     /**
      * @var boolean
@@ -440,7 +436,7 @@ class Package extends Base
     /**
      * Set begin
      *
-     * @param /DateTime $begin
+     * @param \DateTime $begin
      * @return self
      */
     public function setBegin($begin)
@@ -452,7 +448,7 @@ class Package extends Base
     /**
      * Get begin
      *
-     * @return date $begin
+     * @return \DateTime $begin
      */
     public function getBegin()
     {
@@ -713,10 +709,10 @@ class Package extends Base
     /**
      * Set arrivalTime
      *
-     * @param int $arrivalTime
+     * @param \DateTime $arrivalTime
      * @return self
      */
-    public function setArrivalTime($arrivalTime)
+    public function setArrivalTime(\DateTime $arrivalTime = null)
     {
         $this->arrivalTime = $arrivalTime;
         return $this;
@@ -725,7 +721,7 @@ class Package extends Base
     /**
      * Get arrivalTime
      *
-     * @return int $arrivalTime
+     * @return \DateTime $arrivalTime
      */
     public function getArrivalTime()
     {
@@ -735,10 +731,10 @@ class Package extends Base
     /**
      * Set departureTime
      *
-     * @param int $departureTime
+     * @param \DateTime $departureTime
      * @return self
      */
-    public function setDepartureTime($departureTime)
+    public function setDepartureTime(\DateTime $departureTime = null)
     {
         $this->departureTime = $departureTime;
         return $this;
@@ -747,7 +743,7 @@ class Package extends Base
     /**
      * Get departureTime
      *
-     * @return int $departureTime
+     * @return \DateTime $departureTime
      */
     public function getDepartureTime()
     {
@@ -1017,5 +1013,51 @@ class Package extends Base
     public function getMainTourist()
     {
         return $this->getOrder()->getMainTourist();
+    }
+
+    /**
+     * @param boolean $isCheckOut
+     */
+    public function setIsCheckOut($isCheckOut)
+    {
+        $this->isCheckOut = $isCheckOut;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsCheckOut()
+    {
+        return $this->isCheckOut;
+    }
+
+    /**
+     * @ODM\PrePersist
+     */
+    public function prePersist()
+    {
+        $this->checkCheckInOut();
+    }
+
+    /**
+     * @ODM\preUpdate
+     */
+    public function preUpdate()
+    {
+        $this->checkCheckInOut();
+    }
+
+    public function checkCheckInOut()
+    {
+        if (!$this->getIsCheckIn()) {
+            $this->setArrivalTime(null);
+        } elseif (!$this->getArrivalTime()) {
+            $this->setArrivalTime(new \DateTime());
+        }
+        if (!$this->getIsCheckOut()) {
+            $this->setDepartureTime(null);
+        } elseif (!$this->getDepartureTime()) {
+            $this->setDepartureTime(new \DateTime());
+        }
     }
 }

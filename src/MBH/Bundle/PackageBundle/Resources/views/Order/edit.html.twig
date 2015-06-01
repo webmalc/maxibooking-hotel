@@ -53,29 +53,12 @@
                         {% endif %}
                     </div>
                 </div>
-                {% if entity.card and entity.deletedAt is empty %}
-                <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>Карта</strong></div>
-                    <div class="col-md-10">
-                        {% for k in entity.card|split(';') %}
-                            {% set v = k|split(':') %}
-                             {% if v[0]|trim == 'cc_number' %}
-                                <strong>{{ v[0] }}</strong> - {{ v[1]|slice(0,5) }}{% for i in 0..v[1]|length-10 %}*{% endfor %}{{ v[1]|slice(v[1]|length-4, 4) }}<br>
-                             {% elseif v[0]|trim == 'cc_cvc' %}
-                                 <strong>{{ v[0] }}</strong> - ***<br>
-                             {% else %}
-                                <strong>{{ v[0] }}</strong> - {{ v[1] }}<br>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
 
             </div>
 
             {{ form_start(form, {'action': path('package_order_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHPackageBundle:Order:navbar.html.twig' with {'entity': entity, 'package': package} %}
+                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package} %}
             {{ form_end(form) }}
 
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}

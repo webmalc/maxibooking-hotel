@@ -67,6 +67,17 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * @param \MongoDate $mongoDate
+     * @return \DateTime
+     *
+     * @author Aleksandr Arofikin <sashaaro@gmail.com>
+     */
+    public function convertMongoDate(\MongoDate $mongoDate)
+    {
+        return new \DateTime('@' . $mongoDate->sec);
+    }
+
+    /**
      * @return array
      */
     public function getFilters()
@@ -75,6 +86,7 @@ class Extension extends \Twig_Extension
             'mbh_format' => new \Twig_Filter_Method($this, 'format'),
             'mbh_md5' => new \Twig_Filter_Method($this, 'md5'),
             'num2str' => new \Twig_Filter_Method($this, 'num2str'),
+            'convertMongoDate' => new \Twig_Filter_Method($this, 'convertMongoDate'),
         ];
     }
 

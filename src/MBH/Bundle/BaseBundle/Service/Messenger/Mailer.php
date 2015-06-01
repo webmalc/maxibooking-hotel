@@ -1,13 +1,13 @@
 <?php
 
-namespace MBH\Bundle\BaseBundle\Service;
+namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Mailer service
  */
-class Mailer
+class Mailer implements \SplObserver
 {
     /**
      * @array
@@ -29,12 +29,32 @@ class Mailer
      */
     private $container;
 
+    /**
+     * @var \Doctrine\ODM\MongoDB\DocumentManager
+     */
+    private $dm;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->twig = $container->get('twig');
         $this->mailer = $container->get('mailer');
         $this->params = $container->getParameter('mbh.mailer');
+        $this->dm = $this->container->get('doctrine_mongodb');
+    }
+
+    /**
+     * @param \SplSubject $notifier
+     */
+    public function update(\SplSubject $notifier)
+    {
+        /** @var NotifierMessage $message */
+        $message = $notifier->getMessage();
+
+        $this->send($message->getRecipients(), [
+            'text' => $message->getText(),
+            'type' => $message->getType()
+        ], $message->getTemplate());
     }
 
     /**
@@ -47,7 +67,19 @@ class Mailer
     public function send(array $recipients, array $data, $template = null)
     {
         if (empty($recipients)) {
-            throw new \Exception('Не удалось отправить письмо. Нет не одного получателя.');
+
+            $users = $this->dm->getRepository('MBHUserBundle:User')->findBy(
+                ['emailNotifications' => true, 'enabled' => true, 'locked' => false]
+            );
+
+            if (!count($users)) {
+                throw new \Exception('Не удалось отправить письмо. Нет не одного получателя.');
+            }
+
+            $recipients = [];
+            foreach ($users as $user) {
+                $recipients[] = [$user->getEmail() => $user->getFullName()];
+            }
         }
 
         (empty($data['subject'])) ? $data['subject'] = $this->params['subject']: $data['subject'];

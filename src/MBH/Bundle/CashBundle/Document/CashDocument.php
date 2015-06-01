@@ -4,6 +4,7 @@ namespace MBH\Bundle\CashBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
@@ -124,7 +125,6 @@ class CashDocument extends Base
     /**
      * @var \DateTime
      * @Gedmo\Versioned
-     * @Assert\NotNull()
      * @ODM\Date()
      */
     protected $documentDate;
@@ -147,6 +147,12 @@ class CashDocument extends Base
      * @var Tourist
      */
     protected $touristPayer;
+
+
+    /**
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\OrderDocument", inversedBy="cashDocuments")
+     */
+    protected $orderDocument;
 
     /**
      * Set method
@@ -275,11 +281,10 @@ class CashDocument extends Base
 
     private function checkDate()
     {
-        if (!$this->getIsPaid()) {
+        if(!$this->getIsPaid())
             $this->setPaidDate(null);
-        } elseif (!$this->getPaidDate()) {
+        elseif(!$this->getPaidDate())
             $this->setPaidDate(new \DateTime('now'));
-        }
     }
 
     /**
@@ -291,7 +296,6 @@ class CashDocument extends Base
     public function setIsConfirmed($isConfirmed)
     {
         $this->isConfirmed = $isConfirmed;
-
         return $this;
     }
 
@@ -314,7 +318,6 @@ class CashDocument extends Base
     public function setIsPaid($isPaid)
     {
         $this->isPaid = $isPaid;
-
         return $this;
     }
 
@@ -338,18 +341,20 @@ class CashDocument extends Base
 
 
     /**
-     * @param bool $self
-     * @return Organization|Tourist|null
+     * @see Organization
+     * @see Tourist
+     *
+     * @return PayerInterface|null
      */
-    public function getPayer($self = false)
+    public function getPayer()
     {
         if ($this->getOrganizationPayer()) {
             return $this->getOrganizationPayer();
         } elseif ($this->getTouristPayer()) {
             return $this->getTouristPayer();
-        } elseif ($this->getOrder()->getOrganization() && !$self) {
+        } elseif ($this->getOrder()->getOrganization()) {
             return $this->getOrder()->getOrganization();
-        } elseif ($this->getOrder()->getMainTourist() && !$self) {
+        } elseif ($this->getOrder()->getMainTourist()) {
             return $this->getOrder()->getMainTourist();
         }
 
@@ -365,7 +370,6 @@ class CashDocument extends Base
     public function setOrder(\MBH\Bundle\PackageBundle\Document\Order $order)
     {
         $this->order = $order;
-
         return $this;
     }
 
@@ -428,6 +432,7 @@ class CashDocument extends Base
     }
 
 
+
     /**
      * @return null|Tourist
      */
@@ -449,10 +454,31 @@ class CashDocument extends Base
      */
     public function isValidDate()
     {
-        if ($this->getIsPaid() && $this->getPaidDate()) {
+        if($this->getIsPaid() && $this->getPaidDate())
             return $this->getPaidDate()->getTimestamp() >= $this->getDocumentDate()->getTimestamp();
-        }
 
         return true;
     }
+
+    /**
+     * @return OrderDocument|null
+     */
+    public function getOrderDocument()
+    {
+        foreach($this->getOrder()->getDocuments() as $document){
+            if($document->getCashDocument() == $this)
+                return $document;
+        }
+
+        return null;
+        //return $this->orderDocument;
+    }
+
+    /**
+     * @param OrderDocument $orderDocument
+     */
+    /*public function setOrderDocument(OrderDocument $orderDocument = null)
+    {
+        $this->orderDocument = $orderDocument;
+    }*/
 }

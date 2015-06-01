@@ -113,12 +113,13 @@ class OrganizationController extends Controller
      */
     public function createAction(Request $request)
     {
-        /* @var $dm  \Doctrine\ODM\MongoDB\DocumentManager */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         $organization = new Organization();
+        //default value
+        if(!$request->isMethod('PUT') && $request->get('type')) {
+            $organization->setType($request->get('type'));
+        }
 
-        $form = $this->createForm(new OrganizationType($dm), $organization, [
+        $form = $this->createForm(new OrganizationType($this->dm), $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
         ]);
 
@@ -126,10 +127,10 @@ class OrganizationController extends Controller
             $form->submit($request);
 
             if ($form->isValid()) {
-                $dm->persist($organization);
-                $dm->flush();
+                $this->dm->persist($organization);
+                $this->dm->flush();
 
-                return $this->redirect($this->generateUrl('organizations'));
+                return $this->redirect($this->generateUrl('organizations', ['type' => $organization->getType()]));
             }
         }
 
