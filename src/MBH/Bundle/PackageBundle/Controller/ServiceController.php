@@ -110,6 +110,12 @@ class ServiceController extends BaseController
         /** @var \MBH\Bundle\PackageBundle\Document\PackageService[] $results */
         $results = $qb->getQuery()->execute()->toArray();
 
+        $total = $qb->group([], ['total' => 0, 'persons' => 0])->reduce('function(obj, prev){
+            prev.persons += obj.persons;
+            prev.total += obj.persons * obj.price;
+        }')->getQuery()->getSingleResult();
+
+
         if($request->get('deleted') == 'on') {
             $this->dm->getFilterCollection()->enable('softdeleteable') ;
         }
@@ -117,6 +123,7 @@ class ServiceController extends BaseController
         return [
             'results' => $results,
             'recordsFiltered' => count($results),
+            'total' => $total,
             'config' => $this->container->getParameter('mbh.services'),
         ];
     }

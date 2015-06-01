@@ -16,7 +16,7 @@ var cashDocumentConfirmation = function (link) {
                     $('#cash-table').dataTable().fnDraw();
                 }
             } else {
-                alert(response.message);
+                alert('Error: ' + response.message);
             }
         },
         dataType: 'json'
@@ -36,10 +36,9 @@ var cashDocumentPay = function (link) {
         data: {paidDate: paidDate},
         success: function (response) {
             if (!response.error) {
-                //location.reload();
                 $('#cash-table').dataTable().fnDraw();
             } else {
-                alert(response.message);
+                alert('Error: ' + response.message);
             }
         },
         dataType: 'json'
