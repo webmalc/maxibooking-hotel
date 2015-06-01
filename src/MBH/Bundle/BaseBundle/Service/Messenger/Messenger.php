@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\BaseBundle\Service;
+namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
 use MBH\Bundle\BaseBundle\Document\Message;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Messenger service
  */
-class Messenger
+class Messenger implements \SplObserver
 {
     /**
      * @var \Doctrine\ODM\MongoDB\DocumentManager
@@ -26,7 +26,20 @@ class Messenger
         $this->dm = $container->get('doctrine_mongodb')->getManager();
     }
 
-    public function send($text, $from = 'system', $type = 'info', $autohide = false, $end = null, $email = false)
+    /**
+     * @param \SplSubject $notifier
+     */
+    public function update(\SplSubject $notifier)
+    {
+        /** @var NotifierMessage $message */
+        $message = $notifier->getMessage();
+
+        $this->send($message->getText(), $message->getFrom(), $message->getType(), $message->getAutohide(),
+            $message->getEnd());
+
+    }
+
+    public function send($text, $from = 'system', $type = 'info', $autohide = false, $end = null)
     {
         return $this->add($text, $from, $type, $autohide, $end);
     }
@@ -39,7 +52,7 @@ class Messenger
         $messages = $this->dm->getRepository('MBHBaseBundle:Message')->findAll();
         $session = $this->container->get('session');
 
-        foreach($messages as $message) {
+        foreach ($messages as $message) {
             $session->getFlashBag()->add($message->getType(), $message->getText());
         }
         $this->clear();
@@ -61,8 +74,7 @@ class Messenger
             ->setText($text)
             ->setType($type)
             ->setAutohide($autohide)
-            ->setEnd($end)
-        ;
+            ->setEnd($end);
         $this->dm->persist($message);
         $this->dm->flush();
 
@@ -77,8 +89,7 @@ class Messenger
     {
         $qb = $this->dm->getRepository('MBHBaseBundle:Message')
             ->createQueryBuilder('q')
-            ->remove()
-        ;
+            ->remove();
         if ($from) {
             $qb->field('from')->equals($from);
         }

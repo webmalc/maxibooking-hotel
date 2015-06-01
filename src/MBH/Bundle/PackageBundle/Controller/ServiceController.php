@@ -36,11 +36,12 @@ class ServiceController extends BaseController
         $serviceCategories = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->findAll();
 
         $services = [];
-        foreach($serviceCategories as $category){
+        foreach ($serviceCategories as $category) {
             $group = $category->getHotel()->getName().': '.mb_strtolower($category->getName());
             $services[$group][$category->getId()] = 'Все услуги';
-            foreach($category->getServices() as $service)
+            foreach ($category->getServices() as $service) {
                 $services[$group][$service->getId()] = $service->getName();
+            }
         }
 
         return [
@@ -89,22 +90,24 @@ class ServiceController extends BaseController
 
         $qb->skip($tableParams->getStart())->limit($tableParams->getLength());
 
-        if($firstSort = $tableParams->getFirstSort()) {
+        if ($firstSort = $tableParams->getFirstSort()) {
             $qb->sort($firstSort[0], $firstSort[1]);
         }
 
-        if($services) {
+        if ($services) {
             /** @var ServiceCategory[] $categories */
             $categories = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->createQueryBuilder()->field('id')->in($services)->getQuery()->execute();
-            foreach($categories as $category)
-                foreach($category->getServices() as $service)
+            foreach ($categories as $category) {
+                foreach ($category->getServices() as $service) {
                     $services[] = $service->getId();
+                }
+            }
 
             $qb->field('service.id')->in($services);
         }
 
-        if($request->get('deleted') == 'on') {
-            $this->dm->getFilterCollection()->disable('softdeleteable') ;
+        if ($request->get('deleted') == 'on') {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
         }
 
         /** @var \MBH\Bundle\PackageBundle\Document\PackageService[] $results */

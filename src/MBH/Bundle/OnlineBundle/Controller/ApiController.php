@@ -268,23 +268,8 @@ class ApiController extends Controller
      */
     private function sendNotifications(array $packages)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $users = $dm->getRepository('MBHUserBundle:User')->findBy(
-            ['emailNotifications' => true, 'enabled' => true, 'locked' => false]
-        );
-
-        if (!count($users)) {
-            return false;
-        }
-
-        $recipients = [];
-        foreach ($users as $user) {
-            $recipients[] = [$user->getEmail() => $user->getFullName()];
-        }
         try {
-            $this->get('mbh.mailer')->send($recipients, ['packages' => $packages],
+            $this->get('mbh.mailer')->send([], ['packages' => $packages],
                 'MBHOnlineBundle:Api:notification.html.twig');
 
             return true;
