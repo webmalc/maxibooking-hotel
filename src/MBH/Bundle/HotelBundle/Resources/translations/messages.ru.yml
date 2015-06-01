@@ -13,6 +13,7 @@ form.hotelExtendedType.hotel_theme: Тема отеля
 form.hotelExtendedType.hotel_amenities: Удобства отеля
 form.hotelType.name: Название
 form.hotelType.general_info: Общаяя информация
+form.taskType.general_info: Добавление задачи
 form.hotelType.placeholder_my_hotel: Мой отель
 form.hotelType.inner_name: Внутреннее название
 form.hotelType.placeholder_hotel: Отель
@@ -70,3 +71,12 @@ controller.hotelController.record_edited_success: 'Запись успешно �
 controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'
 controller.roomTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
 controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'
+form.taskType.title: Название
+form.task.taskType: Тип задачи
+form.task.room: Комната
+form.task.placeholder_taskType: Задача
+form.task.creationalDate: Создано
+form.task.updatableDate: Обновлено
+form.task.description: Комментарий
+form.task.general_info: Добавление задачи
+form.task.roomType: Тип номера

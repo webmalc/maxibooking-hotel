@@ -38,6 +38,10 @@ class Builder extends ContainerAware
         //Prices links
         $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Номера и цены'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-ruble']);
+
+        $menu->addChild('task', ['route' => 'task', 'label' => 'Задачи'])
+            ->setAttributes(['icon' => 'fa fa-ruble']);
+
         $menu['prices']->addChild('overview', ['route' => 'room_overview', 'label' => 'Обзор'])
             ->setAttributes(['icon' => 'fa fa-info-circle']);
         $menu['prices']->addChild('room_cache', ['route' => 'room_cache_overview', 'label' => 'Номера в продаже'])
@@ -110,7 +114,11 @@ class Builder extends ContainerAware
         $menu['configs']->addChild('config', ['route' => 'client_config', 'label' => 'Параметры'])
             ->setAttributes(['icon' => 'fa fa-cog'])
         ;
-        
+
+        $menu['configs']->addChild('config', ['route' => 'tasktype', 'label' => 'Типы задач'])
+            ->setAttributes(['icon' => 'fa fa-cog'])
+        ;
+
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])
              ->setAttributes(['dropdown' => true, 'icon' => 'fa fa fa-arrows-h'])

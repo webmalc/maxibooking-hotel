@@ -1,0 +1,12 @@
+{% extends 'MBHHotelBundle:Task:layout.html.twig' %}
+
+{% set small_title = 'new.create'|trans({}, 'FOSUserBundle') %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('task_new'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+    {{ form_end(form) }}
+    
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'MBHHotelBundle:Task:layout.html.twig' %}
+
+{% block content %}
+
+
+    <table id="task-table"
+           class="package-table table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xxs"></th>
+            <th class="td-xs">#</th>
+
+            <th class="td-xs">{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-md">{{ 'views.task.index.tasktype'|trans({}, 'MBHHotelBundle') }}</th>
+            <th>{{ 'views.task.index.roomType'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-md">{{ 'views.task.index.users'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-sm">{{ 'views.task.index.role'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-sm">{{ 'views.task.index.guest'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-sm">{{ 'views.task.index.creationalDate'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-sm">{{ 'views.task.index.updatableDate'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-sm"></th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tbody>
+    </table>
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'task_new'} %}
+{% endblock %}
