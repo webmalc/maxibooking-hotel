@@ -118,6 +118,8 @@ class ServiceController extends BaseController
             prev.total += obj.persons * obj.price;
         }')->getQuery()->getSingleResult();
 
+        if(!$total)
+            $total = ['persons' => 0, 'total' => 0];
 
         if($request->get('deleted') == 'on') {
             $this->dm->getFilterCollection()->enable('softdeleteable') ;

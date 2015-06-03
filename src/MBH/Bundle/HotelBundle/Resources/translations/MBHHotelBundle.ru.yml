@@ -2,12 +2,13 @@ views.tasktype.index.name: Название
 views.tasktype.index.created: Создан
 views.task.index.status: Cтатус
 views.task.index.tasktype: Тип задачи
+views.task.index.priority: Приоритет
 views.task.index.roomType: Тип комнаты
 views.task.index.users:   Исполнитель
 views.task.index.guest:    Клиент
 views.task.index.role: Роли
-views.task.index.creationalDate: Создано
-views.task.index.updatableDate: Обновлено
+views.task.index.createAt: Создано
+views.task.index.updateAt: Обновлено
 views.hotel.edit.editing_number: "редактирование #"
 views.hotel.extended.editing_number: "редактирование #"
 views.hotel.extended.close: Закрыть
@@ -67,7 +68,6 @@ views.roomType.roomListButtons.edit_record: 'Редактирование зап
 views.roomType.roomListButtons.delete_record: 'Удаление записи'
 views.hotel.index.confirm_delete: 'Вы действительно хотите удалить отель "%hotelname%"?'
 views.task.layout.tasks: "Задачи"
-
 
 
 

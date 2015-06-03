@@ -1,4 +1,4 @@
-{% extends "MBHBaseBundle::page.html.twig" %}
+{% extends "MBHHotelBundle:TaskType:layout.html.twig" %}
 
 
 {% block content %}
@@ -7,8 +7,8 @@
         <thead>
         <tr>
             <th class="td-xs"></th>
-            <th>{{ "tasktype.index.name"|trans({}, "MBHHotelBundle") }}</th>
-            <th class="td-md">{{ "tasktype.index.created"|trans({}, "MBHHotelBundle") }}</th>
+            <th>{{ "views.tasktype.index.name"|trans({}, "MBHHotelBundle") }}</th>
+            <th class="td-md">{{ "views.tasktype.index.created"|trans({}, "MBHHotelBundle") }}</th>
 
             <th class="td-sm"></th>
         </tr>
@@ -16,7 +16,7 @@
         <tbody>
         {% for entity in entities %}
             <tr>
-                <td class="text-center table-icon"><i class="fa fa-compass"></i></td>
+                <td class="text-center table-icon"><i class="fa fa-cog"></i></td>
                 <td>
                     <a href="{{ path('tasktype_edit', { 'id': entity.id }) }}" rel="main" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">{{ entity.title }}</a>
                 </td>

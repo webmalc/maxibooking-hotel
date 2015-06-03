@@ -40,7 +40,7 @@ class Builder extends ContainerAware
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-ruble']);
 
         $menu->addChild('task', ['route' => 'task', 'label' => 'Задачи'])
-            ->setAttributes(['icon' => 'fa fa-ruble']);
+            ->setAttributes(['icon' => 'fa fa-tasks']);
 
         $menu['prices']->addChild('overview', ['route' => 'room_overview', 'label' => 'Обзор'])
             ->setAttributes(['icon' => 'fa fa-info-circle']);

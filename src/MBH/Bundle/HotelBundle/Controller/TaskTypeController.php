@@ -27,9 +27,7 @@ class TaskTypeController extends Controller
     public function indexAction(Request $request)
     {
         $entity = new TaskType();
-        $form = $this->createForm(
-            new \MBH\Bundle\HotelBundle\Form\TaskType(), $entity, []
-        );
+        $form = $this->createForm(new \MBH\Bundle\HotelBundle\Form\TaskType(), $entity);
 
         $entities = $this->dm->getRepository('MBHHotelBundle:TaskType')->createQueryBuilder('s')
             ->sort('title', 'asc')
@@ -47,18 +45,19 @@ class TaskTypeController extends Controller
 
         if ($request->isMethod('POST')) {
             $form->submit($request);
-            $this->dm->persist($entity);
-            $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
+            if($form->isValid()) {
+                $this->dm->persist($entity);
+                $this->dm->flush();
 
-            return $this->redirect($this->generateUrl('tasktype'));
+                $request->getSession()->getFlashBag()
+                    ->set('success', $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
+                return $this->redirect($this->generateUrl('tasktype'));
+            }
         }
         return [
             'form' => $form->createView(),
-            'entities' => $entities,
-            'logs' => $this->logs($entity)
+            'entities' => $entities
         ];
     }
 

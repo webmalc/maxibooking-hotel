@@ -174,9 +174,9 @@ parameters:
 
     #Статусы задач
     mbh.task.statuses:
-        offline: { title: "В процессе", class: "info"}
-        online: { title: "Открыта", class: "success"}
-        channel_manager: { title: "Закрыта", class: "danger"}
+        process: { title: "В процессе", class: "info"}
+        open: { title: "Открыта", class: "success"}
+        closed: { title: "Закрыта", class: "danger"}
 
 
 
@@ -237,3 +237,9 @@ parameters:
     mbh.organization.types:
         contragents: 'Контрагенты'
         my: 'Мои организации'
+
+    #Приоритет задач
+    mbh.tasktype.priority:
+        low: "Низкий"
+        average: "Средний"
+        high : "Высокий"

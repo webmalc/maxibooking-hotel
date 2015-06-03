@@ -2,13 +2,14 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class TaskType extends AbstractType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -16,11 +17,9 @@ class TaskType extends AbstractType
                 'label' => 'form.taskType.title',
                 'group' => 'form.taskType.general_info',
                 'required' => true,
-                'attr' => ['placeholder' => '']
+                'attr' => ['placeholder' => ''],
             ])
         ;
-
-
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

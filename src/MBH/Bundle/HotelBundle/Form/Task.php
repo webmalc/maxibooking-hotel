@@ -2,105 +2,90 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Date;
-use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\UserBundle\Form\UserType;
 
 class Task extends AbstractType
 {
+    const SCENARIO_NEW = 'SCENARIO_NEW';
+    const SCENARIO_EDIT = 'SCENARIO_EDIT';
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-       $builder
-            ->add('taskType', 'text', [
+        if($options['scenario'] == self::SCENARIO_NEW)
+            $group = 'form.task.general_group_add';
+        elseif($options['scenario'] == self::SCENARIO_EDIT)
+            $group = 'form.task.general_group_edit';
+
+        $builder
+            ->add('taskType', 'document', [
+                'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
                 'label' => 'form.task.taskType',
-                'group' => 'form.task.general_info',
+                'group' => $group,
                 'required' => true,
-                'attr' => ['placeholder' => 'form.task.attr_taskType']
+                //'attr' => ['placeholder' => 'form.task.attr_taskType']
             ]);
 
         $builder
-            ->add('room', 'text', [
+            /*->add('room', 'text', [
                 'label' => 'form.task.room',
                 'group' => 'form.task.general_room',
                 'required' => true,
-                'attr' => ['placeholder' => 'form.task.attr_room']
+            ]);*/
+            ->add('room', 'document', [
+                'label' => 'form.task.room',
+                'group' => $group,
+                'class' => 'MBH\Bundle\HotelBundle\Document\Room',
+                'required' => true,
             ]);
 
+        $builder
+            ->add('priority', 'choice', [
+                'label' => 'form.task.priority',
+                'group' => $group,
+                'choices' => $options['priorities'],
+                'required' => true,
+            ]);
 
-        $builder->add('roomType', 'document', array(
-                'group' => 'form.task.roomType',
-                'label' => 'form.task.roomType',
-                'multiple' => true,
-                'mapped' => true,
-                'data' => array(),
-                'class' => 'MBHHotelBundle:RoomType',
-                'property' => 'name',
-                 'attr' => array('class' => "chzn-select")
-            ));
+        $builder
+            ->add('guest', 'document', [
+                'label' => 'form.task.tourist',
+                'group' => $group,
+                'class' => 'MBH\Bundle\PackageBundle\Document\Tourist',
+                'required' => true,
+            ]);
 
-
-        /*$builder
-            ->add('roles', 'choice', array(
-                'group' => 'form.userType.settings',
+        $builder
+            ->add('role', 'choice', array(
+                'group' => $group,
                 'label' => 'form.userType.roles',
-                'multiple' => true,
-                'choices' => $this->roles,
+                //'multiple' => true,
+                'choices' => $options['roles'],
                 'translation_domain' => 'MBHUserBundleRoles',
-                'attr' => array('class' => "chzn-select roles")
-            )); */
-
-
-
-        $builder
-                ->add('creationalDate', 'date', array(
-                'label' => 'form.task.creationalDate',
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'data' => new \DateTime(),
-                'required' => true,
-                'error_bubbling' => true,
-                'attr' => array('class' => 'datepicker begin-datepiker', 'data-date-format' => 'dd.mm.yyyy'),
-                'constraints' => [new NotBlank(['message' => 'form.searchType.check_in_date_not_filled']), new Date()]
+                'attr' => array('class' => "chzn-select roles"),
+                'required' => false
             ));
 
-
         $builder
-                ->add('updatableDate', 'date', array(
-                'label' => 'form.task.updatableDate',
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'data' => new \DateTime(),
-                'required' => true,
-                'error_bubbling' => true,
-                    'attr' => array('class' => 'datepicker begin-datepiker', 'data-date-format' => 'dd.mm.yyyy'),
-                    'constraints' => [new NotBlank(['message' => 'form.searchType.check_in_date_not_filled']), new Date()]
-                ));
-
-        $builder
-                ->add('description', 'textarea', [
-                    'label' => 'form.task.description',
-                    'group' => '',
-                    'required' => true,
-                    'attr' => ['placeholder' => 'form.task.attr_description']
-                ]);
-
-
-
-
+            ->add('description', 'textarea', [
+                'label' => 'form.task.description',
+                'group' => $group,
+                'required' => false,
+            ]);
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Task',
-            'types' => [],
-            'roles' => []
-
+            'roles' => [],
+            'priorities' => [],
+            'scenario' => self::SCENARIO_NEW
         ));
     }
 

@@ -9,16 +9,17 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
-
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ODM\Document(collection="Task")
+ * @ODM\HasLifecycleCallbacks
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class Task extends  Base
+class Task extends Base
 {
-     /**
+    /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
      */
@@ -39,7 +40,7 @@ class Task extends  Base
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="TaskType")
-     * @Assert\NotNull(message="validator.document.task.taskType_no_selected")
+     * @ Assert\NotNull(message="validator.document.task.taskType_no_selected")
      */
     protected $taskType;
 
@@ -47,17 +48,12 @@ class Task extends  Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String
-     * @Assert\NotNull()
+     * @ Assert\NotNull()
      * @Assert\Choice(choices = {"open", "closed", "process"})
      */
     protected $status;
 
-    /**
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
-     */
-    protected $roomType;
-
+    protected $previousStatus;
 
     /**
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
@@ -87,51 +83,45 @@ class Task extends  Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String
-     * @Assert\NotNull()
+     * @ Assert\NotNull()
      */
-     protected $role;
+    protected $role;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\UserBundle\Document\User")
+     * @var \MBH\Bundle\UserBundle\Document\User
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\UserBundle\Document\User")
      */
-    protected $users;
+    protected $performer;
 
     /**
-     * @var \DateTime
-     * @ODM\Date
-     * @Assert\Date()
+     * @var string
+     * @ODM\String
      */
-    protected $creationalDate;
+    protected $priority;
 
     /**
-     * @var \DateTime
-     * @ODM\Date
-     * @Assert\Date()
+     * @var integer
+     * @ODM\Int
      */
-    protected $updatableDate;
+    protected $number;
 
-
-    public function __construct()
-    {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-    
     /**
-    * Set taskType
-    *
-    * @param MBH\Bundle\HotelBundle\Document\TaskType $taskType
-    * @return self
-    */
+     * Set taskType
+     *
+     * @param \MBH\Bundle\HotelBundle\Document\TaskType $taskType
+     * @return self
+     */
     public function setTaskType(\MBH\Bundle\HotelBundle\Document\TaskType $taskType)
     {
         $this->taskType = $taskType;
+
         return $this;
     }
 
     /**
      * Get taskType
      *
-     * @return MBH\Bundle\HotelBundle\Document\TaskType $taskType
+     * @return \MBH\Bundle\HotelBundle\Document\TaskType $taskType
      */
     public function getTaskType()
     {
@@ -146,8 +136,9 @@ class Task extends  Base
      */
     public function setStatus($status)
     {
-        //берем данные из конфига
+        $this->previousStatus = $this->status;
         $this->status = $status;
+
         return $this;
     }
 
@@ -162,43 +153,22 @@ class Task extends  Base
     }
 
     /**
-     * Set roomType
-     *
-     * @param MBH\Bundle\HotelBundle\Document\RoomType $roomType
-     * @return self
-     */
-    public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
-    {
-        $this->roomType = $roomType;
-        return $this;
-    }
-
-    /**
-     * Get roomType
-     *
-     * @return MBH\Bundle\HotelBundle\Document\RoomType $roomType
-     */
-    public function getRoomType()
-    {
-        return $this->roomType;
-    }
-
-    /**
      * Set room
      *
-     * @param MBH\Bundle\HotelBundle\Document\Room $room
+     * @param \MBH\Bundle\HotelBundle\Document\Room $room
      * @return self
      */
-    public function setRoom(\MBH\Bundle\HotelBundle\Document\Room $room)
+    public function setRoom(\MBH\Bundle\HotelBundle\Document\Room $room = null)
     {
         $this->room = $room;
+
         return $this;
     }
 
     /**
      * Get room
      *
-     * @return MBH\Bundle\HotelBundle\Document\Room $room
+     * @return \MBH\Bundle\HotelBundle\Document\Room $room
      */
     public function getRoom()
     {
@@ -214,6 +184,7 @@ class Task extends  Base
     public function setDescription($description)
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -230,19 +201,20 @@ class Task extends  Base
     /**
      * Set guest
      *
-     * @param MBH\Bundle\PackageBundle\Document\Tourist $guest
+     * @param \MBH\Bundle\PackageBundle\Document\Tourist $guest
      * @return self
      */
     public function setGuest(\MBH\Bundle\PackageBundle\Document\Tourist $guest)
     {
         $this->guest = $guest;
+
         return $this;
     }
 
     /**
      * Get guest
      *
-     * @return MBH\Bundle\PackageBundle\Document\Tourist $guest
+     * @return \MBH\Bundle\PackageBundle\Document\Tourist
      */
     public function getGuest()
     {
@@ -258,6 +230,7 @@ class Task extends  Base
     public function setRole($role)
     {
         $this->role = $role;
+
         return $this;
     }
 
@@ -272,77 +245,80 @@ class Task extends  Base
     }
 
     /**
-     * Add user
-     *
-     * @param MBH\Bundle\UserBundle\Document\User $user
+     * @return \MBH\Bundle\UserBundle\Document\User
      */
-    public function addUser(\MBH\Bundle\UserBundle\Document\User $user)
+    public function getPerformer()
     {
-        $this->users[] = $user;
+        return $this->performer;
     }
 
     /**
-     * Remove user
-     *
-     * @param MBH\Bundle\UserBundle\Document\User $user
+     * @param \MBH\Bundle\UserBundle\Document\User $performer
      */
-    public function removeUser(\MBH\Bundle\UserBundle\Document\User $user)
+    public function setPerformer(\MBH\Bundle\UserBundle\Document\User $performer)
     {
-        $this->users->removeElement($user);
+        $this->performer = $performer;
     }
 
     /**
-     * Get users
-     *
-     * @return Doctrine\Common\Collections\Collection $users
+     * @return string
      */
-    public function getUsers()
+    public function getPriority()
     {
-        return $this->users;
+        return $this->priority;
     }
 
     /**
-     * Set creationalDate
-     *
-     * @param date $creationalDate
-     * @return self
+     * @param string $priority
      */
-    public function setCreationalDate($creationalDate)
+    public function setPriority($priority)
     {
-        $this->creationalDate = $creationalDate;
-        return $this;
+        $this->priority = $priority;
     }
 
     /**
-     * Get creationalDate
-     *
-     * @return date $creationalDate
+     * @return int
      */
-    public function getCreationalDate()
+    public function getNumber()
     {
-        return $this->creationalDate;
+        return $this->number;
     }
 
     /**
-     * Set updatableDate
-     *
-     * @param date $updatableDate
-     * @return self
+     * @param int $number
      */
-    public function setUpdatableDate($updatableDate)
+    public function setNumber($number)
     {
-        $this->updatableDate = $updatableDate;
-        return $this;
+        $this->number = $number;
     }
 
     /**
-     * Get updatableDate
-     *
-     * @return date $updatableDate
+     * @ODM\PrePersist
      */
-    public function getUpdatableDate()
+    public function prePersist()
     {
-        return $this->updatableDate;
+        $this->status = 'online';
     }
 
+    /**
+     * @Assert\Callback
+     * @author Aleksandr Arofikin <sashaaro@gmail.com>
+     */
+    public function validate(ExecutionContextInterface $context)
+    {
+        if (!$this->isStatusChainValid()) {
+            $context->buildViolation('Settled status is not correct')->atPath('status')->addViolation();
+        };
+    }
+
+    /**
+     * Validate status order. Consider previous status and current status
+     * @return boolean
+     *
+     * @author Aleksandr Arofikin <sashaaro@gmail.com>
+     */
+    private function isStatusChainValid()
+    {
+        return $this->status == 'process' && $this->previousStatus == 'open' || $this->status == 'closed' && $this->previousStatus == 'process';
+    }
 }
