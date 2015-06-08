@@ -1,0 +1,4 @@
+services:
+    mbh.vega.vega_export:
+          class: MBH\Bundle\VegaBundle\Services\VegaExport
+          arguments: [@service_container]

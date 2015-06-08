@@ -183,6 +183,30 @@ class Tourist extends Base implements PayerInterface
     protected $note;
 
     /**
+     * @var string
+     * @ODM\String
+     */
+    protected $citizenship;
+
+    /**
+     * @ODM\EmbedOne(targetDocument="BirthPlace")
+     * @var BirthPlace
+     */
+    protected $birthplace;
+
+    /**
+     * @var AddressObjectDecomposed
+     * @ODM\EmbedOne(targetDocument="AddressObjectDecomposed")
+     */
+    protected $addressObjectDecomposed;
+
+    /**
+     * @var DocumentRelation
+     * @ODM\EmbedOne(targetDocument="DocumentRelation")
+     */
+    protected $documentRelation;
+
+    /**
      * Set firstName
      *
      * @param string $firstName
@@ -493,7 +517,7 @@ class Tourist extends Base implements PayerInterface
     /**
      * Add package
      *
-     * @param MBH\Bundle\PackageBundle\Document\Package $package
+     * @param \MBH\Bundle\PackageBundle\Document\Package $package
      */
     public function addPackage(\MBH\Bundle\PackageBundle\Document\Package $package)
     {
@@ -503,7 +527,7 @@ class Tourist extends Base implements PayerInterface
     /**
      * Remove package
      *
-     * @param MBH\Bundle\PackageBundle\Document\Package $package
+     * @param \MBH\Bundle\PackageBundle\Document\Package $package
      */
     public function removePackage(\MBH\Bundle\PackageBundle\Document\Package $package)
     {
@@ -513,7 +537,7 @@ class Tourist extends Base implements PayerInterface
     /**
      * Get packages
      *
-     * @return Doctrine\Common\Collections\Collection $packages
+     * @return \Doctrine\Common\Collections\Collection $packages
      */
     public function getPackages()
     {
@@ -651,5 +675,69 @@ class Tourist extends Base implements PayerInterface
     public function getOrders()
     {
         return $this->orders;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCitizenship()
+    {
+        return $this->citizenship;
+    }
+
+    /**
+     * @param string $citizenship
+     */
+    public function setCitizenship($citizenship)
+    {
+        $this->citizenship = $citizenship;
+    }
+
+    /**
+     * @return BirthPlace
+     */
+    public function getBirthplace()
+    {
+        return $this->birthplace;
+    }
+
+    /**
+     * @param BirthPlace $birthplace
+     */
+    public function setBirthplace(BirthPlace $birthplace = null)
+    {
+        $this->birthplace = $birthplace;
+    }
+
+    /**
+     * @return AddressObjectDecomposed
+     */
+    public function getAddressObjectDecomposed()
+    {
+        return $this->addressObjectDecomposed;
+    }
+
+    /**
+     * @param AddressObjectDecomposed $addressObjectDecomposed
+     */
+    public function setAddressObjectDecomposed(AddressObjectDecomposed $addressObjectDecomposed = null)
+    {
+        $this->addressObjectDecomposed = $addressObjectDecomposed;
+    }
+
+    /**
+     * @return DocumentRelation
+     */
+    public function getDocumentRelation()
+    {
+        return $this->documentRelation;
+    }
+
+    /**
+     * @param DocumentRelation $documentRelation
+     */
+    public function setDocumentRelation(DocumentRelation $documentRelation = null)
+    {
+        $this->documentRelation = $documentRelation;
     }
 }

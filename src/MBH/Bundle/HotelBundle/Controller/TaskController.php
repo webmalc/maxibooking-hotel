@@ -157,7 +157,7 @@ class TaskController extends Controller
                 $this->dm->flush();
 
                 $request->getSession()->getFlashBag()
-                    ->set('success', $this->get('translator')->trans('controller.TaskTypeController.record_edited_success'))
+                    ->set('success', $this->get('translator')->trans('controller.taskTypeController.record_edited_success'))
                 ;
                 return $this->afterSaveRedirect('task', $entity->getId());
             }
@@ -180,6 +180,5 @@ class TaskController extends Controller
     public function deleteAction($id)
     {
         return $this->deleteEntity($id, 'MBHHotelBundle:Task', 'task');
-
     }
 }

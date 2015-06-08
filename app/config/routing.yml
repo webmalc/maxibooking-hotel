@@ -69,3 +69,7 @@ mdh_task:
     type:     annotation
     prefix:   /management/task
 
+mbh_vega:
+    resource: "@MBHVegaBundle/Controller/"
+    type:     annotation
+    prefix:   /vega

@@ -106,6 +106,12 @@ class Task extends Base
     protected $number;
 
     /**
+     * @var \DateTime
+     * @ODM\Date
+     */
+    protected $date;
+
+    /**
      * Set taskType
      *
      * @param \MBH\Bundle\HotelBundle\Document\TaskType $taskType
@@ -293,11 +299,27 @@ class Task extends Base
     }
 
     /**
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     * @param \DateTime|null $date
+     */
+    public function setDate($date = null)
+    {
+        $this->date = $date;
+    }
+
+    /**
      * @ODM\PrePersist
      */
     public function prePersist()
     {
-        $this->status = 'online';
+        $this->status = 'open';
     }
 
     /**
@@ -319,6 +341,6 @@ class Task extends Base
      */
     private function isStatusChainValid()
     {
-        return $this->status == 'process' && $this->previousStatus == 'open' || $this->status == 'closed' && $this->previousStatus == 'process';
+        return !$this->previousStatus || ($this->status == 'process' && $this->previousStatus == 'open' || $this->status == 'closed' && $this->previousStatus == 'process');
     }
 }

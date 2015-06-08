@@ -72,6 +72,16 @@ class Task extends AbstractType
             ));
 
         $builder
+            ->add('date', 'date', [
+                'widget' => 'single_text',
+                'label' => 'form.task.date',
+                'format' => 'dd.MM.yyyy',
+                'attr' => ['class' => 'input-small'],
+                //'required' => true,
+                //'data' => new \DateTime()
+            ]);
+
+        $builder
             ->add('description', 'textarea', [
                 'label' => 'form.task.description',
                 'group' => $group,

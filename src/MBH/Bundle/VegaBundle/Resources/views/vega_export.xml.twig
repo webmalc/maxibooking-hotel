@@ -1,0 +1,44 @@
+<registration dateIn="2014-10-01" dateOut="2014-10-10" room="301" xmlns="http://www.sonarplus.ru/replication/vegaimport">
+    <person lastName="{{ tourist.lastName }}" firstName="{{ tourist.firstName }}" {% if tourist.middleName is defined %} middleName="{{ tourist.middleName }}" {% endif %} birthDate="{{ tourist.birthDay|date("Y-m-d") }}">
+        <gender type="S_SEX" dictvalue="{% if tourist.sex == 'male' %}МУЖ.{% elseif tourist.sex == 'female' %}ЖЕН.  {% endif %}" />
+        <citizenship type="S_STATE" dictvalue="{{ tourist.citizenship }}" />
+        {% if tourist.birthPlace %}
+        <birthPlace {% if tourist.birthPlace.mainRegion %} main_region="{{ tourist.birthPlace.mainRegion }}" {% endif %} city="{{ tourist.birthPlace.city }}" settlement="{{ tourist.birthPlace.settlement }}">
+            {% if tourist.birthPlace.country %}<country type="S_STATE" dictvalue="{{ tourist.birthPlace.country.name }}" />{% endif %}
+        </birthPlace>
+        {% endif %}
+    </person>
+    {% if tourist.documentRelation %}
+    <documentRelation>
+        <document {% if tourist.documentRelation.series %} series="{{ tourist.documentRelation.series }}" {% endif %} {% if tourist.documentRelation.series %} number="{{ tourist.documentRelation.number }}" {% endif %} {% if tourist.documentRelation.issued %} issued="{{ tourist.documentRelation.issued|date("Y-m-d") }}" {% endif %}>
+            {% if tourist.documentRelation.type %}<type type="S_DOCUM" dictvalue="ПАСПОРТ РФ {# { tourist.documentRelation.type } #}" />{% endif %}
+            {% if tourist.documentRelation.authorityOrgan %}<authorityOrgan type="S_FMS" dictvalue="592-011{# { tourist.documentRelation.authorityOrgan } #}" />{% endif %}
+        </document>
+        {% if tourist.documentRelation.relation %}
+            <relation type="TYPE_SV" dictvalue="ВЛАДЕЛЕЦ{#tourist.documentRelation.relation#}" />
+        {% endif %}
+    </documentRelation>
+    {% endif %}
+    {% if tourist.addressObjectDecomposed %}
+    <liveAddress>
+        <addressObject type="ADDROBJ" dictvalue="F1C553C1-B927-4D76-B398-048E10587EA6 {# tourist.liveAddress.addressObject #}" />
+        <housing value="160" type="S_HOUSEPART" dictvalue="ДОМ" />
+        <housing value="А" type="S_HOUSEPART" dictvalue="ЛИТЕРА" />
+        <housing value="13" type="S_HOUSEPART" dictvalue="КВАРТИРА" />
+    </liveAddress>
+    {% endif %}
+    <regAddress type="ADDR_REG" dictvalue="12" />
+
+
+
+    <embeddings>
+        <scanneddocument filename="img123456.jpg">
+            <doctype  type="S_DOCUM"  dictvalue="ВИЗА"/>
+            <scantype type="S_TPSCAN" dictvalue="ВИЗА"/>
+        </scanneddocument>
+        <scanneddocument filename="img123895.jpg">
+            <doctype  type="S_DOCUM"  dictvalue="ПАСПОРТ ИГ"/>
+            <scantype type="S_TPSCAN" dictvalue="ДОКУМЕНТ, УД. ЛИЧНОСТЬ - УСТАНОВОЧНЫЕ ДАННЫЕ ЛИЦА (ФИО, Д.Р., ФОТО)"/>
+        </scanneddocument>
+    </embeddings>
+</registration>

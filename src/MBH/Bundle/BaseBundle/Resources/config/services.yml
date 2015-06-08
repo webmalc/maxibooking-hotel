@@ -98,3 +98,10 @@ services:
     mbh.system.messenger:
       class: MBH\Bundle\BaseBundle\Service\Messenger\Messenger
       arguments: [@service_container]
+
+
+    form.type.city:
+        class: MBH\Bundle\BaseBundle\Form\Extension\CityType
+        arguments: [@doctrine_mongodb]
+        tags:
+            - { name: form.type, alias: mbh_city }
