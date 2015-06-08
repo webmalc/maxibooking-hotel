@@ -32,3 +32,10 @@ validator.document.roomType.min_hex_code: HEX-код цвета должен б�
 validator.document.roomType.max_hex_code: HEX-код цвета должен быть не больше шести символов
 validator.document.roomType.min_places_amount: Количество мест не может быть меньше одного
 validator.document.roomType.places_amount_less_zero: Количество мест не может быть меньше нуля
+validator.document.task.title_no_selected: Не выбрана задача
+validator.document.task.taskType_no_selected: Не выбран тип задачи
+validator.document.task.min_description: Слишком короткое описание
+validator.document.task.max_description: Слишком длинное описание
+validator.document.taskType.min_title: Слишком короткий заголовок
+validator.document.taskType.max_title: Слишком длинный заголовок
+

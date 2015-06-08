@@ -1,0 +1,12 @@
+{% extends "MBHHotelBundle:TaskType:layout.html.twig" %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('tasktype_update',  {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'delete_route': 'tasktype_delete'}%}
+    {{ form_end(form) }}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
+
+{% endblock %}

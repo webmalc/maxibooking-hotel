@@ -130,7 +130,7 @@ class Room extends Base
     /**
      * Set roomType
      *
-     * @param MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
      * @return self
      */
     public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
@@ -142,7 +142,7 @@ class Room extends Base
     /**
      * Get roomType
      *
-     * @return MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     * @return \MBH\Bundle\HotelBundle\Document\RoomType $roomType
      */
     public function getRoomType()
     {

@@ -128,10 +128,13 @@ $(document).ready(function () {
             {"name": "note", "bSortable": false},
             {"name": "createAt", "bSortable": true}
         ],
-        "fnDrawCallback" : function () {
+        "fnDrawCallback" : function (settings) {
             processing = false;
             var $markDeleted = $serviceTable.find('.mark-deleted');
             $markDeleted.closest('tr').addClass('danger');
+            console.log(settings.json);
+            $('#total').html(settings.json.total);
+            $('#total-persons').removeClass('hide').find('em').html(settings.json.persons);
         }
     }).fnDraw();
 

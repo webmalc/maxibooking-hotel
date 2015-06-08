@@ -58,6 +58,22 @@
         <tbody>
         </tbody>
         <tfoot>
+        <tr>
+            <td colspan="4"></td>
+            <td class="text-right"><strong>{{ 'views.cash.index.result'|trans({}, 'MBHCashBundle') }}:</strong></td>
+            <td class="text-right">
+                <div>
+                    <strong id="total"></strong>
+                </div>
+                <div>
+                    &nbsp;<small id="total-persons" class="hide"><em></em> {{ "package.service.guests"|trans({}, "MBHPackageBundle")|lower }}</small>
+                </div>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
         </tfoot>
     </table>
 

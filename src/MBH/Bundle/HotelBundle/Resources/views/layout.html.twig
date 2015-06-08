@@ -2,17 +2,11 @@
 
 {% block scripts %}
     {{ parent() }}
-    
-    {% javascripts filter='uglifyjs2''@MBHHotelBundle/Resources/public/js/*'%}
+
+    {% javascripts filter='?uglifyjs2'
+    '@MBHHotelBundle/Resources/public/js/*'
+    %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
-{% endblock %}
-
-{% block styles %}
-    {{ parent() }}
-
-    {% stylesheets filter='cssrewrite, uglifycss' '@MBHHotelBundle/Resources/public/css/*'%}
-    <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
 {% endblock %}

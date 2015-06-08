@@ -67,6 +67,10 @@ parameters:
     #mbh sources
     mbh.default.sources: ['Он-лайн бронирование', 'ВашОтель.ру', 'Постоянный клиент', 'Рекомендация знакомых']
 
+    #mbh task
+    mbh.default.taskType: ['Задача_1', 'Задача_2', 'Задача_3','Задача_4']
+
+
     #mbh services
     mbh.services:
       calcTypes:
@@ -167,6 +171,15 @@ parameters:
         online: { title: "Онлайн", class: "success", icon: "fa fa-globe"}
         channel_manager: { title: "Channel manager", class: "danger", icon: "fa fa-cloud-download"}
 
+
+    #Статусы задач
+    mbh.task.statuses:
+        process: { title: "В процессе", class: "info"}
+        open: { title: "Открыта", class: "success"}
+        closed: { title: "Закрыта", class: "danger"}
+
+
+
     #Типы документов
     mbh.order.document.types:
         passport: package.document.type_passport
@@ -224,3 +237,9 @@ parameters:
     mbh.organization.types:
         contragents: 'Контрагенты'
         my: 'Мои организации'
+
+    #Приоритет задач
+    mbh.tasktype.priority:
+        low: "Низкий"
+        average: "Средний"
+        high : "Высокий"

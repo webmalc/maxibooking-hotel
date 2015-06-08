@@ -1,0 +1,44 @@
+{% extends "MBHHotelBundle:TaskType:layout.html.twig" %}
+
+
+{% block content %}
+
+    <table class="table {#not-auto-datatable#} table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xs"></th>
+            <th>{{ "views.tasktype.index.name"|trans({}, "MBHHotelBundle") }}</th>
+            <th class="td-md">{{ "views.tasktype.index.created"|trans({}, "MBHHotelBundle") }}</th>
+
+            <th class="td-sm"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for entity in entities %}
+            <tr>
+                <td class="text-center table-icon"><i class="fa fa-cog"></i></td>
+                <td>
+                    <a href="{{ path('tasktype_edit', { 'id': entity.id }) }}" rel="main" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">{{ entity.title }}</a>
+                </td>
+                <td>{{ entity.createdAt|date('d.m.Y') }}</td>
+
+                <td class="table-actions-td text-center">
+                    <a href="{{ path('tasktype_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
+                        <i class="fa fa-pencil-square-o"></i>
+                    </a>
+                    <a href="{{ path('tasktype_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
+                        <i class="fa fa-trash-o"></i>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {{ form_start(form, {'action': path('tasktype'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new_plus_actions.html.twig' with {'save_close': false} %}
+    {{ form_end(form) }}
+
+{% endblock %}
+

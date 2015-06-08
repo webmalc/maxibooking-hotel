@@ -27,6 +27,7 @@ mbh_package:
     type:     annotation
     prefix:   /package
 
+
 mbh_price:
     resource: "@MBHPriceBundle/Controller/"
     type:     annotation
@@ -56,3 +57,15 @@ mbh_hotel:
 
 _liip_imagine:
     resource: "@LiipImagineBundle/Resources/config/routing.xml"
+
+mdh_tasktype:
+    resource: "@MBHHotelBundle/Controller/TaskTypeController.php"
+    type:     annotation
+    prefix:   /management/tasktype
+
+
+mdh_task:
+    resource: "@MBHHotelBundle/Controller/TaskController.php"
+    type:     annotation
+    prefix:   /management/task
+

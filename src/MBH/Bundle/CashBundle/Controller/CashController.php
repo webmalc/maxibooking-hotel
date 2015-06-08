@@ -273,8 +273,8 @@ class CashController extends Controller
         $violationList = $this->get('validator')->validate($entity);
         if($violationList->count() > 0){
             return new JsonResponse([
-                'error' => false,
-                'message' => (string) $violationList
+                'error' => true,
+                'message' => $violationList->get(0)->getMessage()
             ]);
         }
         $this->dm->persist($entity);

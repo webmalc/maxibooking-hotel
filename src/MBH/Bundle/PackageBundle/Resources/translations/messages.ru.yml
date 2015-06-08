@@ -135,6 +135,7 @@ controller.packageController.placement_saved_success: 'Размещение ус
 controller.packageController.placement_deleted_success: 'Размещение успешно удалено.'
 controller.packageController.record_deleted_success: 'Запись успешно удалена.'
 controller.sourceController.record_created_success: 'Запись успешно создана.'
+controller.taskTypeController.record_created_success: 'Запись успешно создана.'
 controller.sourceController.record_edited_success: 'Запись успешно отредактирована.'
 controller.touristController.record_created_success: 'Запись успешно создана.'
 controller.touristController.record_edited_success: 'Запись успешно отредактирована.'
