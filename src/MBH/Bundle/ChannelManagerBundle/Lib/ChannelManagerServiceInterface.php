@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\Order;
 
 interface ChannelManagerServiceInterface
 {
@@ -74,4 +75,13 @@ interface ChannelManagerServiceInterface
      * @return boolean
      */
     public function closeAll();
+
+    /**
+     * User notifications
+     * @param Order $order
+     * @param $service
+     * @param string $type
+     * @return mixed
+     */
+    public function notify(Order $order, $service, $type = 'new');
 }

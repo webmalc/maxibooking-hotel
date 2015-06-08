@@ -307,3 +307,5 @@ organizations.breadcrumbs.list: Организации
 organizations.breadcrumbs.add: Добавить организацию
 organizations.breadcrumbs.edit: Редактировать организацию
 organizations.confirm_delete: 'Вы действительно хотите удалить организацию "%organization_name%"'
+
+payer.confirmation.notification: Ваш заказ %order% подтвержден

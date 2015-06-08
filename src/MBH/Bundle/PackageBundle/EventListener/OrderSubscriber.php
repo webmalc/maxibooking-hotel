@@ -15,6 +15,16 @@ class OrderSubscriber implements EventSubscriber
      * @var \Symfony\Component\DependencyInjection\ContainerInterface 
      */
     protected $container;
+
+    /**
+     * @var \MBH\Bundle\BaseBundle\Service\Messenger\Mailer
+     */
+    protected $mailer;
+
+    /**
+     * @var \Symfony\Component\Translation\IdentityTranslator
+     */
+    protected $translator;
     
 
     public function __construct(ContainerInterface $container)
@@ -31,8 +41,11 @@ class OrderSubscriber implements EventSubscriber
         );
     }
 
+
     public function onFlush(OnFlushEventArgs $args)
     {
+        $this->mailer = $this->container->get('mbh.mailer');
+        $this->translator = $this->container->get('translator');
         $dm = $args->getDocumentManager();
         $uow = $dm->getUnitOfWork();
 
@@ -41,6 +54,25 @@ class OrderSubscriber implements EventSubscriber
         );
 
         foreach ($entities as $entity) {
+
+            if ($entity instanceof Order) {
+
+                //send emails to payer
+                if (isset($uow->getDocumentChangeSet($entity)['confirmed']) && $entity->getConfirmed()) {
+                    $payerEmail = $entity->getPayer()->getEmail();
+
+                    if (!empty($payerEmail)) {
+                        try {
+                            $this->mailer->send([$payerEmail], [
+                                'text' =>  $this->translator->trans('payer.confirmation.notification', ['%order%' => $entity->getId()], 'MBHPackageBundle')
+                            ]);
+                        } catch (\Exception $e) {
+                            return false;
+                        }
+                    }
+                }
+            }
+
             if ($entity instanceof CashDocument) {
                 try {
                     $order = $entity->getOrder();

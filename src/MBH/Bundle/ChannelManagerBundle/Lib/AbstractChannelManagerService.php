@@ -2,9 +2,9 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
+use MBH\Bundle\PackageBundle\Document\Order;
 
 
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
@@ -64,7 +64,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     public function log($message, $method = 'info')
     {
         (method_exists($this->logger, $method)) ? $method : $method = 'info';
-        $this->logger->$method((string) $message);
+        $this->logger->$method((string)$message);
 
         return $this;
     }
@@ -77,7 +77,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $result = [];
 
         foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
-            $method = 'get' . static::CONFIG;
+            $method = 'get'.static::CONFIG;
             $config = $hotel->$method();
 
             if ($config && $config instanceof BaseInterface && $config->getIsEnabled()) {
@@ -117,6 +117,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
 
         }
+
         return $result;
     }
 
@@ -131,7 +132,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
         foreach ($config->getTariffs() as $configTariff) {
             $tariff = $configTariff->getTariff();
-            
+
             if (empty($configTariff->getTariffId()) || !$tariff->getIsEnabled() || !empty($tariff->getDeletedAt())) {
                 continue;
             }
@@ -139,15 +140,16 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             if ($byService) {
                 $result[$configTariff->getTariffId()] = [
                     'syncId' => $configTariff->getTariffId(),
-                    'doc' =>$tariff
+                    'doc' => $tariff
                 ];
             } else {
                 $result[$tariff->getId()] = [
                     'syncId' => $configTariff->getTariffId(),
-                    'doc' =>$tariff
+                    'doc' => $tariff
                 ];
             }
         }
+
         return $result;
     }
 
@@ -168,9 +170,10 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
             $result[$configService->getServiceId()] = [
                 'syncId' => $configService->getServiceId(),
-                'doc' =>$service
+                'doc' => $service
             ];
         }
+
         return $result;
     }
 
@@ -181,7 +184,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      * @param bool $error
      * @return mixed
      */
-    public function send ($url, $data, $headers = null, $error = false)
+    public function send($url, $data, $headers = null, $error = false)
     {
         $ch = curl_init($url);
 
@@ -224,5 +227,32 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
 
         return $xml;
+    }
+
+    public function notify(Order $order, $service, $type = 'new')
+    {
+
+        try {
+            $notifier = $this->container->get('mbh.notifier');
+            $tr = $this->container->get('translator');
+            $message = $notifier::createMessage();
+
+            $text = 'channelManager.'.$service.'.notification.'.$type;
+            $subject = 'channelManager.'.$service.'.notification.subject';
+
+            $message
+                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => count($order->getPackages())], 'MBHChannelManagerBundle'))
+                ->setFrom('channelmanager')
+                ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
+                ->setType($type == 'delete' ? 'danger' : 'info')
+                ->setAutohide(false)
+                ->setEnd(new \DateTime('+10 minute'))
+            ;
+
+            $notifier->setMessage($message)->notify();
+
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

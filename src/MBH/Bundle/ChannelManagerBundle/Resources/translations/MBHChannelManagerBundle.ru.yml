@@ -36,4 +36,10 @@ views.tabs.room_types: ' Типы номеров'
 views.tabs.tariffs: ' Тарифы'
 views.tabs.services: ' Услуги'
 views.tabs.must_fill_main_settings: "Необходимо заполнить основные настройки!"
+
+#channelManager
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
+channelManager.booking.notification.subject: Сообщения от Booking.com
+channelManager.booking.notification.new: Новый заказ %order% из booking.com. Броней: %packages%
+channelManager.booking.notification.edit: Изменен заказ %order% из booking.com. Броней: %packages%
+channelManager.booking.notification.delete: Удален заказ %order% из booking.com. Броней: %packages%

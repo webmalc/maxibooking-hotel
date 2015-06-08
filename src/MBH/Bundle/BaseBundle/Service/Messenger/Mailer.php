@@ -51,10 +51,13 @@ class Mailer implements \SplObserver
         /** @var NotifierMessage $message */
         $message = $notifier->getMessage();
 
-        $this->send($message->getRecipients(), [
-            'text' => $message->getText(),
-            'type' => $message->getType()
-        ], $message->getTemplate());
+        if ($message->getEmail()) {
+            $this->send($message->getRecipients(), [
+                'text' => $message->getText(),
+                'type' => $message->getType(),
+                'subject' => $message->getSubject()
+            ], $message->getTemplate());
+        }
     }
 
     /**
