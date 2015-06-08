@@ -1,6 +1,7 @@
 {% for key in  app.session.flashbag.keys()%}
     {% for message in app.session.flashbag.get(key) %}
-        <div class="autohide alert alert-{{key}} alert-dismissable">
+        {% set info = key|split('|') %}
+        <div class="{{info[1] is defined and info[1] is not empty ? 'autohide' }}  alert alert-{{info[0]}} alert-dismissable">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
             {{ message|raw }}
         </div>

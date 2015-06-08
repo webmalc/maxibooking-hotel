@@ -77,3 +77,4 @@ views.form.index.before_closing_tag: Перед закрывающим тего�
 views.form.index.search_page_embed_code: Код страницы поиска для вставки на сайт:
 views.form.index.to_results_place: На место для результатов:
 views.form.layout.online_form: "Онлайн форма"
+online_form.notification: "Оформлены новые брони через онлайн форму."

@@ -269,10 +269,20 @@ class ApiController extends Controller
     private function sendNotifications(array $packages)
     {
         try {
-            $this->get('mbh.mailer')->send([], ['packages' => $packages],
-                'MBHOnlineBundle:Api:notification.html.twig');
-
-            return true;
+            $notifier = $this->container->get('mbh.notifier');
+            $message = $notifier::createMessage();
+            $message
+                ->setText($this->renderView('MBHOnlineBundle:Api:notification.html.twig', ['packages' => $packages]))
+                ->setFrom('online')
+                ->setSubject($this->get('translator')->trans('online_form.notification', [], 'MBHOnlineBundle'))
+                ->setType('info')
+                ->setAutohide(false)
+                ->setEnd(new \DateTime('+1 minute'))
+            ;
+            $notifier
+                ->setMessage($message)
+                ->notify()
+            ;
         } catch (\Exception $e) {
 
             return false;
@@ -294,8 +304,8 @@ class ApiController extends Controller
                 'end' => $request->end,
                 'adults' => $info->adults,
                 'children' => $info->children,
-                'arrivalTime' => $request->arrival,
-                'departureTime' => $request->departure,
+                'arrivalTime' => $this->get('mbh.helper')->getDateFromString($request->arrival, 'H:i'),
+                'departureTime' =>$this->get('mbh.helper')->getDateFromString($request->departure, 'H:i'),
                 'roomType' => $info->roomType->id,
                 'tariff' => $info->tariff->id,
                 'isOnline' => true

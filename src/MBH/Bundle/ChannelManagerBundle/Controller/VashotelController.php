@@ -67,7 +67,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             new VashotelType(), $entity
         );
 
-        $form->bind($request);
+        $form->submit($request);
 
         if ($form->isValid()) {
 
@@ -76,18 +76,11 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             $dm->persist($entity);
             $dm->flush();
 
-            if ($new) {
-                $this->get('mbh.channelmanager.vashotel')->roomSync($entity);
-                $this->get('mbh.channelmanager.vashotel')->tariffSync($entity);
-                $dm->persist($entity);
-                $dm->flush();
-            }
-
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.vashhotelController.settings_saved_success'))
             ;
 
-            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
+            $this->container->get('mbh.channelmanager')->syncInBackground();
 
             return $this->redirect($this->generateUrl('vashotel'));
         }
@@ -357,4 +350,26 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             'form' => $form->createView(),
         );
     }
+
+    /**
+     * Services configuration page
+     * @Route("/service", name="vashotel_service")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template()
+     */
+    public function serviceAction()
+    {
+        $doc = $this->get('mbh.hotel.selector')->getSelected()->getBookingConfig();
+
+        if (!$doc) {
+            throw $this->createNotFoundException();
+        }
+
+        return [
+            'doc' => $doc,
+            'logs' => $this->logs($doc)
+        ];
+    }
+
 }

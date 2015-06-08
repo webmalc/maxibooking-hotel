@@ -28,6 +28,11 @@ class NotifierMessage
     private $recipients = [];
 
     /**
+     * @var bool
+     */
+    private $email = true;
+
+    /**
      * @var string
      */
     private $type = 'info';
@@ -209,5 +214,26 @@ class NotifierMessage
 
         return $this;
     }
+
+    /**
+     * @param boolean $email
+     * @return $this
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+
 
 }
