@@ -4,40 +4,19 @@
 
 {% block content %}
 
-    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 2, 'entity': doc, 'base': 'booking'} %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 2, 'entity': config, 'base': 'booking'} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
 
-            <table class="table table-striped table-hover table-condensed not-auto-datatable">
-                <thead>
-                    <tr>
-                        <th class="td-lg">{{ 'views.booking.room.room_type'|trans({}, 'MBHChannelManagerBundle') }}</th>
-                        <th>ID</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for room in doc.rooms %}
-                        <tr>
-                            <td>{{ room.roomType }} <a class="external" target="_blank" href="{{ path('room_type_edit', {'id': room.roomType.id}) }}"><i class="fa fa-external-link"></i></a></td>
-                            <td>{{ room.roomId }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            {{ form_start(form, {'action': path('booking_room'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+            {{ form_end(form) }}
 
-            <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
-                <div class="container-fluid">
-                    <ul class="nav navbar-nav">
-                        <li><button type="button" data-toggle="tooltip" title={{ 'views.booking.room.booking_com_sync'|trans({}, 'MBHChannelManagerBundle') }} onclick="location.href = '{{ path('channel_manager_sync', {'name': 'booking'}) }}'" class="btn btn-success navbar-btn"><i class="fa fa-share-square-o"> </i> {{ 'views.booking.room.sync'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
-                        <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
-                    </ul>
-                </div>
-            </div>
-
-            {%  if doc %}
-                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': doc, 'logs': logs} %}
-            {%  endif %}
+            {% if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

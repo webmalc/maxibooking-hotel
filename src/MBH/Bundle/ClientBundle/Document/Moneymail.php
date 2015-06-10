@@ -115,12 +115,12 @@ class Moneymail implements PaymentSystemInterface
         $status = $request->get('Status');
         $cyberSourceTransactionNumber = $request->get('CyberSourceTransactionNumber');
         $requestSignature = $request->get('Signature');
+        $commission = $request->get('Comission');
 
         if (!$cashDocumentId || !$shopId || !$status || !$requestSignature || $status != 'AS000') {
             return false;
         }
-
-        $signature = $cashDocumentId . $status . $shopId . $cyberSourceTransactionNumber . $this->getMoneymailKey();
+        $signature = $cashDocumentId . $status . $shopId . $cyberSourceTransactionNumber . $commission . $this->getMoneymailKey();
         $signature = strtoupper(str_replace('-', '', md5($signature)));
 
         if ($signature != $requestSignature) {
@@ -129,6 +129,7 @@ class Moneymail implements PaymentSystemInterface
 
         return [
             'doc' => $cashDocumentId,
+            'commission' => $commission,
             'text' => 'OK'
         ];
     }

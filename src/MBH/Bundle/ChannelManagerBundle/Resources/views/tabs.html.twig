@@ -6,9 +6,16 @@
 ]
 %}
 
+{% if entity.rooms.count == 0 or entity.tariffs.count == 0 %}
+    <div class="alert alert-danger">
+        <i class="fa fa-exclamation-circle"></i>&nbsp;
+        {{ 'channelmanager.empty.config'|trans({}, 'MBHChannelManagerBundle') }}
+    </div>
+{% endif %}
+
 <ul class="nav nav-tabs" role="tablist">
 {% for item in menu %}
-    {% if entity is null and loop.index != 1 %}
+    {% if (entity is null or not entity.isEnabled) and loop.index != 1 %}
         <li class="disabled">
             <a href="#" role="tab" data-toggle="tooltip" title={{ 'views.tabs.must_fill_main_settings'|trans({}, 'MBHChannelManagerBundle') }}>{{item.title|raw}}</a>
         </li>

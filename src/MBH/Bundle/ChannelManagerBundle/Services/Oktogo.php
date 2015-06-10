@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
 /**
  *  ChannelManager service
@@ -136,4 +137,32 @@ class Oktogo extends Base
     {
         return new Response();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getRooms(ChannelManagerConfigInterface $config)
+    {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTariffs(ChannelManagerConfigInterface $config)
+    {
+    }
+
+    /**
+     * Pull rooms from service server
+     * @param ChannelManagerConfigInterface $config
+     * @return array
+     */
+    public function pullRooms(ChannelManagerConfigInterface $config) {}
+
+    /**
+     * Pull tariffs from service server
+     * @param ChannelManagerConfigInterface $config
+     * @return array
+     */
+    public function pullTariffs(ChannelManagerConfigInterface $config) {}
 }

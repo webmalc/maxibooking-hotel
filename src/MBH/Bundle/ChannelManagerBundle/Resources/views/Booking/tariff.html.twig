@@ -1,43 +1,22 @@
-    {% extends 'MBHChannelManagerBundle:Booking:layout.html.twig' %}
+{% extends 'MBHChannelManagerBundle:Booking:layout.html.twig' %}
 
-{% set small_title = "настройки" %}
+{% set small_title = 'views.booking.room.settings'|trans({}, 'MBHChannelManagerBundle') %}
 
 {% block content %}
 
-    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 3, 'entity': doc, 'base': 'booking'} %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 3, 'entity': config, 'base': 'booking'} %}
 
     <div class="tab-content">
-
-        <table class="table table-striped table-hover table-condensed not-auto-datatable">
-            <thead>
-            <tr>
-                <th class="td-lg">Тариф</th>
-                <th>ID</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for tariff in doc.tariffs %}
-                <tr>
-                    <td>{{ tariff.tariff }} <a class="external" target="_blank" href="{{ path('tariff_edit', {'id': tariff.tariff.id}) }}"><i class="fa fa-external-link"></i></a></td>
-                    <td>{{ tariff.tariffId }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-
         <div class="tab-pane active" id="home">
-            <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
-                <div class="container-fluid">
-                    <ul class="nav navbar-nav">
-                        <li><button type="button" data-toggle="tooltip" title="Синхронизироваться с Booking.com" onclick="location.href = '{{ path('channel_manager_sync', {'name': 'booking'}) }}'" class="btn btn-success navbar-btn"><i class="fa fa-share-square-o"> </i> {{ 'views.booking.tariff.sync'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
-                        <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"> </i> {{ 'views.booking.tariff.cancel'|trans({}, 'MBHChannelManagerBundle') }}</button></li>
-                    </ul>
-                </div>
-            </div>
 
-            {%  if doc %}
-                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': doc, 'logs': logs} %}
-            {%  endif %}
+            {{ form_start(form, {'action': path('booking_tariff'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+            {{ form_end(form) }}
+
+            {% if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

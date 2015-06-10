@@ -2,18 +2,13 @@
 <request>
     {% include 'MBHChannelManagerBundle:Booking:credentials.xml.twig' with {'config': config } %}
 
-    {% for room in rooms %}
-        <room id="{{ room['syncId'] }}">
-            {% for rate in rates %}
+    {% for roomId, room in rooms %}
+
+        <room id="{{ roomId }}">
+            {% for rateId, rate in rates %}
                 <date from ="{{ 'now'|date('Y-m-d') }}" to="{{ 'now'|date_modify("+5 years")|date('Y-m-d') }}">
-                    <rate id="{{ rate['syncId'] }}" />
-                    <roomstosell>0</roomstosell>
-                    <minimumstay_arrival>0</minimumstay_arrival>
-                    <maximumstay_arrival>0</maximumstay_arrival>
-                    <minimumstay>0</minimumstay>
-                    <maximumstay>0</maximumstay>
-                    <closedonarrival>0</closedonarrival>
-                    <closedondeparture>0</closedondeparture>
+                    <rate id="{{ rateId }}" />
+                    <closed>1</closed>
                 </date>
             {% endfor %}
         </room>
