@@ -1,15 +1,15 @@
 services:
     mbh.package.search:
-        class: MBH\Bundle\PackageBundle\Services\Search
-        arguments: [@service_container]
+            class: MBH\Bundle\PackageBundle\Services\Search
+            arguments: [@service_container]
 
     mbh.tourists.messenger:
             class: MBH\Bundle\PackageBundle\Services\TouristsMessenger
             arguments: [@service_container]
         
     mbh.calculation:
-        class: MBH\Bundle\PackageBundle\Services\Calculation
-        arguments: [@service_container]
+            class: MBH\Bundle\PackageBundle\Services\Calculation
+            arguments: [@service_container]
 
     mbh.order:
             class: MBH\Bundle\PackageBundle\Services\Order
@@ -20,10 +20,10 @@ services:
             arguments: [@service_container]
 
     mbh.package.subscriber:
-        class: MBH\Bundle\PackageBundle\EventListener\PackageSubscriber
-        arguments: [@service_container]
-        tags:
-            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+            class: MBH\Bundle\PackageBundle\EventListener\PackageSubscriber
+            arguments: [@service_container]
+            tags:
+                - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
     mbh.package.order.subscriber:
             class: MBH\Bundle\PackageBundle\EventListener\OrderSubscriber
@@ -36,3 +36,18 @@ services:
             arguments: [@service_container]
             tags:
                 - { name: validator.constraint_validator, alias: mbh.package.validator }
+
+    mbh.package.form.type.birthplace:
+            class: MBH\Bundle\PackageBundle\Form\BirthplaceType
+            tags:
+                - { name: form.type, alias: mbh_birthplace }
+
+    mbh.package.form.type.address_object_decomposed:
+            class: MBH\Bundle\PackageBundle\Form\AddressObjectDecomposedType
+            tags:
+                - { name: form.type, alias: mbh_address_object_decomposed }
+
+    mbh.package.form.type.document_relation:
+            class: MBH\Bundle\PackageBundle\Form\DocumentRelationType
+            tags:
+                - { name: form.type, alias: mbh_document_relation }

@@ -1,0 +1,3 @@
+mbh_vega_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: MBHVegaBundle:Default:index }

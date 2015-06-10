@@ -1,0 +1,21 @@
+{% set menu = [
+    {'route': 'tourist_edit', 'title': '<i class="fa fa-info-circle"></i> '~ 'views.hotel.tabs.main_info'|trans({}, 'MBHHotelBundle')},
+    {'route': 'tourist_edit_extended', 'title': '<i class="fa fa-cogs"></i> '~ 'views.hotel.tabs.additional_settings'|trans({}, 'MBHHotelBundle')},
+] %}
+
+<ul class="nav nav-tabs" role="tablist">
+    {% for item in menu %}
+        {% if entity is null and loop.index != 1 %}
+            <li class="disabled">
+                <a href="#" role="tab" data-toggle="tooltip"
+                   title={{ 'views.hotel.tabs.main_info_required'|trans({}, 'MBHHotelBundle') }}>{{ item.title|raw }}</a>
+            </li>
+        {% else %}
+            <li {% if loop.index == active %}class="active"{% endif %}>
+                {% if entity is null %}{% set route = 'hotel_new' %}{% else %}{% set route = item.route %}{% endif %}
+                <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"
+                   {% else %}href="{{ path(item.route, {'id': entity.id|default(null)}) }}"{% endif %}>{{ item.title|raw }}</a>
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>

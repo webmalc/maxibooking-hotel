@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Form\TouristExtendedType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -10,13 +11,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Form\TouristType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/tourist")
  */
 class TouristController extends Controller
 {
-
     /**
      * Lists all entities.
      *
@@ -96,19 +98,17 @@ class TouristController extends Controller
     {
         $entity = new Tourist();
         $form = $this->createForm(
-                new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
+            new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
         );
-        $form->bind($request);
+        $form->submit($request);
 
         if ($form->isValid()) {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
-            $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', $this->get('translator')->trans('controller.touristController.record_created_success'))
-            ;
+            $request->getSession()->getFlashBag()
+                ->set('success',
+                    $this->get('translator')->trans('controller.touristController.record_created_success'));
 
             return $this->afterSaveRedirect('tourist', $entity->getId());
         }
@@ -122,36 +122,28 @@ class TouristController extends Controller
     /**
      * Edits an existing entity.
      *
-     * @Route("/{id}", name="tourist_update")
+     * @Route("/{id}/edit", name="tourist_update")
      * @Method("PUT")
      * @Security("is_granted('ROLE_USER')")
      * @Template("MBHPackageBundle:Tourist:edit.html.twig")
+     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
-    public function updateAction(Request $request, $id)
+    public function updateAction(Request $request, Tourist $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPackageBundle:Tourist')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
         $form = $this->createForm(
-                new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
+            new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
         );
         
-        $form->bind($request);
+        $form->submit($request);
 
         if ($form->isValid()) {
+            /*var_dump($entity->getBirthplace());
+            die();*/
 
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
-            $this->getRequest()->getSession()->getFlashBag()
+            $request->getSession()->getFlashBag()
                     ->set('success', $this->get('translator')->trans('controller.touristController.record_edited_success'))
             ;
             
@@ -172,22 +164,32 @@ class TouristController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
      * @Template()
+     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
-    public function editAction($id)
+    public function editAction(Tourist $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPackageBundle:Tourist')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-        
         $form = $this->createForm(
-                new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
+            new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
         );
         
+        return [
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        ];
+    }
+
+    /**
+     * @Route("/{id}/edit/extended", name="tourist_edit_extended")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     */
+    public function editExtendedAction(Tourist $entity)
+    {
+        $form = $this->createForm(new TouristExtendedType(), $entity);
+
         return [
             'entity' => $entity,
             'form' => $form->createView(),
@@ -206,5 +208,4 @@ class TouristController extends Controller
     {
         return $this->deleteEntity($id, 'MBHPackageBundle:Tourist', 'tourist');
     }
-
 }

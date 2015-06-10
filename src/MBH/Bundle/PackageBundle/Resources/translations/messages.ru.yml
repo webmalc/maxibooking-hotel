@@ -135,12 +135,16 @@ controller.packageController.placement_saved_success: 'Размещение ус
 controller.packageController.placement_deleted_success: 'Размещение успешно удалено.'
 controller.packageController.record_deleted_success: 'Запись успешно удалена.'
 controller.sourceController.record_created_success: 'Запись успешно создана.'
-controller.taskTypeController.record_created_success: 'Запись успешно создана.'
 controller.sourceController.record_edited_success: 'Запись успешно отредактирована.'
 controller.touristController.record_created_success: 'Запись успешно создана.'
 controller.touristController.record_edited_success: 'Запись успешно отредактирована.'
 controller.packageController.record_edited_fail: 'Ошибка при обновлении брони. Нет доступных номеров.'
 controller.packageController.record_edited_fail_accommodation: 'Ошибка при обновлении брони. Номер недоступен для размещения.'
+
+# TaskType Controller
+controller.taskTypeController.record_created_success: 'Запись успешно создана.'
+controller.taskTypeController.record_edited_success: 'Запись успешно отредактирована.'
+
 # Documents Controller
 controller.documentsController.table_row_name: 'Имя'
 controller.documentsController.table_row_comment: 'Комментарий'

@@ -1,5 +1,5 @@
 {% block form_widget_compound %}
-    <div class="well" {{ block('widget_container_attributes') }}>
+    <div {% if not form.parent %} class="well" {% endif %} {{ block('widget_container_attributes') }}>
         {% if form.parent is empty %}
             {% if errors|length > 0 %}<div class="alert alert-danger global-errors">{{ form_errors(form) }}</div>{% endif %}
         {% endif %}

@@ -77,6 +77,7 @@ form.task.status: Статус
 form.task.room: Комната
 form.task.priority: Приоритет
 form.task.tourist: Турист
+form.task.date: Дата
 form.task.general_room: Тип комнаты
 form.task.placeholder_taskType: Задача
 form.task.creationalDate: Создано
