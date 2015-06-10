@@ -11,3 +11,4 @@ twig.extension.september: 'сент'
 twig.extension.october: 'окт'
 twig.extension.november: 'нояб'
 twig.extension.december: 'дек'
+eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: Нельзя удалить запись с существующими бронями

@@ -21,6 +21,24 @@ class Helper
     }
 
     /**
+     * @param string $interface
+     * @return array
+     */
+    public function getClassesByInterface($interface)
+    {
+        $result = [];
+
+        foreach(get_declared_classes() as $class) {
+            $reflect = new \ReflectionClass($class);
+            if ($reflect->implementsInterface($interface)) {
+                $result[] = $class;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * @param int $length
      * @return string
      *

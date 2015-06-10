@@ -54,22 +54,6 @@ class BookingConfig extends Base implements BaseInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\NotNull(message= "validator.document.bookingConfig.login_not_specified")
-     */
-    protected $username;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
-     * @Assert\NotNull(message="validator.document.bookingConfig.password_not_specified")
-     */
-    protected $password;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
      * @Assert\NotNull(message="validator.document.bookingConfig.no_hotel_id_specified")
      */
     protected $hotelId;
@@ -112,50 +96,6 @@ class BookingConfig extends Base implements BaseInterface
     public function getHotel()
     {
         return $this->hotel;
-    }
-
-    /**
-     * Set username
-     *
-     * @param string $username
-     * @return self
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-        return $this;
-    }
-
-    /**
-     * Get username
-     *
-     * @return string $username
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * Set password
-     *
-     * @param string $password
-     * @return self
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-        return $this;
-    }
-
-    /**
-     * Get password
-     *
-     * @return string $password
-     */
-    public function getPassword()
-    {
-        return $this->password;
     }
 
     /**
@@ -280,7 +220,7 @@ class BookingConfig extends Base implements BaseInterface
     /**
      * Add service
      *
-     * @param MBH\Bundle\ChannelManagerBundle\Document\Service $service
+     * @param \MBH\Bundle\ChannelManagerBundle\Document\Service $service
      */
     public function addService(\MBH\Bundle\ChannelManagerBundle\Document\Service $service)
     {
@@ -290,7 +230,7 @@ class BookingConfig extends Base implements BaseInterface
     /**
      * Remove service
      *
-     * @param MBH\Bundle\ChannelManagerBundle\Document\Service $service
+     * @param \MBH\Bundle\ChannelManagerBundle\Document\Service $service
      */
     public function removeService(\MBH\Bundle\ChannelManagerBundle\Document\Service $service)
     {
@@ -300,10 +240,32 @@ class BookingConfig extends Base implements BaseInterface
     /**
      * Get services
      *
-     * @return Doctrine\Common\Collections\Collection $services
+     * @return \Doctrine\Common\Collections\Collection $services
      */
     public function getServices()
     {
         return $this->services;
+    }
+
+    public function getRoomsAsArray()
+    {
+        $result = [];
+
+        foreach ($this->getRooms() as $room) {
+            $result[$room->getRoomId()] = $room->getRoomType();
+        }
+
+        return $result;
+    }
+
+    public function getTariffsAsArray()
+    {
+        $result = [];
+
+        foreach ($this->getTariffs() as $tariff) {
+            $result[$tariff->getTariffId()] = $tariff->getTariff();
+        }
+
+        return $result;
     }
 }

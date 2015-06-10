@@ -43,3 +43,4 @@ channelManager.booking.notification.subject: Сообщения от Booking.com
 channelManager.booking.notification.new: Новый заказ %order% из booking.com. Броней: %packages%
 channelManager.booking.notification.edit: Изменен заказ %order% из booking.com. Броней: %packages%
 channelManager.booking.notification.delete: Удален заказ %order% из booking.com. Броней: %packages%
+channelmanager.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы типы номеров, тарифы или услуги

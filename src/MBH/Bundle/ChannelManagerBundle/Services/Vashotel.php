@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
 /**
  *  ChannelManager service
@@ -640,7 +641,7 @@ class Vashotel extends Base
      * @param VashotelConfig $config
      * @return array
      */
-    public function getTariffs(VashotelConfig $config)
+    public function getTariffs1(VashotelConfig $config)
     {
         ($config->getIsBreakfast()) ? $food = 'BB' : $food = 'RO';
 
@@ -783,8 +784,31 @@ class Vashotel extends Base
         return $fields;
     }
 
-    public function sync()
+    /**
+     * {@inheritDoc}
+     */
+    public function getRooms(ChannelManagerConfigInterface $config)
     {
-        
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTariffs(ChannelManagerConfigInterface $config)
+    {
+    }
+
+    /**
+     * Pull rooms from service server
+     * @param ChannelManagerConfigInterface $config
+     * @return array
+     */
+    public function pullRooms(ChannelManagerConfigInterface $config) {}
+
+    /**
+     * Pull tariffs from service server
+     * @param ChannelManagerConfigInterface $config
+     * @return array
+     */
+    public function pullTariffs(ChannelManagerConfigInterface $config) {}
 }

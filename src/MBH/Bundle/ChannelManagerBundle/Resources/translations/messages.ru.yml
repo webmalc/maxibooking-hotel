@@ -37,3 +37,5 @@ controller.vashhotelController.sync_error: 'Во время синхрониза
 controller.vashhotelController.rooms_sync_success: 'Тарифы успешно синхронизированы.'
 controller.vashhotelController.settings_saved_success: 'Настройки успешно сохранены.'
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
+roomtype.placeholder: 'тип номера соответствия номеру в канале'
+tarifftype.placeholder: 'тариф соответствия тарифу в канале'

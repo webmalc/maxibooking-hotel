@@ -141,7 +141,7 @@ class PackageSubscriber implements EventSubscriber
 
                         $relatedPackagesIds[] = $relatedPackage->getNumberWithPrefix();
                     }
-                    throw new DeleteException($this->get('translator')->trans('eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations') . implode(', ', $relatedPackagesIds));
+                    throw new DeleteException($this->container->get('translator')->trans('eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations') . ' ' . implode(', ', $relatedPackagesIds));
                 }
             }
         }

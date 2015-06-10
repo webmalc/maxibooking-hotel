@@ -39,8 +39,8 @@ class Builder extends ContainerAware
         $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Номера и цены'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-ruble']);
 
-        $menu->addChild('task', ['route' => 'task', 'label' => 'Задачи'])
-            ->setAttributes(['icon' => 'fa fa-tasks']);
+        /*$menu->addChild('task', ['route' => 'task', 'label' => 'Задачи'])
+            ->setAttributes(['icon' => 'fa fa-tasks']);*/
 
         $menu['prices']->addChild('overview', ['route' => 'room_overview', 'label' => 'Обзор'])
             ->setAttributes(['icon' => 'fa fa-info-circle']);

@@ -56,11 +56,20 @@ interface ChannelManagerServiceInterface
      */
     public function pullOrders();
 
+
     /**
-     * Sync tariffs & rates
-     * @return mixed
+     * Pull rooms from service server
+     * @param ChannelManagerConfigInterface $config
+     * @return array
      */
-    public function sync();
+    public function pullRooms(ChannelManagerConfigInterface $config);
+
+    /**
+     * Pull tariffs from service server
+     * @param ChannelManagerConfigInterface $config
+     * @return array
+     */
+    public function pullTariffs(ChannelManagerConfigInterface $config);
     
     /**
      * Check response from booking service

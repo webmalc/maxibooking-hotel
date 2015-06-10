@@ -1,6 +1,19 @@
 {% extends 'MBHBaseBundle::meta.html.twig' %}
 
 {% block body %}
+
+    {% if app.environment != 'prod' %}
+        <style>
+            .navbar-fixed-bottom {
+                margin-bottom: 40px !important;
+            }
+            .body {
+                padding-bottom: 100px !important;
+            }
+        </style>
+    {% endif %}
+
+
     {{ parent() }}
     {% block top_navbar %}
         {% include 'MBHBaseBundle::navbar.html.twig' %}

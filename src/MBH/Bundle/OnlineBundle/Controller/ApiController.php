@@ -77,24 +77,36 @@ class ApiController extends Controller
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $logger = $this->get('mbh.online.logger');
         $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP'.$request->getClientIp().'. Post data: '.implode('; ',
-                $request->request->all()).' Get data: '.implode('; ', $request->query->all());
+                $request->request->all()).' Get data: '.implode('; ', $_POST) . '. Keys: ' .implode('; ', array_keys($_POST));
 
         if (!$clientConfig) {
-            $logger->info('FAIL. '.$logText);
+            $logger->info('FAIL. '.$logText. ' .Not found config');
             throw $this->createNotFoundException();
         }
         $response = $clientConfig->checkRequest($request);
 
         if (!$response) {
-            $logger->info('FAIL. '.$logText);
+            $logger->info('FAIL. '.$logText . ' .Bad signature');
             throw $this->createNotFoundException();
         }
 
+
+        //save cashDocument
         $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($response['doc']);
 
         if ($cashDocument && !$cashDocument->getIsPaid()) {
             $cashDocument->setIsPaid(true);
             $dm->persist($cashDocument);
+            $dm->flush();
+        }
+
+        //save commission
+        if (isset($response['commission']) && is_numeric($response['commission'])) {
+            $commission = clone $cashDocument;
+            $commission->setTotal((float) $response['commission'])
+                       ->setOperation('fee')
+            ;
+            $dm->persist($commission);
             $dm->flush();
         }
 

@@ -90,37 +90,13 @@ class ChannelManager
         return $services;
     }
 
-    /**
-     * @param null $name
-     */
-    public function sync($name = null)
-    {
-        $services = $this->getServices(empty($name) ? null : [$name]);
-
-        foreach ($services as $service) {
-            try {
-                $service['service']->sync();
-            } catch (\Exception $e) {
-                if ($this->env == 'dev') {
-                    var_dump($e);
-                };
-            }
-        }
-    }
-    
-    public function syncInBackground()
-    {
-        $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
-        
-        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:sync --no-debug ' . $env . '> /dev/null 2>&1 &');
-        $process->run();
-    }
-
     public function updateInBackground(\DateTime $begin = null, \DateTime $end = null)
     {
         $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
         $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
         $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
+
+        var_dump('nohup php ' . $this->console . 'mbh:channelmanager:update --no-debug ' . $env . $begin . $end . '> /dev/null 2>&1 &');
 
         $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --no-debug ' . $env . $begin . $end . '> /dev/null 2>&1 &');
         $process->run();

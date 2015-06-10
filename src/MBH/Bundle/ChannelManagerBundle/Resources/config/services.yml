@@ -14,12 +14,6 @@ services:
     mbh.channelmanager.booking:
                 class: MBH\Bundle\ChannelManagerBundle\Services\Booking
                 arguments: [@service_container]
-                
-    mbh.channelmanager.subscriber:
-        class: MBH\Bundle\ChannelManagerBundle\EventListener\ChannelManagerSubscriber
-        arguments: [@service_container]
-        tags:
-            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
     mbh.channelmanager.logger:
         class:     Symfony\Bridge\Monolog\Logger
@@ -30,3 +24,9 @@ services:
     mbh.channelmanager.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: [%kernel.logs_dir%/%kernel.environment%.channelmanager.log, 200]
+
+    mbh.channelmanager.configs.subscriber:
+            class: MBH\Bundle\ChannelManagerBundle\EventListener\ConfigsSubscriber
+            arguments: [@service_container]
+            tags:
+                - { name: doctrine_mongodb.odm.event_subscriber, connection: default}

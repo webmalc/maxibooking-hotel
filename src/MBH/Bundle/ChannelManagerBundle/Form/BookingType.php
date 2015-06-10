@@ -23,26 +23,6 @@ class BookingType extends AbstractType
                 ]
             )
             ->add(
-                'username',
-                'text',
-                [
-                    'label' => 'form.bookingType.login',
-                    'required' => true,
-                    'attr' => ['placeholder' => 'username'],
-                    'help' => 'form.bookingType.booking_api_com_access_login'
-                ]
-            )
-            ->add(
-                'password',
-                'text',
-                [
-                    'label' => 'form.bookingType.password',
-                    'required' => true,
-                    'attr' => ['placeholder' => 'password'],
-                    'help' => 'form.bookingType.booking_api_com_password_access'
-                ]
-            )
-            ->add(
                 'hotelId',
                 'text',
                 [

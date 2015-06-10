@@ -131,8 +131,8 @@ parameters:
           title: 'Booking.com'
           service: 'mbh.channelmanager.booking'
           fee: 0.15
-
-
+          username: maxibookingXML
+          password: bMBhv6tds5i
 
     #параметры логов
     mbh.logs.max: 100
