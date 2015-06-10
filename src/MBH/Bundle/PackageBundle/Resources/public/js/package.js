@@ -1,4 +1,4 @@
-/*global window, $, services, document */
+/*global window, $, services, document, datepicker */
 $(document).ready(function () {
     'use strict';
 
@@ -259,24 +259,24 @@ $(document).ready(function () {
             $(this).children('i.fa').toggleClass('fa-caret-up').toggleClass('fa-caret-down');
 
             if ($.cookie('order-packages-panel') === undefined) {
-                $.cookie('order-packages-panel', 1, { path: '/' });
+                $.cookie('order-packages-panel', 1, {path: '/'});
             } else {
-                $.removeCookie('order-packages-panel', { path: '/' });
+                $.removeCookie('order-packages-panel', {path: '/'});
             }
 
         });
 
-        deleted.on('switchChange', function() {
+        deleted.on('switchChange', function () {
 
             if ($.cookie('order-packages-panel-deleted') === undefined) {
-                $.cookie('order-packages-panel-deleted', 1, { path: '/' });
+                $.cookie('order-packages-panel-deleted', 1, {path: '/'});
             } else {
-                $.removeCookie('order-packages-panel-deleted', { path: '/' });
+                $.removeCookie('order-packages-panel-deleted', {path: '/'});
             }
 
             location.reload();
         });
-    } ());
+    }());
 
     //prices by day
     (function () {
@@ -297,8 +297,15 @@ $(document).ready(function () {
     (function () {
         var checkIn = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckIn'),
             checkOut = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckOut'),
+            arrivalDate = $('#mbh_bundle_packagebundle_package_accommodation_type_arrivalTime_date'),
+            departureDate = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_date'),
             arrival = $('#mbh_bundle_packagebundle_package_accommodation_type_arrivalTime_time'),
             departure = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_time'),
+            datepickerOptions = {
+                language: "ru",
+                autoclose: true,
+                format: 'dd.mm.yyyy'
+            },
             show = function () {
                 if (checkIn.is(':checked')) {
                     arrival.closest('.form-group ').show();
@@ -325,6 +332,8 @@ $(document).ready(function () {
         }
         arrival.timepicker({showMeridian: false});
         departure.timepicker({showMeridian: false});
+        arrivalDate.datepicker(datepickerOptions);
+        departureDate.datepicker(datepickerOptions);
         show();
         showOut();
         checkIn.on('switchChange.bootstrapSwitch', show);

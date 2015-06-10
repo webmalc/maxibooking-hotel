@@ -22,6 +22,8 @@ class PackageRepository extends DocumentRepository
         $qb = $this->createQueryBuilder('s');
         $qb->field('accommodation')->exists(true)
             ->field('accommodation')->notEqual(null)
+            ->addOr($qb->expr()->field('departureTime')->exists(false))
+            ->addOr($qb->expr()->field('departureTime')->equals(null))
         ;
 
         if ($begin) {

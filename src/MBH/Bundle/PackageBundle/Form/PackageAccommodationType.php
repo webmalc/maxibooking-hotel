@@ -12,7 +12,6 @@ class PackageAccommodationType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $now = new \DateTime();
         $rooms = [];
         foreach ($options['rooms'] as $roomTypeRooms) {
             $rooms[$roomTypeRooms[0]->getRoomType()->getName()] = [];
@@ -69,7 +68,7 @@ class PackageAccommodationType extends AbstractType
                 'required' => false,
                 'time_widget' => 'single_text',
                 'date_widget' => 'single_text',
-                'attr' => array('placeholder' => '12:00', 'class' => 'input-time input-xxs'),
+                'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),
             ))
             ->add('isCheckOut', 'checkbox', [
                 'label' => 'form.packageAccommodationType.are_guests_checked_out',
@@ -85,7 +84,7 @@ class PackageAccommodationType extends AbstractType
                 'required' => false,
                 'time_widget' => 'single_text',
                 'date_widget' => 'single_text',
-                'attr' => array('placeholder' => '12:00', 'class' => 'input-time input-xxs'),
+                'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),
             ));
     }
 
