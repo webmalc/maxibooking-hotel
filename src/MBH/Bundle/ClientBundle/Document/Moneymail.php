@@ -88,7 +88,7 @@ class Moneymail implements PaymentSystemInterface
             'time' => 60 * 30,
             'disabled' => $createdAt <= new \DateTime(),
             'touristEmail' => $payer ? $payer->getEmail() : null,
-            'comment' => '# ' . $cashDocument->getId(),
+            'comment' => 'Order # ' . $cashDocument->getOrder()->getId(),
             'signature' => $this->getSignature($cashDocument, $url),
         ];
     }

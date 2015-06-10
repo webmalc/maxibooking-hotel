@@ -183,7 +183,7 @@ class Order
                 ->setMethod(isset($cash['method']) ? $cash['method'] : 'electronic')
                 ->setOperation(isset($cash['operation']) ? $cash['operation'] : 'in')
                 ->setOrder($order)
-                ->setPayer($order->getMainTourist())
+                ->setTouristPayer($order->getMainTourist())
                 ->setTotal(isset($cash['total']) ? (float)$cash['total'] : $order->getPrice())
             ;
 
