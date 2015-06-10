@@ -42,10 +42,7 @@ class TouristController extends Controller
      */
     public function jsonAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $qb = $dm->getRepository('MBHPackageBundle:Tourist')
+        $qb = $this->dm->getRepository('MBHPackageBundle:Tourist')
                  ->createQueryBuilder('r')
                  ->skip($request->get('start'))
                  ->limit($request->get('length'))
@@ -181,14 +178,32 @@ class TouristController extends Controller
 
     /**
      * @Route("/{id}/edit/extended", name="tourist_edit_extended")
-     * @Method("GET")
+     * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_USER')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
-    public function editExtendedAction(Tourist $entity)
+    public function editExtendedAction(Tourist $entity, Request $request)
     {
         $form = $this->createForm(new TouristExtendedType(), $entity);
+
+        if($request->isMethod('PUT')) {
+            $form->submit($request);
+
+            if ($form->isValid()) {
+                /*var_dump($entity->getBirthplace());
+                die();*/
+
+                $this->dm->persist($entity);
+                $this->dm->flush();
+
+                $request->getSession()->getFlashBag()
+                    ->set('success', $this->get('translator')->trans('controller.touristController.record_edited_success'))
+                ;
+
+                return $this->afterSaveRedirect('tourist', $entity->getId());
+            }
+        }
 
         return [
             'entity' => $entity,

@@ -214,7 +214,7 @@ class Package extends Base
     protected $channelManagerId;
 
     /**
-     * @var int
+     * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date()
      * @Assert\DateTime()
@@ -222,7 +222,7 @@ class Package extends Base
     protected $arrivalTime;
 
     /**
-     * @var int
+     * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date()
      * @Assert\DateTime()

@@ -40,6 +40,18 @@ class OrderDocumentType extends AbstractType
             ]
         );
 
+        $builder->add(
+            'scanType',
+            'choice',
+            [
+                'group' => $groupTitle,
+                'label' => 'Тип скана',
+                'required' => false,
+                'empty_value' => '',
+                'choices' => $options['scanTypes']
+            ]
+        );
+
         $touristIds = $options['touristIds'];
 
         $builder->add(
@@ -99,13 +111,14 @@ class OrderDocumentType extends AbstractType
      */
     public function getName()
     {
-        return 'mbh_bundle_packagebundle_package_document_type';
+        return 'mbh_package_bundle_order_document_type';
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults([
             'documentTypes' => [],
+            'scanTypes' => [],
             'touristIds' => [],
             'scenario' => self::SCENARIO_ADD,
             'document' => null,

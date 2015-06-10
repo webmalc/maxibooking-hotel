@@ -13,16 +13,22 @@ use Symfony\Component\Form\FormBuilderInterface;
  */
 class DocumentRelationType extends AbstractType
 {
+    private $documentTypes;
+
+    public function setDocumentTypes(array $documentTypes)
+    {
+        $this->documentTypes = $documentTypes;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $documentTypes = [];//include '/var/www/mbh/app/Resources/vega/docum.php';
-
         $group = 'DocumentRelation';
 
         $builder
             ->add('type', 'choice', [
-                'choices' => $documentTypes,
+                'choices' => $this->documentTypes,
                 //'group' => $group,
+                'required' => false,
             ])
             ->add('authority_organ', 'document', [
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaFMS',
@@ -47,7 +53,7 @@ class DocumentRelationType extends AbstractType
                 'format' => 'dd.MM.yyyy',
                 //'group' => $group,
                 'required' => false,
-                'attr' => ['class' => 'input-small'],
+                'attr' => ['class' => 'input-small', 'data-date-format' => 'dd.mm.yyyy'],
             ])
             ->add('relation', 'choice', [
                 'choices' => [
