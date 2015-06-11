@@ -30,6 +30,12 @@ class OrderDocument
      * @var string
      * @ODM\String
      */
+    protected $scanType;
+
+    /**
+     * @var string
+     * @ODM\String
+     */
     protected $name;
 
     /**
@@ -103,6 +109,23 @@ class OrderDocument
     public function setType($type)
     {
         $this->type = $type;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getScanType()
+    {
+        return $this->scanType;
+    }
+
+    /**
+     * @param string $scanType
+     */
+    public function setScanType($scanType)
+    {
+        $this->scanType = $scanType;
     }
 
     /**

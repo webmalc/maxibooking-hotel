@@ -51,10 +51,17 @@ class DocumentsController extends Controller
         if ($mainTourist = $package->getMainTourist()) {
             $touristIds[] = $mainTourist->getId();
         }
-        $docTypes = $this->container->getParameter('mbh.order.document.types');
+
+        $orderDocumentTypes = $this->container->getParameter('mbh.order.document.types');
+        $vagaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
+        $docTypes = $orderDocumentTypes + $vagaDocumentTypes;
+
+        $groupDocTypes = ['' => $orderDocumentTypes, 'Vega' => $vagaDocumentTypes];
+        $scanTypes = $this->container->getParameter('mbh.vega.document.scan.types');
 
         $form = $this->createForm(new OrderDocumentType(), $orderDocument, [
-            'documentTypes' => $docTypes,
+            'documentTypes' => $groupDocTypes,
+            'scanTypes' => $scanTypes,
             'touristIds' => $touristIds
         ]);
 
@@ -63,10 +70,6 @@ class DocumentsController extends Controller
 
             if ($form->isValid()) {
                 $orderDocument->upload();
-
-                /* @var $this->dm  \Doctrine\ODM\MongoDB\DocumentManager */
-                $this->dm = $this->get('doctrine_mongodb')->getManager();
-
                 $package->getOrder()->addDocument($orderDocument);
                 $this->dm->persist($package);
                 $this->dm->flush();
@@ -91,7 +94,7 @@ class DocumentsController extends Controller
      * @param $name
      * @return RedirectResponse
      *
-     * @Route("/{id}/removeDocument/{packageId}/{name}", name="order_remove_document", options={"expose"=true})
+     * @Route("/document/{id}/{packageId}/{name}/remove", name="order_remove_document", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
      * @ParamConverter("order", class="MBHPackageBundle:Order")
@@ -116,7 +119,7 @@ class DocumentsController extends Controller
 
     /**
      *
-     * @Route("/document/{name}/{download}", name="order_document_view", options={"expose"=true}, defaults={"download" = 0})
+     * @Route("/document/{name}/view/{download}", name="order_document_view", options={"expose"=true}, defaults={"download" = 0})
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
      * @param $name

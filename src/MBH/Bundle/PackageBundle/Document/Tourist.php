@@ -195,10 +195,22 @@ class Tourist extends Base implements PayerInterface
     protected $birthplace;
 
     /**
+     * @var string
+     * @ODM\String
+     */
+    protected $addressObject;
+
+    /**
      * @var AddressObjectDecomposed
      * @ODM\EmbedOne(targetDocument="AddressObjectDecomposed")
      */
     protected $addressObjectDecomposed;
+
+    /**
+     * @var string
+     * @ODM\String
+     */
+    protected $addressObjectCombined;
 
     /**
      * @var DocumentRelation
@@ -710,6 +722,22 @@ class Tourist extends Base implements PayerInterface
     }
 
     /**
+     * @return string
+     */
+    public function getAddressObject()
+    {
+        return $this->addressObject;
+    }
+
+    /**
+     * @param string $addressObject
+     */
+    public function setAddressObject($addressObject)
+    {
+        $this->addressObject = $addressObject;
+    }
+
+    /**
      * @return AddressObjectDecomposed
      */
     public function getAddressObjectDecomposed()
@@ -723,6 +751,22 @@ class Tourist extends Base implements PayerInterface
     public function setAddressObjectDecomposed(AddressObjectDecomposed $addressObjectDecomposed = null)
     {
         $this->addressObjectDecomposed = $addressObjectDecomposed;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddressObjectCombined()
+    {
+        return $this->addressObjectCombined;
+    }
+
+    /**
+     * @param string $addressObjectCombined
+     */
+    public function setAddressObjectCombined($addressObjectCombined)
+    {
+        $this->addressObjectCombined = $addressObjectCombined;
     }
 
     /**

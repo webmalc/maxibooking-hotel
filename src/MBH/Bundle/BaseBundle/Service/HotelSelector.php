@@ -37,7 +37,7 @@ class HotelSelector
     }
 
     /**
-     * @return \MBH\Bundle\HotelBundle\Document\Hotel
+     * @return null|\MBH\Bundle\HotelBundle\Document\Hotel
      */
     public function getSelected()
     {

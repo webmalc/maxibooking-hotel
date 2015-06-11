@@ -72,6 +72,8 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-bar-chart']);
         $menu['reports']->addChild('service_list', ['route' => 'service_list', 'label' => 'Услуги'])
             ->setAttributes(['icon' => 'fa fa-plug']);
+        $menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
+            ->setAttributes(['icon' => 'fa fa-file-archive-o']);
 
         return $this->filterMenu($menu);
     }

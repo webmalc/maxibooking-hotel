@@ -1,0 +1,28 @@
+{% extends 'MBHPackageBundle:Report:layout.html.twig' %}
+
+{% set small_title = "source.index.fms"|trans({}, "MBHPackageBundle") %}
+
+{% block content %}
+
+    <div class="well">
+        <form method="post" name="fms_form" action="{{ path('report_fms') }}" class="form-inline filter-form">
+            <div class="input">
+                <i class="fa fa-calendar" title="{{ "package.service.index.period"|trans({}, "MBHPackageBundle") }}"
+                   data-toggle='tooltip'></i>
+                &nbsp
+                <input required="required" type="text" name="begin" class="datepicker begin-datepiker form-control input-sm"
+                       data-date-format="dd.mm.yyyy" value="{{ "-1 day"|date("d.m.Y") }}">
+            </div>
+            <div class="input">
+                - &nbsp
+                <input required="required" type="text" name="end" class="datepicker end-datepiker form-control input-sm"
+                       data-date-format="dd.mm.yyyy" value="{{ "now"|date("d.m.Y") }}">
+            </div>
+            &nbsp;
+            <input type="submit" class="btn btn-success" value="Скачать отчет">
+        </form>
+    </div>
+    <div class="alert alert-warning">
+        <p>Выберите период для скачивания zip отчета ФМС для ПК "Вега" </p>
+    </div>
+{% endblock %}

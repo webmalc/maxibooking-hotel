@@ -1,0 +1,12 @@
+MBH\Bundle\PackageBundle\Document\Tourist:
+     getters:
+         sex:
+              - NotBlank: ~
+         citizenship:
+              - NotBlank: ~
+         birthplace:
+              - NotBlank: ~
+         documentRelation:
+              - NotBlank: ~
+         documentRelation:
+              - NotBlank: ~

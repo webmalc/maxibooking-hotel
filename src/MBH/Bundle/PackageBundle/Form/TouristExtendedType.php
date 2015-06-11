@@ -37,20 +37,20 @@ class TouristExtendedType extends AbstractType
                 'mapped' => false
             ]);*/
             ->add('documentRelation', 'mbh_document_relation', [
-                'data_class' => 'MBH\Bundle\PackageBundle\Document\DocumentRelation'
+                'data_class' => 'MBH\Bundle\PackageBundle\Document\DocumentRelation',
+                'group' => 'LiveAddress',//'DocumentRelation',
             ])
             //LiveAddress
             ->add('address_object', 'text', [
-                'mapped' => false,
                 'group' => 'LiveAddress',
                 'required' => false,
             ])
             ->add('address_object_decomposed', 'mbh_address_object_decomposed', [
                 'required' => false,
+                'group' => 'LiveAddress',
                 'data_class' => 'MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed'
             ])
             ->add('address_object_combined', 'text', [
-                'mapped' => false,
                 'group' => 'LiveAddress',
                 'required' => false,
             ])
@@ -66,14 +66,14 @@ class TouristExtendedType extends AbstractType
                 'mapped' => false,
                 'group' => 'LiveAddress',
             ])*/
-            ->add('room', 'text', [
+            /*->add('room', 'text', [
                 'mapped' => false,
                 'required' => false,
             ])
             ->add('embeddings', 'text', [
                 'mapped' => false,
                 'required' => false,
-            ])
+            ])*/
             //Scanned_Document
             /*->add('scanned_document', 'text', [
                 'mapped' => false,
