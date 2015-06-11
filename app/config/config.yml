@@ -189,3 +189,12 @@ liip_imagine:
             quality: 100
             filters:
               relative_resize: { scale: 0.5, allow_upscale: true }
+
+
+jms_translation:
+    configs:
+        app:
+            dirs: [%kernel.root_dir%, %kernel.root_dir%/../src]
+            output_dir: %kernel.root_dir%/Resources/translations
+            excluded_dirs: [%kernel.root_dir%/../var/cache, %kernel.root_dir%/../var/logs]
+            excluded_names: ["*TestCase.php", "*Test.php"]

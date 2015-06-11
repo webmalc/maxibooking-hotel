@@ -127,6 +127,7 @@ parameters:
           title: 'ВашОтель.RU'
           service: 'mbh.channelmanager.vashotel'
           fee: 0.15
+          password: N4H18zzmjreJmCJ
         booking:
           title: 'Booking.com'
           service: 'mbh.channelmanager.booking'

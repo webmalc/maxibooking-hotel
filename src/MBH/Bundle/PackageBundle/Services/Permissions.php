@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
-use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Order as OrderDoc;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\BaseBundle\Document\Base;
@@ -54,7 +54,7 @@ class Permissions
         if ($doc instanceof Package) {
             return $hotelSelector->checkPermissions($doc->getRoomType()->getHotel());
         }
-        if ($doc instanceof Order) {
+        if ($doc instanceof OrderDoc) {
             foreach ($doc->getPackages() as $package) {
                 if (!$hotelSelector->checkPermissions($package->getRoomType()->getHotel())) {
                     return false;

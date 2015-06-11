@@ -31,7 +31,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
      */
     public function indexAction()
     {
-        $entity = $this->get('mbh.hotel.selector')->getSelected()->getVashotelConfig();
+        $entity = $this->hotel->getVashotelConfig();
 
         $form = $this->createForm(
             new VashotelType(), $entity
@@ -53,33 +53,26 @@ class VashotelController extends Controller implements CheckHotelControllerInter
      */
     public function saveAction(Request $request)
     {
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
-        $new = false;
+        $entity = $this->hotel->getVashotelConfig();
 
         if (!$entity) {
             $entity = new VashotelConfig();
-            $entity->setHotel($hotel);
-            $new = true;
+            $entity->setHotel($this->hotel);
         }
 
         $form = $this->createForm(
             new VashotelType(), $entity
         );
 
-        $form->submit($request);
+        $form->handleRequest($request);
 
-        if ($form->isValid()) {
-
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.vashhotelController.settings_saved_success'))
             ;
-
             $this->container->get('mbh.channelmanager')->syncInBackground();
 
             return $this->redirect($this->generateUrl('vashotel'));
@@ -100,12 +93,14 @@ class VashotelController extends Controller implements CheckHotelControllerInter
      */
     public function roomAction()
     {
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
+        $config = $this->hotel->getVashotelConfig();
 
-        if (!$entity) {
+        if (!$config) {
             throw $this->createNotFoundException();
         }
+
+        $this->get('mbh.channelmanager.vashotel')->pullRooms($config);
+
 
         $form = $this->createForm(
             new RoomType(), [], ['entity' => $entity]

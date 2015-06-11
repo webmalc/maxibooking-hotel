@@ -1,4 +1,9 @@
 services:
+    twig.text_extension:
+        class: Twig_Extensions_Extension_Text
+        tags:
+            - name: twig.extension
+
     doctrine_odm.mongodb.validator.unique:
       class: MBH\Bundle\BaseBundle\Validator\Constraints\UniqueEntityValidator
       arguments:

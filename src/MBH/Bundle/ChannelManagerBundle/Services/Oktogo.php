@@ -13,7 +13,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 /**
  *  ChannelManager service
  */
-class Oktogo extends Base
+class Oktogo
 {
     /**
      * Config class
@@ -28,7 +28,7 @@ class Oktogo extends Base
     /**
      * Get roomTypes & tariffs template file
      */
-    const GET_ROOMS_TARIFFS_TEMPLATE = 'MBHChannelManagerBundle:Oktogo:getRoomsTariffs.xml.twig';
+    const GET_ROOMS_TARIFFS_TEMPLATE = 'MBHChannelManagerBundle:Oktogo:get.xml.twig';
 
     /**
      * Base API URL

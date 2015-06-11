@@ -64,27 +64,10 @@ class VashotelConfig extends Base implements BaseInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="key")
-     * @Assert\NotNull(message="validator.document.vashhotelConfig.no_api_key_specified")
-     */
-    protected $key;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
      * @ODM\String(name="hotelId")
      * @Assert\NotNull(message="validator.document.vashhotelConfig.no_hotel_id_specified")
      */
     protected $hotelId;
-
-    /**
-     * @var boolean
-     * @Gedmo\Versioned
-     * @ODM\Boolean(name="isBreakfast")
-     * @Assert\NotNull()
-     * @Assert\Type(type="boolean")
-     */
-    protected $isBreakfast = false;
 
     /**
      * Set hotel
@@ -106,28 +89,6 @@ class VashotelConfig extends Base implements BaseInterface
     public function getHotel()
     {
         return $this->hotel;
-    }
-
-    /**
-     * Set key
-     *
-     * @param string $key
-     * @return self
-     */
-    public function setKey($key)
-    {
-        $this->key = $key;
-        return $this;
-    }
-
-    /**
-     * Get key
-     *
-     * @return string $key
-     */
-    public function getKey()
-    {
-        return $this->key;
     }
 
     /**
@@ -264,28 +225,5 @@ class VashotelConfig extends Base implements BaseInterface
         }
 
         return $result;
-    }
-
-    /**
-     * Set isBreakfast
-     *
-     * @param boolean $isBreakfast
-     * @return self
-     */
-    public function setIsBreakfast($isBreakfast)
-    {
-        $this->isBreakfast = $isBreakfast;
-
-        return $this;
-    }
-
-    /**
-     * Get isBreakfast
-     *
-     * @return boolean $isBreakfast
-     */
-    public function getIsBreakfast()
-    {
-        return $this->isBreakfast;
     }
 }
