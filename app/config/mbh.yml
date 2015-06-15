@@ -132,6 +132,12 @@ parameters:
           service: 'mbh.channelmanager.booking'
           username: maxibookingXML
           password: bMBhv6tds5i
+        hotelinn:
+          title: 'Hotel-inn'
+          service: 'mbh.channelmanager.hotelinn'
+          username: maxibookingXML
+          password: bMBhv6tds5i
+
 
     #параметры логов
     mbh.logs.max: 100

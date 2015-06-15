@@ -168,6 +168,9 @@ class Hotel extends Base
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\BookingConfig", mappedBy="hotel") */
     protected $bookingConfig;
 
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig", mappedBy="hotel") */
+    protected $hotelinnConfig;
+
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Country")
@@ -741,5 +744,27 @@ class Hotel extends Base
     public function getBookingConfig()
     {
         return $this->bookingConfig;
+    }
+
+    /**
+     * Set hotelinnConfig
+     *
+     * @param \MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig $hotelinnConfig
+     * @return self
+     */
+    public function setHotelinnConfig(\MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig $hotelinnConfig)
+    {
+        $this->hotelinnConfig = $hotelinnConfig;
+        return $this;
+    }
+
+    /**
+     * Get hotelinnConfig
+     *
+     * @return \MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig $hotelinnConfig
+     */
+    public function getHotelinnConfig()
+    {
+        return $this->hotelinnConfig;
     }
 }

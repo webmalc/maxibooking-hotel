@@ -3,10 +3,10 @@
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\ChannelManagerBundle\Document\BookingConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
-use MBH\Bundle\ChannelManagerBundle\Form\BookingType;
+use MBH\Bundle\ChannelManagerBundle\Form\HotelinnType;
 use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -18,23 +18,23 @@ use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
 
 /**
- * @Route("/booking")
+ * @Route("/hotelinn")
  */
-class BookingController extends Controller implements CheckHotelControllerInterface, EnvironmentInterface
+class HotelinnController extends Controller implements CheckHotelControllerInterface, EnvironmentInterface
 {
     /**
      * Main configuration page
-     * @Route("/", name="booking")
+     * @Route("/", name="hotelinn")
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
      */
     public function indexAction()
     {
-        $config = $this->hotel->getBookingConfig();
+        $config = $this->hotel->getHotelinnConfig();
 
         $form = $this->createForm(
-            new BookingType(), $config
+            new HotelinnType(), $config
         );
 
         return [
@@ -46,24 +46,24 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
     /**
      * Main configuration save
-     * @Route("/", name="booking_save")
+     * @Route("/", name="hotelinn_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Template("MBHChannelManagerBundle:Booking:index.html.twig")
+     * @Template("MBHChannelManagerBundle:Hotelinn:index.html.twig")
      * @param Request $request
      * @return Response
      */
     public function saveAction(Request $request)
     {
-        $hotel = $this->hotel;
-        $config = $hotel->getBookingConfig();
+        $hotel = $this->get('mbh.hotel.selector')->getSelected();
+        $config = $hotel->getHotelinnConfig();
 
         if (!$config) {
-            $config = new BookingConfig();
+            $config = new HotelinnConfig();
             $config->setHotel($hotel);
         }
         $form = $this->createForm(
-            new BookingType(), $config
+            new HotelinnType(), $config
         );
 
         $form->handleRequest($request);
@@ -74,14 +74,14 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $dm->persist($config);
             $dm->flush();
 
-            $this->get('mbh.channelmanager.booking')->syncServices($config);
+            $this->get('mbh.channelmanager.hotelinn')->syncServices($config);
             $this->get('mbh.channelmanager')->updateInBackground();
 
             $request->getSession()->getFlashBag()
                 ->set('success',
-                    $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+                    $this->get('translator')->trans('controller.hotelinnController.settings_saved_success'));
 
-            return $this->redirect($this->generateUrl('booking'));
+            return $this->redirect($this->generateUrl('hotelinn'));
         }
 
         return [
@@ -93,7 +93,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
     /**
      * Room configuration page
-     * @Route("/room", name="booking_room")
+     * @Route("/room", name="hotelinn_room")
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
@@ -103,7 +103,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      */
     public function roomAction(Request $request)
     {
-        $config = $this->hotel->getBookingConfig();
+        $config = $this->hotel->getHotelinnConfig();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -111,7 +111,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
         $form = $this->createForm(new RoomsType(), $config->getRoomsAsArray(), [
             'hotel' => $this->hotel,
-            'booking' => $this->get('mbh.channelmanager.booking')->pullRooms($config),
+            'hotelinn' => $this->get('mbh.channelmanager.hotelinn')->pullRooms($config),
         ]);
 
         $form->handleRequest($request);
@@ -131,9 +131,9 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
             $request->getSession()->getFlashBag()
                 ->set('success',
-                    $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+                    $this->get('translator')->trans('controller.hotelinnController.settings_saved_success'));
 
-            return $this->redirect($this->generateUrl('booking_room'));
+            return $this->redirect($this->generateUrl('hotelinn_room'));
         }
 
         return [
@@ -145,7 +145,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
     /**
      * Tariff configuration page
-     * @Route("/tariff", name="booking_tariff")
+     * @Route("/tariff", name="hotelinn_tariff")
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
@@ -155,7 +155,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      */
     public function tariffAction(Request $request)
     {
-        $config = $this->hotel->getBookingConfig();
+        $config = $this->hotel->getHotelinnConfig();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -163,7 +163,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
         $form = $this->createForm(new TariffsType(), $config->getTariffsAsArray(), [
             'hotel' => $this->hotel,
-            'booking' => $this->get('mbh.channelmanager.booking')->pullTariffs($config),
+            'hotelinn' => $this->get('mbh.channelmanager.hotelinn')->pullTariffs($config),
         ]);
 
         $form->handleRequest($request);
@@ -183,9 +183,9 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
             $request->getSession()->getFlashBag()
                 ->set('success',
-                    $this->get('translator')->trans('controller.bookingController.settings_saved_success'));
+                    $this->get('translator')->trans('controller.hotelinnController.settings_saved_success'));
 
-            return $this->redirect($this->generateUrl('booking_tariff'));
+            return $this->redirect($this->generateUrl('hotelinn_tariff'));
         }
 
 
@@ -198,14 +198,14 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
     /**
      * Services configuration page
-     * @Route("/service", name="booking_service")
+     * @Route("/service", name="hotelinn_service")
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
      */
     public function serviceAction()
     {
-        $config = $this->get('mbh.hotel.selector')->getSelected()->getBookingConfig();
+        $config = $this->get('mbh.hotel.selector')->getSelected()->getHotelinnConfig();
 
         if (!$config) {
             throw $this->createNotFoundException();
