@@ -21,11 +21,24 @@ use Symfony\Component\Validator\ValidatorBuilder;
  */
 class VegaExport
 {
+    /**
+     * @var Container
+     */
     private $container;
+    /**
+     * @var array
+     */
+    private $documentTypes;
+    /**
+     * @var array
+     */
+    private $scanTypes;
 
     public function __construct(Container $container)
     {
-       $this->container = $container;
+        $this->container = $container;
+        $this->documentTypes = $this->container->getParameter('mbh.vega.document.types');
+        $this->scanTypes = $this->container->getParameter('mbh.vega.document.scan.types');
     }
 
     /**
@@ -36,7 +49,7 @@ class VegaExport
     {
         /** @var ValidatorBuilder $validatorBuilder */
         $validatorBuilder = $this->container->get('validator.builder');
-        $validatorBuilder->disableAnnotationMapping()->addYamlMapping(__DIR__.'/../Resources/config/additional_validation.yml');
+        $validatorBuilder->disableAnnotationMapping()->addYamlMapping(__DIR__ . '/../Resources/config/additional_validation.yml');
         $validator = $validatorBuilder->getValidator();
         /** @var ConstraintViolationListInterface $constraintViolationList */
         $constraintViolationList = $validator->validate($tourist);
@@ -45,7 +58,6 @@ class VegaExport
     }
 
     /**
-     * @todo may be created used new \XMLWriter()
      * @todo try catch \Twig_Error
      * @todo throw ValidationException
      * @param Tourist $tourist
@@ -53,18 +65,16 @@ class VegaExport
      * @param array|OrderDocument[] $touristDocuments
      * @return string
      */
-    public function getXMLString(Tourist $tourist, Package $package , array $touristDocuments = [])
+    private function getXmlString(Tourist $tourist, Package $package, array $touristDocuments = [])
     {
         //@todo $this->isValid($tourist);
-        $documentTypes = $this->container->getParameter('mbh.vega.document.types');
-        $scanTypes = $this->container->getParameter('mbh.vega.document.scan.types');
 
         $xml = $this->container->get('twig')->render('MBHVegaBundle::vega_export.xml.twig', [
             'tourist' => $tourist,
             'package' => $package,
             'documents' => $touristDocuments,
-            'documentTypes' => $documentTypes,
-            'scanTypes' => $scanTypes
+            'documentTypes' => $this->documentTypes,
+            'scanTypes' => $this->scanTypes
         ]);
 
         return $xml;
@@ -75,12 +85,12 @@ class VegaExport
      * @param Tourist $tourist
      * @return OrderDocument[]
      */
-    public function getDocumentsByOrderAndTourist(Order $order,Tourist $tourist)
+    public function getDocumentsByOrderAndTourist(Order $order, Tourist $tourist)
     {
         $orderDocuments = [];
         $documents = $order->getDocuments();
-        foreach($documents as $document) {
-            if($document->getTourist() && $document->getTourist()->getId() == $tourist->getId()) {
+        foreach ($documents as $document) {
+            if ($document->getTourist() && $document->getTourist()->getId() == $tourist->getId()) {
                 $orderDocuments[] = $document;
             }
         }
@@ -91,46 +101,56 @@ class VegaExport
 
     /**
      * @param Package[] $packages
+     */
+    private function getXmlStringListWithFiles(array $packages)
+    {
+        $xmlList = [];
+        $fileName = 'FrOrg' . date('Ymdhis');
+        foreach ($packages as $package) {
+            $tourists = $package->getTourists();
+            $tourists[] = $package->getMainTourist();
+            foreach ($tourists as $k => $tourist) {
+                $touristDocuments = $this->getDocumentsByOrderAndTourist($package->getOrder(), $tourist);
+                $xml = $this->getXmlString($tourist, $package, $touristDocuments);
+                $files = array_map(function ($document) {
+                    return $document->getFile();
+                }, $touristDocuments);
+                $xmlList[$fileName . ($k > 0 ? '_(' . $k . ')' : '') . '.xml'] = ['xml' => $xml, 'files' => $files];
+            }
+        }
+
+        return $xmlList;
+    }
+
+    /**
+     * @param Package[] $packages
      * @return \SplFileInfo|void
      */
     public function exportToZip(array $packages)
     {
-        $xmlList = [];
-        $fileName = 'FrOrg'.date('Ymdhis');
+        $xmlList = $this->getXmlStringListWithFiles($packages);
 
-        foreach($packages as $package) {
-            $tourists = $package->getTourists();
-            $tourists[] = $package->getMainTourist();
-            foreach($tourists as $k =>$tourist) {
-                $touristDocuments = $this->getDocumentsByOrderAndTourist($package->getOrder(), $tourist);
-                $xml = $this->getXMLString($tourist, $package, $touristDocuments);
-                $files = array_map(function($document){ return $document->getFile(); }, $touristDocuments);
-                $xmlList[$fileName.($k > 0 ? '_('.$k.')' : '').'.xml'] = ['xml' => $xml, 'files' => $files];
-            }
-        }
-
-        if(!$xmlList) {
+        if (!$xmlList) {
             return;
         }
 
-        $uploadedPath = $this->container->get('kernel')->getRootDir().'/../protectedUpload/vegaDocuments';
+        $uploadedPath = $this->container->get('kernel')->getRootDir() . '/../protectedUpload/vegaDocuments';
 
         $zip = new \ZipArchive();
-        $zipName = 'FrOrg'.date('Ymdhis').'.zip';
-        $fullZipName = $uploadedPath.DIRECTORY_SEPARATOR.$zipName;
+        $zipName = 'FrOrg' . date('Ymdhis') . '.zip';
+        $fullZipName = $uploadedPath . DIRECTORY_SEPARATOR . $zipName;
 
-        if(is_file($fullZipName)) {
+        if (is_file($fullZipName)) {
             unlink($fullZipName);
         }
 
-        if($zip->open($fullZipName, \ZipArchive::CREATE))
-        {
-            foreach($xmlList as $fileName => $data) {
+        if ($zip->open($fullZipName, \ZipArchive::CREATE)) {
+            foreach ($xmlList as $fileName => $data) {
                 $zip->addFromString($fileName, $data['xml']);
                 /** @var UploadedFile $file */
-                foreach($data['files'] as $file) {
+                foreach ($data['files'] as $file) {
                     $fileName = $file->getRealPath();
-                    $localName = 'images'.DIRECTORY_SEPARATOR.$file->getClientOriginalName();
+                    $localName = 'images' . DIRECTORY_SEPARATOR . $file->getClientOriginalName();
                     $zip->addFile($fileName, $localName);
                 }
             }

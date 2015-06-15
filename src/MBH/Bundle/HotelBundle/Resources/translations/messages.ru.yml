@@ -86,3 +86,6 @@ form.task.description: Комментарий
 form.task.general_group_add: Добавление задачи
 form.task.general_group_edit: Редактирование задачи
 form.task.roomType: Тип номера
+
+form.userType.users: Исполнитель
+form.userType.date: Дата

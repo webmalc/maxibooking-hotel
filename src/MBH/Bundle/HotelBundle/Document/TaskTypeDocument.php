@@ -18,7 +18,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="title")
  */
-class TaskType extends  Base {
+class TaskTypeDocument extends  Base {
 
     /**
      * Hook timestampable behavior

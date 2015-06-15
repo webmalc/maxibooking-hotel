@@ -12,7 +12,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * @ODM\Document(collection="Task")
+ * @ODM\Document(collection="Task", repositoryClass="TaskRepository")
  * @ODM\HasLifecycleCallbacks
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
@@ -39,7 +39,7 @@ class Task extends Base
 
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="TaskType")
+     * @ODM\ReferenceOne(targetDocument="TaskTypeDocument")
      * @ Assert\NotNull(message="validator.document.task.taskType_no_selected")
      */
     protected $taskType;
@@ -80,7 +80,7 @@ class Task extends Base
     protected $guest;
 
     /**
-     * @var string
+     * @var string Perform role
      * @Gedmo\Versioned
      * @ODM\String
      * @ Assert\NotNull()
@@ -114,10 +114,10 @@ class Task extends Base
     /**
      * Set taskType
      *
-     * @param \MBH\Bundle\HotelBundle\Document\TaskType $taskType
+     * @param TaskTypeDocument $taskType
      * @return self
      */
-    public function setTaskType(\MBH\Bundle\HotelBundle\Document\TaskType $taskType)
+    public function setTaskType(TaskTypeDocument $taskType)
     {
         $this->taskType = $taskType;
 
@@ -127,7 +127,7 @@ class Task extends Base
     /**
      * Get taskType
      *
-     * @return \MBH\Bundle\HotelBundle\Document\TaskType $taskType
+     * @return TaskTypeDocument $taskType
      */
     public function getTaskType()
     {

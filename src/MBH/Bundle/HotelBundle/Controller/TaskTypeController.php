@@ -3,13 +3,15 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Document\TaskTypeDocument;
+use MBH\Bundle\HotelBundle\Form\TaskTypeType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\HotelBundle\Document\TaskType;
+use MBH\Bundle\HotelBundle\Form\TaskType;
 use MBH\Bundle\HotelBundle\Document\Task;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
@@ -26,17 +28,17 @@ class TaskTypeController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $entity = new TaskType();
-        $form = $this->createForm(new \MBH\Bundle\HotelBundle\Form\TaskType(), $entity);
+        $entity = new TaskTypeDocument();
+        $form = $this->createForm(new TaskTypeType(), $entity);
 
-        $entities = $this->dm->getRepository('MBHHotelBundle:TaskType')->createQueryBuilder('s')
+        $entities = $this->dm->getRepository('MBHHotelBundle:TaskTypeDocument')->createQueryBuilder('s')
             ->sort('title', 'asc')
             ->getQuery()
             ->execute();
 
         if (!count($entities)) {
             foreach ($this->container->getParameter('mbh.default.taskType') as $default) {
-                $new = new TaskType();
+                $new = new TaskTypeDocument();
                 $new->setTitle($default);
                 $this->dm->persist($new);
             }
@@ -68,18 +70,11 @@ class TaskTypeController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
+     * @ParamConverter(class="TaskTypeDocument")
      */
-    public function editAction($id)
+    public function editAction(TaskTypeDocument $entity)
     {
-        $entity = $this->dm->getRepository('MBHHotelBundle:TaskType')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        $form = $this->createForm(
-            new \MBH\Bundle\HotelBundle\Form\TaskType(), $entity, []
-        );
+        $form = $this->createForm(new TaskTypeType(), $entity, []);
 
         return [
             'entity' => $entity,
@@ -98,7 +93,7 @@ class TaskTypeController extends Controller
      */
     public function deleteAction($id)
     {
-        return $this->deleteEntity($id, 'MBHHotelBundle:TaskType', 'tasktype');
+        return $this->deleteEntity($id, 'MBHHotelBundle:TaskTypeDocument', 'tasktype');
 
     }
 
@@ -109,19 +104,11 @@ class TaskTypeController extends Controller
      * @Method("PUT")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template("MBHHotelBundle:TaskType:edit.html.twig")
-     *
+     * @ParamConverter(class="TaskTypeDocument")
      */
-    public function updateAction(Request $request, $id)
+    public function updateAction(Request $request, TaskTypeDocument $entity)
     {
-        $entity = $this->dm->getRepository('MBHHotelBundle:TaskType')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        $form = $this->createForm(
-            new \MBH\Bundle\HotelBundle\Form\TaskType(), $entity, []
-        );
+        $form = $this->createForm(new TaskTypeType(), $entity, []);
 
         $form->submit($request);
 
@@ -139,6 +126,6 @@ class TaskTypeController extends Controller
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );;
+        );
     }
 }

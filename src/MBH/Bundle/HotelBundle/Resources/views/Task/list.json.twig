@@ -1,4 +1,5 @@
 {
+    "draw": "{{ draw }}",
     "recordsTotal": {{ recordsTotal }},
     "recordsFiltered": {{ recordsTotal }},
     "data": [
@@ -11,7 +12,7 @@
             "{{ priorities[task.priority] }}",
             "{{ task.room.roomType.title }}",
             "{% if task.performer %}{{ task.performer.fullName }} {% endif %}",
-            "{{ task.role }}",
+            "{% if task.role %} {{ task.role|trans({}, 'MBHUserBundleRoles') }} {% endif %}",
             "{% if task.guest %} {{ task.guest.fullName }} {% endif %}",
             "{{ task.createdAt|date('d.m.Y') }}",
             "{{ task.updatedAt|date('d.m.Y') }}",

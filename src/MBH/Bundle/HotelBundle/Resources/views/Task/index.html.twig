@@ -2,9 +2,28 @@
 
 {% block content %}
 
+    <div class="well">
+        <form id="task-table-filter" class="form-inline search-form filter-form">
+            <div class="input">
+                    <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp <input type="text" id="task-filter-begin" class="datepicker begin-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
+            </div>
+            <div class="input">
+                - &nbsp <input type="text" id="task-filter-end" class="datepicker end-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
+            </div>
 
-    <table id="task-table"
-           class="package-table table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+            &nbsp;<i class="fa fa-server" title='{{ "task.status"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i>&nbsp;
+            <select id="task-filter-status">
+                <option></option>
+                {% for key,status in statuses %}
+                    <option value="{{ key }}">{{ status.title }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+
+
+    <table id="task-table" class="table table-hover table-actions">
         <thead>
         <tr>
             <th class="td-xs"></th>

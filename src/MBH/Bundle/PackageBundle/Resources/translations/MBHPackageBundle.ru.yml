@@ -310,3 +310,6 @@ organizations.breadcrumbs.edit: Редактировать организаци�
 organizations.confirm_delete: 'Вы действительно хотите удалить организацию "%organization_name%"'
 
 payer.confirmation.notification: Ваш заказ %order% подтвержден
+
+# Task
+task.status: Статус
