@@ -39,7 +39,7 @@ class PackageSubscriber implements EventSubscriber
         $doc = $args->getEntity();
 
         if ($doc instanceof Package) {
-            $end = $doc->getEnd();
+            $end = clone $doc->getEnd();
             $this->container->get('mbh.room.cache')->recalculate(
                 $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff()
             );
@@ -76,7 +76,7 @@ class PackageSubscriber implements EventSubscriber
         $doc = $args->getEntity();
 
         if ($doc instanceof Package) {
-            $end = $doc->getEnd();
+            $end = clone $doc->getEnd();
             $this->container->get('mbh.room.cache')->recalculate(
                 $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff(), false
             );

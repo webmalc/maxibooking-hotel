@@ -8,23 +8,10 @@
             {% for rateId, rateInfo in dateInfo %}
                 <date value="{{ date }}">
                     <rate id="{{rateId}}"/>
-
-                    {% if rateInfo.minimumstay_arrival %}
                     <minimumstay_arrival>{{rateInfo.minimumstay_arrival}}</minimumstay_arrival>
-                    {% endif %}
-
-                    {% if rateInfo.maximumstay_arrival %}
                     <maximumstay_arrival>{{rateInfo.maximumstay_arrival}}</maximumstay_arrival>
-                    {% endif %}
-
-                    {% if rateInfo.minimumstay %}
-                        <minimumstay>{{rateInfo.minimumstay}}</minimumstay>
-                    {% endif %}
-
-                    {% if rateInfo.maximumstay %}
-                        <maximumstay>{{rateInfo.maximumstay}}</maximumstay>
-                    {% endif %}
-
+                    <minimumstay>{{rateInfo.minimumstay}}</minimumstay>
+                    <maximumstay>{{rateInfo.maximumstay}}</maximumstay>
                     <closedonarrival>{{rateInfo.closedonarrival}}</closedonarrival>
                     <closedondeparture>{{rateInfo.closedondeparture}}</closedondeparture>
                     <closed>{{rateInfo.closed}}</closed>

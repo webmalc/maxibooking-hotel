@@ -189,7 +189,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         }
         $dm->flush();
 
-        $this->get('mbh.channelmanager')->updateInBackground();
+        $this->get('mbh.channelmanager')->updateRestrictionsInBackground();
 
         $request->getSession()->getFlashBag()
             ->set('success', 'Изменения успешно сохранены.')
@@ -258,7 +258,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
                 $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
             );
 
-            $this->get('mbh.channelmanager')->updateInBackground();
+            $this->get('mbh.channelmanager')->updateRestrictionsInBackground();
 
             if ($request->get('save') !== null) {
                 return $this->redirect($this->generateUrl('restriction_generator'));

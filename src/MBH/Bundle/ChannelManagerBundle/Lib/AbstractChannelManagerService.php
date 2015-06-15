@@ -59,6 +59,34 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     }
 
     /**
+     * @param \DateTime $begin
+     * @return \DateTime
+     */
+    public function getDefaultBegin(\DateTime $begin = null)
+    {
+        if (!$begin) {
+            $begin = new \DateTime('midnight');
+        }
+
+        return $begin;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return \DateTime
+     */
+    public function getDefaultEnd(\DateTime $begin, \DateTime $end = null)
+    {
+        if (!$end) {
+            $end = clone $begin;
+            $end->modify('+360 days');
+        }
+
+        return $end;
+    }
+
+    /**
      * @param string $message
      * @param string $method
      * @return $this
