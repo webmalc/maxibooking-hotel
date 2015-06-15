@@ -86,6 +86,13 @@ interface ChannelManagerServiceInterface
     public function closeAll();
 
     /**
+     * Close sales on service
+     * @param ChannelManagerConfigInterface $config
+     * @return boolean
+     */
+    public function closeForConfig(ChannelManagerConfigInterface $config);
+
+    /**
      * User notifications
      * @param Order $order
      * @param $service

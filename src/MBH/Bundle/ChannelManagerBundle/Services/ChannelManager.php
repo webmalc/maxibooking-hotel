@@ -90,18 +90,33 @@ class ChannelManager
         return $services;
     }
 
+
+    public function closeInBackground()
+    {
+        $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
+
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:close --no-debug ' . $env . '> /dev/null 2>&1 &');
+        $process->run();
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     */
     public function updateInBackground(\DateTime $begin = null, \DateTime $end = null)
     {
         $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
         $begin ? $begin = ' --begin=' . $begin->format('d.m.Y') : '';
         $end ? $end = ' --end=' . $end->format('d.m.Y') : '';
 
-        var_dump('nohup php ' . $this->console . 'mbh:channelmanager:update --no-debug ' . $env . $begin . $end . '> /dev/null 2>&1 &');
-
         $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:update --no-debug ' . $env . $begin . $end . '> /dev/null 2>&1 &');
         $process->run();
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     */
     public function updateRoomsInBackground(\DateTime $begin = null, \DateTime $end = null)
     {
         $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
@@ -112,6 +127,10 @@ class ChannelManager
         $process->run();
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     */
     public function updatePricesInBackground(\DateTime $begin = null, \DateTime $end = null)
     {
         $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
@@ -122,6 +141,10 @@ class ChannelManager
         $process->run();
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     */
     public function updateRestrictionsInBackground(\DateTime $begin = null, \DateTime $end = null)
     {
         $this->env == 'prod' ? $env = '--env=prod ' : $env = '';

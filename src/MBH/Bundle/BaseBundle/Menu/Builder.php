@@ -131,9 +131,11 @@ class Builder extends ContainerAware
         $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'Онлайн форма']);
 
         if ($this->container->getParameter('mbh.environment') == 'prod') {
-            $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель.RU']);
-            $menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru']);
             $menu['services']->addChild('booking', ['route' => 'booking', 'label' => 'Booking.com']);
+            $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель.RU']);
+            //$menu['services']->addChild('hotelinn', ['route' => 'hotelinn', 'label' => 'Hotel-inn']);
+            //$menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru']);
+
         }
 
         return $this->filterMenu($menu);

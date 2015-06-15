@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -171,6 +172,10 @@ class Booking extends Base
                 $this->dm->remove($package);
                 $this->dm->flush();
             }
+            foreach($order->getFee() as $cashDoc) {
+                $this->dm->remove($cashDoc);
+                $this->dm->flush();
+            }
             $order->setChannelManagerStatus('modified');
             $order->setDeletedAt(null);
         }
@@ -190,6 +195,22 @@ class Booking extends Base
 
         $this->dm->persist($order);
         $this->dm->flush();
+
+        //fee
+        if (!empty((float) $reservation->commissionamount)) {
+
+            $fee = new CashDocument();
+            $fee->setIsConfirmed(false)
+                ->setIsPaid(false)
+                ->setMethod('electronic')
+                ->setOperation('fee')
+                ->setOrder($order)
+                ->setTouristPayer($payer)
+                ->setTotal((float) $reservation->commissionamount)
+            ;
+            $this->dm->persist($fee);
+            $this->dm->flush();
+        }
 
         //packages
         foreach ($reservation->room as $room) {
@@ -290,19 +311,27 @@ class Booking extends Base
         $result = false;
 
         foreach ($this->getConfig() as $config) {
-
-                $request = $this->templating->render('MBHChannelManagerBundle:Booking:close.xml.twig', [
-                        'config' => $config,
-                        'params' => $this->params,
-                        'rooms' => $this->pullRooms($config),
-                        'rates' => $this->pullTariffs($config)
-                    ]
-                );
-                $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
-                $result = $this->checkResponse($sendResult);
-            }
+            $result = $this->closeForConfig($config);
+        }
 
         return $result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function closeForConfig(ChannelManagerConfigInterface $config)
+    {
+        $request = $this->templating->render('MBHChannelManagerBundle:Booking:close.xml.twig', [
+                'config' => $config,
+                'params' => $this->params,
+                'rooms' => $this->pullRooms($config),
+                'rates' => $this->pullTariffs($config)
+            ]
+        );
+        $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
+
+        return $this->checkResponse($sendResult);
     }
 
     /**

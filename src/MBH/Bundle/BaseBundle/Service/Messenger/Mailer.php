@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class Mailer implements \SplObserver
 {
     /**
-     * @array
+     * @var array
      */
     private $params;
 

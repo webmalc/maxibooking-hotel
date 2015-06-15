@@ -425,10 +425,13 @@ class CashDocument extends Base
 
     /**
      * @param Organization $organizationPayer
+     * @return $this
      */
     public function setOrganizationPayer(Organization $organizationPayer = null)
     {
         $this->organizationPayer = $organizationPayer;
+
+        return $this;
     }
 
 
@@ -443,10 +446,13 @@ class CashDocument extends Base
 
     /**
      * @param Tourist $touristPayer
+     * @return $this
      */
     public function setTouristPayer(Tourist $touristPayer = null)
     {
         $this->touristPayer = $touristPayer;
+
+        return $this;
     }
 
     /**
@@ -471,14 +477,5 @@ class CashDocument extends Base
         }
 
         return null;
-        //return $this->orderDocument;
     }
-
-    /**
-     * @param OrderDocument $orderDocument
-     */
-    /*public function setOrderDocument(OrderDocument $orderDocument = null)
-    {
-        $this->orderDocument = $orderDocument;
-    }*/
 }

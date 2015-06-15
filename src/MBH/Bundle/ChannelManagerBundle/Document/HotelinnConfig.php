@@ -14,16 +14,16 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInt
 use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
- * @ODM\Document(collection="BookingConfig")
+ * @ODM\Document(collection="HotelinnConfig")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class BookingConfig extends Base implements BaseInterface
+class HotelinnConfig extends Base implements BaseInterface
 {
 
     public function getName()
     {
-        return 'booking';
+        return 'hotelinn';
     }
 
     use ConfigTrait;
@@ -48,8 +48,8 @@ class BookingConfig extends Base implements BaseInterface
 
     /** 
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="bookingConfig")
-     * @Assert\NotNull(message="document.bookingConfig.no_hotel_selected")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="hotelinnConfig")
+     * @Assert\NotNull(message="document.hotelinnConfig.no_hotel_selected")
      */
     protected $hotel;
 
@@ -57,7 +57,7 @@ class BookingConfig extends Base implements BaseInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\NotNull(message="validator.document.bookingConfig.no_hotel_id_specified")
+     * @Assert\NotNull(message="validator.document.hotelinnConfig.no_hotel_id_specified")
      */
     protected $hotelId;
 

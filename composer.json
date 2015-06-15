@@ -12,7 +12,7 @@
     },
     "require": {
         "php": ">=5.3.3",
-        "symfony/symfony": "2.7.*",
+        "symfony/symfony": "2.7.*@stable",
         "doctrine/orm": "dev-master",
         "doctrine/doctrine-bundle": "dev-master",
         "twig/extensions": "dev-master",
@@ -20,7 +20,7 @@
         "symfony/swiftmailer-bundle": "dev-master",
         "symfony/monolog-bundle": "dev-master",
         "sensio/distribution-bundle": "dev-master",
-        "sensio/framework-extra-bundle": "dev-master",
+        "sensio/framework-extra-bundle": "~3.0",
         "incenteev/composer-parameter-handler": "dev-master",
         "doctrine/mongodb-odm-bundle": "dev-master",
         "stof/doctrine-extensions-bundle": "dev-master",
@@ -34,7 +34,9 @@
         "knplabs/knp-snappy-bundle": "dev-master",
         "misd/guzzle-bundle": "~1.1",
         "iampersistent/mongodb-acl-bundle": "dev-master",
-        "liip/imagine-bundle": "~1.0@dev"
+        "liip/imagine-bundle": "~1.0@dev",
+        "jms/translation-bundle": "^1.1@dev",
+        "jms/di-extra-bundle": "^1.5@dev"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

@@ -32,27 +32,6 @@ class VashotelType extends AbstractType
                     'help' => 'form.vashhotelType.vashhotel_ru_settings_hotel_id'
                 ]
             )
-            ->add(
-                'key',
-                'text',
-                [
-                    'label' => 'form.vashhotelType.api_key',
-                    'required' => true,
-                    'attr' => ['placeholder' => 'MySecretKeyForVashotelAPI'],
-                    'help' => 'form.vashhotelType.vashhotel_ru_settings_key'
-                ]
-            )
-
-            ->add(
-                'isBreakfast',
-                'checkbox',
-                [
-                    'label' => 'form.vashhotelType.breakfast',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'form.vashhotelType.r0_or_BB'
-                ]
-            )
         ;
     }
 

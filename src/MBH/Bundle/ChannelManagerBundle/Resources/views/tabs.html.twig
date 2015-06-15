@@ -6,7 +6,7 @@
 ]
 %}
 
-{% if entity.rooms.count == 0 or entity.tariffs.count == 0 %}
+{% if entity and (entity.rooms.count == 0 or entity.tariffs.count == 0) %}
     <div class="alert alert-danger">
         <i class="fa fa-exclamation-circle"></i>&nbsp;
         {{ 'channelmanager.empty.config'|trans({}, 'MBHChannelManagerBundle') }}

@@ -126,13 +126,18 @@ parameters:
         vashotel:
           title: 'ВашОтель.RU'
           service: 'mbh.channelmanager.vashotel'
-          fee: 0.15
+          password: N4H18zzmjreJmCJ
         booking:
           title: 'Booking.com'
           service: 'mbh.channelmanager.booking'
-          fee: 0.15
           username: maxibookingXML
           password: bMBhv6tds5i
+        hotelinn:
+          title: 'Hotel-inn'
+          service: 'mbh.channelmanager.hotelinn'
+          username: maxibookingXML
+          password: bMBhv6tds5i
+
 
     #параметры логов
     mbh.logs.max: 100
