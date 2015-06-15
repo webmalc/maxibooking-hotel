@@ -1,6 +1,6 @@
 {% extends 'MBHChannelManagerBundle:Booking:layout.html.twig' %}
 
-{% set small_title = 'views.booking.room.settings'|trans({}, 'MBHChannelManagerBundle') %}
+{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle') %}
 
 {% block content %}
 
@@ -11,7 +11,7 @@
 
             {{ form_start(form, {'action': path('booking_room'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false } %}
             {{ form_end(form) }}
 
             {% if config %}

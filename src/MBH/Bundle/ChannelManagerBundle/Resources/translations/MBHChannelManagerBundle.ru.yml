@@ -1,33 +1,22 @@
 views.booking.index.settings: "настройки"
 views.booking.index.booking_com_sync: "Синхронизироваться с Booking.com"
 views.booking.index.save: Сохранить
-views.booking.index.sync: Синхронизировать
 views.booking.index.cancel: Отмена
 views.booking.room.settings: "настройки"
 views.booking.room.room_type: Тип номера
 views.booking.room.booking_com_sync: "Синхронизироваться с Booking.com"
-views.booking.room.sync: Синхронизировать
 views.booking.service.service: Сервис
 views.booking.service.code: Код
-views.booking.service.sync: Синхронизировать
 views.booking.service.cancel: Отмена
-views.booking.tariff.sync: Синхронизировать
 views.booking.tariff.cancel: Отмена
-views.oktogo.index.settings: "настройки"
-views.oktogo.room.settings: "настройки"
+views.channnelmanager.settings: "настройки"
 views.oktogo.room.save: Сохранить
 views.oktogo.room.get_room_ids_from_oktogo: "Получить ID номеров из Oktogo.ru"
-views.oktogo.room.sync: Синхронизировать
-views.oktogo.tariff.settings: "настройки"
 views.oktogo.tariff.save: Сохранить
-views.vashhotel.index.settings: "настройки"
 views.vashhotel.layout.you_hotel_ru: "ВашОтель.RU"
-views.vashhotel.room.settings: "настройки"
 views.vashhotel.room.save: Сохранить
 views.vashhotel.room.get_room_ids_from_your_hotel_ru: "Получить ID номеров из ВашОтель.RU"
-views.vashhotel.room.sync: Синхронизировать
 views.vashhotel.room.cancel: Отмена
-views.vashhotel.tariff.settings: "настройки"
 views.vashhotel.tariff.save: Сохранить
 views.vashhotel.tariff.get_tariff_ids: "Получить ID тарифов из ВашОтель.RU"
 views.vashhotel.tariff.cancel: Отмена

@@ -6,9 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
-use MBH\Bundle\ChannelManagerBundle\Form\TariffType;
 use MBH\Bundle\ChannelManagerBundle\Form\VashotelType;
-use MBH\Bundle\ChannelManagerBundle\Form\RoomType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -16,6 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
+use MBH\Bundle\ChannelManagerBundle\Form\RoomsType;
+use MBH\Bundle\ChannelManagerBundle\Form\TariffsType;
 
 /**
  * @Route("/vashotel")
@@ -32,6 +32,8 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     public function indexAction()
     {
         $entity = $this->hotel->getVashotelConfig();
+
+        //$this->get('mbh.channelmanager.vashotel')->updateRooms();
 
         $form = $this->createForm(
             new VashotelType(), $entity
@@ -73,7 +75,8 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.vashhotelController.settings_saved_success'))
             ;
-            $this->container->get('mbh.channelmanager')->syncInBackground();
+
+            $this->get('mbh.channelmanager')->updateInBackground();
 
             return $this->redirect($this->generateUrl('vashotel'));
         }
@@ -87,11 +90,14 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
     /**
      * @Route("/room", name="vashotel_room")
-     * @Method("GET")
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
      */
-    public function roomAction()
+    public function roomAction(Request $request)
     {
         $config = $this->hotel->getVashotelConfig();
 
@@ -99,251 +105,90 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
-        $this->get('mbh.channelmanager.vashotel')->pullRooms($config);
+        $form = $this->createForm(new RoomsType(), $config->getRoomsAsArray(), [
+            'hotel' => $this->hotel,
+            'booking' => $this->get('mbh.channelmanager.vashotel')->pullRooms($config),
+        ]);
 
-
-        $form = $this->createForm(
-            new RoomType(), [], ['entity' => $entity]
-        );
-
-        return array(
-            'entity' => $entity,
-            'logs' => $this->logs($entity),
-            'form' => $form->createView(),
-        );
-    }
-
-    /**
-     * @Route("/room", name="vashotel_room_save")
-     * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
-     * @Template("MBHChannelManagerBundle:Vashotel:room.html.twig")
-     */
-    public function roomSaveAction(Request $request)
-    {
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        $form = $this->createForm(
-            new RoomType(), [], ['entity' => $entity]
-        );
-
-        $form->submit($request);
-
-        if ($form->isValid()) {
-
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-
-            $entity->removeAllRooms();
-
-            foreach ($form->getData() as $roomTypeId => $value) {
-                if ($value === null) {
-                    continue;
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $config->removeAllRooms();
+            foreach ($form->getData() as $id => $roomType) {
+                if ($roomType) {
+                    $configRoom = new Room();
+                    $configRoom->setRoomType($roomType)->setRoomId($id);
+                    $config->addRoom($configRoom);
+                    $this->dm->persist($config);
                 }
-
-                $roomType = $dm->getRepository('MBHHotelBundle:RoomType')->find($roomTypeId);
-
-                if (!$roomType) {
-                    continue;
-                }
-                $room = new Room();
-                $room->setRoomType($roomType)->setRoomId($value);
-                $entity->addRoom($room);
             }
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->flush();
+
+            $this->get('mbh.channelmanager')->updateInBackground();
 
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.vashhotelController.settings_saved_success'))
-            ;
-            if ($request->get('save') !== null) {
+                ->set('success',
+                    $this->get('translator')->trans('controller.vashhotelController.settings_saved_success'));
 
-                return $this->redirect($this->generateUrl('vashotel_room'));
-            }
-
-            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
-
-            return $this->redirect($this->generateUrl('vashotel'));
+            return $this->redirect($this->generateUrl('vashotel_room'));
         }
 
-        return array(
-            'entity' => $entity,
-            'logs' => $this->logs($entity),
+        return [
+            'config' => $config,
             'form' => $form->createView(),
-        );
+            'logs' => $this->logs($config)
+        ];
     }
 
-    /**
-     * @Route("/room/sync", name="vashotel_room_sync")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
-     * @Template()
-     */
-    public function roomSyncAction(Request $request)
-    {
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        $result = $this->get('mbh.channelmanager.vashotel')->roomSync($entity);
-
-        if ($result) {
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.vashhotelController.settings_saved_success'))
-            ;
-
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
-
-            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
-        } else {
-            $request->getSession()->getFlashBag()
-                ->set('danger', $this->get('translator')->trans('controller.vashhotelController.sync_error'))
-            ;
-        }
-
-        return $this->redirect($this->generateUrl('vashotel_room'));
-    }
-
-    /**
-     * @Route("/tariff/sync", name="vashotel_tariff_sync")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
-     * @Template()
-     */
-    public function tariffSyncAction(Request $request)
-    {
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        $result = $this->get('mbh.channelmanager.vashotel')->tariffSync($entity);
-
-        if ($result) {
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.vashhotelController.rooms_sync_success'))
-            ;
-
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
-
-            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
-        } else {
-            $request->getSession()->getFlashBag()
-                ->set('danger', $this->get('translator')->trans('controller.vashhotelController.sync_error'))
-            ;
-        }
-
-        return $this->redirect($this->generateUrl('vashotel_tariff'));
-    }
 
     /**
      * @Route("/tariff", name="vashotel_tariff")
-     * @Method("GET")
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
      */
-    public function tariffAction()
+    public function tariffAction(Request $request)
     {
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
+        $config = $this->hotel->getVashotelConfig();
 
-        if (!$entity) {
+        if (!$config) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(
-            new TariffType(), [], ['entity' => $entity]
-        );
+        $form = $this->createForm(new TariffsType(), $config->getTariffsAsArray(), [
+            'hotel' => $this->hotel,
+            'booking' => $this->get('mbh.channelmanager.vashotel')->pullTariffs($config),
+        ]);
 
-        return array(
-            'entity' => $entity,
-            'logs' => $this->logs($entity),
-            'form' => $form->createView(),
-        );
-    }
-
-    /**
-     * @Route("/tariff", name="vashotel_tariff_save")
-     * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
-     * @Template("MBHChannelManagerBundle:Vashotel:tariff.html.twig")
-     */
-    public function tariffSaveAction(Request $request)
-    {
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entity = $hotel->getVashotelConfig();
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        $form = $this->createForm(
-            new TariffType(), [], ['entity' => $entity]
-        );
-
-        $form->submit($request);
-
-        if ($form->isValid()) {
-
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-
-            $entity->removeAllTariffs();
-
-            foreach ($form->getData() as $tariffId => $value) {
-                if ($value === null) {
-                    continue;
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $config->removeAllTariffs();
+            foreach ($form->getData() as $id => $tariff) {
+                if ($tariff) {
+                    $configTariff = new Tariff();
+                    $configTariff->setTariff($tariff)->setTariffId($id);
+                    $config->addTariff($configTariff);
+                    $this->dm->persist($config);
                 }
-
-                $tariff = $dm->getRepository('MBHPriceBundle:Tariff')->find($tariffId);
-
-                if (!$tariff) {
-                    continue;
-                }
-
-                $vashotelTariff = new Tariff();
-                $vashotelTariff->setTariff($tariff)->setTariffId($value);
-                $entity->addTariff($vashotelTariff);
             }
+            $this->dm->flush();
 
-            $dm->persist($entity);
-            $dm->flush();
+            $this->get('mbh.channelmanager')->updateInBackground();
 
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.vashhotelController.settings_saved_success'))
-            ;
+                ->set('success',
+                    $this->get('translator')->trans('controller.vashhotelController.settings_saved_success'));
 
-            $this->get('mbh.room.cache.generator')->updateChannelManagerInBackground();
-
-            if ($request->get('save') !== null) {
-
-                return $this->redirect($this->generateUrl('vashotel_tariff'));
-            }
-
-            return $this->redirect($this->generateUrl('vashotel'));
+            return $this->redirect($this->generateUrl('vashotel_tariff'));
         }
 
-        return array(
-            'entity' => $entity,
-            'logs' => $this->logs($entity),
+        return [
+            'config' => $config,
             'form' => $form->createView(),
-        );
+            'logs' => $this->logs($config)
+        ];
     }
 
     /**
@@ -355,15 +200,15 @@ class VashotelController extends Controller implements CheckHotelControllerInter
      */
     public function serviceAction()
     {
-        $doc = $this->get('mbh.hotel.selector')->getSelected()->getBookingConfig();
+        $config = $this->hotel->getVashotelConfig();
 
-        if (!$doc) {
+        if (!$config) {
             throw $this->createNotFoundException();
         }
 
         return [
-            'doc' => $doc,
-            'logs' => $this->logs($doc)
+            'config' => $config,
+            'logs' => $this->logs($config)
         ];
     }
 

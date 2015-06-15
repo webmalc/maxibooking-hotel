@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -23,7 +24,9 @@ class VashotelConfig extends Base implements BaseInterface
     {
         return 'vashotel';
     }
-    
+
+    use ConfigTrait;
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -197,33 +200,5 @@ class VashotelConfig extends Base implements BaseInterface
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getTariffsAsArray()
-    {
-        $result = [];
-
-        foreach($this->getTariffs() as $tariff) {
-            $result[$tariff->getTariffId()] = $tariff->getTariff();
-        }
-
-        return $result;
-    }
-
-    /**
-     * @return array
-     */
-    public function getRoomsAsArray()
-    {
-        $result = [];
-
-        foreach($this->getRooms() as $room) {
-            $result[$room->getRoomId()] = $room->getRoomType();
-        }
-
-        return $result;
     }
 }

@@ -1,6 +1,6 @@
 {% extends 'MBHChannelManagerBundle:Booking:layout.html.twig' %}
 
-{% set small_title = 'views.booking.index.settings'|trans({}, 'MBHChannelManagerBundle')  %}
+{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle')  %}
 
 {% block content %}
 
@@ -10,7 +10,7 @@
         <div class="tab-pane active" id="home">
             {{ form_start(form, {'action': path('booking_save'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false } %}
             {{ form_end(form) }}
 
             {%  if doc %}

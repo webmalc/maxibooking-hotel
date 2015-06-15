@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<request>
+    {% include 'MBHChannelManagerBundle:Vashotel:credentials.xml.twig' with {'config': config , 'salt': salt, 'sig': sig} %}
+
+    {% if rate is defined and rate %}
+        <rate_id>{{ rate }}</rate_id>
+    {% endif %}
+
+    {% for roomId, room in rooms %}
+        <room id="{{ roomId }}">
+            {% for day in range('now'|date('U'), 'now'|date_modify("+1 year - 10 days")|date('U'), 86400 ) %}
+                <date value="{{ day|date('Y-m-d') }}">
+                    <closed>1</closed>
+                </date>
+            {% endfor %}
+        </room>
+    {% endfor %}
+
+</request>

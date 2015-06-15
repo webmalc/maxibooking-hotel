@@ -149,6 +149,9 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function tariffAction(Request $request)
     {

@@ -723,4 +723,19 @@ class Order extends Base
             null;
         }
     }
+
+    /**
+     * @return array
+     */
+    public function getFee()
+    {
+        $fee = [];
+        foreach($this->getCashDocuments() as $doc) {
+            if ($doc->getOperation() == 'fee') {
+                $fee[] = $doc;
+            }
+        }
+
+        return $fee;
+    }
 }

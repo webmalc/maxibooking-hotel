@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -24,6 +25,8 @@ class BookingConfig extends Base implements BaseInterface
     {
         return 'booking';
     }
+
+    use ConfigTrait;
     
     /**
      * Hook timestampable behavior
@@ -245,27 +248,5 @@ class BookingConfig extends Base implements BaseInterface
     public function getServices()
     {
         return $this->services;
-    }
-
-    public function getRoomsAsArray()
-    {
-        $result = [];
-
-        foreach ($this->getRooms() as $room) {
-            $result[$room->getRoomId()] = $room->getRoomType();
-        }
-
-        return $result;
-    }
-
-    public function getTariffsAsArray()
-    {
-        $result = [];
-
-        foreach ($this->getTariffs() as $tariff) {
-            $result[$tariff->getTariffId()] = $tariff->getTariff();
-        }
-
-        return $result;
     }
 }

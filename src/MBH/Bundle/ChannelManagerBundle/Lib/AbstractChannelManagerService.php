@@ -10,7 +10,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
 {
 
-    CONST TEST = false;
+    CONST TEST = true;
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -245,6 +245,9 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             $text = 'channelManager.'.$service.'.notification.'.$type;
             $subject = 'channelManager.'.$service.'.notification.subject';
 
+            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->enable('softdeleteable');
+            }
             $message
                 ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => count($order->getPackages())], 'MBHChannelManagerBundle'))
                 ->setFrom('channelmanager')

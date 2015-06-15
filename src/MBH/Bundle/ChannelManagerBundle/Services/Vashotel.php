@@ -29,6 +29,16 @@ class Vashotel extends Base
     const GET_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:get.xml.twig';
 
     /**
+     * Update rooms template
+     */
+    const UPDATE_ROOMS_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:updateRooms.xml.twig';
+
+    /**
+     * Close all rooms
+     */
+    const CLOSE_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:close.xml.twig';
+
+    /**
      * @var array
      */
     private $params;
@@ -76,15 +86,15 @@ class Vashotel extends Base
             $xml = simplexml_load_string($xml);
         }
 
-        if(isset($xml->xpath('status')[0]) && (string) $xml->xpath('status')[0] == 'error') {
+        if (isset($xml->xpath('status')[0]) && (string)$xml->xpath('status')[0] == 'error') {
             return false;
         };
 
-        $responseSig = (string) $xml->xpath('sig')[0];
+        $responseSig = (string)$xml->xpath('sig')[0];
 
         $sig = $this->getSignature($xml, $script, $key);
 
-        if (md5($sig)  !== $responseSig) {
+        if (md5($sig) !== $responseSig) {
             return false;
         }
 
@@ -92,7 +102,7 @@ class Vashotel extends Base
     }
 
     /**
-     * @param string $response
+     * @param mixed $response
      * @param array $params
      * @return bool
      */
@@ -103,13 +113,15 @@ class Vashotel extends Base
         if (!$response) {
             return false;
         }
-        $xml = simplexml_load_string($response);
+        if (!$response instanceof \SimpleXMLElement) {
+            $response = simplexml_load_string($response);
+        }
 
-        if (!$this->checkResponseSignature($xml, $script, $key)) {
+        if (!$this->checkResponseSignature($response, $script, $key)) {
             return false;
         }
 
-        return ($xml->xpath('/response/status')[0] == 'ok') ? true : false;
+        return ($response->xpath('/response/status')[0] == 'ok') ? true : false;
     }
 
     /**
@@ -130,7 +142,7 @@ class Vashotel extends Base
         $string = $this->getStringFromXmlArray($fields, $dev);
 
         if ($script) {
-            $string = $script . ';' . $string;
+            $string = $script.';'.$string;
         }
         if ($key) {
             $string .= $key;
@@ -151,7 +163,7 @@ class Vashotel extends Base
             if (is_array($field['value'])) {
                 $string .= $this->getStringFromXmlArray($field['value'], $dev);
             } else {
-                $string .= ($dev) ? $field['name'] . '-' . $field['value'] . ';' : $field['value'] . ';' ;
+                $string .= ($dev) ? $field['name'].'-'.$field['value'].';' : $field['value'].';';
             }
         }
 
@@ -195,19 +207,19 @@ class Vashotel extends Base
             $count = 'o';
 
             foreach ($fields as $field) {
-                if (preg_match('/' . $child->getName() . '_sort_number_[o]*$/iu', $field['name'])) {
+                if (preg_match('/'.$child->getName().'_sort_number_[o]*$/iu', $field['name'])) {
                     $count .= 'o';
                 }
             }
 
             if ($child->count()) {
                 $fields[] = [
-                    'name' => $child->getName() . '_sort_number_' . $count,
+                    'name' => $child->getName().'_sort_number_'.$count,
                     'value' => $this->getXmlFieldsAsArray($child)
                 ];
             } else {
                 $fields[] = [
-                    'name' => $child->getName() . '_sort_number_' . $count,
+                    'name' => $child->getName().'_sort_number_'.$count,
                     'value' => (string)$child
                 ];
             }
@@ -232,54 +244,168 @@ class Vashotel extends Base
         );
         $data['sig'] = md5($sig);
 
-        dump($this->templating->render(static::GET_TEMPLATE, $data));
+        $response = $this->sendXml(static::BASE_URL.$script, $this->templating->render(static::GET_TEMPLATE, $data));
 
-        $response = $this->send(static::BASE_URL . $script, $this->templating->render(static::GET_TEMPLATE, $data));
-
-        dump($response); exit();
-
-        /*
+        if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+            return [];
+        }
         $result = [];
-        $request = $this->templating->render('MBHChannelManagerBundle:Vashotel:get.xml.twig',
-            ['config' => $config, 'params' => $this->params]);
 
-        dump($request); exit();
-
-        $response = $this->sendXml(static::BASE_URL.'rooms', $request);
         foreach ($response->xpath('room') as $room) {
-            $result[(string)$room['id']] = (string)$room;
+            $result[(int)$room->id] = (string)$room->name;
         }
 
-        return $result;*/
+        return $result;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function pullTariffs(ChannelManagerConfigInterface $config) {}
+    public function pullTariffs(ChannelManagerConfigInterface $config)
+    {
+        $script = 'get_rates.php';
+        $salt = $this->helper->getRandomString(20);
+        $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
+
+        $sig = $this->getSignature(
+            $this->templating->render(static::GET_TEMPLATE, $data),
+            $script,
+            $this->params['password']
+        );
+        $data['sig'] = md5($sig);
+
+        $response = $this->sendXml(static::BASE_URL.$script, $this->templating->render(static::GET_TEMPLATE, $data));
+
+        if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+            return [];
+        }
+        $result = [
+            0 => 'Standard rate'
+        ];
+
+        foreach ($response->xpath('rate') as $rate) {
+            $result[(int)$rate->id] = (string)$rate->name;
+        }
+
+        return $result;
+    }
 
     /**
      * {@inheritDoc}
      */
-    public function pullOrders() {}
+    public function pullOrders()
+    {
+    }
 
     /**
      * {@inheritDoc}
      */
-    public function closeAll() {}
+    public function closeAll()
+    {
+        $result = false;
+
+        foreach ($this->getConfig() as $config) {
+            $result = $this->closeForConfig($config);
+        }
+
+        return $result;
+    }
 
     /**
      * {@inheritDoc}
      */
-    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null){}
+    public function closeForConfig(ChannelManagerConfigInterface $config)
+    {
+        //foreach ($this->pullTariffs($config) as $tariffId => $tariff) {
+        $script = 'set_availability.php';
+        $salt = $this->helper->getRandomString(20);
+        $data = [
+            'config' => $config,
+            'salt' => $salt,
+            'sig' => null,
+            'rooms' => $this->pullRooms($config),
+            'rate' => 0
+        ];
+
+        $sig = $this->getSignature(
+            $this->templating->render(static::CLOSE_TEMPLATE, $data),
+            $script,
+            $this->params['password']
+        );
+        $data['sig'] = md5($sig);
+
+        $response = $this->sendXml(static::BASE_URL.$script, $this->templating->render(static::CLOSE_TEMPLATE, $data));
+
+        return $this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']]);
+        //}
+    }
 
     /**
      * {@inheritDoc}
      */
-    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null){}
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    {
+    }
 
     /**
      * {@inheritDoc}
      */
-    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null){}
+    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    {
+        $result = false;
+        $script = 'set_availability.php';
+
+        // iterate hotels
+        foreach ($this->getConfig() as $config) {
+
+            $salt = $this->helper->getRandomString(20);
+            $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
+            $roomTypes = $this->getRoomTypes($config);
+
+            //roomCache
+            $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
+                $begin, $end, $config->getHotel(), $roomType ? [$roomType->getId()] : [], null
+            );
+            if (!$roomCaches->count()) {
+                continue;
+            }
+
+            //group caches
+            foreach ($roomCaches as $roomCache) {
+                $roomType = $roomCache->getRoomType();
+                isset($roomTypes[$roomType->getId()]) ? $roomTypeSyncId = $roomTypes[$roomType->getId()]['syncId'] : $roomTypeSyncId = null;
+                $formattedDate = $roomCache->getDate()->format('Y-m-d');
+
+                if ($roomTypeSyncId) {
+                    $data['rooms'][$roomTypeSyncId][$formattedDate] = [
+                        'sellquantity' => $roomCache->getLeftRooms(),
+                        'closed' => $roomCache->getIsClosed()
+                    ];
+                }
+            }
+
+            //dump($this->templating->render(static::UPDATE_ROOMS_TEMPLATE, $data)); exit();
+
+            $sig = $this->getSignature(
+                $this->templating->render(static::UPDATE_ROOMS_TEMPLATE, $data),
+                $script,
+                $this->params['password']
+            );
+            $data['sig'] = md5($sig);
+
+            $response = $this->send(static::BASE_URL.$script, $this->templating->render(static::UPDATE_ROOMS_TEMPLATE, $data));
+
+            dump($response); exit();
+
+            //return $this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']]);
+
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    {
+    }
 }
