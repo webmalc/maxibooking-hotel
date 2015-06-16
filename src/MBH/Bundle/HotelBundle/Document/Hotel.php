@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -220,6 +221,24 @@ class Hotel extends Base
      * @ODM\ReferenceMany(targetDocument="Corpus", mappedBy="hotel")
      */
     protected $corpuses;
+
+
+    /**
+     * @var UploadedFile
+     * @Assert\File(maxSize="6M", mimeTypes={
+     *          "image/png",
+     *          "image/jpeg",
+     *          "image/jpg",
+     *          "image/gif",
+     * }, mimeTypesMessage="validator.document.OrderDocument.file_type")
+     */
+    protected $file;
+
+    /**
+     * @ODM\String
+     * @var string
+     */
+    protected $logo;
 
     /**
      * Set fullTitle
@@ -835,5 +854,107 @@ class Hotel extends Base
     public function setCorpuses(array $corpuses)
     {
         $this->corpuses = $corpuses;
+    }
+
+
+
+
+
+
+
+    /**
+     * @return string
+     */
+    public function getLogo()
+    {
+        return $this->logo;
+    }
+
+    /**
+     * @param string $logo
+     */
+    public function setLogo($logo)
+    {
+        $this->logo = $logo;
+    }
+
+    /**
+     * @param UploadedFile $file
+     */
+    public function setFile(UploadedFile $file = null)
+    {
+        $this->file = $file;
+        if ($this->file) {
+            $this->logo = $file->getClientOriginalName();
+        }
+    }
+
+
+    /**
+     * The absolute directory path where uploaded
+     * documents should be saved
+     * @return string
+     */
+    public function getUploadRootDir()
+    {
+        return __DIR__.'/../../../../../web/upload/hotelLogos';
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->getUploadRootDir().DIRECTORY_SEPARATOR.$this->getLogo();
+    }
+
+    /**
+     * @return UploadedFile|null
+     */
+    public function getFile()
+    {
+        if (!$this->file && $this->logo && is_file($this->getPath())) {
+            $this->file = new UploadedFile($this->getPath(), $this->getLogo());
+        }
+
+        return $this->file;
+    }
+
+    public function getLogoUrl()
+    {
+        if($this->getFile()) {
+            return '/upload/hotelLogos/'.$this->getFile()->getClientOriginalName();
+        }
+        return null;
+    }
+
+    public function uploadFile()
+    {
+        if (null === $this->getFile()) {
+            return;
+        }
+
+        if($this->getLogo()) {
+            $this->setLogo($this->getFile()->getClientOriginalName());
+        }
+
+        $this->getFile()->move($this->getUploadRootDir(), $this->getLogo());
+    }
+
+    /**
+     * @return bool
+     */
+    public function deleteFile()
+    {
+        if ($this->getFile() && is_writable($this->getFile()->getPathname())) {
+            $result = unlink($this->getFile()->getPathname());
+            if ($result) {
+                $this->file = null;
+            }
+
+            return $result;
+        }
+
+        return false;
     }
 }
