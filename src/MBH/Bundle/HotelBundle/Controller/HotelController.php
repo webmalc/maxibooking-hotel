@@ -3,12 +3,12 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
@@ -185,7 +185,7 @@ class HotelController extends Controller
      */
     public function extendedAction(Hotel $entity)
     {
-        $form = $this->createForm(new HotelExtendedType(), $entity, [
+        $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),
             'config' => $this->container->getParameter('mbh.hotel')
         ]);
@@ -209,23 +209,15 @@ class HotelController extends Controller
      */
     public function extendedSaveAction(Request $request, Hotel $entity)
     {
-        $form = $this->createForm(new HotelExtendedType(), $entity, [
+        $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),
-            'config' => $this->container->getParameter('mbh.hotel')
+            'config' => $this->container->getParameter('mbh.hotel'),
+            'isHostel' => in_array('hostel', $entity->getType()),
         ]);
 
         $form->submit($request);
 
         if ($form->isValid()) {
-            //save address
-            $city = $this->dm->getRepository('MBHHotelBundle:City')->find($form['address']->getData());
-            if ($city) {
-                $entity->setCountry($city->getCountry())
-                    ->setRegion($city->getRegion())
-                    ->setCity($city)
-                ;
-            }
-
             $this->dm->persist($entity);
             $this->dm->flush();
 

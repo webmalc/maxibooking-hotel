@@ -1,0 +1,10 @@
+{% extends 'MBHHotelBundle:Corpus:layout.html.twig' %}
+
+{% block content %}
+    {{ form_start(form, {'action': path('corpus_update', {id : entity.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' %}
+    {{ form_end(form) }}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'corpus_delete' } %}
+{% endblock %}

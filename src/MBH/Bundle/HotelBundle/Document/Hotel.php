@@ -10,12 +10,14 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 
 /**
  * @ODM\Document(collection="Hotels")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
+ * @ODM\HasLifecycleCallbacks
  */
 class Hotel extends Base
 {
@@ -102,7 +104,7 @@ class Hotel extends Base
      * @ODM\Float()
      * @Assert\Type(type="numeric", message= "validator.document.hotel.wrong_latitude")
      */
-    public $latitude;
+    protected $latitude;
 
     /**
      * @var float
@@ -110,28 +112,28 @@ class Hotel extends Base
      * @ODM\Float()
      * @Assert\Type(type="numeric", message="validator.document.hotel.wrong_longitude")
      */
-    public $longitude;
+    protected $longitude;
 
     /**
      * @var array
      * @Gedmo\Versioned
      * @ODM\Collection()
      */
-    public $type = [];
+    protected $type = [];
 
     /**
      * @var array
      * @Gedmo\Versioned
      * @ODM\Collection()
      */
-    public $theme = [];
+    protected $theme = [];
 
     /**
      * @var array
      * @Gedmo\Versioned
      * @ODM\Collection()
      */
-    public $facilities = [];
+    protected $facilities = [];
 
     /**
      * @var int
@@ -145,7 +147,7 @@ class Hotel extends Base
      *      maxMessage="validator.document.hotel.max_stars",
      * )
      */
-    public $rating;
+    protected $rating;
 
     /** @ODM\ReferenceMany(targetDocument="RoomType", mappedBy="hotel") */
     protected $roomTypes;
@@ -188,6 +190,36 @@ class Hotel extends Base
      * @ODM\ReferenceOne(targetDocument="City")
      */
     protected $city;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\String
+     */
+    protected $street;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\String
+     */
+    protected $house;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\String
+     */
+    protected $corpus;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\String
+     */
+    protected $flat;
+
+    /**
+     * @var Corpus[]
+     * @ODM\ReferenceMany(targetDocument="Corpus", mappedBy="hotel")
+     */
+    protected $corpuses;
 
     /**
      * Set fullTitle
@@ -766,5 +798,42 @@ class Hotel extends Base
     public function getHotelinnConfig()
     {
         return $this->hotelinnConfig;
+    }
+
+    /**
+     * @PreUpdate
+     */
+    public function preUpdate()
+    {
+        $this->fillLocationByCity();
+    }
+
+    private function fillLocationByCity()
+    {
+        if ($this->getCity()) {
+            $this->setCountry($this->getCity()->getCountry());
+            $this->setRegion($this->getCity()->getRegion());
+        }
+    }
+
+    /**
+     * @return Corpus[]
+     */
+    public function getCorpuses()
+    {
+        return $this->corpuses;
+    }
+
+    public function addCorpus(Corpus $corpus)
+    {
+        $this->corpuses[] = $corpus;
+    }
+
+    /**
+     * @param Corpus[] $corpuses
+     */
+    public function setCorpuses(array $corpuses)
+    {
+        $this->corpuses = $corpuses;
     }
 }
