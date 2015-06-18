@@ -48,9 +48,6 @@ class OrganizationController extends Controller
      */
     public function organizationJsonAction(Request $request)
     {
-        /* @var $dm  \Doctrine\ODM\MongoDB\DocumentManager */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         $criteria = [];
 
         $search = $request->get('search');
@@ -91,9 +88,9 @@ class OrganizationController extends Controller
         }
 
 
-        $organizations = $dm->getRepository('MBHPackageBundle:Organization')->findBy($criteria, $sort,
+        $organizations = $this->dm->getRepository('MBHPackageBundle:Organization')->findBy($criteria, $sort,
             $request->get('length'), $request->get('start'));
-        $recordsTotal = $dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder()->setQueryArray($criteria)->getQuery()->count();
+        $recordsTotal = $this->dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder()->setQueryArray($criteria)->getQuery()->count();
 
         $response = $this->render('MBHPackageBundle:Organization:json.json.twig', [
             'organizations' => $organizations,
@@ -148,10 +145,7 @@ class OrganizationController extends Controller
      */
     public function editAction(Organization $organization, Request $request)
     {
-        /* @var $dm  \Doctrine\ODM\MongoDB\DocumentManager */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $form = $this->createForm(new OrganizationType($dm), $organization, [
+        $form = $this->createForm(new OrganizationType($this->dm), $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
             'id' => $organization->getId(),
             'type' => OrganizationType::TYPE_EDIT
@@ -161,8 +155,8 @@ class OrganizationController extends Controller
             $form->submit($request);
 
             if ($form->isValid()) {
-                $dm->persist($organization);
-                $dm->flush();
+                $this->dm->persist($organization);
+                $this->dm->flush();
 
                 return $this->redirect($this->generateUrl('organizations'));
             }
@@ -184,10 +178,8 @@ class OrganizationController extends Controller
      */
     public function deleteAction(Organization $organization)
     {
-        /* @var $dm  \Doctrine\ODM\MongoDB\DocumentManager */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $dm->remove($organization);
-        $dm->flush();
+        $this->dm->remove($organization);
+        $this->dm->flush();
 
         return $this->redirect($this->generateUrl('organizations'));
     }
@@ -203,15 +195,12 @@ class OrganizationController extends Controller
      */
     public function organizationJsonListAction(Request $request, $id = null)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         if (empty($id) && empty($request->get('query'))) {
             return new JsonResponse([]);
         }
 
         if (!empty($id)) {
-            $organization = $dm->getRepository('MBHPackageBundle:Organization')->find($id);
+            $organization = $this->dm->getRepository('MBHPackageBundle:Organization')->find($id);
 
             if ($organization) {
                 return new JsonResponse([
@@ -227,7 +216,7 @@ class OrganizationController extends Controller
             'inn',
         ];
 
-        $queryBuilder = $dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder('q')
+        $queryBuilder = $this->dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder('q')
             ->field('type')->equals('contragents') // criteria only contragents type
         ;
 

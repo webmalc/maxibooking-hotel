@@ -227,4 +227,55 @@ class DocumentsController extends Controller
             'logs' => $this->logs($package),
         ];
     }
+
+
+
+
+    /**
+     * Return pdf doc
+     *
+     * @Route("/{id}/pdf", name="package_pdf")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     */
+    public function pdfAction(Package $entity)
+    {
+        if (!$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:act.html.twig', [
+            'entity' => $entity
+        ]);
+
+        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
+            'Content-Type' => 'application/pdf',
+            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
+        ]);
+    }
+
+    /**
+     * Return pdf doc
+     *
+     * @Route("/{id}/confirmation_pdf", name="package_confirmation_pdf")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     */
+    public function confirmationPdfAction(Package $entity)
+    {
+        if (!$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:confirmation.html.twig', [
+            'entity' => $entity
+        ]);
+
+        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
+            'Content-Type' => 'application/pdf',
+            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
+        ]);
+    }
 }

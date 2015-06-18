@@ -80,6 +80,7 @@ class OrderDocumentType extends AbstractType
             'png' => 'fa-file-image-o',
             'xls' => 'fa-file-excel-o'
         ];
+
         $builder->add(
             'file',
             'file',
@@ -87,7 +88,7 @@ class OrderDocumentType extends AbstractType
                 'group' => $groupTitle,
                 'label' => $options['scenario'] == self::SCENARIO_EDIT ? 'Заменить файл' : 'Файл',
                 'required' => $options['scenario'] == self::SCENARIO_ADD,
-            ] + ($options['scenario'] == self::SCENARIO_EDIT ? ['help' => '<i class="fa '.$typeIcons[$document->getExtension()].'"></i> '.$document->getOriginalName()] : [])
+            ] + ($options['scenario'] == self::SCENARIO_EDIT ? ['help' => '<i class="fa '.(isset($typeIcons[strtolower($document->getExtension())]) ? $typeIcons[strtolower($document->getExtension())] : null).'"></i> '.$document->getOriginalName()] : [])
         );
 
         $builder->add(

@@ -79,12 +79,6 @@ parameters:
         not_applicable: 'за услугу'
         day_percent: 'за услугу (% от цены за сутки)'
 
-    #organization info
-    mbh.organization:
-      title: 'OOO "Название предприятия"'
-      position: 'Директор OOO "Название предприятия"'
-      name: 'Иванов И.В.'
-
     #mailer
     mbh.mailer:
       from: {'robot@maxi-booking.ru': 'MaxiBooking'}

@@ -13,9 +13,12 @@ form.hotelExtendedType.longitude: Долгота
 form.hotelExtendedType.longitude: GPS координата широты отеля.
 form.hotelExtendedType.how_many_stars_hotel: Звездность отеля
 form.hotelExtendedType.parameters: Параметры
+form.hotelExtendedType.integration: Интеграция
 form.hotelExtendedType.hotel_type: Тип отеля
 form.hotelExtendedType.hotel_theme: Тема отеля
 form.hotelExtendedType.hotel_amenities: Удобства отеля
+form.hotelExtendedType.vega_address_id: ID адреса для ПК "Вега"
+form.hotelExtendedType.vega_address_id_help: ID адреса для ПК "Вега"
 form.hotelType.name: Название
 form.hotelType.general_info: Общаяя информация
 form.taskType.general_info: Добавление задачи

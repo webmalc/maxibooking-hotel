@@ -4,8 +4,8 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\HotelBundle\Document\Corpus;
-use MBH\Bundle\HotelBundle\Form\CorpusType;
+use MBH\Bundle\HotelBundle\Document\Housing;
+use MBH\Bundle\HotelBundle\Form\HousingType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -14,22 +14,22 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class CorpusController
+ * Class HousingController
  * @package MBH\Bundle\HotelBundle\Controller
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  * @see Corpus
- * @Route("/corpus")
+ * @Route("/housing")
  */
-class CorpusController extends BaseController
+class HousingController extends BaseController
 {
     /**
-     * @Route("/", name="corpus")
+     * @Route("/", name="housings")
      * @Template()
      */
     public function indexAction()
     {
         $currentHotel = $this->get('mbh.hotel.selector')->getSelected();
-        $entities = $currentHotel->getCorpuses();//$entities = $this->dm->getRepository('MBHHotelBundle:Corpus')->findBy(['hotel.id' => $currentHotel->getId()]);
+        $entities = $currentHotel->getHousings();//$entities = $this->dm->getRepository('MBHHotelBundle:Housing')->findBy(['hotel.id' => $currentHotel->getId()]);
 
         return [
             'entities' => $entities,
@@ -37,27 +37,27 @@ class CorpusController extends BaseController
     }
 
     /**
-     * @Route("/new", name="corpus_new")
+     * @Route("/new", name="housing_new")
      * @Method("GET")
      * @Template()
      */
     public function newAction()
     {
-        $form = $this->createForm(new CorpusType($this->dm));
+        $form = $this->createForm(new HousingType($this->dm));
         return [
             'form' => $form->createView()
         ];
     }
 
     /**
-     * @Route("/edit/{id}", name="corpus_edit")
+     * @Route("/edit/{id}", name="housing_edit")
      * @Method("GET")
      * @Template()
-     * @ParamConverter("entity", class="MBHHotelBundle:Corpus")
+     * @ParamConverter("entity", class="MBHHotelBundle:Housing")
      */
-    public function editAction(Corpus $entity)
+    public function editAction(Housing $entity)
     {
-        $form = $this->createForm(new CorpusType($this->dm), $entity);
+        $form = $this->createForm(new HousingType($this->dm), $entity);
         return [
             'form' => $form->createView(),
             'entity' => $entity,
@@ -66,17 +66,17 @@ class CorpusController extends BaseController
     }
 
     /**
-     * @Route("/new", name="corpus_create")
+     * @Route("/new", name="housing_create")
      * @Method("PUT")
-     * @Template("MBHHotelBundle:Corpus:new.html.twig")
+     * @Template("MBHHotelBundle:Housing:new.html.twig")
      */
     public function createAction(Request $request)
     {
-        $entity = new Corpus();
+        $entity = new Housing();
         $currentHotel = $this->get('mbh.hotel.selector')->getSelected();
         $entity->setHotel($currentHotel);
 
-        $form = $this->createForm(new CorpusType($this->dm), $entity);
+        $form = $this->createForm(new HousingType($this->dm), $entity);
         $form->submit($request);
 
         if($form->isValid()) {
@@ -86,7 +86,7 @@ class CorpusController extends BaseController
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.corpus.created_success'));
 
-            return $this->afterSaveRedirect('corpus', $entity->getId());
+            return $this->afterSaveRedirect('housing', $entity->getId());
         }
 
         return [
@@ -95,16 +95,14 @@ class CorpusController extends BaseController
     }
 
     /**
-     * @Route("/update/{id}", name="corpus_update")
+     * @Route("/update/{id}", name="housing_update")
      * @Method("POST")
-     * @Template("MBHHotelBundle:Corpus:edit.html.twig")
-     * @ParamConverter("entity", class="MBHHotelBundle:Corpus")
+     * @Template("MBHHotelBundle:Housing:edit.html.twig")
+     * @ParamConverter("entity", class="MBHHotelBundle:Housing")
      */
-    public function updateAction(Corpus $entity, Request $request)
+    public function updateAction(Housing $entity, Request $request)
     {
-        $currentHotel = $this->get('mbh.hotel.selector')->getSelected();
-
-        $form = $this->createForm(new CorpusType($this->dm), $entity);
+        $form = $this->createForm(new HousingType($this->dm), $entity);
         $form->submit($request);
 
         if($form->isValid()) {
@@ -114,22 +112,24 @@ class CorpusController extends BaseController
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.corpus.updated_success'));
 
-            return $this->afterSaveRedirect('corpus', $entity->getId());
+            return $this->afterSaveRedirect('housings', $entity->getId());
         }
 
         return [
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'entity' => $entity,
+            'logs' => $this->logs($entity)
         ];
     }
 
     /**
-     * @Route("/delete/{id}", name="corpus_delete")
-     * @ParamConverter("entity", class="MBHHotelBundle:Corpus")
+     * @Route("/delete/{id}", name="housing_delete")
+     * @ParamConverter("entity", class="MBHHotelBundle:Housing")
      */
-    public function deleteAction(Corpus $corpus)
+    public function deleteAction(Housing $housing)
     {
-        $this->dm->remove($corpus);
+        $this->dm->remove($housing);
         $this->dm->flush();
-        return $this->redirect($this->generateUrl('corpus'));
+        return $this->redirect($this->generateUrl('housings'));
     }
 }

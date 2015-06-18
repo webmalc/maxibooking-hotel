@@ -3,6 +3,7 @@
 namespace MBH\Bundle\VegaBundle\Services;
 
 
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -65,7 +66,7 @@ class VegaExport
      * @param array|OrderDocument[] $touristDocuments
      * @return string
      */
-    private function getXmlString(Tourist $tourist, Package $package, array $touristDocuments = [])
+    private function getXmlString(Tourist $tourist, Package $package, Hotel $hotel, array $touristDocuments = [])
     {
         //@todo $this->isValid($tourist);
 
@@ -74,7 +75,8 @@ class VegaExport
             'package' => $package,
             'documents' => $touristDocuments,
             'documentTypes' => $this->documentTypes,
-            'scanTypes' => $this->scanTypes
+            'scanTypes' => $this->scanTypes,
+            'hotel' => $hotel
         ]);
 
         return $xml;
@@ -89,8 +91,9 @@ class VegaExport
     {
         $orderDocuments = [];
         $documents = $order->getDocuments();
+        $vegaTypes = array_keys($this->container->getParameter('mbh.vega.document.types'));
         foreach ($documents as $document) {
-            if ($document->getTourist() && $document->getTourist()->getId() == $tourist->getId()) {
+            if ($document->getTourist() && $document->getTourist()->getId() == $tourist->getId() && in_array($document->getType(), $vegaTypes)) {
                 $orderDocuments[] = $document;
             }
         }
@@ -101,8 +104,9 @@ class VegaExport
 
     /**
      * @param Package[] $packages
+     * @param Hotel $hotel
      */
-    private function getXmlStringListWithFiles(array $packages)
+    private function getXmlStringListWithFiles(array $packages, Hotel $hotel)
     {
         $xmlList = [];
         $fileName = 'FrOrg' . date('Ymdhis');
@@ -111,7 +115,7 @@ class VegaExport
             $tourists[] = $package->getMainTourist();
             foreach ($tourists as $k => $tourist) {
                 $touristDocuments = $this->getDocumentsByOrderAndTourist($package->getOrder(), $tourist);
-                $xml = $this->getXmlString($tourist, $package, $touristDocuments);
+                $xml = $this->getXmlString($tourist, $package, $hotel, $touristDocuments);
                 $files = array_map(function ($document) {
                     return $document->getFile();
                 }, $touristDocuments);
@@ -124,11 +128,12 @@ class VegaExport
 
     /**
      * @param Package[] $packages
+     * @param Hotel $hotel
      * @return \SplFileInfo|void
      */
-    public function exportToZip(array $packages)
+    public function exportToZip(array $packages, Hotel $hotel)
     {
-        $xmlList = $this->getXmlStringListWithFiles($packages);
+        $xmlList = $this->getXmlStringListWithFiles($packages, $hotel);
 
         if (!$xmlList) {
             return;

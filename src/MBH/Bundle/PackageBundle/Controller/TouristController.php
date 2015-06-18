@@ -192,9 +192,6 @@ class TouristController extends Controller
             $form->submit($request);
 
             if ($form->isValid()) {
-                /*var_dump($entity->getBirthplace());
-                die();*/
-
                 $this->dm->persist($entity);
                 $this->dm->flush();
 

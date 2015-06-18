@@ -185,8 +185,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     public function fmsAction(Request $request)
     {
         if($request->isMethod('POST')) {
-            $begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
-            $end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
+            $helper = $this->get('mbh.helper');
+            $begin = $helper->getDateFromString($request->get('begin'));
+            $end = $helper->getDateFromString($request->get('end'));
             $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
             if(!$hotel || !$begin || !$end || !$hotel->getRoomTypes()) {
@@ -194,24 +195,24 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             }
 
             $end->modify('+ 23 hours  59 minutes');
-
-            $roomTypeIds = [];
-            foreach($hotel->getRoomTypes() as $r) {
-                $roomTypeIds[] = $r->getId();
-            }
+            $roomTypeIds = $helper->toIds($hotel->getRoomTypes());
 
             $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findBy([
                 'isCheckIn' => true,
                 '$or' => [
                     ['arrivalTime' => ['$lt' => $end]],
                     ['arrivalTime' => ['$gt' => $begin]],
-                ]
+                ],
+                'accommodation' => ['$exists' => 1],
+                //'roomType' => ['$in' => $roomTypeIds]
             ]);
 
-            $zipFile = $this->get('mbh.vega.vega_export')->exportToZip($packages);
+            $zipFile = $this->get('mbh.vega.vega_export')->exportToZip($packages, $hotel);
 
             if (!$zipFile) {
-                $this->createNotFoundException();
+                return [
+                    'message' => 'Нет данных для выгрузки'
+                ];
             }
 
             $response = new BinaryFileResponse($zipFile);

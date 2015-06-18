@@ -29,7 +29,7 @@
                 <addressObject type="ADDROBJ" dictvalue="{{ tourist.addressObject }}"/>
             {% endif %}
             {% if tourist.addressObjectDecomposed %}
-                <addressObjectDecomposed region="{{ tourist.addressObjectDecomposed.district }}" city="{{ tourist.addressObjectDecomposed.city }}" settlement="{{ tourist.addressObjectDecomposed.settlement }}" street="{{ tourist.addressObjectDecomposed.street }}"/>
+                <addressObjectDecomposed region="{{ tourist.addressObjectDecomposed.district.name }}" city="{{ tourist.addressObjectDecomposed.city }}" settlement="{{ tourist.addressObjectDecomposed.settlement }}" street="{{ tourist.addressObjectDecomposed.street }}"/>
                 {#
                 <housing value="160" type="S_HOUSEPART" dictvalue="ДОМ"/>
                 <housing value="А" type="S_HOUSEPART" dictvalue="ЛИТЕРА"/>
@@ -41,7 +41,7 @@
             {% endif %}
         </liveAddress>
     {% endif %}
-    <regAddress type="ADDR_REG" dictvalue="12{# todo #}"/>
+    <regAddress type="ADDR_REG" dictvalue="{% if package.accommodation.housing.vegaAddressId %} {{ package.accommodation.housing.vegaAddressId }} {% else %} {{ hotel.vegaAddressId }} {% endif %}"/>
     <embeddings>
         {% for document in documents %}
             <scanneddocument filename="{{ document.name }}">

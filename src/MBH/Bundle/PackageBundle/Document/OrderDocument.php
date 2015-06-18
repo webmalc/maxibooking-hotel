@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ODM\EmbeddedDocument
  * @ODM\HasLifecycleCallbacks
+ *
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class OrderDocument
@@ -83,6 +84,7 @@ class OrderDocument
     protected $file;
 
     /**
+     * Client Original Extension
      * @var string
      * @ODM\String
      */
@@ -146,7 +148,7 @@ class OrderDocument
     public function setFile(UploadedFile $file = null)
     {
         $this->file = $file;
-        if ($this->file) {
+        if ($this->file && $this->file->isFile()) {
             $this->originalName = $this->file->getClientOriginalName();
             $this->name = uniqid().'.'.$this->file->getClientOriginalExtension();
             $this->extension = $this->file->getClientOriginalExtension();
@@ -303,6 +305,7 @@ class OrderDocument
     }
 
     /**
+     * Client Original Extension
      * @param string $extension
      */
     public function setExtension($extension)

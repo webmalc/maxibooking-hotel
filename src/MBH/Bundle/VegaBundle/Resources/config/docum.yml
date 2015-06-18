@@ -3,7 +3,7 @@ docum:
   vega_residence: 'ВИД НА ЖИТЕЛЬСТВО ИГ'
   vega_visa: 'ВИЗА'
   vega_military_spare: 'ВОЕННЫЙ БИЛЕТ ОФИЦЕРА ЗАПАСА'
-  vega_temporary_itentity: 'ВРЕМЕННОЕ УДОСТОВЕРЕНИЕ ЛИЧНОСТИ'
+  vega_temporary_identity: 'ВРЕМЕННОЕ УДОСТОВЕРЕНИЕ ЛИЧНОСТИ'
   vega_diplomatic_passport: 'ДИПЛОМАТИЧЕСКИЙ ПАСПОРТ'
   vega_travel_passport: 'ЗАГРАН. ПАСПОРТ'
   vega_russian_passport: 'ПАСПОРТ РФ'

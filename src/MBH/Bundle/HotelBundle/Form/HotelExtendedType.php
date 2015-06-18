@@ -108,6 +108,13 @@ class HotelExtendedType extends AbstractType
                 'multiple' => true
             ]);
 
+        $builder->add('vega_address_id', 'number', [
+            'label' => 'form.hotelExtendedType.vega_address_id',
+            'help' => 'form.hotelExtendedType.vega_address_id_help',
+            'group' => 'form.hotelExtendedType.integration',
+            'required' => false
+        ]);
+
         $builder->get('city')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHHotelBundle:City'));
     }
 

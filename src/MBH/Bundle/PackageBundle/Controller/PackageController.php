@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -27,40 +28,6 @@ use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 class PackageController extends Controller implements CheckHotelControllerInterface, DeletableControllerInterface
 {
     /**
-     * Return pdf doc
-     *
-     * @Route("/{id}/pdf", name="package_pdf")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     * @Template()
-     */
-    public function pdfAction($id)
-    {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-
-        if (!$entity || !$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
-
-        $html = $this->renderView('MBHPackageBundle:Package:pdf.html.twig', [
-            'entity' => $entity,
-            'organization' => $this->container->getParameter('mbh.organization'),
-            'strPrice' => $this->get('mbh.helper')->num2str($entity->getPrice())
-        ]);
-
-        return new Response(
-            $this->get('knp_snappy.pdf')->getOutputFromHtml($html),
-            200,
-            array(
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="act_'.$entity->getNumberWithPrefix().'.pdf"'
-            )
-        );
-    }
-
-    /**
      * List entities
      *
      * @Route("/", name="package")
@@ -70,8 +37,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function indexAction()
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $now = new \DateTime('midnight');
         $tomorrow = new \DateTime('midnight +1 day');
 
@@ -82,9 +47,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'count' => true,
             'hotel' => $this->get('mbh.hotel.selector')->getSelected()
         ];
-        $repo = $dm->getRepository('MBHPackageBundle:Package');
+        /** @var PackageRepository $repository */
+        $repository = $this->dm->getRepository('MBHPackageBundle:Package');
 
-        $count['begin_today'] = $repo->fetch(array_merge([
+        $count['begin_today'] = $repository->fetch(array_merge([
                 'begin' => $now->format('d.m.Y'),
                 'end' => $now->format('d.m.Y'),
                 'dates' => 'begin',
@@ -93,7 +59,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ], $data)
         );
         //begin tomorrow count
-        $count['begin_tomorrow'] = $repo->fetch(array_merge([
+        $count['begin_tomorrow'] = $repository->fetch(array_merge([
                 'begin' => $tomorrow->format('d.m.Y'),
                 'end' => $tomorrow->format('d.m.Y'),
                 'dates' => 'begin',
@@ -102,43 +68,43 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ], $data)
         );
         //live now count
-        $count['live_now'] = $repo->fetch(array_merge([
+        $count['live_now'] = $repository->fetch(array_merge([
                 'filter' => 'live_now',
                 'checkOut' => false,
                 'checkIn' => true
             ], $data)
         );
         //without-approval count
-        $count['without_approval'] = $repo->fetch(array_merge([
+        $count['without_approval'] = $repository->fetch(array_merge([
                 'confirmed' => '0'
             ], $data)
         );
         //without_accommodation count
-        $count['without_accommodation'] = $repo->fetch(array_merge([
+        $count['without_accommodation'] = $repository->fetch(array_merge([
                 'filter' => 'without_accommodation',
                 'end' => $now->format('d.m.Y'),
                 'dates' => 'begin'
             ], $data)
         );
         //not_paid count
-        $count['not_paid'] = $repo->fetch(array_merge([
+        $count['not_paid'] = $repository->fetch(array_merge([
                 'paid' => 'not_paid'
             ], $data)
         );
         //not_paid time count
-        $count['not_paid_time'] = $repo->fetch(array_merge([
+        $count['not_paid_time'] = $repository->fetch(array_merge([
                 'paid' => 'not_paid',
                 'end' => new \DateTime($this->container->getParameter('mbh.package.notpaid.time')),
                 'dates' => 'createdAt'
             ], $data)
         );
         //created_by count
-        $count['created_by'] = $repo->fetch(array_merge([
+        $count['created_by'] = $repository->fetch(array_merge([
                 'createdBy' => $this->getUser()->getUsername()
             ], $data)
         );
         //checkIn count
-        $count['not_check_in'] = $repo->fetch(array_merge([
+        $count['not_check_in'] = $repository->fetch(array_merge([
                 'checkIn' => false,
                 'end' => $now->format('d.m.Y'),
                 'dates' => 'begin'
@@ -162,9 +128,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function jsonAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $dm->getFilterCollection()->enable('softdeleteable');
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         $data = [
             'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
@@ -245,7 +209,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             default:
         }
 
-        $entities = $dm->getRepository('MBHPackageBundle:Package')->fetch($data);
+        $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
 
         return [
             'entities' => $entities,
@@ -262,15 +226,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
      * @Template()
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
-    public function editAction($id)
+    public function editAction(Package $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(
@@ -301,15 +261,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Method("PUT")
      * @Security("is_granted('ROLE_USER')")
      * @Template("MBHPackageBundle:Package:edit.html.twig")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
-    public function updateAction(Request $request, $id)
+    public function updateAction(Request $request, Package $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -329,19 +285,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             //check by search
             $result = $this->container->get('mbh.order')->updatePackage($oldPackage, $entity);
             if ($result instanceof Package) {
-                /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-                $dm = $this->get('doctrine_mongodb')->getManager();
-                $dm->persist($entity);
-                $dm->flush();
+                $this->dm->persist($entity);
+                $this->dm->flush();
 
-                $request->getSession()->getFlashBag()
-                    ->set('success',
-                        $this->get('translator')->trans('controller.packageController.record_edited_success'));
+                $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.packageController.record_edited_success'));
 
                 return $this->afterSaveRedirect('package', $entity->getId());
             } else {
-                $request->getSession()->getFlashBag()
-                    ->set('danger', $this->get('translator')->trans($result));
+                $request->getSession()->getFlashBag()->set('danger', $this->get('translator')->trans($result));
             }
         }
 
@@ -366,9 +318,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         try {
             $order = null;
             if ($request->get('order')) {
-                /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-                $dm = $this->get('doctrine_mongodb')->getManager();
-                $order = $dm->getRepository('MBHPackageBundle:Order')->find($request->get('order'));
+                $order = $this->dm->getRepository('MBHPackageBundle:Order')->find($request->get('order'));
             }
             $order = $this->container->get('mbh.order')->createPackages([
                 'packages' => [
@@ -392,8 +342,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             return [];
         }
 
-        $request->getSession()
-            ->getFlashBag()
+        $request->getSession()->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.packageController.order_created_success'));
 
         return $this->redirect($this->generateUrl('package_edit', [
@@ -407,16 +356,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Route("/{id}/guest", name="package_guest")
      * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
      * @Template()
      */
-    public function guestAction(Request $request, $id)
+    public function guestAction(Request $request, Package $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -425,7 +370,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         );
 
         if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
-            $form->bind($request);
+            $form->submit($request);
 
             if ($form->isValid()) {
 
@@ -449,18 +394,16 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                         ->setLastName($data['lastName'])
                         ->setPatronymic($data['patronymic'])
                         ->setBirthday($data['birthday']);
-                    $dm->persist($tourist);
+                    $this->dm->persist($tourist);
                 }
 
                 $entity->addTourist($tourist);
 
-                $dm->persist($entity);
-                $dm->flush();
+                $this->dm->persist($entity);
+                $this->dm->flush();
 
-                $request->getSession()
-                    ->getFlashBag()
-                    ->set('success',
-                        $this->get('translator')->trans('controller.packageController.guest_added_success'));
+                $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.packageController.guest_added_success'));
 
                 return $this->afterSaveRedirect('package', $entity->getId(), [], '_guest');
             }
@@ -479,26 +422,20 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Route("/{id}/guest/{touristId}/delete", name="package_guest_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     * @ParamConverter("tourist", class="MBHPackageBundle:Tourist")
      */
-    public function guestDeleteAction(Request $request, $id, $touristId)
+    public function guestDeleteAction(Request $request, Package $entity, $tourist)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-        $tourist = $dm->getRepository('MBHPackageBundle:Tourist')->find($touristId);
-
-        if (!$entity || !$tourist || !$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
         $entity->removeTourist($tourist);
-        $dm->persist($entity);
-        $dm->flush();
+        $this->dm->persist($entity);
+        $this->dm->flush();
 
-        $request->getSession()
-            ->getFlashBag()
-            ->set('success', 'Гость успешно удален.');
+        $request->getSession()->getFlashBag()->set('success', 'Гость успешно удален.');
 
         return $this->redirect($this->generateUrl('package_guest', ['id' => $id]));
     }
@@ -518,9 +455,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function serviceAction(Request $request, Package $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
@@ -545,15 +479,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $form->submit($request);
 
             if ($form->isValid()) {
-                $dm->persist($packageService);
-                $dm->flush();
+                $this->dm->persist($packageService);
+                $this->dm->flush();
 
-                $request->getSession()
-                    ->getFlashBag()
-                    ->set(
-                        'success',
-                        $this->get('translator')->trans('controller.packageController.service_added_success')
-                    );
+                $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.packageController.service_added_success')
+                );
 
                 return $this->afterSaveRedirect('package', $entity->getId(), [], '_service');
             }
@@ -585,9 +516,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function serviceEditAction(Request $request, Package $entity, PackageService $service)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
@@ -609,20 +537,18 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
             if ($form->isValid()) {
 
-                $dm->persist($service);
-                $dm->flush();
+                $this->dm->persist($service);
+                $this->dm->flush();
 
-                $request->getSession()
-                    ->getFlashBag()
-                    ->set(
-                        'success',
-                        $this->get('translator')->trans('controller.packageController.service_edit_success')
-                    );
+                $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.packageController.service_edit_success')
+                );
 
                 if ($request->get('save') !== null) {
                     return $this->redirect($this->generateUrl('package_service_edit',
                         ['id' => $entity->getId(), 'serviceId' => $service->getId()]));
                 }
+
                 return $this->redirect($this->generateUrl('package_service', ['id' => $entity->getId()]));
             }
         }
@@ -647,18 +573,14 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function serviceDeleteAction(Request $request, Package $entity, PackageService $service)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         if (!$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
-        $dm->remove($service);
-        $dm->flush();
+        $this->dm->remove($service);
+        $this->dm->flush();
 
-        $request->getSession()
-            ->getFlashBag()
+        $request->getSession()->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.packageController.service_deleted_success'));
 
         return $this->redirect($this->generateUrl('package_service', ['id' => $entity->getId()]));
@@ -673,7 +595,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Template()
      * @param Request $request
      * @param Package $entity
-     * @return array|\MBH\Bundle\BaseBundle\Controller\Response
+     * @return array
      */
     public function accommodationAction(Request $request, Package $entity)
     {
@@ -693,15 +615,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $entity->setDepartureTime(new \DateTime());
         }
 
-        $form = $this->createForm(
-            new PackageAccommodationType(),
-            $entity,
-            [
-                'rooms' => $groupedRooms,
-                'isHostel' => $this->hotel->getIsHostel(),
-                'roomType' => $entity->getRoomType(),
-                'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
-            ]);
+        $form = $this->createForm(new PackageAccommodationType(), $entity, [
+            'rooms' => $groupedRooms,
+            'isHostel' => $this->hotel->getIsHostel(),
+            'roomType' => $entity->getRoomType(),
+            'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
+        ]);
 
         if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
             $form->submit($request);
@@ -710,10 +629,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $request->getSession()
-                    ->getFlashBag()
-                    ->set('success',
-                        $this->get('translator')->trans('controller.packageController.placement_saved_success'));
+                $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.packageController.placement_saved_success'));
 
                 return $this->afterSaveRedirect('package', $entity->getId(), [], '_accommodation');
             }
@@ -732,23 +649,19 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Route("/{id}/accommodation/delete", name="package_accommodation_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
-    public function accommodationDeleteAction(Request $request, $id)
+    public function accommodationDeleteAction(Request $request, Package $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
-        $entity->removeAccommodation();
-        $dm->persist($entity);
-        $dm->flush();
 
-        $request->getSession()
-            ->getFlashBag()
+        $entity->removeAccommodation();
+        $this->dm->persist($entity);
+        $this->dm->flush();
+
+        $request->getSession()->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.packageController.placement_deleted_success'));
 
         return $this->redirect($this->generateUrl('package_accommodation', ['id' => $id]));
@@ -760,23 +673,18 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Route("/{id}/delete", name="package_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
-    public function deleteAction($id, Request $request)
+    public function deleteAction(Request $request, Package $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $entity = $dm->getRepository('MBHPackageBundle:Package')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
         $orderId = $entity->getOrder()->getId();
-        $dm->remove($entity);
-        $dm->flush($entity);
+        $this->dm->remove($entity);
+        $this->dm->flush($entity);
 
-        $request
-            ->getSession()
-            ->getFlashBag()
+        $request->getSession()->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
 
         if (!empty($request->get('order'))) {
@@ -784,8 +692,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         return $this->redirect($this->generateUrl('package'));
-
-        return $response;
     }
 
 }

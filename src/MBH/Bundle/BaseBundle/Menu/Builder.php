@@ -100,7 +100,7 @@ class Builder extends ContainerAware
                 ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-building-o']);
         $menu['hotels']->addChild('hotelsList', ['route' => 'hotel', 'label' => 'Отели'])
                 ->setAttributes(['icon' => 'fa fa-building']);
-        $menu['hotels']->addChild('corpusList', ['route' => 'corpus', 'label' => 'Корпуса'])
+        $menu['hotels']->addChild('corpusList', ['route' => 'housings', 'label' => 'Корпуса'])
             ->setAttributes(['icon' => 'fa fa-puzzle-piece']);
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номерной фонд'])
                 ->setAttributes(['icon' => 'fa fa-bed']);

@@ -44,22 +44,17 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      */
     public function cashDeleteAction(Request $request, Order $entity, CashDocument $cash, Package $package)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         $permissions = $this->container->get('mbh.package.permissions');
 
         if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
-        $dm->remove($cash);
-        $dm->flush();
+        $this->dm->remove($cash);
+        $this->dm->flush();
 
-        $request->getSession()
-            ->getFlashBag()
-            ->set('success',
-                $this->get('translator')->trans('controller.orderController.cash_register_paper_deleted_success'));
+        $request->getSession()->getFlashBag()->set('success',
+            $this->get('translator')->trans('controller.orderController.cash_register_paper_deleted_success'));
 
         return $this->redirect($this->generateUrl('package_order_cash',
             ['id' => $entity->getId(), 'packageId' => $package->getId()]));
@@ -226,8 +221,6 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      */
     public function touristUpdateAction(Order $entity, Package $package, Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $permissions = $this->container->get('mbh.package.permissions');
 
         if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
@@ -240,16 +233,15 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
 
         if ($form->isValid()) {
             $data = $form->getData();
-            $tourist = $dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+            $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
                 $data['lastName'], $data['firstName'], $data['patronymic'], $data['birthday'], $data['email'],
                 $data['phone']
             );
             $entity->setMainTourist($tourist);
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
-            $request->getSession()
-                ->getFlashBag()
+            $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.orderController.payer_added_success'));
 
             if ($request->get('save') !== null) {
@@ -358,14 +350,11 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             throw $this->createNotFoundException();
         }
 
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $entity->setMainTourist(null);
-        $dm->persist($entity);
-        $dm->flush();
+        $this->dm->persist($entity);
+        $this->dm->flush();
 
-        $request->getSession()
-            ->getFlashBag()
+        $request->getSession()->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.orderController.payer_deleted_success'));
 
         return $this->redirect($this->generateUrl('package_order_tourist_edit',
@@ -392,14 +381,11 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             throw $this->createNotFoundException();
         }
 
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $entity->setOrganization(null);
-        $dm->persist($entity);
-        $dm->flush();
+        $this->dm->persist($entity);
+        $this->dm->flush();
 
-        $request->getSession()
-            ->getFlashBag()
+        $request->getSession()->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.orderController.payer_organization_success'));
 
         return $this->redirect($this->generateUrl('package_order_organization_edit',
@@ -452,8 +438,6 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      */
     public function updateAction(Order $entity, Package $package, Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $permissions = $this->container->get('mbh.package.permissions');
 
         if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
@@ -461,12 +445,11 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         }
 
         $form = $this->createForm(new OrderType(), $entity);
-
         $form->submit($request);
 
         if ($form->isValid()) {
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.orderController.record_edited_success'));
@@ -500,22 +483,17 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      */
     public function deleteAction(Order $entity, Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $permissions = $this->container->get('mbh.package.permissions');
 
         if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
-        $dm->remove($entity);
-        $dm->flush($entity);
+        $this->dm->remove($entity);
+        $this->dm->flush($entity);
 
-        $request->getSession()
-            ->getFlashBag()
+        $request->getSession()->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.orderController.record_deleted_success'));
 
         return $this->redirect($this->generateUrl('package'));
-
-        return $response;
     }
 }

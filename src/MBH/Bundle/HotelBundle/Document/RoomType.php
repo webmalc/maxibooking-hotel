@@ -297,7 +297,7 @@ class RoomType extends Base
     /**
      * Add room
      *
-     * @param MBH\Bundle\HotelBundle\Document\Room $room
+     * @param \MBH\Bundle\HotelBundle\Document\Room $room
      */
     public function addRoom(\MBH\Bundle\HotelBundle\Document\Room $room)
     {
@@ -307,7 +307,7 @@ class RoomType extends Base
     /**
      * Remove room
      *
-     * @param MBH\Bundle\HotelBundle\Document\Room $room
+     * @param \MBH\Bundle\HotelBundle\Document\Room $room
      */
     public function removeRoom(\MBH\Bundle\HotelBundle\Document\Room $room)
     {
@@ -317,7 +317,7 @@ class RoomType extends Base
     /**
      * Get rooms
      *
-     * @return Doctrine\Common\Collections\Collection $rooms
+     * @return \Doctrine\Common\Collections\Collection|Room[] $rooms
      */
     public function getRooms()
     {
