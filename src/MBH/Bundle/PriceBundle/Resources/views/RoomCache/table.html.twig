@@ -36,7 +36,7 @@
                 </tr>
 
                 {% set cats = {'totalRooms': 'В продаже', 'packagesCount': 'Забранировано', 'leftRooms': 'Осталось'} %}
-                {% if tariff is null %}
+                {% if tariff is null and false %}
                     {% set cats = cats|merge({'isClosed': 'Закрыто'}) %}
                 {% endif %}
 

@@ -33,8 +33,6 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     {
         $entity = $this->hotel->getVashotelConfig();
 
-        //$this->get('mbh.channelmanager.vashotel')->updateRooms();
-
         $form = $this->createForm(
             new VashotelType(), $entity
         );

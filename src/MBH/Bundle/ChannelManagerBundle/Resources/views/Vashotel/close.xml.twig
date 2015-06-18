@@ -8,7 +8,7 @@
 
     {% for roomId, room in rooms %}
         <room id="{{ roomId }}">
-            {% for day in range('now'|date('U'), 'now'|date_modify("+1 year - 10 days")|date('U'), 86400 ) %}
+            {% for day in range(begin|date('U'), end|date('U'), 86400 ) %}
                 <date value="{{ day|date('Y-m-d') }}">
                     <closed>1</closed>
                 </date>

@@ -12,46 +12,54 @@ class PackageMainType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        for ($i = 0; $i <= 23; $i++) {
-            $hours[$i] = sprintf('%02d', $i).':00';
-        }
-        for ($i = 0; $i <= 10; $i++) {
-            $places[$i] = $i;
-        }
-
-
-
         $builder
-            ->add('begin', 'date', array(
-                'label' => 'Заезд',
-                'group' => 'Заезд/отъезд',
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'required' => true,
-                'error_bubbling' => true,
-                'attr' => array('class' => 'datepicker begin-datepiker input-small', 'data-date-format' => 'dd.mm.yyyy'),
-            ))
-            ->add('end', 'date', array(
-                'label' => 'Отъезд',
-                'group' => 'Заезд/отъезд',
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'required' => true,
-                'error_bubbling' => true,
-                'attr' => array('class' => 'datepicker end-datepiker input-small', 'data-date-format' => 'dd.mm.yyyy'),
-            ))
-            ->add('roomType', 'document', [
-                'label' => 'Тип номера',
-                'class' => 'MBHHotelBundle:RoomType',
-                'group' => 'Номер',
-                'query_builder' => function(DocumentRepository $dr) use ($options) {
-                    return $dr->createQueryBuilder('q')
-                        ->field('hotel.id')->equals($options['hotel']->getId())
-                        ->sort(['fullTitle' => 'asc', 'title' => 'asc'])
-                        ;
-                },
-                'required' => true
-            ])
+            ->add(
+                'begin',
+                'date',
+                array(
+                    'label' => 'Заезд',
+                    'group' => 'Заезд/отъезд',
+                    'widget' => 'single_text',
+                    'format' => 'dd.MM.yyyy',
+                    'required' => true,
+                    'error_bubbling' => true,
+                    'attr' => array(
+                        'class' => 'datepicker begin-datepiker input-small',
+                        'data-date-format' => 'dd.mm.yyyy'
+                    ),
+                )
+            )
+            ->add(
+                'end',
+                'date',
+                array(
+                    'label' => 'Отъезд',
+                    'group' => 'Заезд/отъезд',
+                    'widget' => 'single_text',
+                    'format' => 'dd.MM.yyyy',
+                    'required' => true,
+                    'error_bubbling' => true,
+                    'attr' => array(
+                        'class' => 'datepicker end-datepiker input-small',
+                        'data-date-format' => 'dd.mm.yyyy'
+                    ),
+                )
+            )
+            ->add(
+                'roomType',
+                'document',
+                [
+                    'label' => 'Тип номера',
+                    'class' => 'MBHHotelBundle:RoomType',
+                    'group' => 'Номер',
+                    'query_builder' => function (DocumentRepository $dr) use ($options) {
+                        return $dr->createQueryBuilder('q')
+                            ->field('hotel.id')->equals($options['hotel']->getId())
+                            ->sort(['fullTitle' => 'asc', 'title' => 'asc']);
+                    },
+                    'required' => true
+                ]
+            )
             ->add(
                 'adults',
                 'choice',
@@ -61,7 +69,7 @@ class PackageMainType extends AbstractType
                     'required' => true,
                     'group' => 'Номер',
                     'multiple' => false,
-                    'choices' => $places,
+                    'choices' => range(0, 10),
                     'attr' => array('class' => 'input-xxs plain-html'),
                 ]
             )
@@ -74,7 +82,7 @@ class PackageMainType extends AbstractType
                     'required' => true,
                     'group' => 'Номер',
                     'multiple' => false,
-                    'choices' => $places,
+                    'choices' => range(0, 10),
                     'attr' => array('class' => 'input-xxs plain-html'),
                 ]
             )
@@ -127,6 +135,21 @@ class PackageMainType extends AbstractType
                     'required' => false,
                 ]
             );
+
+        if ($options['corrupted']) {
+            $builder
+                ->add(
+                    'corrupted',
+                    'checkbox',
+                    [
+                        'label' => 'Повреждена?',
+                        'required' => false,
+                        'group' => 'Информация',
+                        'help' => 'Бронь с поврежденной информацией. Подробности в комментарии к брони.'
+                    ]
+                );
+        }
+
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
@@ -135,7 +158,8 @@ class PackageMainType extends AbstractType
             array(
                 'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
                 'price' => false,
-                'hotel' => null
+                'hotel' => null,
+                'corrupted' => false
             )
         );
     }

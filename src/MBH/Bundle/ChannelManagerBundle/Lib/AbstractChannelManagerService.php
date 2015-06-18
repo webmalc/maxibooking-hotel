@@ -5,12 +5,22 @@ namespace MBH\Bundle\ChannelManagerBundle\Lib;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 
 
 abstract class AbstractChannelManagerService implements ChannelManagerServiceInterface
 {
 
+    /**
+     * Test mode on/off
+     */
     CONST TEST = true;
+
+    /**
+     * Default period for room/prices upload
+     */
+    CONST DEFAULT_PERIOD = 365;
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -59,13 +69,118 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function closeAll()
+    {
+        $result = true;
+
+        foreach ($this->getConfig() as $config) {
+            $check = $this->closeForConfig($config);
+            $result ? $result = $check : $result;
+
+        }
+
+        return $result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    {
+        $result = true;
+
+        $check = $this->updateRooms($begin, $end, $roomType);
+        $result ? $result = $check : $result;
+
+        $this->updateRestrictions($begin, $end, $roomType);
+        $result ? $result = $check : $result;
+
+        $this->updatePrices($begin, $end, $roomType);
+        $result ? $result = $check : $result;
+
+        return $result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function clearAllConfigs()
+    {
+        foreach ($this->getConfig() as $config) {
+            $this->clearConfig($config);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function clearConfig(ChannelManagerConfigInterface $config)
+    {
+        //roomTypes
+        $rooms = $this->pullRooms($config);
+        foreach ($config->getRooms() as $room) {
+            if (!isset($rooms[$room->getRoomId()])) {
+
+                $config->removeRoom($room);
+            }
+        }
+        //tariffs
+        $rates = $this->pullTariffs($config);
+        foreach ($config->getTariffs() as $tariff) {
+            if (!isset($rates[$tariff->getTariffId()])) {
+                $config->removeTariff($tariff);
+            }
+        }
+        $this->dm->persist($config);
+        $this->dm->flush();
+
+        return $config;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function createTariff(ChannelManagerConfigInterface $config, $id)
+    {
+        $tariffsInfo = $this->pullTariffs($config);
+
+        if (!isset($tariffsInfo[$id])) {
+            return null;
+        }
+        $info = $tariffsInfo[$id];
+
+        $oldTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy([
+            'title' => $info['title']
+        ]);
+        if ($oldTariff) {
+            return $oldTariff;
+        }
+
+        $tariff = new Tariff();
+        $tariff->setTitle($info['title'])
+            ->setIsDefault(false)
+            ->setIsOnline(false)
+            ->setHotel($config->getHotel())
+            ->setDescription('Automatically generated rate.')
+        ;
+        $this->dm->persist($tariff);
+        $this->dm->flush();
+
+        return $tariff;
+    }
+
+    /**
      * @param \DateTime $begin
      * @return \DateTime
      */
     public function getDefaultBegin(\DateTime $begin = null)
     {
-        if (!$begin) {
-            $begin = new \DateTime('midnight');
+        $now = new \DateTime('midnight');
+
+        if (!$begin || $begin < $now) {
+            $begin = $now;
         }
 
         return $begin;
@@ -78,9 +193,9 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     public function getDefaultEnd(\DateTime $begin, \DateTime $end = null)
     {
-        if (!$end) {
+        if (!$end || $end < new \DateTime('midnight')) {
             $end = clone $begin;
-            $end->modify('+360 days');
+            $end->modify('+' . static::DEFAULT_PERIOD .' days');
         }
 
         return $end;
@@ -94,7 +209,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     public function log($message, $method = 'info')
     {
         (method_exists($this->logger, $method)) ? $method : $method = 'info';
-        $this->logger->$method((string)$message);
+        $this->logger->$method(get_called_class() . ': ' . (string)$message);
 
         return $this;
     }
@@ -163,7 +278,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         foreach ($config->getTariffs() as $configTariff) {
             $tariff = $configTariff->getTariff();
 
-            if (empty($configTariff->getTariffId()) || !$tariff->getIsEnabled() || !empty($tariff->getDeletedAt())) {
+            if ($configTariff->getTariffId() === null || !$tariff->getIsEnabled() || !empty($tariff->getDeletedAt())) {
                 continue;
             }
 
@@ -276,8 +391,18 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->enable('softdeleteable');
             }
+
+            $packages = [];
+
+            foreach ($order->getPackages() as $package) {
+                if ($package->getDeletedAt()) {
+                    continue;
+                }
+                $packages[] = $package->getNumberWithPrefix();
+            }
+
             $message
-                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => count($order->getPackages())], 'MBHChannelManagerBundle'))
+                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ',  $packages)], 'MBHChannelManagerBundle'))
                 ->setFrom('channelmanager')
                 ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
                 ->setType($type == 'delete' ? 'danger' : 'info')

@@ -56,13 +56,13 @@ class TouristRepository extends DocumentRepository
                 $qb->field('patronymic')->equals($patronymic);
             }
             if (!empty($email)) {
-                $qb->field('email')->equals($email);
+                $qb->addOr($qb->expr()->field('email')->equals($email));
             }
             if (!empty($phone)) {
-                $qb->field('phone')->equals($phone);
+                $qb->addOr($qb->expr()->field('phone')->equals($phone));
             }
             if (!empty($birthday)) {
-                $qb->field('birthday')->equals($birthday);
+                $qb->addOr($qb->expr()->field('birthday')->equals($birthday));
             }
 
             $tourist = $qb->getQuery()->getSingleResult();

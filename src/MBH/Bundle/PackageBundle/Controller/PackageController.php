@@ -281,7 +281,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     'ROLE_BOOKKEEPER',
                     'ROLE_SENIOR_MANAGER'
                 ]),
-                'hotel' => $entity->getRoomType()->getHotel()
+                'hotel' => $entity->getRoomType()->getHotel(),
+                'corrupted' => $entity->getCorrupted()
             ]
         );
 
@@ -318,8 +319,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             new PackageMainType(),
             $entity,
             [
-                'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_BOOKKEEPER']),
-                'hotel' => $entity->getRoomType()->getHotel()
+                'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER']),
+                'hotel' => $entity->getRoomType()->getHotel(),
+                'corrupted' => $entity->getCorrupted()
             ]
         );
 
@@ -681,9 +683,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
+        if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
+        }
+
         $groupedRooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
             $entity->getBegin(), $entity->getEnd(), $this->hotel, null, null, $entity->getId(), true
         );
+
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity->getArrivalTime()) {
             $entity->setArrivalTime(new \DateTime());

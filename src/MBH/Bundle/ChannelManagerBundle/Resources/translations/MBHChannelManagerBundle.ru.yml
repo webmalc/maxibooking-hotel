@@ -28,9 +28,16 @@ views.tabs.must_fill_main_settings: "Необходимо заполнить о�
 
 #channelManager
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
+
 channelManager.booking.notification.subject: Сообщения от Booking.com
-channelManager.booking.notification.new: Новый заказ %order% из booking.com. Броней: %packages%
-channelManager.booking.notification.edit: Изменен заказ %order% из booking.com. Броней: %packages%
-channelManager.booking.notification.delete: Удален заказ %order% из booking.com. Броней: %packages%
+channelManager.booking.notification.new: Новый заказ %order% из booking.com. Номера броней: %packages%
+channelManager.booking.notification.edit: Изменен заказ %order% из booking.com. Номера броней: %packages%
+channelManager.booking.notification.delete: Удален заказ %order% из booking.com. Номера броней: %packages%
+
+channelManager.vashotel.notification.subject: Сообщения от Vashotel.ru
+channelManager.vashotel.notification.new: Новый заказ %order% из vashotel.ru. Номера броней: %packages%
+channelManager.vashotel.notification.edit: Изменен заказ %order% из vashotel.ru. Номера броней: %packages%
+channelManager.vashotel.notification.delete: Удален заказ %order% из vashotel.ru. Номера броней: %packages%
+
 channelmanager.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы типы номеров, тарифы или услуги
 views.channelmanager.actions.sync: Синхронизировать

@@ -2,6 +2,10 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -19,6 +23,20 @@ class Vashotel extends Base
     const CONFIG = 'VashotelConfig';
 
     /**
+     * Config class
+     */
+    const CANCEL_CONDITIONS = [
+        1 => 'Первые сутки проживания в забронированных номерах',
+        2 => 'Процент от стоимости проживания',
+        3 => 'Фиксированная стоимость за каждый забронированный номер'
+    ];
+
+    /**
+     * {@inheritdoc}
+     */
+    const DEFAULT_PERIOD = 360;
+
+    /**
      * Base API URL
      */
     const BASE_URL = 'https://www.dev.vashotel.ru/hotel_xml/';
@@ -34,9 +52,24 @@ class Vashotel extends Base
     const UPDATE_ROOMS_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:updateRooms.xml.twig';
 
     /**
+     * Update prices template
+     */
+    const UPDATE_PRICES_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:updatePrices.xml.twig';
+
+    /**
      * Close all rooms
      */
     const CLOSE_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:close.xml.twig';
+
+    /**
+     * Orders notifications
+     */
+    const NOTIFICATIONS_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:notifications.xml.twig';
+
+    /**
+     * Orders info
+     */
+    const ORDERS_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:orders.xml.twig';
 
     /**
      * @var array
@@ -55,19 +88,6 @@ class Vashotel extends Base
     public function createPackages()
     {
         return $this->pullOrders();
-    }
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
-    {
-        $this->updateRooms($begin, $end, $roomType);
-        $this->updatePrices($begin, $end, $roomType);
-        $this->updateRestrictions($begin, $end, $roomType);
-
-        return true;
     }
 
 
@@ -91,7 +111,6 @@ class Vashotel extends Base
         };
 
         $responseSig = (string)$xml->xpath('sig')[0];
-
         $sig = $this->getSignature($xml, $script, $key);
 
         if (md5($sig) !== $responseSig) {
@@ -140,12 +159,13 @@ class Vashotel extends Base
         $fields = $this->getXmlFieldsAsArray($xml);
         $fields = $this->sortXmlArray($fields);
         $string = $this->getStringFromXmlArray($fields, $dev);
+        $string = trim($string, ';');
 
         if ($script) {
             $string = $script.';'.$string;
         }
         if ($key) {
-            $string .= $key;
+            $string .= ';'.$key;
         }
 
         return $string;
@@ -159,11 +179,12 @@ class Vashotel extends Base
     private function getStringFromXmlArray(array $fields, $dev = false)
     {
         $string = '';
-        foreach ($fields as $field) {
-            if (is_array($field['value'])) {
-                $string .= $this->getStringFromXmlArray($field['value'], $dev);
+
+        foreach ($fields as $key => $field) {
+            if (is_array($field)) {
+                $string .= $this->getStringFromXmlArray($field, $dev);
             } else {
-                $string .= ($dev) ? $field['name'].'-'.$field['value'].';' : $field['value'].';';
+                $string .= ($dev) ? $key.'-'.$field.';' : $field.';';
             }
         }
 
@@ -176,16 +197,12 @@ class Vashotel extends Base
      */
     private function sortXmlArray(array $fields)
     {
-        usort(
-            $fields,
-            function ($a, $b) {
-                return ($a['name'] < $b['name']) ? -1 : 1;
-            }
-        );
+        ksort($fields, SORT_STRING);
+
         foreach ($fields as $key => $field) {
-            if (is_array($field['value'])) {
-                $fields[$key]['value'] = $this->sortXmlArray($field['value']);
-                $result[] = $this->sortXmlArray($field['value']);
+
+            if (is_array($field)) {
+                $fields[$key] = $this->sortXmlArray($field);
             }
         }
 
@@ -204,24 +221,18 @@ class Vashotel extends Base
                 continue;
             }
 
-            $count = 'o';
+            $count = 'a';
 
-            foreach ($fields as $field) {
-                if (preg_match('/'.$child->getName().'_sort_number_[o]*$/iu', $field['name'])) {
-                    $count .= 'o';
+            foreach ($fields as $key => $field) {
+                if (preg_match('/'.$child->getName().'_[a]*$/iu', $key)) {
+                    $count .= 'a';
                 }
             }
 
             if ($child->count()) {
-                $fields[] = [
-                    'name' => $child->getName().'_sort_number_'.$count,
-                    'value' => $this->getXmlFieldsAsArray($child)
-                ];
+                $fields[$child->getName().'_'.$count] = $this->getXmlFieldsAsArray($child);
             } else {
-                $fields[] = [
-                    'name' => $child->getName().'_sort_number_'.$count,
-                    'value' => (string)$child
-                ];
+                $fields[$child->getName().'_'.$count] = (string)$child;
             }
         }
 
@@ -280,11 +291,21 @@ class Vashotel extends Base
             return [];
         }
         $result = [
-            0 => 'Standard rate'
+            0 => [
+                "title" => 'Standard rate',
+                "changePrice" => true,
+                "changeQuan" => true,
+                "isActive" => true,
+            ]
         ];
 
         foreach ($response->xpath('rate') as $rate) {
-            $result[(int)$rate->id] = (string)$rate->name;
+            $result[(int)$rate->id] = [
+                'title' => (string)$rate->name,
+                'changePrice' => !!(int)$rate->changePrice,
+                'changeQuan' => !!(int)$rate->changeQuan,
+                'isActive' => !!(int)$rate->isActive,
+            ];
         }
 
         return $result;
@@ -295,17 +316,389 @@ class Vashotel extends Base
      */
     public function pullOrders()
     {
+        $result = true;
+
+        foreach ($this->getConfig() as $config) {
+            $script = 'get_reservations_list.php';
+            $salt = $this->helper->getRandomString(20);
+            $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
+
+            $sig = $this->getSignature(
+                $this->templating->render(static::NOTIFICATIONS_TEMPLATE, $data),
+                $script,
+                $this->params['password']
+            );
+            $data['sig'] = md5($sig);
+
+            $response = $this->sendXML(
+                static::BASE_URL.$script,
+                $this->templating->render(static::NOTIFICATIONS_TEMPLATE, $data)
+            );
+            $this->log($response->asXML());
+
+            if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+                continue;
+            }
+
+            $modifyIds = $newIds = [];
+
+            //getReservations
+            foreach ($response->reservation_list->reservation as $reservation) {
+                if ((string)$reservation['notification_type'] == 'cancel') {
+                    $this->cancelOrder((string)$reservation['id']);
+                }
+                if (in_array((string)$reservation['notification_type'], ['modify', 'confirm_preliminary'])) {
+                    $modifyIds[] = (int)$reservation['id'];
+                }
+                if (in_array((string)$reservation['notification_type'], ['new', 'new_preliminary'])) {
+                    $newIds[] = (int)$reservation['id'];
+                }
+            }
+
+            if (!empty($newIds)) {
+                $this->orders($newIds, $config, 'new');
+            }
+            if (!empty($modifyIds)) {
+                $this->orders($modifyIds, $config, 'edit');
+            }
+        }
+
+        return $result;
     }
 
     /**
-     * {@inheritDoc}
+     * Remove order
+     * @param $id
+     * @return bool
      */
-    public function closeAll()
+    private function cancelOrder($id)
     {
-        $result = false;
+        $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
+            [
+                'channelManagerId' => (string) $id,
+                'channelManagerType' => 'vashotel'
+            ]
+        );
+        if (!$order) {
+            return false;
+        }
+        $order->setChannelManagerStatus('cancelled');
+        $this->dm->persist($order);
+        $this->dm->flush();
+        $this->notify($order, 'vashotel', 'delete');
+        $this->dm->remove($order);
+        $this->dm->flush();
 
-        foreach ($this->getConfig() as $config) {
-            $result = $this->closeForConfig($config);
+        return true;
+    }
+
+    /**
+     * Create/edit orders
+     * @param array $serviceIds
+     * @param ChannelManagerConfigInterface $config
+     * @param $orderType
+     * @return bool
+     */
+    private function orders(array $serviceIds, ChannelManagerConfigInterface $config, $orderType)
+    {
+        $helper = $this->container->get('mbh.helper');
+        $roomTypes = $this->getRoomTypes($config, true);
+        $tariffs = $this->getTariffs($config, true);
+
+        foreach ($this->getReservations($serviceIds, $config) as $id => $reservation) {
+
+            //check status
+            if (!in_array($reservation->status, ['ok', 'preliminary'])) {
+                continue;
+            }
+            //check order
+            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->enable('softdeleteable');
+            }
+            $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
+                [
+                    'channelManagerId' => (string) $id,
+                    'channelManagerType' => 'vashotel'
+                ]
+            );
+
+            if ($orderType == 'new' && $order) {
+                continue;
+            }
+            if ($orderType == 'edit' && !$order) {
+                continue;
+            }
+
+            //payer
+            $customer = $reservation->customer;
+            $payer = null;
+            if ($customer && $customer->name) {
+                $nameInfo = explode(' ', $customer->name);
+                $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                    $nameInfo[0],
+                    empty($nameInfo[1]) ? 'н/д' : $nameInfo[1],
+                    empty($nameInfo[2]) ? null : $nameInfo[2],
+                    null,
+                    empty($customer->email) ? null : (string)$customer->email,
+                    empty((string)$customer->phone) ? null : (string)$customer->phone
+                );
+            }
+
+            //order
+            if (!$order && $orderType == 'new') {
+                $order = new Order();
+                $order->setChannelManagerStatus('new');
+            } else {
+                foreach ($order->getPackages() as $package) {
+                    $this->dm->remove($package);
+                    $this->dm->flush();
+                }
+                foreach ($order->getFee() as $cashDoc) {
+                    $this->dm->remove($cashDoc);
+                    $this->dm->flush();
+                }
+                $order->setChannelManagerStatus('modified');
+                $order->setDeletedAt(null);
+            }
+
+            $type = (string)$reservation->type;
+            $type != 'prepayment' ? $orderPrice = (float)$reservation->sum_rooms + (float)$reservation->sum_services : $orderPrice = (float)$reservation->sum_hotel;
+
+            $comment = empty((string) $reservation->customer_comments) ? $comment = '' : (string) $reservation->customer_comments . ". \n\n";
+
+            if (!empty((string) $reservation->time_arrival)) {
+                $comment .= 'Время заезда: ' . (string) $reservation->time_arrival . ". \n";
+            }
+            $cancelConditions = $reservation->cancel_conditions;
+            $cancelTypes = static::CANCEL_CONDITIONS;
+            if (!empty($cancelConditions) && !empty($cancelConditions->fine_type)) {
+                $comment .= 'Тип штрафа при аннуляции: ' . $cancelTypes[(int)$cancelConditions->fine_type] . ". \n";
+                if (!empty($cancelConditions->fine_cost)) {
+                    $comment .= 'Стоимость штрафа при аннуляции: ' . $cancelConditions->fine_cost . ". \n";
+                }
+                if (!empty($cancelConditions->free_cancel_date) && (string)$cancelConditions->free_cancel_date != 'none') {
+                    $comment .= 'Дата аннуляции без штрафных санкции: ' . $cancelConditions->free_cancel_date . ". \n";
+                }
+            }
+
+            $order->setChannelManagerType('vashotel')
+                ->setChannelManagerId($id)
+                ->setChannelManagerHumanId($id)
+                ->setMainTourist($payer)
+                ->setConfirmed(false)
+                ->setStatus('channel_manager')
+                ->setPrice($orderPrice)
+                ->setTotalOverwrite($orderPrice)
+                ->setNote($comment . 'Тип: ' . $type);
+
+            $card = $reservation->credit_card;
+            if ($type == 'credit_card_secured' && !empty($card)) {
+
+                $order->setCard(
+                    'cvc: '.$card->cvc.'; valid: '.$card->valid.'; cardholder: '.$card->cardholder.'; number: '.$card->number.'; type: '.$card->type
+                );
+            }
+
+            $this->dm->persist($order);
+            $this->dm->flush();
+
+            //fee
+            if (!empty((float)$reservation->sum_fee)) {
+                $fee = new CashDocument();
+                $fee->setIsConfirmed(false)
+                    ->setIsPaid(false)
+                    ->setMethod('electronic')
+                    ->setOperation('fee')
+                    ->setOrder($order)
+                    ->setTouristPayer($payer)
+                    ->setTotal((float)$reservation->sum_fee);
+                $this->dm->persist($fee);
+                $this->dm->flush();
+            }
+
+            //tariff
+            empty($reservation->rate->id) || (string)$reservation->rate->id == 'base' ? $rateId = 0 : $rateId = (string)$reservation->rate->id;
+
+            $corruptedTariff = false;
+            $errorTariffMessage = '';
+
+            if (isset($tariffs[$rateId])) {
+                $tariff = $tariffs[$rateId]['doc'];
+            } else {
+                $tariff = $this->createTariff($config, $rateId);
+                if (!$tariff) {
+                    continue;
+                }
+                $corruptedTariff = true;
+                $errorTariffMessage .= 'ERROR: Not mapped rate <' . $tariff->getName() . '>. ';
+            }
+
+            //begin & end
+            $begin = $helper->getDateFromString((string)$reservation->date_arrival, 'Y-m-d');
+            $end = $helper->getDateFromString((string)$reservation->date_departure, 'Y-m-d');
+
+            //packages
+            foreach ($reservation->rooms->room as $room) {
+
+                $corrupted = $corruptedTariff;
+                $errorMessage = $errorTariffMessage;
+                $guests = [];
+
+                //roomType
+                if (isset($roomTypes[(string)$room['id']])) {
+                    $roomType = $roomTypes[(string)$room['id']]['doc'];
+                } else {
+                    $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
+                        [
+                            'hotel.id' => $config->getHotel()->getId(),
+                            'isEnabled' => true,
+                            'deletedAt' => null
+                        ]
+                    );
+                    $corrupted = true;
+                    $errorMessage .= 'ERROR: invalid roomType #'.(string)$room->id.'. ';
+
+                    if (!$roomType) {
+                        continue;
+                    }
+                }
+
+                //guests
+                foreach ($room->guests->guest as $guestInfo) {
+
+                    $lastname = (string)$guestInfo['lastname'];
+                    $firstname = (string) $guestInfo['firstname'];
+
+                    if (empty($lastname) || empty($firstname)) {
+                        continue;
+                    }
+
+                    if ($payer && $payer->getLastName() == $lastname && $payer->getFirstName() == $firstname) {
+                        $guests[] = $payer;
+                    } else {
+                        $guests[] = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                            $lastname,
+                            $firstname,
+                            null,
+                            null,
+                            null,
+                            empty((string)$guestInfo['phone']) ? null : (string)$guestInfo['phone']
+                        );
+                    }
+                }
+
+                //prices
+                $total = 0;
+                $pricesByDate = [];
+                $breakfastCount  = 0;
+                foreach ($room->pricePerDay->price as $price) {
+                    $total += (float)$price->price;
+                    $date = $helper->getDateFromString((string)$price['date'], 'Y-m-d');
+                    $pricesByDate[$date->format('d_m_Y')] = (float)$price->price;
+
+                    if ((string) $price->breakfast_included == 'yes') {
+                        $breakfastCount++;
+                    }
+                }
+
+                $package = new Package();
+                $package
+                    ->setChannelManagerId($id)
+                    ->setChannelManagerType('vashotel')
+                    ->setBegin($begin)
+                    ->setEnd($end)
+                    ->setRoomType($roomType)
+                    ->setTariff($tariff)
+                    ->setAdults((int)$room->guests_count)
+                    ->setChildren(0)
+                    ->setIsSmoking(false)
+                    ->setPricesByDate($pricesByDate)
+                    ->setPrice((float)$total)
+                    ->setNote($errorMessage)
+                    ->setOrder($order)
+                    ->setCorrupted($corrupted)
+                ;
+
+                foreach ($guests as $tourist) {
+                    $package->addTourist($tourist);
+                }
+
+                //breakfast
+                if ($breakfastCount) {
+                    $breakfastService = $this->dm->getRepository('MBHPriceBundle:Service')->findOneBy([
+                       'code' => 'Breakfast', 'isEnabled' => true, 'deletedAt' => null
+                    ]);
+                    if ($breakfastService) {
+                        $breakfast = new PackageService();
+                        $breakfast
+                            ->setService($breakfastService)
+                            ->setIsCustomPrice(true)
+                            ->setNights($breakfastCount)
+                            ->setPersons($package->getAdults())
+                            ->setPrice(0)
+                            ->setTotalOverwrite(0)
+                            ->setPackage($package);;
+                        $this->dm->persist($breakfast);
+                        $package->addService($breakfast);
+                    }
+                }
+
+                //TODO: services
+                //TODO: cancel
+
+                $package->setServicesPrice(0);
+                $package->setTotalOverwrite($total);
+
+                $order->addPackage($package);
+                $this->dm->persist($package);
+                $this->dm->persist($order);
+                $this->dm->flush();
+            }
+
+            $this->notify($order, 'vashotel', $orderType);
+
+        }
+        return true;
+    }
+
+    /**
+     * Get reservations info from service
+     * @param array $serviceIds
+     * @param ChannelManagerConfigInterface $config
+     * @return array
+     * @throws \Exception
+     */
+    private function getReservations(array $serviceIds, ChannelManagerConfigInterface $config)
+    {
+        $script = 'get_reservations.php';
+        $salt = $this->helper->getRandomString(20);
+        $result = [];
+
+        foreach (array_chunk($serviceIds, 20) as $ids) {
+
+            $data = ['config' => $config, 'salt' => $salt, 'sig' => null, 'ids' => $ids];
+            $sig = $this->getSignature(
+                $this->templating->render(static::ORDERS_TEMPLATE, $data),
+                $script,
+                $this->params['password']
+            );
+
+            $data['sig'] = md5($sig);
+
+            $response = $this->sendXml(
+                static::BASE_URL.$script,
+                $this->templating->render(static::ORDERS_TEMPLATE, $data)
+            );
+
+            $this->log($response->asXML());
+
+            if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+                continue;
+            }
+
+            foreach ($response->reservations->reservation as $reservation) {
+                $result[(int)$reservation['id']] = $reservation;
+            }
         }
 
         return $result;
@@ -316,28 +709,47 @@ class Vashotel extends Base
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
-        //foreach ($this->pullTariffs($config) as $tariffId => $tariff) {
-        $script = 'set_availability.php';
-        $salt = $this->helper->getRandomString(20);
-        $data = [
-            'config' => $config,
-            'salt' => $salt,
-            'sig' => null,
-            'rooms' => $this->pullRooms($config),
-            'rate' => 0
-        ];
+        $begin = $this->getDefaultBegin();
+        $end = $this->getDefaultEnd($begin);
+        $result = true;
 
-        $sig = $this->getSignature(
-            $this->templating->render(static::CLOSE_TEMPLATE, $data),
-            $script,
-            $this->params['password']
-        );
-        $data['sig'] = md5($sig);
+        foreach ($this->pullTariffs($config) as $tariffId => $tariff) {
 
-        $response = $this->sendXml(static::BASE_URL.$script, $this->templating->render(static::CLOSE_TEMPLATE, $data));
+            if (!$tariff['changeQuan'] || !$tariff['isActive']) {
+                continue;
+            }
 
-        return $this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']]);
-        //}
+            $script = 'set_availability.php';
+            $salt = $this->helper->getRandomString(20);
+            $data = [
+                'config' => $config,
+                'salt' => $salt,
+                'sig' => null,
+                'rooms' => $this->pullRooms($config),
+                'rate' => $tariffId,
+                'begin' => $begin,
+                'end' => $end
+            ];
+
+            $sig = $this->getSignature(
+                $this->templating->render(static::CLOSE_TEMPLATE, $data),
+                $script,
+                $this->params['password']
+            );
+
+            $data['sig'] = md5($sig);
+
+            $response = $this->sendXml(
+                static::BASE_URL.$script,
+                $this->templating->render(static::CLOSE_TEMPLATE, $data)
+            );
+
+            if ($result) {
+                $result = $this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']]);
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -345,6 +757,79 @@ class Vashotel extends Base
      */
     public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
+        $result = true;
+        $script = 'set_availability.php';
+        $begin = $this->getDefaultBegin($begin);
+        $end = $this->getDefaultEnd($begin);
+        $calc = $this->container->get('mbh.calculation');
+
+        foreach ($this->getConfig() as $config) {
+            $salt = $this->helper->getRandomString(20);
+            $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
+            $roomTypes = $this->getRoomTypes($config);
+            $configTariffs = $this->getTariffs($config, true);
+            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                $begin,
+                $end,
+                $config->getHotel(),
+                $roomType ? [$roomType->getId()] : [],
+                [],
+                true
+            );
+
+            //iterate tariffs
+            foreach ($this->pullTariffs($config) as $tariffId => $tariff) {
+
+                if (!$tariff['changePrice'] || !$tariff['isActive'] || !isset($configTariffs[$tariffId])) {
+                    continue;
+                }
+
+                $tariffDoc = $configTariffs[$tariffId]['doc'];
+
+                foreach ($roomTypes as $roomTypeId => $roomType) {
+
+                    $data['rate'] = $tariffId;
+
+                    foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+
+                        $info = false;
+
+                        if (isset($priceCaches[$roomTypeId][$tariffDoc->getId()][$day->format('d.m.Y')])) {
+                            $info = $priceCaches[$roomTypeId][$tariffDoc->getId()][$day->format('d.m.Y')];
+                        }
+
+                        if ($info) {
+                            $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
+                                'prices' => $calc->calcPrices($roomType['doc'], $tariffDoc, $day, $day),
+                            ];
+                        } else {
+                            $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
+                                'closed' => 1
+                            ];
+                        }
+                    }
+                }
+
+                $sig = $this->getSignature(
+                    $this->templating->render(static::UPDATE_PRICES_TEMPLATE, $data),
+                    $script,
+                    $this->params['password']
+                );
+                $data['sig'] = md5($sig);
+
+                $response = $this->sendXml(
+                    static::BASE_URL.$script,
+                    $this->templating->render(static::UPDATE_PRICES_TEMPLATE, $data)
+                );
+
+                if ($result) {
+                    $result = $this->checkResponse(
+                        $response,
+                        ['script' => $script, 'key' => $this->params['password']]
+                    );
+                }
+            }
+        }
     }
 
     /**
@@ -352,8 +837,10 @@ class Vashotel extends Base
      */
     public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
-        $result = false;
+        $result = true;
         $script = 'set_availability.php';
+        $begin = $this->getDefaultBegin($begin);
+        $end = $this->getDefaultEnd($begin);
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
@@ -361,45 +848,84 @@ class Vashotel extends Base
             $salt = $this->helper->getRandomString(20);
             $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
             $roomTypes = $this->getRoomTypes($config);
-
-            //roomCache
+            $configTariffs = $this->getTariffs($config, true);
             $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-                $begin, $end, $config->getHotel(), $roomType ? [$roomType->getId()] : [], null
+                $begin,
+                $end,
+                $config->getHotel(),
+                $roomType ? [$roomType->getId()] : [],
+                null,
+                true
             );
-            if (!$roomCaches->count()) {
-                continue;
-            }
 
-            //group caches
-            foreach ($roomCaches as $roomCache) {
-                $roomType = $roomCache->getRoomType();
-                isset($roomTypes[$roomType->getId()]) ? $roomTypeSyncId = $roomTypes[$roomType->getId()]['syncId'] : $roomTypeSyncId = null;
-                $formattedDate = $roomCache->getDate()->format('Y-m-d');
+            //iterate tariffs
+            foreach ($this->pullTariffs($config) as $tariffId => $tariff) {
 
-                if ($roomTypeSyncId) {
-                    $data['rooms'][$roomTypeSyncId][$formattedDate] = [
-                        'sellquantity' => $roomCache->getLeftRooms(),
-                        'closed' => $roomCache->getIsClosed()
-                    ];
+                if (!$tariff['changeQuan'] || !$tariff['isActive'] || !isset($configTariffs[$tariffId])) {
+                    continue;
+                }
+
+                $tariffRoomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
+                    $begin,
+                    $end,
+                    $config->getHotel(),
+                    $roomType ? [$roomType->getId()] : [],
+                    [$configTariffs[$tariffId]['doc']->getId()],
+                    true
+                );
+
+                foreach ($roomTypes as $roomTypeId => $roomType) {
+
+                    $data['rate'] = $tariffId;
+
+                    foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+
+                        $info = false;
+
+                        if (isset($tariffRoomCaches[$roomTypeId][$configTariffs[$tariffId]['doc']->getId(
+                            )][$day->format('d.m.Y')])) {
+                            $info = $tariffRoomCaches[$roomTypeId][$configTariffs[$tariffId]['doc']->getId(
+                            )][$day->format('d.m.Y')];
+                        } elseif (isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])) {
+                            $info = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
+                        }
+
+                        if ($info) {
+                            $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
+                                'sellquantity' => $info->getLeftRooms(),
+                                'closed' => $info->getLeftRooms() ? 0 : 1
+                            ];
+                        } else {
+                            $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
+                                'sellquantity' => 0,
+                                'closed' => 1
+                            ];
+                        }
+                    }
+                }
+
+                $sig = $this->getSignature(
+                    $this->templating->render(static::UPDATE_ROOMS_TEMPLATE, $data),
+                    $script,
+                    $this->params['password']
+                );
+                $data['sig'] = md5($sig);
+
+                $response = $this->sendXml(
+                    static::BASE_URL.$script,
+                    $this->templating->render(static::UPDATE_ROOMS_TEMPLATE, $data)
+                );
+
+                if ($result) {
+                    $result = $this->checkResponse(
+                        $response,
+                        ['script' => $script, 'key' => $this->params['password']]
+                    );
                 }
             }
-
-            //dump($this->templating->render(static::UPDATE_ROOMS_TEMPLATE, $data)); exit();
-
-            $sig = $this->getSignature(
-                $this->templating->render(static::UPDATE_ROOMS_TEMPLATE, $data),
-                $script,
-                $this->params['password']
-            );
-            $data['sig'] = md5($sig);
-
-            $response = $this->send(static::BASE_URL.$script, $this->templating->render(static::UPDATE_ROOMS_TEMPLATE, $data));
-
-            dump($response); exit();
-
-            //return $this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']]);
-
         }
+
+        return $result;
     }
 
     /**
@@ -407,5 +933,6 @@ class Vashotel extends Base
      */
     public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
+        return true;
     }
 }

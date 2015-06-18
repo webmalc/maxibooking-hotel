@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<request>
+    {% include 'MBHChannelManagerBundle:Vashotel:credentials.xml.twig' with {'config': config , 'salt': salt, 'sig': sig} %}
+        {% if rate is defined and rate %}
+            <rate_id>{{ rate }}</rate_id>
+        {% endif %}
+
+        {% for roomId, roomInfo in rooms %}
+            <room id="{{ roomId }}">
+                {% for date, dateInfo in roomInfo %}
+                    <date value="{{ date }}">
+                        {% if dateInfo.closed is defined and dateInfo.closed %}
+                        <closed>1</closed>
+                        {% endif %}
+
+                        {% if dateInfo.prices is defined %}
+                            <prices>
+                            {% for priceInfo in dateInfo.prices %}
+                                {% if priceInfo.children == 0 %}
+                                    <price_{{ priceInfo.adults }}>{{ priceInfo.total }}</price_{{ priceInfo.adults }}>
+                                {% endif %}
+                            {% endfor %}
+                            </prices>
+                        {% endif %}
+                    </date>
+                {% endfor %}
+            </room>
+    {% endfor %}
+</request>

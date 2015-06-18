@@ -32,6 +32,7 @@ order.cash.cash_documents_not_found: Кассовые документы не н
 order.edit.order_editing: 'редактирование заказа #'
 order.edit.deleted: удален
 order.edit.room: Номер
+order.edit.card: Карта
 order.edit.paid_price: Оплачено/Цена
 order.edit.paid: оплачен
 order.edit.not_paid: не оплачен
@@ -184,6 +185,7 @@ package.index.selection: 'Подбор'
 package.json.reservation_type: Тип брони:
 package.json.edit_record: Редактирование записи
 package.json.deleted: удалена
+package.json.corrupted: ошибка
 package.json.edit_order: Редактирование заказа
 package.json.deleted_order: удален
 package.json.noch: 'ночь'
@@ -310,3 +312,5 @@ organizations.breadcrumbs.edit: Редактировать организаци�
 organizations.confirm_delete: 'Вы действительно хотите удалить организацию "%organization_name%"'
 
 payer.confirmation.notification: Ваш заказ %order% подтвержден
+
+package.corrupted.message.text: Создана поврежденная бронь %package%

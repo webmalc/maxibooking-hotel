@@ -44,6 +44,20 @@ class PackageSubscriber implements EventSubscriber
                 $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff()
             );
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
+
+            //corrupted
+            if ($doc->getCorrupted()) {
+                $notifier = $this->container->get('mbh.notifier');
+                $message = $notifier::createMessage();
+                $message
+                    ->setText($this->container->get('translator')->trans('package.corrupted.message.text', ['%package%' => $doc->getNumberWithPrefix()], 'MBHPackageBundle'))
+                    ->setFrom('system')
+                    ->setType('danger')
+                    ->setAutohide(false)
+                    ->setEnd(new \DateTime('+10 minute'))
+                ;
+                $notifier->setMessage($message)->notify();
+            }
         }
     }
 

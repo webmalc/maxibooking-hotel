@@ -90,6 +90,14 @@ class ChannelManager
         return $services;
     }
 
+    public function clearAllConfigsInBackground()
+    {
+        $this->env == 'prod' ? $env = '--env=prod ' : $env = '';
+
+        $process = new Process('nohup php ' . $this->console . 'mbh:channelmanager:configs --no-debug ' . $env . '> /dev/null 2>&1 &');
+        $process->run();
+    }
+
 
     public function closeInBackground()
     {

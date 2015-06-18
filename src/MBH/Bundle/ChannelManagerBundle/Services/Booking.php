@@ -80,9 +80,6 @@ class Booking extends Base
 
         foreach ($this->getConfig() as $config) {
 
-            //Test data from BOOKING.COM
-            /*$sendResult = simplexml_load_string('<?xml version="1.0"?> <reservations>   <reservation>     <commissionamount>16.20</commissionamount>     <currencycode>EUR</currencycode>     <customer>       <address>asdasd</address>       <cc_cvc>123</cc_cvc>       <cc_expiration_date>10/2015</cc_expiration_date>       <cc_name>werwer erwwererw</cc_name>       <cc_number>5346330641608164</cc_number>       <cc_type>MasterCard</cc_type>       <city>asdasd</city>       <company/>       <countrycode>ru</countrycode>       <dc_issue_number/>       <dc_start_date/>       <email>677651674-qsbf.ntc7.66c6.6mcb@guest.booking.com</email>       <first_name>werwer</first_name>       <last_name>erwwererw</last_name>       <remarks/>       <telephone>213123321</telephone>       <zip>asdasd</zip>     </customer>     <date>2015-06-07</date>     <hotel_id>1189796</hotel_id>     <hotel_name>Potential Provider MaxiBooking</hotel_name>     <id>677651674</id>     <reservation_extra_info booker_is_genius="no" booking_managed_payment="no" no_address_reservation="no"/>     <room>       <addons>         <addon>           <name>Интернет</name>           <nights>1</nights>           <persons>1</persons>           <price_mode>3</price_mode>           <price_per_unit>15</price_per_unit>           <totalprice>15</totalprice>           <type>21</type>         </addon>         <addon>           <name>Парковка</name>           <nights>1</nights>           <persons>1</persons>           <price_mode>3</price_mode>           <price_per_unit>15</price_per_unit>           <totalprice>15</totalprice>           <type>22</type>         </addon>       </addons>       <arrival_date>2015-06-07</arrival_date>       <commissionamount>16.2</commissionamount>       <currencycode>EUR</currencycode>       <departure_date>2015-06-08</departure_date>       <extra_info>This double room features a minibar, air conditioning and seating area.</extra_info>       <facilities>Мини-бар, Телефон, Кондиционер, Фен, Утюг, Радио, Рабочий стол, Гладильные принадлежности, Гостиный уголок, Отопление, Ванна или душ, Ковровое покрытие, Телевизор с плоским экраном, Будильник, Шкаф/гардероб, Гипоаллергенный, Одеяла с электроподогревом, Кофемашина, Вид на город, Полотенца, Для доступа к верхним этажам работает лифт, Отдельно стоящее, Сушилка для одежды</facilities>       <guest_name>werwer erwwererw</guest_name>       <id>118979601</id>       <info>Питание не входит в цену данного номера.  Размещение детей и предоставление дополнительных кроватей: Разрешается проживание детей любого возраста. При размещении одного ребёнка младше 4 лет на имеющихся кроватях взимается EUR 20 с человека за ночь. При размещении одного ребёнка старшего возраста или взрослого на дополнительной кровати взимается EUR 50 с человека за ночь. Максимальное количество дополнительных кроватей/детских кроваток в номере -  1.  Предоплата: Предоплата не  взимается.  Порядок отмены бронирования: В случае отмены бронирования в срок до 1 суток до даты заезда  штраф не взимается. </info>       <max_children>0</max_children>       <meal_plan>Питание не входит в цену данного номера. </meal_plan>       <name>Стандартный двухместный номер с 1 кроватью или 2 отдельными кроватями - Single Use</name>       <numberofguests>1</numberofguests>       <price date="2015-06-07" genius_rate="no" rate_id="4326886">105</price>       <price_details>         <guest>           <extracomponent amount="17.500000" currency="EUR" included="yes" per_night="no" per_person="no" percentage="20%" text="НДС"/>           <total>135.00</total>         </guest>         <hotel>           <extracomponent amount="17.500000" currency="EUR" included="yes" per_night="no" per_person="no" percentage="20%" text="НДС"/>           <total>135</total>         </hotel>       </price_details>       <remarks/>       <roomreservation_id>679520841</roomreservation_id>       <smoking>1</smoking>       <totalprice>135</totalprice>     </room>     <status>new</status>     <time>15:15:45</time>     <totalprice>135</totalprice>   </reservation> </reservations> <!-- RUID: [UmFuZG9tSVYkc2RlIyh9YQ957bIQASwa5ZteJp7/pO1T7RsFANQ+WJJHU6OpV90TNHBM2vk4Jyt9ED/yo/MVjg==] -->');*/
-
             $request = $this->templating->render(
                 'MBHChannelManagerBundle:Booking:reservations.xml.twig',
                 ['config' => $config, 'params' => $this->params, 'lastChange' => false]
@@ -222,11 +219,24 @@ class Booking extends Base
 
         //packages
         foreach ($reservation->room as $room) {
+
+            $corrupted = false;
+            $errorMessage = '';
+
             //roomType
-            if (!isset($roomTypes[(string)$room->id])) {
-                continue;
+            if (isset($roomTypes[(string)$room->id])) {
+                $roomType = $roomTypes[(string)$room->id]['doc'];
+            } else {
+                $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy([
+                    'hotel.id' => $config->getHotel()->getId(), 'isEnabled' => true, 'deletedAt' => null
+                ]);
+                $corrupted = true;
+                $errorMessage = 'ERROR: invalid roomType #' . (string)$room->id . '. ';
+
+                if (!$roomType) {
+                    continue;
+                }
             }
-            $roomType = $roomTypes[(string)$room->id]['doc'];
 
             //guests
             if ($payer->getFirstName().' '.$payer->getLastName() == (string)$room->guest_name) {
@@ -240,22 +250,31 @@ class Booking extends Base
 
             //prices
             $total = 0;
-            $tariff = null;
+            $tariff = $rateId = null;
             $pricesByDate = [];
             foreach ($room->price as $price) {
-                if (!$tariff && isset($tariffs[(string)$price['rate_id']])) {
-                    $tariff = $tariffs[(string)$price['rate_id']]['doc'];
+                if (!$rateId) {
+                    $rateId = (string)$price['rate_id'];
+                }
+                if (!$tariff && isset($tariffs[$rateId])) {
+                    $tariff = $tariffs[$rateId]['doc'];
                 }
                 $total += (float)$price;
-                $date = $helper->getDateFromString((string)(string)$price['date'], 'Y-m-d');
+                $date = $helper->getDateFromString((string)$price['date'], 'Y-m-d');
                 $pricesByDate[$date->format('d_m_Y')] = (float)$price;
             }
             if (!$tariff) {
-                continue;
+                $tariff = $this->createTariff($config, $rateId);
+                if (!$tariff) {
+                    continue;
+                }
+                $corrupted = true;
+                $errorMessage .= 'ERROR: Not mapped rate <' . $tariff->getName() . '>. ';
             }
 
             $packageNote = 'remarks: '.$room->remarks.'; extra_info: '.$room->extra_info.'; facilities: '.$room->facilities.'; max_children: '.$room->max_children;
-            $packageNote.'; commissionamount='.$room->commissionamount.'; currencycode = '.$room->currencycode;
+            $packageNote .='; commissionamount='.$room->commissionamount.'; currencycode = '.$room->currencycode . '; ';
+            $packageNote .= $errorMessage;
 
             $package = new Package();
             $package
@@ -272,6 +291,7 @@ class Booking extends Base
                 ->setPrice((float)$total)
                 ->setNote($packageNote)
                 ->setOrder($order)
+                ->setCorrupted($corrupted)
                 ->addTourist($guest);
 
             //services
@@ -316,20 +336,6 @@ class Booking extends Base
     /**
      * {@inheritDoc}
      */
-    public function closeAll()
-    {
-        $result = false;
-
-        foreach ($this->getConfig() as $config) {
-            $result = $this->closeForConfig($config);
-        }
-
-        return $result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
         $request = $this->templating->render(
@@ -351,7 +357,7 @@ class Booking extends Base
      */
     public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
-        $result = false;
+        $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
@@ -383,7 +389,7 @@ class Booking extends Base
             }
 
             if (!isset($data)) {
-                return false;
+                continue;
             }
 
             $request = $this->templating->render(
@@ -396,7 +402,10 @@ class Booking extends Base
             );
 
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
-            $result = $this->checkResponse($sendResult);
+
+            if ($result) {
+                $result = $this->checkResponse($sendResult);
+            }
         }
 
         return $result;
@@ -407,7 +416,7 @@ class Booking extends Base
      */
     public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
-        $result = false;
+        $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
@@ -415,6 +424,7 @@ class Booking extends Base
         foreach ($this->getConfig() as $config) {
             $roomTypes = $this->getRoomTypes($config);
             $tariffs = $this->getTariffs($config);
+            $serviceTariffs = $this->pullTariffs($config);
             $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
                 $begin,
                 $end,
@@ -427,6 +437,11 @@ class Booking extends Base
             foreach ($roomTypes as $roomTypeId => $roomType) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
+
+                        if (!isset($serviceTariffs[$tariff['syncId']]) || $serviceTariffs[$tariff['syncId']]['readonly'] || $serviceTariffs[$tariff['syncId']]['is_child_rate']) {
+                            continue;
+                        }
+
                         if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
                             $info = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
                             $data[$roomType['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
@@ -447,7 +462,7 @@ class Booking extends Base
             }
 
             if (!isset($data)) {
-                return false;
+                continue;
             }
 
             $request = $this->templating->render(
@@ -462,7 +477,10 @@ class Booking extends Base
             );
 
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
-            $result = $this->checkResponse($sendResult);
+
+            if ($result) {
+                $result = $this->checkResponse($sendResult);
+            }
         }
 
         return $result;
@@ -473,7 +491,7 @@ class Booking extends Base
      */
     public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
-        $result = false;
+        $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
@@ -481,6 +499,7 @@ class Booking extends Base
         foreach ($this->getConfig() as $config) {
             $roomTypes = $this->getRoomTypes($config);
             $tariffs = $this->getTariffs($config);
+            $serviceTariffs = $this->pullTariffs($config);
             $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
                 $begin,
                 $end,
@@ -501,6 +520,10 @@ class Booking extends Base
             foreach ($roomTypes as $roomTypeId => $roomType) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
+
+                        if (!isset($serviceTariffs[$tariff['syncId']]) || $serviceTariffs[$tariff['syncId']]['readonly'] || $serviceTariffs[$tariff['syncId']]['is_child_rate']) {
+                            continue;
+                        }
 
                         $price = false;
                         if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
@@ -534,7 +557,7 @@ class Booking extends Base
             }
 
             if (!isset($data)) {
-                return false;
+                continue;
             }
 
             $request = $this->templating->render(
@@ -548,22 +571,13 @@ class Booking extends Base
                 ]
             );
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
-            $result = $this->checkResponse($sendResult);
+
+            if ($result) {
+                $result = $this->checkResponse($sendResult);
+            }
         }
 
         return $result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
-    {
-        $this->updateRooms($begin, $end, $roomType);
-        $this->updateRestrictions($begin, $end, $roomType);
-        $this->updatePrices($begin, $end, $roomType);
-
-        return true;
     }
 
     /**
@@ -615,9 +629,17 @@ class Booking extends Base
             'MBHChannelManagerBundle:Booking:get.xml.twig',
             ['config' => $config, 'params' => $this->params]
         );
-        $response = $this->sendXml(static::BASE_URL.'rates', $request);
-        foreach ($response->xpath('rate') as $rate) {
-            $result[(string)$rate['id']] = (string)$rate;
+        $response = $this->sendXml(static::BASE_URL.'roomrates', $request);
+
+        foreach ($response->room as $room) {
+            foreach ($room->rates->rate as $rate) {
+
+                $result[(string)$rate['id']] = [
+                    'title' => (string)$rate['rate_name'],
+                    'readonly' => empty((int)$rate['readonly']) ? false : true,
+                    'is_child_rate' => empty((int)$rate['is_child_rate']) ? false : true,
+                ];
+            }
         }
 
         return $result;

@@ -268,6 +268,14 @@ class Package extends Base
     protected $isSmoking = false;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $corrupted = false;
+
+    /**
      * Set tariff
      *
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
@@ -971,6 +979,28 @@ class Package extends Base
     public function getIsSmoking()
     {
         return $this->isSmoking;
+    }
+
+    /**
+     * Set corrupted
+     *
+     * @param boolean $corrupted
+     * @return self
+     */
+    public function setCorrupted($corrupted)
+    {
+        $this->corrupted = $corrupted;
+        return $this;
+    }
+
+    /**
+     * Get corrupted
+     *
+     * @return boolean $corrupted
+     */
+    public function getCorrupted()
+    {
+        return $this->corrupted;
     }
 
     /**
