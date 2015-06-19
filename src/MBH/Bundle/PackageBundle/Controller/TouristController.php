@@ -7,6 +7,7 @@ use MBH\Bundle\PackageBundle\Form\TouristExtendedType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -222,5 +223,60 @@ class TouristController extends Controller
     public function deleteAction($id)
     {
         return $this->deleteEntity($id, 'MBHPackageBundle:Tourist', 'tourist');
+    }
+
+
+    /**
+     * Get city by query
+     *
+     * @Route("/get/{id}", name="ajax_tourists", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_BOOKKEEPER'])")
+     * @return JsonResponse
+     */
+    public function ajaxListAction(Request $request, $id = null)
+    {
+        if (empty($id) && empty($request->get('query'))) {
+            return new JsonResponse([]);
+        }
+
+        if (!empty($id)) {
+            $payer =  $this->dm->getRepository('MBHPackageBundle:Tourist')->find($id);
+            if ($payer) {
+                $text = $payer->getFullName();
+
+                if (!empty($payer->getBirthday())) {
+                    $text .= ' (' . $payer->getBirthday()->format('d.m.Y')  . ')';
+                }
+
+                return new JsonResponse([
+                    'id' => $payer->getId(),
+                    'text' => $text
+                ]);
+            }
+        }
+
+        $payers = $this->dm->getRepository('MBHPackageBundle:Tourist')->createQueryBuilder('q')
+            ->field('fullName')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
+            ->sort(['fullName' => 'asc', 'birthday' => 'desc'])
+            ->getQuery()
+            ->execute()
+        ;
+
+        $data = [];
+
+        foreach ($payers as $payer) {
+            $text = $payer->getFullName();
+            if (!empty($payer->getBirthday())) {
+                $text .= ' (' . $payer->getBirthday()->format('d.m.Y')  . ')';
+            }
+
+            $data[] = [
+                'id' => $payer->getId(),
+                'text' => $text
+            ];
+        }
+
+        return new JsonResponse($data);
     }
 }

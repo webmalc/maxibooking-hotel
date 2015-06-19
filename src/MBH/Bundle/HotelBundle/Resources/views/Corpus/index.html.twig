@@ -1,0 +1,39 @@
+{% extends 'MBHHotelBundle:Corpus:layout.html.twig' %}
+
+{% block content %}
+
+    <table class="table table-striped table-hover table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xxs"></th>
+            <th class="td-md">{{ 'views.corpus.name'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-md">{{ 'views.corpus.internal_name'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-md text-center">{{ 'views.corpus.city'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-md text-center">{{ 'views.corpus.address'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-sm"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for entity in entities %}
+            <tr>
+                <td class="text-center table-icon"><i class="fa fa-puzzle-piece"></i></td>
+                <td><a href="{{ path('corpus_edit', { 'id': entity.id }) }}" rel="main" title= {{ 'views.hotel.index.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">{{ entity.name }}</a></td>
+                <td>{{ entity.internalName }}</td>
+                <td class="text-center">{{ entity.city }}</td>
+                <td class="text-center">{{ entity.address }}</td>
+                <td class="table-actions-td text-center">
+                    <a href="{{ path('corpus_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title={{ 'views.hotel.index.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
+                        <i class="fa fa-pencil-square-o"></i>
+                    </a>
+                    <a href="{{ path('corpus_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " data-text="{{ 'views.hotel.index.confirm_delete'|trans({'%hotelname%': entity.name}, 'MBHHotelBundle') }}" title={{ 'views.hotel.index.delete_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
+                        <i class="fa fa-trash-o"></i>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'corpus_new'} %}
+
+{% endblock %}

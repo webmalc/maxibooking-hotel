@@ -1,4 +1,4 @@
-/*global window, document, $ */
+/*global window, document, Routing, console, $ */
 
 $.fn.serializeObject = function () {
     'use strict';
@@ -137,5 +137,33 @@ $(document).ready(function () {
         "stylesheets": false,
         "image": false
     });
-
+    //payer select2
+    $('.findGuest').select2({
+        minimumInputLength: 3,
+        allowClear: true,
+        ajax: {
+            url: Routing.generate('ajax_tourists'),
+            dataType: 'json',
+            data: function (term) {
+                return {
+                    query: term // search term
+                };
+            },
+            results: function (data) {
+                return {results: data};
+            }
+        },
+        initSelection: function (element, callback) {
+            console.log('initSection');
+            var id = $(element).val();
+            if (id !== "") {
+                $.ajax(Routing.generate('ajax_tourists', {id: id}), {
+                    dataType: "json"
+                }).done(function (data) {
+                    callback(data);
+                });
+            }
+        },
+        dropdownCssClass: "bigdrop"
+    });
 });

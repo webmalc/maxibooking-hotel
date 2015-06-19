@@ -314,3 +314,6 @@ organizations.confirm_delete: 'Вы действительно хотите уд
 payer.confirmation.notification: Ваш заказ %order% подтвержден
 
 package.corrupted.message.text: Создана поврежденная бронь %package%
+
+# Task
+task.status: Статус

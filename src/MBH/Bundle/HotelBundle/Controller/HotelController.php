@@ -3,12 +3,12 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
@@ -57,14 +57,10 @@ class HotelController extends Controller
      */
     public function indexAction()
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entities = $dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('s')
-                       ->sort('fullTitle', 'asc')
-                       ->getQuery()
-                       ->execute()
-        ;
+        $entities = $this->dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('s')
+            ->sort('fullTitle', 'asc')
+            ->getQuery()
+            ->execute();
 
         return array(
             'entities' => $entities,
@@ -101,15 +97,13 @@ class HotelController extends Controller
     {
         $entity = new Hotel();
         $form = $this->createForm(new HotelType(), $entity);
-        $form->bind($request);
+        $form->submit($request);
 
         if ($form->isValid()) {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
-            $this->getRequest()->getSession()->getFlashBag()
+            $request->getSession()->getFlashBag()
                     ->set('success', $this->get('translator')->trans('controller.hotelController.record_created_success'))
             ;
 
@@ -134,30 +128,18 @@ class HotelController extends Controller
      * @Method("PUT")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template("MBHHotelBundle:Hotel:edit.html.twig")
+     * @ParamConverter("entity", class="MBHHotelBundle:Hotel")
      */
-    public function updateAction(Request $request, $id)
+    public function updateAction(Request $request, $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHHotelBundle:Hotel')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
         $form = $this->createForm(new HotelType(), $entity);
-
-        $form->bind($request);
+        $form->submit($request);
 
         if ($form->isValid()) {
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
-
-            $this->getRequest()->getSession()->getFlashBag()
+            $request->getSession()->getFlashBag()
                     ->set('success', $this->get('translator')->trans('controller.hotelController.record_edited_success'))
             ;
             return $this->afterSaveRedirect('hotel', $entity->getId());
@@ -203,7 +185,7 @@ class HotelController extends Controller
      */
     public function extendedAction(Hotel $entity)
     {
-        $form = $this->createForm(new HotelExtendedType(), $entity, [
+        $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),
             'config' => $this->container->getParameter('mbh.hotel')
         ]);
@@ -227,28 +209,17 @@ class HotelController extends Controller
      */
     public function extendedSaveAction(Request $request, Hotel $entity)
     {
-        $form = $this->createForm(new HotelExtendedType(), $entity, [
+        $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),
-            'config' => $this->container->getParameter('mbh.hotel')
+            'config' => $this->container->getParameter('mbh.hotel'),
+            'isHostel' => in_array('hostel', $entity->getType()),
         ]);
 
         $form->submit($request);
 
         if ($form->isValid()) {
-            //save address
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-
-            $city = $dm->getRepository('MBHHotelBundle:City')->find($form['address']->getData());
-            if ($city) {
-                $entity->setCountry($city->getCountry())
-                    ->setRegion($city->getRegion())
-                    ->setCity($city)
-                ;
-            }
-
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.hotelController.record_edited_success'))

@@ -18,39 +18,6 @@ $(document).ready(function () {
         startView: 2
     });
 
-    $(document).ready(function () {
-        'use strict';
-
-        //payer select2
-        $('#mbh_bundle_packagebundle_package_guest_type_tourist, .findGuest').select2({
-            minimumInputLength: 3,
-            allowClear: true,
-            ajax: {
-                url: Routing.generate('cash_payer'),
-                dataType: 'json',
-                data: function (term) {
-                    return {
-                        query: term // search term
-                    };
-                },
-                results: function (data) {
-                    return {results: data};
-                }
-            },
-            initSelection: function (element, callback) {
-                var id = $(element).val();
-                if (id !== "") {
-                    $.ajax(Routing.generate('cash_payer') + '/' + id, {
-                        dataType: "json"
-                    }).done(function (data) {
-                        callback(data);
-                    });
-                }
-            },
-            dropdownCssClass: "bigdrop"
-        });
-    });
-
 
     //payer select2
     $('#mbh_bundle_packagebundle_package_guest_type_tourist, .findGuest').on("select2-selecting", function(e) {

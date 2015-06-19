@@ -36,6 +36,10 @@ class ClientDataTableParams
     protected $isSearchRegex;
 
     /**
+     * array(
+     *  columnName => columnName
+     * ...
+     * )
      * @var array
      */
     protected $sortColumnFields = [];
@@ -61,6 +65,20 @@ class ClientDataTableParams
         $params->search = $searchParams['value'] ? (string)$searchParams['value'] : null;
         $params->isSearchRegex = $searchParams['regex'];
         $params->order = (array)$request->get('order');
+
+        $sortColumnFields = [];
+
+        foreach($params->columns as $column) {
+            $columnNumber = $column['data'];
+            $columnName = $column['name'];
+            if($column['orderable'] === 'true' && $columnName) {
+                $sortColumnFields[$columnNumber] = $columnName;
+            }
+        }
+
+        if($sortColumnFields) {
+            $params->setSortColumnFields($sortColumnFields);
+        }
 
         return $params;
     }

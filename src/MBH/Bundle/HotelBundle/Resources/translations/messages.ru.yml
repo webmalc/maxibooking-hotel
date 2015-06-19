@@ -1,5 +1,10 @@
 form.hotelExtendedType.city: Город
+form.hotelExtendedType.street: Улица
+form.hotelExtendedType.house: Дом
+form.hotelExtendedType.corpus: Корпус
+form.hotelExtendedType.flat: Квартира
 form.hotelExtendedType.location: Местоположение
+form.hotelExtendedType.address: Адрес
 form.hotelExtendedType.placeholder_location: Москва, Московская обл., Щелково
 form.hotelExtendedType.latitude: Широта
 form.hotelExtendedType.gps_coordinates_latitude: GPS координата широты отеля.
@@ -86,3 +91,11 @@ form.task.description: Комментарий
 form.task.general_group_add: Добавление задачи
 form.task.general_group_edit: Редактирование задачи
 form.task.roomType: Тип номера
+
+form.userType.users: Исполнитель
+form.userType.date: Дата
+
+# corpus
+
+controller.corpus.updated_success: Копрус успешно сохранен
+controller.corpus.created_success: Копрус успешно добавлен
