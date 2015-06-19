@@ -178,7 +178,7 @@ class Organization implements PayerInterface
     protected $type;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="organization")
      */
     protected $hotels;
     /**

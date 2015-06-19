@@ -24,22 +24,4 @@ class DefaultController extends Controller
     {
         return $this->render('MBHVegaBundle:Default:index.html.twig', array('name' => 12));
     }
-
-    /**
-     * @Route("/{id}/export", name="vega_export")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
-     */
-    public function exportAction(Tourist $entity)
-    {
-        //$entity->getPackages()
-
-        $xml = $this->get('mbh.vega.vega_export')->getXML($entity);
-
-        $response = new Response($xml);
-        $response->headers->set('Content-Type', 'text/xml');
-
-        return $response;
-    }
 }

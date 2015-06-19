@@ -4,6 +4,8 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PackageBundle\Document\Organization;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -216,10 +218,41 @@ class Hotel extends Base
     protected $flat;
 
     /**
-     * @var Corpus[]
-     * @ODM\ReferenceMany(targetDocument="Corpus", mappedBy="hotel")
+     * @var Housing[]
+     * @ODM\ReferenceMany(targetDocument="Housing", mappedBy="hotel")
      */
-    protected $corpuses;
+    protected $housings;
+
+
+    /**
+     * @var UploadedFile
+     * @Assert\File(maxSize="6M", mimeTypes={
+     *          "image/png",
+     *          "image/jpeg",
+     *          "image/jpg",
+     *          "image/gif",
+     * }, mimeTypesMessage="validator.document.OrderDocument.file_type")
+     */
+    protected $file;
+
+    /**
+     * @ODM\String
+     * @var string
+     */
+    protected $logo;
+
+    /**
+     * @var Organization|null
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Organization", mappedBy="hotels")
+     */
+    protected $organization;
+
+    /**
+     * @var int
+     * @ODM\Int
+     * @Assert\Type(type="numeric")
+     */
+    protected $vegaAddressId;
 
     /**
      * Set fullTitle
@@ -817,23 +850,221 @@ class Hotel extends Base
     }
 
     /**
-     * @return Corpus[]
+     * @return mixed
      */
-    public function getCorpuses()
+    public function getStreet()
     {
-        return $this->corpuses;
-    }
-
-    public function addCorpus(Corpus $corpus)
-    {
-        $this->corpuses[] = $corpus;
+        return $this->street;
     }
 
     /**
-     * @param Corpus[] $corpuses
+     * @param mixed $street
      */
-    public function setCorpuses(array $corpuses)
+    public function setStreet($street)
     {
-        $this->corpuses = $corpuses;
+        $this->street = $street;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHouse()
+    {
+        return $this->house;
+    }
+
+    /**
+     * @param mixed $house
+     */
+    public function setHouse($house)
+    {
+        $this->house = $house;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCorpus()
+    {
+        return $this->corpus;
+    }
+
+    /**
+     * @param mixed $corpus
+     */
+    public function setCorpus($corpus)
+    {
+        $this->corpus = $corpus;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFlat()
+    {
+        return $this->flat;
+    }
+
+    /**
+     * @param mixed $flat
+     */
+    public function setFlat($flat)
+    {
+        $this->flat = $flat;
+    }
+
+    /**
+     * @return Housing[]
+     */
+    public function getHousings()
+    {
+        return $this->housings;
+    }
+
+    public function addHousing(Housing $housing)
+    {
+        $this->housings[] = $housing;
+    }
+
+    /**
+     * @param Housing[] $$housings
+     */
+    public function setHousings(array $housings)
+    {
+        $this->housings = $housings;
+    }
+
+
+
+
+
+
+
+    /**
+     * @return string
+     */
+    public function getLogo()
+    {
+        return $this->logo;
+    }
+
+    /**
+     * @param string $logo
+     */
+    public function setLogo($logo)
+    {
+        $this->logo = $logo;
+    }
+
+    /**
+     * @param UploadedFile $file
+     */
+    public function setFile(UploadedFile $file = null)
+    {
+        $this->file = $file;
+        if ($this->file) {
+            $this->logo = $file->getClientOriginalName();
+        }
+    }
+
+
+    /**
+     * The absolute directory path where uploaded
+     * documents should be saved
+     * @return string
+     */
+    public function getUploadRootDir()
+    {
+        return __DIR__.'/../../../../../web/upload/hotelLogos';
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->getUploadRootDir().DIRECTORY_SEPARATOR.$this->getLogo();
+    }
+
+    /**
+     * @return UploadedFile|null
+     */
+    public function getFile()
+    {
+        if (!$this->file && $this->logo && is_file($this->getPath())) {
+            $this->file = new UploadedFile($this->getPath(), $this->getLogo());
+        }
+
+        return $this->file;
+    }
+
+    public function getLogoUrl()
+    {
+        if($this->getFile()) {
+            return '/upload/hotelLogos/'.$this->getFile()->getClientOriginalName();
+        }
+        return null;
+    }
+
+    public function uploadFile()
+    {
+        if (null === $this->getFile()) {
+            return;
+        }
+
+        if($this->getLogo()) {
+            $this->setLogo($this->getFile()->getClientOriginalName());
+        }
+
+        $this->getFile()->move($this->getUploadRootDir(), $this->getLogo());
+    }
+
+    /**
+     * @return bool
+     */
+    public function deleteFile()
+    {
+        if ($this->getFile() && is_writable($this->getFile()->getPathname())) {
+            $result = unlink($this->getFile()->getPathname());
+            if ($result) {
+                $this->file = null;
+            }
+
+            return $result;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return Organization|null
+     */
+    public function getOrganization()
+    {
+        return $this->organization;
+    }
+
+    /**
+     * @param Organization|null $organization
+     */
+    public function setOrganization(Organization $organization = null)
+    {
+        $this->organization = $organization;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVegaAddressId()
+    {
+        return $this->vegaAddressId;
+    }
+
+    /**
+     * @param int $vegaAddressId
+     */
+    public function setVegaAddressId($vegaAddressId)
+    {
+        $this->vegaAddressId = $vegaAddressId;
     }
 }

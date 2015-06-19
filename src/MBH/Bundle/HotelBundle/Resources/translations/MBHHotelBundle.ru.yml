@@ -68,7 +68,7 @@ views.roomType.roomListButtons.edit_record: 'Редактирование зап
 views.roomType.roomListButtons.delete_record: 'Удаление записи'
 views.hotel.index.confirm_delete: 'Вы действительно хотите удалить отель "%hotelname%"?'
 views.task.layout.tasks: "Задачи"
-# Corpus
+# Housing
 views.corpus.name: Имя
 views.corpus.internal_name: Внутреннее имя
 views.corpus.city: Город

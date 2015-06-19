@@ -99,6 +99,7 @@ class Calculation
             }
             $total += $service->getTotal();
         }
+
         $package->setServicesPrice($total);
 
         return $package;

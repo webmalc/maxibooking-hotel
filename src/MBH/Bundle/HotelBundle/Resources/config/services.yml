@@ -8,3 +8,8 @@ services:
         class: MBH\Bundle\HotelBundle\EventListener\TaskSubscriber
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+    mbh.check_hotel.hotel_subscriber:
+        class: MBH\Bundle\HotelBundle\EventListener\HotelSubscriber
+        arguments: [@service_container]
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}

@@ -10,11 +10,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class CorpusType
+ * Class HousingType
  * @package MBH\Bundle\HotelBundle\Form
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
-class CorpusType extends AbstractType
+class HousingType extends AbstractType
 {
     private $dm;
 
@@ -61,13 +61,20 @@ class CorpusType extends AbstractType
                 'translation_domain' => 'MBHHotelBundle'
             ]);
 
+        $builder->add('vega_address_id', 'number', [
+            'label' => 'form.hotelExtendedType.vega_address_id',
+            'help' => 'form.hotelExtendedType.vega_address_id_help',
+            //'group' => 'form.hotelExtendedType.integration',
+            'required' => false
+        ]);
+
         $builder->get('city')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHHotelBundle:City'));
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MBH\Bundle\HotelBundle\Document\Corpus'
+            'data_class' => 'MBH\Bundle\HotelBundle\Document\Housing'
         ]);
     }
 

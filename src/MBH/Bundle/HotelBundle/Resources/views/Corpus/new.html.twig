@@ -1,8 +1,0 @@
-{% extends 'MBHHotelBundle:Corpus:layout.html.twig' %}
-
-{% block content %}
-    {{ form_start(form, {'action': path('corpus_create'), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
-    {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
-    {{ form_end(form) }}
-{% endblock %}

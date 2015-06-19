@@ -26,13 +26,13 @@ class Room extends Base
      */
     use TimestampableDocument;
 
-/**
+    /**
      * Hook softdeleteable behavior
      * deletedAt field
      */
     use SoftDeleteableDocument;
 
-/**
+    /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
      */
@@ -82,13 +82,7 @@ class Room extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="housing")
-     * @Assert\Length(
-     *      min=1,
-     *      minMessage="validator.document.room.min_housing",
-     *      max=10,
-     *      maxMessage="validator.document.room.max_housing"
-     * )
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Housing")
      */
     protected $housing;
 
@@ -120,7 +114,7 @@ class Room extends Base
     /**
      * Get hotel
      *
-     * @return MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel $hotel
      */
     public function getHotel()
     {
@@ -216,10 +210,10 @@ class Room extends Base
     /**
      * Set housing
      *
-     * @param string $housing
+     * @param Housing $housing
      * @return self
      */
-    public function setHousing($housing)
+    public function setHousing(Housing $housing = null)
     {
         $this->housing = $housing;
         return $this;
@@ -228,7 +222,7 @@ class Room extends Base
     /**
      * Get housing
      *
-     * @return string $housing
+     * @return Housing $housing
      */
     public function getHousing()
     {

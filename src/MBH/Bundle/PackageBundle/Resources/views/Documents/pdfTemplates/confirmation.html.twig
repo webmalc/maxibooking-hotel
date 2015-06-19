@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <style>
+        .document{
+            padding-top: 0px;
+            width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header .title {
+            float: left; padding-top: 20px
+        }
+        .header .title h2 {
+            margin: 5px 0
+        }
+        .header .logo {
+            float: right
+        }
+        .header .logo img{
+            height: 80px; max-width: 200px;
+        }
+
+        .main{
+            padding-top: 20px;
+        }
+
+        .indent {
+            text-indent: 1.5em;
+        }
+        .table {
+            margin: 40px 0px 10px 0px;
+            width: 100%;
+        }
+        .table td {
+            padding: 3px;
+        }
+    </style>
+</head>
+<body>
+<div class="document">
+    {% set hotel = entity.roomType.hotel %}
+    {% set tourist = entity.order.mainTourist %}
+    {% set documentRelation = tourist.documentRelation %}
+
+    <div class="header">
+        <div class="title">
+            <h2>Подтверждение брони № {{ entity.number }} от {{ entity.begin|date("d.m.Y") }} г.</h2>
+        </div>
+        <div class="logo">
+            <img src="{{ asset(hotel.logoUrl, absolute=true) }}">
+        </div>
+        <div style="clear: both"></div>
+    </div>
+    <hr>
+
+    <div class="main">
+        <p class="indent">Отель <strong>"{{ hotel.name }}"</strong>, расположенный по
+            адресу {% if hotel.city and hotel.street %} <strong> {{ hotel.city }} {{ hotel.street }} {{ hotel.house }} </strong> {% else %}_________________________________________{% endif %},
+            ИНН {% if hotel.organization and hotel.organization.inn %} {{ hotel.organization.inn }} {% else %} ________________________ {% endif %} извещает
+            Заказчика: {% if entity.order.mainTourist %} {{ entity.order.mainTourist.fullName }} {% else %} __________________________________ {% endif %},
+            дата рождения {% if entity.order.mainTourist %} {{ entity.order.mainTourist.birthday|date('d.m.Y') }} {% else %} ___.___._______ {% endif %} г.,
+            адрес {% if tourist.address %} {{ tourist.address }} {% else %} ____________________________________________________ {% endif %}</p>
+        <p class="indent">Документ удостоверяющий личность:
+            Тип документа {% if documentRelation.type %} {{ documentRelation.type|trans({}) }}{% else %}_______________{% endif %}
+            Серия {% if documentRelation.series %}{{ documentRelation.series }}{% else %}_____________________{% endif %}
+            № {% if documentRelation.number %}{{ documentRelation.number }}{% else %}______________________{% endif %}
+            Дата выдачи {% if documentRelation.issued %}{{ documentRelation.issued|date('d.m.Y') }}{% else %}___.___._______ г.{% endif %}
+            Выдан {% if documentRelation.authority %}{{ documentRelation.authority }}{% else %}_________________________________{% endif %}
+            Место рождения {% if tourist.birthplace.city and tourist.birthplace.mainRegion %}{{ tourist.birthplace.city }} {{ tourist.birthplace.mainRegion }} {{ tourist.birthplace.district.name }}{% else %}_____________________________________{% endif %}
+        </p>
+
+        <!-- Services -->
+        <table border="1" cellpadding="0" cellspacing="0" class="table">
+            <thead>
+            <tr>
+                <th style="width: 30px;">№</td>
+                <th style="width: 100px;">Наименование услуг</th>
+                <th style="width: 30px;">{{ "package.pdf.amount"|trans({}, "MBHPackageBundle") }}</td>
+                <th style="width: 30px;">{{ "package.pdf.unit"|trans({}, "MBHPackageBundle") }}</td>
+                <th style="width: 100px;">Цена</td>
+                <th style="width: 100px;">Сумма</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td align="center">1</td>
+                <td>{{ "package.pdf.living_in_hotel"|trans({}, "MBHPackageBundle") }} {{ entity.begin|date('d.m.Y') }} - {{ entity.end|date('d.m.Y') }}</td>
+                <td align="center">{{ entity.nights }}</td>
+                <td align="center">{{ "package.pdf.noch"|trans({}, "MBHPackageBundle") }}</td>
+                <td align="right">{{ (entity.packagePrice(true)/entity.nights)|round(1)|number_format }}</td>
+                <td align="right">{{ entity.packagePrice(true)|number_format }}</td>
+            </tr>
+            {% for packageService in entity.services %}
+                <tr>
+                    <td align="center">{{ loop.index + 1 }}</td>
+                    <td>{{ packageService.service.name }}</td>
+                    <td align="center">{{ packageService.amount }}</td>
+                    <td align="center">шт.</td>
+                    <td align="right">{{ packageService.price|number_format(2) }}</td>
+                    <td align="right">{{ packageService.total|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <table border="0" width="100%">
+            <tr>
+                <td align="right"><strong>Итого:</strong></td>
+                <td align="right" style="width: 100px;"><strong>{{ (entity.servicesPrice + entity.packagePrice(true))|number_format(2) }}</strong></td>
+            </tr>
+            <tr>
+                <td align="right"><strong>В том числе НДС:</strong></td>
+                <td align="right"><strong>0</strong></td>
+            </tr>
+        </table>
+
+        <p>Всего заказано услуг {{ entity.services|length + 1 }}, на сумму {{ (entity.servicesPrice + entity.packagePrice(true))|number_format(2) }} руб.<br>
+            <strong>{{ entity.price|num2str|capitalize }}</strong></p>
+
+        <p class="indent">Отель гарантированно бронирует вышеперечисленные услуги для Заказчика за произведенную им предоплату.
+            В случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание конпенсации из внесенной предоплаты.</p>
+
+        <!-- footer -->
+        <table border="0" class="footer" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+                <td valign="top" style="border-bottom: 1px solid #000; height: 120px; width: 50%;">
+                    <h3>Отель</h3>
+                </td>
+                <td style="height: 120px; width: 10%;"></td>
+                <td valign="top" style="border-bottom: 1px solid #000; height: 120px; width: 40%">
+                    <h3>Заказчик</h3>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    {% if hotel.organization %}{{ hotel.organization.directorFio }}{% endif %}
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

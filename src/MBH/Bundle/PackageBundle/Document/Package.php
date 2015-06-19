@@ -803,7 +803,7 @@ class Package extends Base
     /**
      * Get services
      *
-     * @return \Doctrine\Common\Collections\Collection $services
+     * @return \Doctrine\Common\Collections\Collection|PackageService[] $services
      */
     public function getServices()
     {

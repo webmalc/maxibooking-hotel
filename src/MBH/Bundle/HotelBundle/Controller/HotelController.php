@@ -100,6 +100,8 @@ class HotelController extends Controller
         $form->submit($request);
 
         if ($form->isValid()) {
+            $entity->uploadFile();
+
             $this->dm->persist($entity);
             $this->dm->flush();
 
@@ -130,12 +132,14 @@ class HotelController extends Controller
      * @Template("MBHHotelBundle:Hotel:edit.html.twig")
      * @ParamConverter("entity", class="MBHHotelBundle:Hotel")
      */
-    public function updateAction(Request $request, $entity)
+    public function updateAction(Request $request, Hotel $entity)
     {
         $form = $this->createForm(new HotelType(), $entity);
         $form->submit($request);
 
         if ($form->isValid()) {
+            $entity->uploadFile();
+
             $this->dm->persist($entity);
             $this->dm->flush();
 
@@ -160,17 +164,38 @@ class HotelController extends Controller
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
      * @param Hotel $entity
-     * @return Response
+     * @return array
      */
     public function editAction(Hotel $entity)
     {
-        $form = $this->createForm(new HotelType(), $entity);
+        $form = $this->createForm(new HotelType(), $entity, [
+            'imageUrl' => $entity->getLogoUrl(),
+            'removeImageUrl' => $this->generateUrl('hotel_delete_logo', ['id' => $entity->getId()])
+        ]);
 
         return array(
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         );
+    }
+
+    /**
+     * Displays a form to edit an existing entity.
+     *
+     * @Route("/{id}/delete/logo", name="hotel_delete_logo")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @param Hotel $entity
+     * @return Response
+     */
+    public function deleteLogo(Hotel $entity)
+    {
+        if($entity->getFile()) {
+            $entity->setLogo(null);
+            $entity->deleteFile();
+        }
+        return $this->redirect($this->generateUrl('hotel_edit', ['id' => $entity->getId()]));
     }
 
     /**
@@ -205,7 +230,7 @@ class HotelController extends Controller
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template("MBHHotelBundle:Hotel:extended.html.twig")
      * @param Hotel $entity
-     * @return Response
+     * @return array
      */
     public function extendedSaveAction(Request $request, Hotel $entity)
     {

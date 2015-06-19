@@ -49,6 +49,13 @@
                                 </a>
                             </li>
 
+                            <li class="{% if entity.isPaid is empty %}disabled{% endif %}">
+                                <a href="{{ path('package_confirmation_pdf', {'id': entity.id}) }}">
+                                    <i class="fa fa-print"></i>&nbsp;
+                                    {{ 'package.actions.confirmation'|trans({}, 'MBHPackageBundle') }}
+                                </a>
+                            </li>
+
                             <li role="presentation" class="divider"></li>
                             <li role="presentation" class="dropdown-header">
                                 {{ 'package.actions.search'|trans({}, 'MBHPackageBundle') }}

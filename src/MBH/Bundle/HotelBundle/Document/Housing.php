@@ -11,11 +11,11 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 
 /**
- * @ODM\Document(collection="Corpus")
+ * @ODM\Document(collection="Housing")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class Corpus extends Base
+class Housing extends Base
 {
     use TimestampableDocument;
     use SoftDeleteableDocument;
@@ -70,6 +70,13 @@ class Corpus extends Base
      * @ODM\String
      */
     protected $flat;
+
+    /**
+     * @var int
+     * @ODM\Int
+     * @Assert\Type(type="numeric")
+     */
+    protected $vegaAddressId;
 
     /**
      * @return mixed
@@ -202,5 +209,27 @@ class Corpus extends Base
     public function getAddress()
     {
         return $this->getStreet().' '.$this->getHouse().' '.$this->getCorpus();
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getVegaAddressId()
+    {
+        return $this->vegaAddressId;
+    }
+
+    /**
+     * @param int $vegaAddressId
+     */
+    public function setVegaAddressId($vegaAddressId)
+    {
+        $this->vegaAddressId = $vegaAddressId;
+    }
+
+    public function __toString()
+    {
+        return $this->getName();
     }
 }
