@@ -72,14 +72,14 @@ class HotelExtendedType extends AbstractType
                 'group' => 'form.hotelExtendedType.location',
                 'required' => false,
                 'attr' => ['placeholder' => '55.752014'],
-                'help' => 'form.hotelExtendedType.gps_coordinates_latitude <a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>'
+                'help' => 'form.hotelExtendedType.gps_coordinates_latitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>'
             ])
             ->add('longitude', 'text', [
                 'label' => 'form.hotelExtendedType.longitude',
                 'group' => 'form.hotelExtendedType.location',
                 'required' => false,
                 'attr' => ['placeholder' => '37.617515'],
-                'help' => 'form.hotelExtendedType.gps_coordinates_longitude' . '<a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">' . 'form.hotelExtendedType.know_hotel_coordinates</a>'
+                'help' => 'form.hotelExtendedType.gps_coordinates_longitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>'
             ])
             ->add('rating', 'text', [
                 'label' => 'form.hotelExtendedType.how_many_stars_hotel',

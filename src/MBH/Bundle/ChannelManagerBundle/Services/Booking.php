@@ -312,7 +312,7 @@ class Booking extends Base
                         ->setPersons(empty((string)$addon->persons) ? null : (int)$addon->persons)
                         ->setPrice(empty((string)$addon->price_per_unit) ? null : (float)$addon->price_per_unit)
                         ->setTotalOverwrite((float)$addon->totalprice)
-                        ->setPackage($package);;
+                        ->setPackage($package);
                     $this->dm->persist($packageService);
                     $package->addService($packageService);
                 }
@@ -645,6 +645,9 @@ class Booking extends Base
         return $result;
     }
 
+    /**
+     * @param ChannelManagerConfigInterface $config
+     */
     public function syncServices(ChannelManagerConfigInterface $config)
     {
         $config->removeAllServices();

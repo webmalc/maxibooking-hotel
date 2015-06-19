@@ -16,20 +16,20 @@ class VashotelType extends AbstractType
                 'isEnabled',
                 'checkbox',
                 [
-                    'label' => 'form.vashhotelType.in_included',
+                    'label' => 'form.vashotelType.in_included',
                     'value' => true,
                     'required' => false,
-                    'help' => 'form.vashhotelType.should_we_use_in_channel_manager'
+                    'help' => 'form.vashotelType.should_we_use_in_channel_manager'
                 ]
             )
             ->add(
                 'hotelId',
                 'text',
                 [
-                    'label' => 'form.vashhotelType.hotel_id',
+                    'label' => 'form.vashotelType.hotel_id',
                     'required' => true,
                     'attr' => ['placeholder' => '1567'],
-                    'help' => 'form.vashhotelType.vashhotel_ru_settings_hotel_id'
+                    'help' => 'form.vashotelType.vashotel_ru_settings_hotel_id'
                 ]
             )
         ;

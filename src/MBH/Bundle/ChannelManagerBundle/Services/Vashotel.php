@@ -3,9 +3,11 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -29,6 +31,17 @@ class Vashotel extends Base
         1 => 'Первые сутки проживания в забронированных номерах',
         2 => 'Процент от стоимости проживания',
         3 => 'Фиксированная стоимость за каждый забронированный номер'
+    ];
+
+    const SERVICES = [
+        'Завтрак "Шведский стол"' => 'Buffet breakfast',
+        'Завтрак "Континентальный"' => 'Continental breakfast',
+        'Обед' => 'Lunch',
+        'Ужин' => 'Dinner',
+        'Полупансион (завтрак + ужин)' => 'Half board',
+        'Полный пансион (завтрак + обед + ужин)' => 'Full board',
+        'Ранний заезд' => 'Early check-in',
+        'Поздний выезд' => 'Late check-out',
     ];
 
     /**
@@ -347,7 +360,7 @@ class Vashotel extends Base
                 if ((string)$reservation['notification_type'] == 'cancel') {
                     $this->cancelOrder((string)$reservation['id']);
                 }
-                if (in_array((string)$reservation['notification_type'], ['modify', 'confirm_preliminary'])) {
+                if (in_array((string)$reservation['notification_type'], ['modify'])) {
                     $modifyIds[] = (int)$reservation['id'];
                 }
                 if (in_array((string)$reservation['notification_type'], ['new', 'new_preliminary'])) {
@@ -404,6 +417,7 @@ class Vashotel extends Base
         $helper = $this->container->get('mbh.helper');
         $roomTypes = $this->getRoomTypes($config, true);
         $tariffs = $this->getTariffs($config, true);
+        $services = $this->getServices($config);
 
         foreach ($this->getReservations($serviceIds, $config) as $id => $reservation) {
 
@@ -511,7 +525,20 @@ class Vashotel extends Base
                     ->setOperation('fee')
                     ->setOrder($order)
                     ->setTouristPayer($payer)
-                    ->setTotal((float)$reservation->sum_fee);
+                    ->setTotal($orderPrice);
+                $this->dm->persist($fee);
+                $this->dm->flush();
+            }
+            //money
+            if ($type == 'prepayment' && $orderType == 'new') {
+                $fee = new CashDocument();
+                $fee->setIsConfirmed(false)
+                    ->setIsPaid(false)
+                    ->setMethod('electronic')
+                    ->setOperation('in')
+                    ->setOrder($order)
+                    ->setTouristPayer($payer)
+                    ->setTotal($order->getPrice());
                 $this->dm->persist($fee);
                 $this->dm->flush();
             }
@@ -588,8 +615,9 @@ class Vashotel extends Base
                 }
 
                 //prices
-                $total = 0;
+                $total = $totalServices = 0;
                 $pricesByDate = [];
+                $packageServices = [];
                 $breakfastCount  = 0;
                 foreach ($room->pricePerDay->price as $price) {
                     $total += (float)$price->price;
@@ -598,6 +626,74 @@ class Vashotel extends Base
 
                     if ((string) $price->breakfast_included == 'yes') {
                         $breakfastCount++;
+                    }
+
+                    //services
+                    foreach ($price->service as $service) {
+                        $serviceName = trim((string)$service->name);
+                        $serviceQuantity = (int)$service->quantity;
+                        $servicePrice = (float)$service->price;
+                        $totalServices +=$serviceQuantity * $servicePrice;
+
+                        if (isset($services[$serviceName])) {
+                            $serviceDoc = $services[$serviceName]['doc'];
+                        } else {
+                            //find service
+                            $serviceDoc = $this->dm->getRepository('MBHPriceBundle:Service')->findOneBy(
+                                [
+                                    '$or' => [['title' => $serviceName], ['fullTitle' => $serviceName]],
+                                    'isEnabled' => true,
+                                    'deletedAt' => null,
+                                    'category.id' => ['$in' => $helper->toIds($config->getHotel()->getServicesCategories())]
+                                ]
+                            );
+
+                            //new service
+                            if (!$serviceDoc) {
+                                $serviceCategory = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->findOneBy([
+                                    '$or' => [['title' => 'Vashotel.ru'], ['fullTitle' => 'Vashotel.ru']],
+                                    'system' => true,
+                                    'isEnabled' => true,
+                                    'deletedAt' => null,
+                                    'hotel.id' => $config->getHotel()->getId()
+
+                                ]);
+
+                                if (!$serviceCategory) {
+                                    $serviceCategory = new ServiceCategory();
+                                    $serviceCategory->setTitle('Vashotel.ru')
+                                        ->setHotel($config->getHotel())
+                                        ->setSystem(true)
+                                    ;
+                                    $this->dm->persist($serviceCategory);
+                                }
+
+                                $serviceDoc = new \MBH\Bundle\PriceBundle\Document\Service();
+                                $serviceDoc->setCategory($serviceCategory)
+                                    ->setIsOnline(false)
+                                    ->setTitle($serviceName)
+                                    ->setSystem(true)
+                                    ->setCode($serviceCategory)
+                                    ->setCalcType('not_applicable')
+                                    ->setPrice($servicePrice)
+                                ;
+                                $this->dm->persist($serviceDoc);
+                                $this->dm->flush();
+                            }
+                        }
+
+                        $packageService = new PackageService();
+                        $packageService
+                            ->setService($serviceDoc)
+                            ->setIsCustomPrice(true)
+                            ->setNights(1)
+                            ->setPersons(1)
+                            ->setBegin($date)
+                            ->setAmount($serviceQuantity)
+                            ->setPrice($servicePrice)
+                            ->setTotalOverwrite($servicePrice * $serviceQuantity)
+                        ;
+                        $packageServices[] = $packageService;
                     }
                 }
 
@@ -623,6 +719,12 @@ class Vashotel extends Base
                     $package->addTourist($tourist);
                 }
 
+                foreach ($packageServices as $packageService) {
+                    $packageService->setPackage($package);
+                    $this->dm->persist($packageService);
+                    $package->addService($packageService);
+                }
+
                 //breakfast
                 if ($breakfastCount) {
                     $breakfastService = $this->dm->getRepository('MBHPriceBundle:Service')->findOneBy([
@@ -643,11 +745,8 @@ class Vashotel extends Base
                     }
                 }
 
-                //TODO: services
-                //TODO: cancel
-
-                $package->setServicesPrice(0);
-                $package->setTotalOverwrite($total);
+                $package->setServicesPrice($totalServices);
+                $package->setTotalOverwrite($total + $totalServices);
 
                 $order->addPackage($package);
                 $this->dm->persist($package);
@@ -926,6 +1025,32 @@ class Vashotel extends Base
         }
 
         return $result;
+    }
+
+    /**
+     * @param ChannelManagerConfigInterface $config
+     */
+    public function syncServices(ChannelManagerConfigInterface $config)
+    {
+        $config->removeAllServices();
+        foreach (self::SERVICES as $serviceKey => $serviceName) {
+            $serviceDoc = $this->dm->getRepository('MBHPriceBundle:Service')->findOneBy(
+                [
+                    'code' => $serviceName
+                ]
+            );
+
+            if (empty($serviceDoc) || $serviceDoc->getCategory()->getHotel()->getId() != $config->getHotel()->getId()) {
+                continue;
+            }
+
+            $service = new Service();
+            $service->setServiceId($serviceKey)->setService($serviceDoc);
+            $config->addService($service);
+            $this->dm->persist($config);
+        }
+
+        $this->dm->flush();
     }
 
     /**

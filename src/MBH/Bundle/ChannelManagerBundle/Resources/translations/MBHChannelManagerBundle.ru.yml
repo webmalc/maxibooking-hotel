@@ -13,13 +13,15 @@ views.channnelmanager.settings: "настройки"
 views.oktogo.room.save: Сохранить
 views.oktogo.room.get_room_ids_from_oktogo: "Получить ID номеров из Oktogo.ru"
 views.oktogo.tariff.save: Сохранить
-views.vashhotel.layout.you_hotel_ru: "ВашОтель.RU"
-views.vashhotel.room.save: Сохранить
-views.vashhotel.room.get_room_ids_from_your_hotel_ru: "Получить ID номеров из ВашОтель.RU"
-views.vashhotel.room.cancel: Отмена
-views.vashhotel.tariff.save: Сохранить
-views.vashhotel.tariff.get_tariff_ids: "Получить ID тарифов из ВашОтель.RU"
-views.vashhotel.tariff.cancel: Отмена
+views.vashotel.layout.you_hotel_ru: "ВашОтель.RU"
+views.vashotel.room.save: Сохранить
+views.vashotel.room.get_room_ids_from_your_hotel_ru: "Получить ID номеров из ВашОтель.RU"
+views.vashotel.room.cancel: Отмена
+views.vashotel.tariff.save: Сохранить
+views.vashotel.tariff.get_tariff_ids: "Получить ID тарифов из ВашОтель.RU"
+views.vashotel.tariff.cancel: Отмена
+views.vashotel.service.service: Сервис
+views.vashotel.service.code: Код
 views.tabs.main_settings: ' Основные настройки'
 views.tabs.room_types: ' Типы номеров'
 views.tabs.tariffs: ' Тарифы'

@@ -7,6 +7,8 @@ form.hotelExtendedType.location: Местоположение
 form.hotelExtendedType.address: Адрес
 form.hotelExtendedType.placeholder_location: Москва, Московская обл., Щелково
 form.hotelExtendedType.latitude: Широта
+'form.hotelExtendedType.gps_coordinates_latitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>': GPS координата широты отеля.<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">Узнать координаты отеля.</a>
+'form.hotelExtendedType.gps_coordinates_longitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>': GPS координата долготы отеля.<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">Узнать координаты отеля.</a>
 form.hotelExtendedType.gps_coordinates_latitude: GPS координата широты отеля.
 form.hotelExtendedType.know_hotel_coordinates: Узнать координаты отеля.
 form.hotelExtendedType.longitude: Долгота
