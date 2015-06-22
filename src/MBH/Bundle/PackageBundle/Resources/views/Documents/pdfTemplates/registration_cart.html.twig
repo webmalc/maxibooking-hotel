@@ -62,9 +62,13 @@
 </head>
 <body>
 
+{% set organization = null %}
+{% set tourist = null %}
+
 {% if entity.order and entity.order.organization %}
     {% set organization = entity.order.organization %}
 {% endif %}
+
 {% if entity.order and entity.order.mainTourist %}
     {% set tourist = entity.order.mainTourist %}
 {% endif %}
