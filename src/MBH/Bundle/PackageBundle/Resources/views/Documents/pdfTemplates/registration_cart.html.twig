@@ -13,6 +13,12 @@
 
         .header {
             border-bottom: 2px solid;
+            height: 45px;
+            position: relative;
+        }
+
+        .header div {
+            position: absolute;
         }
 
         .table {
@@ -32,28 +38,43 @@
             width: 80px;
         }
 
+        .table .field .title div:first-child {
+            text-transform: uppercase;
+        }
+        .table .field .field .title div:last-child {
+            font-size: 13px;
+        }
+
         .table td {
             clear: both;
         }
 
         .area {
             border-bottom: 1px solid #000000;
+        }
+
+        .table .area {
             height: 30px;
             margin-left: 81px;
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
+
+{% set organization = entity.order.organization %}
+{% set tourist = entity.order.mainTourist %}
+
 <div class="document">
     <div class="header">
-        <div style="float: left;width: 300px; font-weight: bold;font-size: 17px">
+        <div style="width: 200px; font-weight: bold;font-size: 17px">
             Registration Card
         </div>
-        <div style="float: left; text-align: center;width: 300px; font-weight: bold;font-size: 23px">
-            ООО "АУТЕРИЯ"
+        <div style="left: 200px; right: 200px; font-weight: bold; text-align: center; font-size: 22px">
+            ООО "{{ organization.name }}"
         </div>
-        <div style="float: right;width: 210px; font-weight: bold;font-size: 17px">
-            Регистрационная Каточка
+        <div style="width: 200px; right: 0; font-weight: bold;font-size: 17px">
+            Регистрационная Карточка
         </div>
         <div style="clear: both"></div>
     </div>
@@ -63,54 +84,54 @@
         </thead>
         <tbody>
         <tr>
-            <td>
+            <td colspan="4">
                 <div class="field">
                     <div class="title">
                         <div>Surname</div>
                         <div>Фамилия</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area">{{ tourist.lastName }}</div>
                 </div>
             </td>
-            <td>
+            <td colspan="4">
                 <div class="field">
-                    <div class="title">
+                    <div class="title" style="width: 100px">
                         <div>First name</div>
                         <div>Имя</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area" style="margin-left: 100px">{{ tourist.firstName }}</div>
                 </div>
             </td>
-            <td colspan="2">
+            <td colspan="4">
                 <div class="field">
-                    <div class="title">
+                    <div class="title" style="width: 100px">
                         <div>Patronymic</div>
                         <div>Отчество</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area" style="margin-left: 100px">{{ tourist.patronymic }}</div>
                 </div>
             </td>
         </tr>
         <tr>
-            <td>
+            <td colspan="3">
                 <div class="field">
-                    <div class="title">
+                    <div class="title" style="width: 100px;">
                         <div>Nationality</div>
                         <div>Гражданство</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area" style="margin-left: 100px;">{{ tourist.citizenship }}</div>
                 </div>
             </td>
-            <td>
+            <td colspan="3">
                 <div class="field">
                     <div class="title" style="width: 40px;">
                         <div>Sex</div>
                         <div>Пол</div>
                     </div>
-                    <div class="area" style="margin-left: 40px;"></div>
+                    <div class="area" style="margin-left: 40px;">{{ tourist.sex }}</div>
                 </div>
             </td>
-            <td colspan="2">
+            <td colspan="6">
                 <div class="field">
                     <div class="title">
                         <div>Company</div>
@@ -121,27 +142,27 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td colspan="3">
                 <div class="field">
-                    <div class="title" style="width: 100px;">
+                    <div class="title" style="width: 150px;">
                         <div>Day of birth</div>
                         <div>Дата рождения</div>
                     </div>
-                    <div class="area" style="margin-left: 110px;"></div>
+                    <div class="area" style="margin-left: 150px;">{{ tourist.birthday|date('d.m.Y') }}</div>
                 </div>
             </td>
-            <td colspan="3">
+            <td colspan="9">
                 <div class="field">
-                    <div class="title" style="width: 100px;">
+                    <div class="title" style="width: 150px;">
                         <div>Place of birth</div>
                         <div>Место рождения</div>
                     </div>
-                    <div class="area" style="margin-left: 110px;"></div>
+                    <div class="area" style="margin-left: 150px;">{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}</div>
                 </div>
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="6">
                 <div class="field">
                     <div class="title">
                         <div>Pass №</div>
@@ -150,7 +171,7 @@
                     <div class="area"></div>
                 </div>
             </td>
-            <td colspan="2">
+            <td colspan="6">
                 <div class="field">
                     <div class="title">
                         <div>Issued by</div>
@@ -161,7 +182,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="6">
                 <div class="field">
                     <div class="title">
                         <div>Country</div>
@@ -170,7 +191,7 @@
                     <div class="area"></div>
                 </div>
             </td>
-            <td>
+            <td colspan="3">
                 <div class="field">
                     <div class="title">
                         <div>Zip-code</div>
@@ -179,7 +200,7 @@
                     <div class="area"></div>
                 </div>
             </td>
-            <td>
+            <td colspan="3">
                 <div class="field">
                     <div class="title">
                         <div>Arrival</div>
@@ -191,16 +212,16 @@
             <td></td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="6">
                 <div class="field">
-                    <div class="title">
+                    <div class="title" style="width:110px">
                         <div>Base Region</div>
                         <div>Субъект РФ</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area" style="margin-left: 110px"></div>
                 </div>
             </td>
-            <td>
+            <td colspan="3">
                 <div class="field">
                     <div class="title">
                         <div>Сity</div>
@@ -209,7 +230,7 @@
                     <div class="area"></div>
                 </div>
             </td>
-            <td>
+            <td colspan="3">
                 <div class="field">
                     <div class="title">
                         <div>Departere</div>
@@ -220,7 +241,7 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td colspan="3">
                 <div class="field">
                     <div class="title">
                         <div>Base Area</div>
@@ -229,7 +250,7 @@
                     <div class="area"></div>
                 </div>
             </td>
-            <td>
+            <td colspan="3">
                 <div class="field">
                     <div class="title">
                         <div>Town</div>
@@ -238,7 +259,7 @@
                     <div class="area"></div>
                 </div>
             </td>
-            <td>
+            <td colspan="3">
                 <div class="field">
                     <div class="title">
                         <div>Room</div>
@@ -247,7 +268,7 @@
                     <div class="area"></div>
                 </div>
             </td>
-            <td>
+            <td colspan="3">
                 <div class="field">
                     <div class="title">
                         <div>Type</div>
@@ -258,7 +279,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="6">
                 <div class="field">
                     <div class="title">
                         <div>Street</div>
@@ -267,7 +288,7 @@
                     <div class="area"></div>
                 </div>
             </td>
-            <td>
+            <td colspan="3">
                 <div class="field">
                     <div class="title">
                         <div>Persons</div>
@@ -276,7 +297,7 @@
                     <div class="area"></div>
                 </div>
             </td>
-            <td>
+            <td colspan="3">
                 <div class="field">
                     <div class="title">
                         <div>Rate</div>
@@ -306,13 +327,27 @@
             border: solid;
             height: 80px;
             width: 120px;
-            float: left
+            float: right;
         }
 
         .description .agree {
             font-style: italic;
+            font-size: 15px;
             float: left;
             font-weight: bold;
+        }
+
+        .description .agree .fields {
+            display: inline-block;
+        }
+
+        .description .agree .fields div {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .description .agree div:last-child {
+            margin-right: 0px;
         }
     </style>
 
@@ -326,6 +361,14 @@
             The guests are kindly requested to keep rooms clean and in order. <br>
             The guests will have to pay the cost of damaged or lost property of the hotel. <br>
             <strong>Return of money is possible onl at presense of the check confirming the payment</strong>. <br>
+        </div>
+        <div class="square">
+            Оплачено<br>
+            до<br>
+            13.03.15<br>
+            12:00<br>
+        </div>
+        <div class="text">
             Наша гостиница предоставляет услуги, перечень которых Вы найдете в своем номере. <br>
             <strong>Выезд гостей не позднее - 12:00, заселение гостей с 14:00</strong>. <br>
             За сохранность денег и ценных вещей, не сданных на хранение, администрация гостиницы ответственности не
@@ -336,14 +379,23 @@
             <strong>Возврат денежных средств производится только при наличии кассового чека подтверждающего
                 оплату</strong>. <br>
         </div>
-        <div class="square">
-            Оплачено<br>
-            до<br>
-            13.03.15<br>
-            12:00<br>
-        </div>
         <div class="agree">
-            С условиями оплаты, возврата и проживания согласен ______________________ ______________________ __________
+            <div style="display: inline-block;float: left">С условиями оплаты, возврата и проживания согласен</div>
+            &nbsp
+            <div class="fields">
+                <div>
+                    <div style="width: 170px" class="area"></div>
+                    <div style="display: block; font-size: 12px; font-weight: normal;">SIGNATURE Подпись</div>
+                </div>
+                <div>
+                    <div style="width: 140px" class="area"></div>
+                    <div style="display: block; font-size: 12px; font-weight: normal;">Расшифровка подписи</div>
+                </div>
+                <div>
+                    <div style="width: 90px" class="area"></div>
+                    <div style="display: block; font-size: 12px; font-weight: normal;">Дата</div>
+                </div>
+            </div>
         </div>
         <div style="clear: both"></div>
     </div>
@@ -382,7 +434,6 @@
         }
 
         .form .inside .field .area {
-            border-bottom: 1px solid #000000;
             height: 16px;
             margin-left: 81px;
         }
@@ -403,7 +454,7 @@
                                 <div class="title">
                                     1. Фамилия
                                 </div>
-                                <div class="area"></div>
+                                <div class="area">{{ tourist.lastName }}</div>
                             </div>
                         </td>
                         <td>
@@ -411,7 +462,7 @@
                                 <div class="title">
                                     Комната №
                                 </div>
-                                <div class="area"></div>
+                                <div class="area">{{ entity.accommodation.name }}</div>
                             </div>
                         </td>
                     </tr>
@@ -421,7 +472,7 @@
                                 <div class="title">
                                     2. Имя
                                 </div>
-                                <div class="area"></div>
+                                <div class="area">{{ tourist.firstName }}</div>
                             </div>
                         </td>
                         <td>
@@ -429,7 +480,7 @@
                                 <div class="title">
                                     Прибыл
                                 </div>
-                                <div class="area"></div>
+                                <div class="area">{{ entity.arrivalTime|date('d.m.Y') }}</div>
                             </div>
                         </td>
                     </tr>
@@ -439,7 +490,7 @@
                                 <div class="title">
                                     3. Отчество
                                 </div>
-                                <div class="area"></div>
+                                <div class="area">{{ tourist.patronymic }}</div>
                             </div>
                         </td>
                         <td>
@@ -447,27 +498,27 @@
                                 <div class="title">
                                     Выбыл
                                 </div>
-                                <div class="area"></div>
+                                <div class="area">{{ entity.departureTime|date('d.m.Y') }}</div>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">
                             <div class="field">
-                                <div class="title">
+                                <div class="title" style="width : 130px;">
                                     4. Дата рождения
                                 </div>
-                                <div class="area"></div>
+                                <div class="area" style="margin-left: 130px">{{ tourist.birthday|date('d.m.Y') }}</div>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">
                             <div class="field">
-                                <div class="title">
+                                <div class="title" style="width : 130px;">
                                     5. Место рождения
                                 </div>
-                                <div class="area"></div>
+                                <!--<div class="area" style="margin-left: 130px">{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}</div>-->
                             </div>
                         </td>
                     </tr>
@@ -477,7 +528,7 @@
                                 <div class="title" style="margin-left: 30px">
                                     Область
                                 </div>
-                                <div class="area"></div>
+                                <div class="area">{{ tourist.birthplace.district }}</div>
                             </div>
                         </td>
                     </tr>
@@ -487,7 +538,7 @@
                                 <div class="title" style="margin-left: 30px">
                                     Район
                                 </div>
-                                <div class="area"></div>
+                                <div class="area">{{ tourist.birthplace.mainRegion }}</div>
                             </div>
                         </td>
                     </tr>
@@ -505,17 +556,17 @@
                                 <div class="title" style="width: 50px">
                                     Город
                                 </div>
-                                <div class="area" style="margin-left: 50px;"></div>
+                                <div class="area" style="margin-left: 50px;">{{ tourist.birthplace.city }}</div>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">
                             <div class="field">
-                                <div class="title" style="width: 240px">
+                                <div class="title" style="width: 260px">
                                     6. Документ, удостоверяющий личноть
                                 </div>
-                                <div class="area" style="margin-left: 240px"></div>
+                                <div class="area" style="margin-left: 260px"></div>
                             </div>
                         </td>
                     </tr>
@@ -555,10 +606,10 @@
                     <tr>
                         <td colspan="3">
                             <div class="field">
-                                <div class="title" style="width: 220px">
+                                <div class="title" style="width: 240px">
                                     7. Адрес места жительства: Страна
                                 </div>
-                                <div class="area" style="margin-left: 220px"></div>
+                                <div class="area" style="margin-left: 240px"></div>
                             </div>
                         </td>
                     </tr>
@@ -639,10 +690,10 @@
                     <tr>
                         <td colspan="3">
                             <div class="field">
-                                <div class="title" style="width: 220px">
+                                <div class="title" style="width: 250px">
                                     Подпись дежурного админстратора
                                 </div>
-                                <div class="area" style="margin-left: 220px"></div>
+                                <div class="area" style="margin-left: 250px"></div>
                             </div>
                         </td>
                     </tr>
@@ -675,8 +726,14 @@
                 width: 40%;
             }
 
+            .permission-table .field .title div:first-child {
+                text-transform: uppercase;
+            }
+            .permission-table .field .title div:last-child {
+                font-size: 13px;
+            }
+
             .permission-table .field .area {
-                border-bottom: 1px solid #000000;
                 height: 30px;
                 margin-left: 41%;
             }
@@ -684,7 +741,7 @@
 
         <div class="permission">
             <div style="text-align: center;">
-                <div style="font-weight: bold;margin: 15px 0">ООО ЭАУСТЕРИЯ</div>
+                <div style="font-weight: bold;margin: 15px 0">ООО {{ organization.name }}</div>
                 <div style="font-weight: bold;font-size: 15px;margin-top: 15px;">Разрешение на поселение</div>
             </div>
             <hr>
@@ -789,6 +846,21 @@
                 </tr>
                 </tbody>
             </table>
+
+            <style>
+                .signature {
+                    border: solid 2px;
+                    float: right;
+                    width: 200px;
+                    padding: 5px;
+                    font-size: 14px;
+                }
+            </style>
+
+            <div class="signature">
+                <div>SIGNATURE</div>
+                <div>Подпись</div>
+            </div>
 
         </div>
     </div>
