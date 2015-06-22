@@ -241,7 +241,7 @@ class DocumentsController extends Controller
      */
     public function pdfAction(Package $entity)
     {
-        if (!$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -265,7 +265,7 @@ class DocumentsController extends Controller
      */
     public function confirmationPdfAction(Package $entity)
     {
-        if (!$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -289,7 +289,7 @@ class DocumentsController extends Controller
      */
     public function registrationCartPdfAction(Package $entity)
     {
-        if (!$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
