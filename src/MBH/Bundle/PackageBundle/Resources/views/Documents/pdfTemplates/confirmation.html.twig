@@ -41,9 +41,19 @@
 </head>
 <body>
 <div class="document">
-    {% set hotel = entity.roomType.hotel %}
-    {% set tourist = entity.order.mainTourist %}
-    {% if tourist %}
+    {% set hotel = null %}
+    {% set tourist = null %}
+    {% set documentRelation = null %}
+
+    {% if entity.roomType and entity.roomType.hotel %}
+        {% set hotel = entity.roomType.hotel %}
+    {% endif %}
+
+    {% if entity.order and entity.order.mainTourist %}
+        {% set tourist = entity.order.mainTourist %}
+    {% endif %}
+
+    {% if tourist and tourist.documentRelation %}
         {% set documentRelation = tourist.documentRelation %}
     {% endif %}
 
