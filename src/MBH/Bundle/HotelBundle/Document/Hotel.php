@@ -226,7 +226,7 @@ class Hotel extends Base
 
     /**
      * @var UploadedFile
-     * @Assert\File(maxSize="6M", mimeTypes={
+     * @Assert\File(maxSize="2M", mimeTypes={
      *          "image/png",
      *          "image/jpeg",
      *          "image/jpg",

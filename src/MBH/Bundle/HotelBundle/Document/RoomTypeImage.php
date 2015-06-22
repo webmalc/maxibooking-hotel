@@ -10,10 +10,10 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 
-/** @ODM\EmbeddedDocument
+/**
+ * @ODM\EmbeddedDocument
  * @Gedmo\Loggable
  */
-
 class RoomTypeImage
 {
     /**
@@ -128,6 +128,7 @@ class RoomTypeImage
         $this->setName($newName);
         $this->setPath($this->getUploadDir().'/'. $newName);
     }
+
     public function getUploadRootDir()
     {
         return __DIR__.'/../../../../../web/'.$this->getUploadDir();

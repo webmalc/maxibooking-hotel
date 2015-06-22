@@ -60,9 +60,9 @@
         {% for image in images %}
             <a href=" {% if image.getWidth() >= 800 or image.getHeight()>=800 %}
                         {{ asset(image.getPath()) | imagine_filter('scaler') }}"
-                        {% else %}
-                            {{ asset(image.getPath())}}"
-                        {% endif %}
+{% else %}
+    {{ asset(image.getPath()) }}"
+{% endif %}
                class="fancybox" rel="gallery" data-fancybox-title="{{ image.name }}"
                class="roomTypeImage">
                 <img src="{{ asset(image.getPath()) | imagine_filter('thumb_50x50') }}" class="img-thumbnail"/>
@@ -70,12 +70,12 @@
 
 
             {% if image.isMain == false %}
-                <a href="{{ path('room_type_image_make_main', {'id': entity.id, 'imageId' : image.getId}) }}"
-                   class="btn btn-success btn-xs make-main-image " data-toggle="tooltip"
-                   data-original-title="Cделать главной"><i class="fa fa-check"></i></a>
-            {% else %}
-                <i class="fa fa-check make-main-image main-image" alt="Главная фотография"></i>
-            {% endif %}
+    <a href="{{ path('room_type_image_make_main', {'id': entity.id, 'imageId' : image.getId}) }}"
+       class="btn btn-success btn-xs make-main-image " data-toggle="tooltip"
+       data-original-title="Cделать главной"><i class="fa fa-check"></i></a>
+{% else %}
+    <i class="fa fa-check make-main-image main-image" alt="Главная фотография"></i>
+{% endif %}
             <a href="{{ path('room_type_image_delete', {'id': entity.id, 'imageId' : image.getId}) }}"
                class="btn btn-danger btn-xs delete-link delete-image" data-toggle="tooltip"
                data-original-title="Удалить картинку"><i class="fa fa-trash-o"></i></a>

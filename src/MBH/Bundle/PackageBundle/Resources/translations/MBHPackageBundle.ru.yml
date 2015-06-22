@@ -93,6 +93,7 @@ package.actions.delete: Удаление
 package.actions.docs: Генерация документов
 package.actions.act: Акт
 package.actions.confirmation: Подтверждение
+package.actions.registration_cart: Регистрационная карта
 package.actions.find_similar:  Найти похожую
 package.actions.cancel: Отмена
 package.actions.save: 'Сохранить'

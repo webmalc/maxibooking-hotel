@@ -37,6 +37,15 @@ class HotelType extends AbstractType
                 'attr' => ['placeholder' => 'HTL'],
                 'help' => 'form.hotelType.document_use_name'
             ])
+            ->add('file', 'file', [
+                'label' => 'form.hotelType.logo',
+                'group' => 'form.hotelType.settings',
+                'help' => $logoHelp,
+                'required' => false,
+                'constraints' => [
+                    new \Symfony\Component\Validator\Constraints\Image()
+                ]
+            ])
             ->add('isHostel', 'checkbox', [
                 'label' => 'form.hotelType.hostel',
                 'group' => 'form.hotelType.settings',
@@ -50,15 +59,6 @@ class HotelType extends AbstractType
                 'value' => true,
                 'required' => false,
                 'help' => 'form.hotelType.is_default_maxibooking'
-            ])
-            ->add('file', 'file', [
-                'label' => 'form.hotelType.logo',
-                'group' => 'form.hotelType.settings',
-                'help' => $logoHelp,
-                'required' => false,
-                'constraints' => [
-                    new \Symfony\Component\Validator\Constraints\Image()
-                ]
             ]);
     }
 

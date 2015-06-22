@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
@@ -41,13 +42,23 @@ class RoomTypeGenerateRoomsType extends AbstractType
                     new NotBlank(),
                     new Type(['type' => 'numeric', "message" => 'form.roomTypeGenerateRoomsType.field_must_be_number'])
                 ]
-            ])
-            ->add('housing', 'text', [
-                'label' => 'form.roomTypeGenerateRoomsType.housing',
-                'required' => false,
-                'attr' => ['placeholder' => '2-A'],
-                'constraints' => new Length(['max' => 20])
-            ])
+            ]);
+
+        $housingOptions = [
+            'label' => 'form.roomTypeGenerateRoomsType.housing',
+            'required' => false,
+            'class' => 'MBH\Bundle\HotelBundle\Document\Housing'
+        ];
+        $hotel = $options['hotel'];
+        if($hotel) {
+            $housingOptions['query_builder'] = function(DocumentRepository $dr) use ($hotel) {
+                return $dr->createQueryBuilder()->field('hotel.id')->equals($hotel->getId());
+            };
+        }
+        $builder
+            ->add('housing', 'document', $housingOptions);
+
+        $builder
             ->add('floor', 'text', [
                 'label' => 'form.roomTypeGenerateRoomsType.floor',
                 'required' => false,
@@ -71,7 +82,8 @@ class RoomTypeGenerateRoomsType extends AbstractType
                 'constraints' => [
                     new Callback(['methods' => [[get_class($this), 'rangeValidation']]])
                 ],
-                'entity' => null
+                'entity' => null,
+                'hotel' => null
             ]
         );
     }

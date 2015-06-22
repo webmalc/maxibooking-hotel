@@ -25,13 +25,23 @@ class RoomType extends AbstractType
                 'group' => 'form.roomType.general_info',
                 'attr' => ['placeholder' => 'form.roomType.placeholder_27_with_repair'],
                 'help' => 'form.roomType.maxibooking_inner_name'
-            ])
-            ->add('housing', 'document', [
-                'label' => 'form.roomType.housing',
-                'group' => 'form.roomType.general_info',
-                'class' => 'MBH\Bundle\HotelBundle\Document\Housing',
-                'required' => false
-            ])
+            ]);
+
+        $housingOptions = [
+            'label' => 'form.roomType.housing',
+            'group' => 'form.roomType.general_info',
+            'class' => 'MBH\Bundle\HotelBundle\Document\Housing',
+            'required' => false
+        ];
+        $hotelId = $options['hotelId'];
+        if($hotelId) {
+            $housingOptions['query_builder'] = function(DocumentRepository $dr) use ($hotelId) {
+                return $dr->createQueryBuilder()->field('hotel.id')->equals($hotelId);
+            };
+        }
+
+        $builder
+            ->add('housing', 'document', $housingOptions)
             ->add('floor', 'text', [
                 'label' => 'form.roomType.floor',
                 'group' => 'form.roomType.general_info',

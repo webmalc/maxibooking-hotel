@@ -10,23 +10,17 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class RoomTypeImageType extends AbstractType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $fileText = 'Изображние типа номера для онлайн бронирования';
 
         $builder->
-        add('imageFile', 'file', ['label' => 'form.roomTypeType.image',
-            'required' => false,
-            'help' => $fileText,
-            'constraints' => [new Image(), new NotBlank()],
-            'attr' => ['multiple' => 'multiple']
-        ]);
-    }
-
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
-    {
-        $resolver->setDefaults([]);
+            add('imageFile', 'file', ['label' => 'form.roomTypeType.image',
+                'required' => false,
+                'help' => $fileText,
+                'constraints' => [new Image(), new NotBlank()],
+                'attr' => ['multiple' => 'multiple']
+            ]);
     }
 
     public function getName()

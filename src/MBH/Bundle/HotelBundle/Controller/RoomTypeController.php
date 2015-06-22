@@ -4,15 +4,16 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
+use MBH\Bundle\HotelBundle\Form\RoomTypeImageType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Form\RoomTypeType;
-use MBH\Bundle\HotelBundle\Form\RoomTypeImageType;
 use MBH\Bundle\HotelBundle\Form\RoomTypeGenerateRoomsType;
 use MBH\Bundle\HotelBundle\Form\RoomType as RoomForm;
 
@@ -32,20 +33,16 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function jsonRoomsListAction(Request $request, $id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $qb = $dm->getRepository('MBHHotelBundle:Room')
-                 ->createQueryBuilder('r')
-                 ->field('roomType.id')->equals($id)
-                 ->skip($request->get('start'))
-                 ->limit($request->get('length'))
-        ;
+        $qb = $this->dm->getRepository('MBHHotelBundle:Room')
+            ->createQueryBuilder('r')
+            ->field('roomType.id')->equals($id)
+            ->skip($request->get('start'))
+            ->limit($request->get('length'));
 
         $search = $request->get('search')['value'];
         if (!empty($search)) {
-            $qb->addOr($qb->expr()->field('fullTitle')->equals(new \MongoRegex('/.*'. $search .'.*/ui')));
-            $qb->addOr($qb->expr()->field('title')->equals(new \MongoRegex('/.*'. $search .'.*/ui')));
+            $qb->addOr($qb->expr()->field('fullTitle')->equals(new \MongoRegex('/.*' . $search . '.*/ui')));
+            $qb->addOr($qb->expr()->field('title')->equals(new \MongoRegex('/.*' . $search . '.*/ui')));
         }
 
         $entities = $qb->getQuery()->execute();
@@ -76,21 +73,18 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
+     * @ParamConverter(class="MBHHotelBundle:Room")
      */
-    public function editRoomAction($id)
+    public function editRoomAction(Room $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHHotelBundle:Room')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(
-            new RoomForm(), $entity, ['isNew' => false, 'hotelId' => $entity->getHotel()->getId()]
-        );
+        $form = $this->createForm(new RoomForm(), $entity, [
+            'isNew' => false,
+            'hotelId' => $entity->getHotel()->getId()
+        ]);
 
         return array(
             'entity' => $entity,
@@ -106,35 +100,30 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * @Method("PUT")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template("MBHHotelBundle:RoomType:editRoom.html.twig")
+     * @ParamConverter(class="MBHHotelBundle:Room")
      */
-    public function updateRoomAction(Request $request, $id)
+    public function updateRoomAction(Request $request, Room $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHHotelBundle:Room')->find($id);
-
-        if (!$entity  || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(
-            new RoomForm(), $entity, ['isNew' => false, 'hotelId' => $entity->getHotel()->getId()]
-        );
+        $form = $this->createForm(new RoomForm(), $entity, [
+            'isNew' => false,
+            'hotelId' => $entity->getHotel()->getId()
+        ]);
 
-        $form->bind($request);
+        $form->submit($request);
 
         if ($form->isValid()) {
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
-            $dm->persist($entity);
-            $dm->flush();
+            $request->getSession()->getFlashBag()->set('success',
+                $this->get('translator')->trans('controller.roomTypeController.record_edited_success'));
 
-            $request->getSession()->getFlashBag()
-                    ->set('success', $this->get('translator')->trans('controller.roomTypeController.record_edited_success'))
-            ;
-            
             if ($request->get('save') !== null) {
-                return $this->redirect($this->generateUrl('room_type_room_edit', ['id' => $id]));
+                return $this->redirect($this->generateUrl('room_type_room_edit', ['id' => $entity->getId()]));
             }
 
             return $this->redirect($this->generateUrl('room_type', ['tab' => $entity->getRoomType()->getId()]));
@@ -148,58 +137,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     }
 
     /**
-     * Update room.
-     *
-     * @Route("/room/image/{id}/edit", name="room_type_image_room_update")
-
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
-     * @Template("MBHHotelBundle:RoomType:edit.html.twig")
-     */
-    public function updateRoomImageAction(Request $request, $id)
-    {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
-            throw $this->createNotFoundException();
-        }
-        $form = $this->createForm(
-            new RoomTypeType(), $entity
-        );
-        $formImage = $this->createForm(
-            new RoomTypeImageType()
-        );
-        $formImage->handleRequest($request);
-
-        if ($request->getMethod() === 'POST') {
-
-            if ($formImage->isValid()) {
-                $image = new RoomTypeImage();
-                $image->uploadImage($formImage['imageFile']->getData());
-                $entity->addImage($image);
-                $dm->persist($entity);
-                $dm->flush();
-
-                $request->getSession()->getFlashBag()
-                    ->set('success', 'Фотография успешно создана.')
-                ;
-                return $this->redirect($this->generateUrl('room_type_image_room_update', ['id' => $id, 'imageTab' => 'active' ]));
-            }
-        }
-
-        return array(
-
-            'entity' => $entity,
-            'form' => $form->createView(),
-            'formImage' => $formImage->createView(),
-            'logs' => $this->logs($entity),
-            'images' => $entity->getImages(),
-        );
-    }
-
-    /**
      * Show new room form.
      *
      * @Route("/{id}/room/new/", name="room_type_room_new")
@@ -209,15 +146,14 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function newRoomAction($id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
-        if (!$entity  || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        $entity = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($id);
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new RoomForm(), new Room());
+        $form = $this->createForm(new RoomForm(), new Room(), [
+            'hotelId' => $this->hotel->getId()
+        ]);
 
         return array(
             'entity' => $entity,
@@ -236,29 +172,26 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function createRoomAction(Request $request, $id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
-        if (!$entity  || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        $entity = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($id);
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
         $room = new Room();
-        $room->setRoomType($entity)
-                ->setHotel($this->get('mbh.hotel.selector')->getSelected())
-        ;
-        $form = $this->createForm(new RoomForm(), $room);
-        $form->bind($request);
+        $room->setRoomType($entity)->setHotel($this->hotel);
+
+        $form = $this->createForm(new RoomForm(), $room, [
+            'hotelId' => $this->hotel->getId()
+        ]);
+        $form->submit($request);
 
         if ($form->isValid()) {
-            $dm->persist($room);
-            $dm->flush();
+            $this->dm->persist($room);
+            $this->dm->flush();
 
             $request->getSession()->getFlashBag()
-                    ->set('success', 'Запись успешно создана.')
-            ;
-            
+                ->set('success', 'Запись успешно создана.');
+
             if ($request->get('save') !== null) {
                 return $this->redirect($this->generateUrl('room_type_room_edit', ['id' => $room->getId()]));
             }
@@ -280,18 +213,14 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
+     * @ParamConverter(class="MBHHotelBundle:RoomType")
      */
-    public function generateRoomsAction($id)
+    public function generateRoomsAction(RoomType $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        $form = $this->createForm(new RoomTypeGenerateRoomsType(), [], ['entity' => $entity]);
+        $form = $this->createForm(new RoomTypeGenerateRoomsType(), [], [
+            'entity' => $entity,
+            'hotel' => $this->hotel
+        ]);
 
         return array(
             'entity' => $entity,
@@ -307,43 +236,35 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * @Method("POST")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template("MBHHotelBundle:RoomType:generateRooms.html.twig")
+     * @ParamConverter(class="MBHHotelBundle:RoomType")
      */
-    public function generateRoomsProcessAction(Request $request, $id)
+    public function generateRoomsProcessAction(Request $request, RoomType $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        $form = $this->createForm(new RoomTypeGenerateRoomsType());
+        $form = $this->createForm(new RoomTypeGenerateRoomsType(), null, [
+            'hotel' => $this->hotel
+        ]);
         $form->submit($request);
 
         if ($form->isValid()) {
             $data = $form->getData();
 
-            for ($i = (int) round($data['from']); $i <= (int) round($data['to']); $i++) {
+            for ($i = (int)round($data['from']); $i <= (int)round($data['to']); $i++) {
                 $room = new Room();
                 $room->setFullTitle($data['prefix'] . $i)
                     ->setRoomType($entity)
                     ->setHousing(!empty($data['housing']) ? $data['housing'] : null)
                     ->setFloor(!empty($data['floor']) ? $data['floor'] : null)
-                    ->setHotel($this->get('mbh.hotel.selector')->getSelected())
-                ;
+                    ->setHotel($this->hotel);
 
                 if (!count($this->get('validator')->validate(($room)))) {
-                    $dm->persist($room);
+                    $this->dm->persist($room);
                 }
             }
 
-            $dm->flush();
+            $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                    ->set('success', $this->get('translator')->trans('controller.roomTypeController.rooms_generation_success'))
-            ;
+            $request->getSession()->getFlashBag()->set('success',
+                $this->get('translator')->trans('controller.roomTypeController.rooms_generation_success'));
 
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -365,15 +286,11 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function indexAction()
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entities = $dm->getRepository('MBHHotelBundle:RoomType')->createQueryBuilder('s')
-                ->field('hotel.id')->equals($this->get('mbh.hotel.selector')->getSelected()->getId())
-                ->sort('fullTitle', 'asc')
-                ->getQuery()
-                ->execute()
-        ;
+        $entities = $this->dm->getRepository('MBHHotelBundle:RoomType')->createQueryBuilder('s')
+            ->field('hotel.id')->equals($this->hotel->getId())
+            ->sort('fullTitle', 'asc')
+            ->getQuery()
+            ->execute();
 
         if (!$entities->count()) {
             return $this->redirect($this->generateUrl('room_type_new'));
@@ -395,15 +312,11 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     public function newAction()
     {
         $entity = new RoomType();
-        $formImage = $this->createForm(
-            new RoomTypeImageType()
-        );
-        ($this->get('mbh.hotel.selector')->getSelected()->getIsHostel()) ? $type = 'hostel' : $type = 'hotel';
+        $type = $this->hotel->getIsHostel() ? 'hostel' : 'hotel';
         $form = $this->createForm(new RoomTypeType(), $entity, []);
 
         return array(
-            'form' => $form->createView(),
-            'formImage' => $formImage->createView()
+            'form' => $form->createView()
         );
     }
 
@@ -418,37 +331,29 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     public function createAction(Request $request)
     {
         $entity = new RoomType();
-        $entity->setHotel($this->get('mbh.hotel.selector')->getSelected());
+        $entity->setHotel($this->hotel);
 
-        ($this->get('mbh.hotel.selector')->getSelected()->getIsHostel()) ? $type = 'hostel' : $type = 'hotel';
+        $type = $this->hotel->getIsHostel() ? 'hostel' : 'hotel';
         $form = $this->createForm(new RoomTypeType(), $entity, []);
 
-        $form->bind($request);
-        $formImage = $this->createForm(
-            new RoomTypeImageType()
-        );
+        $form->submit($request);
         if ($form->isValid()) {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
 
 //            $entity->uploadImage($form['imageFile']->getData());
 //            $dm->persist($entity);
 //            $dm->flush();
-            
-            $request->getSession()->getFlashBag()
-                    ->set('success', 'Запись успешно создана.')
-            ;
+
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
 
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }
 
         return array(
             'entity' => $entity,
-            'form' => $form->createView(),
-            'formImage' => $formImage->createView()
+            'form' => $form->createView()
         );
     }
 
@@ -459,26 +364,21 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      */
-    public function imageDelete($id,$imageId)
+    public function imageDelete($id, $imageId)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         /* @var $entity RoomType */
-        $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
+        $entity = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($id);
 
-        if (!$entity  || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
-        $entity->deleteImageById($entity,$imageId);
-        $dm->persist($entity);
-        $dm->flush();
+        $entity->deleteImageById($entity, $imageId);
+        $this->dm->persist($entity);
+        $this->dm->flush();
 
-        $this->getRequest()->getSession()->getFlashBag()
-            ->set('success', 'Изображение успешно удалено.')
-        ;
+        $this->getRequest()->getSession()->getFlashBag()->set('success', 'Изображение успешно удалено.');
 
-        return $this->redirect($this->generateUrl('room_type_edit', ['id' => $id, 'imageTab' => 'active' ]));
+        return $this->redirect($this->generateUrl('room_type_edit', ['id' => $id, 'imageTab' => 'active']));
 
     }
 
@@ -492,38 +392,28 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function updateAction(Request $request, $id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         /* @var $entity RoomType */
-        $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
+        $entity = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($id);
 
-        if (!$entity  || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        ($this->get('mbh.hotel.selector')->getSelected()->getIsHostel()) ? $type = 'hostel' : $type = 'hotel';
-        $form = $this->createForm(
-            new RoomTypeType(), $entity /*[
-                'imageUrl' => $entity->getImage(true),
-                'deleteImageUrl' => $this->generateUrl('room_type_image_delete', ['id' => $id])
-            ]*/
-        );
-        /* @var $images RoomTypeImage */
+        $type = $this->hotel->getIsHostel() ? 'hostel' : 'hotel';
+        $form = $this->createForm(new RoomTypeType(), $entity /*[
+            'imageUrl' => $entity->getImage(true),
+            'deleteImageUrl' => $this->generateUrl('room_type_image_delete', ['id' => $id])
+        ]*/);
 
         $form->submit($request);
 
         if ($form->isValid()) {
-
 //            $entity->uploadImage($form['imageFile']->getData());
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
-            
-            $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', $this->get('translator')->trans('controller.roomTypeController.record_edited_success'))
-            ;
+            $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.roomTypeController.record_edited_success'));
 
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -543,32 +433,69 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
+     * @ParamConverter(class="MBHHotelBundle:RoomType")
      */
-    public function editAction($id)
+    public function editAction(RoomType $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        ($this->get('mbh.hotel.selector')->getSelected()->getIsHostel()) ? $type = 'hostel' : $type = 'hotel';
-        $form = $this->createForm(
-            new RoomTypeType(), $entity
-        );
-        $formImage = $this->createForm(
-            new RoomTypeImageType()
-        );
+        $form = $this->createForm(new RoomTypeType(), $entity);
+
+        $formImage = $this->createForm(new RoomTypeImageType());
 
         return array(
             'entity' => $entity,
             'form' => $form->createView(),
+            'logs' => $this->logs($entity),
+            'formImage' => $formImage->createView(),
+            'images' => $entity->getImages()
+        );
+    }
+
+
+    /**
+     * Update room.
+     *
+     * @Route("/room/image/{id}/edit", name="room_type_image_room_update")
+
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Template("MBHHotelBundle:RoomType:edit.html.twig")
+     * @ParamConverter(class="MBHHotelBundle:RoomType")
+     */
+    public function updateRoomImageAction(Request $request, RoomType $entity)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+            throw $this->createNotFoundException();
+        }
+        $form = $this->createForm(new RoomTypeType(), $entity);
+        $formImage = $this->createForm(new RoomTypeImageType());
+        $formImage->handleRequest($request);
+
+        if ($request->getMethod() === 'POST') {
+
+            if ($formImage->isValid()) {
+                $image = new RoomTypeImage();
+                $image->uploadImage($formImage['imageFile']->getData());
+                $entity->addImage($image);
+                $this->dm->persist($entity);
+                $this->dm->flush();
+
+                $request->getSession()->getFlashBag()->set('success', 'Фотография успешно создана.');
+                return $this->redirect($this->generateUrl('room_type_image_room_update', [
+                    'id' => $entity->getId(), 'imageTab' => 'active'
+                ]));
+            }
+        }
+
+        return array(
+
+            'entity' => $entity,
+            'form' => $form->createView(),
             'formImage' => $formImage->createView(),
             'logs' => $this->logs($entity),
-            'images' => $entity->getImages()
+            'images' => $entity->getImages(),
         );
     }
 
@@ -593,10 +520,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function makeMainImageRoomTypeAction(Request $request, $id, $imageId)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHHotelBundle:RoomType')->find($id);
+        $entity = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($id);
 
         if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
@@ -604,18 +528,15 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $form = $this->createForm(
             new RoomTypeType(), $entity
         );
-        $formImage = $this->createForm(
-            new RoomTypeImageType()
-        );
         /* @var $entity RoomType */
-        $entity->makeMainImageById($entity,$imageId);
-        $dm->persist($entity);
-        $dm->flush();
+        $entity->makeMainImageById($entity, $imageId);
+        $this->dm->persist($entity);
+        $this->dm->flush();
 
         $request->getSession()->getFlashBag()
-            ->set('success', 'Фотография успешно была сделана главной.')
-        ;
-        return $this->redirect($this->generateUrl('room_type_edit', ['id' => $id, 'imageTab' => 'active' ]));
+            ->set('success', 'Фотография успешно была сделана главной.');
+
+        return $this->redirect($this->generateUrl('room_type_edit', ['id' => $id, 'imageTab' => 'active']));
 
     }
 }

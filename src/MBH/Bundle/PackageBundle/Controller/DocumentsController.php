@@ -278,4 +278,28 @@ class DocumentsController extends Controller
             //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
         ]);
     }
+
+    /**
+     * Return pdf doc
+     *
+     * @Route("/{id}/registration_cart_pdf", name="package_registration_cart_pdf")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     */
+    public function registrationCartPdfAction(Package $entity)
+    {
+        if (!$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:registration_cart.html.twig', [
+            'entity' => $entity
+        ]);
+
+        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
+            'Content-Type' => 'application/pdf',
+            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
+        ]);
+    }
 }
