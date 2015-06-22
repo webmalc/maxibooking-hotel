@@ -11,7 +11,7 @@
 
             {{ form_start(form, {'action': path('booking_room'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false } %}
+            {% include 'MBHChannelManagerBundle::actions.html.twig'%}
             {{ form_end(form) }}
 
             {% if config %}

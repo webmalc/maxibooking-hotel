@@ -4,12 +4,13 @@
         {% if rate is defined and rate %}
             <rate_id>{{ rate }}</rate_id>
         {% endif %}
+
         {% for roomId, roomInfo in rooms %}
             <room id="{{ roomId }}">
                 {% for date, dateInfo in roomInfo %}
                     <date value="{{ date }}">
                         <sellquantity>{{ dateInfo.sellquantity }}</sellquantity>
-                        <closed>{{ dateInfo.closed ? 1 : 0 }}</closed>
+                        <closed>{{ dateInfo.closed }}</closed>
                     </date>
                 {% endfor %}
             </room>

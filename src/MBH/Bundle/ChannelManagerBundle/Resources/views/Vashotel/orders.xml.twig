@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<request>
+    {% include 'MBHChannelManagerBundle:Vashotel:credentials.xml.twig' with {'config': config , 'salt': salt, 'sig': sig} %}
+
+    {% for id in ids %}
+        <reservation_id>{{ id }}</reservation_id>
+    {% endfor %}
+</request>

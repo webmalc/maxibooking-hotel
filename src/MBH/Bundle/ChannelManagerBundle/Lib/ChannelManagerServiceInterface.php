@@ -51,6 +51,28 @@ interface ChannelManagerServiceInterface
     public function createPackages();
 
     /**
+     * Create tariff from service
+     * @param ChannelManagerConfigInterface $config
+     * @param string $id
+     * @return \MBH\Bundle\PriceBundle\Document\Tariff;
+     * @throw \Exception
+     */
+    public function createTariff(ChannelManagerConfigInterface $config, $id);
+
+    /**
+     * Clear tariffs/roomTypes in config
+     * @param ChannelManagerConfigInterface $config
+     * @return ChannelManagerConfigInterface $config;
+     */
+    public function clearConfig(ChannelManagerConfigInterface $config);
+
+    /**
+     * Clear all tariffs/roomTypes in all configs
+     * @return ChannelManagerConfigInterface $config;
+     */
+    public function clearAllConfigs();
+
+    /**
      * Pull orders from service server
      * @return mixed
      */

@@ -16,6 +16,8 @@ web/css/*
 web/upload/*
 web/js/*
 web/bundles/
+protectedUpload/
+protectedUpload/*
 web/bundles/*
 web/app_dev.php
 nbproject

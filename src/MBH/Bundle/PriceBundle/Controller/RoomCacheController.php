@@ -189,7 +189,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             ->set('success', 'Изменения успешно сохранены.')
         ;
 
-        $this->get('mbh.channelmanager')->updateInBackground();
+        $this->get('mbh.channelmanager')->updateRoomsInBackground();
 
         return $this->redirect($this->generateUrl('room_cache_overview', [
             'begin' => $request->get('begin'),
@@ -250,7 +250,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                 $data['begin'], $data['end'], $hotel, $data['rooms'], $data['isClosed'],  $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
             );
 
-            $this->get('mbh.channelmanager')->updateInBackground();
+            $this->get('mbh.channelmanager')->updateRoomsInBackground();
 
             if ($request->get('save') !== null) {
                 return $this->redirect($this->generateUrl('room_cache_generator'));

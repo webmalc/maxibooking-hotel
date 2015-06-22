@@ -16,4 +16,20 @@ interface ChannelManagerConfigInterface
      * @return string
      */
     public function getName();
+
+    public function removeAllRooms();
+
+    public function getRooms();
+
+    public function addRoom(\MBH\Bundle\ChannelManagerBundle\Document\Room $room);
+
+    public function removeRoom(\MBH\Bundle\ChannelManagerBundle\Document\Room $room);
+
+    public function removeAllTariffs();
+
+    public function getTariffs();
+
+    public function addTariff(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff);
+
+    public function removeTariff(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff);
 }

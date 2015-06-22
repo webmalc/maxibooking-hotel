@@ -7,6 +7,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Form\VashotelType;
+use MBH\Bundle\ChannelManagerBundle\Services\Vashotel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -32,8 +33,6 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     public function indexAction()
     {
         $entity = $this->hotel->getVashotelConfig();
-
-        //$this->get('mbh.channelmanager.vashotel')->updateRooms();
 
         $form = $this->createForm(
             new VashotelType(), $entity
@@ -73,9 +72,10 @@ class VashotelController extends Controller implements CheckHotelControllerInter
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.vashhotelController.settings_saved_success'))
+                ->set('success', $this->get('translator')->trans('controller.vashotelController.settings_saved_success'))
             ;
 
+            $this->get('mbh.channelmanager.vashotel')->syncServices($entity);
             $this->get('mbh.channelmanager')->updateInBackground();
 
             return $this->redirect($this->generateUrl('vashotel'));
@@ -127,7 +127,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
             $request->getSession()->getFlashBag()
                 ->set('success',
-                    $this->get('translator')->trans('controller.vashhotelController.settings_saved_success'));
+                    $this->get('translator')->trans('controller.vashotelController.settings_saved_success'));
 
             return $this->redirect($this->generateUrl('vashotel_room'));
         }
@@ -179,7 +179,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
             $request->getSession()->getFlashBag()
                 ->set('success',
-                    $this->get('translator')->trans('controller.vashhotelController.settings_saved_success'));
+                    $this->get('translator')->trans('controller.vashotelController.settings_saved_success'));
 
             return $this->redirect($this->generateUrl('vashotel_tariff'));
         }

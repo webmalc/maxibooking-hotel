@@ -729,6 +729,10 @@ class Order extends Base
      */
     public function getFee()
     {
+        if (empty($this->getCashDocuments())) {
+            return [];
+        }
+
         $fee = [];
         foreach($this->getCashDocuments() as $doc) {
             if ($doc->getOperation() == 'fee') {

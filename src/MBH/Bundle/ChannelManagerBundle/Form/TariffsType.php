@@ -15,9 +15,10 @@ class TariffsType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        foreach ($options['booking'] as $name => $label) {
+        foreach ($options['booking'] as $name => $info) {
+
             $builder->add($name, 'document', [
-                'label' => $label,
+                'label' => $info['title'],
                 'class' => 'MBHPriceBundle:Tariff',
                 'query_builder' => function(DocumentRepository $er) use($options) {
                     $qb = $er->createQueryBuilder();
@@ -37,7 +38,7 @@ class TariffsType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'constraints' => [new Callback(['methods' => [[$this,'check']]])],
+                //'constraints' => [new Callback(['methods' => [[$this,'check']]])],
                 'booking' => [],
                 'hotel' => null,
             ]

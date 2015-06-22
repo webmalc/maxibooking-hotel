@@ -144,7 +144,7 @@ class Helper
     }
 
     /**
-     * @param array $collection
+     * @param mixed $collection
      * @return array
      */
     public function toIds($collection)

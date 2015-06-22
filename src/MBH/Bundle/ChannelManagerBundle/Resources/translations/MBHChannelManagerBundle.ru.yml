@@ -13,13 +13,15 @@ views.channnelmanager.settings: "настройки"
 views.oktogo.room.save: Сохранить
 views.oktogo.room.get_room_ids_from_oktogo: "Получить ID номеров из Oktogo.ru"
 views.oktogo.tariff.save: Сохранить
-views.vashhotel.layout.you_hotel_ru: "ВашОтель.RU"
-views.vashhotel.room.save: Сохранить
-views.vashhotel.room.get_room_ids_from_your_hotel_ru: "Получить ID номеров из ВашОтель.RU"
-views.vashhotel.room.cancel: Отмена
-views.vashhotel.tariff.save: Сохранить
-views.vashhotel.tariff.get_tariff_ids: "Получить ID тарифов из ВашОтель.RU"
-views.vashhotel.tariff.cancel: Отмена
+views.vashotel.layout.you_hotel_ru: "ВашОтель.RU"
+views.vashotel.room.save: Сохранить
+views.vashotel.room.get_room_ids_from_your_hotel_ru: "Получить ID номеров из ВашОтель.RU"
+views.vashotel.room.cancel: Отмена
+views.vashotel.tariff.save: Сохранить
+views.vashotel.tariff.get_tariff_ids: "Получить ID тарифов из ВашОтель.RU"
+views.vashotel.tariff.cancel: Отмена
+views.vashotel.service.service: Сервис
+views.vashotel.service.code: Код
 views.tabs.main_settings: ' Основные настройки'
 views.tabs.room_types: ' Типы номеров'
 views.tabs.tariffs: ' Тарифы'
@@ -28,8 +30,16 @@ views.tabs.must_fill_main_settings: "Необходимо заполнить о�
 
 #channelManager
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
+
 channelManager.booking.notification.subject: Сообщения от Booking.com
-channelManager.booking.notification.new: Новый заказ %order% из booking.com. Броней: %packages%
-channelManager.booking.notification.edit: Изменен заказ %order% из booking.com. Броней: %packages%
-channelManager.booking.notification.delete: Удален заказ %order% из booking.com. Броней: %packages%
+channelManager.booking.notification.new: Новый заказ %order% из booking.com. Номера броней: %packages%
+channelManager.booking.notification.edit: Изменен заказ %order% из booking.com. Номера броней: %packages%
+channelManager.booking.notification.delete: Удален заказ %order% из booking.com. Номера броней: %packages%
+
+channelManager.vashotel.notification.subject: Сообщения от Vashotel.ru
+channelManager.vashotel.notification.new: Новый заказ %order% из vashotel.ru. Номера броней: %packages%
+channelManager.vashotel.notification.edit: Изменен заказ %order% из vashotel.ru. Номера броней: %packages%
+channelManager.vashotel.notification.delete: Удален заказ %order% из vashotel.ru. Номера броней: %packages%
+
 channelmanager.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы типы номеров, тарифы или услуги
+views.channelmanager.actions.sync: Синхронизировать

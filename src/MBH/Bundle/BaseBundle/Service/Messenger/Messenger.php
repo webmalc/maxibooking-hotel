@@ -53,8 +53,8 @@ class Messenger implements \SplObserver
         $session = $this->container->get('session');
 
         foreach ($messages as $message) {
-            $key[] = $message->getType();
-            $key[] = $message->getAutohide();
+            $key[0] = $message->getType();
+            $key[1] = $message->getAutohide();
             $session->getFlashBag()->add(implode('|', $key), $message->getText());
         }
         $this->clear();

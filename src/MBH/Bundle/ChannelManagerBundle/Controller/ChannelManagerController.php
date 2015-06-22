@@ -42,21 +42,22 @@ class ChannelManagerController extends Controller implements CheckHotelControlle
     /**
      * Sync rooms & tariffs
      *
-     * @Route("/sync/{name}", name="channel_manager_sync")
+     * @Route("/sync", name="channel_manager_sync")
      * @Method({"GET"})
-     * @param string $name
+     * @param Request $request
      * @return Response
      */
-    public function syncAction(Request $request, $name = null)
+    public function syncAction(Request $request)
     {
-        $this->get('mbh.channelmanager')->sync($name);
-        $this->get('mbh.channelmanager')->updateInBackground();
+        $cm = $this->get('mbh.channelmanager');
+        $cm->clearAllConfigsInBackground();
+        $cm->updateInBackground();
 
-        if ($name) {
+        if (!empty($request->get('url'))) {
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.channelManagerController.sync_end'))
             ;
-            return $this->redirect($this->generateUrl($name));
+            return $this->redirect($request->get('url'));
         }
         return new Response('OK');
     }

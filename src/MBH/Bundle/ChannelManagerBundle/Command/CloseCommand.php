@@ -27,6 +27,10 @@ class CloseCommand extends ContainerAwareCommand
 
         foreach($container->getParameter('mbh.channelmanager.services') as $title => $params) {
 
+            if (!$container->has($params['service'])) {
+                continue;
+            }
+
             $service = $container->get($params['service']);
 
             foreach ($dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {

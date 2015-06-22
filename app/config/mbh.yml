@@ -126,11 +126,11 @@ parameters:
           service: 'mbh.channelmanager.booking'
           username: maxibookingXML
           password: bMBhv6tds5i
-        hotelinn:
-          title: 'Hotel-inn'
-          service: 'mbh.channelmanager.hotelinn'
-          username: maxibookingXML
-          password: bMBhv6tds5i
+        #hotelinn:
+         # title: 'Hotel-inn'
+          #service: 'mbh.channelmanager.hotelinn'
+          #username: maxibookingXML
+          #password: bMBhv6tds5i
 
 
     #параметры логов
@@ -176,8 +176,6 @@ parameters:
         process: { title: "В процессе", class: "info"}
         open: { title: "Открыта", class: "success"}
         closed: { title: "Закрыта", class: "danger"}
-
-
 
     #Типы документов
     mbh.order.document.types:

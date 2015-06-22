@@ -53,6 +53,14 @@
                         {% endif %}
                     </div>
                 </div>
+                {% if is_granted('ROLE_ADMIN_HOTEL') and entity.card %}
+                <div class="row spacer-top">
+                    <div class="col-md-2 text-right"><strong>{{ 'order.edit.card'|trans({}, 'MBHPackageBundle') }}</strong></div>
+                    <div class="col-md-10">
+                        {{ entity.card }}
+                    </div>
+                </div>
+                {% endif %}
 
             </div>
 

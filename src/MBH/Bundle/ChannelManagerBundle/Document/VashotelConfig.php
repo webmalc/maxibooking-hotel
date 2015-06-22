@@ -57,10 +57,16 @@ class VashotelConfig extends Base implements BaseInterface
      */
     protected $tariffs;
 
+    /**
+     * @var array
+     * @ODM\EmbedMany(targetDocument="Service")
+     */
+    protected $services;
+
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="vashotelConfig")
-     * @Assert\NotNull(message="validator.document.vashhotelConfig.no_hotel_selected")
+     * @Assert\NotNull(message="validator.document.vashotelConfig.no_hotel_selected")
      */
     protected $hotel;
 
@@ -68,7 +74,7 @@ class VashotelConfig extends Base implements BaseInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\String(name="hotelId")
-     * @Assert\NotNull(message="validator.document.vashhotelConfig.no_hotel_id_specified")
+     * @Assert\NotNull(message="validator.document.vashotelConfig.no_hotel_id_specified")
      */
     protected $hotelId;
 
@@ -120,6 +126,7 @@ class VashotelConfig extends Base implements BaseInterface
     {
         $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -200,5 +207,45 @@ class VashotelConfig extends Base implements BaseInterface
         $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
 
         return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function removeAllServices()
+    {
+        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
+
+        return $this;
+    }
+
+    /**
+     * Add service
+     *
+     * @param \MBH\Bundle\ChannelManagerBundle\Document\Service $service
+     */
+    public function addService(\MBH\Bundle\ChannelManagerBundle\Document\Service $service)
+    {
+        $this->services[] = $service;
+    }
+
+    /**
+     * Remove service
+     *
+     * @param \MBH\Bundle\ChannelManagerBundle\Document\Service $service
+     */
+    public function removeService(\MBH\Bundle\ChannelManagerBundle\Document\Service $service)
+    {
+        $this->services->removeElement($service);
+    }
+
+    /**
+     * Get services
+     *
+     * @return \Doctrine\Common\Collections\Collection $services
+     */
+    public function getServices()
+    {
+        return $this->services;
     }
 }

@@ -18,24 +18,24 @@ form.roomType.room_type_id: ID типа номера
 form.roomType.in_service_settings: в настройках сервиса
 form.tariffType.tariff_id: ID тарифа
 form.tariffType.in_service_settings: в настройках сервиса
-form.vashhotelType.in_included: Включен?
-form.vashhotelType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
-form.vashhotelType.api_key: Ключ API
-form.vashhotelType.vashhotel_ru_settings_key: Ключ, который задается в настройках гостиницы ВашОтель.RU
-form.vashhotelType.hotel_id: ID отеля
-form.vashhotelType.vashhotel_ru_settings_hotel_id: ID отеля в настройках ВашОтель.RU
-form.vashhotelType.breakfast: Завтрак?
-form.vashhotelType.r0_or_BB: Какой тип питания использовать RO или BB?
+form.vashotelType.in_included: Включен?
+form.vashotelType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.vashotelType.api_key: Ключ API
+form.vashotelType.vashotel_ru_settings_key: Ключ, который задается в настройках гостиницы ВашОтель.RU
+form.vashotelType.hotel_id: ID отеля
+form.vashotelType.vashotel_ru_settings_hotel_id: ID отеля в настройках ВашОтель.RU
+form.vashotelType.breakfast: Завтрак?
+form.vashotelType.r0_or_BB: Какой тип питания использовать RO или BB?
 controller.bookingController.settings_saved_success: 'Настройки успешно сохранены.'
 controller.channelManagerController.sync_end: 'Синхронизация окончена.'
 controller.oktogoController.settings_saved_success: 'Настройки успешно сохранены.'
 controller.oktogoController.rooms_sync_success: 'Номера успешно синхронизированы.'
 controller.oktogoController.sync_error: 'Во время синхронизации произошла ошибка. Попробуйте еще раз.'
 controller.oktogoController.tariffs_sync_success: 'Тарифы успешно синхронизированы.'
-controller.vashhotelController.rooms_sync_success: 'Номера успешно синхронизированы.'
-controller.vashhotelController.sync_error: 'Во время синхронизации произошла ошибка. Попробуйте еще раз.'
-controller.vashhotelController.rooms_sync_success: 'Тарифы успешно синхронизированы.'
-controller.vashhotelController.settings_saved_success: 'Настройки успешно сохранены.'
+controller.vashotelController.rooms_sync_success: 'Номера успешно синхронизированы.'
+controller.vashotelController.sync_error: 'Во время синхронизации произошла ошибка. Попробуйте еще раз.'
+controller.vashotelController.rooms_sync_success: 'Тарифы успешно синхронизированы.'
+controller.vashotelController.settings_saved_success: 'Настройки успешно сохранены.'
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
 roomtype.placeholder: 'тип номера соответствия номеру в канале'
 tarifftype.placeholder: 'тариф соответствия тарифу в канале'
