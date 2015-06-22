@@ -70,11 +70,11 @@
 
     <div class="main">
         <p class="indent">Отель {% if hotel and hotel.name %}<strong>"{{ hotel.name }}"</strong> {% else %}____________________{% endif %}, расположенный по
-            адресу {% if hotel.city and hotel.street %} <strong> {{ hotel.city }} {{ hotel.street }} {{ hotel.house }} </strong> {% else %}_________________________________________{% endif %},
-            ИНН {% if hotel.organization and hotel.organization.inn %} {{ hotel.organization.inn }} {% else %} ________________________ {% endif %} извещает
-            Заказчика: {% if entity.order.mainTourist %} {{ entity.order.mainTourist.fullName }} {% else %} __________________________________ {% endif %},
+            адресу {% if hotel and hotel.city and hotel.street %} <strong> {{ hotel.city }} {{ hotel.street }} {{ hotel.house }} </strong> {% else %}_________________________________________{% endif %},
+            ИНН {% if hotel and hotel.organization and hotel.organization.inn %} {{ hotel.organization.inn }} {% else %} ________________________ {% endif %} извещает
+            Заказчика: {% if tourist %} {{ tourist.fullName }} {% else %} __________________________________ {% endif %},
             дата рождения {% if entity.order.mainTourist %} {{ entity.order.mainTourist.birthday|date('d.m.Y') }} {% else %} ___.___._______ {% endif %} г.,
-            адрес {% if tourist.address %} {{ tourist.address }} {% else %} ____________________________________________________ {% endif %}</p>
+            адрес {% if tourist and tourist.address %} {{ tourist.address }} {% else %} ____________________________________________________ {% endif %}</p>
         <p class="indent">Документ удостоверяющий личность:
             Тип документа {% if documentRelation and documentRelation.type %} {{ documentRelation.type|trans({}) }}{% else %}_______________{% endif %}
             Серия {% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% else %}_____________________{% endif %}
