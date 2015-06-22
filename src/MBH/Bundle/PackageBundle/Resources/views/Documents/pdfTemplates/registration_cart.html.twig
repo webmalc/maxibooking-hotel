@@ -462,7 +462,7 @@
                                 <div class="title">
                                     1. Фамилия
                                 </div>
-                                <div class="area">{{ tourist.lastName }}</div>
+                                <div class="area">{% if tourist %}{{ tourist.lastName }}{% endif %}</div>
                             </div>
                         </td>
                         <td>
@@ -470,7 +470,7 @@
                                 <div class="title">
                                     Комната №
                                 </div>
-                                <div class="area">{{ entity.accommodation.name }}</div>
+                                <div class="area">{% if entity and entity.accommodation %}{{ entity.accommodation.name }}{% endif %}</div>
                             </div>
                         </td>
                     </tr>
@@ -480,7 +480,7 @@
                                 <div class="title">
                                     2. Имя
                                 </div>
-                                <div class="area">{{ tourist.firstName }}</div>
+                                <div class="area">{% if tourist %}{{ tourist.firstName }}{% endif %}</div>
                             </div>
                         </td>
                         <td>
@@ -488,7 +488,7 @@
                                 <div class="title">
                                     Прибыл
                                 </div>
-                                <div class="area">{{ entity.arrivalTime|date('d.m.Y') }}</div>
+                                <div class="area">{% if entity.arrivalTime %}{{ entity.arrivalTime|date('d.m.Y') }}{% endif %}</div>
                             </div>
                         </td>
                     </tr>
@@ -498,7 +498,7 @@
                                 <div class="title">
                                     3. Отчество
                                 </div>
-                                <div class="area">{{ tourist.patronymic }}</div>
+                                <div class="area">{% if tourist %}{{ tourist.patronymic }}{% endif %}</div>
                             </div>
                         </td>
                         <td>
@@ -506,7 +506,7 @@
                                 <div class="title">
                                     Выбыл
                                 </div>
-                                <div class="area">{{ entity.departureTime|date('d.m.Y') }}</div>
+                                <div class="area">{% if entity.deletedAt %}{{ entity.departureTime|date('d.m.Y') }}{% endif %}</div>
                             </div>
                         </td>
                     </tr>
@@ -516,7 +516,7 @@
                                 <div class="title" style="width : 130px;">
                                     4. Дата рождения
                                 </div>
-                                <div class="area" style="margin-left: 130px">{{ tourist.birthday|date('d.m.Y') }}</div>
+                                <div class="area" style="margin-left: 130px">{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div>
                             </div>
                         </td>
                     </tr>
@@ -526,7 +526,7 @@
                                 <div class="title" style="width : 130px;">
                                     5. Место рождения
                                 </div>
-                                <!--<div class="area" style="margin-left: 130px">{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}</div>-->
+                                {% if tourist and birthplace %}<!--<div class="area" style="margin-left: 130px">{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}</div>-->{% endif %}
                             </div>
                         </td>
                     </tr>
@@ -536,7 +536,7 @@
                                 <div class="title" style="margin-left: 30px">
                                     Область
                                 </div>
-                                <div class="area">{{ tourist.birthplace.district }}</div>
+                                <div class="area">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district }}{% endif %}</div>
                             </div>
                         </td>
                     </tr>
@@ -546,7 +546,7 @@
                                 <div class="title" style="margin-left: 30px">
                                     Район
                                 </div>
-                                <div class="area">{{ tourist.birthplace.mainRegion }}</div>
+                                <div class="area">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.mainRegion }}{% endif %}</div>
                             </div>
                         </td>
                     </tr>
@@ -564,7 +564,7 @@
                                 <div class="title" style="width: 50px">
                                     Город
                                 </div>
-                                <div class="area" style="margin-left: 50px;">{{ tourist.birthplace.city }}</div>
+                                <div class="area" style="margin-left: 50px;">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.city }}{% endif %}</div>
                             </div>
                         </td>
                     </tr>
