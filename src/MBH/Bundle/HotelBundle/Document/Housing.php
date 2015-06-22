@@ -232,4 +232,16 @@ class Housing extends Base
     {
         return $this->getName();
     }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        if (!empty($this->internalName)) {
+            return $this->internalName;
+        }
+
+        return $this->name;
+    }
 }

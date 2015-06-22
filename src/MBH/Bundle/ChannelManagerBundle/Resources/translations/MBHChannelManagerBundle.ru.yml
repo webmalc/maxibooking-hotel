@@ -37,9 +37,9 @@ channelManager.booking.notification.edit: Изменен заказ %order% из
 channelManager.booking.notification.delete: Удален заказ %order% из booking.com. Номера броней: %packages%
 
 channelManager.vashotel.notification.subject: Сообщения от Vashotel.ru
-channelManager.vashotel.notification.new: Новый заказ %order% из vashotel.ru. Номера броней: %packages%
-channelManager.vashotel.notification.edit: Изменен заказ %order% из vashotel.ru. Номера броней: %packages%
-channelManager.vashotel.notification.delete: Удален заказ %order% из vashotel.ru. Номера броней: %packages%
+channelManager.vashotel.notification.new: Новый заказ %order% из ВашОтель.RU. Номера броней: %packages%
+channelManager.vashotel.notification.edit: Изменен заказ %order% из ВашОтель.RU. Номера броней: %packages%
+channelManager.vashotel.notification.delete: Удален заказ %order% из ВашОтель.RU. Номера броней: %packages%
 
 channelmanager.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы типы номеров, тарифы или услуги
 views.channelmanager.actions.sync: Синхронизировать

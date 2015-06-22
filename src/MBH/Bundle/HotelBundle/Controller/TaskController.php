@@ -19,6 +19,7 @@ use MBH\Bundle\HotelBundle\Form\TaskType;
 /**
  * Class TaskController
  * @package MBH\Bundle\HotelBundle\Controller
+ * @Route("/task")
  */
 class TaskController extends Controller
 {

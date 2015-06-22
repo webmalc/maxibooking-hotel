@@ -25,7 +25,7 @@ class TaskTypeType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'MBH\Bundle\HotelBundle\Document\TaskTypeDocument',
+            'data_class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
             'types' => [],
         ));
     }

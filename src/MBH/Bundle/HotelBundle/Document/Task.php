@@ -39,7 +39,7 @@ class Task extends Base
 
     /**
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="TaskTypeDocument")
+     * @ODM\ReferenceOne(targetDocument="TaskType")
      * @ Assert\NotNull(message="validator.document.task.taskType_no_selected")
      */
     protected $taskType;
@@ -114,10 +114,10 @@ class Task extends Base
     /**
      * Set taskType
      *
-     * @param TaskTypeDocument $taskType
+     * @param TaskType $taskType
      * @return self
      */
-    public function setTaskType(TaskTypeDocument $taskType)
+    public function setTaskType(TaskType $taskType)
     {
         $this->taskType = $taskType;
 
@@ -127,7 +127,7 @@ class Task extends Base
     /**
      * Get taskType
      *
-     * @return TaskTypeDocument $taskType
+     * @return TaskType $taskType
      */
     public function getTaskType()
     {

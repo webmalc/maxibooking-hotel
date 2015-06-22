@@ -29,7 +29,7 @@
                             <i class="fa fa-home" title='Корпус' data-toggle='tooltip'></i>&nbsp  <select name="housing" multiple data-placeholder="Корпус" id="accommodation-report-filter-housing" class="accommodation-report-filter form-control input-sm">
                                 <option></option>
                                 {% for housing in housings %}
-                                    <option value="{{ housing }}" {% if housing in app.request.get('housings') and housings|length != app.request.get('housings')|length %}selected{% endif %}>{{ housing }}</option>
+                                    <option value="{{ housing.id }}" {% if housing in app.request.get('housings') and housings|length != app.request.get('housings')|length %}selected{% endif %}>{{ housing.title }}</option>
                                 {% endfor %}
                             </select>
                         </div>

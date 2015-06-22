@@ -24,7 +24,7 @@ class TaskType extends AbstractType
 
         $builder
             ->add('taskType', 'document', [
-                'class' => 'MBH\Bundle\HotelBundle\Document\TaskTypeDocument',
+                'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
                 'label' => 'form.task.taskType',
                 'group' => $group,
                 'required' => true,

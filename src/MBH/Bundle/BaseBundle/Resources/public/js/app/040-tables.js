@@ -23,15 +23,7 @@ window.universalAddExcelButtons = function($table, $container)
             {
                 "sExtends": "xls",
                 "sButtonText": '<i class="fa fa-table"></i> Excel'
-            },
-            /*{
-             "sExtends": "pdf",
-             "sButtonText": "PDF "
-             },*/
-            {
-                "sExtends": "print",
-                "sButtonText": '<i class="fa fa-print"></i> Печать'
-            },
+            }
         ]
     });
 
@@ -112,15 +104,7 @@ $(document).ready(function() {
                 {
                     "sExtends": "xls",
                     "sButtonText": '<i class="fa fa-table"></i> Excel'
-                },
-                /*{
-                 "sExtends": "pdf",
-                 "sButtonText": "PDF "
-                 },*/
-                {
-                    "sExtends": "print",
-                    "sButtonText": '<i class="fa fa-print"></i> Печать'
-                },
+                }
             ]
         });
 

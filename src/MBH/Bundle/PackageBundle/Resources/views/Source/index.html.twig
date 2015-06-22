@@ -36,7 +36,7 @@
         </tbody>
     </table>
 
-    {{ form_start(form, {'action': path('package_source'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('package_source'), 'attr': {'class': 'hidden-print form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:new_plus_actions.html.twig' with {'save_close': false} %}
     {{ form_end(form) }}

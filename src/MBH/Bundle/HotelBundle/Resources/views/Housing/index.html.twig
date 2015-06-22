@@ -16,7 +16,7 @@
         <tbody>
         {% for entity in entities %}
             <tr>
-                <td class="text-center table-icon"><i class="fa fa-puzzle-piece"></i></td>
+                <td class="text-center table-icon"><i class="fa fa-home"></i></td>
                 <td><a href="{{ path('housing_edit', { 'id': entity.id }) }}" rel="main" title= {{ 'views.hotel.index.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">{{ entity.name }}</a></td>
                 <td>{{ entity.internalName }}</td>
                 <td class="text-center">{{ entity.city }}</td>
