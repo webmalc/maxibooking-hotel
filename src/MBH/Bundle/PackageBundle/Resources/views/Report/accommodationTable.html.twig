@@ -54,20 +54,28 @@
 
                             <!---------------------------- PACKAGE INFO ------------------------->
                             {% for package in roomData['packages'] %}
-                                <li class="tile-title tile-not-selected"
+                                <li class="tile-title tile-not-selected tile-package-info"
                                     data-content="{% include 'MBHPackageBundle:Report:accommodationTablePackage.html.twig' with {'data': package } %}"
                                     data-original-title="{{ package.doc.numberWithPrefix }} {{ package.doc.mainTourist ? package.doc.mainTourist.lastNameWithInitials }}" data-placement="top" data-container="body"
                                     data-toggle="popover" style="left: {{ headerWidth + package.margin + package.padding }}px; display: list-item;">{{ package.name }}</li>
                             {% endfor %}
+
+                            {% set i = 0 %}
 
                             {% for day in roomData['days'] %}
 
                                 {% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}
                                 {% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}
 
+
+                                {% set i = i + 1 %}
+
+                                {% if loop.first %}{% set i = 0 %}{% endif %}
+                                {% if i > 14 %}{% set i = 1 %}{% endif %}
+
                                 {% if day.package is empty %}
                                     <!---------------------------- EMPTY PACKAGES ------------------------->
-                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-free both">
+                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-bookable tile-free both">
                                         {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                     </li>
                                 {% else %}
@@ -80,11 +88,11 @@
 
                                                 {% if day.package[0].isCheckIn %}
                                                     <!---------------------------- ONE PACKAGE. BEGIN. EARLY CHECK-IN. COMING ------------------------->
-                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-busy-early tile-{{ day.package[0].status }} left">
-                                                        <div class="tile tile-free left">
-                                                            <div class="tile tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }}">
-                                                                <div class="tile tile-busy tile-{{ day.package[0].status }}-coming left ">
-                                                                    <div class="tile tile-free right-left">
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-bookable tile-busy tile-busy-early tile-{{ day.package[0].status }} left">
+                                                        <div class="tile tile-num-{{i}} tile-free left">
+                                                            <div class="tile tile-num-{{i}} tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }}">
+                                                                <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }}-coming left ">
+                                                                    <div class="tile tile-num-{{i}} tile-free right-left">
                                                                         {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                                     </div>
                                                                 </div>
@@ -93,8 +101,8 @@
                                                     </li>
                                                 {% else %}
                                                     <!---------------------------- ONE PACKAGE. BEGIN. EARLY CHECK-IN ------------------------->
-                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-busy-early tile-{{ day.package[0].status }} left">
-                                                        <div class="tile tile-busy tile-{{ day.package[0].status }} left">
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-bookable tile-busy tile-busy-early tile-{{ day.package[0].status }} left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }} left">
                                                             {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                         </div>
                                                     </li>
@@ -104,14 +112,14 @@
 
                                                 {% if day.package[0].isCheckIn %}
                                                     <!---------------------------- ONE PACKAGE. BEGIN. COMING ------------------------->
-                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-free tile-coming{{ day.package[0].isCheckOut ? '-out' }} right-left">
-                                                        <div class="tile tile-busy tile-{{ day.package[0].status }}-coming left">
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-bookable tile-free tile-coming{{ day.package[0].isCheckOut ? '-out' }} right-left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }}-coming left">
                                                             {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                         </div>
                                                     </li>
                                                 {% else %}
                                                     <!---------------------------- ONE PACKAGE. BEGIN ------------------------->
-                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-{{ day.package[0].status }} left">
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-bookable tile-busy tile-{{ day.package[0].status }} left">
                                                         {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                     </li>
                                                 {% endif %}
@@ -123,11 +131,11 @@
 
                                                 {% if day.package[0].isCheckIn %}
                                                     <!---------------------------- ONE PACKAGE. LATE CHECK-OUT. COMING ------------------------->
-                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
-                                                        <div class="tile tile-free right-left">
-                                                            <div class="tile tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} tile-{{ day.package[0].status }}-coming right-left">
-                                                                <div class="tile tile-busy tile-{{ day.package[0].status }}-coming left">
-                                                                    <div class="tile tile-free left">
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-bookable tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                        <div class="tile tile-num-{{i}} tile-free right-left">
+                                                            <div class="tile tile-num-{{i}} tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} tile-{{ day.package[0].status }}-coming right-left">
+                                                                <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }}-coming left">
+                                                                    <div class="tile tile-num-{{i}} tile-free left">
                                                                         {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                                     </div>
                                                                 </div>
@@ -136,8 +144,8 @@
                                                     </li>
                                                 {% else %}
                                                     <!---------------------------- ONE PACKAGE. LATE CHECK-OUT ------------------------->
-                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-busy-early tile-{{ day.package[0].status }} right">
-                                                        <div class="tile tile-busy tile-{{ day.package[0].status }} right">
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-bookable tile-busy tile-busy-early tile-{{ day.package[0].status }} right">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }} right">
                                                             {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                         </div>
                                                     </li>
@@ -146,21 +154,21 @@
 
                                                 {% if day.package[0].isCheckIn %}
                                                     <!---------------------------- ONE PACKAGE. END. COMING ------------------------->
-                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} tile-{{ day.package[0].status }}-coming right-left">
-                                                        <div class="tile tile-free right">
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-bookable tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} tile-{{ day.package[0].status }}-coming right-left">
+                                                        <div class="tile tile-num-{{i}} tile-free right">
                                                             {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                         </div>
                                                     </li>
                                                 {% else %}
                                                     <!---------------------------- ONE PACKAGE. END ------------------------->
-                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-bookable tile-busy tile-{{ day.package[0].status }} right">
+                                                    <li {% include 'MBHPackageBundle:Report:accommodationTablePackageInfo.html.twig' with {'day': day, 'roomData': roomData, 'roomTypeData': roomTypeData } %} class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-bookable tile-busy tile-{{ day.package[0].status }} right">
                                                         {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                     </li>
                                                 {% endif %}
                                             {% endif %}
                                         {% else %}
                                             <!---------------------------- ONE PACKAGE ------------------------->
-                                            <li class="{{ weekend }} {{ today }} tile {{ day.package[0].isCheckIn ? 'tile-coming' }}{{ day.package[0].isCheckOut ? '-out' }} tile-busy tile-{{ day.package[0].status }}{{ day.package[0].isCheckIn ? '-coming' }} both">
+                                            <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} {{ day.package[0].isCheckIn ? 'tile-coming' }}{{ day.package[0].isCheckOut ? '-out' }} tile-busy tile-{{ day.package[0].status }}{{ day.package[0].isCheckIn ? '-coming' }} both">
                                                 {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                             </li>
                                         {% endif %}
@@ -172,14 +180,14 @@
                                             {% if day.package[0].isCheckIn and day.package[1].isCheckIn is empty %}
                                                 <!---------------------------- TWO PACKAGES. EARLY CHECK-IN. COMING ONE ------------------------->
 
-                                                <li class=" {{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
-                                                    <div class="tile tile-free left">
-                                                        <div class="tile tile-busy tile-{{ day.package[0].status }} right-left">
-                                                            <div class="tile tile-free right-left">
-                                                                <div class="tile tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} left">
-                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }}-coming right-left">
-                                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
-                                                                            <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                <li class=" {{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-num-{{i}} tile-free left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-num-{{i}} tile-free right-left">
+                                                                <div class="tile tile-num-{{i}} tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} left">
+                                                                    <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }}-coming right-left">
+                                                                        <div class="tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                                            <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }} left">
                                                                                 {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                                             </div>
                                                                         </div>
@@ -194,11 +202,11 @@
                                             {% elseif day.package[1].isCheckIn and day.package[0].isCheckIn is empty %}
                                                 <!---------------------------- TWO PACKAGES. EARLY CHECK-IN. COMING TWO ------------------------->
 
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
-                                                    <div class="tile tile-free left">
-                                                        <div class="tile tile-busy tile-coming{{ day.package[1].isCheckOut ? '-out' }} right-left">
-                                                            <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
-                                                                <div class="tile tile-busy tile-{{ day.package[0].status }} right">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-num-{{i}} tile-free left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-coming{{ day.package[1].isCheckOut ? '-out' }} right-left">
+                                                            <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                                <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }} right">
                                                                     {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                                 </div>
                                                             </div>
@@ -209,13 +217,13 @@
                                             {% elseif day.package[0].isCheckIn and day.package[1].isCheckIn %}
                                                 <!---------------------------- TWO PACKAGES. EARLY CHECK-IN. COMING BOTH ------------------------->
 
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
-                                                    <div class="tile tile-free left">
-                                                        <div class="tile tile-busy tile-{{ day.package[0].status }} right-left">
-                                                            <div class="tile tile-free right-left">
-                                                                <div class="tile tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }}">
-                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }}-coming right-left">
-                                                                        <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-num-{{i}} tile-free left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-num-{{i}} tile-free right-left">
+                                                                <div class="tile tile-num-{{i}} tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }}">
+                                                                    <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }}-coming right-left">
+                                                                        <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }}-coming left">
                                                                             {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                                         </div>
                                                                     </div>
@@ -226,9 +234,9 @@
                                                 </li>
                                             {% else %}
                                                 <!---------------------------- TWO PACKAGES. EARLY CHECK-IN ------------------------->
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-{{ day.package[0].status }} right-left">
-                                                    <div class="tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
-                                                        <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }} right-left">
+                                                    <div class="tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }} left">
                                                             {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                         </div>
                                                     </div>
@@ -239,13 +247,13 @@
 
                                             {% if day.package[0].isCheckIn and day.package[1].isCheckIn is empty %}
                                                 <!---------------------------- TWO PACKAGES. LATE CHECK-OUT. COMING ONE ------------------------->
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-{{ day.package[1].status }} left">
-                                                    <div class="tile tile-free left">
-                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
-                                                            <div class="tile tile-free right-left">
-                                                                <div class="tile tile-busy tile-coming{{ day.package[1].isCheckOut ? '-out' }} left">
-                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }}-coming right-left">
-                                                                        <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-num-{{i}} tile-free left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-num-{{i}} tile-free right-left">
+                                                                <div class="tile tile-num-{{i}} tile-busy tile-coming{{ day.package[1].isCheckOut ? '-out' }} left">
+                                                                    <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }}-coming right-left">
+                                                                        <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }} left">
                                                                             {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                                         </div>
                                                                     </div>
@@ -258,14 +266,14 @@
                                             {% elseif day.package[1].isCheckIn and day.package[0].isCheckIn is empty %}
                                                 <!---------------------------- TWO PACKAGES. LATE CHECK-OUT. COMING TWO ------------------------->
 
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-{{ day.package[1].status }} left">
-                                                    <div class="tile tile-free left">
-                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
-                                                            <div class="tile tile-free right-left">
-                                                                <div class="tile tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} right-left">
-                                                                    <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
-                                                                        <div class="tile tile-busy tile-{{ day.package[0].status }} right">
-                                                                            <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-num-{{i}} tile-free left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-num-{{i}} tile-free right-left">
+                                                                <div class="tile tile-num-{{i}} tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} right-left">
+                                                                    <div class="tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                                        <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }} right">
+                                                                            <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }}-coming left">
                                                                                 {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                                             </div>
                                                                         </div>
@@ -279,13 +287,13 @@
                                             {% elseif day.package[0].isCheckIn and day.package[1].isCheckIn %}
                                                 <!---------------------------- TWO PACKAGES. LATE CHECK-OUT. COMING BOTH ------------------------->
 
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-{{ day.package[1].status }} left">
-                                                    <div class="tile tile-free left">
-                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
-                                                            <div class="tile tile-free right-left">
-                                                                <div class="tile tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }}">
-                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }}-coming right-left">
-                                                                        <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-num-{{i}} tile-free left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-num-{{i}} tile-free right-left">
+                                                                <div class="tile tile-num-{{i}} tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }}">
+                                                                    <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }}-coming right-left">
+                                                                        <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }}-coming left">
                                                                             {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                                         </div>
                                                                     </div>
@@ -297,9 +305,9 @@
 
                                             {% else %}
                                                 <!---------------------------- TWO PACKAGES. LATE CHECK-OUT ------------------------->
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
-                                                    <div class="tile tile-busy tile-{{ day.package[0].status }} right-left">
-                                                        <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                    <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }} right-left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }} left">
                                                             {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                         </div>
                                                     </div>
@@ -310,14 +318,14 @@
 
                                             {% if day.package[0].isCheckIn and day.package[1].isCheckIn is empty %}
                                                 <!---------------------------- TWO PACKAGES. LATE CHECK-OUT AND EARLY CHECK-IN. COMING ONE ------------------------->
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
-                                                    <div class="tile tile-free left">
-                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
-                                                            <div class="tile tile-free right-left">
-                                                                <div class="tile tile-busy tile-coming left">
-                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }}-coming right-left">
-                                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
-                                                                            <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-num-{{i}} tile-free left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-num-{{i}} tile-free right-left">
+                                                                <div class="tile tile-num-{{i}} tile-busy tile-coming left">
+                                                                    <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }}-coming right-left">
+                                                                        <div class="tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                                            <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }} left">
                                                                                 {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                                             </div>
                                                                         </div>
@@ -329,13 +337,13 @@
                                                 </li>
                                             {% elseif day.package[1].isCheckIn and day.package[0].isCheckIn is empty %}
                                                 <!---------------------------- TWO PACKAGES. LATE CHECK-OUT AND EARLY CHECK-IN. COMING TWO ------------------------->
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
-                                                    <div class="tile tile-free left">
-                                                        <div class="tile tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} right-left">
-                                                            <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
-                                                                <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-num-{{i}} tile-free left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} right-left">
+                                                            <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                                <div class="tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
 
-                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }} right-left">
+                                                                    <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }} right-left">
                                                                         {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                                     </div>
                                                                 </div>
@@ -345,13 +353,13 @@
                                                 </li>
                                             {% elseif day.package[0].isCheckIn and day.package[1].isCheckIn %}
                                                 <!---------------------------- TWO PACKAGES. LATE CHECK-OUT AND EARLY CHECK-IN. COMING BOTH ------------------------->
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
-                                                    <div class="tile tile-free left">
-                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
-                                                            <div class="tile tile-free right-left">
-                                                                <div class="tile tile-busy tile-coming">
-                                                                    <div class="tile tile-busy tile-{{ day.package[0].status }}-coming right-left">
-                                                                        <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                    <div class="tile tile-num-{{i}} tile-free left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                            <div class="tile tile-num-{{i}} tile-free right-left">
+                                                                <div class="tile tile-num-{{i}} tile-busy tile-coming">
+                                                                    <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }}-coming right-left">
+                                                                        <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }}-coming left">
                                                                             {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                                         </div>
                                                                     </div>
@@ -362,10 +370,10 @@
                                                 </li>
                                             {% else %}
                                                 <!---------------------------- TWO PACKAGES. LATE CHECK-OUT AND EARLY CHECK-IN ------------------------->
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
-                                                    <div class="tile tile-busy tile-{{ day.package[0].status }} right-left">
-                                                        <div class="tile tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
-                                                            <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[0].status }} right-left">
+                                                    <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }} right-left">
+                                                        <div class="tile tile-num-{{i}} tile-busy tile-busy-early tile-{{ day.package[1].status }} left">
+                                                            <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }} left">
                                                                 {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                             </div>
                                                         </div>
@@ -376,29 +384,29 @@
 
                                             {% if day.package[0].isCheckIn and day.package[1].isCheckIn is empty %}
                                                 <!---------------------------- TWO PACKAGES. COMING ONE ------------------------->
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} tile-{{ day.package[0].status }}-coming right-left">
-                                                    <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} tile-{{ day.package[0].status }}-coming right-left">
+                                                    <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }} left">
                                                         {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                     </div>
                                                 </li>
                                             {% elseif day.package[1].isCheckIn and day.package[0].isCheckIn is empty %}
                                                 <!---------------------------- TWO PACKAGES. COMING TWO ------------------------->
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} tile-{{ day.package[0].status }} right-left">
-                                                    <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-coming{{ day.package[0].isCheckOut ? '-out' }} tile-{{ day.package[0].status }} right-left">
+                                                    <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }}-coming left">
                                                         {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                     </div>
                                                 </li>
                                             {% elseif day.package[0].isCheckIn and day.package[1].isCheckIn %}
                                                 <!---------------------------- TWO PACKAGES. COMING BOTH ------------------------->
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-coming{{ day.package[0].isCheckOut and day.package[1].isCheckOut ? '-out'}}{{ day.package[0].isCheckOut and day.package[1].isCheckOut is empty ? '-out-in' }}{{ day.package[1].isCheckOut and day.package[0].isCheckOut is empty ? '-in-out' }} tile-{{ day.package[0].status }}-coming right-left">
-                                                    <div class="tile tile-busy tile-{{ day.package[1].status }}-coming left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-coming{{ day.package[0].isCheckOut and day.package[1].isCheckOut ? '-out'}}{{ day.package[0].isCheckOut and day.package[1].isCheckOut is empty ? '-out-in' }}{{ day.package[1].isCheckOut and day.package[0].isCheckOut is empty ? '-in-out' }} tile-{{ day.package[0].status }}-coming right-left">
+                                                    <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }}-coming left">
                                                         {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                     </div>
                                                 </li>
                                             {% else %}
                                                 <!---------------------------- TWO PACKAGES ------------------------->
-                                                <li class="{{ weekend }} {{ today }} tile tile-busy tile-{{ day.package[0].status }} right-left">
-                                                    <div class="tile tile-busy tile-{{ day.package[1].status }} left">
+                                                <li class="{{ weekend }} {{ today }} tile tile-num-{{i}} tile-busy tile-{{ day.package[0].status }} right-left">
+                                                    <div class="tile tile-num-{{i}} tile-busy tile-{{ day.package[1].status }} left">
                                                         {% include 'MBHPackageBundle:Report:accommodationTableDay.html.twig' with {'day': day } %}
                                                     </div>
                                                 </li>

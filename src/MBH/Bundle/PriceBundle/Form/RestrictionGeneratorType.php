@@ -60,7 +60,7 @@ class RestrictionGeneratorType extends AbstractType
             ])
             ->add('tariffs', 'document', [
                 'label' => 'Тарифы',
-                'required' => false,
+                'required' => true,
                 'group' => 'Настройки',
                 'multiple' => true,
                 'class' => 'MBHPriceBundle:Tariff',

@@ -7,6 +7,7 @@
             .navbar-fixed-bottom {
                 margin-bottom: 40px !important;
             }
+
             .body {
                 padding-bottom: 100px !important;
             }
@@ -18,33 +19,55 @@
     {% block top_navbar %}
         {% include 'MBHBaseBundle::navbar.html.twig' %}
     {% endblock %}
-    
+
     {% if form is defined %}
         {% form_theme form 'MBHBaseBundle:Form:fields.html.twig' %}
     {% endif %}
-    
+
     {% if edit_form is defined %}
         {% form_theme form 'MBHBaseBundle:Form:fields.html.twig' %}
     {% endif %}
 
     <div class="container-fluid main-container">
 
+        {% if selected_hotel() and selected_hotel().logo %}
+            <div id="print-hotel-logo">
+                <img class="grayscale" src="{{ asset(selected_hotel().logoUrl)|imagine_filter('thumb_95x80') }}"/>
+            </div>
+        {% endif %}
+
         <ul class="breadcrumb" id="main-breadcrumb">
             <li><a href="{{ path('_welcome') }}"><i class="fa fa-home"></i></a></li>
             {% if title_url is defined and title_url %}
-                <li><a href="{{title_url}}">{{ title|default(project_title) }}</a></li>
+                <li><a href="{{ title_url }}">{{ title|default(project_title) }}</a></li>
             {% endif %}
             {% if small_title is defined %}
                 <li>{{ small_title|raw }}</li>
             {% endif %}
         </ul>
 
+        <div class="print-clearfix"></div>
+
         {% block messages %}
             <div id="messages">{% include 'MBHBaseBundle::messages.html.twig' %}</div>
         {% endblock %}
 
-    {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
 
-    {% include 'MBHBaseBundle:Partials:entityDeleteForm.html.twig' %}
-</div>
+        {% include 'MBHBaseBundle:Partials:entityDeleteForm.html.twig' %}
+
+        <div id="print-user-info">
+            <div class="row">
+                <div class="col-md-6">
+                    {{ 'now'|date('d.m.Y H:i') }}
+                </div>
+                <div class="col-md-6 text-right">
+                    {% if app.user %}
+                        {{ app.user.fullName(true) }}&nbsp_____________________
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
 {% endblock %}

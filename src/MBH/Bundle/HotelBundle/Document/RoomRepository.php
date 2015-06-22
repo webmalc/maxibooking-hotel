@@ -103,7 +103,7 @@ class RoomRepository extends AbstractBaseRepository
         //housing
         if (!empty($housing)) {
             is_array($housing) ? $housing : $housing = [$housing];
-            $qb->field('housing')->in($housing);
+            $qb->field('housing.id')->in($housing);
         }
 
         //floors
@@ -155,23 +155,6 @@ class RoomRepository extends AbstractBaseRepository
         }
 
         return $result;
-    }
-
-
-    /**
-     * @return array
-     */
-    public function fetchHousings()
-    {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
-        $docs = $qb->distinct('housing')
-            ->getQuery()
-            ->execute();
-        $docs = iterator_to_array($docs);
-        asort($docs);
-
-        return $docs;
     }
 
     /**

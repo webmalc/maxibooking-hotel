@@ -181,10 +181,19 @@ liip_imagine:
         default:
             web_path: ~
     filter_sets:
-        thumb_50x50:
+        thumb_100x100:
             quality: 100
             filters:
                 thumbnail: { size: [100, 100], mode: outbound, allow_upscale: true }
+        thumb_130x110:
+            quality: 100
+            filters:
+              thumbnail: { size: [130, 110], mode: outbound, allow_upscale: true }
+        thumb_95x80:
+            quality: 100
+            filters:
+              thumbnail: { size: [95, 80], mode: outbound, allow_upscale: true }
+
         scaler:
             quality: 100
             filters:

@@ -30,7 +30,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     {
         return [
             'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
-            'housings' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchHousings(),
+            'housings' => $this->dm->getRepository('MBHHotelBundle:Housing')->findBy([
+                'hotel.id' => $this->hotel->getId()
+            ]),
             'floors' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchFloors()
         ];
     }
@@ -77,7 +79,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         );
 
         //data
-        $calendarMonths = $roomsData = [];
+        $calendarMonths = $roomsData = $groupedRooms = [];
         foreach ($rooms as $doc) {
             $groupedRooms[$doc->getRoomType()->getId()][] = $doc;
         }

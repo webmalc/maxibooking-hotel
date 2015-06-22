@@ -13,12 +13,12 @@ use Gedmo\Blameable\Traits\BlameableDocument;
 
 
 /**
- * @ODM\Document(collection="TaskType")
+ * @ODM\Document()
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="title")
  */
-class TaskTypeDocument extends  Base {
+class TaskType extends  Base {
 
     /**
      * Hook timestampable behavior

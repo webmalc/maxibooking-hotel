@@ -53,7 +53,7 @@ class Extension extends \Twig_Extension
             $this->translator->trans('twig.extension.december', [])
         ];
 
-        return $date->format('d') . ' ' . $months[$date->format('n') - 1] . '.';
+        return $date->format('d') . " <span class='date-month'> " . $months[$date->format('n') - 1] . '.</span>';
     }
 
     public function md5($value)
@@ -83,7 +83,7 @@ class Extension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            'mbh_format' => new \Twig_Filter_Method($this, 'format'),
+            'mbh_format' => new \Twig_Filter_Method($this, 'format', ['is_safe' => array('html')]),
             'mbh_md5' => new \Twig_Filter_Method($this, 'md5'),
             'num2str' => new \Twig_Filter_Method($this, 'num2str'),
             'convertMongoDate' => new \Twig_Filter_Method($this, 'convertMongoDate'),

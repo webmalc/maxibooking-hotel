@@ -80,7 +80,6 @@ class Room extends Base
     protected $title;
 
     /**
-     * @var string
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Housing")
      */

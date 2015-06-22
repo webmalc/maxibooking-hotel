@@ -100,7 +100,7 @@
                 </div>
             {% endif %}
 
-            {{ form_start(form, {'action': path('package_order_organization_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_start(form, {'action': path('package_order_organization_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'hidden-print form-horizontal'}}) }}
             {{ form_widget(form) }}
                 {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package} %}
             {{ form_end(form) }}

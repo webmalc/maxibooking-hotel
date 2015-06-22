@@ -29,7 +29,6 @@
                 </div>
             {% endif %}
 
-
             {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                 {{ form_start(form, {'action': path('package_accommodation', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
                 {{ form_widget(form) }}

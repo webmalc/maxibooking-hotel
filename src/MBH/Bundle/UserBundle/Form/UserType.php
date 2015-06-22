@@ -35,7 +35,6 @@ class UserType extends AbstractType
             $builder->add('plainPassword', 'repeated', array(
                 'group' => 'form.userType.authentication_data',
                 'type' => 'password',
-                'options' => array('translation_domain' => 'FOSUserBundle'),
                 'first_options' => array('label' => 'form.password', 'attr' => array('autocomplete' => 'off', 'class' => 'password'),),
                 'second_options' => array('label' => 'form.password_confirmation'),
                 'invalid_message' => 'fos_user.password.mismatch',
@@ -47,7 +46,6 @@ class UserType extends AbstractType
                 'type' => 'password',
                 'mapped' => false,
                 'required' => false,
-                'options' => array('translation_domain' => 'FOSUserBundle'),
                 'first_options' => array('label' => 'form.userType.new_password', 'attr' => array('autocomplete' => 'off', 'class' => 'password'),),
                 'second_options' => array('label' => 'form.userType.confirm_password'),
                 'invalid_message' => 'fos_user.password.mismatch',
