@@ -1016,7 +1016,9 @@ class Hotel extends Base
             $this->setLogo($this->getId().'.'.$this->getFile()->getClientOriginalExtension());
         }
 
-        $this->getFile()->move($this->getUploadRootDir(), $this->getLogo());
+        if($this->getFile()->getPath() != $this->getUploadRootDir()) {
+            $this->getFile()->move($this->getUploadRootDir(), $this->getLogo());
+        }
     }
 
     /**

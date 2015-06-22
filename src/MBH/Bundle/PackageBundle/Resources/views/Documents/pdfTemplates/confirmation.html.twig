@@ -43,7 +43,9 @@
 <div class="document">
     {% set hotel = entity.roomType.hotel %}
     {% set tourist = entity.order.mainTourist %}
-    {% set documentRelation = tourist.documentRelation %}
+    {% if tourist %}
+        {% set documentRelation = tourist.documentRelation %}
+    {% endif %}
 
     <div class="header">
         <div class="title">
@@ -57,19 +59,19 @@
     <hr>
 
     <div class="main">
-        <p class="indent">Отель <strong>"{{ hotel.name }}"</strong>, расположенный по
+        <p class="indent">Отель {% if hotel and hotel.name %}<strong>"{{ hotel.name }}"</strong> {% else %}____________________{% endif %}, расположенный по
             адресу {% if hotel.city and hotel.street %} <strong> {{ hotel.city }} {{ hotel.street }} {{ hotel.house }} </strong> {% else %}_________________________________________{% endif %},
             ИНН {% if hotel.organization and hotel.organization.inn %} {{ hotel.organization.inn }} {% else %} ________________________ {% endif %} извещает
             Заказчика: {% if entity.order.mainTourist %} {{ entity.order.mainTourist.fullName }} {% else %} __________________________________ {% endif %},
             дата рождения {% if entity.order.mainTourist %} {{ entity.order.mainTourist.birthday|date('d.m.Y') }} {% else %} ___.___._______ {% endif %} г.,
             адрес {% if tourist.address %} {{ tourist.address }} {% else %} ____________________________________________________ {% endif %}</p>
         <p class="indent">Документ удостоверяющий личность:
-            Тип документа {% if documentRelation.type %} {{ documentRelation.type|trans({}) }}{% else %}_______________{% endif %}
-            Серия {% if documentRelation.series %}{{ documentRelation.series }}{% else %}_____________________{% endif %}
-            № {% if documentRelation.number %}{{ documentRelation.number }}{% else %}______________________{% endif %}
-            Дата выдачи {% if documentRelation.issued %}{{ documentRelation.issued|date('d.m.Y') }}{% else %}___.___._______ г.{% endif %}
-            Выдан {% if documentRelation.authority %}{{ documentRelation.authority }}{% else %}_________________________________{% endif %}
-            Место рождения {% if tourist.birthplace.city and tourist.birthplace.mainRegion %}{{ tourist.birthplace.city }} {{ tourist.birthplace.mainRegion }} {{ tourist.birthplace.district.name }}{% else %}_____________________________________{% endif %}
+            Тип документа {% if documentRelation and documentRelation.type %} {{ documentRelation.type|trans({}) }}{% else %}_______________{% endif %}
+            Серия {% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% else %}_____________________{% endif %}
+            № {% if documentRelation and documentRelation.number %}{{ documentRelation.number }}{% else %}______________________{% endif %}
+            Дата выдачи {% if documentRelation and documentRelation.issued %}{{ documentRelation.issued|date('d.m.Y') }}{% else %}___.___._______ г.{% endif %}
+            Выдан {% if documentRelation and documentRelation.authority %}{{ documentRelation.authority }}{% else %}_________________________________{% endif %}
+            Место рождения {% if tourist and tourist.birthplace.city and tourist.birthplace.mainRegion %}{{ tourist.birthplace.city }} {{ tourist.birthplace.mainRegion }} {{ tourist.birthplace.district.name }}{% else %}_____________________________________{% endif %}
         </p>
 
         <!-- Services -->
@@ -136,7 +138,7 @@
             </tr>
             <tr>
                 <td align="center">
-                    {% if hotel.organization %}{{ hotel.organization.directorFio }}{% endif %}
+                    {% if hotel and hotel.organization %}{{ hotel.organization.directorFio }}{% endif %}
                 </td>
                 <td></td>
                 <td></td>

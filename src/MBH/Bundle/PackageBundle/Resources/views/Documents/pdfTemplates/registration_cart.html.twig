@@ -62,8 +62,12 @@
 </head>
 <body>
 
-{% set organization = entity.order.organization %}
-{% set tourist = entity.order.mainTourist %}
+{% if entity.order and entity.order.organization %}
+    {% set organization = entity.order.organization %}
+{% endif %}
+{% if entity.order and entity.order.mainTourist %}
+    {% set tourist = entity.order.mainTourist %}
+{% endif %}
 
 <div class="document">
     <div class="header">
@@ -90,7 +94,7 @@
                         <div>Surname</div>
                         <div>Фамилия</div>
                     </div>
-                    <div class="area">{{ tourist.lastName }}</div>
+                    <div class="area">{% if tourist %}{{ tourist.lastName }}{% endif %}</div>
                 </div>
             </td>
             <td colspan="4">
@@ -99,7 +103,7 @@
                         <div>First name</div>
                         <div>Имя</div>
                     </div>
-                    <div class="area" style="margin-left: 100px">{{ tourist.firstName }}</div>
+                    <div class="area" style="margin-left: 100px">{% if tourist %}{{ tourist.firstName }}{% endif %}</div>
                 </div>
             </td>
             <td colspan="4">
@@ -108,7 +112,7 @@
                         <div>Patronymic</div>
                         <div>Отчество</div>
                     </div>
-                    <div class="area" style="margin-left: 100px">{{ tourist.patronymic }}</div>
+                    <div class="area" style="margin-left: 100px">{% if tourist %}{{ tourist.patronymic }}{% endif %}</div>
                 </div>
             </td>
         </tr>
@@ -119,7 +123,7 @@
                         <div>Nationality</div>
                         <div>Гражданство</div>
                     </div>
-                    <div class="area" style="margin-left: 100px;">{{ tourist.citizenship }}</div>
+                    <div class="area" style="margin-left: 100px;">{% if tourist %}{{ tourist.citizenship }}{% endif %}</div>
                 </div>
             </td>
             <td colspan="3">
@@ -128,7 +132,7 @@
                         <div>Sex</div>
                         <div>Пол</div>
                     </div>
-                    <div class="area" style="margin-left: 40px;">{{ tourist.sex }}</div>
+                    <div class="area" style="margin-left: 40px;">{% if tourist %}{{ tourist.sex }}{% endif %}</div>
                 </div>
             </td>
             <td colspan="6">
@@ -148,7 +152,7 @@
                         <div>Day of birth</div>
                         <div>Дата рождения</div>
                     </div>
-                    <div class="area" style="margin-left: 150px;">{{ tourist.birthday|date('d.m.Y') }}</div>
+                    <div class="area" style="margin-left: 150px;">{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div>
                 </div>
             </td>
             <td colspan="9">
@@ -157,7 +161,7 @@
                         <div>Place of birth</div>
                         <div>Место рождения</div>
                     </div>
-                    <div class="area" style="margin-left: 150px;">{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}</div>
+                    <div class="area" style="margin-left: 150px;">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}{% endif %}</div>
                 </div>
             </td>
         </tr>
