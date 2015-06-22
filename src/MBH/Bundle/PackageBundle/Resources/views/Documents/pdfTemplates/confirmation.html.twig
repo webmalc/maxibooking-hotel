@@ -61,9 +61,11 @@
         <div class="title">
             <h2>Подтверждение брони № {{ entity.number }} от {{ entity.begin|date("d.m.Y") }} г.</h2>
         </div>
-        <div class="logo">
-            <img src="{{ asset(hotel.logoUrl, absolute=true) }}">
-        </div>
+        {% if hotel and hotel.logoUrl %}
+            <div class="logo">
+                <img src="{{ asset(hotel.logoUrl, absolute=true) }}">
+            </div>
+        {% endif %}
         <div style="clear: both"></div>
     </div>
     <hr>
