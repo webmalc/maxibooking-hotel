@@ -67,14 +67,14 @@ class VegaImportCommand extends ContainerAwareCommand
     {
         /** @var \AppKernel $kernel */
         $kernel = $this->getContainer()->get('kernel');
-        $root = $kernel->getBundle('VegaBundle')->getPath();
+        $root = $kernel->getBundle('MBHVegaBundle')->getPath();
         //$root = $kernel->getRootDir();
         return $root.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'data';
     }
 
     private function importRegion()
     {
-        $this->dm->getRepository('MBHPackageBundle:VegaRegion')->clear();
+        $this->dm->getRepository('MBHVegaBundle:VegaRegion')->clear();
 
         $this->progress->start();
 
@@ -102,7 +102,7 @@ class VegaImportCommand extends ContainerAwareCommand
 
     private function importState()
     {
-        $this->dm->getRepository('MBHPackageBundle:VegaState')->clear();
+        $this->dm->getRepository('MBHVegaBundle:VegaState')->clear();
 
         $this->progress->start();
 
@@ -130,7 +130,7 @@ class VegaImportCommand extends ContainerAwareCommand
 
     private function importFMS()
     {
-        $this->dm->getRepository('MBHPackageBundle:VegaFMS')->clear();
+        $this->dm->getRepository('MBHVegaBundle:VegaFMS')->clear();
 
         $this->progress->start(8523);
 

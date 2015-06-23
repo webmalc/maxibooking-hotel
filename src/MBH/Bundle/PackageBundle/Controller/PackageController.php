@@ -204,18 +204,20 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 break;
 
             case 'created-by':
-                $data['created_by'] = $this->getUser()->getUsername();
+                $data['createdBy'] = $this->getUser()->getUsername();
                 break;
             default:
         }
 
         $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
+        $summary = $this->dm->getRepository('MBHPackageBundle:Package')->fetchSummary($data);
 
         return [
             'entities' => $entities,
             'total' => $entities->count(),
             'draw' => $request->get('draw'),
-            'statuses' => $this->container->getParameter('mbh.package.statuses')
+            'statuses' => $this->container->getParameter('mbh.package.statuses'),
+            'summary' => $summary
         ];
     }
 

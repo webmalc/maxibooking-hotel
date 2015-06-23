@@ -710,6 +710,7 @@ class Vashotel extends Base
                     ->setIsSmoking(false)
                     ->setPricesByDate($pricesByDate)
                     ->setPrice((float)$total)
+                    ->setTotalOverwrite((float)$total)
                     ->setNote($errorMessage)
                     ->setOrder($order)
                     ->setCorrupted($corrupted)

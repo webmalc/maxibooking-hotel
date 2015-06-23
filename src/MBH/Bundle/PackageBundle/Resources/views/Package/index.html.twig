@@ -1,16 +1,21 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = 'package.index.reservations_list'|trans({}, 'MBHPackageBundle')  %}
+{% set small_title = 'package.index.reservations_list'|trans({}, 'MBHPackageBundle') %}
 
 {% block content %}
 
     <div class="well" id="package-table-filter-well">
         <form id="package-table-filter" class="form-inline" role="form">
             <div class="input">
-                <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp <input type="text" id="package-filter-begin" class="datepicker package-filter begin-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
+                <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp <input type="text"
+                                                                                              id="package-filter-begin"
+                                                                                              class="datepicker package-filter begin-datepiker form-control input-sm"
+                                                                                              data-date-format="dd.mm.yyyy">
             </div>
             <div class="input">
-                - &nbsp <input type="text" id="package-filter-end" class="datepicker package-filter end-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
+                - &nbsp <input type="text" id="package-filter-end"
+                               class="datepicker package-filter end-datepiker form-control input-sm"
+                               data-date-format="dd.mm.yyyy">
             </div>
             <div class="input">
                 <select id="package-filter-dates" class="package-filter form-control input-sm">
@@ -20,23 +25,30 @@
                 </select>
             </div>
             <div class="input">
-                <i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i>&nbsp  <select data-placeholder="Тип номера" id="package-filter-roomType" class="package-filter form-control input-sm">
+                <i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder="Тип номера" id="package-filter-roomType"
+                        class="package-filter form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypes %}
-                    <option value="{{ roomType.id }}">{{ roomType.name }}</option>
+                        <option value="{{ roomType.id }}">{{ roomType.name }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="input">
-                <i class="fa fa-paper-plane" title='Тип брони' data-toggle='tooltip'></i>&nbsp <select data-placeholder="Тип брони" id="package-filter-status" class="package-filter form-control input-sm plain-html">
+                <i class="fa fa-paper-plane" title='Тип брони' data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder="Тип брони" id="package-filter-status"
+                        class="package-filter form-control input-sm plain-html">
                     <option></option>
                     {% for key, status in statuses %}
-                        <option value="{{ key }}" data-class="{{ status.class }}" data-icon="{{ status.icon }}">{{ status.title }}</option>
+                        <option value="{{ key }}" data-class="{{ status.class }}"
+                                data-icon="{{ status.icon }}">{{ status.title }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="input">
-                <i class="fa fa-ruble" title='Статус оплаты' data-toggle='tooltip'></i>&nbsp <select data-placeholder="Статус оплаты" id="package-filter-paid" class="package-filter form-control input-sm">
+                <i class="fa fa-ruble" title='Статус оплаты' data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder="Статус оплаты" id="package-filter-paid"
+                        class="package-filter form-control input-sm">
                     <option></option>
                     <option value="paid">{{ 'package.index.paid'|trans({}, 'MBHPackageBundle') }}</option>
                     <option value="part">{{ 'package.index.partly_paid'|trans({}, 'MBHPackageBundle') }}</option>
@@ -44,16 +56,22 @@
                 </select>
             </div>
             <div class="input">
-                <i class="fa fa-check" title='{{ 'package.index.is_confirmed'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'></i>&nbsp <select data-placeholder="{{ 'package.index.is_confirmed'|trans({}, 'MBHPackageBundle') }}" id="package-filter-confirmed" class="package-filter form-control input-sm">
+                <i class="fa fa-check" title='{{ 'package.index.is_confirmed'|trans({}, 'MBHPackageBundle') }}'
+                   data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder="{{ 'package.index.is_confirmed'|trans({}, 'MBHPackageBundle') }}"
+                        id="package-filter-confirmed" class="package-filter form-control input-sm">
                     <option></option>
                     <option value="1">{{ 'package.index.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }}</option>
                     <option value="0">{{ 'package.index.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}</option>
                 </select>
             </div>
             {% if environment == 'prod' %}
-            <div class="input">
-                <i class="fa fa-trash-o" title='Удаленные?' data-toggle='tooltip'></i>&nbsp <input type="checkbox" id="package-filter-deleted" class="package-filter"  value="1" />
-            </div>
+                <div class="input">
+                    <i class="fa fa-trash-o" title='Удаленные?' data-toggle='tooltip'></i>&nbsp <input type="checkbox"
+                                                                                                       id="package-filter-deleted"
+                                                                                                       class="package-filter"
+                                                                                                       value="1"/>
+                </div>
             {% endif %}
 
             <input type="hidden" id="package-filter-quick-link" value="">
@@ -61,18 +79,38 @@
 
     </div>
 
-        <ul id="package-table-quick-links">
-            <li><a class="btn btn-xs btn-default" data-value="begin-today" href="#">{{ 'package.index.check_in_today'|trans({}, 'MBHPackageBundle') }} (<span class="package-table-quick-links-count">{{ count.begin_today|default('-') }}</span>)</a></li>
-            <li><a class="btn btn-xs btn-default" data-value="begin-tomorrow" href="#">{{ 'package.index.check_in_tomorrow'|trans({}, 'MBHPackageBundle') }} (<span class="package-table-quick-links-count">{{ count.begin_tomorrow|default('-') }}</span>)</a></li>
-            <li><a class="btn btn-xs btn-default" data-value="live-now" href="#">{{ 'package.index.checked_in_now'|trans({}, 'MBHPackageBundle') }} (<span class="package-table-quick-links-count">{{ count.live_now|default('-') }}</span>)</a></li>
-            <li class="package-table-quick-links-margin"><a class="btn btn-xs btn-default" data-value="without-approval" href="#">{{ 'package.index.not_confirmed'|trans({}, 'MBHPackageBundle') }} (<span class="package-table-quick-links-count">{{ count.without_approval|default('-') }}</span>)</a></li>
-            <li><a class="btn btn-xs btn-default" data-value="without-accommodation" href="#">{{ 'package.index.without_placement'|trans({}, 'MBHPackageBundle') }} (<span class="package-table-quick-links-count">{{ count.without_accommodation|default('-') }}</span>)</a></li>
-            <li><a class="btn btn-xs btn-default" data-value="not-paid" href="#">{{ 'package.index.not_paid'|trans({}, 'MBHPackageBundle') }} (<span class="package-table-quick-links-count">{{ count.not_paid|default('-') }}</span>)</a></li>
-            <li><a class="btn btn-xs btn-default" data-value="not-paid-time" href="#">{{ 'package.index.not_paid_in_time'|trans({}, 'MBHPackageBundle') }} (<span class="package-table-quick-links-count">{{ count.not_paid_time|default('-') }}</span>)</a></li>
-            <li><a class="btn btn-xs btn-default" data-value="not-check-in" href="#">{{ 'package.index.not_checked_in'|trans({}, 'MBHPackageBundle') }} (<span class="package-table-quick-links-count">{{ count.not_check_in|default('-') }}</span>)</a></li>
-            <li class="package-table-quick-links-margin"><a class="btn btn-xs btn-default" data-value="created-by" href="#">{{ 'package.index.my_reservations'|trans({}, 'MBHPackageBundle') }} (<span class="package-table-quick-links-count">{{ count.created_by|default('-') }}</span>)</a></li>
-            <li><a class="btn btn-xs btn-default" id="package-table-quick-reset" href="#"><i class="fa fa-ban"></i></a></li>
-        </ul>
+    <ul id="package-table-quick-links">
+        <li><a class="btn btn-xs btn-default" data-value="begin-today"
+               href="#">{{ 'package.index.check_in_today'|trans({}, 'MBHPackageBundle') }} (<span
+                        class="package-table-quick-links-count">{{ count.begin_today|default('-') }}</span>)</a></li>
+        <li><a class="btn btn-xs btn-default" data-value="begin-tomorrow"
+               href="#">{{ 'package.index.check_in_tomorrow'|trans({}, 'MBHPackageBundle') }} (<span
+                        class="package-table-quick-links-count">{{ count.begin_tomorrow|default('-') }}</span>)</a></li>
+        <li><a class="btn btn-xs btn-default" data-value="live-now"
+               href="#">{{ 'package.index.checked_in_now'|trans({}, 'MBHPackageBundle') }} (<span
+                        class="package-table-quick-links-count">{{ count.live_now|default('-') }}</span>)</a></li>
+        <li class="package-table-quick-links-margin"><a class="btn btn-xs btn-default" data-value="without-approval"
+                                                        href="#">{{ 'package.index.not_confirmed'|trans({}, 'MBHPackageBundle') }}
+                (<span class="package-table-quick-links-count">{{ count.without_approval|default('-') }}</span>)</a>
+        </li>
+        <li><a class="btn btn-xs btn-default" data-value="without-accommodation"
+               href="#">{{ 'package.index.without_placement'|trans({}, 'MBHPackageBundle') }} (<span
+                        class="package-table-quick-links-count">{{ count.without_accommodation|default('-') }}</span>)</a>
+        </li>
+        <li><a class="btn btn-xs btn-default" data-value="not-paid"
+               href="#">{{ 'package.index.not_paid'|trans({}, 'MBHPackageBundle') }} (<span
+                        class="package-table-quick-links-count">{{ count.not_paid|default('-') }}</span>)</a></li>
+        <li><a class="btn btn-xs btn-default" data-value="not-paid-time"
+               href="#">{{ 'package.index.not_paid_in_time'|trans({}, 'MBHPackageBundle') }} (<span
+                        class="package-table-quick-links-count">{{ count.not_paid_time|default('-') }}</span>)</a></li>
+        <li><a class="btn btn-xs btn-default" data-value="not-check-in"
+               href="#">{{ 'package.index.not_checked_in'|trans({}, 'MBHPackageBundle') }} (<span
+                        class="package-table-quick-links-count">{{ count.not_check_in|default('-') }}</span>)</a></li>
+        <li class="package-table-quick-links-margin"><a class="btn btn-xs btn-default" data-value="created-by"
+                                                        href="#">{{ 'package.index.my_reservations'|trans({}, 'MBHPackageBundle') }}
+                (<span class="package-table-quick-links-count">{{ count.created_by|default('-') }}</span>)</a></li>
+        <li><a class="btn btn-xs btn-default" id="package-table-quick-reset" href="#"><i class="fa fa-ban"></i></a></li>
+    </ul>
 
     <table id="package-table"
            class="package-table table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
@@ -90,9 +128,21 @@
         </tr>
         </thead>
         <tbody>
-
-        <tbody>
+        </tbody>
     </table>
-            
-{% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'package_search', 'icon': 'fa-search', 'text': 'package.index.selection'|trans({}, 'MBHPackageBundle')} %}
+
+    <div class="text-center alert alert-warning" id="package-summary">
+        <span class="package-summary-row"><b>{{ 'package.index.summary.nights'|trans({}, 'MBHPackageBundle') }}
+                : </b> <span id="package-summary-nights">-</span></span>
+        <span class="package-summary-row"><b>{{ 'package.index.summary.guests'|trans({}, 'MBHPackageBundle') }}
+                : </b> <span id="package-summary-guests">-</span></span>
+        <span class="package-summary-row"><b>{{ 'package.index.summary.total'|trans({}, 'MBHPackageBundle') }}
+                : </b> <span id="package-summary-total">-</span></span>
+        <span class="package-summary-row"><b>{{ 'package.index.summary.paid'|trans({}, 'MBHPackageBundle') }}
+                : </b> <span id="package-summary-paid">-</span></span>
+        <span class="package-summary-row"><b>{{ 'package.index.summary.debt'|trans({}, 'MBHPackageBundle') }}
+                : </b> <span id="package-summary-debt">-</span></span>
+    </div>
+
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'package_search', 'icon': 'fa-search', 'text': 'package.index.selection'|trans({}, 'MBHPackageBundle')} %}
 {% endblock content %}

@@ -3,6 +3,13 @@
 "draw" : "{{ draw }}",
 "recordsTotal": "{{ total }}",
 "recordsFiltered": "{{ total }}",
+
+"package_summary_total": "{{ summary.total|number_format(2)|default('-') }}",
+"package_summary_paid": "{{ summary.paid|number_format(2)|default('-') }}",
+"package_summary_debt": "{{ summary.debt|number_format(2)|default('-') }}",
+"package_summary_nights": "{{ summary.nights|default('-') }}",
+"package_summary_guests": "{{ summary.guests|number_format()|default('-') }}",
+
 "data": [
 {% for entity in entities %}
     {% if entity.isCheckIn and entity.accommodation %}{% set checkIn = true %}{% else %}{% set checkIn = false %}{% endif %}

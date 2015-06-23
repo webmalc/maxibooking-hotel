@@ -17,14 +17,17 @@ class PackageRepository extends DocumentRepository
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function fetchWithAccommodation(\DateTime $begin = null, \DateTime $end = null, $rooms = null, $excludePackages = null)
-    {
+    public function fetchWithAccommodation(
+        \DateTime $begin = null,
+        \DateTime $end = null,
+        $rooms = null,
+        $excludePackages = null
+    ) {
         $qb = $this->createQueryBuilder('s');
         $qb->field('accommodation')->exists(true)
             ->field('accommodation')->notEqual(null)
             ->addOr($qb->expr()->field('departureTime')->exists(false))
-            ->addOr($qb->expr()->field('departureTime')->equals(null))
-        ;
+            ->addOr($qb->expr()->field('departureTime')->equals(null));
 
         if ($begin) {
             $qb->field('end')->gte($begin);
@@ -47,10 +50,104 @@ class PackageRepository extends DocumentRepository
 
     /**
      * @param $data
-     * @return \MBH\Bundle\PackageBundle\Document\Package[]
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \Exception
      */
-    public function fetch($data)
+    public function fetchSummary($data)
+    {
+        unset($data['skip']);
+        unset($data['limit']);
+
+        $qb = $this->fetchQuery($data);
+        $orderData = [];
+        $orderQb = clone $qb;
+        $ordersIds = $orderQb->distinct('order.$id')->getQuery()->execute();
+
+        if (!empty($ordersIds)) {
+            $dm = $this->getDocumentManager();
+            $orderQb = $dm->getRepository('MBHPackageBundle:Order')->createQueryBuilder('o');
+            $orderQb
+                ->field('id')
+                ->in(iterator_to_array($ordersIds))
+                ->group(
+                    ['id' => 1],
+                    [
+                        'paid' => 0,
+                        'debt' => 0,
+                    ]
+                )->reduce(
+                    'function (obj, prev) {
+                        var price = 0;
+
+                        if(obj.totalOverwrite) {
+                            price = obj.totalOverwrite;
+                        } else {
+                            price = obj.price;
+                        }
+                        prev.paid += obj.paid;
+                        prev.debt += price - obj.paid;
+                    }'
+                );
+
+            $orderData = iterator_to_array($orderQb->getQuery()->execute());
+        }
+
+
+        $qb = $this->fetchQuery($data);
+
+        $qb->group(
+            ['id' => 1],
+            [
+                'total' => 0,
+                'paid' => 0,
+                'debt' => 0,
+                'nights' => 0,
+                'guests' => 0,
+            ]
+        )->reduce(
+            'function (obj, prev) {
+                var oneDay = 24*60*60*1000;
+
+                if(obj.totalOverwrite) {
+                    prev.total += obj.totalOverwrite;
+                } else {
+                    prev.total += obj.price;
+
+                    if (obj.servicesPrice) {
+                        prev.total += obj.servicesPrice
+                    }
+                    if (obj.discount) {
+                        prev.total -= obj.price * obj.discount/100
+                    }
+                }
+
+                prev.guests += obj.adults + obj.children
+
+                prev.nights += Math.round(Math.abs((obj.end.getTime() - obj.begin.getTime())/(oneDay)));
+            }'
+        );
+
+        $packageResult = $qb->getQuery()->execute();
+
+        if (!empty($packageResult[0])) {
+            if (!empty($orderData[0])) {
+
+                return array_merge($packageResult[0], $orderData[0]);
+            }
+
+            return $packageResult[0];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $data
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     * @throws \Exception
+     */
+    public function fetchQuery($data)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->getDocumentManager();
@@ -60,14 +157,17 @@ class PackageRepository extends DocumentRepository
 
         //confirmed
         if (isset($data['confirmed']) && $data['confirmed'] != null) {
-            $orderData = array_merge($orderData, ['asIdsArray' => true, 'confirmed' => !empty($data['confirmed']) ? true : false]);
+            $orderData = array_merge(
+                $orderData,
+                ['asIdsArray' => true, 'confirmed' => !empty($data['confirmed']) ? true : false]
+            );
         }
         //paid status
         if (isset($data['paid']) && in_array($data['paid'], ['paid', 'part', 'not_paid'])) {
             $orderData = array_merge($orderData, ['asIdsArray' => true, 'paid' => $data['paid']]);
         }
         //status
-        if(isset($data['status']) && !empty($data['status'])) {
+        if (isset($data['status']) && !empty($data['status'])) {
             $orderData = array_merge($orderData, ['asIdsArray' => true, 'status' => $data['status']]);
         }
         if (!empty($orderData)) {
@@ -76,8 +176,8 @@ class PackageRepository extends DocumentRepository
         }
 
         //hotel
-        if(isset($data['hotel']) && !empty($data['hotel'])) {
-            if(!$data['hotel'] instanceof Hotel) {
+        if (isset($data['hotel']) && !empty($data['hotel'])) {
+            if (!$data['hotel'] instanceof Hotel) {
                 $data['hotel'] = $dm->getRepository('MBHHotelBundle:Hotel')->find($data['hotel']);
 
                 if (!$data['hotel']) {
@@ -93,20 +193,20 @@ class PackageRepository extends DocumentRepository
             }
         }
         //order
-        if(isset($data['packageOrder']) && !empty($data['packageOrder'])) {
-            if($data['order'] instanceof Order) {
+        if (isset($data['packageOrder']) && !empty($data['packageOrder'])) {
+            if ($data['order'] instanceof Order) {
                 $data['order'] = $data['packageOrder']->getId();
             }
             $qb->field('order.id')->equals($data['packageOrder']);
         }
         //order ids
-        if(isset($data['packageOrders']) && !empty($data['packageOrders']) && is_array($data['packageOrders'])) {
+        if (isset($data['packageOrders']) && !empty($data['packageOrders']) && is_array($data['packageOrders'])) {
             $qb->field('order.id')->in($data['packageOrders']);
         }
 
         //roomType
-        if(isset($data['roomType']) && !empty($data['roomType'])) {
-            if($data['roomType'] instanceof RoomType) {
+        if (isset($data['roomType']) && !empty($data['roomType'])) {
+            if ($data['roomType'] instanceof RoomType) {
                 $data['roomType'] = $data['roomType']->getId();
             }
             $qb->field('roomType.id')->equals($data['roomType']);
@@ -114,25 +214,25 @@ class PackageRepository extends DocumentRepository
 
         //get dates
         $dateType = 'begin';
-        if(isset($data['dates']) && !empty($data['dates'])) {
+        if (isset($data['dates']) && !empty($data['dates'])) {
             $dateType = $data['dates'];
         }
 
         //begin
-        if(isset($data['begin']) && !empty($data['begin'])) {
-            if(!$data['begin'] instanceof \DateTime) {
-                $data['begin'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['begin'] . ' 00:00:00');
+        if (isset($data['begin']) && !empty($data['begin'])) {
+            if (!$data['begin'] instanceof \DateTime) {
+                $data['begin'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['begin'].' 00:00:00');
             }
 
             $qb->field($dateType)->gte($data['begin']);
         }
 
         //end
-        if(isset($data['end']) && !empty($data['end'])) {
-            if(!$data['end'] instanceof \DateTime) {
-                $data['end'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['end'] . ' 00:00:00');
+        if (isset($data['end']) && !empty($data['end'])) {
+            if (!$data['end'] instanceof \DateTime) {
+                $data['end'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['end'].' 00:00:00');
             }
-            
+
             $qb->field($dateType)->lte($data['end']);
         }
 
@@ -155,14 +255,13 @@ class PackageRepository extends DocumentRepository
         }
 
         //query
-        if(isset($data['query']) && !empty($data['query'])) {
+        if (isset($data['query']) && !empty($data['query'])) {
             $query = trim($data['query']);
             $tourists = $dm->getRepository('MBHPackageBundle:Tourist')
-                           ->createQueryBuilder('t')
-                           ->field('fullName')->equals(new \MongoRegex('/.*' . $query . '.*/ui'))
-                           ->getQuery()
-                           ->execute()
-            ;
+                ->createQueryBuilder('t')
+                ->field('fullName')->equals(new \MongoRegex('/.*'.$query.'.*/ui'))
+                ->getQuery()
+                ->execute();
 
             $touristsIds = [];
             foreach ($tourists as $tourist) {
@@ -174,11 +273,11 @@ class PackageRepository extends DocumentRepository
                 $qb->addOr($qb->expr()->field('mainTourist.id')->in($touristsIds));
             }
 
-            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
+            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*'.$query.'.*/ui')));
         }
 
         //isCheckIn
-        if(isset($data['checkIn'])) {
+        if (isset($data['checkIn'])) {
             if (!empty($data['checkIn'])) {
                 $qb->field('isCheckIn')->equals(true);
             } else {
@@ -187,7 +286,7 @@ class PackageRepository extends DocumentRepository
         }
 
         //isCheckOut
-        if(isset($data['checkOut'])) {
+        if (isset($data['checkOut'])) {
             if (!empty($data['checkOut'])) {
                 $qb->field('isCheckOut')->equals(true);
             } else {
@@ -198,7 +297,15 @@ class PackageRepository extends DocumentRepository
         //order
         $order = 'createdAt';
         $dir = 'desc';
-        $cols = [1 => 'number', 2 => 'order.id', 3 => 'begin', 4 => 'roomType', 5 => 'mainTourist', 6 => 'price', 7 => 'createdAt'];
+        $cols = [
+            1 => 'number',
+            2 => 'order.id',
+            3 => 'begin',
+            4 => 'roomType',
+            5 => 'mainTourist',
+            6 => 'price',
+            7 => 'createdAt'
+        ];
         if (isset($data['order']) && isset($cols[$data['order']])) {
             $order = $cols[$data['order']];
         }
@@ -225,6 +332,18 @@ class PackageRepository extends DocumentRepository
                 $dm->getFilterCollection()->enable('softdeleteable');
             }
         }
+
+        return $qb;
+    }
+
+    /**
+     * @param $data
+     * @return \MBH\Bundle\PackageBundle\Document\Package[]
+     * @throws \Exception
+     */
+    public function fetch($data)
+    {
+        $qb = $this->fetchQuery($data);
 
         if (isset($data['count']) && $data['count']) {
             $docs = $qb->getQuery()->count();

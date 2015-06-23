@@ -1,4 +1,4 @@
-/*global window, $, services, document, datepicker */
+/*global window, $, services, document, datepicker, deleteLink, Routing */
 $(document).ready(function () {
     'use strict';
 
@@ -95,6 +95,13 @@ $(document).ready(function () {
             $('.deleted-entry').closest('tr').addClass('danger');
             $('.not-confirmed-entry').closest('tr').addClass('info');
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
+
+            //summary
+            $('#package-summary-total').html(settings.json.package_summary_total);
+            $('#package-summary-paid').html(settings.json.package_summary_paid);
+            $('#package-summary-debt').html(settings.json.package_summary_debt);
+            $('#package-summary-nights').html(settings.json.package_summary_nights);
+            $('#package-summary-guests').html(settings.json.package_summary_guests);
         }
     });
 
