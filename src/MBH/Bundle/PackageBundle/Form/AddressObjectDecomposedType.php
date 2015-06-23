@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class AddressObjectDecomposedType
@@ -16,16 +17,23 @@ class AddressObjectDecomposedType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('city', 'text', [
-        ])
-        ->add('district', 'document', [
-            'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion'
-        ])
-        ->add('settlement', 'text', [
-        ])
-        ->add('urbanarea', 'text', [
-        ])
-        ->add('street', 'text', [
+        $builder
+            ->add('country', 'text', [])
+            ->add('city', 'text', [])
+            ->add('zip_code', 'text', [])
+            ->add('region', 'text', [])
+            ->add('district', 'document', [
+                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion'
+            ])
+            ->add('settlement', 'text', [])
+            ->add('urbanarea', 'text', [])
+            ->add('street', 'text', []);
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'data_class' => 'MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed'
         ]);
     }
 

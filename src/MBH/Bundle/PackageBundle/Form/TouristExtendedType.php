@@ -38,12 +38,13 @@ class TouristExtendedType extends AbstractType
             ]);*/
             ->add('documentRelation', 'mbh_document_relation', [
                 'data_class' => 'MBH\Bundle\PackageBundle\Document\DocumentRelation',
-                'group' => 'LiveAddress',//'DocumentRelation',
+                'group' => 'DocumentRelation',//'DocumentRelation',
             ])
             //LiveAddress
             ->add('address_object', 'text', [
                 'group' => 'LiveAddress',
                 'required' => false,
+                'help' => 'Передача адреса в виде кода (AOID) Федеральной информационной адресной системы (ФИАС)'
             ])
             ->add('address_object_decomposed', 'mbh_address_object_decomposed', [
                 'required' => false,
@@ -53,42 +54,8 @@ class TouristExtendedType extends AbstractType
             ->add('address_object_combined', 'text', [
                 'group' => 'LiveAddress',
                 'required' => false,
-            ])
-            /* todo ->add('reg_address', 'text', [
-                'mapped' => false,
-                'required' => false,
-            ])*/
-            /*->add('date_in', 'text', [
-                'mapped' => false,
-                'group' => 'LiveAddress',
-            ])
-            ->add('date_out', 'text', [
-                'mapped' => false,
-                'group' => 'LiveAddress',
-            ])*/
-            /*->add('room', 'text', [
-                'mapped' => false,
-                'required' => false,
-            ])
-            ->add('embeddings', 'text', [
-                'mapped' => false,
-                'required' => false,
-            ])*/
-            //Scanned_Document
-            /*->add('scanned_document', 'text', [
-                'mapped' => false,
-                'group' => 'Scanned_Document'
-            ])
-            ->add('doctype', 'text', [
-                'mapped' => false,
-            ])
-            ->add('scantype', 'text', [
-                'mapped' => false,
-            ])*/
-            /*->add('filename', 'text', [
-                'mapped' => false,
-            ])*/
-        ;
+            ]);
+            //todo ->add('reg_address', 'text', ['mapped' => false,'required' => false,
     }
 
     /**

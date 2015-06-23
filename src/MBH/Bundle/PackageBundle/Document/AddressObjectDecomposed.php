@@ -9,18 +9,37 @@ use MBH\Bundle\VegaBundle\Document\VegaRegion;
  * @ODM\EmbeddedDocument
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class AddressObjectDecomposed {
+class AddressObjectDecomposed
+{
+    /**
+     * @var String
+     * @ODM\String
+     */
+    protected $country;
     /**
      * @var String
      * @ODM\String
      */
     protected $city;
     /**
+     * @var String
+     * @ODM\String
+     */
+    protected $zipCode;
+    /**
      * @var VegaRegion
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaRegion")
      */
     protected $district;
+
     /**
+     * @var String
+     * @ODM\String
+     */
+    protected $region;
+
+    /**
+     * Населенный пункт
      * @var String
      * @ODM\String
      */
@@ -39,6 +58,22 @@ class AddressObjectDecomposed {
     /**
      * @return String
      */
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
+    /**
+     * @param String $country
+     */
+    public function setCountry($country)
+    {
+        $this->country = $country;
+    }
+
+    /**
+     * @return String
+     */
     public function getCity()
     {
         return $this->city;
@@ -50,6 +85,22 @@ class AddressObjectDecomposed {
     public function setCity($city)
     {
         $this->city = $city;
+    }
+
+    /**
+     * @return String
+     */
+    public function getZipCode()
+    {
+        return $this->zipCode;
+    }
+
+    /**
+     * @param String $zipCode
+     */
+    public function setZipCode($zipCode)
+    {
+        $this->zipCode = $zipCode;
     }
 
     /**
@@ -66,6 +117,22 @@ class AddressObjectDecomposed {
     public function setDistrict(VegaRegion $district = null)
     {
         $this->district = $district;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRegion()
+    {
+        return $this->region;
+    }
+
+    /**
+     * @param mixed $region
+     */
+    public function setRegion($region)
+    {
+        $this->region = $region;
     }
 
     /**

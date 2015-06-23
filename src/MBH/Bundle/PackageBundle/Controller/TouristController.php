@@ -32,7 +32,7 @@ class TouristController extends Controller
     {
         return [];
     }
-    
+
     /**
      * Lists all entities as json.
      *
@@ -44,15 +44,14 @@ class TouristController extends Controller
     public function jsonAction(Request $request)
     {
         $qb = $this->dm->getRepository('MBHPackageBundle:Tourist')
-                 ->createQueryBuilder('r')
-                 ->skip($request->get('start'))
-                 ->limit($request->get('length'))
-                 ->sort('fullName', 'asc')
-        ;
+            ->createQueryBuilder('r')
+            ->skip($request->get('start'))
+            ->limit($request->get('length'))
+            ->sort('fullName', 'asc');
 
         $search = $request->get('search')['value'];
         if (!empty($search)) {
-            $qb->addOr($qb->expr()->field('fullName')->equals(new \MongoRegex('/.*'. $search .'.*/ui')));
+            $qb->addOr($qb->expr()->field('fullName')->equals(new \MongoRegex('/.*' . $search . '.*/ui')));
         }
 
         $entities = $qb->getQuery()->execute();
@@ -76,7 +75,7 @@ class TouristController extends Controller
     {
         $entity = new Tourist();
         $form = $this->createForm(
-                new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
+            new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
         );
 
         return [
@@ -116,7 +115,7 @@ class TouristController extends Controller
             'form' => $form->createView(),
         ];
     }
-    
+
     /**
      * Edits an existing entity.
      *
@@ -131,7 +130,7 @@ class TouristController extends Controller
         $form = $this->createForm(
             new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
         );
-        
+
         $form->submit($request);
 
         if ($form->isValid()) {
@@ -142,9 +141,8 @@ class TouristController extends Controller
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()
-                    ->set('success', $this->get('translator')->trans('controller.touristController.record_edited_success'))
-            ;
-            
+                ->set('success', $this->get('translator')->trans('controller.touristController.record_edited_success'));
+
             return $this->afterSaveRedirect('tourist', $entity->getId());
         }
 
@@ -154,7 +152,7 @@ class TouristController extends Controller
             'logs' => $this->logs($entity)
         ];
     }
-    
+
     /**
      * Displays a form to edit an existing entity.
      *
@@ -169,7 +167,7 @@ class TouristController extends Controller
         $form = $this->createForm(
             new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
         );
-        
+
         return [
             'entity' => $entity,
             'form' => $form->createView(),
@@ -188,7 +186,7 @@ class TouristController extends Controller
     {
         $form = $this->createForm(new TouristExtendedType(), $entity);
 
-        if($request->isMethod('PUT')) {
+        if ($request->isMethod('PUT')) {
             $form->submit($request);
 
             if ($form->isValid()) {
@@ -196,8 +194,8 @@ class TouristController extends Controller
                 $this->dm->flush();
 
                 $request->getSession()->getFlashBag()
-                    ->set('success', $this->get('translator')->trans('controller.touristController.record_edited_success'))
-                ;
+                    ->set('success',
+                        $this->get('translator')->trans('controller.touristController.record_edited_success'));
 
                 return $this->afterSaveRedirect('tourist', $entity->getId());
             }
@@ -209,7 +207,7 @@ class TouristController extends Controller
             'logs' => $this->logs($entity)
         ];
     }
-    
+
     /**
      * Delete entity.
      *
@@ -238,12 +236,12 @@ class TouristController extends Controller
         }
 
         if (!empty($id)) {
-            $payer =  $this->dm->getRepository('MBHPackageBundle:Tourist')->find($id);
+            $payer = $this->dm->getRepository('MBHPackageBundle:Tourist')->find($id);
             if ($payer) {
                 $text = $payer->getFullName();
 
                 if (!empty($payer->getBirthday())) {
-                    $text .= ' (' . $payer->getBirthday()->format('d.m.Y')  . ')';
+                    $text .= ' (' . $payer->getBirthday()->format('d.m.Y') . ')';
                 }
 
                 return new JsonResponse([
@@ -257,15 +255,14 @@ class TouristController extends Controller
             ->field('fullName')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
             ->sort(['fullName' => 'asc', 'birthday' => 'desc'])
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
 
         $data = [];
 
         foreach ($payers as $payer) {
             $text = $payer->getFullName();
             if (!empty($payer->getBirthday())) {
-                $text .= ' (' . $payer->getBirthday()->format('d.m.Y')  . ')';
+                $text .= ' (' . $payer->getBirthday()->format('d.m.Y') . ')';
             }
 
             $data[] = [

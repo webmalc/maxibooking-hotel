@@ -93,6 +93,40 @@
     {% endspaceless %}
 {% endblock textarea_widget %}
 
+{% block mbh_city_widget %}
+    {{ form_widget(form) }}
+
+    {% block scripts %}
+        <script>
+            $("{{ id }}").select2({
+                minimumInputLength: 3,
+                ajax: {
+                    url: Routing.generate('hotel_city'),
+                    dataType: 'json',
+                    data: function (term) {
+                        return {
+                            query: term // search term
+                        };
+                    },
+                    results: function (data) {
+                        return { results: data };
+                    }
+                },
+                initSelection: function(element, callback) {
+                    var id = $(element).val();
+                    if (id !== "") {
+                        $.ajax(Routing.generate('hotel_city') + '/' + id, {
+                            dataType: "json"
+                        }).done(function(data) { callback(data); });
+                    }
+                },
+                dropdownCssClass: "bigdrop"
+            });
+        </script>
+    {% endblock scripts %}
+
+{% endblock mbh_city_widget %}
+
 {% block form_errors %}
     {% spaceless %}
         {% if errors|length > 0 %}
