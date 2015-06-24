@@ -406,6 +406,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setFrom('channelmanager')
                 ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
                 ->setType($type == 'delete' ? 'danger' : 'info')
+                ->setCategory('notification')
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+10 minute'))
             ;

@@ -33,7 +33,7 @@ class UserController extends Controller
      */
     public function indexAction()
     {
-        $notifier = $this->get('mbh.notifier');
+        /*$notifier = $this->get('mbh.notifier');
         $message = $notifier::createMessage();
         $message
             ->setText('test message')
@@ -46,7 +46,7 @@ class UserController extends Controller
         $notifier
             ->setMessage($message)
             ->notify()
-        ;
+        ;*/
 
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();

@@ -288,6 +288,7 @@ class ApiController extends Controller
                 ->setFrom('online')
                 ->setSubject($this->get('translator')->trans('online_form.notification', [], 'MBHOnlineBundle'))
                 ->setType('info')
+                ->setCategory('notification')
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+1 minute'))
             ;
