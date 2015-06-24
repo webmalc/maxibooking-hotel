@@ -307,6 +307,13 @@ source.index.edit_record: Редактирование записи
 source.index.delete_record: Удаление записи
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Невозможно удалить запись с существующими бронями. Брони: '
 analytics.layout.report: Отчеты
+package.index.summary.total: Сумма
+package.index.summary.paid: Оплачено
+package.index.summary.debt: Долг
+package.index.summary.nights: Ночей
+package.index.summary.guests: Гостей
+
+
 # Organizations
 organizations.breadcrumbs.list: Организации
 organizations.breadcrumbs.add: Добавить организацию

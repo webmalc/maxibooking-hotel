@@ -25,7 +25,7 @@ class User extends BaseUser
      * @ODM\Id
      */
     protected $id;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -59,8 +59,27 @@ class User extends BaseUser
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
-    protected $emailNotifications = true;
-    
+    protected $notifications = true;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $errors = true;
+
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $reports = true;
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -152,12 +171,12 @@ class User extends BaseUser
     /**
      * Set emailNotifications
      *
-     * @param boolean $emailNotifications
+     * @param boolean $notifications
      * @return self
      */
-    public function setEmailNotifications($emailNotifications)
+    public function setNotifications($notifications)
     {
-        $this->emailNotifications = $emailNotifications;
+        $this->notifications = $notifications;
         return $this;
     }
 
@@ -166,8 +185,52 @@ class User extends BaseUser
      *
      * @return boolean $emailNotifications
      */
-    public function getEmailNotifications()
+    public function getNotifications()
     {
-        return $this->emailNotifications;
+        return $this->notifications;
+    }
+
+    /**
+     * Set emailErrors
+     *
+     * @param boolean $errors
+     * @return self
+     */
+    public function setErrors($errors)
+    {
+        $this->errors = $errors;
+        return $this;
+    }
+
+    /**
+     * Get emailErrors
+     *
+     * @return boolean $emailErrors
+     */
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+
+    /**
+     * Set emailReports
+     *
+     * @param boolean $reports
+     * @return self
+     */
+    public function setReports($reports)
+    {
+        $this->reports = $reports;
+        return $this;
+    }
+
+    /**
+     * Get emailReports
+     *
+     * @return boolean $emailReports
+     */
+    public function getReports()
+    {
+        return $this->reports;
     }
 }

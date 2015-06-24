@@ -181,6 +181,7 @@ liip_imagine:
         default:
             web_path: ~
     filter_sets:
+        cache: ~
         thumb_100x100:
             quality: 100
             filters:

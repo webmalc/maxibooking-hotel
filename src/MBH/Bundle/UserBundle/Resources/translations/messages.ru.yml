@@ -11,8 +11,6 @@ form.userType.roles: Роли
 form.userType.hotels: Отели
 form.userType.hotels_user_has_access_to: Отели к которым имеет доступ пользователь.
 form.userType.is_included: Включен?
-form.userType.notifications: Уведомления?
-form.userType.is_email_notifications: Получать ли уведомления на электронную почту?
 form.userType.surname: Фамилия
 form.userType.general_info: Общая информация
 form.userType.placeholder_surname: Иванов
@@ -22,3 +20,15 @@ form.userType.placeholder_name: Иван
 controller.profileController.new_password_saved_success: 'Новый пароль успешно сохранен.'
 controller.profileController.record_saved_success: 'Запись успешно создана.'
 controller.profileController.record_edited_success: 'Запись успешно отредактирована.'
+
+#Notifications
+form.userType.notifications_fieldset: Уведомления
+
+form.userType.notifications: Уведомления?
+form.userType.notifications_help: Получать ли уведомления на электронную почту?
+
+form.userType.reports: Отчеты?
+form.userType.reports_help: Получать ли отчеты на электронную почту?
+
+form.userType.errors: Ошибки?
+form.userType.errors_help: Получать ли ошибки на электронную почту?

@@ -289,6 +289,7 @@ class Booking extends Base
                 ->setIsSmoking((int)$room->smoking ? true : false)
                 ->setPricesByDate($pricesByDate)
                 ->setPrice((float)$total)
+                ->setTotalOverwrite((float)$total)
                 ->setNote($packageNote)
                 ->setOrder($order)
                 ->setCorrupted($corrupted)

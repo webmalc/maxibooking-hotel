@@ -53,6 +53,7 @@ class PackageSubscriber implements EventSubscriber
                     ->setText($this->container->get('translator')->trans('package.corrupted.message.text', ['%package%' => $doc->getNumberWithPrefix()], 'MBHPackageBundle'))
                     ->setFrom('system')
                     ->setType('danger')
+                    ->setCategory('error')
                     ->setAutohide(false)
                     ->setEnd(new \DateTime('+10 minute'))
                 ;

@@ -33,9 +33,14 @@ class NotifierMessage
     private $email = true;
 
     /**
-     * @var string
+     * @var string $type info|danger|success|primary
      */
     private $type = 'info';
+
+    /**
+     * @var string $category notification|report|error
+     */
+    private $category = 'notification';
 
     /**
      * @var string
@@ -234,6 +239,23 @@ class NotifierMessage
         return $this->email;
     }
 
+    /**
+     * @return string
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
 
+    /**
+     * @param $category
+     * @return $this
+     */
+    public function setCategory($category)
+    {
+        $this->category = $category;
+
+        return $this;
+    }
 
 }

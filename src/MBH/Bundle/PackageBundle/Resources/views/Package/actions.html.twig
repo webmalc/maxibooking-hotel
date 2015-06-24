@@ -42,24 +42,24 @@
                                 {{ 'package.actions.docs'|trans({}, 'MBHPackageBundle') }}
                             </li>
 
-                            <li class="{% if entity.isPaid is empty %}disabled{% endif %}">
-                                <a href="{{ path('package_pdf', {'id': entity.id}) }}">
-                                    <i class="fa fa-print"></i>&nbsp;
-                                    {{ 'package.actions.act'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </li>
-
-                            <li class="{% if entity.isPaid is empty %}disabled{% endif %}">
+                            <li>
                                 <a href="{{ path('package_confirmation_pdf', {'id': entity.id}) }}">
                                     <i class="fa fa-print"></i>&nbsp;
                                     {{ 'package.actions.confirmation'|trans({}, 'MBHPackageBundle') }}
                                 </a>
                             </li>
 
-                            <li class="{% if entity.isPaid is empty %}disabled{% endif %}">
+                            <!--<li>
                                 <a href="{{ path('package_registration_card_pdf', {'id': entity.id}) }}">
                                     <i class="fa fa-print"></i>&nbsp;
                                     {{ 'package.actions.registration_cart'|trans({}, 'MBHPackageBundle') }}
+                                </a>
+                            </li>-->
+
+                            <li>
+                                <a href="{{ path('package_pdf', {'id': entity.id}) }}">
+                                    <i class="fa fa-print"></i>&nbsp;
+                                    {{ 'package.actions.act'|trans({}, 'MBHPackageBundle') }}
                                 </a>
                             </li>
 
