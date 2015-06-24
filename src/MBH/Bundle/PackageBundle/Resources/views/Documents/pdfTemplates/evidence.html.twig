@@ -30,20 +30,24 @@
 </head>
 <body>
 
+{% set tourist = entity.order.mainTourist %}
 
 <div class="document">
     <div class="header">
-        <span class="upper">Свидетельство</span> № <strong>#kart#</strong> <br>
+        <span class="upper">Свидетельство</span> № <strong>{{ entity.number }}{##kart##}</strong> <br>
         о регистрации по месту пребывания
     </div>
     <div>
-        <div class="indent">
-            Выдано <strong>#fio#</strong>
+        <div style="float:left;" class="indent">
+            Выдано <strong>{{ tourist.name }}{##fio##}</strong>
         </div>
         <div style="float:right;">
             (Ф.И.О., год и место рождения)
         </div>
-        <div><strong>#mesrog#</strong></div>
+        <div style="clear:both;"></div>
+    </div>
+    <div>
+        <strong>{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.mainRegion }}{##mesrog##}</strong>
     </div>
     <div>
         <div class="area">&nbsp</div>
@@ -51,18 +55,21 @@
         <br>
         (руспублика, край, область, округ, район, город, пгт, село,
         <strong class="area">__#ulic#__#dom#__kor#_#g_#kv</strong>
-        деревня, аул,улица, дом, корпус, квартира)<br> на срок с <strong>#d1#</strong> г. по <strong>#d2#</strong> г.
+        деревня, аул,улица, дом, корпус, квартира)<br> на срок с <strong>{% if entity.arrivalTime %}{{ entity.arrivalTime|date('d.m.Y') }}{% endif %}{##d1##}</strong> г. по <strong>{% if entity.departureTime %}{{ entity.departureTime|date('d.m.Y') }}{% endif %}{##d2##}</strong> г.
         <div class="indent">
             Свидетельтсво выдвно к документу, удостоверяющему личность<br>
-            вид <strong>#tip_doc#</strong>, серия <strong>#ser#</strong>,N <strong>#non#</strong><br>
-            дата выдачи <strong>#kogda#</strong> г.<br>
-            <strong>#kem#</strong>
+            вид <strong>{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.type }}{% endif %} {##tip_doc##}</strong>,
+            серия <strong>{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}{##ser##}</strong>,
+            N <strong>{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %} {##non##}</strong><br>
+            дата выдачи <strong>{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}{##kogda##}</strong> г.
         </div>
-
-        <p style="text-align: center">(наименование органа, учереждения, выдавшего документ)</p>
+        <div style="padding: 10px 0" class="indent">
+            <div style="width: 600px; font-weight: bold" class="area">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.authorityOrgan.name }}{% endif %}{##kem##}</div>
+            <div>(наименование органа, учереждения, выдавшего документ)</div>
+        </div>
         <div>
             <div>Начальник (руководитель) органа регистрационного учета</div>
-            <div class="area" style="margin-left: 410px;"></div>
+            <div class="area" style="margin-left: 460px;"></div>
             &nbsp
             <div class="area"></div>
             <div style="text-align: center;">(наименование ограна регистрационного учета)</div>
@@ -90,7 +97,7 @@
                 </td>
             </tr>
             <tr>
-                <td>М.П</td>
+                <td>М.П.</td>
                 <td style="float: right;">
                 </td>
                 <td style="float: right;">
@@ -125,5 +132,6 @@
         -->
 
     </div>
+</div>
 </body>
 </html>

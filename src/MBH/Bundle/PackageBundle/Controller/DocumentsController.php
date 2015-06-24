@@ -293,7 +293,34 @@ class DocumentsController extends Controller
             throw $this->createNotFoundException();
         }
 
+        $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
+
         $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:registration_card.html.twig', [
+            'entity' => $entity,
+            'vegaDocumentTypes' => $vegaDocumentTypes,
+        ]);
+
+        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
+            'Content-Type' => 'application/pdf',
+            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
+        ]);
+    }
+
+    /**
+     * Return pdf doc
+     *
+     * @Route("/{id}/evidence_pdf", name="package_evidence_pdf")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     */
+    public function evidencePdfAction(Package $entity)
+    {
+        if (!$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:evidence.html.twig', [
             'entity' => $entity
         ]);
 
