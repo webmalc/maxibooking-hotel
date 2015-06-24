@@ -33,6 +33,21 @@ class UserController extends Controller
      */
     public function indexAction()
     {
+        $notifier = $this->get('mbh.notifier');
+        $message = $notifier::createMessage();
+        $message
+            ->setText('test message')
+            ->setFrom('system')
+            ->setType('danger')
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+1 minute'))
+            ->setCategory('report')
+        ;
+        $notifier
+            ->setMessage($message)
+            ->notify()
+        ;
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         

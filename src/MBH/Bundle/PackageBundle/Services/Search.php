@@ -273,6 +273,11 @@ class Search
             if (!$query->isOnline && !$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel())) {
                 continue;
             }
+
+            if ($query->isOnline && !$tariff->getIsOnline()) {
+                continue;
+            }
+
             $results[] = $tariff;
         }
 

@@ -35,13 +35,22 @@ class Messenger implements \SplObserver
         $message = $notifier->getMessage();
 
         $this->send($message->getText(), $message->getFrom(), $message->getType(), $message->getAutohide(),
-            $message->getEnd());
+            $message->getEnd(), $message->getCategory());
 
     }
 
-    public function send($text, $from = 'system', $type = 'info', $autohide = false, $end = null)
+    /**
+     * @param $text
+     * @param string $from
+     * @param string $type
+     * @param bool $autohide
+     * @param null $end
+     * @param null $category
+     * @return Messenger
+     */
+    public function send($text, $from = 'system', $type = 'info', $autohide = false, $end = null, $category = null)
     {
-        return $this->add($text, $from, $type, $autohide, $end);
+        return $this->add($text, $from, $type, $autohide, $end, $category);
     }
 
     /**
@@ -51,12 +60,22 @@ class Messenger implements \SplObserver
     {
         $messages = $this->dm->getRepository('MBHBaseBundle:Message')->findAll();
         $session = $this->container->get('session');
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
 
         foreach ($messages as $message) {
-            $key[0] = $message->getType();
-            $key[1] = $message->getAutohide();
-            $session->getFlashBag()->add(implode('|', $key), $message->getText());
+
+
+            $method = 'get' . ucfirst($message->getCategory()) . 's';
+
+            if (!$message->getCategory() || !$user || !method_exists($user, $method)  || $user->$method()) {
+                $key[0] = $message->getType();
+                $key[1] = $message->getAutohide();
+                $session->getFlashBag()->add(implode('|', $key), $message->getText());
+                $message->setIsSend(true);
+                $this->dm->persist($message);
+            }
         }
+        $this->dm->flush();
         $this->clear();
     }
 
@@ -67,16 +86,19 @@ class Messenger implements \SplObserver
      * @param string $type
      * @param bool $autohide
      * @param null $end
+     * @param null $category
      * @return $this
      */
-    public function add($text, $from = 'system', $type = 'info', $autohide = false, $end = null)
+    public function add($text, $from = 'system', $type = 'info', $autohide = false, $end = null, $category = null)
     {
         $message = new Message();
         $message->setFrom($from)
             ->setText($text)
             ->setType($type)
             ->setAutohide($autohide)
-            ->setEnd($end);
+            ->setEnd($end)
+            ->setCategory($category)
+            ;
         $this->dm->persist($message);
         $this->dm->flush();
 
@@ -91,6 +113,7 @@ class Messenger implements \SplObserver
     {
         $qb = $this->dm->getRepository('MBHBaseBundle:Message')
             ->createQueryBuilder('q')
+            ->field('isSend')->equals(true)
             ->remove();
         if ($from) {
             $qb->field('from')->equals($from);

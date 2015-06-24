@@ -121,9 +121,9 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-cog'])
         ;
 
-        $menu['configs']->addChild('config', ['route' => 'tasktype', 'label' => 'Типы задач'])
+        /*$menu['configs']->addChild('tasktype', ['route' => 'tasktype', 'label' => 'Типы задач'])
             ->setAttributes(['icon' => 'fa fa-cog'])
-        ;
+        ;*/
 
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])

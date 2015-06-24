@@ -55,6 +55,7 @@ class Mailer implements \SplObserver
             $this->send($message->getRecipients(), [
                 'text' => $message->getText(),
                 'type' => $message->getType(),
+                'category' => $message->getCategory(),
                 'subject' => $message->getSubject()
             ], $message->getTemplate());
         }
@@ -71,12 +72,18 @@ class Mailer implements \SplObserver
     {
         if (empty($recipients)) {
 
+            $error = 'Не удалось отправить письмо. Нет ни одного получателя.';
+
+            if (empty($data['category'])) {
+                throw new \Exception($error);
+            }
+
             $users = $this->dm->getRepository('MBHUserBundle:User')->findBy(
-                ['emailNotifications' => true, 'enabled' => true, 'locked' => false]
+                [$data['category'] . 's' => true, 'enabled' => true, 'locked' => false]
             );
 
             if (!count($users)) {
-                throw new \Exception('Не удалось отправить письмо. Нет не одного получателя.');
+                throw new \Exception($error);
             }
 
             $recipients = [];

@@ -22,6 +22,12 @@ class Message extends Base implements \JsonSerializable
      * @ODM\String()
      */
     protected $type = 'info';
+
+    /**
+     * @var string
+     * @ODM\String()
+     */
+    protected $category = 'notification';
     
     /**
      * @var string
@@ -40,6 +46,12 @@ class Message extends Base implements \JsonSerializable
      * @ODM\Date()
      */
     protected $end;
+
+    /**
+     * @var string
+     * @ODM\Boolean()
+     */
+    protected $isSend = false;
 
     /**
      * Set text
@@ -161,5 +173,49 @@ class Message extends Base implements \JsonSerializable
     public function getAutohide()
     {
         return $this->autohide;
+    }
+
+    /**
+     * Set category
+     *
+     * @param string $category
+     * @return self
+     */
+    public function setCategory($category)
+    {
+        $this->category = $category;
+        return $this;
+    }
+
+    /**
+     * Get category
+     *
+     * @return string $category
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * Set isSend
+     *
+     * @param boolean $isSend
+     * @return self
+     */
+    public function setIsSend($isSend)
+    {
+        $this->isSend = $isSend;
+        return $this;
+    }
+
+    /**
+     * Get isSend
+     *
+     * @return boolean $isSend
+     */
+    public function getIsSend()
+    {
+        return $this->isSend;
     }
 }
