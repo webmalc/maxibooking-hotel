@@ -51,6 +51,12 @@ class Housing extends Base
      * @Gedmo\Versioned
      * @ODM\String
      */
+    protected $settlement;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\String
+     */
     protected $street;
 
     /**
@@ -140,6 +146,22 @@ class Housing extends Base
     public function setCity(City $city)
     {
         $this->city = $city;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSettlement()
+    {
+        return $this->settlement;
+    }
+
+    /**
+     * @param mixed $settlement
+     */
+    public function setSettlement($settlement)
+    {
+        $this->settlement = $settlement;
     }
 
     /**

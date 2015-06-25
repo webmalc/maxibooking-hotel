@@ -6,6 +6,7 @@ namespace MBH\Bundle\BaseBundle\Form\Extension;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
@@ -20,6 +21,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class CityType extends AbstractType
 {
     private $documentManager;
+
+    /**
+     * @var Container
+     */
+    //private $container;
 
     public function __construct(ManagerRegistry $managerRegistry)
     {

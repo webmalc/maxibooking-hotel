@@ -197,6 +197,12 @@ class Hotel extends Base
      * @Gedmo\Versioned
      * @ODM\String
      */
+    protected $settlement;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\String
+     */
     protected $street;
 
     /**
@@ -649,6 +655,23 @@ class Hotel extends Base
     {
         return $this->city;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getSettlement()
+    {
+        return $this->settlement;
+    }
+
+    /**
+     * @param mixed $settlement
+     */
+    public function setSettlement($settlement)
+    {
+        $this->settlement = $settlement;
+    }
+
 
     /**
      * Set latitude

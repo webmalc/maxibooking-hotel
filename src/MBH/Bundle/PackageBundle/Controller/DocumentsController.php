@@ -234,12 +234,12 @@ class DocumentsController extends Controller
     /**
      * Return pdf doc
      *
-     * @Route("/{id}/pdf", name="package_pdf")
+     * @Route("/{id}/act_pdf", name="package_act_pdf")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
-    public function pdfAction(Package $entity)
+    public function actPdfAction(Package $entity)
     {
         if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
@@ -320,8 +320,38 @@ class DocumentsController extends Controller
             throw $this->createNotFoundException();
         }
 
+        $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
+
         $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:evidence.html.twig', [
-            'entity' => $entity
+            'entity' => $entity,
+            'vegaDocumentTypes' => $vegaDocumentTypes,
+        ]);
+
+        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
+            'Content-Type' => 'application/pdf',
+            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
+        ]);
+    }
+
+    /**
+     * Return pdf doc
+     *
+     * @Route("/{id}/receipt_pdf", name="package_receipt_pdf")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     */
+    public function receiptPdfAction(Package $entity)
+    {
+        if (!$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
+
+        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:receipt.html.twig', [
+            'entity' => $entity,
+            'vegaDocumentTypes' => $vegaDocumentTypes,
         ]);
 
         return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [

@@ -1,4 +1,5 @@
 form.hotelExtendedType.city: Город
+form.hotelExtendedType.settlement: Населенный пункт
 form.hotelExtendedType.street: Улица
 form.hotelExtendedType.house: Дом
 form.hotelExtendedType.corpus: Корпус

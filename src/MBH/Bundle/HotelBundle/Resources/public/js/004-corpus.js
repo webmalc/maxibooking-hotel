@@ -3,6 +3,7 @@ $(document).ready(function () {
     'use strict';
     $('#mbh_corpus_city').select2({
         minimumInputLength: 3,
+        allowClear: true,
         ajax: {
             url: Routing.generate('hotel_city'),
             dataType: 'json',

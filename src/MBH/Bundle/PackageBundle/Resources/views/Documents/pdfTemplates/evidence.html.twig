@@ -33,6 +33,11 @@
 {% set tourist = entity.order.mainTourist %}
 
 <div class="document">
+    <div style="width: 100%;font-weight: bold">
+        <div style="float: right;">Формта 3</div>
+        <div style="clear: both"></div>
+    </div>
+
     <div class="header">
         <span class="upper">Свидетельство</span> № <strong>{{ entity.number }}{##kart##}</strong> <br>
         о регистрации по месту пребывания
@@ -55,7 +60,7 @@
         <br>
         (руспублика, край, область, округ, район, город, пгт, село,
         <strong class="area">__#ulic#__#dom#__kor#_#g_#kv</strong>
-        деревня, аул,улица, дом, корпус, квартира)<br> на срок с <strong>{% if entity.arrivalTime %}{{ entity.arrivalTime|date('d.m.Y') }}{% endif %}{##d1##}</strong> г. по <strong>{% if entity.departureTime %}{{ entity.departureTime|date('d.m.Y') }}{% endif %}{##d2##}</strong> г.
+        деревня, аул,улица, дом, корпус, квартира)<br> на срок с <strong>{% if entity.begin %}{{ entity.begin|date('d.m.Y') }}{% endif %}{##d1##}</strong> г. по <strong>{% if entity.end %}{{ entity.end|date('d.m.Y') }}{% endif %}{##d2##}</strong> г.
         <div class="indent">
             Свидетельтсво выдвно к документу, удостоверяющему личность<br>
             вид <strong>{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.type }}{% endif %} {##tip_doc##}</strong>,
