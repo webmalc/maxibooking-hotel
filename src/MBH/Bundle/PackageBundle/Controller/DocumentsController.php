@@ -331,7 +331,6 @@ class DocumentsController extends Controller
         $response = new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
             'Content-Type' => 'application/pdf'
         ]);
-        //$response = new Response($html);
 
         return $response;
     }
@@ -360,6 +359,35 @@ class DocumentsController extends Controller
         $response = new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
             'Content-Type' => 'application/pdf'
         ]);
+
+        return $response;
+    }
+
+    /**
+     * Return pdf doc
+     *
+     * @Route("/{id}/form_pdf", name="package_form_pdf")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     */
+    public function formPdfAction(Package $entity)
+    {
+        if (!$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+            throw $this->createNotFoundException();
+        }
+
+        $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
+
+        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:form.html.twig', [
+            'entity' => $entity,
+            'vegaDocumentTypes' => $vegaDocumentTypes,
+        ]);
+
+        /*$response = new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
+            'Content-Type' => 'application/pdf'
+        ]);*/
+        $response = new Response($html);
 
         return $response;
     }
