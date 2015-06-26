@@ -384,10 +384,10 @@ class DocumentsController extends Controller
             'vegaDocumentTypes' => $vegaDocumentTypes,
         ]);
 
-        /*$response = new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
+        $response = new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
             'Content-Type' => 'application/pdf'
-        ]);*/
-        $response = new Response($html);
+        ]);
+        //$response = new Response($html);
 
         return $response;
     }

@@ -14,9 +14,11 @@
         .center {
             text-align: center;
         }
+
         .left {
             float: left;
         }
+
         .right {
             float: right;
         }
@@ -26,7 +28,7 @@
         }
 
         .document {
-            width: 900px;
+            width: 840px;
         }
     </style>
 </head>
@@ -42,7 +44,7 @@
         Форма N 1-Г
     </div>
 
-    <table border="1" style="width: 900px;text-align: center;" cellpadding="0" cellspacing="0">
+    <table border="1" style="width: 840px;text-align: center;" cellpadding="0" cellspacing="0">
         <tbody>
         <tr>
             <td>
@@ -61,8 +63,17 @@
         </tbody>
     </table>
 
+    <style>
+        .left-block {
+            float: left;
+        }
+        .left-block div {
+            margin: 5px 0px;
+        }
+    </style>
+
     <div style="margin-top: 30px; width: 730px">
-        <div class="left">
+        <div class="left-block">
             <div>
                 1. Фамилия
                 <div style="width: 250px" class="area ib">&nbsp</div>
@@ -77,49 +88,68 @@
             </div>
             <div>
                 4. Дата рождения
-                <div style="width: 100px" class="area ib">&nbsp</div>г.
+                <div style="width: 100px" class="area ib">&nbsp</div>
+                г.
             </div>
             <div>
-                5. Место рождения
-                <div style="width: 320px" class="area ib">&nbsp</div>
+                <div class="ib left ">5.Место рождения</div>
+                <div style="width: 270px" class="area ib">&nbsp</div>
             </div>
             <div>
                 <div class="ib left">
-                    6. серии
-                    <div style="width: 100px" class="area ib">&nbsp</div>
-                    №
-                    <div style="width: 125px" class="area ib">&nbsp</div>
-                    выдан
+                    <div class="ib">6.серии</div>
+                    <div style="width: 95px" class="area ib">&nbsp</div>
+                </div>
+                <div class="ib left">
+                    №<div style="width: 95px" class="area ib">&nbsp</div>
                 </div>
                 <div class="ib">
-                    <div style="width: 100px" class="area ib">&nbsp</div>
-                    <div style="text-align: center"><small>(когда)</small></div>
+                    <div class="ib left">выдан</div>
+                    <div class="ib">
+                        <div style="width: 95px" class="area ib">&nbsp</div>
+                        <div style="text-align: center"><small>(когда)</small></div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="right">
-            <div>
-                Комната № <div style="width: 180px" class="area ib">1k202</div>
-            </div>
-            <div>
-                Индекс поселения<div style="width: 137px" class="area ib">&nbsp</div>
-            </div>
+        <style>
+            .right-block {
+                float: right;
+            }
+            .right-block div {
+                margin: 5px 0px;
+            }
+        </style>
 
+        <div class="right-block">
+            <div>
+                <div class="ib left">Комната №</div>
+                <div style="width: 180px" class="area ib">1k202</div>
+                <div style="clear:both;"></div>
+            </div>
+            <div>
+                <div class="ib left">Индекс поселения</div>
+                <div style="width: 127px" class="area ib">&nbsp</div>
+                <div style="clear:both;"></div>
+            </div>
             <div>
                 <div class="ib left">Прибыл &nbsp</div>
                 <div class="ib">
                     <div style="width: 200px" class="area ib left">15.06.2015 07:00</div>
-                    <div class="center"><small>(дата, часы)</small></div>
+                    <div class="center">
+                        <small>(дата, часы)</small>
+                    </div>
                     <div style="clear: both;"></div>
                 </div>
             </div>
-
             <div>
                 <div class="ib left">Выбыл &nbsp</div>
                 <div class="ib">
                     <div style="width: 205px" class="area ib left">&nbsp</div>
-                    <div class="center"><small>(дата, часы)</small></div>
+                    <div class="center">
+                        <small>(дата, часы)</small>
+                    </div>
                     <div style="clear: both;"></div>
                 </div>
             </div>
@@ -131,16 +161,20 @@
 
     <div>
         <div class="ib">
-            <div style="width: 455px" class="area ib left">&nbsp</div>
-            <div class="center"><small>(наименования органа внутренних дел, выдавшего документ)</small></div>
+            <div style="width: 725px" class="area ib left">&nbsp</div>
+            <div class="center">
+                <small>(наименования органа внутренних дел, выдавшего документ)</small>
+            </div>
             <div style="clear:both;"></div>
         </div>
 
         <div>
             <div>7. Адрес постоянного места жительства &nbsp</div>
             <div class="ib">
-                <div style="width: 455px" class="area ib left">&nbsp</div>
-                <div class="center"><small>Ул. д.</small></div>
+                <div style="width: 725px" class="area ib left">&nbsp</div>
+                <div class="center">
+                    <small>Ул. д.</small>
+                </div>
                 <div style="clear: both;"></div>
             </div>
         </div>
@@ -167,39 +201,45 @@
             <div class="ib left">Подпись &nbsp</div>
             <div class="ib">
                 <div style="width: 200px" class="area ib left">&nbsp</div>
-                <div class="center"><small>(лица, прибывшего в гостиницу)</small></div>
+                <div class="center">
+                    <small>(лица, прибывшего в гостиницу)</small>
+                </div>
                 <div style="clear: both;"></div>
             </div>
         </div>
         <div style="clear: both"></div>
     </div>
 
-    <div style="margin-top: 20px">
+    <div>
         <div style="float: right; font-weight: bold">Обратная сторона Ф. N 1-Г</div>
         <div style="clear: both"></div>
     </div>
 
     <div style="margin-top: 30px">
-        <p>
-            <div>
-                Поселен(а) "<div style="width: 30px" class="area ib">&nbsp</div>"
-                <div style="width: 540px" class="area ib">&nbsp</div>
-                20<div style="width: 30px" class="area ib">&nbsp</div> г.
-            </div>
-        </p>
-        <p>
-            <div>
-                город (селение) &nbsp
-                <div style="width: 600px" class="area ib">&nbsp</div>
-            </div>
-        </p>
-        <p>гостиница Левин</p>
-
         <div>
+            Поселен(а) "
+            <div style="width: 30px" class="area ib">&nbsp</div>
+            "
+            <div style="width: 540px" class="area ib">&nbsp</div>
+            20
+            <div style="width: 30px" class="area ib">&nbsp</div>
+            г.
+        </div>
+
+        <div style="margin-top: 10px">
+            город (селение) &nbsp
+            <div style="width: 600px" class="area ib">&nbsp</div>
+        </div>
+
+        <div style="margin-top: 10px">гостиница Левин</div>
+
+        <div style="margin-top: 10px">
             <div class="ib left">На дополнительное место в номере согласен(а) &nbsp</div>
             <div class="ib">
                 <div style="width: 390px" class="area ib left">&nbsp</div>
-                <div class="center"><small>(подпись лица, прибывшего в гостиницу)</small></div>
+                <div class="center">
+                    <small>(подпись лица, прибывшего в гостиницу)</small>
+                </div>
                 <div style="clear: both;"></div>
             </div>
         </div>
@@ -208,7 +248,9 @@
             <div class="ib left">Согласен(а) на проживание в номере с оплатой всех мест &nbsp</div>
             <div class="ib">
                 <div style="width: 320px" class="area ib left">&nbsp</div>
-                <div class="center"><small>(подпись лица, прибывшего в гостиницу)</small></div>
+                <div class="center">
+                    <small>(подпись лица, прибывшего в гостиницу)</small>
+                </div>
                 <div style="clear: both;"></div>
             </div>
         </div>
