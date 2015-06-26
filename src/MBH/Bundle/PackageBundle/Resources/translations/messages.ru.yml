@@ -98,6 +98,8 @@ form.touristType.second_name: Отчество
 form.touristType.placeholder_second_name: Иванович
 form.touristType.birth_date: Дата рождения
 form.touristType.gender: Пол
+form.touristType.sex_male: Муж.
+form.touristType.sex_female: Жен.
 form.touristType.address: Адрес
 form.touristType.contact_info: Контактная информация
 form.touristType.placeholder_address: г. Москва, пр-кт Мира, д.6

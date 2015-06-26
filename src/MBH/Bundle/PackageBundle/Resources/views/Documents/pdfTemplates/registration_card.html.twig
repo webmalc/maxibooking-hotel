@@ -12,13 +12,8 @@
         }
 
         .header {
-            border-bottom: 2px solid;
-            height: 45px;
-            position: relative;
-        }
-
-        .header div {
-            position: absolute;
+            width: 100%;
+            border-bottom: solid 2px;
         }
 
         .table {
@@ -30,6 +25,7 @@
         }
 
         .table .field {
+            /*height: 40px;*/
             font-size: 14px;
         }
 
@@ -56,7 +52,7 @@
         .table .area {
             height: 30px;
             margin-left: 81px;
-            font-size: 20px;
+            font-size: 14px
         }
     </style>
 </head>
@@ -64,6 +60,32 @@
 
 {% set organization = null %}
 {% set tourist = null %}
+{% set hotel = null %}
+
+
+
+
+{% set arrival = null %}
+{% set departure = null %}
+
+{% if entity.begin %}
+    {% set arrival = entity.begin|date('d.m.Y') %}
+{% endif %}
+
+{% if entity.end %}
+    {% set departure = entity.end|date('d.m.Y') %}
+{% endif %}
+
+{% if entity.arrivalTime %}
+    {% set arrival = entity.arrivalTime|date('d.m.Y') %}
+{% endif %}
+
+{% if entity.departureTime %}
+    {% set departure = entity.departureTime|date('d.m.Y') %}
+{% endif %}
+
+
+
 
 {% if entity.order and entity.order.organization %}
     {% set organization = entity.order.organization %}
@@ -73,26 +95,32 @@
     {% set tourist = entity.order.mainTourist %}
 {% endif %}
 
+{% if entity.roomType and entity.roomType.hotel %}
+    {% set hotel = entity.roomType.hotel %}
+{% endif %}
+
 <div class="document">
-    <div class="header">
-        <div style="width: 200px; font-weight: bold;font-size: 17px">
-            Registration Card
-        </div>
-        <div style="left: 200px; right: 200px; font-weight: bold; text-align: center; font-size: 22px">
-            {% if organization %}ООО "{{ organization.name }}"{% endif %}
-        </div>
-        <div style="width: 200px; right: 0; font-weight: bold;font-size: 17px">
-            Регистрационная Карточка
-        </div>
-        <div style="clear: both"></div>
-    </div>
+    <table class="header">
+        <tr>
+            <td style="width: 20%">
+                <div style="font-weight: bold;">Registration Card</div>
+                <small>Регистрационная Карточка</small>
+            </td>
+            <td>
+                <div style="font-weight: bold; text-align: center;font-size: 20px">
+                    {% if organization %}{{ organization.name }}{% endif %}
+                </div>
+            </td>
+            <td style="width: 20%">
+                <img src="{{ asset(hotel.logoUrl, absolute=true) }}" style="height: 80px;float: right;">
+            </td>
+        </tr>
+    </table>
 
     <table class="table">
-        <thead>
-        </thead>
         <tbody>
         <tr>
-            <td colspan="4">
+            <td colspan="4" style="width: 33%">
                 <div class="field">
                     <div class="title">
                         <div>Surname</div>
@@ -101,27 +129,27 @@
                     <div class="area">{% if tourist %}{{ tourist.lastName }}{% endif %}</div>
                 </div>
             </td>
-            <td colspan="4">
+            <td colspan="4" style="width: 33%">
                 <div class="field">
                     <div class="title" style="width: 100px">
                         <div>First name</div>
                         <div>Имя</div>
                     </div>
-                    <div class="area" style="margin-left: 100px">{% if tourist %}{{ tourist.firstName }}{% endif %}</div>
+                    <div class="area" style="margin-left: 101px">{% if tourist %}{{ tourist.firstName }}{% endif %}</div>
                 </div>
             </td>
-            <td colspan="4">
+            <td colspan="4" style="width: 33%">
                 <div class="field">
                     <div class="title" style="width: 100px">
                         <div>Patronymic</div>
                         <div>Отчество</div>
                     </div>
-                    <div class="area" style="margin-left: 100px">{% if tourist %}{{ tourist.patronymic }}{% endif %}</div>
+                    <div class="area" style="margin-left: 101px">{% if tourist %}{{ tourist.patronymic }}{% endif %}</div>
                 </div>
             </td>
         </tr>
         <tr>
-            <td colspan="3">
+            <td colspan="3" style="width: 26%">
                 <div class="field">
                     <div class="title" style="width: 100px;">
                         <div>Nationality</div>
@@ -130,22 +158,22 @@
                     <div class="area" style="margin-left: 100px;">{% if tourist %}{{ tourist.citizenship }}{% endif %}</div>
                 </div>
             </td>
-            <td colspan="3">
+            <td colspan="3" style="width: 20%">
                 <div class="field">
                     <div class="title" style="width: 40px;">
                         <div>Sex</div>
                         <div>Пол</div>
                     </div>
-                    <div class="area" style="margin-left: 40px;">{% if tourist %}{{ tourist.sex }}{% endif %}</div>
+                    <div class="area" style="margin-left: 40px;">{% if tourist %} {{ ('form.touristType.sex_' ~ tourist.sex)|trans }} {% endif %}</div>
                 </div>
             </td>
-            <td colspan="6">
+            <td colspan="6" style="width: 67%">
                 <div class="field">
                     <div class="title">
                         <div>Company</div>
                         <div>Фирма</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area">{% if entity.order and entity.order.organization %} {{ entity.order.organization.name }} {% endif %}</div>
                 </div>
             </td>
         </tr>
@@ -176,7 +204,7 @@
                         <div>Pass №</div>
                         <div>Паспорт №</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area">{% if tourist and tourist.documentRelation.number %} {{ tourist.documentRelation.number }} {% endif %}</div>
                 </div>
             </td>
             <td colspan="6">
@@ -185,104 +213,90 @@
                         <div>Issued by</div>
                         <div>Выдан</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area">
+                        {% if tourist and tourist.documentRelation.authorityOrgan %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}
+                        {% if tourist and tourist.documentRelation.issued %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
+                    </div>
                 </div>
             </td>
         </tr>
         <tr>
-            <td colspan="6">
+            <td colspan="8">
                 <div class="field">
                     <div class="title">
                         <div>Country</div>
                         <div>Страна</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.country }} {% endif %}</div>
                 </div>
             </td>
-            <td colspan="3">
+            <td colspan="4">
                 <div class="field">
                     <div class="title">
                         <div>Zip-code</div>
                         <div>Индекс</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area">{% if tourist and tourist.addressObjectDecomposed.zipCode %} tourist.addressObjectDecomposed.zipCode {% endif %}</div>
                 </div>
             </td>
-            <td colspan="3">
-                <div class="field">
-                    <div class="title">
-                        <div>Arrival</div>
-                        <div>Прибытие</div>
-                    </div>
-                    <div class="area"></div>
-                </div>
-            </td>
-            <td></td>
         </tr>
         <tr>
-            <td colspan="6">
+            <td colspan="7">
                 <div class="field">
                     <div class="title" style="width:110px">
                         <div>Base Region</div>
                         <div>Субъект РФ</div>
                     </div>
-                    <div class="area" style="margin-left: 110px"></div>
+                    <div class="area" style="margin-left: 110px">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.district }} {% endif %}</div>
                 </div>
             </td>
-            <td colspan="3">
+            <td colspan="5">
                 <div class="field">
                     <div class="title">
                         <div>Сity</div>
                         <div>Город</div>
                     </div>
-                    <div class="area"></div>
-                </div>
-            </td>
-            <td colspan="3">
-                <div class="field">
-                    <div class="title">
-                        <div>Departere</div>
-                        <div>Отъезд</div>
-                    </div>
-                    <div class="area"></div>
+                    <div class="area">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
                 </div>
             </td>
         </tr>
         <tr>
-            <td colspan="3">
+            <td colspan="12">
                 <div class="field">
                     <div class="title">
-                        <div>Base Area</div>
-                        <div>Район</div>
+                        <div>Street</div>
+                        <div>Улица</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.street }} {% endif %}</div>
                 </div>
             </td>
-            <td colspan="3">
+        </tr>
+        <tr>
+            <td colspan="4">
                 <div class="field">
                     <div class="title">
-                        <div>Town</div>
-                        <div>Нас. пунтк</div>
+                        <div>Arrival</div>
+                        <div>Прибытие</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area">{{ arrival }}</div>
                 </div>
             </td>
-            <td colspan="3">
+            <td colspan="4">
                 <div class="field">
-                    <div class="title">
-                        <div>Room</div>
-                        <div>Номер</div>
+                    <div class="title" style="width: 100px;">
+                        <div>Departure</div>
+                        <div>Отъезд</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area" style="margin-left: 101px">{{ departure }}</div>
                 </div>
             </td>
-            <td colspan="3">
+            <td colspan="4">
                 <div class="field">
                     <div class="title">
-                        <div>Type</div>
-                        <div>Тип</div>
+                        <div>Persons</div>
+                        <div>Кол. гостей</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area">{{ entity.adults + entity.children }}</div>
                 </div>
             </td>
         </tr>
@@ -290,28 +304,30 @@
             <td colspan="6">
                 <div class="field">
                     <div class="title">
-                        <div>Street</div>
-                        <div>Улица</div>
+                        <div>Type</div>
+                        <div>Тип</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area">{% if entity.accommodation and entity.accommodation.roomType %}{{ entity.accommodation.roomType.name }}{% endif %}</div>
                 </div>
             </td>
-            <td colspan="3">
+            <td colspan="6">
                 <div class="field">
                     <div class="title">
-                        <div>Persons</div>
-                        <div>Кол. гостей</div>
+                        <div>Room</div>
+                        <div>Номер</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area">{% if entity.accommodation %}{{ entity.accommodation.name }}{% endif %}</div>
                 </div>
             </td>
-            <td colspan="3">
+        </tr>
+        <tr>
+            <td colspan="12">
                 <div class="field">
                     <div class="title">
                         <div>Rate</div>
                         <div>Тариф</div>
                     </div>
-                    <div class="area"></div>
+                    <div class="area">{% if entity.tariff %}{{ entity.tariff.name }}{% endif %}</div>
                 </div>
             </td>
         </tr>
@@ -343,6 +359,7 @@
             font-size: 15px;
             float: left;
             font-weight: bold;
+            margin-top: 15px;
         }
 
         .description .agree .fields {
@@ -368,13 +385,12 @@
             The guests may entertain visitors in hotel room after notifying the management from 9 a.m. till 11 p.m. <br>
             The guests are kindly requested to keep rooms clean and in order. <br>
             The guests will have to pay the cost of damaged or lost property of the hotel. <br>
-            <strong>Return of money is possible onl at presense of the check confirming the payment</strong>. <br>
+            <strong>Return of money is possible only at presence of the check confirming the payment</strong>. <br>
         </div>
         <div class="square">
             Оплачено<br>
             до<br>
-            13.03.15<br>
-            12:00<br>
+            {% if entity.end %}{{ entity.end|date('d.m.Y') }} <br> 12:00 {% endif %}
         </div>
         <div class="text">
             Наша гостиница предоставляет услуги, перечень которых Вы найдете в своем номере. <br>
@@ -392,15 +408,15 @@
             &nbsp
             <div class="fields">
                 <div>
-                    <div style="width: 170px" class="area"></div>
+                    <div style="width: 170px" class="area">&nbsp</div>
                     <div style="display: block; font-size: 12px; font-weight: normal;">SIGNATURE Подпись</div>
                 </div>
                 <div>
-                    <div style="width: 140px" class="area"></div>
+                    <div style="width: 140px" class="area">{{ tourist.lastName ~ ' ' ~ tourist.firstName|first ~ ' ' ~ tourist.patronymic|first }}</div>
                     <div style="display: block; font-size: 12px; font-weight: normal;">Расшифровка подписи</div>
                 </div>
                 <div>
-                    <div style="width: 90px" class="area"></div>
+                    <div style="width: 90px" class="area">{{ 'now'|date('d.m.Y') }}</div>
                     <div style="display: block; font-size: 12px; font-weight: normal;">Дата</div>
                 </div>
             </div>
@@ -408,47 +424,249 @@
         <div style="clear: both"></div>
     </div>
 
+
     <style>
-        .bottom {
+        .bottom .permission {
+            float: left;
+            width: 395px;
+        }
+
+        .bottom .permission-table {
+            padding: 10px;
+            width: 390px;
+        }
+
+        .bottom .permission-table td{
+            padding: 5px;
+        }
+
+        .bottom .permission-table .field {
+            font-size: 15px;
+        }
+
+        .bottom .permission-table .field .title {
+            float: left;
+            width: 40%;
+        }
+
+        .bottom .permission-table .field .title div:first-child {
+            text-transform: uppercase;
+        }
+        .bottom .permission-table .field .title div:last-child {
+            font-size: 13px;
+        }
+
+        .bottom .permission-table .field .area {
+            height: 30px;
+            margin-left: 41%;
+        }
+    </style>
+
+
+    <style>
+        .bottom .permission {
+            width: 900px;
+        }
+
+        .bottom .permission-table {
+            padding: 10px;
+            width: 900px;
+            border-top: solid 2px #000000;
+        }
+
+        .bottom .permission-table td{
+            padding: 5px;
+        }
+
+        .bottom .permission-table .field {
+            font-size: 15px;
+        }
+
+        .bottom .permission-table .field .title {
+            float: left;
+            width: 40%;
+        }
+
+        .bottom .permission-table .field .title div:first-child {
+            text-transform: uppercase;
+        }
+        .bottom .permission-table .field .title div:last-child {
+            font-size: 13px;
+        }
+
+        .bottom .permission-table .field .area {
+            height: 30px;
+            margin-left: 41%;
+        }
+    </style>
+
+    <div style="border-top: dashed 1px #000000; margin: 18px 0px"></div>
+
+    <div class="bottom">
+        <div class="permission">
+            <div style="text-align: center;">
+                <div style="font-weight: bold;">{% if organization %}{{ organization.name }}{% endif %}</div>
+                <div style="font-weight: bold;font-size: 15px;">Разрешение на поселение</div>
+            </div>
+            <table class="permission-table">
+                <tbody>
+                <tr>
+                    <td>
+                        <div class="field">
+                            <div class="title" style="width: 110px">
+                                <div>Surname</div>
+                                <div>Фамилия</div>
+                            </div>
+                            <div class="area" style="margin-left: 111px">{% if tourist %}{{ tourist.lastName }}{% endif %}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="field">
+                            <div class="title" style="width: 110px">
+                                <div>First name</div>
+                                <div>Имя</div>
+                            </div>
+                            <div class="area" style="margin-left: 111px">{% if tourist %}{{ tourist.firstName }}{% endif %}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="field">
+                            <div class="title" style="width: 110px">
+                                <div>Patronymic</div>
+                                <div>Отчество</div>
+                            </div>
+                            <div class="area" style="margin-left: 111px">{% if tourist %}{{ tourist.patronymic }}{% endif %}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="field">
+                            <div class="title" style="width: 110px">
+                                <div>Sex</div>
+                                <div>Пол</div>
+                            </div>
+                            <div class="area" style="margin-left: 111px">{% if tourist and tourist.sex %} {{ ('form.touristType.sex_' ~ tourist.sex)|trans }} {% endif %}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="field">
+                            <div class="title" style="width: 110px">
+                                <div>Day of birth</div>
+                                <div>Дата рождения</div>
+                            </div>
+                            <div class="area" style="margin-left: 111px">{% if tourist and tourist.birthday %} {{ tourist.birthday|date('d.m.Y') }} {% endif %}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="field">
+                            <div class="title" style="width: 110px">
+                                <div>Arrival</div>
+                                <div>Прибытие</div>
+                            </div>
+                            <div class="area" style="margin-left: 111px">{% if entity.arrivalTime %}{{ entity.arrivalTime|date('d.m.Y') }}{% endif %}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="field">
+                            <div class="title" style="width: 110px">
+                                <div>Departure</div>
+                                <div>Отъезд</div>
+                            </div>
+                            <div class="area" style="margin-left: 111px">{% if entity.departureTime %}{{ entity.departureTime|date('d.m.Y') }}{% endif %}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="field">
+                            <div class="title" style="width:60px">
+                                <div>Room</div>
+                                <div>Номер</div>
+                            </div>
+                            <div class="area" style="margin-left: 61px">{% if entity.accommodation %}{{ entity.accommodation.name }}{% endif %}</div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="field">
+                            <div class="title" style="width:60px">
+                                <div>Type</div>
+                                <div>Тип</div>
+                            </div>
+                            <div class="area" style="margin-left: 61px">{% if entity.accommodation and entity.accommodation.roomType %}{{ entity.accommodation.roomType.name }}{% endif %}</div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <style>
+                .signature {
+                    border: solid 2px;
+                    float: right;
+                    width: 200px;
+                    padding: 5px;
+                    font-size: 14px;
+                }
+            </style>
+
+            <div class="signature">
+                <div>SIGNATURE</div>
+                <div>Подпись</div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div style="page-break-after: always;"></div>
+
+    <style>
+        .two-list {
             width: 900px;
             margin-top: 20px;
             border-top: solid #000000 2px;
         }
 
-        .form {
+        .two-list .form {
             float: left;
             border-right: solid #000000 2px;
             width: 500px;
         }
 
-        .form .inside {
+        .two-list .form .inside {
             border: solid #000000 2px;
             margin: 15px;
             padding: 0px 15px;
             height: 500px;
         }
 
-        .form .inside table{
+        .two-list .form .inside table{
             font-size: 14px;
         }
 
-        .form .inside .field .title {
+        .two-list .form .inside .field .title {
             float: left;
             width: 80px;
         }
 
-        .form .inside table td {
+        .two-list .form .inside table td {
             clear: both;
         }
 
-        .form .inside .field .area {
+        .two-list .form .inside .field .area {
             height: 16px;
             margin-left: 81px;
         }
     </style>
 
-
-    <div class="bottom">
+    <div class="two-list">
         <div class="form">
             <div class="inside">
                 <div style="margin: 10px 0;font-weight: bold;text-align: center">Анкета</div>
@@ -526,7 +744,7 @@
                                 <div class="title" style="width : 130px;">
                                     5. Место рождения
                                 </div>
-                                {% if tourist and birthplace %}<!--<div class="area" style="margin-left: 130px">{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}</div>-->{% endif %}
+                                {% if tourist and tourist.birthplace %}<!--<div class="area" style="margin-left: 130px">{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}</div>-->{% endif %}
                             </div>
                         </td>
                     </tr>
@@ -579,12 +797,24 @@
                         </td>
                     </tr>
                     <tr>
+                        <td colspan="3">
+                            <div class="field">
+                                <div class="title"></div>
+                                <div class="area">
+                                    {% if tourist and tourist.documentRelation and tourist.documentRelation.type %}
+                                        {{ vegaDocumentTypes[tourist.documentRelation.type] }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
                         <td>
                             <div class="field">
-                                <div class="title" style="width: 40px">
+                                <div class="title" style="width: 45px">
                                     Серия
                                 </div>
-                                <div class="area" style="margin-left: 40px"></div>
+                                <div class="area" style="margin-left: 45px">{% if tourist and tourist.documentRelation and tourist.documentRelation.series %} {{ tourist.documentRelation.series }} {% endif %}</div>
                             </div>
                         </td>
                         <td>
@@ -592,7 +822,7 @@
                                 <div class="title" style="width: 20px">
                                     №
                                 </div>
-                                <div class="area" style="margin-left: 20px"></div>
+                                <div class="area" style="margin-left: 20px">{% if tourist and tourist.documentRelation and tourist.documentRelation.number %} {{ tourist.documentRelation.number }} {% endif %}</div>
                             </div>
                         </td>
                         <td>
@@ -600,14 +830,18 @@
                                 <div class="title" style="width: 45px">
                                     Выдан
                                 </div>
-                                <div class="area" style="margin-left: 45px"></div>
+                                <div class="area" style="margin-left: 45px">
+                                    {% if tourist and tourist.documentRelation.issued %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
+                                </div>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">
                             <div class="field">
-                                <div class="area" style="margin-left: 0px"></div>
+                                <div class="area" style="margin-left: 0px">
+                                    {% if tourist and tourist.documentRelation.authorityOrgan %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -617,7 +851,7 @@
                                 <div class="title" style="width: 240px">
                                     7. Адрес места жительства: Страна
                                 </div>
-                                <div class="area" style="margin-left: 240px"></div>
+                                <div class="area" style="margin-left: 240px">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.country %} {{ tourist.addressObjectDecomposed.country }} {% endif %}</div>
                             </div>
                         </td>
                     </tr>
@@ -627,7 +861,7 @@
                                 <div class="title" style="width: 40px;">
                                     Обл.
                                 </div>
-                                <div class="area" style="margin-left: 40px"></div>
+                                <div class="area" style="margin-left: 40px">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.settlement %} {{ tourist.addressObjectDecomposed.settlement }} {% endif %}</div>
                             </div>
                         </td>
                         <td>
@@ -635,25 +869,25 @@
                                 <div class="title"  style="width: 45px">
                                     Город
                                 </div>
-                                <div class="area" style="margin-left: 45px"></div>
+                                <div class="area" style="margin-left: 45px">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.city %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="2">
                             <div class="field">
-                                <div class="title" style="width: 40px;">
+                                <div class="title" style="width: 45px;">
                                     Район
                                 </div>
-                                <div class="area" style="margin-left: 40px"></div>
+                                <div class="area" style="margin-left: 45px">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.district %} {{ tourist.addressObjectDecomposed.district }} {% endif %}</div>
                             </div>
                         </td>
                         <td>
                             <div class="field">
-                                <div class="title" style="width: 70px;">
+                                <div class="title" style="width: 75px;">
                                     Нас. пункт
                                 </div>
-                                <div class="area" style="margin-left: 70px"></div>
+                                <div class="area" style="margin-left: 75px">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.urbanArea %} {{ tourist.addressObjectDecomposed.urbanArea }} {% endif %}</div>
                             </div>
                         </td>
                     </tr>
@@ -663,7 +897,7 @@
                                 <div class="title" style="width: 45px;">
                                     Улица
                                 </div>
-                                <div class="area" style="margin-left: 45px;"></div>
+                                <div class="area" style="margin-left: 45px;">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.street %} {{ tourist.addressObjectDecomposed.street }} {% endif %}</div>
                             </div>
                         </td>
                     </tr>
@@ -699,7 +933,7 @@
                         <td colspan="3">
                             <div class="field">
                                 <div class="title" style="width: 250px">
-                                    Подпись дежурного админстратора
+                                    Подпись дежурного администратора
                                 </div>
                                 <div class="area" style="margin-left: 250px"></div>
                             </div>
@@ -711,165 +945,29 @@
         </div>
 
         <style>
-            .permission {
+            .left-form {
                 float: left;
                 width: 395px;
             }
-
-            .permission-table {
-                padding: 10px;
-                width: 390px;
-            }
-
-            .permission-table td{
-                padding: 5px;
-            }
-
-            .permission-table .field {
-                font-size: 15px;
-            }
-
-            .permission-table .field .title {
-                float: left;
-                width: 40%;
-            }
-
-            .permission-table .field .title div:first-child {
-                text-transform: uppercase;
-            }
-            .permission-table .field .title div:last-child {
-                font-size: 13px;
-            }
-
-            .permission-table .field .area {
-                height: 30px;
-                margin-left: 41%;
+            .left-form .block {
+                margin: 0 20px;
+                border: solid 1px;
+                height: 200px;
             }
         </style>
 
-        <div class="permission">
-            <div style="text-align: center;">
-                <div style="font-weight: bold;margin: 15px 0">{% if organization %}ООО {{ organization.name }}{% endif %}</div>
-                <div style="font-weight: bold;font-size: 15px;margin-top: 15px;">Разрешение на поселение</div>
-            </div>
-            <hr>
-            <table class="permission-table">
-                <thead>
-                </thead>
-                <tbody>
-                <tr>
-                    <td colspan="2">
-                        <div class="field">
-                            <div class="title">
-                                <div>Surname</div>
-                                <div>Фамилия</div>
-                            </div>
-                            <div class="area"></div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <div class="field">
-                            <div class="title">
-                                <div>First name</div>
-                                <div>Имя</div>
-                            </div>
-                            <div class="area"></div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <div class="field">
-                            <div class="title">
-                                <div>Patronymic</div>
-                                <div>Отчество</div>
-                            </div>
-                            <div class="area"></div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="field">
-                            <div class="title">
-                                <div>Sex</div>
-                                <div>Пол</div>
-                            </div>
-                            <div class="area"></div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="field">
-                            <div class="title" style="width:120px">
-                                <div>Day of birth</div>
-                                <div>Дата рождения</div>
-                            </div>
-                            <div class="area" style="margin-left: 120px"></div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <div class="field">
-                            <div class="title">
-                                <div>Arrival</div>
-                                <div>Прибытие</div>
-                            </div>
-                            <div class="area"></div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <div class="field">
-                            <div class="title">
-                                <div>Departere</div>
-                                <div>Отъезд</div>
-                            </div>
-                            <div class="area"></div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="field">
-                            <div class="title" style="width:50px">
-                                <div>Room</div>
-                                <div>Номер</div>
-                            </div>
-                            <div class="area" style="margin-left: 50px"></div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="field">
-                            <div class="title" style="width:30px">
-                                <div>Type</div>
-                                <div>Тип</div>
-                            </div>
-                            <div class="area" style="margin-left: 30px"></div>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-
-            <style>
-                .signature {
-                    border: solid 2px;
-                    float: right;
-                    width: 200px;
-                    padding: 5px;
-                    font-size: 14px;
-                }
-            </style>
-
-            <div class="signature">
-                <div>SIGNATURE</div>
-                <div>Подпись</div>
+        <div class="left-form">
+            <div>
+                <div style="float: right;">Форма №5</div>
+                <div style="clear: both;"></div>
             </div>
 
+            <div style="margin-left: 20px">Блок машиночитаемых данных</div>
+            <div class="block">
+
+            </div>
+
+            <div style="text-align: center">Ф.И.О</div>
         </div>
     </div>
 </div>

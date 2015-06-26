@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <style>
+        .indent {
+            text-indent: 1.5em;
+        }
+
+        .document {
+            width: 900px;
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        .area {
+            border-bottom: solid #000000 1px;
+        }
+
+        .date {
+            /*float: right;*/
+        }
+
+        .upper {
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+{% set tourist = entity.order.mainTourist %}
+
+<div class="document">
+    <div class="header">
+        <span class="upper">Свидетельство</span> № <strong>{{ entity.number }}{##kart##}</strong> <br>
+        о регистрации по месту пребывания
+    </div>
+    <div>
+        <div style="float:left;" class="indent">
+            Выдано <strong>{{ tourist.name }}{##fio##}</strong>
+        </div>
+        <div style="float:right;">
+            (Ф.И.О., год и место рождения)
+        </div>
+        <div style="clear:both;"></div>
+    </div>
+    <div>
+        <strong>{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.mainRegion }}{##mesrog##}</strong>
+    </div>
+    <div>
+        <div class="area">&nbsp</div>
+        о том, что он заергистрирован по месту пребывания по адресу: <strong>#gelen#</strong>
+        <br>
+        (руспублика, край, область, округ, район, город, пгт, село,
+        <strong class="area">__#ulic#__#dom#__kor#_#g_#kv</strong>
+        деревня, аул,улица, дом, корпус, квартира)<br> на срок с <strong>{% if entity.arrivalTime %}{{ entity.arrivalTime|date('d.m.Y') }}{% endif %}{##d1##}</strong> г. по <strong>{% if entity.departureTime %}{{ entity.departureTime|date('d.m.Y') }}{% endif %}{##d2##}</strong> г.
+        <div class="indent">
+            Свидетельтсво выдвно к документу, удостоверяющему личность<br>
+            вид <strong>{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.type }}{% endif %} {##tip_doc##}</strong>,
+            серия <strong>{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}{##ser##}</strong>,
+            N <strong>{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %} {##non##}</strong><br>
+            дата выдачи <strong>{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}{##kogda##}</strong> г.
+        </div>
+        <div style="padding: 10px 0" class="indent">
+            <div style="width: 600px; font-weight: bold" class="area">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.authorityOrgan.name }}{% endif %}{##kem##}</div>
+            <div>(наименование органа, учереждения, выдавшего документ)</div>
+        </div>
+        <div>
+            <div>Начальник (руководитель) органа регистрационного учета</div>
+            <div class="area" style="margin-left: 460px;"></div>
+            &nbsp
+            <div class="area"></div>
+            <div style="text-align: center;">(наименование ограна регистрационного учета)</div>
+        </div>
+
+
+        <table style="width: 900px;">
+            <tbody>
+            <tr>
+                <td>
+                </td>
+                <td style="float: right">
+                    <div>
+                        &nbsp
+                        <div class="area" style="width: 200px"></div>
+                        <div style="text-align: center;">(подпись)</div>
+                    </div>
+                </td>
+                <td style="float: right;">
+                    <div>
+                        &nbsp
+                        <div class="area" style="width: 200px;"></div>
+                        <div style="text-align: center;">(фамилия)</div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>М.П.</td>
+                <td style="float: right;">
+                </td>
+                <td style="float: right;">
+                    "
+                    <div class="area" style="width: 25px; display: inline-block"></div>
+                    "
+                    <div class="area" style="width: 120px; display: inline-block"></div>
+                    <div class="area" style="width: 40px; display: inline-block"></div>
+                    г.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!--
+        <div>
+            <div style="float:right">
+                <div style="display: inline-block">
+                    &nbsp<div class="area" style="width: 200px"></div>
+                    Подпись
+                </div>
+                <div style="display: inline-block">
+                    &nbsp<div class="area" style="width: 200px;"></div>
+                    фамилия
+                </div>
+            </div>
+
+            <div>
+                М.П <div class="area" style="width: 40px; display: inline-block"></div>г.
+            </div>
+        </div>
+        -->
+
+    </div>
+</div>
+</body>
+</html>

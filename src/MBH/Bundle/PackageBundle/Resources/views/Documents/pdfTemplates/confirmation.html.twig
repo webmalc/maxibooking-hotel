@@ -11,13 +11,17 @@
 
         /* Header */
         .header .title {
-            float: left; padding-top: 20px
+            float: left;
+            padding-top: 10px;
+            width:90%;
         }
-        .header .title h2 {
-            margin: 5px 0
+        .header .title p {
+            font-weight: bold;
+            font-size: 22px
         }
         .header .logo {
-            float: right
+            float: right;
+            width:10%;
         }
         .header .logo img{
             height: 80px; max-width: 200px;
@@ -59,7 +63,9 @@
 
     <div class="header">
         <div class="title">
-            <h2>Подтверждение брони № {{ entity.number }} от {{ entity.begin|date("d.m.Y") }} г.</h2>
+            <p>
+                Подтверждение брони № {{ entity.number }} от {{ entity.createdAt|date("d.m.Y") }} г.
+            </p>
         </div>
         {% if hotel and hotel.logoUrl %}
             <div class="logo">
@@ -68,6 +74,23 @@
         {% endif %}
         <div style="clear: both"></div>
     </div>
+
+    <!--
+    <table class="header">
+        <tr class="title">
+            <td>
+                <p>
+                    Подтверждение брони № {{ entity.number }} от {{ entity.createdAt|date("d.m.Y") }} г.
+                <p>
+            </td>
+            <td>
+                <div class="logo">
+                    <img src="{{ asset(hotel.logoUrl, absolute=true) }}">
+                </div>
+            </td>
+        </tr>
+    </table>
+    -->
     <hr>
 
     <div class="main">
@@ -75,7 +98,7 @@
             адресу {% if hotel and hotel.city and hotel.street %} <strong> {{ hotel.city }} {{ hotel.street }} {{ hotel.house }} </strong> {% else %}_________________________________________{% endif %},
             ИНН {% if hotel and hotel.organization and hotel.organization.inn %} {{ hotel.organization.inn }} {% else %} ________________________ {% endif %} извещает
             Заказчика: {% if tourist %} {{ tourist.fullName }} {% else %} __________________________________ {% endif %},
-            дата рождения {% if entity.order.mainTourist %} {{ entity.order.mainTourist.birthday|date('d.m.Y') }} {% else %} ___.___._______ {% endif %} г.,
+            дата рождения {% if tourist and tourist.birthday %} {{ tourist.birthday|date('d.m.Y') }} {% else %} ___.___._______ {% endif %} г.,
             адрес {% if tourist and tourist.address %} {{ tourist.address }} {% else %} ____________________________________________________ {% endif %}</p>
         <p class="indent">Документ удостоверяющий личность:
             Тип документа {% if documentRelation and documentRelation.type %} {{ documentRelation.type|trans({}) }}{% else %}_______________{% endif %}
@@ -137,15 +160,16 @@
         <p class="indent">Отель гарантированно бронирует вышеперечисленные услуги для Заказчика за произведенную им предоплату.
             В случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание конпенсации из внесенной предоплаты.</p>
 
-        <!-- footer -->
-        <table border="0" class="footer" cellpadding="0" cellspacing="0" width="100%">
+        <table class="signatures" cellpadding="0" cellspacing="0">
             <tr>
-                <td valign="top" style="border-bottom: 1px solid #000; height: 120px; width: 50%;">
+                <td style="width: 40%">
                     <h3>Отель</h3>
+                    <div class="area"></div>
                 </td>
-                <td style="height: 120px; width: 10%;"></td>
-                <td valign="top" style="border-bottom: 1px solid #000; height: 120px; width: 40%">
+                <td style="width: 20%"></td>
+                <td style="width: 40%">
                     <h3>Заказчик</h3>
+                    <div class="area"></div>
                 </td>
             </tr>
             <tr>
@@ -153,9 +177,22 @@
                     {% if hotel and hotel.organization %}{{ hotel.organization.directorFio }}{% endif %}
                 </td>
                 <td></td>
-                <td></td>
+                <td align="center">
+                    {% if tourist %}{{ tourist.lastNameWithInitials }}{% endif %}
+                </td>
             </tr>
         </table>
+        <style>
+            .signatures {
+                border: 0;
+                width: 100%;
+            }
+
+            .signatures .area{
+                border-bottom: 1px solid #000;
+                height: 80px;
+            }
+        </style>
     </div>
 </div>
 </body>
