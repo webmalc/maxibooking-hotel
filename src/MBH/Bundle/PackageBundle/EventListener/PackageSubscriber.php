@@ -55,7 +55,10 @@ class PackageSubscriber implements EventSubscriber
                     ->setType('danger')
                     ->setCategory('error')
                     ->setAutohide(false)
+                    ->setHotel($doc->getRoomType()->getHotel())
                     ->setEnd(new \DateTime('+10 minute'))
+                    ->setLinkText('mailer.to_package')
+                    ->setLink($this->container->get('router')->generate('package_edit', ['id' => $doc->getId()], true))
                 ;
                 $notifier->setMessage($message)->notify();
             }

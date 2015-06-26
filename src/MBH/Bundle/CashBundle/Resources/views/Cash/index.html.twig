@@ -31,10 +31,10 @@
                 <i class="fa fa-money" title='{{ 'views.cash.index.payment_way'|trans({}, 'MBHCashBundle') }}'
                    data-toggle='tooltip'></i>
                 &nbsp
-                <select name="methods" id="method">
+                <select name="methods" id="method" placeholder="Способ оплаты">
                     <option></option>
                     {% for type, name in methods %}
-                        <option {% if type == 'cash' %} selected {% endif %} value="{{ type }}">{{ name }}</option>
+                        <option value="{{ type }}">{{ name }}</option>
                     {% endfor %}
                 </select>
             </div>

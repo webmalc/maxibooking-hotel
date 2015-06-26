@@ -179,6 +179,7 @@ class CashDocumentRepository extends DocumentRepository
         }
 
         if ($criteria->methods) {
+
             $qb->field('method')->in($criteria->methods);
         }
 

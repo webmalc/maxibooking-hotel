@@ -90,7 +90,6 @@ class ApiController extends Controller
             throw $this->createNotFoundException();
         }
 
-
         //save cashDocument
         $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($response['doc']);
 
@@ -108,6 +107,52 @@ class ApiController extends Controller
             ;
             $dm->persist($commission);
             $dm->flush();
+        }
+
+        //send notifications
+        $order = $cashDocument->getOrder();
+        $package = $order->getPackages()[0];
+        $params = [
+            '%cash%' => $cashDocument->getTotal(),
+            '%order%' => $order->getId(),
+            '%payer%' => $order->getPayer() ? $order->getPayer()->getName() : '-'
+        ];
+        $tr = $this->get('translator');
+
+
+        $notifier = $this->get('mbh.notifier');
+        $message = $notifier::createMessage();
+        $message
+            ->setText($tr->trans('mailer.online.payment.backend', $params))
+            ->setFrom('online')
+            ->setSubject($tr->trans('mailer.online.payment.subject', $params))
+            ->setType('success')
+            ->setCategory('notification')
+            ->setHotel($cashDocument->getHotel())
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+10 minute'))
+            ->setLink($this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()]))
+            ->setLinkText('mailer.to_order')
+        ;
+
+        //send to backend
+        $notifier
+            ->setMessage($message)
+            ->notify()
+        ;
+
+        //send to user
+        if ($order && $order->getPayer() && $order->getPayer()->getEmail()) {
+            $message
+                ->addRecipient($order->getPayer()->getEmail())
+                ->setText($tr->trans('mailer.online.payment.user', $params))
+                ->setLink('hide')
+                ->setLinkText(null)
+            ;
+            $this->get('mbh.notifier.mailer')
+                ->setMessage($message)
+                ->notify()
+            ;
         }
 
         $logger->info('OK. '.$logText);
@@ -241,7 +286,7 @@ class ApiController extends Controller
             ]);
         }
         $packages = iterator_to_array($order->getPackages());
-        $this->sendNotifications($packages);
+        $this->sendNotifications($order, $request->arrival . ':00', $request->departure . ':00');
 
         if (count($packages) > 1) {
             $roomStr = $this->get('translator')->trans('controller.apiController.reservations_made_success');
@@ -275,20 +320,32 @@ class ApiController extends Controller
     }
 
     /**
-     * @param array $packages
+     * @param Order $order
+     * @param null $arrival
+     * @param null $departure
      * @return bool
      */
-    private function sendNotifications(array $packages)
+    private function sendNotifications(Order $order, $arrival = null, $departure = null)
     {
         try {
+
+            //backend
             $notifier = $this->container->get('mbh.notifier');
             $message = $notifier::createMessage();
+            $hotel = $order->getPackages()[0]->getRoomType()->getHotel();
             $message
-                ->setText($this->renderView('MBHOnlineBundle:Api:notification.html.twig', ['packages' => $packages]))
-                ->setFrom('online')
-                ->setSubject($this->get('translator')->trans('online_form.notification', [], 'MBHOnlineBundle'))
+                ->setText('Поступил новый заказ #' . $order->getId() . ' с вашего сайта.')
+                ->setFrom('online_form')
+                ->setSubject('Поступил новый заказ с вашего сайта.')
                 ->setType('info')
                 ->setCategory('notification')
+                ->setOrder($order)
+                ->setAdditionalData([
+                    'arrivalTime' => $arrival,
+                    'departureTime' => $departure,
+                ])
+                ->setHotel($hotel)
+                ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+1 minute'))
             ;
@@ -296,6 +353,36 @@ class ApiController extends Controller
                 ->setMessage($message)
                 ->notify()
             ;
+
+            //user
+            if ($order->getPayer() && $order->getPayer()->getEmail()) {
+                $tr = $this->get('translator');
+                $notifier = $this->container->get('mbh.notifier.mailer');
+                $message = $notifier::createMessage();
+                $message
+                    ->setFrom('online_form')
+                    ->setSubject($tr->trans('mailer.online.user.subject', ['%hotel%' => $hotel->getName()]))
+                    ->setType('info')
+                    ->setCategory('notification')
+                    ->setOrder($order)
+                    ->setAdditionalData([
+                        'prependText' => $tr->trans('mailer.online.user.prepend', ['%guest%' => $order->getPayer()->getName()]),
+                        'appendText' => $tr->trans('mailer.online.user.append'),
+                    ])
+                    ->setHotel($hotel)
+                    ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
+                    ->setAutohide(false)
+                    ->setEnd(new \DateTime('+1 minute'))
+                    ->addRecipient($order->getPayer()->getEmail())
+                    ->setLink('hide')
+                    ->setSignature($tr->trans('mailer.online.user.signature', ['%hotel%' => $hotel->getName()]))
+                ;
+                $notifier
+                    ->setMessage($message)
+                    ->notify()
+                ;
+            }
+
         } catch (\Exception $e) {
 
             return false;
@@ -317,8 +404,6 @@ class ApiController extends Controller
                 'end' => $request->end,
                 'adults' => $info->adults,
                 'children' => $info->children,
-                'arrivalTime' => $this->get('mbh.helper')->getDateFromString($request->arrival, 'H:i'),
-                'departureTime' =>$this->get('mbh.helper')->getDateFromString($request->departure, 'H:i'),
                 'roomType' => $info->roomType->id,
                 'tariff' => $info->tariff->id,
                 'isOnline' => true
@@ -342,6 +427,7 @@ class ApiController extends Controller
                     'phone' => $request->user->phone
                 ],
                 'status' => 'online',
+                'order_note' => $request->note,
                 'confirmed' => false
             ], null, null, $cash ? ['total' => (float)$request->total] : null);
         } catch (\Exception $e) {

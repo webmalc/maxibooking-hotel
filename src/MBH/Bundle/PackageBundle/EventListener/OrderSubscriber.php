@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
+use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -17,9 +18,9 @@ class OrderSubscriber implements EventSubscriber
     protected $container;
 
     /**
-     * @var \MBH\Bundle\BaseBundle\Service\Messenger\Mailer
+     * @var \MBH\Bundle\BaseBundle\Service\Messenger\Notifier
      */
-    protected $mailer;
+    protected $notifier;
 
     /**
      * @var \Symfony\Component\Translation\IdentityTranslator
@@ -44,7 +45,7 @@ class OrderSubscriber implements EventSubscriber
 
     public function onFlush(OnFlushEventArgs $args)
     {
-        $this->mailer = $this->container->get('mbh.mailer');
+        $this->notifier = $this->container->get('mbh.notifier.mailer');
         $this->translator = $this->container->get('translator');
         $dm = $args->getDocumentManager();
         $uow = $dm->getUnitOfWork();
@@ -59,13 +60,38 @@ class OrderSubscriber implements EventSubscriber
 
                 //send emails to payer
                 if (isset($uow->getDocumentChangeSet($entity)['confirmed']) && $entity->getConfirmed()) {
-                    $payerEmail = $entity->getPayer()->getEmail();
 
-                    if (!empty($payerEmail)) {
+                    if ($entity->getPayer() && $entity->getPayer()->getEmail()) {
                         try {
-                            $this->mailer->send([$payerEmail], [
-                                'text' =>  $this->translator->trans('payer.confirmation.notification', ['%order%' => $entity->getId()], 'MBHPackageBundle')
-                            ]);
+
+                            $notifier = $this->notifier;
+                            $hotel = $entity->getPackages()[0]->getRoomType()->getHotel();
+                            $message = $notifier::createMessage();
+                            $message
+                                ->setFrom('online_form')
+                                ->setSubject($this->translator->trans('mailer.order.confirm.user.subject', [
+                                    '%order%' => $entity->getId(), '%date%' => $entity->getCreatedAt()->format('d.m.Y')
+                                ]))
+                                ->setType('success')
+                                ->setCategory('notification')
+                                ->setOrder($entity)
+                                ->setAdditionalData([
+                                    'prependText' => $this->translator->trans('mailer.order.confirm.user.prepend', ['%guest%' => $entity->getPayer()->getName()]),
+                                    'appendText' => $this->translator->trans('mailer.order.confirm.user.append'),
+                                ])
+                                ->setHotel($hotel)
+                                ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
+                                ->setAutohide(false)
+                                ->setEnd(new \DateTime('+1 minute'))
+                                ->addRecipient($entity->getPayer()->getEmail())
+                                ->setLink('hide')
+                                ->setSignature($this->translator->trans('mailer.online.user.signature', ['%hotel%' => $hotel->getName()]))
+                            ;
+                            $notifier
+                                ->setMessage($message)
+                                ->notify()
+                            ;
+
                         } catch (\Exception $e) {
                             return false;
                         }

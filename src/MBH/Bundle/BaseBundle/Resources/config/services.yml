@@ -96,6 +96,12 @@ services:
         - [attach, ["@mbh.mailer"]]
       arguments: [@service_container]
 
+    mbh.notifier.mailer:
+          class: MBH\Bundle\BaseBundle\Service\Messenger\Notifier
+          calls:
+            - [attach, ["@mbh.mailer"]]
+          arguments: [@service_container]
+
     mbh.mailer:
       class: MBH\Bundle\BaseBundle\Service\Messenger\Mailer
       arguments: [@service_container]

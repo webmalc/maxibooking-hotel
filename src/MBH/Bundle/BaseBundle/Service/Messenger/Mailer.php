@@ -52,12 +52,17 @@ class Mailer implements \SplObserver
         $message = $notifier->getMessage();
 
         if ($message->getEmail()) {
-            $this->send($message->getRecipients(), [
+            $this->send($message->getRecipients(), array_merge([
                 'text' => $message->getText(),
                 'type' => $message->getType(),
                 'category' => $message->getCategory(),
-                'subject' => $message->getSubject()
-            ], $message->getTemplate());
+                'subject' => $message->getSubject(),
+                'hotel' => $message->getHotel(),
+                'link' => $message->getLink(),
+                'linkText' => $message->getLinkText(),
+                'order' => $message->getOrder(),
+                'signature' => $message->getSignature()
+            ], $message->getAdditionalData()) , $message->getTemplate());
         }
     }
 
@@ -96,6 +101,7 @@ class Mailer implements \SplObserver
         $body = $this->twig->render(
             empty($template) ? $this->params['template'] : $template, $data
         );
+
         $message = \Swift_Message::newInstance();
         $message->setSubject($data['subject'])
             ->setFrom($this->params['from'])

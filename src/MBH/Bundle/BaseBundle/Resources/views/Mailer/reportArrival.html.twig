@@ -1,0 +1,182 @@
+{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
+
+{% block text %}
+
+    {% if prependText is defined and prependText %}
+        <p style="{{ pStyles }}">{{ prependText|trans|raw }}</p><br>
+    {% endif %}
+
+    {% if packages is not empty %}
+        <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #e2e2e2;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
+            <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/fa-hotel.png"
+                 align="absmiddle">
+            Ожидаемые гости
+        </div>
+        <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #e2e2e2;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+            <thead>
+            <tr>
+                <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:12%;">
+                    #
+                </th>
+                <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:38%;">
+                    Номер
+                </th>
+                <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:25%;">
+                    Заказчик
+                </th>
+                <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:right;width:25%;">
+                    Оплата
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% set guests = 0 %}
+            {% set debt = 0 %}
+
+            {% for package in packages if package.getDeletedAt is empty %}
+
+                {% set guests = guests + package.adults + package.children %}
+
+                <tr>
+                    <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                        {{ package.numberWithPrefix }}
+                    </td>
+                    <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                        {{ package.begin|mbh_format }}-{{ package.end|mbh_format }}
+                        ({{ plural(package.nights, "package.json.noch"|trans({}, "MBHPackageBundle"), "package.json.nochi"|trans({}, "MBHPackageBundle"), "package.json.nochei"|trans({}, "MBHPackageBundle")) }}
+                        )<br>
+                        <small style="color:#888;">
+                            {{ package.roomType }}, {{ package.roomType.hotel }}
+                        </small>
+                    </td>
+                    <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                        {{ package.order.payer.getName() }}
+                        <br>
+                        <small style="color:#888;">
+                            {% if package.adults > 0 %}{{ package.adults }} вз.{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} рб.{% endif %}
+                        </small>
+                    </td>
+                    <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">
+
+                        {% if package.order.isPaid and  package.order.price < package.order.paid %}
+                            {% set price = {
+                            'val': package.order.price - package.order.paid,
+                            'text': 'Оплачено',
+                            'style': 'color:#50a265;'
+                            } %}
+                        {% elseif package.order.isPaid and  package.order.price == package.order.paid %}
+                            {% set price = {
+                            'val': 0,
+                            'text': 'Оплачено',
+                            'style': 'color:#50a265;'
+                            } %}
+                        {% elseif package.order.isPaid == false and package.order.paid == 0 %}
+                            {% set price = {
+                            'val': package.order.price,
+                            'text': 'Без оплаты',
+                            'style': 'color:#b5494e;'
+                            } %}
+                            {% set debt = debt + price.val %}
+                        {% elseif package.order.isPaid == false and  package.order.paid < package.order.price %}
+                            {% set price = {
+                            'val': package.order.price - package.order.paid,
+                            'text': 'Частичная опл.',
+                            'style': 'color:#c1a33d;'
+                            } %}
+                            {% set debt = debt + price.val %}
+                        {% endif %}
+                        <span style="{{ price.style }}">{{ price.text }}</span>
+                        {% if price.val %}
+                            <br>
+                            <small style="color:#888;">
+                                {{ price.val > 0 ? 'Долг' : 'Перепл.' }}: {{ price.val|number_format(2) }}  руб.
+                            </small>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div style="padding:10px 0;margin:5px 0 20px;">
+            <div style="width:33%;float:left;text-align:center;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+                <b>Номеров:</b> {{ packages|length }}
+            </div>
+            <div style="width:33%;float:left;text-align:center;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+                <b>Гостей:</b>  {{ guests }}
+            </div>
+            <div style="width:33%;float:left;text-align:center;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+                <b>Долг:</b> {{ debt|number_format(2) }} руб.
+            </div>
+        </div>
+        <br>
+    {% endif %}
+
+    {% if transfers is not empty %}
+        <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #e2e2e2;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
+            <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/fa-plug.png"
+                 align="absmiddle"> Трансфер
+        </div>
+        <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #e2e2e2;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+            <thead>
+            <tr>
+                <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:12%;">
+                    #
+                </th>
+                <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:30%;">
+                    Дата
+                </th>
+                <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:30%;">
+                    Количество
+                </th>
+                <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:right;width:28%;">
+                    Комментарий
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% set trId = false %}
+
+            {% for transfer in transfers if transfer.getDeletedAt is empty and transfer.package.getDeletedAt is empty %}
+
+                {% if trId != transfer.service.id %}
+                    {% set trId = transfer.service.id %}
+                    <tr>
+                        <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:center;background-color: #f9f9f9;" colspan="4">
+                            <b>{{ transfer.service }}</b>
+                        </td>
+                    </tr>
+                {% endif %}
+
+                <tr>
+                    <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                        {{ transfer.package.numberWithPrefix }}
+                    </td>
+                    <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                        {{ transfer.begin|mbh_format }} {{ transfer.begin|date('H:i') }}<br>
+                        <small style="color:#888;">{{ transfer.package.roomType.hotel }}</small>
+                    </td>
+                    <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                        {{ transfer.amount }}
+                        {% if transfer.package.order.payer %}
+                            <br>
+                            <small style="color:#888;">{{ transfer.package.order.payer }}</small>
+                        {% endif %}
+                    </td>
+                    <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">
+                        {{ transfer.note|nl2br }}
+                    </td>
+                </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+
+    {% if appendText is defined and appendText %}
+        <br><p style="{{ pStyles }}">{{ appendText|trans|raw }}</p>
+    {% endif %}
+
+{% endblock %}

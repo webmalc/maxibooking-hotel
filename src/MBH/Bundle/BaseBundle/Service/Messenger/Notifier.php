@@ -84,12 +84,18 @@ class Notifier implements \SplSubject
      */
     public function notify()
     {
-        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $user = null;
+        $st = $this->container->get('security.token_storage');
+        if ($st->getToken()) {
+            $user = $st->getToken()->getUser();
+        }
+
         $method = 'get' . ucfirst($this->message->getCategory()) . 's';
 
-        if (!empty($this->message->getText())) {
+        if (!empty($this->message->getText()) || !empty($this->message->getOrder())) {
 
             if (!$user || !method_exists($user, $method)  || $user->$method()) {
+
                 foreach ($this->observers as $observer) {
                     try {
                         $observer->update($this);

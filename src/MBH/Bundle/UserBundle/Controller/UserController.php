@@ -33,35 +33,20 @@ class UserController extends Controller
      */
     public function indexAction()
     {
-        /*$notifier = $this->get('mbh.notifier');
-        $message = $notifier::createMessage();
-        $message
-            ->setText('test message')
-            ->setFrom('system')
-            ->setType('danger')
-            ->setAutohide(false)
-            ->setEnd(new \DateTime('+1 minute'))
-            ->setCategory('report')
-        ;
-        $notifier
-            ->setMessage($message)
-            ->notify()
-        ;*/
-
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        
+
         $entities = $dm->getRepository('MBHUserBundle:User')->createQueryBuilder('q')
-                       ->sort('username', 'asc')
-                       ->getQuery()
-                       ->execute()
+            ->sort('username', 'asc')
+            ->getQuery()
+            ->execute()
         ;
 
         return array(
             'entities' => $entities,
         );
     }
-    
+
     /**
      * Displays a form to create a new entity.
      *
@@ -73,7 +58,7 @@ class UserController extends Controller
     public function newAction()
     {
         $entity = new User();
-        
+
         $form = $this->createForm(
             new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
             $entity,
@@ -84,7 +69,7 @@ class UserController extends Controller
             'form' => $form->createView(),
         );
     }
-    
+
     /**
      * Creates a new entity.
      *
@@ -112,8 +97,7 @@ class UserController extends Controller
             $this->updateAcl($entity, $form);
 
             $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', $this->get('translator')->trans('controller.profileController.record_saved_success'))
-            ;
+                ->set('success', $this->get('translator')->trans('controller.profileController.record_saved_success'));
 
             return $this->afterSaveRedirect('user', $entity->getId());
         }
@@ -123,7 +107,7 @@ class UserController extends Controller
             'form' => $form->createView(),
         );
     }
-    
+
     /**
      * Displays a form to edit an existing entity.
      *
@@ -164,7 +148,7 @@ class UserController extends Controller
 
             }
         }
-            $form = $this->createForm(
+        $form = $this->createForm(
             new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
             $entity,
             ['admin' => $entity->hasRole('ROLE_ADMIN'), 'hotels' => $hasHotels]
@@ -200,7 +184,7 @@ class UserController extends Controller
             new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
             $entity,
             ['admin' => $entity->hasRole('ROLE_ADMIN')]
-            
+
         );
 
         $form->submit($request);
@@ -208,19 +192,19 @@ class UserController extends Controller
         if ($form->isValid()) {
 
             $newPassword = $form->get('newPassword')->getData();
-            
-            if($newPassword != null) {
+
+            if ($newPassword != null) {
                 $entity->setPlainPassword($newPassword);
             }
-            
+
             $this->container->get('fos_user.user_manager')->updateUser($entity);
 
             //update ACL
             $this->updateAcl($entity, $form);
 
             $this->getRequest()->getSession()->getFlashBag()
-                    ->set('success', $this->get('translator')->trans('controller.profileController.record_edited_success'))
-            ;
+                ->set('success', $this->get('translator')->trans('controller.profileController.record_edited_success'));
+
             return $this->afterSaveRedirect('user', $entity->getId());
         }
 
@@ -248,7 +232,7 @@ class UserController extends Controller
 
             $securityIdentity = new UserSecurityIdentity($user, 'MBH\Bundle\UserBundle\Document\User');
 
-            foreach($acl->getObjectAces() as $i => $ace) {
+            foreach ($acl->getObjectAces() as $i => $ace) {
                 if ($ace->getSecurityIdentity() == $securityIdentity) {
                     $acl->deleteObjectAce($i);
                 }
@@ -266,7 +250,7 @@ class UserController extends Controller
         }
 
     }
-    
+
     /**
      * Delete entity.
      *

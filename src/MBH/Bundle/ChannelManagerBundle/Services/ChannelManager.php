@@ -335,8 +335,8 @@ class ChannelManager
         $message
             ->setText( $service['title'] . $this->container->get('translator')->trans('services.channelManager.sync_error_check_interaction_settings'))
             ->setFrom('system')
-            ->setType('danger')
-            ->setCategory('notification')
+            ->setType('warning')
+            ->setCategory('error')
             ->setAutohide(false)
             ->setEnd(new \DateTime('+1 minute'))
         ;

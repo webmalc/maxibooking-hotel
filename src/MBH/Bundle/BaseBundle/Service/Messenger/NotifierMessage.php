@@ -2,6 +2,9 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
+use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+
 /**
  * NotifierMessage
  */
@@ -56,6 +59,36 @@ class NotifierMessage
      * @var string
      */
     private $template = null;
+
+    /**
+     * @var Order
+     */
+    private $order = null;
+
+    /**
+     * @var Hotel
+     */
+    private $hotel = null;
+
+    /**
+     * @var string
+     */
+    private $link = null;
+
+    /**
+     * @var string
+     */
+    private $linkText = null;
+
+    /**
+     * @var array
+     */
+    private $additionalData = [];
+
+    /**
+     * @var string
+     */
+    private $signature = null;
 
     /**
      * @return string
@@ -254,6 +287,120 @@ class NotifierMessage
     public function setCategory($category)
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return Order
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param Order $order
+     * @return self
+     */
+    public function setOrder(Order $order)
+    {
+        $this->order = $order;
+
+        return $this;
+    }
+
+    /**
+     * @return Hotel
+     */
+    public function getHotel()
+    {
+        return $this->hotel;
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return self
+     */
+    public function setHotel(Hotel $hotel = null)
+    {
+        $this->hotel = $hotel;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLink()
+    {
+        return $this->link;
+    }
+
+    /**
+     * @param string $link
+     * @return self
+     */
+    public function setLink($link)
+    {
+        $this->link = $link;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLinkText()
+    {
+        return $this->linkText;
+    }
+
+    /**
+     * @param string $linkText
+     * @return self
+     */
+    public function setLinkText($linkText)
+    {
+        $this->linkText = $linkText;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAdditionalData()
+    {
+        return $this->additionalData;
+    }
+
+    /**
+     * @param array $additionalData
+     * @return self
+     */
+    public function setAdditionalData(array $additionalData)
+    {
+        $this->additionalData = $additionalData;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSignature()
+    {
+        return $this->signature;
+    }
+
+    /**
+     * @param string $signature
+     * @return self
+     */
+    public function setSignature($signature)
+    {
+        $this->signature = $signature;
 
         return $this;
     }
