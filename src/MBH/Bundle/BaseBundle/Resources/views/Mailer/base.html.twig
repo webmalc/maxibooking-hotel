@@ -1,54 +1,117 @@
 {% spaceless %}
-    {% set color = '#dddddd' %}
-    {% if type is defined and type == 'danger' %}
-        {% set color = '#bc1a20' %}
+
+    {%  set colors = {
+        'info': '#649AE1', 'danger': '#b5494e', 'success': '#50a265', 'warning': '#c1a33d', 'default': '#7f7f7f'
+    } %}
+
+    {% if type is not defined %}
+        {% set type = 'default' %}
     {% endif %}
+
+    {% if attribute(colors, type) %}
+        {% set color = attribute(colors, type) %}
+    {% endif %}
+
+    {% if color is not defined %}
+        {% set color = colors['default'] %}
+    {% endif %}
+
+    {% set logo = '/bundles/mbhbase/images/empty_logo.png' %}
+    {% set hotelName = 'MaxiBooking' %}
+
+    {% set organization = '&nbsp;' %}
+
+    {% if hotel is defined and hotel %}
+        {% set hotelName = hotel.name %}
+        {% if hotel.logo %}
+            {% set logo = hotel.logoUrl %}
+        {% endif %}
+        {% if hotel.organization %}
+            {% set organization = hotel.organization.name %}
+        {% endif %}
+    {% else %}
+        {% set organization = 'Система управления отелем' %}
+    {% endif %}
+
+
+    {% if linkText is not defined or linkText is empty %}
+        {% set linkText = 'Перейти в «МаксиБукинг»' %}
+    {% endif %}
+
+    {% if link is not defined or link != 'hide' %}
+        {% set link = url('_welcome') %}
+    {% endif %}
+
+    {% set pStyles = 'margin:5px 0;font-family:Tahoma,Arial;font-size:14px;line-height:19px;color:#666;' %}
+    {% set linkStyles = "background-color:" ~ color ~ ";border-radius:5px;color:#ffffff;display:inline-block;font-family:'Cabin', Helvetica, Arial, sans-serif;font-size:14px;font-weight:bold;line-height:45px;text-align:center;text-decoration:none; padding-left: 20px; padding-right: 20px; -webkit-text-size-adjust:none;mso-hide:all;" %}
 
     <div style="width:750px;margin:50px auto;">
         <div style="width:720px;height:6px;margin:3px auto; height: 5px;">
-            <img src="{{ app.request.uriForPath('/bundles/mbhbase/images/linet.png')|replace({'app_dev.php/': ''}) }}"
+
+            <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/line-top-{{ type }}.png"
                  border="0"
                  style="width:720px;height:5px;">
         </div>
-        <div style="width:750px;border:1px solid {{ color }};">
+        <div style="width:750px;border:1px solid #dddddd;">
             <div style="width:650px;min-height:400px;margin:25px 50px 30px;">
 
-                <div style="border-bottom:1px solid {{ color }};">
+                <div style="border-bottom:1px solid #dddddd;">
 
                     <table cellpadding="0" cellspacing="0" border="0"
                            style="border-collapse:collapse;width:650px;min-height:100px;margin-bottom:15px;">
                         <tr valign="middle">
                             <td style="width:15%;">
-                                <img src="{{ app.request.uriForPath('/bundles/mbhbase/images/empty_logo.png')|replace({'app_dev.php/': ''}) }}"
+
+                                <img src="{{ logo|imagine_filter('thumb_130x110')}}"
                                      border="0"
                                      alt="MaxiBooking"
                                      style="width:130px;height:110px;margin-bottom:1px;">
+
+
                             </td>
                             <td style="width:5%;">
                             </td>
                             <td style="width:80%;">
-                                <h2 style="margin:5px 0;font-family:Tahoma,Arial;font-size:30px;line-height:30px;color:#004071;font-weight:bold;">
-                                    MaxiBooking</h2>
-
-                                <p style="margin:5px 0;font-family:Tahoma,Arial;font-size:14px;line-height:19px;color:#999;">
-                                    Система управления отелем</p>
+                                <h2 style="margin:5px 0;font-family:Tahoma,Arial;font-size:26px;line-height:30px;color:#000;font-weight:bold;">
+                                    {{ hotelName|raw }}</h2>
+                                <p style="margin:5px 0;font-family:Tahoma,Arial;font-size:12px;line-height:19px;color:#999;">
+                                    {{ organization|raw }}</p>
                             </td>
                         </tr>
                     </table>
                 </div>
 
-                <h2 style="margin:35px 0 45px;font-family:Tahoma,Arial;font-size:26px;line-height:30px;color:#000;font-weight:normal;">
-                    {{ subject|default('') }}
-                </h2>
+                <div style="text-align: center;">
+                {% block subject %}
+                    <h2 style="text-align: center; margin:55px 0 30px;font-family:Tahoma,Arial;font-size:26px;line-height:30px;color:#000;font-weight:normal;">
+                        {{ subject|default('') }}
+                    </h2>
+                {% endblock %}
 
-                <p style="margin:5px 0;font-family:Tahoma,Arial;font-size:14px;line-height:19px;color:#666;">
-                    {{ text|default('')|raw }}</p>
-                <br>
+                {% block text %}
+                    <p style="{{ pStyles }}">{{ text|default('')|raw }}</p>
+                {% endblock %}
 
+                {% if link and (hideLink is not defined or hideLink is empty) and link != 'hide' %}
+                    {% block link %}
+                        <br><br>
+                        <a href="{{ link }}" style="{{ linkStyles }}">
+                            {{ linkText|trans }}
+                        </a>
+                    {% endblock %}
+                {% endif %}
+
+                {% block signature %}
+                    {% if signature is defined and signature %}
+                    <br><br>
+                    <p style="{{ pStyles }}; text-align: left;">{{ signature|raw }}</p>
+                    {% endif %}
+                {% endblock %}
+                </div>
             </div>
         </div>
         <div style="width:720px; height:6px; margin:3px auto; height: 5px;">
-            <img src="{{ app.request.uriForPath('/bundles/mbhbase/images/lineb.png')|replace({'app_dev.php/': ''}) }}"
+            <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/line-bottom-{{ type }}.png"
                  border="0"
                  style="width:720px;height:5px;">
         </div>
@@ -56,7 +119,7 @@
         <div style="margin:25px 0 0;font-family:Tahoma,Arial;font-size:11px;line-height:14px;color:#ccc;text-align:center;">
             Письмо сгенерировано автоматически системой управления отелем «МаксиБукинг» <a
                     href="http://maxi-booking.ru/" target="_blank">
-                <img src="{{ app.request.uriForPath('/bundles/mbhbase/images/maxibooking.png')|replace({'app_dev.php/': ''}) }}"
+                <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/maxibooking.png"
                      border="0"
                      alt="MAXIBOOKING"
                      style="width:78px;height:18px;margin-left:3px;vertical-align:middle;"></a>

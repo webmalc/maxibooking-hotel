@@ -57,7 +57,10 @@ class FixturesCommand extends ContainerAwareCommand
           'Parking space' => ['name' => 'Парковка', 'calcType' => 'per_night'],
           'Babycot' => ['name' => 'Детская кровать', 'calcType' => 'per_night'],
 
-      ] 
+      ],
+      'Трансфер' => [
+            'Transfer' => ['name' => 'Трансфер', 'calcType' => 'not_applicable', 'date' => true, 'time' => true]
+      ]
     ];
 
     /**
@@ -233,6 +236,8 @@ class FixturesCommand extends ContainerAwareCommand
                             ->setFullTitle($info['name'])
                             ->setPrice(0)
                             ->setCalcType($info['calcType'])
+                            ->setDate(!empty($info['date']) ? $info['date'] : null)
+                            ->setTime(!empty($info['time']) ? $info['time'] : null)
                             ->setCategory($category)
                     ;
                     $this->dm->persist($service);

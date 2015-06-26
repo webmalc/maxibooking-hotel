@@ -12,3 +12,13 @@ parameters:
     mongodb_database: mbh
     mbh_environment: prod
     mbh_payment_systems_change: false
+
+    router.request_context.host: example.com
+    router.request_context.scheme: https
+    router.request_context.base_url:
+
+    mailer.user.arrival.links:
+        about: 'http://google.ru/'
+        rooms: 'http://google.ru/'
+        map: 'http://google.ru/'
+        contacts: 'http://google.ru/'

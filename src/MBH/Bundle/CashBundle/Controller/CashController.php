@@ -31,13 +31,15 @@ class CashController extends Controller
     public function indexAction()
     {
         $methods = $this->container->getParameter('mbh.cash.methods');
-        $addingMethods = ['cashless_electronic' => "Безнал (в т.ч. электронные)"];
-        array_splice($methods, 2, 0, $addingMethods);
+
+        $methods = array_slice($methods, 0, 2, true) +
+            ['cashless_electronic' => "Безнал (в т.ч. электронные)"] +
+            array_slice($methods, 2, count($methods) - 1, true)
+        ;
 
         return [
-            'methods' => $methods,//$this->container->getParameter('mbh.cash.methods'),
+            'methods' => $methods,
             'operations' => $this->container->getParameter('mbh.cash.operations'),
-            //'form' => $form->createView()
         ];
     }
 
@@ -71,6 +73,7 @@ class CashController extends Controller
         $availableMethods = $this->container->getParameter('mbh.cash.methods');
 
         if ($method) {
+
             if (array_key_exists($method, $availableMethods)) {
                 $queryCriteria->methods = [$method];
             } elseif ($method == 'cashless_electronic') {

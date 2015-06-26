@@ -379,26 +379,29 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
     public function notify(Order $order, $service, $type = 'new')
     {
-
         try {
             $notifier = $this->container->get('mbh.notifier');
             $tr = $this->container->get('translator');
             $message = $notifier::createMessage();
 
             $text = 'channelManager.'.$service.'.notification.'.$type;
-            $subject = 'channelManager.'.$service.'.notification.subject';
+            $subject = 'channelManager.'.$service.'.notification.subject.' . $type;
 
             if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->enable('softdeleteable');
             }
 
             $packages = [];
+            $hotel = null;
 
             foreach ($order->getPackages() as $package) {
                 if ($package->getDeletedAt()) {
                     continue;
                 }
                 $packages[] = $package->getNumberWithPrefix();
+                if (!$hotel) {
+                    $hotel = $package->getRoomType()->getHotel();
+                }
             }
 
             $message
@@ -408,6 +411,9 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setType($type == 'delete' ? 'danger' : 'info')
                 ->setCategory('notification')
                 ->setAutohide(false)
+                ->setHotel($hotel)
+                ->setOrder($order)
+                ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setEnd(new \DateTime('+10 minute'))
             ;
 

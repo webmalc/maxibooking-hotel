@@ -12,3 +12,21 @@ twig.extension.october: 'окт'
 twig.extension.november: 'нояб'
 twig.extension.december: 'дек'
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: Нельзя удалить запись с существующими бронями
+
+mailer.to_order: Перейти к заказу
+mailer.to_package: Перейти к брони
+
+mailer.online.payment.backend: "По заказу #%order% поступил платеж на сумму %cash%.<br> Плательщик: %payer%"
+mailer.online.payment.user: "Ваш платеж по заказу #%order% прошел успешно."
+mailer.online.payment.subject: "Платеж по заказу #%order%"
+mailer.online.user.subject: "Добро пожаловать в «%hotel%»"
+mailer.online.user.prepend: "Здравствуйте, %guest%!<br><br>Вы успешно забронировали номер в нашем отеле. В ближайшее время, мы свяжемся с Вами для подтверждения заказа и уточнения деталей заезда и размещения."
+mailer.online.user.append: "Мы надеемся, что ваша поездка будет успешной, а пребывание в нашем отеле - комфортным.<br>Благодарим Вам за выбор нашего отеля!"
+mailer.online.user.signature: "С уважением,<br>Отдел бронирования отеля «%hotel%»"
+
+mailer.order.confirm.user.subject: "Подтверждение заказа #%order% от %date%"
+mailer.order.confirm.user.prepend: "Здравствуйте, %guest%!<br><br>Ваш заказ был успешно подтвержден службой бронирования."
+mailer.order.confirm.user.append: "Благодарим Вам за выбор нашего отеля!"
+
+mailer.report.arrival.subject: "Список ожидаемых гостей на ближайший заезд"
+mailer.user.arrival.subject: "Ждем с нетерпением вашего прибытия!"

@@ -19,4 +19,9 @@ interface PayerInterface
      * @return string
      */
     public function getEmail();
+
+    /**
+     * @return string
+     */
+    public function getPhone();
 }

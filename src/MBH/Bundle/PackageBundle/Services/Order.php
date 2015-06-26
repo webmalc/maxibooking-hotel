@@ -152,6 +152,7 @@ class Order
             $order = new OrderDoc();
             $order->setConfirmed($data['confirmed'])
                 ->setStatus($data['status'])
+                ->setNote(!empty($data['order_note']) ? $data['order_note'] : null)
             ;
             if (!empty($tourist)) {
                 $order->setMainTourist($tourist);
