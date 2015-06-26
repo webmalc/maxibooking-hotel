@@ -14,22 +14,82 @@
         .document {
             width: 900px;
         }
-        .document h2 {
+        .document h3 {
             text-align: center;
         }
     </style>
 </head>
 <body>
+
+{% set tourist = entity.mainTourist %}
+
 <div class="document">
-    <h2>Расписка</h2>
+    <h3>Расписка</h3>
     <div>
-        <p>Я, <strong>Пантелейсова</strong></p>
-        <p>Дата рождения __.__.___г.,</p>
-        <p>Вид документа  серия номер </p>
-        <p>выданный __.__.___г. Место рожения   Гражданоство</p>
-        <p>постоянное место жительства <strong>г. обл/кр ул. д.</strong></p>
-        <p>за период проживания с <strong>07:00 15.06.2015</strong> г. по <strong>16:00 26.06.2015</strong> г</p>
-        <p>в предоставленной мне квартире по адресу: ул. д. корп. кв. <strong>1к202</strong></p>
+        <p>Я, <strong>{{ entity.mainTourist.generateFullName }}</strong></p>
+        <p>
+            Дата рождения <span class="area" style="display: inline-block; width: 90px">{% if tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</span> г.,
+        </p>
+
+        <p>
+            Вид документа <span class="area" style="display: inline-block; width: 350px">{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type]|capitalize }}{% endif %}</span>
+            серия <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</span>
+            номер <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %}</span>
+        </p>
+
+        <p>
+            выданный <span class="area" style="display: inline-block; width: 90px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}</span> г.,
+            Место рожения <span class="area" style="display: inline-block; width: 505px"></span>
+        </p>
+
+        <!--<div>
+            <div style="float: left; display: inline-block; width: 30%">
+                <div style="display: inline-block;">выданный</div>
+                <div style="width: 60%; display: inline-block;" class="area"></div> г.,
+            </div>
+            <div style="display: inline-block; width: 70%">
+                Место рожения
+                <div style="width: 70%; display: inline-block;" class="area"></div>
+            </div>
+            <div style="clear:both;"></div>
+        </div>-->
+
+        <p>
+            Гражданоство <span class="area" style="display: inline-block; width: 300px">{% if tourist %}{{ tourist.citizenship }}{% endif %}</span>
+        </p>
+        <div>
+            <div style="float: left; width: 240px">
+                постоянное место жительства
+            </div>
+            <div style="display: inline-block">
+                <span class="area" style="display: inline-block; width: 580px">
+                    {% set decomposedAddress = tourist.addressObjectDecomposed %}
+                    {% if decomposedAddress and decomposedAddress.country and decomposedAddress.city %}
+                        {{ decomposedAddress.country ~ ' ' ~ decomposedAddress.city ~ ' ' ~ decomposedAddress.settlement }}
+                        {% if decomposedAddress.street %} .ул {{  decomposedAddress.street }} {% endif %}
+                    {% endif %}
+                </span>
+                <div style="font-size: 15px; font-weight: normal;">г. обл/кр ул. д.</div>
+            </div>
+        </div>
+        <p>за период проживания с <strong>{{ entity.begin|date('d.m.Y') }}</strong> г. по <strong>{{ entity.end|date('d.m.Y') }}</strong> г</p>
+        <p>
+            <div style="float: left; width: 350px">
+                в предоставленной мне квартире по адресу:
+            </div>
+            <div style="display: inline-block">
+                <span class="area" style="display: inline-block; width: 470px">
+                    <strong>
+                        {% if entity.accommodation and entity.accommodation.housing %}
+                            {{ entity.accommodation.housing.city }} {{ entity.accommodation.housing.address }}
+                        {% elseif entity.roomType.hotel.city and entity.roomType.hotel.street %}
+                            {{ entity.roomType.hotel.city }} {{ entity.roomType.hotel.street }} {{ entity.roomType.hotel.corpus }} {{ entity.roomType.hotel.house }}
+                        {% endif %}
+                    </strong>
+                </span>
+                <div style="font-size: 15px; font-weight: normal;">ул. д. корп. кв. </div>
+            </div>
+        </p>
         <div style="white-space: pre;"><span style="text-decoration: underline;font-weight: bold">Обязуюсь:</span>
             -   не производить шум позднее 23-ч часов;
             -   не загрязнять подъезды и прилегающую у дому территорию;
@@ -55,15 +115,72 @@
 
     <hr/>
 
-    <h2>Расписка</h2>
+    <h3>Расписка</h3>
     <div>
-        <p>Я, <strong>Пантелейсова</strong></p>
-        <p>Дата рождения __.__.___г.,</p>
-        <p>Вид документа  серия номер </p>
-        <p>выданный __.__.___г. Место рожения   Гражданоство</p>
-        <p>постоянное место жительства <strong>г. обл/кр ул. д.</strong></p>
-        <p>за период проживания с <strong>07:00 15.06.2015</strong> г. по <strong>16:00 26.06.2015</strong> г</p>
-        <p>в предоставленной мне квартире по адресу: ул. д. корп. кв. <strong>1к202</strong></p>
+        <p>Я, <strong>{{ entity.mainTourist.generateFullName }}</strong></p>
+        <p>
+            Дата рождения <span class="area" style="display: inline-block; width: 90px">{% if tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</span> г.,
+        </p>
+
+        <p>
+            Вид документа <span class="area" style="display: inline-block; width: 350px">{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type]|capitalize }}{% endif %}</span>
+            серия <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</span>
+            номер <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %}</span>
+        </p>
+
+        <p>
+            выданный <span class="area" style="display: inline-block; width: 90px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}</span> г.,
+            Место рожения <span class="area" style="display: inline-block; width: 505px"></span>
+        </p>
+
+        <!--<div>
+            <div style="float: left; display: inline-block; width: 30%">
+                <div style="display: inline-block;">выданный</div>
+                <div style="width: 60%; display: inline-block;" class="area"></div> г.,
+            </div>
+            <div style="display: inline-block; width: 70%">
+                Место рожения
+                <div style="width: 70%; display: inline-block;" class="area"></div>
+            </div>
+            <div style="clear:both;"></div>
+        </div>-->
+
+        <p>
+            Гражданоство <span class="area" style="display: inline-block; width: 300px">{% if tourist %}{{ tourist.citizenship }}{% endif %}</span>
+        </p>
+        <div>
+            <div style="float: left; width: 240px">
+                постоянное место жительства
+            </div>
+            <div style="display: inline-block">
+                <span class="area" style="display: inline-block; width: 580px">
+                    {% set decomposedAddress = tourist.addressObjectDecomposed %}
+                    {% if decomposedAddress and decomposedAddress.country and decomposedAddress.city %}
+                        {{ decomposedAddress.country ~ ' ' ~ decomposedAddress.city ~ ' ' ~ decomposedAddress.settlement }}
+                        {% if decomposedAddress.street %} .ул {{  decomposedAddress.street }} {% endif %}
+                    {% endif %}
+                </span>
+                <div style="font-size: 15px; font-weight: normal;">г. обл/кр ул. д.</div>
+            </div>
+        </div>
+        <p>за период проживания с <strong>{{ entity.begin|date('d.m.Y') }}</strong> г. по <strong>{{ entity.end|date('d.m.Y') }}</strong> г</p>
+        <p>
+        <div style="float: left; width: 350px">
+            в предоставленной мне квартире по адресу:
+        </div>
+        <div style="display: inline-block">
+                <span class="area" style="display: inline-block; width: 470px">
+                    <strong>
+                        {% if entity.accommodation and entity.accommodation.housing %}
+                            {{ entity.accommodation.housing.city }} {{ entity.accommodation.housing.address }}
+                        {% elseif entity.roomType.hotel.city and entity.roomType.hotel.street %}
+                            {{ entity.roomType.hotel.city }} {{ entity.roomType.hotel.street }} {{ entity.roomType.hotel.corpus }} {{ entity.roomType.hotel.house }}
+                        {% endif %}
+                    </strong>
+                </span>
+            <div style="font-size: 15px; font-weight: normal;">ул. д. корп. кв. </div>
+        </div>
+        </p>
         <div style="white-space: pre;"><span style="text-decoration: underline;font-weight: bold">Обязуюсь:</span>
             -   не производить шум позднее 23-ч часов;
             -   не загрязнять подъезды и прилегающую у дому территорию;

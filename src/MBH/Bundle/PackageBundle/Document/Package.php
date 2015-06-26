@@ -1040,6 +1040,9 @@ class Package extends Base
         return null;
     }
 
+    /**
+     * @return Tourist|null
+     */
     public function getMainTourist()
     {
         return $this->getOrder()->getMainTourist();

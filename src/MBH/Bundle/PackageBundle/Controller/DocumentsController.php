@@ -327,10 +327,13 @@ class DocumentsController extends Controller
             'vegaDocumentTypes' => $vegaDocumentTypes,
         ]);
 
-        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
-            'Content-Type' => 'application/pdf',
-            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
+
+        $response = new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
+            'Content-Type' => 'application/pdf'
         ]);
+        //$response = new Response($html);
+
+        return $response;
     }
 
     /**
@@ -354,9 +357,10 @@ class DocumentsController extends Controller
             'vegaDocumentTypes' => $vegaDocumentTypes,
         ]);
 
-        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
-            'Content-Type' => 'application/pdf',
-            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
+        $response = new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
+            'Content-Type' => 'application/pdf'
         ]);
+
+        return $response;
     }
 }
