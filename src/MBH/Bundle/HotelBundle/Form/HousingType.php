@@ -11,11 +11,13 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class HousingType
- * @package MBH\Bundle\HotelBundle\Form
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
 class HousingType extends AbstractType
 {
+    /**
+     * @var DocumentManager
+     */
     private $dm;
 
     public function __construct(DocumentManager $dm)
@@ -84,9 +86,7 @@ class HousingType extends AbstractType
     }
 
     /**
-     * Returns the name of this type.
-     *
-     * @return string The name of this type
+     * {@inheritdoc}
      */
     public function getName()
     {

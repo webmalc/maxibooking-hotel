@@ -28,140 +28,160 @@
         }
 
         .document {
-            width: 840px;
+            /*width: 840px;*/
         }
     </style>
 </head>
 <body>
 <div class="document">
-
-    <div style="float: right;">
-        Утверждена<br>
-        Приказом Министерства финансов<br>
-        Российской Федерации<br>
-        от 13 декабря 1993 г.N 121<br>
-        <br>
-        Форма N 1-Г
-    </div>
-
-    <table border="1" style="width: 840px;text-align: center;" cellpadding="0" cellspacing="0">
-        <tbody>
-        <tr>
-            <td>
-                АНКЕТА № 3
-            </td>
-            <td>
-                Путевка №
-            </td>
-            <td>
-                Авто
-            </td>
-            <td>
-                № счета 302942309
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <style>
-        .left-block {
-            float: left;
-        }
-        .left-block div {
-            margin: 5px 0px;
-        }
-    </style>
-
-    <div style="margin-top: 30px; width: 730px">
-        <div class="left-block">
-            <div>
-                1. Фамилия
-                <div style="width: 250px" class="area ib">&nbsp</div>
-            </div>
-            <div>
-                2. Имя
-                <div style="width: 280px" class="area ib">&nbsp</div>
-            </div>
-            <div>
-                3. Отчество
-                <div style="width: 250px" class="area ib">&nbsp</div>
-            </div>
-            <div>
-                4. Дата рождения
-                <div style="width: 100px" class="area ib">&nbsp</div>
-                г.
-            </div>
-            <div>
-                <div class="ib left ">5.Место рождения</div>
-                <div style="width: 270px" class="area ib">&nbsp</div>
-            </div>
-            <div>
-                <div class="ib left">
-                    <div class="ib">6.серии</div>
-                    <div style="width: 95px" class="area ib">&nbsp</div>
-                </div>
-                <div class="ib left">
-                    №<div style="width: 95px" class="area ib">&nbsp</div>
-                </div>
-                <div class="ib">
-                    <div class="ib left">выдан</div>
-                    <div class="ib">
-                        <div style="width: 95px" class="area ib">&nbsp</div>
-                        <div style="text-align: center"><small>(когда)</small></div>
-                    </div>
-                </div>
-            </div>
+    <div>
+        <div style="float: right;">
+            Утверждена<br>
+            Приказом Министерства финансов<br>
+            Российской Федерации<br>
+            от 13 декабря 1993 г.N 121<br>
+            <br>
+            Форма N 1-Г
         </div>
 
+        <table border="1" style="width: 840px;text-align: center;" cellpadding="0" cellspacing="0">
+            <tbody>
+            <tr>
+                <td>
+                    АНКЕТА № 3
+                </td>
+                <td>
+                    Путевка №
+                </td>
+                <td>
+                    Авто
+                </td>
+                <td>
+                    № счета {{ entity.number }}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+
         <style>
+            .left-block {
+                float: left;
+            }
+
+            .left-block div {
+                margin: 3px 0px;
+            }
+
             .right-block {
                 float: right;
+                width: 350px;
             }
+
             .right-block div {
                 margin: 5px 0px;
             }
         </style>
 
-        <div class="right-block">
-            <div>
-                <div class="ib left">Комната №</div>
-                <div style="width: 180px" class="area ib">1k202</div>
-                <div style="clear:both;"></div>
-            </div>
-            <div>
-                <div class="ib left">Индекс поселения</div>
-                <div style="width: 127px" class="area ib">&nbsp</div>
-                <div style="clear:both;"></div>
-            </div>
-            <div>
-                <div class="ib left">Прибыл &nbsp</div>
-                <div class="ib">
-                    <div style="width: 200px" class="area ib left">15.06.2015 07:00</div>
-                    <div class="center">
-                        <small>(дата, часы)</small>
+        <div>
+            <div class="left-block">
+                <div>
+                    1. Фамилия
+                    <div style="width: 360px" class="area ib">&nbsp{{ entity.order.mainTourist.lastName }}</div>
+                </div>
+                <div>
+                    2. Имя
+                    <div style="width: 400px" class="area ib">&nbsp{{ entity.order.mainTourist.firstName }}</div>
+                </div>
+                <div>
+                    3. Отчество
+                    <div style="width: 360px" class="area ib">&nbsp{{ entity.order.mainTourist.patronymic }}</div>
+                </div>
+                <div>
+                    4. Дата рождения
+                    <div style="width: 160px" class="area ib">
+                        &nbsp{% if entity.order.mainTourist.birthday %}{{ entity.order.mainTourist.birthday|date('d.m.Y') }}{% endif %}</div>
+                    г.
+                </div>
+                <div>
+                    <div class="ib left ">5.Место рождения</div>
+                    <div style="width: 310px" class="area ib">
+                        &nbsp{% if entity.order.mainTourist.birthplace %}{{ entity.order.mainTourist.birthplace.city ~ ' ' ~ entity.order.mainTourist.birthplace.district }}{% endif %}</div>
+                </div>
+                <div>
+                    <div class="left">
+                        <div class="ib">6.серии</div>
+                        <div class="ib">
+                            <div style="width: 110px" class="area ib">
+                                &nbsp{{ entity.order.mainTourist.documentRelation.series }}
+                            </div>
+                        </div>
+                        <div class="ib">№</div>
+                        <div class="ib">
+                            <div style="width: 110px" class="area ib">
+                                &nbsp{{ entity.order.mainTourist.documentRelation.number }}
+                            </div>
+                        </div>
+                        <div class="ib">выдан</div>
                     </div>
-                    <div style="clear: both;"></div>
+                    <div class="ib">
+                        <div class="lb">
+                            <div style="width: 100px" class="area ib">
+                                &nbsp{% if entity.order.mainTourist.documentRelation %}{{ entity.order.mainTourist.documentRelation.issued|date('d.m.Y') }}{% endif %}
+                            </div>
+                            <div style="text-align: center"><small>(когда)</small></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div>
-                <div class="ib left">Выбыл &nbsp</div>
-                <div class="ib">
-                    <div style="width: 205px" class="area ib left">&nbsp</div>
-                    <div class="center">
-                        <small>(дата, часы)</small>
-                    </div>
-                    <div style="clear: both;"></div>
-                </div>
-            </div>
-        </div>
 
-        <div style="clear: both"></div>
+            <div class="right-block">
+                <div>
+                    <div style="width: 130px" class="ib left">Комната №</div>
+                    <div style="width: 180px" class="area ib">{{ entity.accommodation.name }}</div>
+                    <div style="clear:both;"></div>
+                </div>
+                <div>
+                    <div style="width: 150px" class="ib left">Индекс поселения</div>
+                    <div style="width: 160px" class="area ib">&nbsp</div>
+                    <div style="clear:both;"></div>
+                </div>
+                <div>
+                    <div class="ib left">Прибыл &nbsp</div>
+                    <div class="ib">
+                        <div style="width: 200px" class="area ib left">{{ entity.begin|date('d.m.Y H:i') }}</div>
+                        <div class="center">
+                            <small>(дата, часы)</small>
+                        </div>
+                        <div style="clear: both;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ib left">Выбыл &nbsp</div>
+                    <div class="ib">
+                        <div style="width: 205px" class="area ib left">&nbsp{{ entity.end|date('d.m.Y H:i') }}</div>
+                        <div class="center">
+                            <small>(дата, часы)</small>
+                        </div>
+                        <div style="clear: both;"></div>
+                    </div>
+                </div>
+            </div>
+            <div style="clear: both"></div>
+        </div>
     </div>
 
 
-    <div>
+    <style>
+        .center-block div {
+            margin: 3px 0px;
+        }
+    </style>
+
+    <div class="center-block">
         <div class="ib">
-            <div style="width: 725px" class="area ib left">&nbsp</div>
+            <div style="width: 820px" class="area ib left">
+                &nbsp{{ entity.order.mainTourist.documentRelation.authorityOrgan|capitalize }}</div>
             <div class="center">
                 <small>(наименования органа внутренних дел, выдавшего документ)</small>
             </div>
@@ -171,7 +191,8 @@
         <div>
             <div>7. Адрес постоянного места жительства &nbsp</div>
             <div class="ib">
-                <div style="width: 725px" class="area ib left">&nbsp</div>
+                <div style="width: 820px" class="area ib left">
+                    &nbsp{{ entity.order.mainTourist.addressObjectDecomposed.city ~ ' ул.' ~ entity.order.mainTourist.addressObjectDecomposed.street }}</div>
                 <div class="center">
                     <small>Ул. д.</small>
                 </div>
@@ -180,16 +201,15 @@
         </div>
 
         <div>
-            Гражданство телефон
+            8. Цель приезда
+            <div style="width: 690px" class="area ib">&nbsp</div>
         </div>
-        8. Цель приезда
-        <div style="width: 615px" class="area ib">&nbsp</div>
         <div>
-            9. Срок проживания до 26.06.2015 16:00
+            9. Срок проживания до {{ entity.end|date('d.m.Y') }}
         </div>
         <div>
             10. Продление проживания
-            <div style="width: 535px" class="area ib">&nbsp</div>
+            <div style="width: 610px" class="area ib">&nbsp</div>
         </div>
         <div>
             11. С памяткой о правилах пожарной безопасности ознакомлен
@@ -197,7 +217,7 @@
     </div>
 
     <div>
-        <div class="right" style="margin-right: 170px">
+        <div class="right">
             <div class="ib left">Подпись &nbsp</div>
             <div class="ib">
                 <div style="width: 200px" class="area ib left">&nbsp</div>
@@ -210,8 +230,10 @@
         <div style="clear: both"></div>
     </div>
 
+    <div style="page-break-after: always;"></div>
+
     <div>
-        <div style="float: right; font-weight: bold">Обратная сторона Ф. N 1-Г</div>
+        <div style="width: 220px; float: right; font-weight: bold">Обратная сторона Ф. N 1-Г</div>
         <div style="clear: both"></div>
     </div>
 
@@ -220,7 +242,7 @@
             Поселен(а) "
             <div style="width: 30px" class="area ib">&nbsp</div>
             "
-            <div style="width: 540px" class="area ib">&nbsp</div>
+            <div style="width: 600px" class="area ib">&nbsp</div>
             20
             <div style="width: 30px" class="area ib">&nbsp</div>
             г.
@@ -228,10 +250,11 @@
 
         <div style="margin-top: 10px">
             город (селение) &nbsp
-            <div style="width: 600px" class="area ib">&nbsp</div>
+            <div style="width: 680px" class="area ib">
+                &nbsp{{ entity.roomType.hotel.city }} {% if entity.roomType.hotel.street %} {{ ' ул.' ~ entity.roomType.hotel.street }} {% endif %}</div>
         </div>
 
-        <div style="margin-top: 10px">гостиница Левин</div>
+        <div style="margin-top: 10px">гостиница {{ entity.roomType.hotel.name }}</div>
 
         <div style="margin-top: 10px">
             <div class="ib left">На дополнительное место в номере согласен(а) &nbsp</div>
