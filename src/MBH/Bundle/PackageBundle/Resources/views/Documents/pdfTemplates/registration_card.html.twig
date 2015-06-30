@@ -236,7 +236,7 @@
                         <div>Zip-code</div>
                         <div>Индекс</div>
                     </div>
-                    <div class="area">{% if tourist and tourist.addressObjectDecomposed.zipCode %} tourist.addressObjectDecomposed.zipCode {% endif %}</div>
+                    <div class="area">{% if tourist and tourist.addressObjectDecomposed.zipCode %} {{ tourist.addressObjectDecomposed.zipCode }} {% endif %}</div>
                 </div>
             </td>
         </tr>

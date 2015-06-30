@@ -234,161 +234,38 @@ class DocumentsController extends Controller
     /**
      * Return pdf doc
      *
-     * @Route("/{id}/act_pdf", name="package_act_pdf")
+     * @Route("/{id}/pdf/{type}", name="package_act_pdf", requirements={
+     *      "type" : "act|confirmation|evidence|form|receipt|registration_card"
+     * })
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
-    public function actPdfAction(Package $entity)
+    public function actPdfAction(Package $entity, $type)
     {
         if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
-        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:act.html.twig', [
-            'entity' => $entity
-        ]);
+        $templateName = 'MBHPackageBundle:Documents/pdfTemplates:'.$type.'.html.twig';
+        /*if(!$this->get('templating')->exists($templateName)) {
+            throw $this->createNotFoundException();
+        };*/
+
+        $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
+
+        //try{
+            $html = $this->renderView($templateName, [
+                'entity' => $entity,
+                'vegaDocumentTypes' => $vegaDocumentTypes,
+            ]);
+        /*}catch (\Twig_Error_Runtime $e) {
+            //$e->getRawMessage();
+        }*/
 
         return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
             'Content-Type' => 'application/pdf',
             //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
         ]);
-    }
-
-    /**
-     * Return pdf doc
-     *
-     * @Route("/{id}/confirmation_pdf", name="package_confirmation_pdf")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
-     */
-    public function confirmationPdfAction(Package $entity)
-    {
-        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
-
-        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:confirmation.html.twig', [
-            'entity' => $entity
-        ]);
-
-        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
-            'Content-Type' => 'application/pdf',
-            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
-        ]);
-    }
-
-    /**
-     * Return pdf doc
-     *
-     * @Route("/{id}/registration_card_pdf", name="package_registration_card_pdf")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
-     */
-    public function registrationCardPdfAction(Package $entity)
-    {
-        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
-
-        $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
-
-        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:registration_card.html.twig', [
-            'entity' => $entity,
-            'vegaDocumentTypes' => $vegaDocumentTypes,
-        ]);
-
-        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
-            'Content-Type' => 'application/pdf',
-            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
-        ]);
-    }
-
-    /**
-     * Return pdf doc
-     *
-     * @Route("/{id}/evidence_pdf", name="package_evidence_pdf")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
-     */
-    public function evidencePdfAction(Package $entity)
-    {
-        if (!$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
-
-        $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
-
-        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:evidence.html.twig', [
-            'entity' => $entity,
-            'vegaDocumentTypes' => $vegaDocumentTypes,
-        ]);
-
-
-        $response = new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
-            'Content-Type' => 'application/pdf'
-        ]);
-
-        return $response;
-    }
-
-    /**
-     * Return pdf doc
-     *
-     * @Route("/{id}/receipt_pdf", name="package_receipt_pdf")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
-     */
-    public function receiptPdfAction(Package $entity)
-    {
-        if (!$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
-
-        $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
-
-        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:receipt.html.twig', [
-            'entity' => $entity,
-            'vegaDocumentTypes' => $vegaDocumentTypes,
-        ]);
-
-        $response = new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
-            'Content-Type' => 'application/pdf'
-        ]);
-
-        return $response;
-    }
-
-    /**
-     * Return pdf doc
-     *
-     * @Route("/{id}/form_pdf", name="package_form_pdf")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
-     */
-    public function formPdfAction(Package $entity)
-    {
-        if (!$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
-
-        $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
-
-        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:form.html.twig', [
-            'entity' => $entity,
-            'vegaDocumentTypes' => $vegaDocumentTypes,
-        ]);
-
-        $response = new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
-            'Content-Type' => 'application/pdf'
-        ]);
-        //$response = new Response($html);
-
-        return $response;
     }
 }
