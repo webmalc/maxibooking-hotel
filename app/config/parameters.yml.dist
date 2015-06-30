@@ -22,3 +22,4 @@ parameters:
         rooms: 'http://google.ru/'
         map: 'http://google.ru/'
         contacts: 'http://google.ru/'
+        poll: 'http://google.ru/'

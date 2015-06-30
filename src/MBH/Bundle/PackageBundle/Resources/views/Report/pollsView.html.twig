@@ -1,0 +1,86 @@
+{% extends "MBHPackageBundle::layout.html.twig" %}
+
+{% set small_title = 'report.poll.small_title_order'|trans({}, 'MBHPackageBundle')  ~ ' #' ~ order.id %}
+{% set title_url = path('report_polls') %}
+
+{% block content %}
+
+    {% if order.pollQuestions|length > 0 %}
+        <div class="alert alert-warning package-main-info">
+
+            <div class="row">
+                <div class="col-md-2">
+                    <strong>Заказ #</strong>
+                </div>
+                <div class="col-md-10">
+                    {{ order.id }}&nbsp;
+                    <a class="external" target="_blank" href="{{ path('package_order_edit', {'id': order.id, 'packageId': order.packages[0].id}) }}">
+                        <i class="fa fa-external-link"></i>
+                    </a>
+                </div>
+            </div>
+            {% if order.payer %}
+            <div class="row spacer-top">
+                <div class="col-md-2">
+                    <strong>{{ 'order.tabs.payer'|trans({}, 'MBHPackageBundle')|capitalize }}</strong>
+                </div>
+                <div class="col-md-10">
+                    {{ order.payer }}
+                </div>
+            </div>
+            {% endif %}
+            <div class="row spacer-top">
+                <div class="col-md-2">
+                    <strong>Отель</strong>
+                </div>
+                <div class="col-md-10">
+                    {{ order.firstHotel }}
+                </div>
+            </div>
+
+            {% set pollQuestions = order.pollQuestions(true) %}
+
+            {% for other in pollQuestions.other %}
+                <div class="row spacer-top">
+                    <div class="col-md-2">
+                        {% set name = 'poll.other.' ~ other.code %}
+                        <strong>{{ name|trans({}, 'MBHPackageBundle')|capitalize }}</strong>
+                    </div>
+                    <div class="col-md-10">
+                        {{ other.value|default('')|nl2br }}
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+
+            {% for cat, questions in pollQuestions.questions %}
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ cat|trans({}, 'MBHPackageBundle')|capitalize }}</h3>
+                    </div>
+                    <div class="panel-body">
+                       {% for question in questions %}
+                           <div class="row spacer-top">
+                               <div class="col-md-4">
+                                   {% set name = 'poll.question.' ~ question.code %}
+                                   <strong>{{ name|trans({}, 'MBHPackageBundle')|capitalize }}</strong>
+                               </div>
+                               <div class="col-md-8">
+                                   <small class="text-{% if question.value <= 3 %}danger{% elseif question.value <= 5 %}warning{% elseif question.value <= 8 %}success{% else %}primary{% endif %}">
+                                       {% for i in 1..question.value %}<i class="fa fa-star"></i>{% endfor %}
+                                   </small>
+                                   &nbsp; {{ question.value|default('') }}
+                               </div>
+                           </div>
+                       {% endfor %}
+                    </div>
+                </div>
+
+
+            {% endfor %}
+
+    {% else %}
+        <div class="alert alert-danger">{{ 'views.report.polls.not_found'|trans({}, 'MBHPackageBundle') }}</div>
+    {% endif %}
+{% endblock %}

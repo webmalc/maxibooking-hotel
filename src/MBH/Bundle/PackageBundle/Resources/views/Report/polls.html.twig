@@ -1,0 +1,64 @@
+{% extends "MBHPackageBundle::layout.html.twig" %}
+
+{% set small_title = 'report.poll.small_title'|trans({}, 'MBHPackageBundle') %}
+{% set title_url = path('report_polls') %}
+
+{% block content %}
+
+    <div class="well" id="polls-report-filter-well">
+        <form id="polls-report-filter" action="{{ path('report_polls' ) }}" class="form-inline filter-form" role="form">
+            <div class="input">
+                <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
+                <input type="text" name="begin" id="polls-report-filter-begin" class="datepicker polls-report-filter begin-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-45 days")|date('d.m.Y') : app.request.get('begin')}}">
+            </div>
+            <div class="input">
+                - &nbsp
+                <input type="text" name="end" id="polls-report-filter-end" class="datepicker polls-report-filter end-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ?  'now'|date_modify("+1 day")|date('d.m.Y') : app.request.get('end')}}">
+            </div>
+
+
+
+            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false} %}
+        </form>
+    </div>
+
+    {% if  orders.categories is defined and  orders.categories|length > 0 and orders.orders is defined and  orders.orders|length > 0%}
+        <table class="table table-striped table-hover table-condensed table-icons table-actions">
+            <thead>
+            <tr>
+                <th class="td-xs"></th>
+                <th class="td-sm text-center">{{ 'views.report.polls.th.order'|trans({}, 'MBHPackageBundle') }}</th>
+                <th class="td-sm text-center">{{ 'views.report.polls.th.hotel'|trans({}, 'MBHPackageBundle') }}</th>
+                {% for cat in orders.categories %}
+                    <th class="text-center">{{ cat|trans({}, 'MBHPackageBundle')|capitalize }}</th>
+                {% endfor %}
+                <th class="td-sm"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for order in orders.orders %}
+            <tr>
+                <td class="text-center table-icon"><i class="fa fa-star"></i></td>
+                <td class="text-center">
+                    <a href="{{ path('report_polls_view', { 'id': order.order.id }) }}" rel="main" title='{{ 'views.report.polls.view_record'|trans({}, 'MBHPackageBundle') }}' data-toggle="tooltip">
+                        {{ order.order.id }}
+                    </a>
+                </td>
+                <td class="text-center table-icon">{{ order.order.firstHotel }}</td>
+                {% for cat in orders.categories %}
+                    <th class="text-center">{{ attribute(order, cat)|default('') }}</th>
+                {% endfor %}
+                <td class="table-actions-td text-center">
+                    <a href="{{ path('report_polls_view', { 'id': order.order.id }) }}" class="btn btn-success btn-xs" title='{{ 'views.report.polls.view_record'|trans({}, 'MBHPackageBundle') }}' data-toggle="tooltip">
+                        <i class="fa fa-eye"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-danger">{{ 'views.report.polls.not_found'|trans({}, 'MBHPackageBundle') }}</div>
+    {% endif %}
+
+{% endblock %}

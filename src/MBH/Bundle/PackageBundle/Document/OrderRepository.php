@@ -7,13 +7,71 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 class OrderRepository extends DocumentRepository
 {
     /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param bool $isGrouped
+     * @return array
+     */
+    public function fetchWithPolls(\DateTime $begin = null, \DateTime $end = null, $isGrouped = false)
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->field('pollQuestions')->exists(true)
+            ->field('pollQuestions')->notEqual(null)
+        ;
+        if ($begin) {
+            $qb->field('createdAt')->gte($begin);
+        }
+        if ($end) {
+            $qb->field('createdAt')->lte($end);
+        }
+
+        if($isGrouped) {
+            $result = [
+                'orders' => [], 'categories' => []
+            ];
+            foreach ($qb->getQuery()->execute() as $key => $order) {
+                $result['orders'][$key] = [
+                    'order' => $order,
+                ];
+
+                foreach ($order->getPollQuestions() as $pollQuestion) {
+                    $question = $pollQuestion->getQuestion();
+                    if (!$question || !$pollQuestion->getIsQuestion()) {
+                        continue;
+                    }
+
+                    $cat = $question->getCategory();
+
+                    isset($result['orders'][$key][$cat]) ?: $result['orders'][$key][$cat] = [];
+
+                    $result['orders'][$key][$cat][] = $pollQuestion->getValue();
+                    $result['categories'][] = $cat;
+                }
+            }
+            $result['categories'] = array_unique($result['categories']);
+
+            foreach ($result['orders'] as $key => $orderInfo) {
+                foreach ($result['categories'] as $cat) {
+                    if (!isset($orderInfo[$cat])) {
+                        continue;
+                    }
+                    $result['orders'][$key][$cat] = number_format(round(array_sum($orderInfo[$cat])/count($orderInfo[$cat]), 2), 2);
+                }
+            }
+
+            return $result;
+        } else {
+            return $qb->getQuery()->execute();
+        }
+    }
+
+    /**
      * @param $data
      * @return \MBH\Bundle\PackageBundle\Document\Order[]
      * @throws \Exception
      */
     public function fetch($data)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $qb = $this->createQueryBuilder('s');
 
         //confirmed

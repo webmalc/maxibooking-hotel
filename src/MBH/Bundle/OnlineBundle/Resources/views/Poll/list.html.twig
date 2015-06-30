@@ -1,0 +1,145 @@
+{% trans_default_domain "MBHPackageBundle" %}
+
+{% set logo = '/bundles/mbhbase/images/empty_logo.png' %}
+{% set hotelName = 'MaxiBooking' %}
+
+{% if hotel is defined and hotel %}
+    {% set hotelName = hotel.name %}
+    {% if hotel.logo %}
+        {% set logo = hotel.logoUrl %}
+    {% endif %}
+    {% if hotel.organization %}
+        {% set organization = hotel.organization.name %}
+    {% endif %}
+{% else %}
+    {% set organization = 'Система управления отелем' %}
+{% endif %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Maxibooking polls</title>
+    <meta http-equiv=Content-Type content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/cerulean/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css">
+    <link rel="stylesheet" href="{{ asset('/bundles/mbhpackage/css/poll/polls-user-style.css') }}">
+    <link rel="stylesheet" href="{{ asset('/bundles/mbhpackage/css/vendor/jquery.raty.css') }}">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script src="{{ asset('/bundles/mbhpackage/js/vendor/jquery.raty.js') }}"></script>
+    <script src="{{ asset('/bundles/mbhpackage/js/poll/polls-user-script.js') }}"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="mb-pp-mline mb-pp-mlinetop"></div>
+    <div class="container-main">
+        <div class="mb-pp-header row">
+            <div class="col-sm-3" style="text-align: center;">
+
+                <img src="{{ logo|imagine_filter('thumb_130x110') }}"
+                     border="0"
+                     alt="{{ hotelName }}"
+                     style="margin-bottom:1px;">
+            </div>
+            <div class="col-sm-9">
+                <div class="row" style="margin-top:25px;">
+                    <div class="col-sm-12" style="padding-top:12px;">
+                        <h2>{{ hotelName }}</h2>
+                        <small><span style="font-size:14px;">{{ organization }}</span></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+
+        <div id="messages" style="margin-left: 20px; margin-right: 20px;">
+            {% if app.session.flashbag.keys()|length == 0 and complete %}
+                <div class="alert alert-danger">
+                    Отзыв по этому заказу уже оставлен!
+                </div>
+            {% endif %}
+
+            {% for key in app.session.flashbag.keys()%}
+                {% for message in app.session.flashbag.get(key) %}
+                    {% set info = key|split('|') %}
+
+                    <div class="{{info[1] is defined and info[1] is not empty ? 'autohide' }}  alert alert-{{info[0]}}">
+                        {{ message|raw }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+
+        {% if complete is empty %}
+
+        <div style="padding:25px 25px 50px;min-height:300px;">
+            <p>Мы были рады принимать вас и надеемся, что ваше пребывание в нашем отеле было комфортным и приятным.</p>
+
+            <p>Пожалуйста, заполните небольшую анкету гостя, ваша оценка поможет нам развиваться и улучшать наш сервис.
+                Мы будем рады видеть Вас снова!</p>
+
+            <form action="{{ path('online_poll_list', {'id': order.id, 'payerId': order.payer.id}) }}" id="mb-rank-form" method="POST">
+
+
+                {% set cat = null %}
+                {% for question in questions %}
+
+                    {% if not cat or cat != question.category %}
+                        {% set cat = question.category %}
+                        <h4 class="header_thin">Пожалуйста, оцените {{ question.category|trans() }}</h4>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            {{ question|trans() }}
+                        </div>
+                        <div class="col-sm-8" style="padding:0;">
+                            <div rel="{{ question.id }}" class="mb-rank"></div>
+                            <div rel="{{ question.id }}" class="mb-rank-result-screen"></div>
+                            <input type="hidden" class="mb-rank-result" id="mb-rank-result-{{ question.id }}"
+                                   name="mb-rank-result[{{ question.id }}]"
+                                   value="{{ question.id }}"></div>
+                    </div>
+                    <hr>
+                {% endfor %}
+
+                <h4 class="header_thin">Ваш отзыв или пожелание</h4>
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        Ваш отзыв, предложения или пожелания<br><br>
+                        <small>(необязательно)</small>
+                    </div>
+                    <div class="col-sm-8">
+                        <textarea class="mb-textarea mb-rank-result" id="mb-rank-result-note"
+                                  name="mb-rank-result[note]"></textarea>
+                    </div>
+                </div>
+                <hr>
+                <br>
+
+                <div class="mb-pp-button-overlay" align="center">
+                    <button type="button" class="btn btn-lg btn-success btn-block mb-rank-submit">ОТПРАВИТЬ</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+    <div class="mb-pp-mline mb-pp-mlinebottom"></div>
+    <div style="text-align:right;min-width:400px;clear:both;margin:20px 25px 40px;">
+        <small>Основано на технологиях MAXIBOOKING LLC</small>
+        <a href="http://maxi-booking.ru/" title="Основано на технологиях MaxiBooking" target="_blank"><img
+                    src="{{ asset('/bundles/mbhbase/images/maxibooking.png') }}" alt="MaxiBooking" width="105px"
+                    height="23px" align="absmiddle"
+                    style="margin-left:12px;"></a></div>
+
+    {% endif %}
+
+</div>
+</body>
+</html>

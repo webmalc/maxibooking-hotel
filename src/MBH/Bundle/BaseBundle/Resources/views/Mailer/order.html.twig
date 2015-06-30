@@ -107,7 +107,7 @@
 
     {% if order.payer %}
     <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #e2e2e2;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
-        <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}mbh/bundles/mbhbase/images/fa-user.png"
+        <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/fa-user.png"
              align="absmiddle">
         Сведения о клиенте
     </div>
@@ -183,8 +183,8 @@
 
     {% if order.packages[0] is defined and order.packages[0].deletedAt is empty %}
         <br><br>
-        <a href="{{ url('package_order_edit', {'id': order.id, 'packageId': order.packages[0].id}) }}" style="{{ linkStyles }}">
-            {{ 'mailer.to_order'|trans }}
+        <a href="{% if emptyLink %}{{ url('package_order_edit', {'id': order.id, 'packageId': order.packages[0].id}) }}{% else %}{{ link }}{% endif %}" style="{{ linkStyles }}">
+            {% if emptyLinkText %}{{ 'mailer.to_order'|trans }}{% else %}{{ linkText|trans }}{% endif %}
         </a>
     {% endif %}
 {% endblock %}

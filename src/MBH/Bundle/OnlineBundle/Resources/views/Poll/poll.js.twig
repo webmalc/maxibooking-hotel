@@ -1,0 +1,15 @@
+/*global location, document, mbPollsHeight, mbPollsWidth */
+
+function mbGetParameterByName(name) {
+    'use strict';
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+var mbPollsLink = mbGetParameterByName('link');
+
+if (mbPollsLink) {
+    document.write('<iframe src="' + mbPollsLink + '" width="' + mbPollsWidth + '" height="' + mbPollsHeight  + '" frameBorder="0"></iframe>');
+}

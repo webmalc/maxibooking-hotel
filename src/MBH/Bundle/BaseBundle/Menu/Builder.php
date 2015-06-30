@@ -72,6 +72,9 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-bar-chart']);
         $menu['reports']->addChild('service_list', ['route' => 'service_list', 'label' => 'Услуги'])
             ->setAttributes(['icon' => 'fa fa-plug']);
+        $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'Оценки'])
+            ->setAttributes(['icon' => 'fa fa-star']);
+
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
             ->setAttributes(['icon' => 'fa fa-file-archive-o']);*/
 
@@ -131,6 +134,8 @@ class Builder extends ContainerAware
         ;
 
         $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'Онлайн форма']);
+        $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'Оценки']);
+
 
         if ($this->container->getParameter('mbh.environment') == 'prod') {
             $menu['services']->addChild('booking', ['route' => 'booking', 'label' => 'Booking.com']);
@@ -182,6 +187,13 @@ class Builder extends ContainerAware
                         'dropdown' => true
                     ])
         ;
+        $menu['login']->addChild('user_edit', [
+            'route' => 'user_edit',
+            'routeParameters' => ['id' => $user->getId()],
+            'label' => 'Профиль'
+        ])
+            ->setAttributes(['icon' => 'fa fa-user'])
+        ;
         $menu['login']->addChild('profile', [
                     'route' => 'user_profile',
                     'label' => 'Смена пароля'
@@ -192,7 +204,7 @@ class Builder extends ContainerAware
                 ->setAttribute('icon', 'fa fa-sign-out')
         ;
 
-        return $menu;
+        return $this->filterMenu($menu);
     }
 
     /**

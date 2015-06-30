@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Document\Order;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -10,8 +11,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * @Route("/report")
@@ -226,4 +226,44 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         return [
         ];
     }
+
+    /**
+     * @param Request $request
+     * @return array
+     * @Route("/polls", name="report_polls")
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function pollsAction(Request $request)
+    {
+        $helper = $this->get('mbh.helper');
+        $request->get('begin') ? $begin = $helper->getDateFromString($request->get('begin')) : $begin = null;
+        $request->get('end') ? $end = $helper->getDateFromString($request->get('end')) : $end = null;
+
+        $orders = $this->dm
+            ->getRepository('MBHPackageBundle:Order')
+            ->fetchWithPolls($begin, $end, true)
+        ;
+
+        return [
+            'orders' => $orders
+        ];
+    }
+
+    /**
+     * @return array
+     * @Route("/polls/{id}/view", name="report_polls_view")
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     * @ParamConverter("order", class="MBHPackageBundle:Order")
+     */
+    public function pollsViewAction(Order $order)
+    {
+        return [
+            'order' => $order
+        ];
+    }
+
 }

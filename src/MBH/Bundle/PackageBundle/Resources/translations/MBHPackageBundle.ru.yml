@@ -326,3 +326,28 @@ package.corrupted.message.text: Создана поврежденная брон
 
 # Task
 task.status: Статус
+
+#Polls
+poll.question.category.service: 'сервис приема и регистрации'
+poll.question.amiability: 'Приветливость персонала отеля на приеме'
+poll.question.doc_speed: 'Скорость оформления документов и выдачи номера'
+poll.question.rules: 'Доступность правил размещения в отеле'
+
+poll.question.category.accommodation: 'комфорт размещения'
+poll.question.room_comfort: 'Комфорт и комплектация вашего номера'
+poll.question.beds_comfort: 'Комфорт и удобство кроватей'
+poll.question.room_service: 'Уборка и сервис номеров'
+poll.other.note: Комментарий
+
+poll.question.category.hotel: 'наш отель'
+poll.question.hotel_location: 'Расположение отеля и доступность инфраструктуры'
+poll.question.hotel_food: 'Качество и разнообразие питания'
+poll.question.hotel_entertainment: 'Качество и разнообразие мест отдыха и развлечений'
+poll.controller.save_success: 'Спасибо! Ваша оценка успешно сохранена!'
+
+report.poll.small_title: 'Оценки'
+report.poll.small_title_order: 'Оценки заказа '
+views.report.polls.th.order: Заказ
+views.report.polls.th.hotel: Отель
+views.report.polls.not_found: Ничего не найдено.
+views.report.polls.view_record: 'Перейти к результатам'

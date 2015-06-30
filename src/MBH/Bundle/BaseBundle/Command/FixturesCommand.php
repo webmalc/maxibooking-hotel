@@ -2,8 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\Command;
 
-use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\PollQuestion;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -17,7 +17,7 @@ use Symfony\Component\Process\Process;
 class FixturesCommand extends ContainerAwareCommand
 {
     /**
-     * @var ManagerRegistry 
+     * @var \Doctrine\ODM\MongoDB\DocumentManager
      */
     private $dm;
 
@@ -61,6 +61,12 @@ class FixturesCommand extends ContainerAwareCommand
       'Трансфер' => [
             'Transfer' => ['name' => 'Трансфер', 'calcType' => 'not_applicable', 'date' => true, 'time' => true]
       ]
+    ];
+
+    private $pollQuestions = [
+        'poll.question.category.service' => ['amiability', 'doc_speed', 'rules'],
+        'poll.question.category.accommodation' => ['room_comfort', 'beds_comfort', 'room_service'],
+        'poll.question.category.hotel' => ['hotel_location', 'hotel_food', 'hotel_entertainment'],
     ];
 
     /**
@@ -111,9 +117,37 @@ class FixturesCommand extends ContainerAwareCommand
         if ($input->getOption('cities')) {
             $this->createCities();
         }
+
+        //PollQuestions
+        $this->createPollQuestions($hotel);
         
         $time = $start->diff(new \DateTime());
         $output->writeln('Installing complete. Elapsed time: ' . $time->format('%H:%I:%S'));
+    }
+
+    private function createPollQuestions()
+    {
+        $oldQuestions = $this->dm->getRepository('MBHPackageBundle:PollQuestion')->findAll();
+        $sort = 0;
+        foreach ($this->pollQuestions as $questionCat => $questions) {
+            foreach ($questions as $question) {
+                foreach ($oldQuestions as $old) {
+                    if ($old->getId() == $question) {
+                        continue 2;
+                    }
+                }
+
+                $new = new PollQuestion();
+                $new->setId($question)
+                    ->setCategory($questionCat)
+                    ->setText('poll.question.' . $question)
+                    ->setSort($sort)
+                ;
+                $sort++;
+                $this->dm->persist($new);
+                $this->dm->flush();
+            }
+        }
     }
 
     /**
