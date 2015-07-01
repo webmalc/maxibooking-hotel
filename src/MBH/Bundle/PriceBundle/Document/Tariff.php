@@ -104,7 +104,7 @@ class Tariff extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isOnline = true;
-   
+
     /**
      * Set hotel
      *

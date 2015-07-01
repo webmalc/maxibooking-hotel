@@ -4,11 +4,15 @@
 "recordsTotal": "{{ total }}",
 "recordsFiltered": "{{ total }}",
 
+{% if summary %}
+
 "package_summary_total": "{{ summary.total|number_format(2)|default('-') }}",
 "package_summary_paid": "{{ summary.paid|number_format(2)|default('-') }}",
 "package_summary_debt": "{{ summary.debt|number_format(2)|default('-') }}",
 "package_summary_nights": "{{ summary.nights|default('-') }}",
 "package_summary_guests": "{{ summary.guests|number_format()|default('-') }}",
+
+{% endif %}
 
 "data": [
 {% for entity in entities %}

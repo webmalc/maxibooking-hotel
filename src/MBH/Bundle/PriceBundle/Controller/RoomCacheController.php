@@ -247,7 +247,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             $data = $form->getData();
 
             $this->get('mbh.room.cache')->update(
-                $data['begin'], $data['end'], $hotel, $data['rooms'], $data['isClosed'],  $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
+                $data['begin'], $data['end'], $hotel, $data['rooms'], false,  $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
             );
 
             $this->get('mbh.channelmanager')->updateRoomsInBackground();

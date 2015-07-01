@@ -29,15 +29,17 @@ class MailerCommand extends ContainerAwareCommand
         $helper = $this->getContainer()->get('mbh.helper');
         $tr = $this->getContainer()->get('translator');
         $notifier = $this->getContainer()->get('mbh.notifier.mailer');
+        $router = $this->getContainer()->get('router');
+        $linksParams = $this->getContainer()->getParameter('mailer.user.arrival.links');
 
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
         }
+
+        $yesterday = new \DateTime('midnight - 1 day');
         $now = new \DateTime('midnight');
-        $tomorrow = clone $now;
-        $tomorrow->modify('+1 day');
-        $dayAfterTomorrow =  clone $tomorrow;
-        $dayAfterTomorrow->modify('+1 day');
+        $tomorrow = new \DateTime('midnight + 1 day');
+        $dayAfterTomorrow =  new \DateTime('midnight + 2 days');
 
         $repo = $this->dm->getRepository('MBHPackageBundle:Package');
 
@@ -126,6 +128,59 @@ class MailerCommand extends ContainerAwareCommand
             }
         }
 
+        //user polls
+        $packages = $repo->createQueryBuilder('p')
+            ->field('end')->gte($yesterday)
+            ->field('end')->lt($now)
+            ->getQuery()
+            ->execute();
+        ;
+        if (count($packages)) {
+            foreach ($packages as $package) {
+                $order = $package->getOrder();
+                $payer = $order->getPayer();
+                if (!$payer || !$payer->getEmail() || count($order->getPollQuestions())) {
+                    continue;
+                }
+
+                $hotel = $package->getRoomType()->getHotel();
+                $message = $notifier::createMessage();
+
+                $link = $router->generate('online_poll_list', [
+                    'id' => $order->getId(),
+                    'payerId' => $order->getPayer()->getId()
+                ], true);
+
+                if (!empty($linksParams['poll'])) {
+                    $link = $linksParams['poll'] . '?link=' . $link;
+                }
+
+                $message
+                    ->setFrom('system')
+                    ->setSubject($tr->trans('mailer.report.user.poll.subject'))
+                    ->setType('info')
+                    ->setCategory('notification')
+                    ->setOrder($order)
+                    ->setAdditionalData([
+                        'prependText' => $tr->trans('mailer.online.user.poll.prepend', ['%guest%' => $order->getPayer()->getName()]),
+                        'appendText' => $tr->trans('mailer.online.user.poll.append'),
+                        'image' => 'stars_but.png'
+                    ])
+                    ->setHotel($hotel)
+                    ->setTemplate('MBHBaseBundle:Mailer:base.html.twig')
+                    ->setAutohide(false)
+                    ->setEnd(new \DateTime('+1 minute'))
+                    ->addRecipient($order->getPayer()->getEmail())
+                    ->setLink($link)
+                    ->setLinkText($tr->trans('mailer.online.user.poll.link'))
+                    ->setSignature($tr->trans('mailer.online.user.signature', ['%hotel%' => $hotel->getName()]))
+                ;
+                $notifier
+                    ->setMessage($message)
+                    ->notify()
+                ;
+            }
+        }
 
         $time = $start->diff(new \DateTime());
         $output->writeln('Installing complete. Elapsed time: ' . $time->format('%H:%I:%S'));

@@ -377,6 +377,15 @@ class ApiController extends Controller
                     ->setLink('hide')
                     ->setSignature($tr->trans('mailer.online.user.signature', ['%hotel%' => $hotel->getName()]))
                 ;
+
+                $params = $this->container->getParameter('mailer.user.arrival.links');
+
+                if (!empty($params['map'])) {
+                    $message->setLink($params['map'])
+                        ->setLinkText($tr->trans('mailer.online.user.map'))
+                    ;
+                }
+
                 $notifier
                     ->setMessage($message)
                     ->notify()

@@ -179,6 +179,12 @@ class Order extends Base
 
     /**
      * @var array
+     * @ODM\EmbedMany(targetDocument="OrderPollQuestion")
+     */
+    protected $pollQuestions;
+
+    /**
+     * @var array
      * @ODM\EmbedMany(targetDocument="OrderDocument")
      */
     protected $documents = [];
@@ -741,5 +747,77 @@ class Order extends Base
         }
 
         return $fee;
+    }
+
+    /**
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel;
+     */
+    public function getFirstHotel()
+    {
+        foreach ($this->getPackages() as $package) {
+            if (!$package->getDeletedAt()) {
+                return $package->getRoomType()->getHotel();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Add pollQuestion
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\OrderPollQuestion $pollQuestion
+     */
+    public function addPollQuestion(\MBH\Bundle\PackageBundle\Document\OrderPollQuestion $pollQuestion)
+    {
+        $this->pollQuestions[] = $pollQuestion;
+    }
+
+    /**
+     * Remove pollQuestion
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\OrderPollQuestion $pollQuestion
+     */
+    public function removePollQuestion(\MBH\Bundle\PackageBundle\Document\OrderPollQuestion $pollQuestion)
+    {
+        $this->pollQuestions->removeElement($pollQuestion);
+    }
+
+    /**
+     * Get pollQuestions
+     * @param boolean $grouped
+     * @return \Doctrine\Common\Collections\Collection $pollQuestions
+     */
+    public function getPollQuestions($grouped = false)
+    {
+        if (!$grouped) {
+            return $this->pollQuestions;
+        }
+
+        $result = [
+            'questions' => [],
+            'other' => []
+        ];
+
+        foreach ($this->pollQuestions as $pollQuestion) {
+            $question = $pollQuestion->getQuestion();
+            if ($question && $pollQuestion->getIsQuestion()) {
+                $result['questions'][$question->getCategory()][] = $pollQuestion;
+            } else {
+                $result['other'][] = $pollQuestion;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return $this
+     */
+    public function removeAllPollQuestions()
+    {
+        $this->pollQuestions = new \Doctrine\Common\Collections\ArrayCollection();
+
+        return $this;
     }
 }

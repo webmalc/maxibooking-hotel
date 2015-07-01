@@ -33,13 +33,17 @@
         {% set organization = 'Система управления отелем' %}
     {% endif %}
 
+    {% set emptyLink = false %}
+    {% set emptyLinkText = false %}
 
     {% if linkText is not defined or linkText is empty %}
         {% set linkText = 'Перейти в «МаксиБукинг»' %}
+        {% set emptyLinkText = true %}
     {% endif %}
 
-    {% if link is not defined or link != 'hide' %}
+    {% if link is not defined or link is empty %}
         {% set link = url('_welcome') %}
+        {% set emptyLink = true %}
     {% endif %}
 
     {% set pStyles = 'margin:5px 0;font-family:Tahoma,Arial;font-size:14px;line-height:19px;color:#666;' %}
@@ -89,7 +93,17 @@
                 {% endblock %}
 
                 {% block text %}
+                    {% if prependText is defined and prependText %}
+                        <p style="{{ pStyles }}">{{ prependText|trans|raw }}</p><br>
+                    {% endif %}
                     <p style="{{ pStyles }}">{{ text|default('')|raw }}</p>
+
+                    {% if image is defined and image %}
+                        {% if link and link != 'hide' %}<a href="{{ link }}">{% endif %}
+                        <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/{{ image }}" border="0" alt="Оцените наш сервис" style="margin:10px 0;">
+                        {% if link and link != 'hide' %}</a>{% endif %}
+                    {% endif %}
+
                 {% endblock %}
 
                 {% if link and (hideLink is not defined or hideLink is empty) and link != 'hide' %}
@@ -99,9 +113,15 @@
                             {{ linkText|trans }}
                         </a>
                     {% endblock %}
+
                 {% endif %}
 
                 {% block signature %}
+
+                    {% if appendText is defined and appendText %}
+                        <br><br><p style="{{ pStyles }}">{{ appendText|trans|raw }}</p>
+                    {% endif %}
+
                     {% if signature is defined and signature %}
                     <br><br>
                     <p style="{{ pStyles }}; text-align: left;">{{ signature|raw }}</p>
