@@ -17,6 +17,10 @@
             border-bottom: solid #000000 1px;
         }
 
+        .left {
+            float: left;
+        }
+
         /* Header */
         .header .title {
             float: left;
@@ -111,45 +115,70 @@
         </p>
 
 
-        <table style="margin-left: 1.5em; width: 750px">
-            <tbody>
-            <tr>
-                <td>Ф.И.О.:</td>
-                <td colspan="3" class="area">{% if tourist %}{{ tourist.fullName }}{% endif %}</td>
+        <style>
+            .ta table {
+                margin-left: 1.5em; width: 890px;
+            }
+        </style>
+        <div class="ta">
+            <table border="0">
+                <tbody>
+                <tr>
+                    <td style="width: 40px">Ф.И.О.:</td>
+                    <td style="width: 60%;">
+                        <div class="area">&nbsp{% if tourist %}{{ tourist.fullName }}{% endif %}</div>
+                    </td>
+                    <td style="width: 130px">дата рождения:</td>
+                    <td><div class="area">&nbsp{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div></td>
+                </tr>
+                </tbody>
+            </table>
+            <table border="0">
+                <tbody>
+                <tr>
+                    <td style="width: 20px">адрес:</td>
+                    <td>
+                        <div class="area">&nbsp
+                            {% if tourist and tourist.addressObjectDecomposed %}
+                                {{ tourist.addressObjectDecomposed.country }}, {{ tourist.addressObjectDecomposed.region }}{% if tourist.addressObjectDecomposed.city %}, г.{{ tourist.addressObjectDecomposed.city }}{% endif %}{% if tourist.addressObjectDecomposed.street %}, ул. {{ tourist.addressObjectDecomposed.street }}{% endif %}{% if tourist.addressObjectDecomposed.house %}, д.{{ tourist.addressObjectDecomposed.house }}{% endif %}{% if tourist.addressObjectDecomposed.corpus %}, кор. {{ tourist.addressObjectDecomposed.corpus }}{% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table border="0">
+                <tbody>
+                <tr>
+                    <td>тип документа:</td>
+                    <td style="width: 45%"><div class="area">&nbsp{% if documentRelation and documentRelation.type %}{{ documentRelation.type|trans({})|capitalize }}{% endif %}</div></td>
 
-                <td>дата рождения:</td>
-                <td class="area">{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</td>
-            </tr>
-            <tr>
-                <td>адрес:</td>
-                <td colspan="5" class="area">{% if tourist and tourist.address %} {{ tourist.address }}{% endif %}</td>
-            </tr>
+                    <td>серия:</td>
+                    <td style="width: 15%"><div class="area">&nbsp{% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% endif %}</div></td>
 
-            <tr>
-                <td>тип документа:</td>
-                <td colspan="3" class="area">{% if documentRelation and documentRelation.type %}{{ documentRelation.type|trans({})|capitalize }}{% endif %}</td>
-
-                <td>серия:</td>
-                <td class="area">{% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% endif %}</td>
-            </tr>
-
-            <tr>
-                <td>№:</td>
-                <td class="area">{% if documentRelation and documentRelation.number %}{{ documentRelation.number }}{% endif %}</td>
-
-                <td>дата выдачи:</td>
-                <td class="area">{% if documentRelation and documentRelation.issued %}{{ documentRelation.issued|date('d.m.Y') }}{% endif %}</td>
-
-                <td>выдан:</td>
-                <td class="area">{% if documentRelation and documentRelation.authority %}{{ documentRelation.authority }}{% endif %}</td>
-            </tr>
-
-            <tr>
-                <td>место рождения:</td>
-                <td colspan="5" class="area">{% if tourist and tourist.birthplace.city and tourist.birthplace.mainRegion %}{{ tourist.birthplace.city }} {{ tourist.birthplace.mainRegion }}{% endif %}</td>
-            </tr>
-            </tbody>
-        </table>
+                    <td>№:</td>
+                    <td style="width: 15%"><div class="area">&nbsp{% if documentRelation and documentRelation.number %}{{ documentRelation.number }}{% endif %}</div></td>
+                </tr>
+                </tbody>
+            </table>
+            <table border="0">
+                <tbody>
+                <tr>
+                    <td style="width: 50px">выдан:</td>
+                    <td>
+                        <div class="area">
+                            &nbsp
+                            {% if documentRelation and documentRelation.authority %}
+                                {{ documentRelation.authority }}{% if documentRelation and documentRelation.issued %},
+                                {{ documentRelation.issued|date('d.m.Y') }}
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
         <!-- Services -->
         <table border="1" cellpadding="0" cellspacing="0" class="table">

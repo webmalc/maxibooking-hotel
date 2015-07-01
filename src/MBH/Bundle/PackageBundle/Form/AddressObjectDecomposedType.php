@@ -9,7 +9,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class AddressObjectDecomposedType
- * @package MBH\Bundle\PackageBundle\Form
  *
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
@@ -27,7 +26,10 @@ class AddressObjectDecomposedType extends AbstractType
             ])
             ->add('settlement', 'text', [])
             ->add('urbanarea', 'text', [])
-            ->add('street', 'text', []);
+            ->add('street', 'text', [])
+            ->add('house', 'text', [])
+            ->add('corpus', 'text', [])
+            ->add('flat', 'text', []);
     }
 
     public function configureOptions(OptionsResolver $resolver)

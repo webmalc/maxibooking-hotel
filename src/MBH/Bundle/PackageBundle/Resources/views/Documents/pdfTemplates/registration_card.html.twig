@@ -204,7 +204,7 @@
                         <div>Pass №</div>
                         <div>Паспорт №</div>
                     </div>
-                    <div class="area">{% if tourist and tourist.documentRelation.number %} {{ tourist.documentRelation.number }} {% endif %}</div>
+                    <div class="area">{% if tourist and tourist.documentRelation and tourist.documentRelation.number %} {{ tourist.documentRelation.number }} {% endif %}</div>
                 </div>
             </td>
             <td colspan="6">
@@ -214,8 +214,8 @@
                         <div>Выдан</div>
                     </div>
                     <div class="area">
-                        {% if tourist and tourist.documentRelation.authorityOrgan %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}
-                        {% if tourist and tourist.documentRelation.issued %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
+                        {% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrgan %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}
+                        {% if tourist and tourist.documentRelation and tourist.documentRelation.issued %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
                     </div>
                 </div>
             </td>

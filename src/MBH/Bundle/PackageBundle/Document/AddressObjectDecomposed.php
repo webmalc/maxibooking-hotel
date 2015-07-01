@@ -56,6 +56,24 @@ class AddressObjectDecomposed
     protected $street;
 
     /**
+     * @var String
+     * @ODM\String
+     */
+    protected $corpus;
+
+    /**
+     * @var String
+     * @ODM\String
+     */
+    protected $house;
+
+    /**
+     * @var String
+     * @ODM\String
+     */
+    protected $flat;
+
+    /**
      * @return String
      */
     public function getCountry()
@@ -181,5 +199,58 @@ class AddressObjectDecomposed
     public function setStreet($street)
     {
         $this->street = $street;
+    }
+
+    /**
+     * @return String
+     */
+    public function getCorpus()
+    {
+        return $this->corpus;
+    }
+
+    /**
+     * @param String $corpus
+     */
+    public function setCorpus($corpus)
+    {
+        $this->corpus = $corpus;
+    }
+
+    /**
+     * @return String
+     */
+    public function getHouse()
+    {
+        return $this->house;
+    }
+
+    /**
+     * @param String $house
+     */
+    public function setHouse($house)
+    {
+        $this->house = $house;
+    }
+
+    /**
+     * @return String
+     */
+    public function getFlat()
+    {
+        return $this->flat;
+    }
+
+    /**
+     * @param String $flat
+     */
+    public function setFlat($flat)
+    {
+        $this->flat = $flat;
+    }
+
+    public function __toString()
+    {
+        return $this->getRegion().' '. $this->getCity().' ул.'. $this->getStreet().' д.'. $this->getHouse().' кор.'. $this->getCorpus();
     }
 }

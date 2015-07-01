@@ -133,7 +133,7 @@ class Tourist extends Base implements PayerInterface
      *      maxMessage= "validator.document.Tourist.max_address"
      * )
      */
-    protected $address;
+    //protected $address;
     
     /**
      * @var string
@@ -146,7 +146,7 @@ class Tourist extends Base implements PayerInterface
      *      maxMessage= "validator.document.Tourist.max_document"
      * )
      */
-    protected $document;
+    //protected $document;
     
     /**
      * @var string
@@ -356,12 +356,13 @@ class Tourist extends Base implements PayerInterface
     /**
      * Set address
      *
+     * @deprecated
      * @param string $address
      * @return self
      */
     public function setAddress($address)
     {
-        $this->address = $address;
+        //$this->address = $address;
         return $this;
     }
 
@@ -372,7 +373,7 @@ class Tourist extends Base implements PayerInterface
      */
     public function getAddress()
     {
-        return $this->address;
+        return $this->getAddressObjectDecomposed();
     }
 
     /**

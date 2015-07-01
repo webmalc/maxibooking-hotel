@@ -263,7 +263,9 @@ class DocumentsController extends Controller
             //$e->getRawMessage();
         }*/
 
-        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
+        $content = $this->get('knp_snappy.pdf')->getOutputFromHtml($html);
+        //$content = $html;
+        return new Response($content, 200, [
             'Content-Type' => 'application/pdf',
             //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
         ]);
