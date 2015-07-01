@@ -9,6 +9,14 @@
             margin: 0 auto;
         }
 
+        .ib{
+            display: inline-block;
+        }
+
+        .area {
+            border-bottom: solid #000000 1px;
+        }
+
         /* Header */
         .header .title {
             float: left;
@@ -95,19 +103,53 @@
 
     <div class="main">
         <p class="indent">Отель {% if hotel and hotel.name %}<strong>"{{ hotel.name }}"</strong> {% else %}____________________{% endif %}, расположенный по
-            адресу {% if hotel and hotel.city and hotel.street %} <strong> {{ hotel.city }} {{ hotel.street }} {{ hotel.house }} </strong> {% else %}_________________________________________{% endif %},
+            адресу: {% if hotel and hotel.city and hotel.street %}
+            {{ hotel.country }}, {{ hotel.region }}, г. {{ hotel.city }}{% if hotel.settlement %}, {{ hotel.settlement }}{% endif %}, {{ hotel.street }},
+                {% if hotel.house %} д. {{ hotel.house }}{% endif %}{% if hotel.corpus %}, кор. {{ hotel.corpus }}{% endif %}{% if hotel.flat %}, кв. {{ hotel.flat }} {% endif %} {% else %}_________________________________________{% endif %},
             ИНН {% if hotel and hotel.organization and hotel.organization.inn %} {{ hotel.organization.inn }} {% else %} ________________________ {% endif %} извещает
-            Заказчика: {% if tourist %} {{ tourist.fullName }} {% else %} __________________________________ {% endif %},
-            дата рождения {% if tourist and tourist.birthday %} {{ tourist.birthday|date('d.m.Y') }} {% else %} ___.___._______ {% endif %} г.,
-            адрес {% if tourist and tourist.address %} {{ tourist.address }} {% else %} ____________________________________________________ {% endif %}</p>
-        <p class="indent">Документ удостоверяющий личность:
-            Тип документа {% if documentRelation and documentRelation.type %} {{ documentRelation.type|trans({}) }}{% else %}_______________{% endif %}
-            Серия {% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% else %}_____________________{% endif %}
-            № {% if documentRelation and documentRelation.number %}{{ documentRelation.number }}{% else %}______________________{% endif %}
-            Дата выдачи {% if documentRelation and documentRelation.issued %}{{ documentRelation.issued|date('d.m.Y') }}{% else %}___.___._______ г.{% endif %}
-            Выдан {% if documentRelation and documentRelation.authority %}{{ documentRelation.authority }}{% else %}_________________________________{% endif %}
-            Место рождения {% if tourist and tourist.birthplace.city and tourist.birthplace.mainRegion %}{{ tourist.birthplace.city }} {{ tourist.birthplace.mainRegion }} {{ tourist.birthplace.district.name }}{% else %}_____________________________________{% endif %}
+            Заказчика:
         </p>
+
+
+        <table style="margin-left: 1.5em; width: 750px">
+            <tbody>
+            <tr>
+                <td>Ф.И.О.:</td>
+                <td colspan="3" class="area">{% if tourist %}{{ tourist.fullName }}{% endif %}</td>
+
+                <td>дата рождения:</td>
+                <td class="area">{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <td>адрес:</td>
+                <td colspan="5" class="area">{% if tourist and tourist.address %} {{ tourist.address }}{% endif %}</td>
+            </tr>
+
+            <tr>
+                <td>тип документа:</td>
+                <td colspan="3" class="area">{% if documentRelation and documentRelation.type %}{{ documentRelation.type|trans({})|capitalize }}{% endif %}</td>
+
+                <td>серия:</td>
+                <td class="area">{% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% endif %}</td>
+            </tr>
+
+            <tr>
+                <td>№:</td>
+                <td class="area">{% if documentRelation and documentRelation.number %}{{ documentRelation.number }}{% endif %}</td>
+
+                <td>дата выдачи:</td>
+                <td class="area">{% if documentRelation and documentRelation.issued %}{{ documentRelation.issued|date('d.m.Y') }}{% endif %}</td>
+
+                <td>выдан:</td>
+                <td class="area">{% if documentRelation and documentRelation.authority %}{{ documentRelation.authority }}{% endif %}</td>
+            </tr>
+
+            <tr>
+                <td>место рождения:</td>
+                <td colspan="5" class="area">{% if tourist and tourist.birthplace.city and tourist.birthplace.mainRegion %}{{ tourist.birthplace.city }} {{ tourist.birthplace.mainRegion }}{% endif %}</td>
+            </tr>
+            </tbody>
+        </table>
 
         <!-- Services -->
         <table border="1" cellpadding="0" cellspacing="0" class="table">

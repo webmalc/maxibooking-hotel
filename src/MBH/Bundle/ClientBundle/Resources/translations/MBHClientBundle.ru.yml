@@ -2,3 +2,12 @@ views.clientConfig.index.editing: "редактирование"
 views.clientConfig.layout.parameters: "Параметры"
 client.tabs.params: 'Параметры'
 client.tabs.payment_system: 'Платежная система'
+
+# Document Template Controller
+views.documentTempalte.index: "Шаблоны документов"
+views.documentTempalte.new: "Создание"
+views.documentTempalte.edit: "Редактирование"
+
+# Document Template
+documentTempalte.title: "Название"
+documentTempalte.enabled: "Включен"
