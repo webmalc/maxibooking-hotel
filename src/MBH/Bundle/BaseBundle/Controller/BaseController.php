@@ -6,6 +6,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Base Controller
@@ -18,7 +19,8 @@ class BaseController extends Controller
     protected $dm;
 
     /**
-     * @var \MBH\Bundle\HotelBundle\Document\Hotel
+     * Current selected hotel
+     * @var \MBH\Bundle\HotelBundle\Document\Hotel|null
      */
     protected $hotel;
 
@@ -72,7 +74,7 @@ class BaseController extends Controller
      * @param string $id
      * @param [] $params
      * @param string $suffix
-     * @return Response
+     * @return RedirectResponse
      */
     public function afterSaveRedirect($route, $id, array $params = [], $suffix = '_edit')
     {
@@ -90,35 +92,32 @@ class BaseController extends Controller
      * @param string $repo repository name
      * @param string $route route name for redirect
      * @param array $params
-     * @return Response
+     * @return RedirectResponse
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
     protected function deleteEntity($id, $repo, $route, array $params = [])
     {
         try {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-
-            $entity = $dm->getRepository($repo)->find($id);
+            $entity = $this->dm->getRepository($repo)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException();
             }
 
             if (method_exists($entity, 'getHotel')) {
-                if(!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+                if(!$this->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
                     throw $this->createNotFoundException();
                 }
             }
 
             if ($entity instanceof Hotel) {
-                if(!$this->container->get('mbh.hotel.selector')->checkPermissions($entity)) {
+                if(!$this->get('mbh.hotel.selector')->checkPermissions($entity)) {
                     throw $this->createNotFoundException();
                 }
             }
 
-            $dm->remove($entity);
-            $dm->flush($entity);
+            $this->dm->remove($entity);
+            $this->dm->flush($entity);
 
             $this->getRequest()
                 ->getSession()
@@ -133,7 +132,7 @@ class BaseController extends Controller
         }
 
 
-        return $this->redirect($this->generateUrl($route, $params));
+        return $this->redirectToRoute($route, $params);
     }
 
 }

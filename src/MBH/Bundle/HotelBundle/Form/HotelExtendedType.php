@@ -40,7 +40,6 @@ class HotelExtendedType extends AbstractType
             ->add('street', 'text', [
                 'label' => 'form.hotelExtendedType.street',
                 'group' => 'form.hotelExtendedType.address',
-                'mapped' => false,
                 'required' => false,
                 'attr' => [
                     'style' => 'min-width: 500px'
@@ -49,7 +48,6 @@ class HotelExtendedType extends AbstractType
             ->add('house', 'text', [
                 'label' => 'form.hotelExtendedType.house',
                 'group' => 'form.hotelExtendedType.address',
-                'mapped' => false,
                 'required' => false,
                 'attr' => [
                     'style' => 'min-width: 500px'
@@ -58,7 +56,6 @@ class HotelExtendedType extends AbstractType
             ->add('corpus', 'text', [
                 'label' => 'form.hotelExtendedType.corpus',
                 'group' => 'form.hotelExtendedType.address',
-                'mapped' => false,
                 'required' => false,
                 'attr' => [
                     'style' => 'min-width: 500px'
@@ -68,7 +65,6 @@ class HotelExtendedType extends AbstractType
             $builder->add('flat', 'text', [
                 'label' => 'form.hotelExtendedType.flat',
                 'group' => 'form.hotelExtendedType.address',
-                'mapped' => false,
                 'required' => false,
                 'attr' => [
                     'style' => 'min-width: 500px'

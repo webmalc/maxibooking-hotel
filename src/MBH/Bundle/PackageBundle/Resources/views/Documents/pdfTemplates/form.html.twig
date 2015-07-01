@@ -118,7 +118,7 @@
                         <div class="ib">№</div>
                         <div class="ib">
                             <div style="width: 110px" class="area ib">
-                                &nbsp{{ entity.order.mainTourist.documentRelation.number }}
+                                &nbsp{% if entity.order and entity.order.mainTourist and entity.order.mainTourist.documentRelation %} {{ entity.order.mainTourist.documentRelation.number }} {% endif %}
                             </div>
                         </div>
                         <div class="ib">выдан</div>

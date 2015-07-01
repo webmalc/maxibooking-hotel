@@ -232,7 +232,7 @@ class HotelController extends Controller
      * @param Hotel $entity
      * @return array
      */
-    public function extendedSaveAction(Request $request, Hotel $entity)
+    public function extendedUpdateAction(Request $request, Hotel $entity)
     {
         $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),
@@ -270,15 +270,12 @@ class HotelController extends Controller
      */
     public function cityAction(Request $request, $id = null)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         if (empty($id) && empty($request->get('query'))) {
             return new JsonResponse([]);
         }
 
         if (!empty($id)) {
-            $city =  $dm->getRepository('MBHHotelBundle:City')->find($id);
+            $city =  $this->dm->getRepository('MBHHotelBundle:City')->find($id);
 
             if ($city) {
                 return new JsonResponse([
@@ -288,7 +285,7 @@ class HotelController extends Controller
             }
         }
 
-        $cities = $dm->getRepository('MBHHotelBundle:City')->createQueryBuilder('q')
+        $cities = $this->dm->getRepository('MBHHotelBundle:City')->createQueryBuilder('q')
             ->field('title')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
             ->getQuery()
             ->execute()
@@ -303,7 +300,7 @@ class HotelController extends Controller
             ];
         }
 
-        $regions = $dm->getRepository('MBHHotelBundle:Region')->createQueryBuilder('q')
+        $regions = $this->dm->getRepository('MBHHotelBundle:Region')->createQueryBuilder('q')
             ->field('title')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
             ->getQuery()
             ->execute()

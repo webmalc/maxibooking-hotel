@@ -94,7 +94,10 @@ package.actions.delete: Удаление
 package.actions.docs: Генерация документов
 package.actions.act: Акт
 package.actions.confirmation: Подтверждение
-package.actions.registration_cart: Регистрационная карта
+package.actions.registration_card: Регистрационная карта
+package.actions.evidence: Свидетельство о регистрации по месту пребывания
+package.actions.form: Форма N 1-Г
+package.actions.receipt: Расписка
 package.actions.find_similar:  Найти похожую
 package.actions.cancel: Отмена
 package.actions.save: 'Сохранить'

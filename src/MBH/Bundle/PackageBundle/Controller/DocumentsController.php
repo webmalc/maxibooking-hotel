@@ -130,7 +130,6 @@ class DocumentsController extends Controller
     {
         /** @var OrderRepository $packageRepository */
         $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
-
         /** @var Order $order */
         $order = $orderRepository->findOneBy(['documents.name' => $name]);
 
@@ -140,7 +139,8 @@ class DocumentsController extends Controller
 
         $document = null;
 
-        foreach ($order->getDocuments()->getIterator() as $d) /** @var OrderDocument $d */ {
+        foreach ($order->getDocuments()->getIterator() as $d) {
+            /** @var OrderDocument $d */
             if ($d->getName() == $name) {
                 $document = $d;
             }
@@ -178,7 +178,7 @@ class DocumentsController extends Controller
      * @ParamConverter("order", class="MBHPackageBundle:Order")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @Template()
-     * @return Response|null
+     * @return RedirectResponse|null
      */
     public function editAction(Order $entity, Package $package, $name, Request $request)
     {
@@ -234,7 +234,7 @@ class DocumentsController extends Controller
     /**
      * Return pdf doc
      *
-     * @Route("/{id}/pdf/{type}", name="package_act_pdf", requirements={
+     * @Route("/{id}/pdf/{type}", name="package_pdf", requirements={
      *      "type" : "act|confirmation|evidence|form|receipt|registration_card"
      * })
      * @Method("GET")

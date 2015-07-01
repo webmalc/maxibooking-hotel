@@ -412,11 +412,11 @@
                     <div style="display: block; font-size: 12px; font-weight: normal;">SIGNATURE Подпись</div>
                 </div>
                 <div>
-                    <div style="width: 140px" class="area">{{ tourist.lastName ~ ' ' ~ tourist.firstName|first ~ ' ' ~ tourist.patronymic|first }}</div>
+                    <div style="width: 140px" class="area">&nbsp{% if tourist %}{{ tourist.lastName ~ ' ' ~ tourist.firstName|first ~ ' ' ~ tourist.patronymic|first }}{% endif %}</div>
                     <div style="display: block; font-size: 12px; font-weight: normal;">Расшифровка подписи</div>
                 </div>
                 <div>
-                    <div style="width: 90px" class="area">{{ 'now'|date('d.m.Y') }}</div>
+                    <div style="width: 90px" class="area">&nbsp{{ 'now'|date('d.m.Y') }}</div>
                     <div style="display: block; font-size: 12px; font-weight: normal;">Дата</div>
                 </div>
             </div>
