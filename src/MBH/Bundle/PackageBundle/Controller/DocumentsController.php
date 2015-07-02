@@ -237,11 +237,11 @@ class DocumentsController extends Controller
      * @Route("/{id}/pdf/{type}", name="package_pdf", requirements={
      *      "type" : "act|confirmation|evidence|form|receipt|registration_card"
      * })
-     * @Method("GET")
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_USER')")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
-    public function actPdfAction(Package $entity, $type)
+    public function actPdfAction(Package $entity, $type, Request $request)
     {
         if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
@@ -253,11 +253,20 @@ class DocumentsController extends Controller
         };*/
 
         $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
+        $params = [];
+        if($request->isMethod(Request::METHOD_POST)) {
+            $form = $form = $this->createFormByType($type);
+            $form->submit($request);
+            if ($form->isValid()) {
+                $params = $form->getData();
+            }
+        }
 
         //try{
             $html = $this->renderView($templateName, [
                 'entity' => $entity,
                 'vegaDocumentTypes' => $vegaDocumentTypes,
+                'params' => $params
             ]);
         /*}catch (\Twig_Error_Runtime $e) {
             //$e->getRawMessage();
@@ -267,7 +276,54 @@ class DocumentsController extends Controller
         //$content = $html;
         return new Response($content, 200, [
             'Content-Type' => 'application/pdf',
-            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
+            'Content-Disposition' => //'attachment;
+             'filename="'.$type.'_'.$entity->getNumberWithPrefix().'.pdf"'
         ]);
+    }
+
+
+    /**
+     * @param $type
+     * @todo may by move to factory
+     * @return \Symfony\Component\Form\Form
+     */
+    public function createFormByType($type)
+    {
+        $formBuilder = $this->createFormBuilder();
+        if($type == 'confirmation') {
+            $formBuilder
+                ->add('hasFull', 'checkbox', [
+                    'required' => false
+                ])
+                ->add('hasServices', 'checkbox', [
+                    'required' => false
+                ])
+                ->add('hasPrint', 'checkbox', [
+                    'required' => false
+                ]);
+        }
+
+        return $formBuilder->getForm();
+    }
+
+    /**
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     * @Template()
+     */
+    public function documentModalFormsAction(Package $entity)
+    {
+        $templateTypes = [
+            //'act',
+            'confirmation',
+            //'evidence','form','receipt','registration_card'
+        ];
+        foreach($templateTypes as $type) {
+            $forms[$type] = $this->createFormByType($type)->createView();
+        }
+
+        return [
+            'forms' => $forms,
+            'entity' => $entity
+        ];
     }
 }

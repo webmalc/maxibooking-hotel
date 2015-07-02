@@ -47,7 +47,7 @@
             text-indent: 1.5em;
         }
         .table {
-            margin: 40px 0px 10px 0px;
+            margin: 10px 0px 10px 0px;
             width: 100%;
         }
         .table td {
@@ -124,11 +124,11 @@
             <table border="0">
                 <tbody>
                 <tr>
-                    <td style="width: 40px">Ф.И.О.:</td>
+                    <td style="width: 40px">Ф.И.О.</td>
                     <td style="width: 60%;">
                         <div class="area">&nbsp{% if tourist %}{{ tourist.fullName }}{% endif %}</div>
                     </td>
-                    <td style="width: 130px">дата рождения:</td>
+                    <td style="width: 130px">дата рождения</td>
                     <td><div class="area">&nbsp{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div></td>
                 </tr>
                 </tbody>
@@ -136,11 +136,16 @@
             <table border="0">
                 <tbody>
                 <tr>
-                    <td style="width: 20px">адрес:</td>
+                    <td style="width: 20px">адрес</td>
                     <td>
                         <div class="area">&nbsp
                             {% if tourist and tourist.addressObjectDecomposed %}
-                                {{ tourist.addressObjectDecomposed.country }}, {{ tourist.addressObjectDecomposed.region }}{% if tourist.addressObjectDecomposed.city %}, г.{{ tourist.addressObjectDecomposed.city }}{% endif %}{% if tourist.addressObjectDecomposed.street %}, ул. {{ tourist.addressObjectDecomposed.street }}{% endif %}{% if tourist.addressObjectDecomposed.house %}, д.{{ tourist.addressObjectDecomposed.house }}{% endif %}{% if tourist.addressObjectDecomposed.corpus %}, кор. {{ tourist.addressObjectDecomposed.corpus }}{% endif %}
+                                {{ tourist.addressObjectDecomposed.country }}, {{ tourist.addressObjectDecomposed.region }}{% if tourist.addressObjectDecomposed.city %}, г.{{ tourist.addressObjectDecomposed.city }}{% endif %}{% if tourist.addressObjectDecomposed.street %}, ул. {{ tourist.addressObjectDecomposed.street }}{% endif %}
+                                {% if tourist.addressObjectDecomposed.house %},
+                                    д.{{ tourist.addressObjectDecomposed.house }}
+                                    {% if tourist.addressObjectDecomposed.corpus %}, кор. {{ tourist.addressObjectDecomposed.corpus }}{% endif %}
+                                    {% if tourist.addressObjectDecomposed.flat %}, кв. {{ tourist.addressObjectDecomposed.flat }}{% endif %}
+                                {% endif %}
                             {% endif %}
                         </div>
                     </td>
@@ -150,13 +155,13 @@
             <table border="0">
                 <tbody>
                 <tr>
-                    <td>тип документа:</td>
+                    <td>тип документа</td>
                     <td style="width: 45%"><div class="area">&nbsp{% if documentRelation and documentRelation.type %}{{ documentRelation.type|trans({})|capitalize }}{% endif %}</div></td>
 
-                    <td>серия:</td>
+                    <td>серия</td>
                     <td style="width: 15%"><div class="area">&nbsp{% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% endif %}</div></td>
 
-                    <td>№:</td>
+                    <td>№</td>
                     <td style="width: 15%"><div class="area">&nbsp{% if documentRelation and documentRelation.number %}{{ documentRelation.number }}{% endif %}</div></td>
                 </tr>
                 </tbody>
@@ -164,7 +169,7 @@
             <table border="0">
                 <tbody>
                 <tr>
-                    <td style="width: 50px">выдан:</td>
+                    <td style="width: 50px">выдан</td>
                     <td>
                         <div class="area">
                             &nbsp
@@ -179,6 +184,13 @@
                 </tbody>
             </table>
         </div>
+
+        <p>
+            о нижеследующем:
+        </p>
+        <p>
+            Отель гарантированно бронирует для Заказчика следующие услуги:
+        </p>
 
         <!-- Services -->
         <table border="1" cellpadding="0" cellspacing="0" class="table">
@@ -201,16 +213,18 @@
                 <td align="right">{{ (entity.packagePrice(true)/entity.nights)|round(1)|number_format }}</td>
                 <td align="right">{{ entity.packagePrice(true)|number_format }}</td>
             </tr>
-            {% for packageService in entity.services %}
-                <tr>
-                    <td align="center">{{ loop.index + 1 }}</td>
-                    <td>{{ packageService.service.name }}</td>
-                    <td align="center">{{ packageService.amount }}</td>
-                    <td align="center">шт.</td>
-                    <td align="right">{{ packageService.price|number_format(2) }}</td>
-                    <td align="right">{{ packageService.total|number_format(2) }}</td>
-                </tr>
-            {% endfor %}
+            {% if params.hasServices is defined and params.hasServices %}
+                {% for packageService in entity.services %}
+                    <tr>
+                        <td align="center">{{ loop.index + 1 }}</td>
+                        <td>{{ packageService.service.name }}</td>
+                        <td align="center">{{ packageService.amount }}</td>
+                        <td align="center">шт.</td>
+                        <td align="right">{{ packageService.price|number_format(2) }}</td>
+                        <td align="right">{{ packageService.total|number_format(2) }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
             </tbody>
         </table>
 
@@ -228,8 +242,9 @@
         <p>Всего заказано услуг {{ entity.services|length + 1 }}, на сумму {{ (entity.servicesPrice + entity.packagePrice(true))|number_format(2) }} руб.<br>
             <strong>{{ entity.price|num2str|capitalize }}</strong></p>
 
-        <p class="indent">Отель гарантированно бронирует вышеперечисленные услуги для Заказчика за произведенную им предоплату.
-            В случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание конпенсации из внесенной предоплаты.</p>
+        <p>
+            Примечание: в случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание конпенсации из внесенной предоплаты.
+        </p>
 
         <table class="signatures" cellpadding="0" cellspacing="0">
             <tr>
@@ -253,6 +268,12 @@
                 </td>
             </tr>
         </table>
+
+
+        {% if params.hasPrint is defined and params.hasPrint %}
+            Печать
+        {% endif %}
+
         <style>
             .signatures {
                 border: 0;

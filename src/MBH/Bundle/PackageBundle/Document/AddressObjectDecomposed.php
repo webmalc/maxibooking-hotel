@@ -249,8 +249,8 @@ class AddressObjectDecomposed
         $this->flat = $flat;
     }
 
-    public function __toString()
+    /*public function __toString()
     {
         return $this->getRegion().' '. $this->getCity().' ул.'. $this->getStreet().' д.'. $this->getHouse().' кор.'. $this->getCorpus();
-    }
+    }*/
 }

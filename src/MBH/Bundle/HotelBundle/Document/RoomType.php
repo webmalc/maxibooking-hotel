@@ -75,6 +75,13 @@ class RoomType extends Base
      */
     protected $title;
 
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    protected $internationalTitle;
+
 
     /**
      * @var string
@@ -210,6 +217,22 @@ class RoomType extends Base
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getInternationalTitle()
+    {
+        return $this->internationalTitle;
+    }
+
+    /**
+     * @param mixed $internationalTitle
+     */
+    public function setInternationalTitle($internationalTitle)
+    {
+        $this->internationalTitle = $internationalTitle;
     }
 
     /**

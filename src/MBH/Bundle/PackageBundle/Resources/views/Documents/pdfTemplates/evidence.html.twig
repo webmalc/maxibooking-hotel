@@ -53,7 +53,11 @@
                 Выдано &nbsp
             </div>
             <div style="margin-left: 62px;">
-                <div class="area"><strong>&nbsp{% if tourist %} {{ tourist.name }} {{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.mainRegion }}{% endif %}</strong></div>
+                <div class="area">&nbsp{% if tourist %} {{ tourist.name }}
+                            {% if tourist.birthplace and tourist.birthplace.country and tourist.birthplace.city %}
+                                {{ tourist.birthplace.country ~ ', г.' ~ tourist.birthplace.city ~ ', ' ~ tourist.birthplace.mainRegion }}
+                            {% endif %}
+                        {% endif %}</div>
                 <div style="display: block; font-size: 12px; font-weight: normal;">(Ф.И.О., год и место рождения)</div>
             </div>
             <div style="clear: both "></div>
@@ -64,11 +68,20 @@
     {% set location = '' %}
 
     {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.street %}
-        {% set location = entity.accommodation.housing.city  ~ ' ' ~ entity.accommodation.housing.settlement ~ ' ' ~ entity.accommodation.housing.street ~ ' ' ~ entity.accommodation.housing.house %}
+        {% set location = ' г.' ~ entity.accommodation.housing.city  ~ ', нас.пунк ' ~ entity.accommodation.housing.settlement ~ ' ул.' ~ entity.accommodation.housing.street ~ ' д.' ~ entity.accommodation.housing.house %}
     {% endif %}
 
     {% if not location and entity.roomType.hotel.city and entity.roomType.hotel.street %}
-        {% set location = entity.roomType.hotel.city  ~ ' ' ~ entity.roomType.hotel.settlement ~ ' ' ~ entity.roomType.hotel.street ~ ' ' ~ entity.roomType.hotel.house %}
+        {% set location = ' г.' ~ entity.roomType.hotel.city  ~ ', нас.пунк ' ~ entity.roomType.hotel.settlement ~ ', ул.' ~ entity.roomType.hotel.street %}
+        {% if entity.roomType.hotel.house %}
+            {% set location = location ~ ', д.' ~ entity.roomType.hotel.house %}
+            {% if entity.roomType.hotel.corpus %}
+                {% set location = location ~ ', кор. ' ~ entity.roomType.hotel.corpus %}
+                {% if entity.roomType.hotel.flat %}
+                    {% set location = location ~  ', кв. ' ~ entity.roomType.hotel.flat %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
     {% endif %}
 
         <div>
