@@ -15,10 +15,17 @@ else
     IGNORE='ignore_update.txt'
 fi
 
-if [[ $3 == 'demo' ]]; then
+if [[ -z "$3" && $2 == 'new' ]]; then
+    echo -e "${RED}Error: path=false! Usage: scripts/deploy.sh last.mbf new password ${NC}"
+	exit
+fi
+
+if [[ $4 == 'demo' ]]; then
     SERVER='root@95.85.3.188'
 fi
 
+
+DB_USER="${1////_}"
 FOLDER='/var/www/'$1'/'
 APC=$FOLDER'bin/console mbh:demo:apc --name='$1
 CACHE='rm -rf '$FOLDER'var/cache/*'
@@ -37,6 +44,12 @@ rsync -avz --delete --exclude-from=scripts/$IGNORE * -e ssh $SERVER:$FOLDER
 
 if [[ $2 == 'new' ]]; then
 
+    echo -e "${GREEN}New database${NC}"
+    ssh $SERVER '/root/scripts/mongo_user.sh '$3' '$DB_USER
+
+    echo -e "${GREEN}New nginx server${NC}"
+    ssh $SERVER '/root/scripts/nginx.sh '$DB_USER
+
     echo -e "${GREEN}Move parameters.yml${NC}"
     ssh $SERVER $MOVE_PARAMS
 fi
@@ -44,16 +57,12 @@ fi
 echo -e "${GREEN}Start mbh:demo:apc${NC}"
 ssh $SERVER $APC
 
-echo -e "${GREEN}Make cache and logs directories${NC}"
-ssh $SERVER 'setfacl -R -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs'
-ssh $SERVER 'setfacl -dR -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs'
+echo -e "${GREEN}Make cache, logs and upload directories${NC}"
+ssh $SERVER 'setfacl -R -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs '$FOLDER'protectedUpload '$FOLDER'web/media'
+ssh $SERVER 'setfacl -dR -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs '$FOLDER'protectedUpload '$FOLDER'web/media'
 
 echo -e "${GREEN}Start clear:cache${NC}"
 ssh $SERVER $CACHE
-
-echo -e "${GREEN}Make cache and logs directories${NC}"
-ssh $SERVER 'setfacl -R -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs'
-ssh $SERVER 'setfacl -dR -m u:"www-data":rwX -m u:"root":rwX '$FOLDER'var/cache '$FOLDER'var/logs'
 
 echo -e "${GREEN}Start doctrine:mongodb:generate:hydrators${NC}"
 ssh $SERVER $HYDRATORS
@@ -74,15 +83,14 @@ echo -e "${GREEN}Start doctrine:mongodb:schema:create${NC}"
 ssh $SERVER $DB
 
 if [[ $2 == 'new' ]]; then
-
-    echo -e "${GREEN}Make user admin/admin${NC}"
-    ssh $SERVER $FOLDER'bin/console doctrine:mongodb:schema:update'
-    ssh $SERVER $FOLDER'bin/console fos:user:create admin admin@example.com admin'
-    ssh $SERVER $FOLDER'bin/console fos:user:promote admin ROLE_ADMIN'
+    echo -e "${GREEN}Upload fixtures${NC}"
+    ssh $SERVER $FOLDER'bin/console mbh:base:fixtures --cities'
+    ssh $SERVER $FOLDER'bin/console mbh:vega:import'
 fi
 
 echo -e "${GREEN}Start clear:cache${NC}"
 ssh $SERVER $CACHE
 
 ssh $SERVER $PHP_FPM
+ssh $SERVER 'service nginx restart'
 

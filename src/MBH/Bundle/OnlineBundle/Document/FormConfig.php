@@ -76,7 +76,7 @@ class FormConfig extends Base
      * @Gedmo\Versioned
      * @ODM\Collection
      * @Assert\NotNull()
-     * @Assert\Choice(choices = {"in_hotel", "online_full", "online_first_day"}, multiple = true)
+     * @Assert\Choice(choices = {"in_hotel", "online_full", "online_first_day", "online_half"}, multiple = true)
      */
     protected $paymentTypes = [];
 

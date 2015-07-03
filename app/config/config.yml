@@ -154,12 +154,6 @@ knp_menu:
     templating: false # if true, enables the helper for PHP templates
     default_renderer: twig
 
-# Kints Configuration   
-cg_kint:
-    enabled:          true
-    nesting_depth:    20
-    string_length:    60
-
 # KnpSnappyBundle Configuration
 knp_snappy:
     pdf:

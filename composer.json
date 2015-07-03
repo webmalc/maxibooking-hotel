@@ -1,80 +1,78 @@
 {
-    "name": "symfony/framework-standard-edition",
-    "license": "MIT",
-    "type": "project",
-    "description": "The \"Symfony Standard Edition\" distribution",
-    "minimum-stability": "dev",
-    "autoload": {
-        "psr-0": {
-            "": "src/",
-            "SymfonyStandard": "app/"
-        }
-    },
-    "require": {
-        "php": ">=5.3.3",
-        "symfony/symfony": "2.7.*@stable",
-        "doctrine/orm": "dev-master",
-        "doctrine/doctrine-bundle": "dev-master",
-        "twig/extensions": "dev-master",
-        "symfony/assetic-bundle": "dev-master",
-        "symfony/swiftmailer-bundle": "dev-master",
-        "symfony/monolog-bundle": "dev-master",
-        "sensio/distribution-bundle": "dev-master",
-        "sensio/framework-extra-bundle": "~3.0",
-        "incenteev/composer-parameter-handler": "dev-master",
-        "doctrine/mongodb-odm-bundle": "dev-master",
-        "stof/doctrine-extensions-bundle": "dev-master",
-        "friendsofsymfony/user-bundle": "dev-master",
-        "friendsofsymfony/jsrouting-bundle": "dev-master",
-        "knplabs/knp-menu": "dev-master",
-        "knplabs/knp-menu-bundle": "dev-master",
-        "jms/security-extra-bundle": "dev-master",
-        "cg/kint-bundle": "dev-master",
-        "ob/highcharts-bundle": "dev-master",
-        "knplabs/knp-snappy-bundle": "dev-master",
-        "misd/guzzle-bundle": "~1.1",
-        "iampersistent/mongodb-acl-bundle": "dev-master",
-        "liip/imagine-bundle": "~1.0@dev",
-        "jms/translation-bundle": "^1.1@dev",
-        "jms/di-extra-bundle": "^1.5@dev"
-    },
-    "require-dev": {
-        "sensio/generator-bundle": "~2.3"
-    },
-    "scripts": {
-        "post-root-package-install": [
-            "SymfonyStandard\\Composer::hookRootPackageInstall"
-        ],
-        "post-install-cmd": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
-        ],
-        "post-update-cmd": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
-        ]
-    },
-    "config": {
-        "bin-dir": "bin"
-    },
-    "extra": {
-        "symfony-app-dir": "app",
-        "symfony-bin-dir": "bin",
-        "symfony-var-dir": "var",
-        "symfony-web-dir": "web",
-        "incenteev-parameters": {
-            "file": "app/config/parameters.yml"
-        },
-        "branch-alias": {
-            "dev-master": "2.5-dev"
-        }
+  "name": "symfony/framework-standard-edition",
+  "license": "MIT",
+  "type": "project",
+  "description": "The \"Symfony Standard Edition\" distribution",
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-0": {
+      "": "src/",
+      "SymfonyStandard": "app/"
     }
+  },
+  "require": {
+    "php": ">=5.3.3",
+    "symfony/symfony": "2.7.*@stable",
+    "twig/extensions": "*@stable",
+    "symfony/assetic-bundle": "*@stable",
+    "symfony/swiftmailer-bundle": "*@stable",
+    "symfony/monolog-bundle": "*@stable",
+    "sensio/distribution-bundle": "*@stable",
+    "sensio/framework-extra-bundle": "~3.0",
+    "incenteev/composer-parameter-handler": "*@stable",
+    "doctrine/mongodb-odm": "1.0.0-BETA13",
+    "doctrine/mongodb-odm-bundle": "3.0.*@dev",
+    "stof/doctrine-extensions-bundle": "~1.1@dev",
+    "friendsofsymfony/user-bundle": "*@dev",
+    "friendsofsymfony/jsrouting-bundle": "*@stable",
+    "knplabs/knp-menu": "*@stable",
+    "knplabs/knp-menu-bundle": "*@stable",
+    "jms/security-extra-bundle": "*@stable",
+    "ob/highcharts-bundle": "*@stable",
+    "knplabs/knp-snappy-bundle": "*@stable",
+    "misd/guzzle-bundle": "*@stable",
+    "iampersistent/mongodb-acl-bundle": "*@stable",
+    "liip/imagine-bundle": "*@stable",
+    "jms/translation-bundle": "*@stable",
+    "jms/di-extra-bundle": "*@stable"
+  },
+  "require-dev": {
+    "sensio/generator-bundle": "~2.3"
+  },
+  "scripts": {
+    "post-root-package-install": [
+      "SymfonyStandard\\Composer::hookRootPackageInstall"
+    ],
+    "post-install-cmd": [
+      "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
+    ],
+    "post-update-cmd": [
+      "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
+    ]
+  },
+  "config": {
+    "bin-dir": "bin"
+  },
+  "extra": {
+    "symfony-app-dir": "app",
+    "symfony-bin-dir": "bin",
+    "symfony-var-dir": "var",
+    "symfony-web-dir": "web",
+    "incenteev-parameters": {
+      "file": "app/config/parameters.yml"
+    },
+    "branch-alias": {
+      "*@stable": "2.7.*@stable"
+    }
+  }
 }

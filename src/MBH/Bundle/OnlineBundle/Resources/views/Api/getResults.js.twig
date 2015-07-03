@@ -399,16 +399,27 @@ jQuery(document).ready(function () {
                                             var calc = function() {
                                                 var type = jQuery('.mbh-payment-types-radio:checked'),
                                                     totalWrapper = jQuery('#mbh-package-info-total'),
+                                                    totalHidden = jQuery('#mbh-package-info-total-hidden'),
                                                     totalPackagesWrapper = jQuery('#mbh-package-info-total-packages'),
                                                     sum = total,
+                                                    sumHidden = total,
                                                     sumPackages = totalPackages
                                                     ;
-                                                if (type.length && type.val() == 'online_first_day') {
+                                                if (type.length && type.val() === 'online_first_day') {
                                                     sumPackages = Math.round(totalPackages/requestParams.nights);
-                                                    sum = sumPackages + parseInt(totalServices, 10);
+                                                    sum =  parseInt(totalPackages, 10) + parseInt(totalServices, 10);
+                                                    sumHidden = parseInt(sumPackages, 10) + parseInt(totalServices, 10);
+                                                }
+                                                if (type.length && type.val() === 'online_half') {
+
+                                                    sumPackages = Math.round(totalPackages/2);
+                                                    sum = parseInt(totalPackages, 10) + parseInt(totalServices, 10);
+                                                    sumHidden = parseInt(sumPackages, 10) + parseInt(totalServices, 10);
                                                 }
                                                 totalWrapper.html(sum);
+                                                totalHidden.html(sumHidden);
                                                 totalPackagesWrapper.html(sumPackages);
+
                                             }
                                             validate();
                                             jQuery('.mbh-payment-types-radio').change(function() {
@@ -419,7 +430,7 @@ jQuery(document).ready(function () {
 
                                         //user payment types next button
                                         jQuery('#mbh-payment-types-next').click(function(){
-                                            requestParams.total = jQuery('#mbh-package-info-total').text();
+                                            requestParams.total = jQuery('#mbh-package-info-total-hidden').text();
                                             requestParams.paymentType = jQuery('.mbh-payment-types-radio:checked').val();
 
                                             waiting();

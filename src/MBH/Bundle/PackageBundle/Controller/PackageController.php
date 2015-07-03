@@ -340,7 +340,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ], $order, $this->getUser());
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
-                var_dump($e);
+                dump($e);
             };
 
             return [];

@@ -196,7 +196,7 @@ class ChannelManager
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
-                var_dump($e);
+                dump($e);
             }
         }
 
@@ -228,7 +228,7 @@ class ChannelManager
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
-                var_dump($e);
+                dump($e);
             }
         }
 
@@ -260,7 +260,7 @@ class ChannelManager
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
-                var_dump($e);
+                dump($e);
             }
         }
 
@@ -292,7 +292,7 @@ class ChannelManager
             } catch (\Exception $e) {
                 $result[$service['key']]['result'] = false;
                 $result[$service['key']]['error'] = $e;
-                var_dump($e);
+                dump($e);
             }
         }
 

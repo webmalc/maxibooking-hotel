@@ -339,13 +339,19 @@ class Booking extends Base
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
+        foreach ($this->pullTariffs($config) as $key => $tariff) {
+            if (!$tariff['readonly'] || !$tariff['is_child_rate']) {
+                $tariffs[$key] = $tariff;
+            }
+        }
+
         $request = $this->templating->render(
             'MBHChannelManagerBundle:Booking:close.xml.twig',
             [
                 'config' => $config,
                 'params' => $this->params,
                 'rooms' => $this->pullRooms($config),
-                'rates' => $this->pullTariffs($config)
+                'rates' => $tariffs
             ]
         );
         $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);

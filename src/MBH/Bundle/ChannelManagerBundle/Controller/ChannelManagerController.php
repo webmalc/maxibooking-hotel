@@ -18,7 +18,7 @@ class ChannelManagerController extends Controller implements CheckHotelControlle
 {
     /**
      * @Route("/package/notifications/{name}", name="channel_manager_notifications")
-     * @Method({"POST"})
+     * @Method({"POST", "GET"})
      * @param string $name
      * @return Response
      */
