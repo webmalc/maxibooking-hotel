@@ -76,12 +76,17 @@
     <div class="header">
         <div class="title">
             <p>
-                Подтверждение брони № {{ entity.number }} от {{ entity.createdAt|date("d.m.Y") }} г.
+                Подтверждение
+                {% if params.hasFull is defined and params.hasFull %}
+                    заказа № {{ entity.order.id }} от {{ entity.order.createdAt|date("d.m.Y") }} г.
+                {% else %}
+                    брони № {{ entity.number }} от {{ entity.createdAt|date("d.m.Y") }} г.
+                {% endif %}
             </p>
         </div>
         {% if hotel and hotel.logoUrl %}
             <div class="logo">
-                <img src="{{ asset(hotel.logoUrl, absolute=true) }}">
+                <img src="{{ asset(hotel.logoUrl)|imagine_filter('thumb_95x80') }}">
             </div>
         {% endif %}
         <div style="clear: both"></div>
@@ -205,23 +210,62 @@
             </tr>
             </thead>
             <tbody>
+            {% if params.hasFull is defined and params.hasFull %}
+                {% set packages = entity.order.packages %}
+            {% else %}
+                {% set packages = [entity] %}
+            {% endif %}
+
+            {% set counter = 0 %}
+            {% for package in packages %}
+                {% set counter = counter + 1 %}
+                <tr>
+                    <td align="center">{{ counter }}</td>
+                    <td>
+                        {{ "package.pdf.living_in_hotel"|trans({}, "MBHPackageBundle") }} {{ package.begin|date('d.m.Y') }} - {{ package.end|date('d.m.Y') }}
+                        {% if package.roomType and package.roomType.internationalTitle %}
+                            ({{ package.roomType.internationalTitle }})
+                        {% endif %}
+                    </td>
+                    <td align="center">{{ package.nights }}</td>
+                    <td align="center">{{ "package.pdf.noch"|trans({}, "MBHPackageBundle") }}</td>
+                    <td align="right">{{ (package.packagePrice(true)/entity.nights)|round(1)|number_format(2) }}</td>
+                    <td align="right">{{ package.packagePrice(true)|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
+            {# {% if params.hasServices is defined and params.hasServices %}
+                 {% for package in packages %}
+                    {% for packageService in package.services %}
+                        {% set counter = counter + 1 %}
+                        <tr>
+                            <td align="center">{{ counter }}</td>
+                            <td>{{ packageService.service.name }}</td>
+                            <td align="center">{{ packageService.amount }}</td>
+                            <td align="center">шт.</td>
+                            <td align="right">{{ packageService.price|number_format(2) }}</td>
+                            <td align="right">{{ packageService.total|number_format(2) }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
             <tr>
-                <td align="center">1</td>
-                <td>{{ "package.pdf.living_in_hotel"|trans({}, "MBHPackageBundle") }} {{ entity.begin|date('d.m.Y') }} - {{ entity.end|date('d.m.Y') }}</td>
-                <td align="center">{{ entity.nights }}</td>
-                <td align="center">{{ "package.pdf.noch"|trans({}, "MBHPackageBundle") }}</td>
-                <td align="right">{{ (entity.packagePrice(true)/entity.nights)|round(1)|number_format }}</td>
-                <td align="right">{{ entity.packagePrice(true)|number_format }}</td>
-            </tr>
+                <td align="center"></td>
+                <td></td>
+                <td align="center"></td>
+                <td align="center">шт.</td>
+                <td align="right"></td>
+                <td align="right"></td>
+            </tr>#}
             {% if params.hasServices is defined and params.hasServices %}
-                {% for packageService in entity.services %}
+                {% for serviceGroup in packageServicesByType %}
+                    {% set counter = counter + 1 %}
                     <tr>
-                        <td align="center">{{ loop.index + 1 }}</td>
-                        <td>{{ packageService.service.name }}</td>
-                        <td align="center">{{ packageService.amount }}</td>
+                        <td align="center">{{ counter }}</td>
+                        <td>{{ serviceGroup.byService.name }}</td>
+                        <td align="center">{{ serviceGroup.actuallyAmount }}</td>
                         <td align="center">шт.</td>
-                        <td align="right">{{ packageService.price|number_format(2) }}</td>
-                        <td align="right">{{ packageService.total|number_format(2) }}</td>
+                        <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
+                        <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
                     </tr>
                 {% endfor %}
             {% endif %}
@@ -231,7 +275,7 @@
         <table border="0" width="100%">
             <tr>
                 <td align="right"><strong>Итого:</strong></td>
-                <td align="right" style="width: 100px;"><strong>{{ (entity.servicesPrice + entity.packagePrice(true))|number_format(2) }}</strong></td>
+                <td align="right" style="width: 100px;"><strong>{{ total|number_format(2) }}</strong></td>
             </tr>
             <tr>
                 <td align="right"><strong>В том числе НДС:</strong></td>
@@ -239,8 +283,9 @@
             </tr>
         </table>
 
-        <p>Всего заказано услуг {{ entity.services|length + 1 }}, на сумму {{ (entity.servicesPrice + entity.packagePrice(true))|number_format(2) }} руб.<br>
-            <strong>{{ entity.price|num2str|capitalize }}</strong></p>
+        <p>Всего заказано услуг {{ entity.services|length + 1 }}, на сумму {{ total|number_format(2) }} руб.<br>
+            <strong>{{ total|num2str|capitalize }}</strong>
+        </p>
 
         <p>
             Примечание: в случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание конпенсации из внесенной предоплаты.
@@ -270,8 +315,8 @@
         </table>
 
 
-        {% if params.hasPrint is defined and params.hasPrint %}
-            Печать
+        {% if params.hasStamp is defined and params.hasStamp and hotel.organization.stamp %}
+            <img style="position: relative; top: -100px; left: 0px; width: 400px;  height: 200px" src="{{ hotel.organization.stamp }}">
         {% endif %}
 
         <style>

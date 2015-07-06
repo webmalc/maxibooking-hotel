@@ -185,6 +185,7 @@ form.organizationType.correspondent_account: 'Корр. счёт'
 form.organizationType.checking_account: 'Расчётный счёт'
 form.organizationType.type: 'Тип'
 form.organizationType.comment: 'Комментарий'
+form.organizationType.stamp: 'Печать'
 form.organizationType.created_at: 'Создан'
 form.organizationType.group_location: 'Адресные данные'
 form.organizationType.address: 'Адрес'
@@ -208,3 +209,7 @@ package.document.type_train_tickets: Ж/д билеты
 package.document.type_info: Информация
 package.document.type_letter: Письмо
 package.document.type_other: Прочее
+
+templateDocument.form.confirmation.hasFull: Весь заказ?
+templateDocument.form.confirmation.hasServices: Включить услуги?
+templateDocument.form.confirmation.hasStamp: Добавить печать?

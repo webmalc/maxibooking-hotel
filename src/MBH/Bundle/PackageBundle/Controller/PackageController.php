@@ -390,7 +390,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     $criteria['birthday'] = $data['birthday'];
                 }
 
-                $tourist = $dm->getRepository('MBHPackageBundle:Tourist')->findOneBy($criteria);
+                $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->findOneBy($criteria);
 
                 if (empty($tourist)) {
                     $tourist = new Tourist();

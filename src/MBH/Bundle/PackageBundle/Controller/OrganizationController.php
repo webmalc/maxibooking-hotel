@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Form\OrganizationType;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -127,6 +128,8 @@ class OrganizationController extends Controller
                 $this->dm->persist($organization);
                 $this->dm->flush();
 
+                $organization->upload();
+
                 return $this->redirect($this->generateUrl('organizations', ['type' => $organization->getType()]));
             }
         }
@@ -157,6 +160,17 @@ class OrganizationController extends Controller
             if ($form->isValid()) {
                 $this->dm->persist($organization);
                 $this->dm->flush();
+
+                $imagine = new \Imagine\Gd\Imagine();
+                $size = new \Imagine\Image\Box(400, 200);
+                $mode = \Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
+                if($stamp = $organization->getStamp() and $stamp instanceof UploadedFile) {
+                    $image = $imagine->open($stamp->getPathname())->thumbnail($size, $mode)->save($stamp->getPathname(), [
+                        'format' => $stamp->getClientOriginalExtension()
+                    ]);
+
+                    $organization->upload();
+                }
 
                 return $this->redirect($this->generateUrl('organizations'));
             }

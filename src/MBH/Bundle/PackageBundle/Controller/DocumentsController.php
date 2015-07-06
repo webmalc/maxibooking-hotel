@@ -3,9 +3,14 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Component\DocumentTemplateProvider\DocumentTemplateProviderFactory;
+use MBH\Bundle\PackageBundle\Component\PackageServiceGroup;
+use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
 use MBH\Bundle\PackageBundle\Document\OrderRepository;
+use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Form\OrderDocumentType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -253,27 +258,62 @@ class DocumentsController extends Controller
         };*/
 
         $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
-        $params = [];
+        $formParams = [];
         if($request->isMethod(Request::METHOD_POST)) {
             $form = $form = $this->createFormByType($type);
             $form->submit($request);
             if ($form->isValid()) {
-                $params = $form->getData();
+                $formParams = $form->getData();
             }
         }
 
-        //try{
+        $templateFactory = new DocumentTemplateProviderFactory();
+        $templateProvider = $templateFactory->createByType($type);
+        $templateProvider->setContainer($this->container);
+        $templateProvider->setPackage($entity);
+
+        /*
+        /** @var PackageService[] $packageServices */
+        $packageServices = [];
+        /** @var PackageServiceGroupByService[] $packageServicesByType */
+        $packageServicesByType = [];
+
+        /*$total = 0;
+        foreach($entity->getOrder()->getPackages() as $package) {
+            $packageServices = array_merge(iterator_to_array($package->getServices()), $packageServices);
+            $total += $package->getPackagePrice(true);
+        }
+        foreach($packageServices as $ps) {
+            if(!array_key_exists($ps->getService()->getId(), $packageServicesByType)) {
+                $group = new PackageServiceGroupByService($ps->getService());
+                $packageServicesByType[$ps->getService()->getId()] = $group;
+            }
+            $packageServicesByType[$ps->getService()->getId()]->add($ps);
+            $total += $ps->getTotal();
+        }
+
+        try{
             $html = $this->renderView($templateName, [
                 'entity' => $entity,
                 'vegaDocumentTypes' => $vegaDocumentTypes,
-                'params' => $params
+                'params' => $formParams,
+                'packageServicesByType' => $packageServicesByType,
+                'total' => $total
             ]);
-        /*}catch (\Twig_Error_Runtime $e) {
+        }catch (\Twig_Error_Runtime $e) {
             //$e->getRawMessage();
         }*/
 
-        $content = $this->get('knp_snappy.pdf')->getOutputFromHtml($html);
-        //$content = $html;
+        $html = $templateProvider->getTemplate();
+
+        $content = $this->get('knp_snappy.pdf')->getOutputFromHtml($html, [
+            'cookie' => [$request->getSession()->getName() => $request->getSession()->getId()]
+        ]);
+
+        /*$content = $this->get('knp_snappy.pdf')->getOutput('http://mbh.h/app_dev.php/user/login', [
+            'cookie' => [$request->getSession()->getName() => $request->getSession()->getId()]
+        ]);*/
+
         return new Response($content, 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => //'attachment;
@@ -293,17 +333,21 @@ class DocumentsController extends Controller
         if($type == 'confirmation') {
             $formBuilder
                 ->add('hasFull', 'checkbox', [
-                    'required' => false
+                    'required' => false,
+                    'label' => 'templateDocument.form.confirmation.hasFull',
                 ])
                 ->add('hasServices', 'checkbox', [
-                    'required' => false
+                    'required' => false,
+                    'label' => 'templateDocument.form.confirmation.hasServices',
                 ])
-                ->add('hasPrint', 'checkbox', [
-                    'required' => false
+                ->add('hasStamp', 'checkbox', [
+                    'required' => false,
+                    'label' => 'templateDocument.form.confirmation.hasStamp'
                 ]);
         }
 
-        return $formBuilder->getForm();
+        $form = $formBuilder->getForm();
+        return $form;
     }
 
     /**
@@ -318,12 +362,43 @@ class DocumentsController extends Controller
             //'evidence','form','receipt','registration_card'
         ];
         foreach($templateTypes as $type) {
-            $forms[$type] = $this->createFormByType($type)->createView();
+            $formView = $this->createFormByType($type)->createView();
+            $forms[$type] = $formView;
         }
 
         return [
             'forms' => $forms,
             'entity' => $entity
         ];
+    }
+
+
+    /**
+     * @Route("/stamp/{id}.jpg", name="stamp")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @return Response
+     * @ParamConverter(class="\MBH\Bundle\PackageBundle\Document\Organization")
+     */
+    public function stampAction(Organization $entity)
+    {
+        if (!$entity->getStamp()) {
+            throw $this->createNotFoundException();
+        }
+
+        $fp = fopen($entity->getStamp()->getPathname(), "rb");
+        $str = stream_get_contents($fp);
+        fclose($fp);
+
+        /*$binary = $this->get('liip_imagine.data.manager')->find('stamp',
+            '/orderDocuments/5554599b7d3d6494118b4567'//$entity->getStamp()->getPathname()
+        );
+        $str = $binary->getContent();*/
+
+
+        $response = new Response($str, 200);
+        $response->headers->set('Content-Type', $entity->getStamp()->getMimeType());
+
+        return $response;
     }
 }

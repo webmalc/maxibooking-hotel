@@ -7,6 +7,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\City;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -185,6 +187,11 @@ class Organization implements PayerInterface
      * @ODM\String
      */
     protected $comment;
+
+    /**
+     * @var File
+     */
+    protected $stamp;
 
     public function getId()
     {
@@ -687,6 +694,54 @@ class Organization implements PayerInterface
     public function setComment($comment)
     {
         $this->comment = $comment;
+    }
+
+    /**
+     * @return File
+     */
+    public function getStamp()
+    {
+        if (!$this->stamp && $this->getId() && is_file($this->getPath())) {
+            $this->stamp = new File($this->getPath(), $this->getId());
+        }
+
+        return $this->stamp;
+    }
+
+    /**
+     * @param UploadedFile $stamp
+     */
+    public function setStamp(UploadedFile $stamp = null)
+    {
+        $this->stamp = $stamp;
+    }
+
+    /**
+     * The absolute directory path where uploaded
+     * documents should be saved
+     * @return string
+     */
+    public function getUploadRootDir()
+    {
+        return realpath(__DIR__.'/../../../../../protectedUpload/orderDocuments');
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->getUploadRootDir().DIRECTORY_SEPARATOR.$this->getId();
+    }
+
+    /**
+     * @return File
+     */
+    public function upload()
+    {
+        if ($this->getStamp() and $this->getStamp() instanceof UploadedFile) {
+            return $this->getStamp()->move($this->getUploadRootDir(), $this->getId());
+        }
     }
 
     /**
