@@ -13,6 +13,8 @@
             {% include 'MBHChannelManagerBundle::actions.html.twig' %}
             {{ form_end(form) }}
 
+            {% include 'MBHChannelManagerBundle:ChannelManager:pushLink.html.twig' with {'name': 'booking'} %}
+
             {%  if doc %}
                 {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': doc, 'logs': logs} %}
             {%  endif %}

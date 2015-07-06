@@ -12,6 +12,8 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  *  ChannelManager service
@@ -356,6 +358,8 @@ class Booking extends Base
         );
         $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
+        $this->log($sendResult);
+
         return $this->checkResponse($sendResult);
     }
 
@@ -413,6 +417,8 @@ class Booking extends Base
             if ($result) {
                 $result = $this->checkResponse($sendResult);
             }
+
+            $this->log($sendResult);
         }
 
         return $result;
@@ -488,6 +494,8 @@ class Booking extends Base
             if ($result) {
                 $result = $this->checkResponse($sendResult);
             }
+
+            $this->log($sendResult);
         }
 
         return $result;
@@ -582,6 +590,8 @@ class Booking extends Base
             if ($result) {
                 $result = $this->checkResponse($sendResult);
             }
+
+            $this->log($sendResult);
         }
 
         return $result;
@@ -619,6 +629,9 @@ class Booking extends Base
             ['config' => $config, 'params' => $this->params]
         );
         $response = $this->sendXml(static::BASE_URL.'rooms', $request);
+
+        //$this->log($response->asXML());
+
         foreach ($response->xpath('room') as $room) {
             $result[(string)$room['id']] = (string)$room;
         }
@@ -637,6 +650,8 @@ class Booking extends Base
             ['config' => $config, 'params' => $this->params]
         );
         $response = $this->sendXml(static::BASE_URL.'roomrates', $request);
+
+        //$this->log($response->asXML());
 
         foreach ($response->room as $room) {
             foreach ($room->rates->rate as $rate) {
@@ -677,5 +692,15 @@ class Booking extends Base
 
         $this->dm->flush();
 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function pushResponse(Request $request)
+    {
+        $this->log($request->getContent());
+
+        return new Response('OK');
     }
 }

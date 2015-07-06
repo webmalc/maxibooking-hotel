@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\OrderPollQuestion;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -79,9 +80,9 @@ class PollController extends Controller
     }
 
     /**
-     * Online form js
      * @Route("/api/poll/config", name="online_poll_config")
      * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
      * @Template("")
      */
     public function configAction()
@@ -90,7 +91,6 @@ class PollController extends Controller
     }
 
     /**
-     * Online form js
      * @Route("/api/poll/js/main", name="online_poll_js", defaults={"_format"="js"})
      * @Method("GET")
      * @Template("")

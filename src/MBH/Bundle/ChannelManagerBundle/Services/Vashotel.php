@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -12,6 +13,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  *  ChannelManager service
@@ -83,6 +86,11 @@ class Vashotel extends Base
      * Orders info
      */
     const ORDERS_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:orders.xml.twig';
+
+    /**
+     * Push response
+     */
+    const PUSH_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:push.xml.twig';
 
     /**
      * @var array
@@ -270,6 +278,8 @@ class Vashotel extends Base
 
         $response = $this->sendXml(static::BASE_URL.$script, $this->templating->render(static::GET_TEMPLATE, $data));
 
+        //$this->log($response->asXML());
+
         if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
             return [];
         }
@@ -299,6 +309,8 @@ class Vashotel extends Base
         $data['sig'] = md5($sig);
 
         $response = $this->sendXml(static::BASE_URL.$script, $this->templating->render(static::GET_TEMPLATE, $data));
+
+        //$this->log($response->asXML());
 
         if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
             return [];
@@ -844,6 +856,8 @@ class Vashotel extends Base
                 $this->templating->render(static::CLOSE_TEMPLATE, $data)
             );
 
+            $this->log($response->asXML());
+
             if ($result) {
                 $result = $this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']]);
             }
@@ -855,7 +869,7 @@ class Vashotel extends Base
     /**
      * {@inheritDoc}
      */
-    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $filterRoomType = null)
     {
         $result = true;
         $script = 'set_availability.php';
@@ -872,7 +886,7 @@ class Vashotel extends Base
                 $begin,
                 $end,
                 $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
+                $filterRoomType ? [$filterRoomType->getId()] : [],
                 [],
                 true
             );
@@ -904,7 +918,7 @@ class Vashotel extends Base
                             ];
                         } else {
                             $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
-                                'closed' => 1
+                                'prices' => []
                             ];
                         }
                     }
@@ -922,6 +936,8 @@ class Vashotel extends Base
                     $this->templating->render(static::UPDATE_PRICES_TEMPLATE, $data)
                 );
 
+                $this->log($response->asXML());
+
                 if ($result) {
                     $result = $this->checkResponse(
                         $response,
@@ -930,12 +946,14 @@ class Vashotel extends Base
                 }
             }
         }
+
+        return $result;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $filterRoomType = null)
     {
         $result = true;
         $script = 'set_availability.php';
@@ -953,8 +971,17 @@ class Vashotel extends Base
                 $begin,
                 $end,
                 $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
+                $filterRoomType ? [$filterRoomType->getId()] : [],
                 null,
+                true
+            );
+
+            $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
+                $begin,
+                $end,
+                $config->getHotel(),
+                $filterRoomType ? [$filterRoomType->getId()] : [],
+                [],
                 true
             );
 
@@ -969,7 +996,7 @@ class Vashotel extends Base
                     $begin,
                     $end,
                     $config->getHotel(),
-                    $roomType ? [$roomType->getId()] : [],
+                    $filterRoomType ? [$filterRoomType->getId()] : [],
                     [$configTariffs[$tariffId]['doc']->getId()],
                     true
                 );
@@ -981,6 +1008,7 @@ class Vashotel extends Base
                     foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
 
                         $info = false;
+                        $restriction = null;
 
                         if (isset($tariffRoomCaches[$roomTypeId][$configTariffs[$tariffId]['doc']->getId(
                             )][$day->format('d.m.Y')])) {
@@ -990,11 +1018,28 @@ class Vashotel extends Base
                             $info = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
                         }
 
+                        if (isset($restrictions[$roomTypeId][$configTariffs[$tariffId]['doc']->getId(
+                            )][$day->format('d.m.Y')])) {
+                            $restriction = $restrictions[$roomTypeId][$configTariffs[$tariffId]['doc']->getId()][$day->format('d.m.Y')];
+                        }
+
                         if ($info) {
-                            $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
-                                'sellquantity' => $info->getLeftRooms(),
-                                'closed' => $info->getLeftRooms() ? 0 : 1
-                            ];
+
+                            if ($restriction && $restriction->getClosed()) {
+                                if ($tariffId) {
+                                    $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
+                                        'sellquantity' => 0,
+                                    ];
+                                } else {
+                                    $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
+                                        'closed' => 1,
+                                    ];
+                                }
+                            } else {
+                                $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
+                                    'sellquantity' => $info->getLeftRooms() > 0 ? $info->getLeftRooms() : 0,
+                                ];
+                            }
                         } else {
                             $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
                                 'sellquantity' => 0,
@@ -1016,6 +1061,8 @@ class Vashotel extends Base
                     $this->templating->render(static::UPDATE_ROOMS_TEMPLATE, $data)
                 );
 
+                $this->log($response->asXML());
+
                 if ($result) {
                     $result = $this->checkResponse(
                         $response,
@@ -1024,7 +1071,6 @@ class Vashotel extends Base
                 }
             }
         }
-
         return $result;
     }
 
@@ -1057,8 +1103,38 @@ class Vashotel extends Base
     /**
      * {@inheritDoc}
      */
-    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $filterRoomType = null)
     {
-        return true;
+        return $this->updateRooms($begin = null, $end = null, $filterRoomType);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function pushResponse(Request $request)
+    {
+        $this->log($request->getContent());
+
+        $xml = simplexml_load_string($request->getContent());
+
+        $config = $this->dm->getRepository('MBHChannelManagerBundle:VashotelConfig')->findOneBy(['hotelId' => (string)$xml->hotel_id]);
+
+        if (!$config) {
+            throw new Exception('Vashotel config not found');
+        }
+
+        $salt = $this->helper->getRandomString(20);
+        $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
+
+        $sig = $this->getSignature(
+            $this->templating->render(static::PUSH_TEMPLATE, $data),
+            '',
+            $this->params['password']
+        );
+        $data['sig'] = md5($sig);
+
+        return new Response($this->templating->render(static::PUSH_TEMPLATE, $data), 200, [
+            'Content-Type' => 'text/xml'
+        ]);
     }
 }
