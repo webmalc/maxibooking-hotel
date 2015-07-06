@@ -1,18 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mb
- * Date: 06.07.15
- * Time: 11:35
- */
 
-namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateProvider;
+namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator\Extended;
 
 
+use MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator\DefaultDocumentTemplateGenerator;
 use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 
-class ConfirmationTemplateProvider extends DefaultDocumentTemplateProvider
+/**
+ * Class ConfirmationTemplateGenerator
+ * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ */
+class ConfirmationTemplateGenerator extends DefaultDocumentTemplateGenerator
 {
     protected function getAdditionalParams()
     {
@@ -36,7 +35,7 @@ class ConfirmationTemplateProvider extends DefaultDocumentTemplateProvider
             $total += $ps->getTotal();
         }
 
-        return [
+        return $params + [
             'total' => $total,
             'packageServicesByType' => $packageServicesByType
         ];

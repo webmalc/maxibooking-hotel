@@ -1,12 +1,16 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateProvider;
+namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator;
 
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class DefaultDocumentTemplateProvider extends AbstractDocumentTemplateProvider implements ContainerAwareInterface
+/**
+ * Class DefaultDocumentTemplateGenerator
+ * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ */
+class DefaultDocumentTemplateGenerator extends AbstractDocumentTemplateGenerator implements ContainerAwareInterface
 {
     /**
      * @var Package
@@ -62,6 +66,11 @@ class DefaultDocumentTemplateProvider extends AbstractDocumentTemplateProvider i
 
     protected function getTemplateName()
     {
-        return 'MBHPackageBundle:Documents/pdfTemplates:'.$this->type.'.html.twig';
+        $templateName = 'MBHPackageBundle:Documents/pdfTemplates:'.$this->type.'.html.twig';
+        if(!$this->container->get('templating')->exists($templateName)) {
+            throw new \Exception();
+        };
+
+        return $templateName;
     }
 }

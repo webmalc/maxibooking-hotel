@@ -1,9 +1,12 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateProvider;
+namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator;
 
-
-abstract class AbstractDocumentTemplateProvider
+/**
+ * Class AbstractDocumentTemplateGenerator
+ * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ */
+abstract class AbstractDocumentTemplateGenerator
 {
     /**
      * @var string

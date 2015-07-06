@@ -3,14 +3,11 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\PackageBundle\Component\DocumentTemplateProvider\DocumentTemplateProviderFactory;
-use MBH\Bundle\PackageBundle\Component\PackageServiceGroup;
-use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
+use MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator\DocumentTemplateGeneratorFactory;
 use MBH\Bundle\PackageBundle\Document\OrderRepository;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Form\OrderDocumentType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -252,12 +249,6 @@ class DocumentsController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $templateName = 'MBHPackageBundle:Documents/pdfTemplates:'.$type.'.html.twig';
-        /*if(!$this->get('templating')->exists($templateName)) {
-            throw $this->createNotFoundException();
-        };*/
-
-        $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
         $formParams = [];
         if($request->isMethod(Request::METHOD_POST)) {
             $form = $form = $this->createFormByType($type);
@@ -267,52 +258,15 @@ class DocumentsController extends Controller
             }
         }
 
-        $templateFactory = new DocumentTemplateProviderFactory();
+        $templateFactory = new DocumentTemplateGeneratorFactory();
         $templateProvider = $templateFactory->createByType($type);
         $templateProvider->setContainer($this->container);
         $templateProvider->setPackage($entity);
-
-        /*
-        /** @var PackageService[] $packageServices */
-        $packageServices = [];
-        /** @var PackageServiceGroupByService[] $packageServicesByType */
-        $packageServicesByType = [];
-
-        /*$total = 0;
-        foreach($entity->getOrder()->getPackages() as $package) {
-            $packageServices = array_merge(iterator_to_array($package->getServices()), $packageServices);
-            $total += $package->getPackagePrice(true);
-        }
-        foreach($packageServices as $ps) {
-            if(!array_key_exists($ps->getService()->getId(), $packageServicesByType)) {
-                $group = new PackageServiceGroupByService($ps->getService());
-                $packageServicesByType[$ps->getService()->getId()] = $group;
-            }
-            $packageServicesByType[$ps->getService()->getId()]->add($ps);
-            $total += $ps->getTotal();
-        }
-
-        try{
-            $html = $this->renderView($templateName, [
-                'entity' => $entity,
-                'vegaDocumentTypes' => $vegaDocumentTypes,
-                'params' => $formParams,
-                'packageServicesByType' => $packageServicesByType,
-                'total' => $total
-            ]);
-        }catch (\Twig_Error_Runtime $e) {
-            //$e->getRawMessage();
-        }*/
-
-        $html = $templateProvider->getTemplate();
+        $html = $templateProvider->getTemplate($formParams);
 
         $content = $this->get('knp_snappy.pdf')->getOutputFromHtml($html, [
             'cookie' => [$request->getSession()->getName() => $request->getSession()->getId()]
         ]);
-
-        /*$content = $this->get('knp_snappy.pdf')->getOutput('http://mbh.h/app_dev.php/user/login', [
-            'cookie' => [$request->getSession()->getName() => $request->getSession()->getId()]
-        ]);*/
 
         return new Response($content, 200, [
             'Content-Type' => 'application/pdf',
@@ -358,8 +312,7 @@ class DocumentsController extends Controller
     {
         $templateTypes = [
             //'act',
-            'confirmation',
-            //'evidence','form','receipt','registration_card'
+            'confirmation', //'evidence','form','receipt','registration_card'
         ];
         foreach($templateTypes as $type) {
             $formView = $this->createFormByType($type)->createView();
