@@ -43,16 +43,9 @@
                             </li>
 
                             <li>
-                                <a data-toggle="modal" data-target="#confirmation-modal">
+                                <a data-type="confirmation" data-toggle="modal" data-target="#template-document-modal">
                                     <i class="fa fa-print"></i>&nbsp;
                                     {{ 'package.actions.confirmation'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ path('package_pdf', {'id': entity.id, 'type': 'act'}) }}">
-                                    <i class="fa fa-print"></i>&nbsp;
-                                    {{ 'package.actions.act'|trans({}, 'MBHPackageBundle') }}
                                 </a>
                             </li>
 
@@ -81,6 +74,13 @@
                                 <a href="{{ path('package_pdf', {'id': entity.id, 'type': 'receipt'}) }}">
                                     <i class="fa fa-print"></i>&nbsp;
                                     {{ 'package.actions.receipt'|trans({}, 'MBHPackageBundle') }}
+                                </a>
+                            </li>
+
+                            <li>
+                                <a data-type="act" data-toggle="modal" data-target="#template-document-modal">
+                                    <i class="fa fa-print"></i>&nbsp;
+                                    {{ 'package.actions.act'|trans({}, 'MBHPackageBundle') }}
                                 </a>
                             </li>
 

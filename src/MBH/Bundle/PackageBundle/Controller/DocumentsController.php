@@ -284,15 +284,15 @@ class DocumentsController extends Controller
     public function createFormByType($type)
     {
         $formBuilder = $this->createFormBuilder();
-        if($type == 'confirmation') {
+        if($type == 'confirmation' || $type == 'act') {
             $formBuilder
                 ->add('hasFull', 'checkbox', [
                     'required' => false,
-                    'label' => 'templateDocument.form.confirmation.hasFull',
+                    'label' => 'templateDocument.form.confirmation.hasFull'
                 ])
                 ->add('hasServices', 'checkbox', [
                     'required' => false,
-                    'label' => 'templateDocument.form.confirmation.hasServices',
+                    'label' => 'templateDocument.form.confirmation.hasServices'
                 ])
                 ->add('hasStamp', 'checkbox', [
                     'required' => false,
@@ -305,26 +305,20 @@ class DocumentsController extends Controller
     }
 
     /**
+     * @Route("/document/{id}/modal_form/{type}", name="document_modal_form", options={"expose"=true})
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      * @Template()
      */
-    public function documentModalFormsAction(Package $entity)
+    public function documentModalFormAction(Package $entity, $type)
     {
-        $templateTypes = [
-            //'act',
-            'confirmation', //'evidence','form','receipt','registration_card'
-        ];
-        foreach($templateTypes as $type) {
-            $formView = $this->createFormByType($type)->createView();
-            $forms[$type] = $formView;
-        }
+        $form = $this->createFormByType($type);
 
         return [
-            'forms' => $forms,
+            'form' => $form->createView(),
+            'type' => $type,
             'entity' => $entity
         ];
     }
-
 
     /**
      * @Route("/stamp/{id}.jpg", name="stamp")

@@ -8,17 +8,18 @@ namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator;
  */
 class DocumentTemplateGeneratorFactory
 {
-    const TYPE_ACT = 'act';
     const TYPE_CONFIRMATION = 'confirmation';
     const TYPE_EVIDENCE = 'evidence';
     const TYPE_FORM = 'form';
     const TYPE_RECEIPT = 'receipt';
     const TYPE_REGISTRATION_CARD = 'registration_card';
+    const TYPE_ACT = 'act';
 
     protected function getExtendedTypes()
     {
         return [
-            'confirmation' => 'ConfirmationTemplateGenerator'
+            self::TYPE_CONFIRMATION => 'ConfirmationTemplateGenerator',
+            self::TYPE_ACT => 'ConfirmationTemplateGenerator',
         ];
     }
 
@@ -28,12 +29,12 @@ class DocumentTemplateGeneratorFactory
     public static function getAvailableTypes()
     {
         return [
-            self::TYPE_ACT,
             self::TYPE_CONFIRMATION,
             self::TYPE_EVIDENCE,
             self::TYPE_FORM,
             self::TYPE_RECEIPT,
-            self::TYPE_REGISTRATION_CARD
+            self::TYPE_REGISTRATION_CARD,
+            self::TYPE_ACT
         ];
     }
 

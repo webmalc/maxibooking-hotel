@@ -56,7 +56,7 @@ class DefaultDocumentTemplateGenerator extends AbstractDocumentTemplateGenerator
     {
         $params = [
             'entity' => $this->package,
-            'params' => $formParams,
+            'formParams' => $formParams,
         ] + $this->getAdditionalParams();
 
         $html = $this->container->get('templating')->render($this->getTemplateName(), $params);
