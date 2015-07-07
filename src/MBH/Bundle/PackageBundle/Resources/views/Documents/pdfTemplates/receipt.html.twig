@@ -21,9 +21,10 @@
 </head>
 <body>
 
-{% set tourist = entity.mainTourist %}
+{# % set tourist = entity.mainTourist % #}
 
 <div class="document">
+{% for tourist in tourists %}
     <h3>Расписка</h3>
     <div>
         <p>Я, <strong>{% if tourist %}{{ tourist.generateFullName }}{% endif %}</strong></p>
@@ -120,7 +121,7 @@
 
     <h3>Расписка</h3>
     <div>
-        <p>Я, <strong>{% if tourist %}{{ entity.mainTourist.generateFullName }}{% endif %}</strong></p>
+        <p>Я, <strong>{% if tourist %}{{ tourist.generateFullName }}{% endif %}</strong></p>
         <p>
             Дата рождения <span class="area" style="display: inline-block; width: 90px">{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</span> г.,
         </p>
@@ -209,6 +210,11 @@
             <div style="clear:both;"></div>
         </div>
     </div>
+    {% if loop.index < tourists|length %}
+        <div style="page-break-after: always;"></div>
+    {% endif %}
+
+{% endfor %}
 </div>
 </body>
 </html>

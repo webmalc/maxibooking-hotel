@@ -22,8 +22,7 @@ abstract class AbstractDocumentTemplateGenerator
     }
 
     /**
-     * @param array $formParams
      * @return string
      */
-    public abstract function getTemplate(array $formParams = []);
+    public abstract function getTemplate();
 }

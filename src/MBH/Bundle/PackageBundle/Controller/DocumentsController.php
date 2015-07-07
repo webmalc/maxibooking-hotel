@@ -9,6 +9,7 @@ use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Form\OrderDocumentType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -237,7 +238,7 @@ class DocumentsController extends Controller
      * Return pdf doc
      *
      * @Route("/{id}/pdf/{type}", name="package_pdf", requirements={
-     *      "type" : "act|confirmation|evidence|form|receipt|registration_card"
+     *      "type" : "confirmation|registration_card|fms_form_5|evidence|form_1_g|receipt|act"
      * })
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_USER')")
@@ -258,11 +259,12 @@ class DocumentsController extends Controller
             }
         }
 
-        $templateFactory = new DocumentTemplateGeneratorFactory();
-        $templateProvider = $templateFactory->createByType($type);
-        $templateProvider->setContainer($this->container);
-        $templateProvider->setPackage($entity);
-        $html = $templateProvider->getTemplate($formParams);
+        $templateGeneratorFactory = new DocumentTemplateGeneratorFactory();
+        $templateGenerator = $templateGeneratorFactory->createByType($type);
+        $templateGenerator->setContainer($this->container);
+        $templateGenerator->setPackage($entity);
+        $templateGenerator->setFormParams($formParams);
+        $html = $templateGenerator->getTemplate();
 
         $content = $this->get('knp_snappy.pdf')->getOutputFromHtml($html, [
             'cookie' => [$request->getSession()->getName() => $request->getSession()->getId()]
@@ -284,7 +286,7 @@ class DocumentsController extends Controller
     public function createFormByType($type)
     {
         $formBuilder = $this->createFormBuilder();
-        if($type == 'confirmation' || $type == 'act') {
+        if($type == DocumentTemplateGeneratorFactory::TYPE_CONFIRMATION || $type == DocumentTemplateGeneratorFactory::TYPE_ACT) {
             $formBuilder
                 ->add('hasFull', 'checkbox', [
                     'required' => false,
@@ -313,11 +315,16 @@ class DocumentsController extends Controller
     {
         $form = $this->createFormByType($type);
 
-        return [
+        $html = $this->renderView('MBHPackageBundle:Documents:documentModalForm.html.twig', [
             'form' => $form->createView(),
             'type' => $type,
             'entity' => $entity
-        ];
+        ]);
+
+        return new JsonResponse([
+            'html' => $html,
+            'name' => $this->get('translator')->trans('templateDocument.type.'. $type)
+        ]);
     }
 
     /**

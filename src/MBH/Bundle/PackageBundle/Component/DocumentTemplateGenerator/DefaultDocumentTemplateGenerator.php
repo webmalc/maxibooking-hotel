@@ -16,14 +16,28 @@ class DefaultDocumentTemplateGenerator extends AbstractDocumentTemplateGenerator
      * @var Package
      */
     protected $package;
+
     /**
      * @var ContainerInterface
      */
     protected $container;
 
+    /**
+     * @var array
+     */
+    protected $formParams;
+
     public function setPackage(Package $package)
     {
         $this->package = $package;
+    }
+
+    /**
+     * @param $formParams
+     */
+    public function setFormParams(array $formParams)
+    {
+        $this->formParams = $formParams;
     }
 
     /**
@@ -38,7 +52,9 @@ class DefaultDocumentTemplateGenerator extends AbstractDocumentTemplateGenerator
         $this->container = $container;
     }
 
-
+    /**
+     * @return array
+     */
     protected function getAdditionalParams()
     {
         $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
@@ -49,14 +65,13 @@ class DefaultDocumentTemplateGenerator extends AbstractDocumentTemplateGenerator
     }
 
     /**
-     * @param array $formParams
      * @return string
      */
-    public function getTemplate(array $formParams = [])
+    public function getTemplate()
     {
         $params = [
             'entity' => $this->package,
-            'formParams' => $formParams,
+            'formParams' => $this->formParams,
         ] + $this->getAdditionalParams();
 
         $html = $this->container->get('templating')->render($this->getTemplateName(), $params);
@@ -64,6 +79,10 @@ class DefaultDocumentTemplateGenerator extends AbstractDocumentTemplateGenerator
         return $html;
     }
 
+    /**
+     * @return string
+     * @throws \Exception
+     */
     protected function getTemplateName()
     {
         $templateName = 'MBHPackageBundle:Documents/pdfTemplates:'.$this->type.'.html.twig';

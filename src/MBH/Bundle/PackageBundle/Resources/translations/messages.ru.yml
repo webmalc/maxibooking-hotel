@@ -100,6 +100,7 @@ form.touristType.birth_date: Дата рождения
 form.touristType.gender: Пол
 form.touristType.sex_male: Муж.
 form.touristType.sex_female: Жен.
+form.touristType.sex_unknown: -
 form.touristType.address: Адрес
 form.touristType.contact_info: Контактная информация
 form.touristType.placeholder_address: г. Москва, пр-кт Мира, д.6
@@ -213,3 +214,10 @@ package.document.type_other: Прочее
 templateDocument.form.confirmation.hasFull: Весь заказ?
 templateDocument.form.confirmation.hasServices: Включить услуги?
 templateDocument.form.confirmation.hasStamp: Добавить печать?
+
+templateDocument.type.confirmation: Подтверждение
+templateDocument.type.registration_card: Регистрационная карта
+templateDocument.type.evidence: Свидетельство о регистрации по месту пребывания
+templateDocument.type.form: Форма N 1-Г
+templateDocument.type.receipt: Расписка
+templateDocument.type.act: Акт

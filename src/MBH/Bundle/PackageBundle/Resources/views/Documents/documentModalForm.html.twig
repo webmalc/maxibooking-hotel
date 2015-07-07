@@ -1,6 +1,6 @@
 {% form_theme form 'MBHPackageBundle:Documents:modalFormFields.html.twig' %}
 
-{{ form_start(form, {'action': path('package_pdf', {'id': entity.id, type: type}), 'attr': {'class': 'form-horizontal'}}) }}
+{{ form_start(form, {'action': path('package_pdf', {'id': entity.id, type: type}), 'attr': {'class': 'form-horizontal', 'target' : '_blank'}}) }}
     {{ form_widget(form) }}
     {# % for f in form %}
     <div class="form-group">

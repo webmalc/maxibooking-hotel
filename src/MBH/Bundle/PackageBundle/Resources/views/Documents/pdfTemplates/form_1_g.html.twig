@@ -34,6 +34,7 @@
 </head>
 <body>
 <div class="document">
+{% for tourist in tourists %}
     <div>
         <div style="float: right;">
             Утверждена<br>
@@ -86,39 +87,39 @@
             <div class="left-block">
                 <div>
                     1. Фамилия
-                    <div style="width: 360px" class="area ib">&nbsp{% if entity.order and entity.order.mainTourist %} {{ entity.order.mainTourist.lastName }} {% endif %}</div>
+                    <div style="width: 360px" class="area ib">&nbsp{% if tourist %} {{ tourist.lastName }} {% endif %}</div>
                 </div>
                 <div>
                     2. Имя
-                    <div style="width: 400px" class="area ib">&nbsp{% if entity.order and entity.order.mainTourist %} {{ entity.order.mainTourist.firstName }} {% endif %}</div>
+                    <div style="width: 400px" class="area ib">&nbsp{% if tourist %} {{ tourist.firstName }} {% endif %}</div>
                 </div>
                 <div>
                     3. Отчество
-                    <div style="width: 360px" class="area ib">&nbsp{% if entity.order and entity.order.mainTourist %} {{ entity.order.mainTourist.patronymic }} {% endif %}</div>
+                    <div style="width: 360px" class="area ib">&nbsp{% if tourist %} {{ tourist.patronymic }} {% endif %}</div>
                 </div>
                 <div>
                     4. Дата рождения
                     <div style="width: 160px" class="area ib">
-                        &nbsp{% if entity.order and entity.order.mainTourist and entity.order.mainTourist.birthday %} {{ entity.order.mainTourist.birthday|date('d.m.Y') }} {% endif %}</div>
+                        &nbsp{% if tourist and tourist.birthday %} {{ tourist.birthday|date('d.m.Y') }} {% endif %}</div>
                     г.
                 </div>
                 <div>
                     <div class="ib left ">5.Место рождения</div>
                     <div style="width: 310px" class="area ib">
-                        &nbsp{% if entity.order and entity.order.mainTourist and entity.order.mainTourist.birthplace %} {{ entity.order.mainTourist.birthplace.city ~ ' ' ~ entity.order.mainTourist.birthplace.district }}{% endif %}</div>
+                        &nbsp{% if tourist and tourist.birthplace %} {{ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.district }}{% endif %}</div>
                 </div>
                 <div>
                     <div class="left">
                         <div class="ib">6.серии</div>
                         <div class="ib">
                             <div style="width: 110px" class="area ib">
-                                &nbsp{% if entity.order and entity.order.mainTourist and entity.order.mainTourist.documentRelation %} {{ entity.order.mainTourist.documentRelation.series }} {% endif %}
+                                &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.series }} {% endif %}
                             </div>
                         </div>
                         <div class="ib">№</div>
                         <div class="ib">
                             <div style="width: 110px" class="area ib">
-                                &nbsp{% if entity.order and entity.order.mainTourist and entity.order.mainTourist.documentRelation %} {{ entity.order.mainTourist.documentRelation.number }} {% endif %}
+                                &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.number }} {% endif %}
                             </div>
                         </div>
                         <div class="ib">выдан</div>
@@ -126,7 +127,7 @@
                     <div class="ib">
                         <div class="lb">
                             <div style="width: 100px" class="area ib">
-                                &nbsp{% if entity.order and entity.order.mainTourist and entity.order.mainTourist.documentRelation %} {{ entity.order.mainTourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
+                                &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
                             </div>
                             <div style="text-align: center"><small>(когда)</small></div>
                         </div>
@@ -180,7 +181,7 @@
     <div class="center-block">
         <div class="ib">
             <div style="width: 820px" class="area ib left">
-                &nbsp{% if entity.order and entity.order.mainTourist and entity.order.mainTourist.documentRelation %} {{ entity.order.mainTourist.documentRelation.authorityOrgan|capitalize }} {% endif %}</div>
+                &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan|capitalize }} {% endif %}</div>
             <div class="center">
                 <small>(наименования органа внутренних дел, выдавшего документ)</small>
             </div>
@@ -191,7 +192,7 @@
             <div>7. Адрес постоянного места жительства &nbsp</div>
             <div class="ib">
                 <div style="width: 820px" class="area ib left">
-                    &nbsp{% if entity.order and entity.order.mainTourist and entity.order.mainTourist.addressObjectDecomposed %} {{ entity.order.mainTourist.addressObjectDecomposed.city ~ ' ул.' ~ entity.order.mainTourist.addressObjectDecomposed.street }}{% endif %}</div>
+                    &nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city ~ ' ул.' ~ tourist.addressObjectDecomposed.street }}{% endif %}</div>
                 <div class="center">
                     <small>Ул. д.</small>
                 </div>
@@ -288,6 +289,11 @@
             <div style="width: 150px" class="area ib">&nbsp</div>
         </div>
     </div>
+    {% if loop.index < tourists|length %}
+        <div style="page-break-after: always;"></div>
+    {% endif %}
+
+{% endfor %}
 </div>
 </body>
 </html>

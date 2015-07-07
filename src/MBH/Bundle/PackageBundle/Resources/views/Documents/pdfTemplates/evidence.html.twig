@@ -23,10 +23,6 @@
             border-bottom: solid #000000 1px;
         }
 
-        .date {
-            /*float: right;*/
-        }
-
         .upper {
             text-transform: uppercase;
         }
@@ -34,16 +30,17 @@
 </head>
 <body>
 
-{% set tourist = entity.order.mainTourist %}
+{# % set tourist = entity.order.mainTourist % #}
 
 <div class="document">
+{% for tourist in tourists %}
     <div style="width: 100%;font-weight: bold">
         <div style="float: right;">Форма 3</div>
         <div style="clear: both"></div>
     </div>
 
     <div class="header">
-        <span class="upper">Свидетельство</span> № <strong>{{ entity.number }}{##kart##}</strong> <br>
+        <span class="upper">Свидетельство</span> № <strong>{{ entity.number }}</strong> <br>
         о регистрации по месту пребывания
     </div>
 
@@ -53,11 +50,17 @@
                 Выдано &nbsp
             </div>
             <div style="margin-left: 62px;">
-                <div class="area">&nbsp{% if tourist %} {{ tourist.name }}
-                            {% if tourist.birthplace and tourist.birthplace.country and tourist.birthplace.city %}
-                                {{ tourist.birthplace.country ~ ', г.' ~ tourist.birthplace.city ~ ', ' ~ tourist.birthplace.mainRegion }}
-                            {% endif %}
-                        {% endif %}</div>
+                <div class="area">&nbsp
+                    {% if tourist %}
+                        {{ tourist.fullName }}
+                        {% if tourist.birthday %}
+                            , {{ tourist.birthday|date('d.m.Y') }}
+                        {% endif %}
+                        {% if tourist.birthplace and tourist.birthplace.country and tourist.birthplace.city %}
+                            , {{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.city }}
+                        {% endif %}
+                    {% endif %}
+                </div>
                 <div style="display: block; font-size: 12px; font-weight: normal;">(Ф.И.О., год и место рождения)</div>
             </div>
             <div style="clear: both "></div>
@@ -65,24 +68,24 @@
 
         <div>о том, что он зарегистрирован по месту пребывания по адресу:</div>
 
-    {% set location = '' %}
+        {% set location = '' %}
 
-    {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.street %}
-        {% set location = ' г.' ~ entity.accommodation.housing.city  ~ ', нас.пунк ' ~ entity.accommodation.housing.settlement ~ ' ул.' ~ entity.accommodation.housing.street ~ ' д.' ~ entity.accommodation.housing.house %}
-    {% endif %}
+        {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.street %}
+            {% set location = ' г.' ~ entity.accommodation.housing.city  ~ ', ' ~ entity.accommodation.housing.settlement ~ ' ' ~ entity.accommodation.housing.street ~ ' д.' ~ entity.accommodation.housing.house %}
+        {% endif %}
 
-    {% if not location and entity.roomType.hotel.city and entity.roomType.hotel.street %}
-        {% set location = ' г.' ~ entity.roomType.hotel.city  ~ ', нас.пунк ' ~ entity.roomType.hotel.settlement ~ ', ул.' ~ entity.roomType.hotel.street %}
-        {% if entity.roomType.hotel.house %}
-            {% set location = location ~ ', д.' ~ entity.roomType.hotel.house %}
-            {% if entity.roomType.hotel.corpus %}
-                {% set location = location ~ ', кор. ' ~ entity.roomType.hotel.corpus %}
-                {% if entity.roomType.hotel.flat %}
-                    {% set location = location ~  ', кв. ' ~ entity.roomType.hotel.flat %}
+        {% if not location and entity.roomType.hotel.city and entity.roomType.hotel.street %}
+            {% set location = ' г.' ~ entity.roomType.hotel.city  ~ ', ' ~ entity.roomType.hotel.settlement ~ ', ' ~ entity.roomType.hotel.street %}
+            {% if entity.roomType.hotel.house %}
+                {% set location = location ~ ', д.' ~ entity.roomType.hotel.house %}
+                {% if entity.roomType.hotel.corpus %}
+                    {% set location = location ~ ', кор. ' ~ entity.roomType.hotel.corpus %}
+                    {% if entity.roomType.hotel.flat %}
+                        {% set location = location ~  ', кв. ' ~ entity.roomType.hotel.flat %}
+                    {% endif %}
                 {% endif %}
             {% endif %}
         {% endif %}
-    {% endif %}
 
         <div>
             <div class="area"><strong>&nbsp{{ location }}</strong></div>
@@ -109,7 +112,7 @@
             </div>
         </div>
         <div style="margin-left: 202px;">
-            <div class="area"><strong>&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.authorityOrgan.name }}{% endif %}{##kem##}</strong></div>
+            <div class="area"><strong>&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.authorityOrgan.name|capitalize }}{% endif %}{##kem##}</strong></div>
             <div style="display: block; font-size: 12px; font-weight: normal;">(наименование органа, учреждения, выдавшего документ)</div>
         </div>
     </div>
@@ -178,6 +181,12 @@
         </div>
     </div>
     -->
+
+    {% if loop.index < tourists|length %}
+        <div style="page-break-after: always;"></div>
+    {% endif %}
+
+{% endfor %}
 </div>
 </body>
 </html>

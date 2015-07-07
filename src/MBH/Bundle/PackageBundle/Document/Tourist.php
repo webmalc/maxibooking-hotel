@@ -373,7 +373,7 @@ class Tourist extends Base implements PayerInterface
      */
     public function getAddress()
     {
-        return $this->getAddressObjectDecomposed();
+        return $this->getAddressObjectCombined();
     }
 
     /**
