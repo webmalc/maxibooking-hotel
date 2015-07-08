@@ -36,61 +36,7 @@
                             {{ 'package.actions'|trans({}, 'MBHPackageBundle') }}
                             <span class="caret"></span>
                         </button>
-                        <ul class="dropdown-menu" role="menu">
-                            
-                            <li role="presentation" class="dropdown-header">
-                                {{ 'package.actions.docs'|trans({}, 'MBHPackageBundle') }}
-                            </li>
-
-                            <li>
-                                <a data-type="confirmation" data-toggle="modal" data-target="#template-document-modal">
-                                    <i class="fa fa-print"></i>&nbsp;
-                                    {{ 'package.actions.confirmation'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </li>
-
-                            <li>
-                                <a target="_blank" href="{{ path('package_pdf', {'id': entity.id, 'type': 'registration_card'}) }}">
-                                    <i class="fa fa-print"></i>&nbsp;
-                                    {{ 'package.actions.registration_card'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </li>
-
-                            <li>
-                                <a target="_blank" href="{{ path('package_pdf', {'id': entity.id, 'type': 'fms_form_5'}) }}">
-                                    <i class="fa fa-print"></i>&nbsp;
-                                    {{ 'package.actions.fms_form_5'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </li>
-                            <li>
-                                <a target="_blank" href="{{ path('package_pdf', {'id': entity.id, 'type': 'evidence'}) }}">
-                                    <i class="fa fa-print"></i>&nbsp;
-                                    {{ 'package.actions.evidence'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </li>
-
-                            <li>
-                                <a target="_blank" href="{{ path('package_pdf', {'id': entity.id, 'type': 'form_1_g'}) }}">
-                                    <i class="fa fa-print"></i>&nbsp;
-                                    {{ 'package.actions.form_1_g'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </li>
-
-                            <li>
-                                <a target="_blank" href="{{ path('package_pdf', {'id': entity.id, 'type': 'receipt'}) }}">
-                                    <i class="fa fa-print"></i>&nbsp;
-                                    {{ 'package.actions.receipt'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </li>
-
-                            <li>
-                                <a data-type="act" data-toggle="modal" data-target="#template-document-modal">
-                                    <i class="fa fa-print"></i>&nbsp;
-                                    {{ 'package.actions.act'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </li>
-
-                            <li role="presentation" class="divider"></li>
+                        <ul class="dropdown-menu" role="menu" data-id="{{ entity.id }}">
                             <li role="presentation" class="dropdown-header">
                                 {{ 'package.actions.search'|trans({}, 'MBHPackageBundle') }}
                             </li>
@@ -126,10 +72,21 @@
                                 </a>
                             </li>
                         </ul>
-
-                        {# { knp_menu_render(knp_menu_get('MBHPackageBundle:Builder:templateDocuments')) } #}
                     </div>
                 </li>
+
+                <li>
+                    <div class="dropup">
+                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"
+                                aria-expanded="true">
+                            <i class="fa fa-print"></i>
+                            {{ 'package.actions.docs'|trans({}, 'MBHPackageBundle') }}
+                            <span class="caret"></span>
+                        </button>
+                        {{ knp_menu_render(knp_menu_get('MBHPackageBundle:Builder:templateDocuments', {}, {'package' : entity})) }}
+                    </div>
+                </li>
+
                 <li>
                     <button type="button" onclick="location.href = '{{ title_url|default(path('_welcome')) }}'"
                             class="btn btn-default navbar-btn"><i

@@ -2,6 +2,10 @@
 
 namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Form\FormBuilder;
+
 
 /**
  * Class DocumentTemplateGeneratorFactory
@@ -9,7 +13,7 @@ namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator;
  *
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
-class DocumentTemplateGeneratorFactory
+class DocumentTemplateGeneratorFactory implements ContainerAwareInterface
 {
     const TYPE_CONFIRMATION = 'confirmation';
     const TYPE_REGISTRATION_CARD = 'registration_card';
@@ -18,6 +22,8 @@ class DocumentTemplateGeneratorFactory
     const TYPE_FORM_1_G = 'form_1_g';
     const TYPE_RECEIPT = 'receipt';
     const TYPE_ACT = 'act';
+
+    protected $container;
 
     protected function getExtendedTypes()
     {
@@ -49,23 +55,73 @@ class DocumentTemplateGeneratorFactory
     }
 
     /**
+     * Sets the Container.
+     *
+     * @param ContainerInterface|null $container A ContainerInterface instance or null
+     *
+     * @api
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * @param $type
+     * @return \Symfony\Component\Form\Form
+     */
+    public function createFormByType($type)
+    {
+        /** @var FormBuilder $formBuilder */
+        $formBuilder = $this->container->get('form.factory')->createBuilder('form');
+        if ($type == self::TYPE_CONFIRMATION || $type == self::TYPE_ACT) {
+            $formBuilder
+                ->add('hasFull', 'checkbox', [
+                    'required' => false,
+                    'label' => 'templateDocument.form.confirmation.hasFull'
+                ])
+                ->add('hasServices', 'checkbox', [
+                    'required' => false,
+                    'label' => 'templateDocument.form.confirmation.hasServices'
+                ])
+                ->add('hasStamp', 'checkbox', [
+                    'required' => false,
+                    'label' => 'templateDocument.form.confirmation.hasStamp'
+                ]);
+        }
+
+        return $formBuilder->getForm();
+    }
+
+    /**
+     * @param $type
+     * @return bool
+     */
+    public function hasForm($type)
+    {
+        return $type == self::TYPE_CONFIRMATION || $type == self::TYPE_ACT;
+    }
+
+    /**
      * Create TemplateGenerator by type
      *
      * @param $type
      * @return DefaultDocumentTemplateGenerator
      */
-    public function createByType($type)
+    public function createGeneratorByType($type)
     {
         $availableTypes = $this->getAvailableTypes();
-        if(!in_array($type, $availableTypes)) {
+        if (!in_array($type, $availableTypes)) {
             throw new \InvalidArgumentException();
         }
 
-        if($this->isExtendType($type)) {
-            return $this->createExtendType($type);
-        }
+        $generator = $this->isExtendType($type) ?
+            $this->createExtendType($type) :
+            $this->createByDefault($type);
 
-        return $this->createByDefault($type);
+        $generator->setContainer($this->container);
+
+        return $generator;
     }
 
     /**
@@ -85,9 +141,10 @@ class DocumentTemplateGeneratorFactory
     private function createExtendType($type)
     {
         $extendedTypes = $this->getExtendedTypes();
-        $className = __NAMESPACE__.'\\'.'Extended'.'\\'.$extendedTypes[$type];
+        $className = __NAMESPACE__ . '\\' . 'Extended' . '\\' . $extendedTypes[$type];
         /** @var DefaultDocumentTemplateGenerator $generator */
         $generator = new $className($type);
+
         return $generator;
     }
 

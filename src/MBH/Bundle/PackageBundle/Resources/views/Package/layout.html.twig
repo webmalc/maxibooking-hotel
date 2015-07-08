@@ -2,3 +2,8 @@
 
 {% set title =  "package.layout.reservation"|trans({}, "MBHPackageBundle")  %}
 {% set title_url = path('package') %}
+
+{% block body %}
+    {{ parent() }}
+    {% include 'MBHPackageBundle:Documents:documentFormModal.html.twig' %}
+{% endblock %}

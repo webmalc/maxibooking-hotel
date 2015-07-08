@@ -348,5 +348,40 @@ $(document).ready(function () {
         checkOut.on('switchChange.bootstrapSwitch', show);
     }());
 
+
+
+    // Template Document form modal
+    var $modal = $('#template-document-modal'),
+        $body = $modal.find('.modal-body'),
+        $submitButton = $modal.find('.btn.btn-primary'),
+        $modalTitle = $modal.find('.modal-title');
+    $submitButton.on('click', function(){
+        $body.find('form').trigger('submit');
+    });
+    $modal.on('show.bs.modal', function (event) {
+        var $button = $(event.relatedTarget),
+            type = $button.data('type'),
+            entityId = $button.closest('ul').data('id');
+
+        $.ajax(Routing.generate('document_modal_form', {id: entityId, type: type}), {
+            'success' : function(response) {
+                $body.html(response.html);
+
+                var $em = $modalTitle.find('em');
+                $em.text(response.name);
+
+                $body.find("input[type=checkbox]").bootstrapSwitch({
+                    'size': 'small',
+                    'onText': 'да',
+                    'offText': 'нет',
+                    'labelText': '<i class="fa fa-arrows-h" style="opacity: 0.6;"></i>'
+                });
+            }
+        });
+    }).on('close.bs.modal', function(event) {
+        var $modal = $(this);
+        var $body = $modal.find('.modal-body');
+        $body.empty();
+    });
 });
 

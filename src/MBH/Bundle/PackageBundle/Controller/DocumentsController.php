@@ -250,18 +250,20 @@ class DocumentsController extends Controller
             throw $this->createNotFoundException();
         }
 
+
+        $templateGeneratorFactory = new DocumentTemplateGeneratorFactory();
+        $templateGeneratorFactory->setContainer($this->container);
+
         $formParams = [];
-        if($request->isMethod(Request::METHOD_POST)) {
-            $form = $form = $this->createFormByType($type);
+        if($templateGeneratorFactory->hasForm($type) && $request->isMethod(Request::METHOD_POST)) {
+            $form = $templateGeneratorFactory->createFormByType($type);
             $form->submit($request);
             if ($form->isValid()) {
                 $formParams = $form->getData();
             }
         }
 
-        $templateGeneratorFactory = new DocumentTemplateGeneratorFactory();
-        $templateGenerator = $templateGeneratorFactory->createByType($type);
-        $templateGenerator->setContainer($this->container);
+        $templateGenerator = $templateGeneratorFactory->createGeneratorByType($type);
         $templateGenerator->setPackage($entity);
         $templateGenerator->setFormParams($formParams);
         $html = $templateGenerator->getTemplate();
@@ -277,35 +279,6 @@ class DocumentsController extends Controller
         ]);
     }
 
-
-    /**
-     * @param $type
-     * @todo may by move to factory
-     * @return \Symfony\Component\Form\Form
-     */
-    public function createFormByType($type)
-    {
-        $formBuilder = $this->createFormBuilder();
-        if($type == DocumentTemplateGeneratorFactory::TYPE_CONFIRMATION || $type == DocumentTemplateGeneratorFactory::TYPE_ACT) {
-            $formBuilder
-                ->add('hasFull', 'checkbox', [
-                    'required' => false,
-                    'label' => 'templateDocument.form.confirmation.hasFull'
-                ])
-                ->add('hasServices', 'checkbox', [
-                    'required' => false,
-                    'label' => 'templateDocument.form.confirmation.hasServices'
-                ])
-                ->add('hasStamp', 'checkbox', [
-                    'required' => false,
-                    'label' => 'templateDocument.form.confirmation.hasStamp'
-                ]);
-        }
-
-        $form = $formBuilder->getForm();
-        return $form;
-    }
-
     /**
      * @Route("/document/{id}/modal_form/{type}", name="document_modal_form", options={"expose"=true})
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
@@ -313,7 +286,9 @@ class DocumentsController extends Controller
      */
     public function documentModalFormAction(Package $entity, $type)
     {
-        $form = $this->createFormByType($type);
+        $templateGeneratorFactory = new DocumentTemplateGeneratorFactory();
+        $templateGeneratorFactory->setContainer($this->container);
+        $form = $templateGeneratorFactory->createFormByType($type);
 
         $html = $this->renderView('MBHPackageBundle:Documents:documentModalForm.html.twig', [
             'form' => $form->createView(),
