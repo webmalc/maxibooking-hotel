@@ -3,6 +3,10 @@
 namespace MBH\Bundle\UserBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MyAllocator\phpsdk\src\Api\AssociateUserToPMS;
+use MyAllocator\phpsdk\src\Api\HelloVendor;
+use MyAllocator\phpsdk\src\Api\HelloWorld;
+use MyAllocator\phpsdk\src\Object\Auth;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;

@@ -205,6 +205,11 @@ class ApiController extends Controller
 
         $results = $this->get('mbh.package.search')->search($query);
 
+        if(empty($results)) {
+            $query->adults = $query->children = 0;
+            $results = $this->get('mbh.package.search')->search($query);
+        }
+
         $hotels = $services = [];
         foreach ($results as $result) {
             $hotel = $result->getRoomType()->getHotel();
@@ -215,6 +220,8 @@ class ApiController extends Controller
         }
 
         $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
+
+
 
         return [
             'results' => $results,
@@ -441,7 +448,7 @@ class ApiController extends Controller
             ], null, null, $cash ? ['total' => (float)$request->total] : null);
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
-                var_dump($e);
+                dump($e);
             };
 
             return false;

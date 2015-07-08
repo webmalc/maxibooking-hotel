@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
+use Symfony\Component\HttpFoundation\Request;
 
 interface ChannelManagerServiceInterface
 {
@@ -122,4 +123,10 @@ interface ChannelManagerServiceInterface
      * @return mixed
      */
     public function notify(Order $order, $service, $type = 'new');
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function pushResponse(Request $request);
 }

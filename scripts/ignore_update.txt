@@ -16,9 +16,11 @@ web/css/*
 web/upload/*
 web/js/*
 web/bundles/
+web/bundles/*
+web/media/*
+web/media/
 protectedUpload/
 protectedUpload/*
-web/bundles/*
 web/app_dev.php
 nbproject
 parameters.yml

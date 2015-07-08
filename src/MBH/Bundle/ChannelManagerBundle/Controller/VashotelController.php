@@ -164,6 +164,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+
             $config->removeAllTariffs();
             foreach ($form->getData() as $id => $tariff) {
                 if ($tariff) {

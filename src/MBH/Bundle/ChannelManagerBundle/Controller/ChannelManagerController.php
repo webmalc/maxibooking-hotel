@@ -8,35 +8,69 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/")
  */
-class ChannelManagerController extends Controller implements CheckHotelControllerInterface
+class ChannelManagerController extends Controller
 {
     /**
      * @Route("/package/notifications/{name}", name="channel_manager_notifications")
-     * @Method({"POST"})
+     * @Method({"POST", "GET"})
      * @param string $name
      * @return Response
+     * @param Request $request
      */
-    public function packageNotificationsAction($name)
+    public function packageNotificationsAction(Request $request, $name)
     {
-        $services = $this->container->getParameter('mbh.channelmanager.services');
+        $result = $this->get('mbh.channelmanager')->pullOrders($name);
 
-        if (!array_key_exists($name, $services)) {
-            throw $this->createNotFoundException();
+        if ($result && !empty($result[$name]['result'])) {
+            return  $this->get('mbh.channelmanager')->pushResponse($name, $request);
         }
 
-        try {
-            return $this->get($services[$name]['service'])->createPackages();
-        } catch (\Exception $e){
-            return new Response('ERROR');
+        throw $this->createNotFoundException();
+    }
+
+    /**
+     * Show log file
+     *
+     * @Route("/logs", name="channel_manager_logs")
+     * @Method({"GET", "POST"})
+     * @return Response
+     * @Template()
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function logsAction(Request $request)
+    {
+        $content = null;
+
+        $root = $this->get('kernel')->getRootDir();
+        $env = $this->get('kernel')->getEnvironment();
+        $file = $root.'/../var/logs/'.$env.'.channelmanager.log';
+        if (file_exists($file) && is_readable($file)) {
+            if ($request->getMethod() == 'POST') {
+                file_put_contents($file, '');
+
+                $request->getSession()->getFlashBag()
+                    ->set(
+                        'success',
+                        $this->get('translator')->trans('Логи успешно очищены.')
+                    );
+
+                return $this->redirect($this->generateUrl('channel_manager_logs'));
+
+            }
+
+            ob_start();
+            passthru('tail -1000 ' . escapeshellarg($file));
+            $content = trim(preg_replace('/==>.*<==/', '', ob_get_clean()));
         }
 
-        return new Response('OK');
+        return [
+            'content' => str_replace(PHP_EOL, '<br><br>', htmlentities($content))
+        ];
     }
 
     /**
@@ -55,10 +89,11 @@ class ChannelManagerController extends Controller implements CheckHotelControlle
 
         if (!empty($request->get('url'))) {
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.channelManagerController.sync_end'))
-            ;
+                ->set('success', $this->get('translator')->trans('controller.channelManagerController.sync_end'));
+
             return $this->redirect($request->get('url'));
         }
+
         return new Response('OK');
     }
 }

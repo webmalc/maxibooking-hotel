@@ -5,15 +5,15 @@ node_modules/
 .git
 .git*
 app/config/parameters.yml
-var/logs/
 var/logs/*
-var/cache/
 var/cache/*
 web/css/*
 web/js/*
 web/upload/*
 web/bundles/
 web/bundles/*
+web/media/*
+protectedUpload/*
 web/app_dev.php
 nbproject
 .idea

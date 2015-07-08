@@ -181,9 +181,14 @@
 
 {% block link %}
 
-    {% if order.packages[0] is defined and order.packages[0].deletedAt is empty %}
+    {% set linkPackage = false %}
+    {% for p in order.packages if p.deletedAt is empty %}
+        {% set linkPackage = p %}
+    {% endfor %}
+
+    {% if linkPackage %}
         <br><br>
-        <a href="{% if emptyLink %}{{ url('package_order_edit', {'id': order.id, 'packageId': order.packages[0].id}) }}{% else %}{{ link }}{% endif %}" style="{{ linkStyles }}">
+        <a href="{% if emptyLink %}{{ url('package_order_edit', {'id': order.id, 'packageId': linkPackage.id}) }}{% else %}{{ link }}{% endif %}" style="{{ linkStyles }}">
             {% if emptyLinkText %}{{ 'mailer.to_order'|trans }}{% else %}{{ linkText|trans }}{% endif %}
         </a>
     {% endif %}

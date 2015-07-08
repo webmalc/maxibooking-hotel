@@ -70,6 +70,15 @@ class PackageService extends Base
      * @Gedmo\Versioned
      * @ODM\Float()
      * @Assert\Type(type="numeric")
+     */
+    protected $total;
+
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Float()
+     * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
      *      minMessage= "validator.document.packageService.price_less_zero"
@@ -266,7 +275,7 @@ class PackageService extends Base
     /**
      * @return int
      */
-    public function getTotal()
+    public function calcTotal()
     {
         if (!empty($this->getTotalOverwrite())) {
             return $this->getTotalOverwrite();
@@ -288,6 +297,31 @@ class PackageService extends Base
 
         return $price;
     }
+
+    /**
+     * @return float
+     */
+    public function getTotal()
+    {
+        if (is_null($this->total)) {
+            $this->total = $this->calcTotal();
+        }
+
+        return $this->total;
+    }
+
+    /**
+     * @param mixed $total
+     * @return float
+     */
+    public function setTotal($total)
+    {
+        $this->total = $total;
+
+        return $this;
+    }
+
+
 
     /**
      * Set persons
@@ -390,6 +424,8 @@ class PackageService extends Base
         $nights = clone $this->getBegin();
         $nights->modify('+' . $this->getNights() . ' days');
         $this->setEnd($nights);
+
+        $this->total = $this->calcTotal();
     }
     
     public function getCalcType()

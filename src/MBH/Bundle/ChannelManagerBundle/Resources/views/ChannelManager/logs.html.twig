@@ -1,0 +1,16 @@
+{% extends "MBHChannelManagerBundle:ChannelManager:layout.html.twig" %}
+
+{% set small_title = "логи" %}
+
+{% block content %}
+    {% if content %}
+        <div class="well scrolling">
+            <form action="" method="POST">
+            <pre>{{ content|raw }}</pre>
+                {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, save_text: 'Очистить' } %}
+            </form>
+        </div>
+    {% else %}
+        <div class="alert alert-warning">Нет записей в файле логов.</div>
+    {% endif %}
+{% endblock %}
