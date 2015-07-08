@@ -36,45 +36,7 @@
                             {{ 'package.actions'|trans({}, 'MBHPackageBundle') }}
                             <span class="caret"></span>
                         </button>
-
                         {{ knp_menu_render(knp_menu_get('MBHPackageBundle:Builder:templateDocuments', {}, {'package' : entity, 'searchQuery' : searchQuery})) }}
-
-                        <!--<ul class="dropdown-menu" role="menu" data-id="{{ entity.id }}">
-                            <li role="presentation" class="dropdown-header">
-                                {{ 'package.actions.search'|trans({}, 'MBHPackageBundle') }}
-                            </li>
-
-                            <li>
-                                <a href="{{ path('package_search') }}#{{ {'s': searchQuery}|url_encode }}">
-                                    <i class="fa fa-search"></i>&nbsp;
-                                    {{ 'package.actions.find_similar'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ path('package_search', {'order': entity.order.id}) }}">
-                                    <i class="fa fa-search"></i>&nbsp;
-                                    {{ 'order.package.add'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </li>
-
-                            <li role="presentation" class="divider"></li>
-                            <li role="presentation" class="dropdown-header">{{ 'package.actions.delete'|trans({}, 'MBHPackageBundle') }}</li>
-
-                            <li>
-                                <a href="{{ path('package_delete', {'id': entity.id}) }}" class="delete-link">
-                                    <i class="fa fa-trash-o"></i>&nbsp;
-                                    {{ 'package.actions.delete'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ path('package_order_delete', {'id': entity.order.id}) }}" class="delete-link">
-                                    <i class="fa fa-trash-o"></i>&nbsp;
-                                    {{ 'order.navbar.delete_order'|trans({}, 'MBHPackageBundle') }}
-                                </a>
-                            </li>
-                        </ul>-->
                     </div>
                 </li>
 
