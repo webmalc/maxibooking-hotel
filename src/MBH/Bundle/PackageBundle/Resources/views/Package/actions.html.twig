@@ -36,7 +36,10 @@
                             {{ 'package.actions'|trans({}, 'MBHPackageBundle') }}
                             <span class="caret"></span>
                         </button>
-                        <ul class="dropdown-menu" role="menu" data-id="{{ entity.id }}">
+
+                        {{ knp_menu_render(knp_menu_get('MBHPackageBundle:Builder:templateDocuments', {}, {'package' : entity, 'searchQuery' : searchQuery})) }}
+
+                        <!--<ul class="dropdown-menu" role="menu" data-id="{{ entity.id }}">
                             <li role="presentation" class="dropdown-header">
                                 {{ 'package.actions.search'|trans({}, 'MBHPackageBundle') }}
                             </li>
@@ -71,19 +74,7 @@
                                     {{ 'order.navbar.delete_order'|trans({}, 'MBHPackageBundle') }}
                                 </a>
                             </li>
-                        </ul>
-                    </div>
-                </li>
-
-                <li>
-                    <div class="dropup">
-                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"
-                                aria-expanded="true">
-                            <i class="fa fa-print"></i>
-                            {{ 'package.actions.docs'|trans({}, 'MBHPackageBundle') }}
-                            <span class="caret"></span>
-                        </button>
-                        {{ knp_menu_render(knp_menu_get('MBHPackageBundle:Builder:templateDocuments', {}, {'package' : entity})) }}
+                        </ul>-->
                     </div>
                 </li>
 
