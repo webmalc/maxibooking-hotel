@@ -36,7 +36,7 @@
                             {{ 'package.actions'|trans({}, 'MBHPackageBundle') }}
                             <span class="caret"></span>
                         </button>
-                        {{ knp_menu_render(knp_menu_get('MBHPackageBundle:Builder:templateDocuments', {}, {'package' : entity, 'searchQuery' : searchQuery})) }}
+                        {{ knp_menu_render(knp_menu_get('MBHPackageBundle:Builder:templateDocuments', {}, {'package' : entity, 'searchQuery' : searchQuery}).actions) }}
                     </div>
                 </li>
 

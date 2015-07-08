@@ -96,7 +96,7 @@ package.actions.docs: Генерация документов
 package.actions.confirmation: Подтверждение
 package.actions.registration_card: Регистрационная карта
 package.actions.fms_form_5: Анкета ФМС (Форма 5)
-package.actions.evidence: Свидетельство о регистрации по месту пребывания
+package.actions.evidence: Свидетельство о регистрации
 package.actions.form_1_g: Анкета (Форма 1-Г)
 package.actions.receipt: Расписка
 package.actions.act: Акт
