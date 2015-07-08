@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
+use MBH\Bundle\VegaBundle\Document\VegaState;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -184,7 +185,7 @@ class Tourist extends Base implements PayerInterface
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaState")
      */
     protected $citizenship;
 
@@ -691,7 +692,7 @@ class Tourist extends Base implements PayerInterface
     }
 
     /**
-     * @return string
+     * @return VegaState
      */
     public function getCitizenship()
     {
@@ -699,9 +700,9 @@ class Tourist extends Base implements PayerInterface
     }
 
     /**
-     * @param string $citizenship
+     * @param VegaState $citizenship
      */
-    public function setCitizenship($citizenship)
+    public function setCitizenship(VegaState $citizenship)
     {
         $this->citizenship = $citizenship;
     }

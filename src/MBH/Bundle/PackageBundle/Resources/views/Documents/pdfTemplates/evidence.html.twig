@@ -88,31 +88,33 @@
         {% endif %}
 
         <div>
-            <div class="area"><strong>&nbsp{{ location }}</strong></div>
+            <div class="area">&nbsp{{ location }}</div>
             <div style="display: block; font-size: 12px; font-weight: normal;">(республика, край, область, округ, район, город, пгт, село,деревня, аул,улица, дом, корпус, квартира)</div>
         </div>
 
         <div>
-            на срок с <strong>&nbsp{% if entity.begin %}{{ entity.begin|date('d.m.Y') }}{% endif %}</strong> г. по <strong>{% if entity.end %}{{ entity.end|date('d.m.Y') }}{% endif %}</strong> г.
+            на срок с &nbsp{% if entity.begin %}{{ entity.begin|date('d.m.Y') }}{% endif %} г. по {% if entity.end %}{{ entity.end|date('d.m.Y') }}{% endif %} г.
         </div>
     </p>
 
     <div class="indent">
         Свидетельство выдано к документу, удостоверяющему личность
-        <br>вид <div class="area ib" style="font-weight: bold; width: 475px">&nbsp{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type]|capitalize }}{% endif %}</div>,
-        серия <div class="area ib" style="font-weight: bold; width: 150px">&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</div>,
-        N <div class="area ib" style="font-weight: bold; width: 160px">&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %}</div>
+        <br>вид <div class="area ib" style="width: 475px">&nbsp{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type]|capitalize }}{% endif %}</div>,
+        серия <div class="area ib" style="width: 150px">&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</div>,
+        N <div class="area ib" style="width: 160px">&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %}</div>
     </div>
 
     <div>
         <div class="ib" style="float: left;width: 210px">
             <div style="float: left;width: 95px">дата выдачи</div>
-            <div class="area ib" style="width: 100px;font-weight: bold">
+            <div class="area ib" style="width: 100px;">
                 &nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}
             </div>
         </div>
         <div style="margin-left: 202px;">
-            <div class="area"><strong>&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.authorityOrgan.name|capitalize }}{% endif %}{##kem##}</strong></div>
+            <div class="area">
+                &nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.authorityOrgan.name|capitalize }}{% endif %}
+            </div>
             <div style="display: block; font-size: 12px; font-weight: normal;">(наименование органа, учреждения, выдавшего документ)</div>
         </div>
     </div>

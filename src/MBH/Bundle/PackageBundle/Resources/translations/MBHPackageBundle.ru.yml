@@ -357,3 +357,9 @@ views.report.polls.th.order: Заказ
 views.report.polls.th.hotel: Отель
 views.report.polls.not_found: Ничего не найдено.
 views.report.polls.view_record: 'Перейти к результатам'
+
+mbh.package.arrivals.tourism: "Отдых/туризм"
+mbh.package.arrivals.work: "Работа/стажировка"
+mbh.package.arrivals.study: "Курсы/учеба"
+mbh.package.arrivals.residence: "Временное проживание"
+mbh.package.arrivals.other: "Другое"

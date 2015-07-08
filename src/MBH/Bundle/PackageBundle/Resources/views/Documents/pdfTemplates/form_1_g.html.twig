@@ -192,7 +192,16 @@
             <div>7. Адрес постоянного места жительства &nbsp</div>
             <div class="ib">
                 <div style="width: 820px" class="area ib left">
-                    &nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city ~ ' ул.' ~ tourist.addressObjectDecomposed.street }}{% endif %}</div>
+                    &nbsp
+                    {% if tourist and tourist.addressObjectDecomposed %}
+                        {{ tourist.addressObjectDecomposed.city }}
+                        {% if tourist.addressObjectDecomposed.street %}
+                            ул. {{ tourist.addressObjectDecomposed.street }}
+                            {% if tourist.addressObjectDecomposed.house %}
+                                д. {{ tourist.addressObjectDecomposed.house }}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}</div>
                 <div class="center">
                     <small>Ул. д.</small>
                 </div>
@@ -202,7 +211,9 @@
 
         <div>
             8. Цель приезда
-            <div style="width: 690px" class="area ib">&nbsp</div>
+            <div style="width: 690px" class="area ib">
+                &nbsp{% if entity.purposeOfArrival %}{{ ('mbh.package.arrivals.' ~ entity.purposeOfArrival)|trans({}, 'MBHPackageBundle') }}{% endif %}
+            </div>
         </div>
         <div>
             9. Срок проживания до {% if entity.end %} {{ entity.end|date('d.m.Y') }} {% endif %}

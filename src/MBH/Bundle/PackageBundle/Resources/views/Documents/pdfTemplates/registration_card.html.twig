@@ -63,8 +63,6 @@
 {% set hotel = null %}
 
 
-
-
 {% set arrival = null %}
 {% set departure = null %}
 
@@ -85,16 +83,13 @@
 {% endif %}
 
 
-
-
-{% if entity.order and entity.order.organization %}
-    {% set organization = entity.order.organization %}
-{% endif %}
-
 {% if entity.roomType and entity.roomType.hotel %}
     {% set hotel = entity.roomType.hotel %}
 {% endif %}
 
+{% if hotel and hotel.organization %}
+    {% set organization = hotel.organization %}
+{% endif %}
 
 {% for tourist in tourists %}
 <div class="document">
@@ -566,7 +561,7 @@
                                 <div>Arrival</div>
                                 <div>Прибытие</div>
                             </div>
-                            <div class="area" style="margin-left: 111px">{% if entity.arrivalTime %}{{ entity.arrivalTime|date('d.m.Y') }}{% endif %}</div>
+                            <div class="area" style="margin-left: 111px">{{ arrival }}</div>
                         </div>
                     </td>
                     <td>
@@ -575,7 +570,7 @@
                                 <div>Departure</div>
                                 <div>Отъезд</div>
                             </div>
-                            <div class="area" style="margin-left: 111px">{% if entity.departureTime %}{{ entity.departureTime|date('d.m.Y') }}{% endif %}</div>
+                            <div class="area" style="margin-left: 111px">{{ departure }}</div>
                         </div>
                     </td>
                 </tr>

@@ -29,12 +29,14 @@ class DocumentRelationType extends AbstractType
                 'choices' => $this->documentTypes,
                 //'group' => $group,
                 'required' => false,
+                'empty_value' => ''
             ])
             ->add('authority_organ', 'document', [
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaFMS',
                 //'property_path' => 'code',
                 //'group' => $group,
                 'required' => false,
+                'empty_value' => ''
             ])
             ->add('authority', 'text', [
                 //'group' => $group,

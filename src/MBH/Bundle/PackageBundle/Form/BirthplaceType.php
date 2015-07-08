@@ -24,13 +24,15 @@ class BirthplaceType extends AbstractType
 
         $builder
             ->add('country', 'document', [
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState'
+                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
+                'empty_value' => ''
             ])
             ->add('city', 'mbh_city', [])
             ->add('main_region', 'text', [
             ])
             ->add('district', 'document', [
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion'
+                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
+                'empty_value' => ''
             ])
             ->add('city', 'text', [
             ])

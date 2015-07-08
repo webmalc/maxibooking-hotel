@@ -19,7 +19,8 @@ class TouristExtendedType extends AbstractType
             //Person
             ->add('citizenship', 'document', [
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
-                'group' => 'Person'
+                'group' => 'Person',
+                'empty_value' => ''
             ])
             ->add('birthplace', 'mbh_birthplace', [
                 'required' => false,
