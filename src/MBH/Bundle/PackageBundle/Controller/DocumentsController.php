@@ -56,11 +56,11 @@ class DocumentsController extends Controller
         }
 
         $orderDocumentTypes = $this->container->getParameter('mbh.order.document.types');
-        $vagaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
+        $vagaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
         $docTypes = $orderDocumentTypes + $vagaDocumentTypes;
 
         $groupDocTypes = ['' => $orderDocumentTypes, 'Vega' => $vagaDocumentTypes];
-        $scanTypes = $this->container->getParameter('mbh.vega.document.scan.types');
+        $scanTypes = $this->container->get('mbh.vega.dictionary_provider')->getScanTypes();
 
         $form = $this->createForm(new OrderDocumentType(), $orderDocument, [
             'documentTypes' => $groupDocTypes,
@@ -238,7 +238,7 @@ class DocumentsController extends Controller
      * Return pdf doc
      *
      * @Route("/{id}/pdf/{type}", name="package_pdf", requirements={
-     *      "type" : "confirmation|registration_card|fms_form_5|evidence|form_1_g|receipt|act"
+     *      "type" : "confirmation|confirmation_en|registration_card|fms_form_5|evidence|form_1_g|receipt|act"
      * })
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_USER')")

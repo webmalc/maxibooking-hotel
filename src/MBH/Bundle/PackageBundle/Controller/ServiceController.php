@@ -32,15 +32,16 @@ class ServiceController extends BaseController
      */
     public function indexAction()
     {
-        /** @var ServiceCategory[] $serviceCategories */
-        $serviceCategories = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->findAll();
-
         $services = [];
-        foreach ($serviceCategories as $category) {
-            $group = $category->getHotel()->getName().': '.mb_strtolower($category->getName());
-            $services[$group][$category->getId()] = 'Все услуги';
-            foreach ($category->getServices() as $service) {
-                $services[$group][$service->getId()] = $service->getName();
+
+        foreach($this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
+            $categories = $hotel->getServicesCategories();
+            foreach($categories as $category) {
+                $group = $hotel->getName().':'.mb_strtolower($category->getName());
+                $services[$group][$category->getId()] = 'Все услеги';
+                foreach ($category->getServices() as $service) {
+                    $services[$group][$service->getId()] = $service->getName();
+                }
             }
         }
 

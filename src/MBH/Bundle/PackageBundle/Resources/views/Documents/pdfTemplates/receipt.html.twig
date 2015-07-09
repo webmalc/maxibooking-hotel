@@ -41,7 +41,14 @@
 
             <p>
                 выданный <span class="area" style="display: inline-block; width: 90px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}</span> г.,
-                Место рождения <span class="area" style="display: inline-block; width: 505px"></span>
+                Место рождения <span class="area" style="display: inline-block; width: 505px">
+                    &nbsp {% if tourist and tourist.birthPlace %}
+                        {{ tourist.birthPlace.country|capitalize }}
+                        {{ tourist.birthPlace.mainRegion }}
+                        {{ tourist.birthPlace.city }}
+                        {{ tourist.birthPlace.district|capitalize }}
+                    {% endif %}
+                </span>
             </p>
 
             <!--<div>
@@ -94,13 +101,18 @@
             </div>
             <div style="display: inline-block">
                 <span class="area" style="display: inline-block; width: 470px">
-                    <strong>
-                        {% if entity.accommodation and entity.accommodation.housing %}
-                            {{ entity.accommodation.housing.city }} {{ entity.accommodation.housing.address }}
-                        {% elseif entity.roomType.hotel.city and entity.roomType.hotel.street %}
-                            {{ entity.roomType.hotel.city }} {{ entity.roomType.hotel.street }} {{ entity.roomType.hotel.corpus }} {{ entity.roomType.hotel.house }}
+                    {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.address %}
+                        {{ entity.accommodation.housing.city }} {{ entity.accommodation.housing.address }}
+                    {% elseif entity.roomType.hotel.city and entity.roomType.hotel.street %}
+                        {{ entity.roomType.hotel.city }}
+                        {{ entity.roomType.hotel.street }}
+                        {% if entity.roomType.hotel.house %}
+                            д.{{ entity.roomType.hotel.house }}
+                            {% if entity.roomType.hotel.house %}
+                                {{ entity.roomType.hotel.corpus }}
+                            {% endif %}
                         {% endif %}
-                    </strong>
+                    {% endif %}
                 </span>
                 <div style="font-size: 15px; font-weight: normal;">ул. д. корп. кв. </div>
             </div>

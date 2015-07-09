@@ -7,7 +7,7 @@ class Extension extends \Twig_Extension
 {
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface 
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
 
@@ -66,6 +66,16 @@ class Extension extends \Twig_Extension
         return $this->container->get('mbh.helper')->num2str($value);
     }
 
+    public function num2enStr($value)
+    {
+        return $this->container->get('mbh.helper')->convertNumberToWords($value);
+    }
+
+    public function translateToLat($value)
+    {
+        return $this->container->get('mbh.helper')->translateToLat($value);
+    }
+
     /**
      * @param \MongoDate $mongoDate
      * @return \DateTime
@@ -86,6 +96,8 @@ class Extension extends \Twig_Extension
             'mbh_format' => new \Twig_Filter_Method($this, 'format', ['is_safe' => array('html')]),
             'mbh_md5' => new \Twig_Filter_Method($this, 'md5'),
             'num2str' => new \Twig_Filter_Method($this, 'num2str'),
+            'num2enStr' => new \Twig_Filter_Method($this, 'num2enStr'),
+            'transToLat' => new \Twig_Filter_Method($this, 'translateToLat'),
             'convertMongoDate' => new \Twig_Filter_Method($this, 'convertMongoDate'),
         ];
     }

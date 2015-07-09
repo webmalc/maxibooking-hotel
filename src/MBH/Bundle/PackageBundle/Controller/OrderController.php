@@ -165,7 +165,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         return [
             'entity' => $entity,
             'logs' => $this->logs($entity),
-            'vegaDocumentTypes' => $this->container->getParameter('mbh.vega.document.types'),
+            'vegaDocumentTypes' => $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes(),
             'genders' => $this->container->getParameter('mbh.gender.types'),
             'form' => $form->createView(),
             'package' => $package

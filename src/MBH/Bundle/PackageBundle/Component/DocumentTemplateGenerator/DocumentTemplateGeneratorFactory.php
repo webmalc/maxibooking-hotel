@@ -16,6 +16,7 @@ use Symfony\Component\Form\FormBuilder;
 class DocumentTemplateGeneratorFactory implements ContainerAwareInterface
 {
     const TYPE_CONFIRMATION = 'confirmation';
+    const TYPE_CONFIRMATION_EN = 'confirmation_en';
     const TYPE_REGISTRATION_CARD = 'registration_card';
     const TYPE_FMS_FORM_5 = 'fms_form_5';
     const TYPE_EVIDENCE = 'evidence';
@@ -29,6 +30,7 @@ class DocumentTemplateGeneratorFactory implements ContainerAwareInterface
     {
         return [
             self::TYPE_CONFIRMATION => 'ConfirmationTemplateGenerator',
+            self::TYPE_CONFIRMATION_EN => 'EnConfirmationTemplateGenerator',
             self::TYPE_REGISTRATION_CARD => 'RegistrationCardTemplateGenerator',
             self::TYPE_FMS_FORM_5 => 'RegistrationCardTemplateGenerator',
             self::TYPE_EVIDENCE => 'RegistrationCardTemplateGenerator',
@@ -45,6 +47,7 @@ class DocumentTemplateGeneratorFactory implements ContainerAwareInterface
     {
         return [
             self::TYPE_CONFIRMATION,
+            self::TYPE_CONFIRMATION_EN,
             self::TYPE_REGISTRATION_CARD,
             self::TYPE_FMS_FORM_5,
             self::TYPE_EVIDENCE,
@@ -74,7 +77,7 @@ class DocumentTemplateGeneratorFactory implements ContainerAwareInterface
     {
         /** @var FormBuilder $formBuilder */
         $formBuilder = $this->container->get('form.factory')->createBuilder('form');
-        if ($type == self::TYPE_CONFIRMATION || $type == self::TYPE_ACT) {
+        if ($type == self::TYPE_CONFIRMATION_EN ||$type == self::TYPE_CONFIRMATION || $type == self::TYPE_ACT) {
             $formBuilder
                 ->add('hasFull', 'checkbox', [
                     'required' => false,
@@ -99,7 +102,7 @@ class DocumentTemplateGeneratorFactory implements ContainerAwareInterface
      */
     public function hasForm($type)
     {
-        return $type == self::TYPE_CONFIRMATION || $type == self::TYPE_ACT;
+        return $type == self::TYPE_CONFIRMATION_EN ||$type == self::TYPE_CONFIRMATION || $type == self::TYPE_ACT;
     }
 
     /**

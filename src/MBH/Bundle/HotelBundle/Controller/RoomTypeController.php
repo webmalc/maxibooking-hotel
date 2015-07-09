@@ -189,8 +189,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $this->dm->persist($room);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', 'Запись успешно создана.');
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
 
             if ($request->get('save') !== null) {
                 return $this->redirect($this->generateUrl('room_type_room_edit', ['id' => $room->getId()]));
@@ -418,11 +417,15 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }
 
+
+        $formImage = $this->createForm(new RoomTypeImageType());
+
         return array(
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity),
-            'images' => $entity->getImages()
+            'images' => $entity->getImages(),
+            'formImage' => $formImage->createView(),
         );
     }
 
@@ -490,7 +493,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         }
 
         return array(
-
             'entity' => $entity,
             'form' => $form->createView(),
             'formImage' => $formImage->createView(),

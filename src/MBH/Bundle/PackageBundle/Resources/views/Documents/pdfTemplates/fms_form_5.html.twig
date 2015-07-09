@@ -246,7 +246,7 @@
                                     <div class="title" style="margin-left: 30px; width: 70px">
                                         Нас. пункт
                                     </div>
-                                    <div class="area" style="margin-left: 100px"></div>
+                                    <div class="area" style="margin-left: 100px">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district|capitalize }}{% endif %}</div>
                                 </div>
                             </td>
                             <td>
@@ -397,7 +397,7 @@
                                     <div class="title" style="width: 130px">
                                         Зарегистрировано
                                     </div>
-                                    <div class="area" style="margin-left: 130px"></div>
+                                    <div class="area" style="margin-left: 130px">{{ arrival }}</div>
                                 </div>
                             </td>
                         </tr>

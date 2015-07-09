@@ -32,16 +32,12 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      */
     public function indexAction()
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entities = $dm->getRepository('MBHPriceBundle:ServiceCategory')->createQueryBuilder('q')
+        $entities = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->createQueryBuilder('q')
             ->field('hotel.id')->equals($this->get('mbh.hotel.selector')->getSelected()->getId())
             ->sort('fullTitle', 'asc')
             ->getQuery()
-            ->execute()
-        ;
-        
+            ->execute();
+
         return [
             'entities' => $entities,
             'config' => $this->container->getParameter('mbh.services')
@@ -58,22 +54,23 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      */
     public function savePricesAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $entries = $request->get('entries');
+        $serviceRepository = $this->dm->getRepository('MBHPriceBundle:Service');
 
+        /*todo find _id => [$in => $ids] if($entries) {
+            $services = $serviceRepository->findBy(['_id' => ['$in' => $entries]]);
+        }*/
         foreach ($entries as $id => $price) {
-            $entity = $dm->getRepository('MBHPriceBundle:Service')->find($id);
+            $entity = $serviceRepository->find($id);
 
             if (!$entity || $entity->getPrice() == $price || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
                 continue;
             }
 
-            $entity->setPrice((empty($price)) ? null : (float) $price);
-            $dm->persist($entity);
-
+            $entity->setPrice((empty($price)) ? null : (float)$price);
+            $this->dm->persist($entity);
         }
-        $dm->flush();
+        $this->dm->flush();
 
         $request->getSession()
             ->getFlashBag()
@@ -92,20 +89,16 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      */
     public function newEntryAction($id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $entity = $dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
+        $entity = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
 
         if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
         $entry = new Service();
-        $form = $this->createForm(
-            new ServiceType(),
-            $entry,
-            ['calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']]
-        );
+        $form = $this->createForm(new ServiceType(), $entry, [
+            'calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']
+        ]);
 
         return [
             'entry' => $entry,
@@ -124,9 +117,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      */
     public function createEntryAction(Request $request, $id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $entity = $dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
+        $entity = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
 
         if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
@@ -135,34 +126,27 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $entry = new Service();
         $entry->setCategory($entity);
 
-        $form = $this->createForm(
-            new ServiceType(),
-            $entry,
-            ['calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']]
-        );
+        $form = $this->createForm(new ServiceType(), $entry, [
+            'calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']
+        ]);
 
         $form->submit($request);
 
         if ($form->isValid()) {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            if ($request->get("mbh_bundle_pricebundle_service_type")["time"]){
+            if ($request->get("mbh_bundle_pricebundle_service_type")["time"]) {
                 $date = date_create();
                 $entry->setDate(date_format($date, 'U = H:i:s'));
             }
-            $dm->persist($entry);
-            $dm->flush();
+            $this->dm->persist($entry);
+            $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', 'Запись успешно создана.')
-            ;
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
 
             if ($request->get('save') !== null) {
-                return $this->redirect($this->generateUrl('price_service_category_entry_edit', ['id' => $entry->getId()]));
+                return $this->redirectToRoute('price_service_category_entry_edit', ['id' => $entry->getId()]);
             }
 
-            return $this->redirect($this->generateUrl('price_service_category', ['tab' => $id]));
-
+            return $this->redirectToRoute('price_service_category', ['tab' => $id]);
         }
 
         return array(
@@ -181,19 +165,15 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      */
     public function editEntryAction($id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $entry = $dm->getRepository('MBHPriceBundle:Service')->find($id);
+        $entry = $this->dm->getRepository('MBHPriceBundle:Service')->find($id);
 
         if (!$entry || !$this->container->get('mbh.hotel.selector')->checkPermissions($entry->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(
-            new ServiceType(),
-            $entry,
-            ['calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']]
-        );
+        $form = $this->createForm(new ServiceType(), $entry, [
+            'calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']
+        ]);
 
         return [
             'entry' => $entry,
@@ -213,38 +193,28 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      */
     public function updateEntryAction(Request $request, $id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $entry = $dm->getRepository('MBHPriceBundle:Service')->find($id);
+        $entry = $this->dm->getRepository('MBHPriceBundle:Service')->find($id);
 
         if (!$entry || !$this->container->get('mbh.hotel.selector')->checkPermissions($entry->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(
-            new ServiceType(),
-            $entry,
-            ['calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']]
-        );
+        $form = $this->createForm(new ServiceType(), $entry, [
+            'calcTypes' => $this->container->getParameter('mbh.services')['calcTypes']
+        ]);
 
         $form->submit($request);
-
         if ($form->isValid()) {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
+            $this->dm->persist($entry);
+            $this->dm->flush();
 
-            $dm->persist($entry);
-            $dm->flush();
-
-            $request->getSession()->getFlashBag()
-                ->set('success', 'Запись успешно отредактирована.')
-            ;
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
 
             if ($request->get('save') !== null) {
-                return $this->redirect($this->generateUrl('price_service_category_entry_edit', ['id' => $entry->getId()]));
+                return $this->redirectToRoute('price_service_category_entry_edit', ['id' => $entry->getId()]);
             }
 
-            return $this->redirect($this->generateUrl('price_service_category', ['tab' => $entry->getCategory()->getId()]));
+            return $this->redirectToRoute('price_service_category', ['tab' => $entry->getCategory()->getId()]);
         }
 
         return [
@@ -266,9 +236,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
     public function newAction()
     {
         $entity = new ServiceCategory();
-        $form = $this->createForm(
-            new ServiceCategoryType(), $entity
-        );
+        $form = $this->createForm(new ServiceCategoryType(), $entity);
 
         return [
             'entity' => $entity,
@@ -287,22 +255,16 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
     public function createAction(Request $request)
     {
         $entity = new ServiceCategory();
-        $entity->setHotel($this->get('mbh.hotel.selector')->getSelected());
+        $entity->setHotel($this->hotel);
 
-        $form = $this->createForm(
-            new ServiceCategoryType(), $entity
-        );
+        $form = $this->createForm(new ServiceCategoryType(), $entity);
         $form->submit($request);
 
         if ($form->isValid()) {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
-            $this->getRequest()->getSession()->getFlashBag()
-                ->set('success', 'Запись успешно создана.')
-            ;
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
 
             return $this->afterSaveRedirect('price_service_category', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -323,18 +285,13 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      */
     public function editAction($id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
+        $entity = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
 
         if (!$entity || $entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(
-            new ServiceCategoryType(), $entity
-        );
+        $form = $this->createForm(new ServiceCategoryType(), $entity);
 
         return array(
             'entity' => $entity,
@@ -353,30 +310,21 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      */
     public function updateAction(Request $request, $id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
+        $entity = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
 
-        $entity = $dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
-
-        if (!$entity || $entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entry->getHotel())) {
+        if (!$entity || $entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(
-            new ServiceCategoryType(), $entity
-        );
+        $form = $this->createForm(new ServiceCategoryType(), $entity);
         $form->submit($request);
 
         if ($form->isValid()) {
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
-
-            $this->getRequest()->getSession()->getFlashBag()
-                ->set('success', 'Запись успешно отредактирована.')
-            ;
+            $request->getSession()->getFlashBag()
+                ->set('success', 'Запись успешно отредактирована.');
 
             return $this->afterSaveRedirect('price_service_category', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -400,7 +348,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         if ($category->getSystem()) {
             throw $this->createNotFoundException();
         }
-        
+
         return $this->deleteEntity($category->getId(), 'MBHPriceBundle:ServiceCategory', 'price_service_category');
     }
 
@@ -414,25 +362,18 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
     public function deleteEntryAction(Request $request, $id)
     {
         try {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-
-            $entity = $dm->getRepository('MBHPriceBundle:Service')->find($id);
+            $entity = $this->dm->getRepository('MBHPriceBundle:Service')->find($id);
 
             if (!$entity || $entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
                 throw $this->createNotFoundException();
             }
             $catId = $entity->getCategory()->getId();
-            $dm->remove($entity);
-            $dm->flush($entity);
+            $this->dm->remove($entity);
+            $this->dm->flush($entity);
 
-            $request->getSession()
-                ->getFlashBag()
-                ->set('success', 'Запись успешно удалена.');
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно удалена.');
         } catch (DeleteException $e) {
-            $request->getSession()
-                ->getFlashBag()
-                ->set('danger', $e->getMessage());
+            $request->getSession()->getFlashBag()->set('danger', $e->getMessage());
         }
 
         return $this->redirect($this->generateUrl('price_service_category', ['tab' => $catId]));

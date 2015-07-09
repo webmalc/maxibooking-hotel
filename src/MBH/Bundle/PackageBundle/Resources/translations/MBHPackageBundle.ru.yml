@@ -94,6 +94,7 @@ package.actions.delete: Удаление
 
 package.actions.docs: Генерация документов
 package.actions.confirmation: Подтверждение
+package.actions.confirmation_en: Подтверждение (EN)
 package.actions.registration_card: Регистрационная карта
 package.actions.fms_form_5: Анкета ФМС (Форма 5)
 package.actions.evidence: Свидетельство о регистрации
@@ -224,7 +225,7 @@ package.pdf.amount: Кол-во
 package.pdf.unit: Ед.
 package.pdf.price: Цена
 package.pdf.sum: Сумма
-package.pdf.living_in_hotel: Проживание в отеле
+package.pdf.hotel_accommodation: Проживание в отеле
 package.pdf.noch: ночь
 package.pdf.conditions: Вышеперечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.
 package.pdf.executor_caps: ИСПОЛНИТЕЛЬ

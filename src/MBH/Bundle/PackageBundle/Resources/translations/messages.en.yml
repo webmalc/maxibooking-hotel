@@ -1,0 +1,18 @@
+package.document.type_passport: Passport
+package.document.type_foreign_passport: Foreign Passport
+package.document.type_insurance: Insurance
+package.document.type_birth_certificate: Birth Certificate
+package.document.type_military: Militart
+package.document.type_accommodation_voucher: Accommodation Voucher
+package.document.type_shuttle_voucher: Type_Shuttle Voucher
+package.document.type_sertives_voucher: Type Sertives Voucher
+package.document.type_complex: Комплект документов
+package.document.type_congirmation_account: Счет-подтверждение
+package.document.type_invoice_for_payment: Счет на оплату
+package.document.type_contract: Договор
+package.document.type_extra_argument: Доп. соглашение
+package.document.type_air_tickets: Авиабилеты
+package.document.type_train_tickets: Ж/д билеты
+package.document.type_info: Info
+package.document.type_letter: Letter
+package.document.type_other: Other

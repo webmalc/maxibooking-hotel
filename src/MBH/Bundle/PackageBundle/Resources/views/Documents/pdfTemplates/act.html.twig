@@ -41,6 +41,7 @@
 <body>
 <div class="document">
     <!-- Header -->
+    {% set hotel = null %}
     {% if entity.roomType and entity.roomType.hotel %}
         {% set hotel = entity.roomType.hotel %}
     {% endif %}
@@ -49,9 +50,11 @@
         <div class="title">
             <h2>Акт № {{ entity.numberWithPrefix }} от {{ 'now'|date('d.m.Y') }}.</h2>
         </div>
+        {% if hotel and hotel.logoUrl %}
         <div class="logo">
             <img src="{{ asset(hotel.logoUrl, absolute=true) }}">
         </div>
+        {% endif %}
         <div style="clear: both"></div>
     </div>
     <hr>
