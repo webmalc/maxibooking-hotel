@@ -7,9 +7,11 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Date as ConstrainDate;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Class OrganizationType
@@ -24,9 +26,12 @@ class OrganizationType extends AbstractType
 
     const TYPE_EDIT = 'tp_edit';
 
+    /**
+     * @var \Doctrine\ODM\MongoDB\DocumentManager
+     */
     private $documentManager;
 
-    public function __construct(\Doctrine\ODM\MongoDB\DocumentManager $documentManager)
+    public function __construct(DocumentManager $documentManager)
     {
         $this->documentManager = $documentManager;
     }
@@ -252,9 +257,24 @@ class OrganizationType extends AbstractType
                 'constraints' => [new Length(['min' => 2, 'max' => 300])]
             ]);
         }
+
+        $builder->add('stamp', 'file', [
+            'group' => 'Дополнительно',
+            'label' => 'form.organizationType.stamp',
+            'required' => false,
+            'constraints' => [
+                new \Symfony\Component\Validator\Constraints\Image([
+                    /*'minWidth' => 400,
+                    'maxWidth' => 400,
+                    'maxHeight' => 200,
+                    'minHeight' => 200,*/
+                ])
+            ],
+            'help' => 'Скан печати для генерации документов (400x200 пикселей)'
+        ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'typeList' => [],
@@ -263,7 +283,6 @@ class OrganizationType extends AbstractType
             'type' => null,
         ]);
     }
-
 
     /**
      * Returns the name of this type.

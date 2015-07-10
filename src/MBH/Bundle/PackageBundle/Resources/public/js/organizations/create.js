@@ -1,8 +1,10 @@
-/**
+/*
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-(function($){
+/*global $, window,console, document*/
+(function ($) {
     $('#organization_city').select2({
+        allowClear: true,
         minimumInputLength: 3,
         ajax: {
             url: Routing.generate('hotel_city'),
@@ -28,22 +30,22 @@
     });
 
     var $registrationDate = $('#organization_registration_date');
-    if($registrationDate)
+    if ($registrationDate) {
         $registrationDate.datepicker({
             language: "ru",
             autoclose: true,
             startView: 2,
             format: 'dd.mm.yyyy',
         });
+    }
 
     var $hotelsInput = $('#organization_hotels');
     var $hotelsGroup = $hotelsInput.closest('.form-group');
     var $typeInput = $('#organization_type');
-    var checkDisplayHotelsGroup = function() {
+    var checkDisplayHotelsGroup = function () {
         $typeInput.val() == 'my' ? $hotelsGroup.show() : $hotelsGroup.hide();
     }
-
-    if($typeInput.length > 0) {
+    if ($typeInput.length > 0) {
         $typeInput.on('change', function(){
             checkDisplayHotelsGroup();
             $hotelsInput.select2({width: 'resolve'});

@@ -52,7 +52,7 @@
                             <td>{% if tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</td>
                             <td class="text-center">{{ tourist.age }}</td>
                             <td class="text-center">
-                                {% if tourist.document is not empty %}
+                                {% if tourist.documentRelation is not empty %}
                                     <span class="text-success"><i class="fa fa-check"></i></span>
                                 {% else %}
                                     <span class="text-muted"><i class="fa fa-times"></i></span>

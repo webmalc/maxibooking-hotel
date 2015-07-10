@@ -369,9 +369,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(
-            new PackageGuestType()
-        );
+        $form = $this->createForm(new PackageGuestType());
 
         if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
             $form->submit($request);

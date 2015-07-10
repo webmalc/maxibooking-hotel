@@ -224,11 +224,9 @@ class CashController extends Controller
      */
     public function confirmAction($id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $dm->getFilterCollection()->disable('softdeleteable');
-        $entity = $dm->getRepository('MBHCashBundle:CashDocument')->find($id);
-        $dm->getFilterCollection()->enable('softdeleteable');
+        $this->dm->getFilterCollection()->disable('softdeleteable');
+        $entity = $this->dm->getRepository('MBHCashBundle:CashDocument')->find($id);
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity || !$entity->getIsPaid() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             return new JsonResponse([
@@ -237,8 +235,8 @@ class CashController extends Controller
             ]);
         }
         $entity->setIsConfirmed(true);
-        $dm->persist($entity);
-        $dm->flush();
+        $this->dm->persist($entity);
+        $this->dm->flush();
 
         return new JsonResponse([
             'error' => false,

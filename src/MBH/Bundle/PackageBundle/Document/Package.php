@@ -1041,6 +1041,9 @@ class Package extends Base implements JsonSerializable
         return null;
     }
 
+    /**
+     * @return Tourist|null
+     */
     public function getMainTourist()
     {
         return $this->getOrder()->getMainTourist();

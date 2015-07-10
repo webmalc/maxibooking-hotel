@@ -9,6 +9,18 @@
             margin: 0 auto;
         }
 
+        .ib{
+            display: inline-block;
+        }
+
+        .area {
+            border-bottom: solid #000000 1px;
+        }
+
+        .left {
+            float: left;
+        }
+
         /* Header */
         .header .title {
             float: left;
@@ -35,7 +47,7 @@
             text-indent: 1.5em;
         }
         .table {
-            margin: 40px 0px 10px 0px;
+            margin: 10px 0px 10px 0px;
             width: 100%;
         }
         .table td {
@@ -64,12 +76,17 @@
     <div class="header">
         <div class="title">
             <p>
-                Подтверждение брони № {{ entity.number }} от {{ entity.createdAt|date("d.m.Y") }} г.
+                Подтверждение
+                {% if formParams.hasFull is defined and formParams.hasFull %}
+                    заказа № {{ entity.order.id }} от {{ entity.order.createdAt|date("d.m.Y") }} г.
+                {% else %}
+                    брони № {{ entity.number }} от {{ entity.createdAt|date("d.m.Y") }} г.
+                {% endif %}
             </p>
         </div>
         {% if hotel and hotel.logoUrl %}
             <div class="logo">
-                <img src="{{ asset(hotel.logoUrl, absolute=true) }}">
+                <img src="{{ asset(hotel.logoUrl)|imagine_filter('thumb_95x80') }}">
             </div>
         {% endif %}
         <div style="clear: both"></div>
@@ -95,18 +112,89 @@
 
     <div class="main">
         <p class="indent">Отель {% if hotel and hotel.name %}<strong>"{{ hotel.name }}"</strong> {% else %}____________________{% endif %}, расположенный по
-            адресу {% if hotel and hotel.city and hotel.street %} <strong> {{ hotel.city }} {{ hotel.street }} {{ hotel.house }} </strong> {% else %}_________________________________________{% endif %},
+            адресу: {% if hotel and hotel.city and hotel.street %}
+            {{ hotel.country }}, {{ hotel.region }}, г. {{ hotel.city }}{% if hotel.settlement %}, {{ hotel.settlement }}{% endif %}, {{ hotel.street }},
+                {% if hotel.house %} д. {{ hotel.house }}{% endif %}{% if hotel.corpus %}, кор. {{ hotel.corpus }}{% endif %}{% if hotel.flat %}, кв. {{ hotel.flat }} {% endif %} {% else %}_________________________________________{% endif %},
             ИНН {% if hotel and hotel.organization and hotel.organization.inn %} {{ hotel.organization.inn }} {% else %} ________________________ {% endif %} извещает
-            Заказчика: {% if tourist %} {{ tourist.fullName }} {% else %} __________________________________ {% endif %},
-            дата рождения {% if tourist and tourist.birthday %} {{ tourist.birthday|date('d.m.Y') }} {% else %} ___.___._______ {% endif %} г.,
-            адрес {% if tourist and tourist.address %} {{ tourist.address }} {% else %} ____________________________________________________ {% endif %}</p>
-        <p class="indent">Документ удостоверяющий личность:
-            Тип документа {% if documentRelation and documentRelation.type %} {{ documentRelation.type|trans({}) }}{% else %}_______________{% endif %}
-            Серия {% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% else %}_____________________{% endif %}
-            № {% if documentRelation and documentRelation.number %}{{ documentRelation.number }}{% else %}______________________{% endif %}
-            Дата выдачи {% if documentRelation and documentRelation.issued %}{{ documentRelation.issued|date('d.m.Y') }}{% else %}___.___._______ г.{% endif %}
-            Выдан {% if documentRelation and documentRelation.authority %}{{ documentRelation.authority }}{% else %}_________________________________{% endif %}
-            Место рождения {% if tourist and tourist.birthplace.city and tourist.birthplace.mainRegion %}{{ tourist.birthplace.city }} {{ tourist.birthplace.mainRegion }} {{ tourist.birthplace.district.name }}{% else %}_____________________________________{% endif %}
+            Заказчика:
+        </p>
+
+
+        <style>
+            .ta table {
+                margin-left: 1.5em; width: 890px;
+            }
+        </style>
+        <div class="ta">
+            <table border="0">
+                <tbody>
+                <tr>
+                    <td style="width: 40px">Ф.И.О.</td>
+                    <td style="width: 60%;">
+                        <div class="area">&nbsp{% if tourist %}{{ tourist.fullName }}{% endif %}</div>
+                    </td>
+                    <td style="width: 130px">дата рождения</td>
+                    <td><div class="area">&nbsp{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div></td>
+                </tr>
+                </tbody>
+            </table>
+            <table border="0">
+                <tbody>
+                <tr>
+                    <td style="width: 20px">адрес</td>
+                    <td>
+                        <div class="area">&nbsp
+                            {% if tourist and tourist.addressObjectDecomposed %}
+                                {{ tourist.addressObjectDecomposed.country }}, {{ tourist.addressObjectDecomposed.region }}{% if tourist.addressObjectDecomposed.city %}, г.{{ tourist.addressObjectDecomposed.city }}{% endif %}{% if tourist.addressObjectDecomposed.street %}, ул. {{ tourist.addressObjectDecomposed.street }}{% endif %}
+                                {% if tourist.addressObjectDecomposed.house %},
+                                    д.{{ tourist.addressObjectDecomposed.house }}
+                                    {% if tourist.addressObjectDecomposed.corpus %}, кор. {{ tourist.addressObjectDecomposed.corpus }}{% endif %}
+                                    {% if tourist.addressObjectDecomposed.flat %}, кв. {{ tourist.addressObjectDecomposed.flat }}{% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table border="0">
+                <tbody>
+                <tr>
+                    <td>тип документа</td>
+                    <td style="width: 45%"><div class="area">&nbsp{% if documentRelation and documentRelation.type %}{{ documentRelation.type|trans({})|capitalize }}{% endif %}</div></td>
+
+                    <td>серия</td>
+                    <td style="width: 15%"><div class="area">&nbsp{% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% endif %}</div></td>
+
+                    <td>№</td>
+                    <td style="width: 15%"><div class="area">&nbsp{% if documentRelation and documentRelation.number %}{{ documentRelation.number }}{% endif %}</div></td>
+                </tr>
+                </tbody>
+            </table>
+            <table border="0">
+                <tbody>
+                <tr>
+                    <td style="width: 50px">выдан</td>
+                    <td>
+                        <div class="area">
+                            &nbsp
+                            {% if documentRelation and documentRelation.authority %}
+                                {{ documentRelation.authority }}{% if documentRelation and documentRelation.issued %},
+                                {{ documentRelation.issued|date('d.m.Y') }}
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>
+            о нижеследующем:
+        </p>
+        <p>
+            Отель гарантированно бронирует для Заказчика следующие услуги:
         </p>
 
         <!-- Services -->
@@ -122,31 +210,72 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td align="center">1</td>
-                <td>{{ "package.pdf.living_in_hotel"|trans({}, "MBHPackageBundle") }} {{ entity.begin|date('d.m.Y') }} - {{ entity.end|date('d.m.Y') }}</td>
-                <td align="center">{{ entity.nights }}</td>
-                <td align="center">{{ "package.pdf.noch"|trans({}, "MBHPackageBundle") }}</td>
-                <td align="right">{{ (entity.packagePrice(true)/entity.nights)|round(1)|number_format }}</td>
-                <td align="right">{{ entity.packagePrice(true)|number_format }}</td>
-            </tr>
-            {% for packageService in entity.services %}
+            {% if formParams.hasFull is defined and formParams.hasFull %}
+                {% set packages = entity.order.packages %}
+            {% else %}
+                {% set packages = [entity] %}
+            {% endif %}
+
+            {% set counter = 0 %}
+            {% for package in packages %}
+                {% set counter = counter + 1 %}
                 <tr>
-                    <td align="center">{{ loop.index + 1 }}</td>
-                    <td>{{ packageService.service.name }}</td>
-                    <td align="center">{{ packageService.amount }}</td>
-                    <td align="center">шт.</td>
-                    <td align="right">{{ packageService.price|number_format(2) }}</td>
-                    <td align="right">{{ packageService.total|number_format(2) }}</td>
+                    <td align="center">{{ counter }}</td>
+                    <td>
+                        {{ "package.pdf.living_in_hotel"|trans({}, "MBHPackageBundle") }} {{ package.begin|date('d.m.Y') }} - {{ package.end|date('d.m.Y') }}
+                        {% if package.roomType and package.roomType.internationalTitle %}
+                            ({{ package.roomType.internationalTitle }})
+                        {% endif %}
+                    </td>
+                    <td align="center">{{ package.nights }}</td>
+                    <td align="center">{{ "package.pdf.noch"|trans({}, "MBHPackageBundle") }}</td>
+                    <td align="right">{{ (package.packagePrice(true)/entity.nights)|round(1)|number_format(2) }}</td>
+                    <td align="right">{{ package.packagePrice(true)|number_format(2) }}</td>
                 </tr>
             {% endfor %}
+            {# {% if formParams.hasServices is defined and formParams.hasServices %}
+                 {% for package in packages %}
+                    {% for packageService in package.services %}
+                        {% set counter = counter + 1 %}
+                        <tr>
+                            <td align="center">{{ counter }}</td>
+                            <td>{{ packageService.service.name }}</td>
+                            <td align="center">{{ packageService.amount }}</td>
+                            <td align="center">шт.</td>
+                            <td align="right">{{ packageService.price|number_format(2) }}</td>
+                            <td align="right">{{ packageService.total|number_format(2) }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+            <tr>
+                <td align="center"></td>
+                <td></td>
+                <td align="center"></td>
+                <td align="center">шт.</td>
+                <td align="right"></td>
+                <td align="right"></td>
+            </tr>#}
+            {% if formParams.hasServices is defined and formParams.hasServices %}
+                {% for serviceGroup in packageServicesByType %}
+                    {% set counter = counter + 1 %}
+                    <tr>
+                        <td align="center">{{ counter }}</td>
+                        <td>{{ serviceGroup.byService.name }}</td>
+                        <td align="center">{{ serviceGroup.actuallyAmount }}</td>
+                        <td align="center">шт.</td>
+                        <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
+                        <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
             </tbody>
         </table>
 
         <table border="0" width="100%">
             <tr>
                 <td align="right"><strong>Итого:</strong></td>
-                <td align="right" style="width: 100px;"><strong>{{ (entity.servicesPrice + entity.packagePrice(true))|number_format(2) }}</strong></td>
+                <td align="right" style="width: 100px;"><strong>{{ total|number_format(2) }}</strong></td>
             </tr>
             <tr>
                 <td align="right"><strong>В том числе НДС:</strong></td>
@@ -154,11 +283,13 @@
             </tr>
         </table>
 
-        <p>Всего заказано услуг {{ entity.services|length + 1 }}, на сумму {{ (entity.servicesPrice + entity.packagePrice(true))|number_format(2) }} руб.<br>
-            <strong>{{ entity.price|num2str|capitalize }}</strong></p>
+        <p>Всего заказано услуг {{ entity.services|length + 1 }}, на сумму {{ total|number_format(2) }} руб.<br>
+            <strong>{{ total|num2str|capitalize }}</strong>
+        </p>
 
-        <p class="indent">Отель гарантированно бронирует вышеперечисленные услуги для Заказчика за произведенную им предоплату.
-            В случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание конпенсации из внесенной предоплаты.</p>
+        <p>
+            Примечание: в случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание конпенсации из внесенной предоплаты.
+        </p>
 
         <table class="signatures" cellpadding="0" cellspacing="0">
             <tr>
@@ -182,6 +313,12 @@
                 </td>
             </tr>
         </table>
+
+
+        {% if formParams.hasStamp is defined and formParams.hasStamp and hotel.organization.stamp %}
+            <img style="position: relative; top: -100px; left: 0px; width: 400px;  height: 200px" src="{{ hotel.organization.stamp }}">
+        {% endif %}
+
         <style>
             .signatures {
                 border: 0;

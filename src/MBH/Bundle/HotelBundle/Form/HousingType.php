@@ -11,11 +11,13 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class HousingType
- * @package MBH\Bundle\HotelBundle\Form
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
 class HousingType extends AbstractType
 {
+    /**
+     * @var DocumentManager
+     */
     private $dm;
 
     public function __construct(DocumentManager $dm)
@@ -40,6 +42,11 @@ class HousingType extends AbstractType
                 'label' => 'views.corpus.city',
                 'translation_domain' => 'MBHHotelBundle'
             ])
+            ->add('settlement', 'text', [
+                'required' => false,
+                'label' => 'views.corpus.settlement',
+                'translation_domain' => 'MBHHotelBundle'
+            ])
             ->add('street', 'text', [
                 'required' => false,
                 'label' => 'views.corpus.street',
@@ -50,14 +57,14 @@ class HousingType extends AbstractType
                 'label' => 'views.corpus.house',
                 'translation_domain' => 'MBHHotelBundle'
             ])
-            ->add('flat', 'text', [
-                'required' => false,
-                'label' => 'views.corpus.flat',
-                'translation_domain' => 'MBHHotelBundle'
-            ])
             ->add('corpus', 'text', [
                 'required' => false,
                 'label' => 'views.corpus.corpus',
+                'translation_domain' => 'MBHHotelBundle'
+            ])
+            ->add('flat', 'text', [
+                'required' => false,
+                'label' => 'views.corpus.flat',
                 'translation_domain' => 'MBHHotelBundle'
             ]);
 
@@ -79,9 +86,7 @@ class HousingType extends AbstractType
     }
 
     /**
-     * Returns the name of this type.
-     *
-     * @return string The name of this type
+     * {@inheritdoc}
      */
     public function getName()
     {

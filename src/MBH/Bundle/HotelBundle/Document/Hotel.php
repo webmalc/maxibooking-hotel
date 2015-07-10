@@ -197,6 +197,12 @@ class Hotel extends Base
      * @Gedmo\Versioned
      * @ODM\String
      */
+    protected $settlement;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\String
+     */
     protected $street;
 
     /**
@@ -206,6 +212,7 @@ class Hotel extends Base
     protected $house;
 
     /**
+     * @var string
      * @Gedmo\Versioned
      * @ODM\String
      */
@@ -651,6 +658,23 @@ class Hotel extends Base
     }
 
     /**
+     * @return mixed
+     */
+    public function getSettlement()
+    {
+        return $this->settlement;
+    }
+
+    /**
+     * @param mixed $settlement
+     */
+    public function setSettlement($settlement)
+    {
+        $this->settlement = $settlement;
+    }
+
+
+    /**
      * Set latitude
      *
      * @param float $latitude
@@ -826,7 +850,7 @@ class Hotel extends Base
     /**
      * Get hotelinnConfig
      *
-     * @return \MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig $hotelinnConfig
+     * @return \MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig
      */
     public function getHotelinnConfig()
     {
@@ -882,7 +906,7 @@ class Hotel extends Base
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCorpus()
     {
@@ -890,7 +914,7 @@ class Hotel extends Base
     }
 
     /**
-     * @param mixed $corpus
+     * @param string $corpus
      */
     public function setCorpus($corpus)
     {

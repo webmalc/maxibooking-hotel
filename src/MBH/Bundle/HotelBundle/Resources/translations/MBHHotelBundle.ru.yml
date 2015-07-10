@@ -72,6 +72,7 @@ views.task.layout.tasks: "Задачи"
 views.corpus.name: Имя
 views.corpus.internal_name: Внутреннее имя
 views.corpus.city: Город
+views.corpus.settlement: Населенный пункт
 views.corpus.address: Адрес
 views.corpus.street: Улица
 views.corpus.house: Дом

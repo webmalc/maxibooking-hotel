@@ -22,6 +22,7 @@ class Housing extends Base
     use BlameableDocument;
 
     /**
+     * @var Hotel
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Hotel")
      * @Assert\NotNull()
@@ -29,6 +30,7 @@ class Housing extends Base
     protected $hotel;
 
     /**
+     * @var string
      * @Gedmo\Versioned
      * @ODM\String
      * @Assert\NotNull()
@@ -36,6 +38,7 @@ class Housing extends Base
     protected $name;
 
     /**
+     * @var string
      * @Gedmo\Versioned
      * @ODM\String
      */
@@ -48,24 +51,35 @@ class Housing extends Base
     protected $city;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String
+     */
+    protected $settlement;
+
+    /**
+     * @var string
      * @Gedmo\Versioned
      * @ODM\String
      */
     protected $street;
 
     /**
+     * @var string
      * @Gedmo\Versioned
      * @ODM\String
      */
     protected $house;
 
     /**
+     * @var string
      * @Gedmo\Versioned
      * @ODM\String
      */
     protected $corpus;
 
     /**
+     * @var string
      * @Gedmo\Versioned
      * @ODM\String
      */
@@ -88,10 +102,13 @@ class Housing extends Base
 
     /**
      * @param mixed $hotel
+     * @return self
      */
     public function setHotel($hotel)
     {
         $this->hotel = $hotel;
+
+        return $this;
     }
 
     /**
@@ -104,10 +121,13 @@ class Housing extends Base
 
     /**
      * @param mixed $name
+     * @return self
      */
     public function setName($name)
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -120,10 +140,13 @@ class Housing extends Base
 
     /**
      * @param mixed $internalName
+     * @return self
      */
     public function setInternalName($internalName)
     {
         $this->internalName = $internalName;
+
+        return $this;
     }
 
     /**
@@ -136,14 +159,36 @@ class Housing extends Base
 
     /**
      * @param City $city
+     * @return self
      */
     public function setCity(City $city)
     {
         $this->city = $city;
+
+        return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
+     */
+    public function getSettlement()
+    {
+        return $this->settlement;
+    }
+
+    /**
+     * @param string $settlement
+     * @return self
+     */
+    public function setSettlement($settlement)
+    {
+        $this->settlement = $settlement;
+
+        return $this;
+    }
+
+    /**
+     * @return string
      */
     public function getStreet()
     {
@@ -151,15 +196,18 @@ class Housing extends Base
     }
 
     /**
-     * @param mixed $street
+     * @param string $street
+     * @return self
      */
     public function setStreet($street)
     {
         $this->street = $street;
+
+        return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getHouse()
     {
@@ -167,15 +215,18 @@ class Housing extends Base
     }
 
     /**
-     * @param mixed $house
+     * @param string $house
+     * @return self
      */
     public function setHouse($house)
     {
         $this->house = $house;
+
+        return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCorpus()
     {
@@ -183,15 +234,18 @@ class Housing extends Base
     }
 
     /**
-     * @param mixed $corpus
+     * @param string $corpus
+     * @return self
      */
     public function setCorpus($corpus)
     {
         $this->corpus = $corpus;
+
+        return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getFlat()
     {
@@ -199,16 +253,22 @@ class Housing extends Base
     }
 
     /**
-     * @param mixed $flat
+     * @param string $flat
+     * @return self
      */
     public function setFlat($flat)
     {
         $this->flat = $flat;
+
+        return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getAddress()
     {
-        return $this->getStreet().' '.$this->getHouse().' '.$this->getCorpus();
+        return $this->getStreet() . ' ' . $this->getHouse() . ' ' . $this->getCorpus();
     }
 
 
@@ -222,10 +282,13 @@ class Housing extends Base
 
     /**
      * @param int $vegaAddressId
+     * @return self
      */
     public function setVegaAddressId($vegaAddressId)
     {
         $this->vegaAddressId = $vegaAddressId;
+
+        return $this;
     }
 
     public function __toString()

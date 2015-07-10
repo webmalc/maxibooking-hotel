@@ -254,6 +254,26 @@ class PackageService extends Base
 
     /**
      * @return int
+     * @throws \Exception
+     */
+    public function getActuallyAmount()
+    {
+        $type = $this->getService()->getCalcType();
+        if($type == 'per_stay') {
+            return $this->getAmount() * $this->getPersons();
+        }
+        if($type == 'per_night') {
+            return $this->getPersons() * $this->getNights() * $this->getAmount();
+        }
+        if($type == 'not_applicable' or $type == 'day_percent') {
+            return $this->getAmount();
+        }
+
+        throw new \Exception();
+    }
+
+    /**
+     * @return int
      */
     public function calcTotal()
     {

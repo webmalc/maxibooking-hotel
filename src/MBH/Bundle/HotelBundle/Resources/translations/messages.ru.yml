@@ -1,4 +1,5 @@
 form.hotelExtendedType.city: Город
+form.hotelExtendedType.settlement: Населенный пункт
 form.hotelExtendedType.street: Улица
 form.hotelExtendedType.house: Дом
 form.hotelExtendedType.corpus: Корпус
@@ -64,8 +65,10 @@ form.roomTypeType.name: Название
 form.roomTypeType.general_info: Общаяя информация
 form.roomTypeType.comfort_plus: Комфорт плюс
 form.roomTypeType.inner_name: Внутреннее название
+form.roomTypeType.international_title: Международное название
 form.roomTypeType.comport_plus_rooms_in_new_housing: Комфорт плюс - номера в новом корпусе
 form.roomTypeType.description: Описание
+form.roomTypeType.color: Цвет
 form.roomTypeType.online_reservation_room_description: Описание типа номера для онлайн бронирования
 form.roomTypeType.chess_room_type_color: Цвет типа номера на шахматке
 form.roomTypeType.image: Изображение

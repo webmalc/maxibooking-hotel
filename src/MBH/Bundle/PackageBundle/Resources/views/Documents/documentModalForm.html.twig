@@ -1,0 +1,34 @@
+{% form_theme form 'MBHPackageBundle:Documents:modalFormFields.html.twig' %}
+
+{{ form_start(form, {'action': path('package_pdf', {'id': entity.id, type: type}), 'attr': {'class': 'form-horizontal', 'target' : '_blank'}}) }}
+    {{ form_widget(form) }}
+    {# % for f in form %}
+    <div class="form-group">
+        {{ form_label(f, {'attr': {'class' : 'col-md-6'}}) }}
+        {{ form_widget(f) }}
+        {{ form_errors(f) }}
+    </div>
+    {% endfor % #}
+    <!--
+    <div>
+        <div class="form-group">
+            <label class="control-label col-md-6">Весь заказ</label>
+            <div class="col-md-4">
+                <input name="full" type="checkbox">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-6">Добавлять услуги</label>
+            <div class="col-md-4">
+                <input name="full" type="checkbox">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-6">Добавить печать</label>
+            <div class="col-md-4">
+                <input name="full" type="checkbox">
+            </div>
+        </div>
+    </div>
+    -->
+{{ form_end(form) }}

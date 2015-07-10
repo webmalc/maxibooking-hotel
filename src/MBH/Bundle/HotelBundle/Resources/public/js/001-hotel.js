@@ -26,8 +26,10 @@ $(document).ready(function () {
         maxboostedstep: 1
     });
 
+    console.log(1);
     $('#mbh_bundle_hotelbundle_hotel_extended_type_city').select2({
         minimumInputLength: 3,
+        allowClear: true,
         ajax: {
             url: Routing.generate('hotel_city'),
             dataType: 'json',
@@ -52,9 +54,9 @@ $(document).ready(function () {
         },
         dropdownCssClass: "bigdrop"
     });
-    var $typeInput = $('#mbh_bundle_hotelbundle_hotel_extended_type_type'),
-        $corpusFormGroup = $('#mbh_bundle_hotelbundle_hotel_extended_type_corpus').closest('.form-group'),
-        checkCorpusFormGroup = function () {
+    /*var $typeInput = $('#mbh_bundle_hotelbundle_hotel_extended_type_type'),
+        $corpusFormGroup = $('#mbh_bundle_hotelbundle_hotel_extended_type_corpus').closest('.form-group');
+        var checkCorpusFormGroup = function () {
             var values = $typeInput.select2('val');
             var isHotel = values.indexOf('hotel') !== -1;
             console.log(isHotel);
@@ -70,6 +72,6 @@ $(document).ready(function () {
 
     if ($typeInput.length > 0) {
         checkCorpusFormGroup();
-    }
+    }*/
 });
 

@@ -1,0 +1,41 @@
+{% extends 'MBHClientBundle:DocumentTemplate:layout.html.twig' %}
+
+{% block content %}
+
+    <table class="table table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xs"></th>
+            <th>{{ 'documentTempalte.title'|trans({}, 'MBHClientBundle') }}</th>
+            <th class="td-md text-center">{{ 'documentTempalte.enabled'|trans({}, 'MBHClientBundle') }}</th>
+            <th class="td-sm"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for entity in entities %}
+            <tr>
+                <td class="text-center table-icon"><i class="fa fa-building"></i></td>
+                <td>
+                    <a href="{{ path('document_templates_edit', { 'id': entity.id }) }}" rel="main" data-toggle="tooltip">{{ entity.title }}</a>
+                </td>
+                <td class="text-center">
+                    {% if entity.isEnabled %}
+                        <span class="label label-success">Да</span>
+                    {% endif %}
+                </td>
+                <td class="table-actions-td text-center">
+                    <a href="{{ path('document_templates_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title={{ 'views.hotel.index.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
+                        <i class="fa fa-pencil-square-o"></i>
+                    </a>
+                    <a href="{{ path('document_templates_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " data-text="{{ 'views.hotel.index.confirm_delete'|trans({'%hotelname%': entity.title}, 'MBHHotelBundle') }}" title={{ 'views.hotel.index.delete_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
+                        <i class="fa fa-trash-o"></i>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'document_templates_new'} %}
+
+{% endblock %}

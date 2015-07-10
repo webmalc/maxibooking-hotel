@@ -61,14 +61,14 @@
                         <div class="col-md-2 text-right">
                             <strong>{{ 'order.touristEdit.address'|trans({}, 'MBHPackageBundle') }}</strong></div>
                         <div class="col-md-10">
-                            {% autoescape false %}{{ entity.mainTourist.address|nl2br|default('-') }}{% endautoescape %}
+                            {% if entity.mainTourist %}{% autoescape false %}{{ entity.mainTourist.address|nl2br|default('-') }}{% endautoescape %}{% endif %}
                         </div>
                     </div>
                     <div class="row spacer-top">
                         <div class="col-md-2 text-right">
                             <strong>{{ 'order.touristEdit.document'|trans({}, 'MBHPackageBundle') }}</strong></div>
                         <div class="col-md-10">
-                            {% autoescape false %}{{ entity.mainTourist.document|nl2br|default('-') }}{% endautoescape %}
+                            {% if entity.mainTourist and entity.mainTourist.documentRelation and entity.mainTourist.documentRelation.type %}{% autoescape false %}{{ vegaDocumentTypes[entity.mainTourist.documentRelation.type]|capitalize|nl2br|default('-') }}{% endautoescape %}{% endif %}
                         </div>
                     </div>
 

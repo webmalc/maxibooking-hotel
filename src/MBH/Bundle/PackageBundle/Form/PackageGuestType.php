@@ -11,7 +11,6 @@ use Symfony\Component\Validator\Constraints\Date;
 
 class PackageGuestType extends AbstractType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -78,12 +77,6 @@ class PackageGuestType extends AbstractType
                 'attr' => array('data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new Date()]
             ));
-    }
-
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
-    {
-        $resolver->setDefaults([
-        ]);
     }
 
     public function getName()

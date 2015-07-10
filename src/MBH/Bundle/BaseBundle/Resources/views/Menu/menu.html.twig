@@ -5,11 +5,12 @@
 {% if item.displayed %}
     {%- set attributes = item.attributes %}
     {%- set is_dropdown = attributes.dropdown|default(false) %}
+    {%- set is_dropdown_header = attributes.dropdown_header|default(false) %}
     {%- set divider_prepend = attributes.divider_prepend|default(false) %}
     {%- set divider_append = attributes.divider_append|default(false) %}
- 
+
 {# unset bootstrap specific attributes #}
-    {%- set attributes = attributes|merge({'dropdown': null, 'divider_prepend': null, 'divider_append': null }) %}
+    {%- set attributes = attributes|merge({'dropdown': null, 'dropdown_header': null, 'divider_prepend': null, 'divider_append': null }) %}
  
     {%- if divider_prepend %}
         {{ block('dividerElement') }}
@@ -44,20 +45,25 @@
         {%- set attributes = attributes|merge({'class': classes|join(' ')}) %}
     {%- endif %}
     {%- set listAttributes = item.childrenAttributes|merge({'class': childrenClasses|join(' ') }) %}
- 
-{# displaying the item #}
-    <li{{ macros.attributes(attributes) }}>
-        {%- if is_dropdown %}
-            {% if item.hasChildren%} {{ block('dropdownElement') }}{% endif %}
-        {%- elseif item.uri is not empty and (not item.current or options.currentAsLink) %}
-            {{ block('linkElement') }}
-        {%- else %}
-            {{ block('linkElement') }}
-        {%- endif %}
-{# render the list of children#}
-        {{ block('list') }}
-    </li>
-    
+
+
+    {%- if is_dropdown_header %}
+        {{ block('dropdownHeader') }}
+    {%- else %}
+        {# displaying the item #}
+        <li{{ macros.attributes(attributes) }}>
+            {%- if is_dropdown %}
+                {% if item.hasChildren%} {{ block('dropdownElement') }}{% endif %}
+            {%- elseif item.uri is not empty and (not item.current or options.currentAsLink) %}
+                {{ block('linkElement') }}
+            {%- else %}
+                {{ block('linkElement') }}
+            {%- endif %}
+        {# render the list of children#}
+            {{ block('list') }}
+        </li>
+    {%- endif %}
+
     {%- if divider_append %}
         {{ block('dividerElement') }}
     {%- endif %}
@@ -71,7 +77,11 @@
     <li class="divider"></li>
 {% endif %}
 {% endblock %}
- 
+
+{% block dropdownHeader %}
+    <li role="presentation" class="dropdown-header">{{ item.label }}</li>
+{% endblock %}
+
 {% block dropdownElement %}
     {%- set classes = item.linkAttribute('class') is not empty ? [item.linkAttribute('class')] : [] %}
     {%- set classes = classes|merge(['dropdown-toggle']) %}

@@ -1,0 +1,41 @@
+{#
+{% for type,form in forms %}
+    {% form_theme form 'MBHPackageBundle:Documents:modalFormFields.html.twig' %}
+
+    <div id="{{ type }}-modal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">{{ type|capitalize }}</h4>
+                </div>
+                {{ form_start(form, {'action': path('package_pdf', {'id': entity.id, type: type}), 'attr': {'class': 'form-horizontal'}}) }}
+                    <div class="modal-body">
+                        {{ form_widget(form) }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сгенерировать</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+#}
+
+<div id="template-document-modal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Генерация документа "<em></em>"</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary">Сгенерировать</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -25,22 +25,29 @@ class HotelExtendedType extends AbstractType
                 'group' => 'form.hotelExtendedType.address',
                 'required' => true,
                 'attr' => [
-                    'style' => 'min-width: 500px'
+                    'style' => 'min-width: 500px',
+                    'placeholder' => 'form.hotelExtendedType.city',
                 ]
             ])
-            ->add('street', 'text', [
-                'label' => 'form.hotelExtendedType.street',
+            ->add('settlement', 'text', [
+                'label' => 'form.hotelExtendedType.settlement',
                 'group' => 'form.hotelExtendedType.address',
-                'mapped' => false,
                 'required' => false,
                 'attr' => [
                     'style' => 'min-width: 500px'
                 ]
             ])
             ->add('street', 'text', [
+                'label' => 'form.hotelExtendedType.street',
+                'group' => 'form.hotelExtendedType.address',
+                'required' => false,
+                'attr' => [
+                    'style' => 'min-width: 500px'
+                ]
+            ])
+            ->add('house', 'text', [
                 'label' => 'form.hotelExtendedType.house',
                 'group' => 'form.hotelExtendedType.address',
-                'mapped' => false,
                 'required' => false,
                 'attr' => [
                     'style' => 'min-width: 500px'
@@ -49,7 +56,6 @@ class HotelExtendedType extends AbstractType
             ->add('corpus', 'text', [
                 'label' => 'form.hotelExtendedType.corpus',
                 'group' => 'form.hotelExtendedType.address',
-                'mapped' => false,
                 'required' => false,
                 'attr' => [
                     'style' => 'min-width: 500px'
@@ -59,7 +65,6 @@ class HotelExtendedType extends AbstractType
             $builder->add('flat', 'text', [
                 'label' => 'form.hotelExtendedType.flat',
                 'group' => 'form.hotelExtendedType.address',
-                'mapped' => false,
                 'required' => false,
                 'attr' => [
                     'style' => 'min-width: 500px'

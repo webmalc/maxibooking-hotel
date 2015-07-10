@@ -5,6 +5,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -17,6 +18,8 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="Такой тип номера уже существует")
+ *
+ * @ODM\HasLifecycleCallbacks
  */
 class RoomType extends Base
 {
@@ -74,6 +77,13 @@ class RoomType extends Base
      * )
      */
     protected $title;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    protected $internationalTitle;
 
 
     /**
@@ -210,6 +220,22 @@ class RoomType extends Base
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getInternationalTitle()
+    {
+        return $this->internationalTitle;
+    }
+
+    /**
+     * @param mixed $internationalTitle
+     */
+    public function setInternationalTitle($internationalTitle)
+    {
+        $this->internationalTitle = $internationalTitle;
     }
 
     /**
@@ -528,6 +554,18 @@ class RoomType extends Base
 
         return null;
     }
+
+
+    /**
+     * @ODM\PreUpdate()
+     */
+    public function preUpdate()
+    {
+        if(!$this->internationalTitle && $this->fullTitle) {
+            $this->internationalTitle = Helper::translateToLat($this->fullTitle);
+        }
+    }
+
 
     public function deleteImageById(RoomType $entity,$imageId){
         $result = new \Doctrine\Common\Collections\ArrayCollection();

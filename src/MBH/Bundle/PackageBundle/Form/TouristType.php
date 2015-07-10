@@ -45,7 +45,7 @@ class TouristType extends AbstractType
                 'empty_value' => '',
                 'choices' => $options['genders']
             ])
-            ->add('address', 'textarea', [
+            /*->add('address', 'textarea', [
                 'label' => 'form.touristType.address',
                 'group' => 'form.touristType.contact_info',
                 'required' => false,
@@ -56,7 +56,7 @@ class TouristType extends AbstractType
                 'group' => 'form.touristType.contact_info',
                 'required' => false,
                 'attr' => ['placeholder' => 'form.touristType.placeholder_document']
-            ])
+            ])*/
             ->add('phone', 'text', [
                 'label' => 'form.touristType.phone',
                 'group' => 'form.touristType.contact_info',

@@ -87,13 +87,11 @@ class UserController extends Controller
             $entity,
             ['admin' => $entity->hasRole('ROLE_ADMIN')]
         );
-        $form->bind($request);
+        $form->submit($request);
 
         if ($form->isValid()) {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
             $this->updateAcl($entity, $form);
 
@@ -119,17 +117,14 @@ class UserController extends Controller
      */
     public function editAction($id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHUserBundle:User')->find($id);
+        $entity = $this->dm->getRepository('MBHUserBundle:User')->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException();
         }
 
         $hasHotels = [];
-        $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         foreach ($hotels as $hotel) {
             $aclProvider = $this->get('security.acl.provider');
             $objectIdentity = ObjectIdentity::fromDomainObject($hotel);
@@ -172,10 +167,7 @@ class UserController extends Controller
      */
     public function updateAction(Request $request, $id)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHUserBundle:User')->find($id);
+        $entity = $this->dm->getRepository('MBHUserBundle:User')->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -185,7 +177,6 @@ class UserController extends Controller
             new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
             $entity,
             ['admin' => $entity->hasRole('ROLE_ADMIN')]
-
         );
 
         $form->submit($request);
@@ -203,7 +194,7 @@ class UserController extends Controller
             //update ACL
             $this->updateAcl($entity, $form);
 
-            $this->getRequest()->getSession()->getFlashBag()
+            $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.profileController.record_edited_success'));
 
             return $this->afterSaveRedirect('user', $entity->getId());
@@ -218,10 +209,7 @@ class UserController extends Controller
 
     private function updateAcl(User $user, $form)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         foreach ($hotels as $hotel) {
             $aclProvider = $this->get('security.acl.provider');
             $objectIdentity = ObjectIdentity::fromDomainObject($hotel);

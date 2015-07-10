@@ -218,7 +218,7 @@ class Order extends Base
     /**
      * Get packages
      *
-     * @return \Doctrine\Common\Collections\Collection $packages
+     * @return Package[] $packages
      */
     public function getPackages()
     {

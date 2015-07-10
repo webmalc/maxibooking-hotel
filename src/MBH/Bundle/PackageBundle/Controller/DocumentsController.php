@@ -3,10 +3,13 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator\DocumentTemplateGeneratorFactory;
 use MBH\Bundle\PackageBundle\Document\OrderRepository;
+use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Form\OrderDocumentType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -130,7 +133,6 @@ class DocumentsController extends Controller
     {
         /** @var OrderRepository $packageRepository */
         $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
-
         /** @var Order $order */
         $order = $orderRepository->findOneBy(['documents.name' => $name]);
 
@@ -140,7 +142,8 @@ class DocumentsController extends Controller
 
         $document = null;
 
-        foreach ($order->getDocuments()->getIterator() as $d) /** @var OrderDocument $d */ {
+        foreach ($order->getDocuments()->getIterator() as $d) {
+            /** @var OrderDocument $d */
             if ($d->getName() == $name) {
                 $document = $d;
             }
@@ -178,7 +181,7 @@ class DocumentsController extends Controller
      * @ParamConverter("order", class="MBHPackageBundle:Order")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @Template()
-     * @return Response|null
+     * @return RedirectResponse|null
      */
     public function editAction(Order $entity, Package $package, $name, Request $request)
     {
@@ -234,99 +237,97 @@ class DocumentsController extends Controller
     /**
      * Return pdf doc
      *
-     * @Route("/{id}/pdf", name="package_pdf")
-     * @Method("GET")
+     * @Route("/{id}/pdf/{type}", name="package_pdf", requirements={
+     *      "type" : "confirmation|registration_card|fms_form_5|evidence|form_1_g|receipt|act"
+     * })
+     * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_USER')")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
-    public function pdfAction(Package $entity)
+    public function actPdfAction(Package $entity, $type, Request $request)
     {
         if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
-        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:act.html.twig', [
-            'entity' => $entity
+
+        $templateGeneratorFactory = new DocumentTemplateGeneratorFactory();
+        $templateGeneratorFactory->setContainer($this->container);
+
+        $formParams = [];
+        if($templateGeneratorFactory->hasForm($type) && $request->isMethod(Request::METHOD_POST)) {
+            $form = $templateGeneratorFactory->createFormByType($type);
+            $form->submit($request);
+            if ($form->isValid()) {
+                $formParams = $form->getData();
+            }
+        }
+
+        $templateGenerator = $templateGeneratorFactory->createGeneratorByType($type);
+        $templateGenerator->setPackage($entity);
+        $templateGenerator->setFormParams($formParams);
+        $html = $templateGenerator->getTemplate();
+
+        $content = $this->get('knp_snappy.pdf')->getOutputFromHtml($html, [
+            'cookie' => [$request->getSession()->getName() => $request->getSession()->getId()]
         ]);
 
-        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
+        return new Response($content, 200, [
             'Content-Type' => 'application/pdf',
-            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
+            'Content-Disposition' => //'attachment;
+             'filename="'.$type.'_'.$entity->getNumberWithPrefix().'.pdf"'
         ]);
     }
 
     /**
-     * Return pdf doc
-     *
-     * @Route("/{id}/confirmation_pdf", name="package_confirmation_pdf")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Route("/document/{id}/modal_form/{type}", name="document_modal_form", options={"expose"=true})
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     * @Template()
      */
-    public function confirmationPdfAction(Package $entity)
+    public function documentModalFormAction(Package $entity, $type)
     {
-        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
+        $templateGeneratorFactory = new DocumentTemplateGeneratorFactory();
+        $templateGeneratorFactory->setContainer($this->container);
+        $form = $templateGeneratorFactory->createFormByType($type);
 
-        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:confirmation.html.twig', [
+        $html = $this->renderView('MBHPackageBundle:Documents:documentModalForm.html.twig', [
+            'form' => $form->createView(),
+            'type' => $type,
             'entity' => $entity
         ]);
 
-        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
-            'Content-Type' => 'application/pdf',
-            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
+        return new JsonResponse([
+            'html' => $html,
+            'name' => $this->get('translator')->trans('templateDocument.type.'. $type)
         ]);
     }
 
     /**
-     * Return pdf doc
-     *
-     * @Route("/{id}/registration_card_pdf", name="package_registration_card_pdf")
+     * @Route("/stamp/{id}.jpg", name="stamp")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     * @return Response
+     * @ParamConverter(class="\MBH\Bundle\PackageBundle\Document\Organization")
      */
-    public function registrationCardPdfAction(Package $entity)
+    public function stampAction(Organization $entity)
     {
-        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$entity->getStamp()) {
             throw $this->createNotFoundException();
         }
 
-        $vegaDocumentTypes = $this->container->getParameter('mbh.vega.document.types');
+        $fp = fopen($entity->getStamp()->getPathname(), "rb");
+        $str = stream_get_contents($fp);
+        fclose($fp);
 
-        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:registration_card.html.twig', [
-            'entity' => $entity,
-            'vegaDocumentTypes' => $vegaDocumentTypes,
-        ]);
+        /*$binary = $this->get('liip_imagine.data.manager')->find('stamp',
+            '/orderDocuments/5554599b7d3d6494118b4567'//$entity->getStamp()->getPathname()
+        );
+        $str = $binary->getContent();*/
 
-        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
-            'Content-Type' => 'application/pdf',
-            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
-        ]);
-    }
 
-    /**
-     * Return pdf doc
-     *
-     * @Route("/{id}/evidence_pdf", name="package_evidence_pdf")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
-     */
-    public function evidencePdfAction(Package $entity)
-    {
-        if (!$entity->getIsPaid() || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
-            throw $this->createNotFoundException();
-        }
+        $response = new Response($str, 200);
+        $response->headers->set('Content-Type', $entity->getStamp()->getMimeType());
 
-        $html = $this->renderView('MBHPackageBundle:Documents/pdfTemplates:evidence.html.twig', [
-            'entity' => $entity
-        ]);
-
-        return new Response($this->get('knp_snappy.pdf')->getOutputFromHtml($html), 200, [
-            'Content-Type' => 'application/pdf',
-            //'Content-Disposition' => 'attachment; filename="confirmation_'.$entity->getNumberWithPrefix().'.pdf"'
-        ]);
+        return $response;
     }
 }
