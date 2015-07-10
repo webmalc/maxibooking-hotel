@@ -9,13 +9,14 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
+use Gedmo\Translatable\Translatable;
 
 /**
  * @ODM\Document(collection="Country")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class Country extends Base
+class Country extends Base implements Translatable
 {
 
     /**
@@ -29,7 +30,7 @@ class Country extends Base
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -52,8 +53,18 @@ class Country extends Base
      *      max=100,
      *      maxMessage="validator.document.country.max_name"
      * )
+     *
+     * @Gedmo\Translatable
      */
     protected $title;
+
+
+    /**
+     * @Gedmo\Locale
+     * Used locale to override Translation listener`s locale
+     * this is not a mapped field of entity metadata, just a simple property
+     */
+    private $locale;
 
     /**
      * Set title
@@ -82,13 +93,13 @@ class Country extends Base
         $this->regions = new \Doctrine\Common\Collections\ArrayCollection();
         $this->cities = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
      * Add region
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Region $region
+     * @param Region $region
      */
-    public function addRegion(\MBH\Bundle\HotelBundle\Document\Region $region)
+    public function addRegion(Region $region)
     {
         $this->regions[] = $region;
     }
@@ -96,9 +107,9 @@ class Country extends Base
     /**
      * Remove region
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Region $region
+     * @param Region $region
      */
-    public function removeRegion(\MBH\Bundle\HotelBundle\Document\Region $region)
+    public function removeRegion(Region $region)
     {
         $this->regions->removeElement($region);
     }
@@ -141,6 +152,11 @@ class Country extends Base
     public function getCities()
     {
         return $this->cities;
+    }
+
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
     }
 
     public function __toString()

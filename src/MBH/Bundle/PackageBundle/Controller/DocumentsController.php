@@ -42,6 +42,12 @@ class DocumentsController extends Controller
      */
     public function indexAction(Request $request, Order $entity, Package $package)
     {
+        $country = $this->dm->getRepository('MBHHotelBundle:Country')->findOneBy([]);
+        //$country->setTranslatableLocale('en_EN');
+        $this->dm->refresh($country);
+        dump($country->getTitle());
+        die();
+
         $permissions = $this->container->get('mbh.package.permissions');
 
         if (!$permissions->checkHotel($entity)) {

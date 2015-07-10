@@ -99,7 +99,7 @@
             The Hotel {% if hotel and hotel.name %}<strong>“{{ hotel.name|transToLat }}”</strong>{% else %}____________________{% endif %} with an address at
 
             {#Russia, Krasnodar region, Mostovskoy city, Chuguevka village, str. Smirnova 11, bldg. A, fl. 246, TIN 123123810923#}
-            {% if hotel and hotel.city and hotel.street %}
+            {% if hotel and hotel.country and hotel.city and hotel.street and false %}
             {{ hotel.country|transToLat }}, {% if hotel.region %} {{ hotel.region|transToLat }}, {% endif %} {{ hotel.city|transToLat }} city{% if hotel.settlement|transToLat %}, {{ hotel.settlement|transToLat }}{% endif %}, str. {{ hotel.street|transToLat }},
             {% if hotel.house %} {{ hotel.house }}{% endif %}{% if hotel.corpus %}, bldg. {{ hotel.corpus|transToLat }}{% endif %}{% if hotel.flat %}, fl. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %},
             TIN {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %},

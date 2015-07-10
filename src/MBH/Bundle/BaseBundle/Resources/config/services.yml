@@ -116,3 +116,8 @@ services:
         arguments: [@doctrine_mongodb]
         tags:
             - { name: form.type, alias: mbh_city }
+
+    mbh.translatable_listener:
+        class: MBH\Bundle\BaseBundle\EventListener\TranslatableListener
+        calls:
+              - [ setContainer, [ '@service_container' ] ]

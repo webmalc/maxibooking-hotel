@@ -107,12 +107,12 @@ doctrine_mongodb:
                     dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Document"
                     alias: GedmoLoggable # this one is optional and will default to the name set for the mapping
                     is_bundle: false
-#                gedmo_translatable:
-#                    type: annotation
-#                    prefix: Gedmo\Translatable\Document
-#                    dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Translatable/Document"
-#                    alias: GedmoTranslatable # this one is optional and will default to the name set for the mapping
-#                    is_bundle: false
+                gedmo_translatable:
+                    type: annotation
+                    prefix: Gedmo\Translatable\Document
+                    dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Translatable/Document"
+                    alias: GedmoTranslatable # this one is optional and will default to the name set for the mapping
+                    is_bundle: false
 #                gedmo_translator:
 #                    type: annotation
 #                    prefix: Gedmo\Translator\Document
@@ -129,6 +129,8 @@ doctrine_mongodb:
 # StofDoctrineExtensionsBundle Configuration
 stof_doctrine_extensions:
     default_locale: ru_RU
+    class:
+        timestampable:  MBH\Bundle\BaseBundle\EventListener\TranslatableListener
     mongodb:
         default:
             blameable:      true
@@ -136,7 +138,7 @@ stof_doctrine_extensions:
             loggable:       true
             softdeleteable: true
             sluggable:      false
-            translatable:   false
+            translatable:   true
             uploadable:     false
             tree:           false
             sortable:       false
