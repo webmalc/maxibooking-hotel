@@ -130,6 +130,9 @@ class Mbhs
             $request->send();
 
         } catch (\Exception $e) {
+            if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+                dump($e);
+            };
             return false;
         }
 
@@ -137,45 +140,36 @@ class Mbhs
     }
 
     /**
-     * @param mixed $doc
-     * @param string $serviceName
-     * @return boolean
+     * @param Package $package
+     * @param $ip
+     * @return bool
      */
-    public function channelManager($doc, $serviceName)
+    public function sendPackageInfo(Package $package, $ip)
     {
         if (!$this->checkIp) {
             return false;
         }
-        $packages = [];
 
-        if ($doc instanceof Package) {
-            $packages[] = $doc;
-        }
-        if ($doc instanceof Order) {
-            $packages = $doc->getPackages();
-        }
+        try {
+            $request = $this->guzzle
+                ->post(base64_decode($this->config['mbhs']) . 'client/package/log')
+                ->setBody(json_encode(array_merge($package->toArray(), [
+                    'url' => $this->request->getSchemeAndHttpHost(),
+                    'key' => $this->config['key'],
+                    'ip' => $ip
+                ])))
+                ->setHeader('Content-Type', 'application/json')
+                ->send()
+            ;
 
-        foreach ($packages as $package) {
-            try {
-                $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/package/channelmanager');
-                $request->getQuery()->set('url', $this->request->getSchemeAndHttpHost());
-                $request->getQuery()->set('key', $this->config['key']);
-                $request->getQuery()->set('number', $package->getNumberWithPrefix());
-                $request->getQuery()->set('tourist', (string) $package->getMainTourist());
-                $request->getQuery()->set('tourist_email', ($package->getMainTourist()) ? $package->getMainTourist()->getEmail() : null);
-                $request->getQuery()->set('tourist_phone', ($package->getMainTourist()) ? $package->getMainTourist()->getPhone() : null);
-                $request->getQuery()->set('begin', $package->getBegin()->format('d.m.Y'));
-                $request->getQuery()->set('end', $package->getEnd()->format('d.m.Y'));
-                $request->getQuery()->set('roomType', (string) $package->getRoomType());
-                $request->getQuery()->set('service', $serviceName);
-
-                $request->send();
-
-            } catch (\Exception $e) {
-                return false;
-            }
+        } catch (\Exception $e) {
+            if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+                dump($e->getMessage());
+                dump($e);
+            };
+            return false;
         }
 
-        return true;
+        return $request;
     }
 }

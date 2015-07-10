@@ -104,7 +104,9 @@ class Mailer implements \SplObserver
 
         $message = \Swift_Message::newInstance();
         $message->setSubject($data['subject'])
-            ->setFrom($this->params['from'])
+            ->setFrom([
+                $this->params['fromMail'] => empty($data['fromText']) ? $this->params['fromText'] : $data['fromText']
+            ])
             ->setBody($body, 'text/html')
         ;
 

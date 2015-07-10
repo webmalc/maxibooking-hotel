@@ -62,6 +62,9 @@ class PackageSubscriber implements EventSubscriber
                 ;
                 $notifier->setMessage($message)->notify();
             }
+
+            $this->container->get('mbh.mbhs')
+                ->sendPackageInfo($doc, $this->container->get('request')->getClientIp());
         }
     }
 

@@ -61,8 +61,9 @@ parameters:
 
     #mbhs
     mbh.mbhs:
-      mbhs: 'aHR0cDovL21iaHMubWF4aWJvb2tpbmcucnUv'
-      key: 'AMliD0HLwjtLNewcrcNLr2xm8SGNY9HzV2Rz3zlA'
+      #mbhs: 'aHR0cDovL21iaHMubWF4aWJvb2tpbmcucnUv'
+      mbhs: 'aHR0cDovL21iaHMuaC8='
+      key: 'CfPlsYwUswLWWbvEDKrRU907HjsPGW3jbTFERbyj'
 
     #mbh sources
     mbh.default.sources: ['Он-лайн бронирование', 'ВашОтель.ру', 'Постоянный клиент', 'Рекомендация знакомых']
@@ -81,7 +82,8 @@ parameters:
 
     #mailer
     mbh.mailer:
-      from: {'robot@maxi-booking.ru': 'MaxiBooking'}
+      fromText: MaxiBooking
+      fromMail: robot@maxi-booking.ru
       subject: 'Сообщение от MaxiBooking'
       template: 'MBHBaseBundle:Mailer:base.html.twig'
 

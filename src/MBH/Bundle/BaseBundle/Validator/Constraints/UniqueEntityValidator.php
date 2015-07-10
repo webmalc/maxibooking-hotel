@@ -88,6 +88,8 @@ class UniqueEntityValidator extends ConstraintValidator
                 throw new ConstraintDefinitionException(sprintf("The field '%s' is not mapped by Doctrine, so it cannot be validated for uniqueness.", $fieldName));
             }
 
+            $isInt = preg_match('/Int\(\)/iu', $class->reflFields[$fieldName]->getDocComment());
+
             $criteria[$fieldName] = $class->reflFields[$fieldName]->getValue($entity);
 
             if ($constraint->ignoreNull && null === $criteria[$fieldName]) {
@@ -114,6 +116,8 @@ class UniqueEntityValidator extends ConstraintValidator
                 $criteria[$fieldName . '.id'] = $criteria[$fieldName];
                 unset($criteria[$fieldName]);
             }
+
+            !$isInt ?: $criteria[$fieldName] = (int) $criteria[$fieldName];
         }
 
         $repository = $em->getRepository(get_class($entity));

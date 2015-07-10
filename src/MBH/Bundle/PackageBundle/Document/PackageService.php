@@ -267,10 +267,6 @@ class PackageService extends Base
             $price *= $this->getNights();
         }
 
-        if ($this->getCalcType() == 'day_percent' && !$this->getIsCustomPrice()) {
-            $price = $this->getPackage()->getOneDayPrice() * $price / 100;
-        }
-
         if (!in_array($this->getCalcType(), ['not_applicable', 'day_percent'])) {
             $price *= $this->getPersons();
         }

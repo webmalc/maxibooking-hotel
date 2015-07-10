@@ -118,9 +118,13 @@
 
                 {% block signature %}
 
-                    {% if appendText is defined and appendText %}
-                        <br><br><p style="{{ pStyles }}">{{ appendText|trans|raw }}</p>
-                    {% endif %}
+                    {% block signatureAppendText %}
+
+                        {% if appendText is defined and appendText %}
+                            <br><br><p style="{{ pStyles }}">{{ appendText|trans|raw }}</p>
+                        {% endif %}
+
+                    {% endblock %}
 
                     {% if signature is defined and signature %}
                     <br><br>

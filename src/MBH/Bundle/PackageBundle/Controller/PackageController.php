@@ -390,7 +390,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     $criteria['birthday'] = $data['birthday'];
                 }
 
-                $tourist = $dm->getRepository('MBHPackageBundle:Tourist')->findOneBy($criteria);
+                $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->findOneBy($criteria);
 
                 if (empty($tourist)) {
                     $tourist = new Tourist();
@@ -441,7 +441,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $request->getSession()->getFlashBag()->set('success', 'Гость успешно удален.');
 
-        return $this->redirect($this->generateUrl('package_guest', ['id' => $id]));
+        return $this->redirect($this->generateUrl('package_guest', ['id' => $entity->getId()]));
     }
 
     /**
@@ -674,7 +674,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $request->getSession()->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.packageController.placement_deleted_success'));
 
-        return $this->redirect($this->generateUrl('package_accommodation', ['id' => $id]));
+        return $this->redirect($this->generateUrl('package_accommodation', ['id' => $entity->getId()]));
     }
 
     /**
