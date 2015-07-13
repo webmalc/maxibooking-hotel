@@ -61,8 +61,8 @@ parameters:
 
     #mbhs
     mbh.mbhs:
-      #mbhs: 'aHR0cDovL21iaHMubWF4aWJvb2tpbmcucnUv'
-      mbhs: 'aHR0cDovL21iaHMuaC8='
+      mbhs: 'aHR0cDovL21iaHMubWF4aWJvb2tpbmcucnUv'
+      #mbhs: 'aHR0cDovL21iaHMuaC8='
       key: 'CfPlsYwUswLWWbvEDKrRU907HjsPGW3jbTFERbyj'
 
     #mbh sources
@@ -82,7 +82,7 @@ parameters:
 
     #mailer
     mbh.mailer:
-      fromText: MaxiBooking
+      fromText: 'MaxiBooking'
       fromMail: robot@maxi-booking.ru
       subject: 'Сообщение от MaxiBooking'
       template: 'MBHBaseBundle:Mailer:base.html.twig'

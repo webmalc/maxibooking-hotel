@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * Mailer service
@@ -67,6 +68,31 @@ class Mailer implements \SplObserver
     }
 
     /**
+     * @param $data
+     * @param \Swift_Message $message
+     * @param $template
+     * @return mixed
+     */
+    public function addImages($data, \Swift_Message $message, $template)
+    {
+        $baseUrl = str_replace('app_dev.php/', '', $this->container->get('router')->generate('_welcome', [], true));
+        $crawler = new Crawler($this->twig->render($template, $data));
+        foreach ($crawler->filterXpath('//img') as $domElement) {
+            $id = $domElement->getAttribute('data-name');
+            $src = $domElement->getAttribute('src');
+
+            strpos($src, 'http') === false ? $http = $baseUrl : $http = '';
+
+            if (!empty($id) && !empty($src)) {
+                $data[$id] = $message->embed(
+                    \Swift_Image::fromPath($http . $src));
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * @param array $recipients
      * @param array $data
      * @param null $template
@@ -98,21 +124,27 @@ class Mailer implements \SplObserver
         }
 
         (empty($data['subject'])) ? $data['subject'] = $this->params['subject']: $data['subject'];
-        $body = $this->twig->render(
-            empty($template) ? $this->params['template'] : $template, $data
-        );
-
         $message = \Swift_Message::newInstance();
+        empty($template) ? $template = $this->params['template'] : $template;
+        $data = $this->addImages($data, $message, $template);
+
         $message->setSubject($data['subject'])
             ->setFrom([
                 $this->params['fromMail'] => empty($data['fromText']) ? $this->params['fromText'] : $data['fromText']
             ])
-            ->setBody($body, 'text/html')
+            ->setBody($this->twig->render($template, $data), 'text/html')
         ;
 
         foreach ($recipients as $recipient) {
             $message->setTo($recipient);
             $this->mailer->send($message);
+        }
+
+        if (php_sapi_name() == 'cli') {
+            $mailer = $this->container->get('mailer');
+            $spool = $mailer->getTransport()->getSpool();
+            $transport = $this->container->get('swiftmailer.transport.real');
+            $spool->flushQueue($transport);
         }
 
         return true;

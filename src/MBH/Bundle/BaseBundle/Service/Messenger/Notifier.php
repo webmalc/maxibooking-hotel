@@ -100,7 +100,9 @@ class Notifier implements \SplSubject
                     try {
                         $observer->update($this);
                     } catch (\Exception $e) {
-
+                        if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+                            dump($e->getMessage());
+                        };
                     }
                 }
             }

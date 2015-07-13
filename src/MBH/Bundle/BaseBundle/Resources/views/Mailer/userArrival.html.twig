@@ -17,25 +17,25 @@
 
         {% if links is defined and links %}
         <a href="{{ links.about is defined ? links.about : url('_welcome') }}" style="margin-right:3px;background-color:#50a265;border-radius:5px;color:#ffffff;display:inline-block;font-family:'Cabin', Helvetica, Arial, sans-serif;font-size:14px;font-weight:bold;padding:5px 0px 15px;text-align:center;text-decoration:none;width:155px;-webkit-text-size-adjust:none;mso-hide:all;">
-            <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/user-arrival-1.png" border="0" alt="" style="width:145px;height:155px;margin-bottom:10px;">
+            <img data-name="user_arrival_1" src="{{ user_arrival_1|default('bundles/mbhbase/images/user-arrival-1.png') }}" border="0" alt="" style="width:145px;height:155px;margin-bottom:10px;">
             Об отеле
         </a>
         <a href="{{ links.rooms is defined ? links.rooms : url('_welcome') }}" style="margin-right:3px;background-color:#50a265;border-radius:5px;color:#ffffff;display:inline-block;font-family:'Cabin', Helvetica, Arial, sans-serif;font-size:14px;font-weight:bold;padding:5px 0px 15px;text-align:center;text-decoration:none;width:155px;-webkit-text-size-adjust:none;mso-hide:all;">
-            <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/user-arrival-2.png" border="0" alt="" style="width:145px;height:155px;margin-bottom:10px;">
+            <img data-name="user_arrival_2" src="{{ user_arrival_2|default('bundles/mbhbase/images/user-arrival-2.png') }}" border="0" alt="" style="width:145px;height:155px;margin-bottom:10px;">
             Номера и услуги
         </a>
         <a href="{{ links.map is defined ? links.map : url('_welcome') }}" style="margin-right:3px;background-color:#50a265;border-radius:5px;color:#ffffff;display:inline-block;font-family:'Cabin', Helvetica, Arial, sans-serif;font-size:14px;font-weight:bold;padding:5px 0px 15px;text-align:center;text-decoration:none;width:155px;-webkit-text-size-adjust:none;mso-hide:all;">
-            <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/user-arrival-3.png" border="0" alt="" style="width:145px;height:155px;margin-bottom:10px;">
+            <img data-name="user_arrival_3" src="{{ user_arrival_3|default('bundles/mbhbase/images/user-arrival-3.png') }}" border="0" alt="" style="width:145px;height:155px;margin-bottom:10px;">
             Схема проезда
         </a>
         <a href="{{ links.contacts is defined ? links.contacts : url('_welcome') }}" style="background-color:#50a265;border-radius:5px;color:#ffffff;display:inline-block;font-family:'Cabin', Helvetica, Arial, sans-serif;font-size:14px;font-weight:bold;padding:5px 0px 15px;text-align:center;text-decoration:none;width:155px;-webkit-text-size-adjust:none;mso-hide:all;">
-            <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/user-arrival-4.png" border="0" alt="" style="width:145px;height:155px;margin-bottom:10px;">
+            <img data-name="user_arrival_4" src="{{ user_arrival_4|default('bundles/mbhbase/images/user-arrival-4.png') }}" border="0" alt="" style="width:145px;height:155px;margin-bottom:10px;">
             Контакты
         </a>
         <br><br>
         {% endif %}
 
-        Будем рады вас видеть!
-    </p>
+        <p style="{{ pStyles }}">Будем рады вас видеть!</p>
+
 
 {% endblock %}
