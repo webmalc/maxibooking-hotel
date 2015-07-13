@@ -90,6 +90,7 @@ $(document).ready(function () {
             {"bSortable": false} // actions
         ],
         "drawCallback": function (settings, json) {
+
             $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
             deleteLink();
             $('.deleted-entry').closest('tr').addClass('danger');
@@ -97,11 +98,11 @@ $(document).ready(function () {
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
 
             //summary
-            $('#package-summary-total').html(settings.json.package_summary_total);
-            $('#package-summary-paid').html(settings.json.package_summary_paid);
-            $('#package-summary-debt').html(settings.json.package_summary_debt);
-            $('#package-summary-nights').html(settings.json.package_summary_nights);
-            $('#package-summary-guests').html(settings.json.package_summary_guests);
+            $('#package-summary-total').html(settings.json.package_summary_total ||  '-');
+            $('#package-summary-paid').html(settings.json.package_summary_paid ||  '-');
+            $('#package-summary-debt').html(settings.json.package_summary_debt ||  '-');
+            $('#package-summary-nights').html(settings.json.package_summary_nights ||  '-');
+            $('#package-summary-guests').html(settings.json.package_summary_guests ||  '-');
         }
     });
 

@@ -41,7 +41,7 @@ class Permissions
             return true;
         }
 
-        return $securityContext->isGranted('EDIT', $doc);;
+        return $securityContext->isGranted('EDIT', $doc);
     }
 
     /**
@@ -83,7 +83,7 @@ class Permissions
                 continue;
             }
 
-            $packages = $dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('s')
+            $packages = $dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder()
                 ->field('roomType.id')->in($this->container->get('mbh.helper')->toIds($hotel->getRoomTypes()))
                 ->getQuery()
                 ->execute()

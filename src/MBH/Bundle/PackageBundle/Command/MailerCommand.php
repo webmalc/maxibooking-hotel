@@ -32,33 +32,6 @@ class MailerCommand extends ContainerAwareCommand
         $router = $this->getContainer()->get('router');
         $linksParams = $this->getContainer()->getParameter('mailer.user.arrival.links');
 
-        $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find('5519390a627f13233a8b4567');
-        $order = $this->dm->getRepository('MBHPackageBundle:Order')->find(420);
-
-        $message = $notifier::createMessage();
-        $message
-            ->setText('test test test test test test test test test')
-            ->setFrom('report')
-            ->setSubject('test test test')
-            ->setType('info')
-            ->setCategory('report')
-            ->setAdditionalData([
-                'package' => $order->getPackages()[0],
-                'links' => $this->getContainer()->getParameter('mailer.user.arrival.links')
-            ])
-            ->setOrder($order)
-            ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
-            ->setAutohide(false)
-            ->setHotel($hotel)
-            ->setEnd(new \DateTime('+1 minute'))
-        ;
-        $notifier
-            ->setMessage($message)
-            ->notify()
-        ;
-
-        exit();
-
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
         }
