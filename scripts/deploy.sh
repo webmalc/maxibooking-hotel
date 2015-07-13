@@ -86,6 +86,7 @@ if [[ $2 == 'new' ]]; then
     echo -e "${GREEN}Upload fixtures${NC}"
     ssh $SERVER $FOLDER'bin/console mbh:base:fixtures --cities'
     ssh $SERVER $FOLDER'bin/console mbh:vega:import'
+    ssh $SERVER $FOLDER'bin/console mbh:currency:load'
 fi
 
 echo -e "${GREEN}Start clear:cache${NC}"
