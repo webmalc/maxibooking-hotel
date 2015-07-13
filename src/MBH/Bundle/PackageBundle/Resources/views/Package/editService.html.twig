@@ -12,24 +12,5 @@
 {% block scripts %}
     {{ parent() }}
 
-    <script>
-        var services = {
-                    'package_duration': {{ service.nights }},
-                    'package_guests': {{ service.persons }},
-                    'package_one_day_price': {{ service.price }},
-                    'service_amount' : {{ service.amount }},
-                    {% for category in entity.tariff.hotel.servicesCategories %}
-                    {% for service in category.services %}
-                    '{{ service.id}}': {
-                        'date': {{ service.date ? 1 : 0}},
-                        'time': {{ service.time ? 1 : 0 }},
-                        'calcType': '{{ service.calcType}}',
-                        'calcTypeStr': '{{ config.calcTypes[service.calcType]}}',
-                        'price': {% if service.calcType == 'day_percent' %}{{ entity.oneDayPrice() }} * {{ service.price}} / 100 {% else %} {{ service.price}} {% endif %}
-                },
-                {% endfor %}
-                {% endfor %}
-
-                };
-    </script>
+    {% include 'MBHPackageBundle:Package:serviceScripts.html.twig' with {'entity': entity} %}
 {% endblock %}

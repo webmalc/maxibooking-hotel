@@ -909,11 +909,26 @@ class Package extends Base implements JsonSerializable
 
     /**
      * Returns the average price per night.
+     * @param mixed $day \DateTime or string d.m.Y
      * @return float
      */
-    public function getOneDayPrice()
+    public function getOneDayPrice($day = null)
     {
-        return round($this->getPackagePrice()/$this->getNights());
+        $date = null;
+
+        if ($day instanceof \DateTime) {
+            $date = $day>format('d_m_Y');
+        }
+        if (preg_match('/^\d{2}\.\d{2}.\d{4}$/ui', (string) $day)) {
+            $date = str_replace('.', '_', $day);
+        }
+
+        if (!$date || empty($this->pricesByDate[$date])) {
+            return round($this->getPackagePrice()/$this->getNights(), 2);
+        }
+        else {
+            return (float) $this->pricesByDate[$date];
+        }
     }
 
     public function isEarlyCheckIn()

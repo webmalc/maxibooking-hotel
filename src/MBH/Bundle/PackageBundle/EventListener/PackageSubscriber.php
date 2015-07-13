@@ -30,7 +30,7 @@ class PackageSubscriber implements EventSubscriber
             'preRemove',
             'postPersist',
             'postSoftDelete',
-            'onFlush'
+            'onFlush',
         );
     }
 
@@ -80,9 +80,22 @@ class PackageSubscriber implements EventSubscriber
         foreach ($docs as $doc) {
             if ($doc instanceof PackageService) {
 
+
+
                 try {
                     $package = $doc->getPackage();
-                    $this->container->get('mbh.calculation')->setServicesPrice($package);
+
+                    $changes = $uow->getDocumentChangeSet($doc);
+
+                    $new = new PackageService();
+                    $new->setAmount($changes['amount'][1])
+                        ->setPrice($changes['price'][1])
+                        ->setNights($changes['nights'][1])
+                        ->setPersons($changes['persons'][1])
+                        ->setService(empty($changes['persons'][1]) ? $changes['persons'][1] : $doc->getService())
+                    ;
+
+                    $this->container->get('mbh.calculation')->setServicesPrice($package, $new, $doc);
                     $meta = $dm->getClassMetadata(get_class($package));
                     $uow->recomputeSingleDocumentChangeSet($meta, $package);
                 } catch (\Exception $e) {
