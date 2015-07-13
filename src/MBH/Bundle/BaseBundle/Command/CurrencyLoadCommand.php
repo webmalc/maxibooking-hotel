@@ -25,7 +25,7 @@ class CurrencyLoadCommand extends ContainerAwareCommand
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         $validator = $this->getContainer()->get('validator');
         $date = new \DateTime('midnight');
-        $xml = simplexml_load_file(self::SOURCE_LINK.$date->format('d/m/Y'));
+        $xml = simplexml_load_file(self::SOURCE_LINK . $date->format('d/m/Y'));
 
         if (!$xml) {
             throw new Exception('Invalid xml');
