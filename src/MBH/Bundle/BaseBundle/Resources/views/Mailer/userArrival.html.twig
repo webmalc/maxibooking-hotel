@@ -3,7 +3,7 @@
 {% block text %}
 
     <p style="{{ pStyles }}">
-        Здравствуйте, Елена Парчелли!
+        Здравствуйте, {{ package.order.payer.name|default('') }}!
     </p>
     <p style="{{ pStyles }}">
         Спешим напомнить, что для вас зарезервирован номер в нашем отеле на ЗАВТРА {{ package.begin|mbh_format }}

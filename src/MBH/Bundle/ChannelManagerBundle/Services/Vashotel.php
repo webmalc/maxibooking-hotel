@@ -55,7 +55,7 @@ class Vashotel extends Base
     /**
      * Base API URL
      */
-    const BASE_URL = 'https://www.dev.vashotel.ru/hotel_xml/';
+    const BASE_URL = 'https://www.vashotel.ru/hotel_xml/';
 
     /**
      * Get roomTypes & tariffs template file
