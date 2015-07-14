@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -58,6 +59,11 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     protected $logger;
 
+    /**
+     * @var \MBH\Bundle\BaseBundle\Service\Currency;
+     */
+    protected $currency;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -66,6 +72,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $this->request = $container->get('request');
         $this->helper = $container->get('mbh.helper');
         $this->logger = $container->get('mbh.channelmanager.logger');
+        $this->currency = $container->get('mbh.currency');
     }
 
     /**
@@ -422,5 +429,47 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * @param CurrencyConfigInterface $config
+     * @param $amount
+     * @return float
+     */
+    public function currencyConvertToRub(CurrencyConfigInterface $config, $amount)
+    {
+        $code = $config->getCurrency();
+
+        if (!$code) {
+            return $amount;
+        }
+        try {
+            return $this->currency->convertToRub($amount, $code);
+        } catch (Exception $e) {
+            return $amount * $config->getCurrencyDefaultRatio();
+        }
+
+        return $amount;
+    }
+
+    /**
+     * @param CurrencyConfigInterface $config
+     * @param $amount
+     * @return float
+     */
+    public function currencyConvertFromRub(CurrencyConfigInterface $config, $amount)
+    {
+        $code = $config->getCurrency();
+
+        if (!$code) {
+            return $amount;
+        }
+        try {
+            return $this->currency->convertFromRub($amount, $code);
+        } catch (Exception $e) {
+            return $amount / $config->getCurrencyDefaultRatio();
+        }
+
+        return $amount;
     }
 }

@@ -23,7 +23,7 @@
     {% if hotel is defined and hotel %}
         {% set hotelName = hotel.name %}
 
-        {% if logo is not defined and hotel.logo %}
+        {% if logo is not defined and hotel.file %}
             {% set logo = hotel.logoUrl|imagine_filter('thumb_130x110') %}
         {% endif %}
 

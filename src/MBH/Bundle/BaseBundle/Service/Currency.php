@@ -52,6 +52,27 @@ class Currency
     }
 
     /**
+     * @return array
+     */
+    public function codes()
+    {
+        $dm = $this->container->get('doctrine_mongodb');
+        $codes = $dm->getRepository('MBHBaseBundle:Currency')
+            ->createQueryBuilder()
+            ->distinct('code')
+            ->sort('code', -1)
+            ->getQuery()
+            ->execute()
+        ;
+
+        $codes = iterator_to_array($codes);
+        $result = array_combine($codes, $codes);
+        asort($result);
+
+        return $result;
+    }
+
+    /**
      * @param $amount
      * @param $code
      * @param null $date
@@ -63,7 +84,7 @@ class Currency
         $date ?: $date = new \DateTime('midnight');
         $currency = $this->get($code, $date);
 
-        return $amount * $currency->getRatio();
+        return round($amount * $currency->getRatio(), 2);
     }
 
     /**
@@ -78,6 +99,6 @@ class Currency
         $date ?: $date = new \DateTime('midnight');
         $currency = $this->get($code, $date);
 
-        return $amount / $currency->getRatio();
+        return round(($amount / $currency->getRatio()) * $this->container->getParameter('mbh.currency.ratio.fix'), 2);
     }
 }

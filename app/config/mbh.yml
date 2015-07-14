@@ -1,4 +1,6 @@
 parameters:
+    mbh.currency.ratio.fix: 1.015
+
     #timezone. default - deafult server timezone
     mbh.timezone: 'default'
 
