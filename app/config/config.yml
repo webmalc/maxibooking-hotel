@@ -130,7 +130,7 @@ doctrine_mongodb:
 stof_doctrine_extensions:
     default_locale: ru_RU
     class:
-        timestampable:  MBH\Bundle\BaseBundle\EventListener\TranslatableListener
+        translatable:  MBH\Bundle\BaseBundle\EventListener\TranslatableListener
     mongodb:
         default:
             blameable:      true

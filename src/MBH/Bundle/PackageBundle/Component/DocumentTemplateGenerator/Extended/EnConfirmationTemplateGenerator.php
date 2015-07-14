@@ -15,6 +15,13 @@ class EnConfirmationTemplateGenerator extends ConfirmationTemplateGenerator
         $currentLocale = $translator->getLocale();
         $translator->setLocale('en');
 
+        $hotel = $this->package->getRoomType()->getHotel();
+
+        $country = $hotel->getCountry();
+        if($country) {
+            $country->setTranslatableLocale('en_EN');
+            $this->container->get('doctrine_mongodb')->getManager()->refresh($country);
+        }
         //var_dump($translator->trans('package.document.type_passport')); die();
 
         $html = parent::getTemplate();

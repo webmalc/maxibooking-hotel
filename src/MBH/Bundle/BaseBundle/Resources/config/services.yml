@@ -120,4 +120,7 @@ services:
     mbh.translatable_listener:
         class: MBH\Bundle\BaseBundle\EventListener\TranslatableListener
         calls:
-              - [ setContainer, [ '@service_container' ] ]
+              - [ setDefaultLocale, [ 'ru_RU' ] ]
+              - [ setAnnotationReader, [ @annotation_reader ] ]
+        tags:
+              - { name: doctrine.event_subscriber, connection: default }

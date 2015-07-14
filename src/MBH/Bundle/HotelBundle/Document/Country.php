@@ -53,7 +53,6 @@ class Country extends Base implements Translatable
      *      max=100,
      *      maxMessage="validator.document.country.max_name"
      * )
-     *
      * @Gedmo\Translatable
      */
     protected $title;
@@ -161,6 +160,6 @@ class Country extends Base implements Translatable
 
     public function __toString()
     {
-        return $this->getTitle();
+        return (string) $this->getTitle();
     }
 }

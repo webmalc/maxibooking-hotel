@@ -2,26 +2,18 @@
 
 namespace MBH\Bundle\BaseBundle\EventListener;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class TimestampableListener
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
-class TranslatableListener extends \Gedmo\Translatable\TranslatableListener implements ContainerAwareInterface
+class TranslatableListener extends \Gedmo\Translatable\TranslatableListener
 {
-    private $container;
-    /**
-     * Sets the Container.
-     *
-     * @param ContainerInterface|null $container A ContainerInterface instance or null
-     *
-     * @api
-     */
-    public function setContainer(ContainerInterface $container = null)
+    public function __construct()
     {
-        $this->container = $container;
-    }
+        parent::__construct();
 
+        //$this->setDefaultLocale('en_EN');
+        //$this->setTranslatableLocale('en_EN');
+    }
 }
