@@ -182,7 +182,6 @@ class HotelController extends Controller
     }
 
     /**
-     * Displays a form to edit an existing entity.
      *
      * @Route("/{id}/delete/logo", name="hotel_delete_logo")
      * @Method("GET")
@@ -190,11 +189,14 @@ class HotelController extends Controller
      * @param Hotel $entity
      * @return Response
      */
-    public function deleteLogo(Hotel $entity)
+    public function deleteLogoAction(Hotel $entity)
     {
-        if($entity->getFile()) {
+        if($entity->getFile() || $entity->getLogo()) {
             $entity->setLogo(null);
             $entity->deleteFile();
+
+            $this->dm->persist($entity);
+            $this->dm->flush();
         }
         return $this->redirect($this->generateUrl('hotel_edit', ['id' => $entity->getId()]));
     }

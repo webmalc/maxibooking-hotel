@@ -28,7 +28,7 @@
                 <i class="fa fa-sliders" title='Тариф' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="Тариф" id="room-overview-filter-tariff" class="room-overview-filter form-control input-sm">
                         <option></option>
                         {% for tariff in tariffs %}
-                            <option value="{{ tariff.id }}" {% if tariff.id in app.request.get('tariffs') and tariffs|length != app.request.get('tariffs')|length %}selected{% endif %}>{{ tariff.name }}</option>
+                            <option value="{{ tariff.id }}" {% if (tariff.id in app.request.get('tariffs') and tariffs|length != app.request.get('tariffs')|length) or (app.request.get('tariffs') is empty and tariff.isDefault) %}selected{% endif %}>{{ tariff.name }}</option>
                         {% endfor %}
                 </select>
             </div>

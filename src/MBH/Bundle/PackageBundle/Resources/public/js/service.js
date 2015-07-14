@@ -19,7 +19,7 @@ $(document).ready(function () {
             serviceHelp = serviceInput.next('span.help-block'),
             amountInput = $('#mbh_bundle_packagebundle_package_service_type_amount'),
             amountHelp = amountInput.closest('div.input-group').next('span.help-block'),
-            timeInput = $('#mbh_bundle_packagebundle_package_service_type_time_time'),
+            timeInput = $('#mbh_bundle_packagebundle_package_service_type_time'),
             timeDiv = timeInput.closest('div.form-group'),
 
             hide = function () {
@@ -27,18 +27,15 @@ $(document).ready(function () {
                 personsDiv.hide();
                 dateDiv.hide();
                 timeDiv.hide();
-                dateInput.val(dateDefault);
+                dateInput.val(dateInput.val() || dateDefault);
                 personsInput.val(1);
                 nightsInput.val(1);
                 amountHelp.html('');
-                amountInput.val(1);
                 serviceHelp.html('<small>Услуга для добавления к броне</small>');
             },
-
             calc = function () {
 
                 var info = services[serviceInput.val()];
-
                 amountHelp.html('');
                 if (serviceInput.val() !== null && typeof info !== 'undefined') {
                     var nights = nightsInput.val(),
@@ -46,7 +43,6 @@ $(document).ready(function () {
                     amountHelp.html($.number(price, 2) + ' руб. за ' + amountInput.val() + ' шт.');
                 }
             },
-
             show = function (info) {
                 hide();
                 if (info.calcType === 'per_night' || info.calcType === 'per_stay') {
@@ -58,42 +54,56 @@ $(document).ready(function () {
                     nightsDiv.show();
                 }
                 priceInput.show();
-                if (info.date) {
-                    dateDiv.show();
-                }
-                if (info.time) {
-                    timeDiv.show();
-                }
+                amountInput.val(services.service_amount);
+                amountInput.show();
+                if (info.date) dateDiv.show();
+                if (info.time) timeDiv.show();
 
                 var peoplesStr = (info.calcType === 'per_night' || info.calcType === 'per_stay') ? ' за 1 человека ' : ' ';
-                serviceHelp.html($.number(info.price, 2) + ' рублей' + peoplesStr + info.calcTypeStr);
+
+                if (info.calcType !== 'day_percent') {
+                    serviceHelp.html($.number(info.price, 2) + ' рублей' + peoplesStr + info.calcTypeStr);
+                } else {
+                    serviceHelp.html(info.priceRaw + '% ' + info.calcTypeStr);
+                }
                 calc();
             },
-            hideShow = function () {
+            hideShow = function (event) {
+
                 if (serviceInput.val() !== null) {
-                    var info = services[serviceInput.val()];
-                    if (typeof info === 'undefined') {
-                        return;
+                    var info = services[serviceInput.val()],
+                        priceNew = info.price;
+
+                    if (info.calcType === 'day_percent' && services.package_prices_by_date && dateInput.val()) {
+                        var dayPrice = services.package_prices_by_date[dateInput.val()];
+                        if (dayPrice) {
+
+                            priceNew = (dayPrice * info.priceRaw) / 100;
+                        }
                     }
-                    priceInput.val(info.price);
+                    if (typeof info === 'undefined') return;
+
+                    if (!priceInput.val() || event) {
+                        priceInput.val(priceNew);
+                    }
                     show(info);
                 } else {
                     hide();
                 }
-            };
-        timeInput.timepicker({
-            showMeridian: false,
-            defaultTime: '00:00'
-        });
+            }
+            ;
         nightsDiv.change(calc);
         personsDiv.change(calc);
         amountInput.change(calc);
         serviceInput.change(calc);
         priceInput.change(calc);
         serviceInput.change(hideShow);
+        dateInput.change(hideShow);
         hideShow();
+
     }());
 });
+
 /**
  * @author Aleksandr Arofikin
  */

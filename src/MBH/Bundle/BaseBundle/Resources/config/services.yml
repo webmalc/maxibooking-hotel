@@ -68,6 +68,10 @@ services:
         class: MBH\Bundle\BaseBundle\Service\HotelSelector
         arguments: [@service_container]
 
+    mbh.currency:
+            class: MBH\Bundle\BaseBundle\Service\Currency
+            arguments: [@service_container]
+
     mbh.helper:
             class: MBH\Bundle\BaseBundle\Service\Helper
             arguments: [@service_container]

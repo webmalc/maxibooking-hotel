@@ -111,7 +111,8 @@ class MailerCommand extends ContainerAwareCommand
                     ->setOrder($package->getOrder())
                     ->setAdditionalData([
                         'package' => $package,
-                        'links' => $this->getContainer()->getParameter('mailer.user.arrival.links')
+                        'links' => $this->getContainer()->getParameter('mailer.user.arrival.links'),
+                        'fromText' => $package->getRoomType()->getHotel()
                     ])
                     ->setTemplate('MBHBaseBundle:Mailer:userArrival.html.twig')
                     ->setAutohide(false)
@@ -164,7 +165,8 @@ class MailerCommand extends ContainerAwareCommand
                     ->setAdditionalData([
                         'prependText' => $tr->trans('mailer.online.user.poll.prepend', ['%guest%' => $order->getPayer()->getName()]),
                         'appendText' => $tr->trans('mailer.online.user.poll.append'),
-                        'image' => 'stars_but.png'
+                        'image' => 'stars_but.png',
+                        'fromText' => $order->getFirstHotel()
                     ])
                     ->setHotel($hotel)
                     ->setTemplate('MBHBaseBundle:Mailer:base.html.twig')

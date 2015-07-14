@@ -436,7 +436,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $request->getSession()->getFlashBag()->set('success', 'Гость успешно удален.');
 
-        return $this->redirect($this->generateUrl('package_guest', ['id' => $id]));
+        return $this->redirect($this->generateUrl('package_guest', ['id' => $entity->getId()]));
     }
 
     /**

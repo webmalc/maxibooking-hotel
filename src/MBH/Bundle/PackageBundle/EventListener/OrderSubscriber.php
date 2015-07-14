@@ -78,6 +78,7 @@ class OrderSubscriber implements EventSubscriber
                                 ->setAdditionalData([
                                     'prependText' => $this->translator->trans('mailer.order.confirm.user.prepend', ['%guest%' => $entity->getPayer()->getName()]),
                                     'appendText' => $this->translator->trans('mailer.order.confirm.user.append'),
+                                    'fromText' => $entity->getFirstHotel()
                                 ])
                                 ->setHotel($hotel)
                                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')

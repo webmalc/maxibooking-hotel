@@ -8,24 +8,24 @@
 
     {% set services = false %}
 
-    <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #e2e2e2;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
-        <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/fa-hotel.png"
+    <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #dddddd;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
+        <img data-name="fa_hotel" src="{{ fa_hotel|default('bundles/mbhbase/images/fa-hotel.png') }}"
              align="absmiddle">
         Забронированные номера
     </div>
-    <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #e2e2e2;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+    <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
         <thead>
         <tr>
-            <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:12%;">
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:12%;">
                 #
             </th>
-            <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:30%;">
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:30%;">
                 Дата
             </th>
-            <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:40%;">
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:40%;">
                 Номер
             </th>
-            <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:right;width:18%;">
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:right;width:18%;">
                 Стоимость
             </th>
         </tr>
@@ -34,17 +34,17 @@
 
         {% for package in order.packages if package.getDeletedAt is empty %}
             <tr>
-                <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.numberWithPrefix }}</td>
-                <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.begin|mbh_format }}
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.numberWithPrefix }}</td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.begin|mbh_format }}
                     -{{ package.end|mbh_format }}<br>
                     <small style="color:#888;">{{ plural(package.nights, "package.json.noch"|trans({}, "MBHPackageBundle"), "package.json.nochi"|trans({}, "MBHPackageBundle"), "package.json.nochei"|trans({}, "MBHPackageBundle")) }}</small>
                 </td>
-                <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.roomType }}
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.roomType }}
                     <br>
                     <small style="color:#888;">{{ package.roomType.hotel }}
                         , {% if package.adults > 0 %}{{ package.adults }} вз.{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} рб.{% endif %}</small>
                 </td>
-                <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">{{ package.packagePrice|number_format(2) }}</td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">{{ package.packagePrice|number_format(2) }}</td>
             </tr>
 
             {% if services is empty and package.services is not empty %}
@@ -57,21 +57,21 @@
     <br>
 
     {% if services %}
-        <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #e2e2e2;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
-            <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/fa-plug.png"
+        <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #dddddd;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
+            <img data-name="fa_plug"  src="{{ fa_plug|default('bundles/mbhbase/images/fa-plug.png') }}"
                  align="absmiddle">
             Дополнительные услуги
         </div>
-        <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #e2e2e2;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+        <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
             <thead>
             <tr>
-                <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:42%;">
+                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:42%;">
                     Наименование
                 </th>
-                <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:40%;">
+                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:40%;">
                     Количество
                 </th>
-                <th style="border-bottom:1px solid #eeeeee;font-weight:600;vertical-align:bottom;padding:9px;text-align:right;width:18%;">
+                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:right;width:18%;">
                     Стоимость
                 </th>
             </tr>
@@ -80,13 +80,13 @@
             {% for service in package.services if service.getDeletedAt is empty %}
             <tbody>
             <tr>
-                <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
                     {{ service.service }}
                 </td>
-                <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
                     {{ service.amount }}
                 </td>
-                <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">
                     {{ service.total }}
                 </td>
             </tr>
@@ -106,65 +106,65 @@
     </div>
 
     {% if order.payer %}
-    <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #e2e2e2;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
-        <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/fa-user.png"
+    <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #dddddd;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
+        <img data-name="fa_user" src="{{ fa_user|default('bundles/mbhbase/images/fa-user.png') }}"
              align="absmiddle">
         Сведения о клиенте
     </div>
-    <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #e2e2e2;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+    <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
         <tbody>
         <tr>
-            <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;width:42%;">Имя:</td>
-            <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;width:58%;">
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:42%;">Имя:</td>
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:58%;">
                 {{ order.payer.name }}
             </td>
         </tr>
 
         {% if order.payer.phone %}
         <tr>
-            <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:42%;">
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:42%;">
                 Телефон:
             </td>
-            <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:58%;">
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:58%;">
                 {{ order.payer.phone }}
             </td>
         </tr>
         {% endif %}
         {% if order.payer.email %}
         <tr>
-            <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;width:42%;">E-mail:
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:42%;">E-mail:
             </td>
-            <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;width:58%;">
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:58%;">
                 {{ order.payer.email }}
             </td>
         </tr>
         {% endif %}
         {% if arrivalTime is defined and arrivalTime %}
         <tr>
-            <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:42%;">
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:42%;">
                 Время заезда:
             </td>
-            <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:58%;">
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:58%;">
                 {{ arrivalTime }}
             </td>
         </tr>
         {% endif %}
         {% if departureTime is defined and departureTime %}
         <tr>
-            <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;width:42%;">Время
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:42%;">Время
                 выезда:
             </td>
-            <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;width:58%;">
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:58%;">
                 {{ departureTime }}
             </td>
         </tr>
         {% endif %}
         {% if order.note %}
         <tr>
-            <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:42%;">
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:42%;">
                 Комментарий:
             </td>
-            <td style="border-bottom:1px solid #eeeeee;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:58%;">
+            <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:58%;">
                 {{ order.note|nl2br }}
             </td>
         </tr>
@@ -178,6 +178,8 @@
     {% endif %}
 
 {% endblock %}
+
+{% block signatureAppendText %}{% endblock %}
 
 {% block link %}
 

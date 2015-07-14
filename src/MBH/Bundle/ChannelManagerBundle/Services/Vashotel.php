@@ -55,7 +55,7 @@ class Vashotel extends Base
     /**
      * Base API URL
      */
-    const BASE_URL = 'https://www.dev.vashotel.ru/hotel_xml/';
+    const BASE_URL = 'https://www.vashotel.ru/hotel_xml/';
 
     /**
      * Get roomTypes & tariffs template file
@@ -452,7 +452,18 @@ class Vashotel extends Base
                 continue;
             }
             if ($orderType == 'edit' && !$order) {
-                continue;
+                $this->dm->getFilterCollection()->disable('softdeleteable');
+                $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
+                    [
+                        'channelManagerId' => (string) $id,
+                        'channelManagerType' => 'vashotel'
+                    ]
+                );
+                $this->dm->getFilterCollection()->enable('softdeleteable');
+
+                if (!$order) {
+                    continue;
+                }
             }
 
             //payer
@@ -1116,6 +1127,11 @@ class Vashotel extends Base
         $this->log($request->getContent());
 
         $xml = simplexml_load_string($request->getContent());
+        $script = 'vashotel';
+
+        if (!$xml || !$xml->hotel_id) {
+            throw new Exception('Invalid vashotel xml');
+        }
 
         $config = $this->dm->getRepository('MBHChannelManagerBundle:VashotelConfig')->findOneBy(['hotelId' => (string)$xml->hotel_id]);
 
@@ -1128,7 +1144,7 @@ class Vashotel extends Base
 
         $sig = $this->getSignature(
             $this->templating->render(static::PUSH_TEMPLATE, $data),
-            '',
+            $script,
             $this->params['password']
         );
         $data['sig'] = md5($sig);

@@ -16,21 +16,38 @@
         {% set color = colors['default'] %}
     {% endif %}
 
-    {% set logo = '/bundles/mbhbase/images/empty_logo.png' %}
     {% set hotelName = 'MaxiBooking' %}
 
-    {% set organization = '&nbsp;' %}
+    {% set address = '&nbsp;' %}
 
     {% if hotel is defined and hotel %}
         {% set hotelName = hotel.name %}
-        {% if hotel.logo %}
-            {% set logo = hotel.logoUrl %}
+
+        {% if logo is not defined and hotel.logo %}
+            {% set logo = hotel.logoUrl|imagine_filter('thumb_130x110') %}
         {% endif %}
-        {% if hotel.organization %}
-            {% set organization = hotel.organization.name %}
+
+        {% if hotel.city %}
+            {% set address = hotel.city %}
         {% endif %}
+        {% if hotel.city %}
+            {% set address = hotel.city %}
+        {% endif %}
+        {% if hotel.settlement %}
+            {% set address = address ~ ', ' ~ hotel.settlement %}
+        {% endif %}
+        {% if hotel.street %}
+            {% set address = address ~ ', ' ~ hotel.street %}
+        {% endif %}
+        {% if hotel.house %}
+            {% set address = address ~ ', д. ' ~ hotel.house %}
+        {% endif %}
+        {% if hotel.corpus %}
+            {% set address = address ~ ', кор. ' ~ hotel.corpus %}
+        {% endif %}
+
     {% else %}
-        {% set organization = 'Система управления отелем' %}
+        {% set address = 'Система управления отелем' %}
     {% endif %}
 
     {% set emptyLink = false %}
@@ -49,13 +66,13 @@
     {% set pStyles = 'margin:5px 0;font-family:Tahoma,Arial;font-size:14px;line-height:19px;color:#666;' %}
     {% set linkStyles = "background-color:" ~ color ~ ";border-radius:5px;color:#ffffff;display:inline-block;font-family:'Cabin', Helvetica, Arial, sans-serif;font-size:14px;font-weight:bold;line-height:45px;text-align:center;text-decoration:none; padding-left: 20px; padding-right: 20px; -webkit-text-size-adjust:none;mso-hide:all;" %}
 
-    <div style="width:750px;margin:50px auto;">
-        <div style="width:720px;height:6px;margin:3px auto; height: 5px;">
+    <div style="width:750px;margin:50px auto;line-height:1;font-size:100%;">
 
-            <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/line-top-{{ type }}.png"
+
+            <img data-name="line_top" src="{{ line_top|default('bundles/mbhbase/images/line-top-' ~ type ~ '.png') }}"
                  border="0"
-                 style="width:720px;height:5px;">
-        </div>
+                 style="margin: 3px auto;display:block;width:720px;height:6px;">
+
         <div style="width:750px;border:1px solid #dddddd;">
             <div style="width:650px;min-height:400px;margin:25px 50px 30px;">
 
@@ -66,7 +83,7 @@
                         <tr valign="middle">
                             <td style="width:15%;">
 
-                                <img src="{{ logo|imagine_filter('thumb_130x110')}}"
+                                <img data-name="logo" src="{{ logo|default('bundles/mbhbase/images/empty_logo.png') }}"
                                      border="0"
                                      alt="MaxiBooking"
                                      style="width:130px;height:110px;margin-bottom:1px;">
@@ -79,7 +96,7 @@
                                 <h2 style="margin:5px 0;font-family:Tahoma,Arial;font-size:26px;line-height:30px;color:#000;font-weight:bold;">
                                     {{ hotelName|raw }}</h2>
                                 <p style="margin:5px 0;font-family:Tahoma,Arial;font-size:12px;line-height:19px;color:#999;">
-                                    {{ organization|raw }}</p>
+                                    {{ address|raw }}</p>
                             </td>
                         </tr>
                     </table>
@@ -100,7 +117,7 @@
 
                     {% if image is defined and image %}
                         {% if link and link != 'hide' %}<a href="{{ link }}">{% endif %}
-                        <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/{{ image }}" border="0" alt="Оцените наш сервис" style="margin:10px 0;">
+                        <img data-name="image_link" src="{{ image_link|default('bundles/mbhbase/images/' ~ image) }}" border="0" alt="Оцените наш сервис" style="margin:10px 0;">
                         {% if link and link != 'hide' %}</a>{% endif %}
                     {% endif %}
 
@@ -118,9 +135,13 @@
 
                 {% block signature %}
 
-                    {% if appendText is defined and appendText %}
-                        <br><br><p style="{{ pStyles }}">{{ appendText|trans|raw }}</p>
-                    {% endif %}
+                    {% block signatureAppendText %}
+
+                        {% if appendText is defined and appendText %}
+                            <br><br><p style="{{ pStyles }}">{{ appendText|trans|raw }}</p>
+                        {% endif %}
+
+                    {% endblock %}
 
                     {% if signature is defined and signature %}
                     <br><br>
@@ -130,16 +151,16 @@
                 </div>
             </div>
         </div>
-        <div style="width:720px; height:6px; margin:3px auto; height: 5px;">
-            <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/line-bottom-{{ type }}.png"
+ 
+            <img data-name="line_bottom" src="{{ line_bottom|default('bundles/mbhbase/images/line-bottom-' ~ type ~ '.png') }}"
                  border="0"
-                 style="width:720px;height:5px;">
-        </div>
+                 style="margin: 3px auto;display:block;width:720px;height:6px;">
+
 
         <div style="margin:25px 0 0;font-family:Tahoma,Arial;font-size:11px;line-height:14px;color:#ccc;text-align:center;">
             Письмо сгенерировано автоматически системой управления отелем «МаксиБукинг» <a
                     href="http://maxi-booking.ru/" target="_blank">
-                <img src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}/bundles/mbhbase/images/maxibooking.png"
+                <img data-name="mb_logo" src="{{ mb_logo|default('bundles/mbhbase/images/maxibooking.png') }}"
                      border="0"
                      alt="MAXIBOOKING"
                      style="width:78px;height:18px;margin-left:3px;vertical-align:middle;"></a>

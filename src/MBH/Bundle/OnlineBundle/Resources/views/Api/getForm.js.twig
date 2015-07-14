@@ -41,12 +41,14 @@ jQuery(document).ready(function () {
 
     // nights
     if (nights.length) {
-        nights.change(function() {
+        jQuery('#mbh-form-nights, #mbh-form-begin').change(function() {
+
             var beginDate = begin.datepicker("getDate");
             var endDate =  beginDate;
-            endDate.setDate(beginDate.getDate() + parseInt(nights.val(), 10));
+            endDate.setDate(endDate.getDate() + parseInt(nights.val(), 10));
             end.datepicker('setDate', endDate);
         });
+
     }
 
     setValue(begin, query.begin);
@@ -73,8 +75,8 @@ jQuery(document).ready(function () {
         if (!endDate) {
             end.datepicker("option", {'minDate': beginDate});
         }
-        console.log(beginDate.setDate(beginDate.getDate() + 1));
-        end.datepicker('setDate', beginDate);
+        //beginDate.setDate(beginDate.getDate() + 1);
+        //end.datepicker('setDate', beginDate);
     });
 
     end.change(function () {

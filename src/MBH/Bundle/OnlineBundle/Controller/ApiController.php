@@ -148,6 +148,9 @@ class ApiController extends Controller
                 ->setText($tr->trans('mailer.online.payment.user', $params))
                 ->setLink('hide')
                 ->setLinkText(null)
+                ->setAdditionalData([
+                    'fromText' => $order->getFirstHotel()
+                ])
             ;
             $this->get('mbh.notifier.mailer')
                 ->setMessage($message)
@@ -375,6 +378,7 @@ class ApiController extends Controller
                     ->setAdditionalData([
                         'prependText' => $tr->trans('mailer.online.user.prepend', ['%guest%' => $order->getPayer()->getName()]),
                         'appendText' => $tr->trans('mailer.online.user.append'),
+                        'fromText' => $hotel->getName()
                     ])
                     ->setHotel($hotel)
                     ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')

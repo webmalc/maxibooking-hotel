@@ -10,6 +10,7 @@ use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
+use Zend\Stdlib\JsonSerializable;
 
 /**
  * @ODM\Document(collection="Packages", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageRepository")
@@ -18,7 +19,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  */
-class Package extends Base
+class Package extends Base implements JsonSerializable
 {
     /**
      * Hook timestampable behavior
@@ -908,11 +909,26 @@ class Package extends Base
 
     /**
      * Returns the average price per night.
+     * @param mixed $day \DateTime or string d.m.Y
      * @return float
      */
-    public function getOneDayPrice()
+    public function getOneDayPrice($day = null)
     {
-        return round($this->getPackagePrice()/$this->getNights());
+        $date = null;
+
+        if ($day instanceof \DateTime) {
+            $date = $day>format('d_m_Y');
+        }
+        if (preg_match('/^\d{2}\.\d{2}.\d{4}$/ui', (string) $day)) {
+            $date = str_replace('.', '_', $day);
+        }
+
+        if (!$date || empty($this->pricesByDate[$date])) {
+            return round($this->getPackagePrice()/$this->getNights(), 2);
+        }
+        else {
+            return (float) $this->pricesByDate[$date];
+        }
     }
 
     public function isEarlyCheckIn()
@@ -1093,4 +1109,25 @@ class Package extends Base
             $this->setDepartureTime(new \DateTime());
         }
     }
+
+    public function toArray()
+    {
+        return [
+            'packageKey' => $this->getId(),
+            'number' => $this->getNumberWithPrefix(),
+            'hotel' => (string) $this->getRoomType()->getHotel(),
+            'roomType' => (string) $this->getRoomType(),
+            'payer' => (string) $this->getOrder()->getPayer(),
+            'price' => $this->getPrice(),
+            'begin' => $this->getBegin()->format('d.m.Y'),
+            'end' => $this->getEnd()->format('d.m.Y'),
+            'type' => $this->getStatus(),
+        ];
+    }
+
+    public function jsonSerialize()
+    {
+        $this->toArray();
+    }
+
 }
