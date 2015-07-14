@@ -30,7 +30,7 @@ class MailerCommand extends ContainerAwareCommand
         $tr = $this->getContainer()->get('translator');
         $notifier = $this->getContainer()->get('mbh.notifier.mailer');
         $router = $this->getContainer()->get('router');
-        $linksParams = $this->getContainer()->getParameter('mailer.user.arrival.links');
+        $linksParams = $this->getContainer()->getParameter('mailer_user_arrival_links');
 
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -111,7 +111,7 @@ class MailerCommand extends ContainerAwareCommand
                     ->setOrder($package->getOrder())
                     ->setAdditionalData([
                         'package' => $package,
-                        'links' => $this->getContainer()->getParameter('mailer.user.arrival.links'),
+                        'links' => $this->getContainer()->getParameter('mailer_user_arrival_links'),
                         'fromText' => $package->getRoomType()->getHotel()
                     ])
                     ->setTemplate('MBHBaseBundle:Mailer:userArrival.html.twig')
