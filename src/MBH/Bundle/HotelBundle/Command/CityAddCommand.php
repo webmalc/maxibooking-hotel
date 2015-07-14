@@ -19,8 +19,7 @@ class CityAddCommand extends ContainerAwareCommand
             ->setDescription('Add a city in the database.')
             ->addArgument('country', InputArgument::REQUIRED, 'Country title')
             ->addArgument('region', InputArgument::REQUIRED, 'Region title')
-            ->addArgument('city', InputArgument::REQUIRED, 'City title')
-        ;
+            ->addArgument('city', InputArgument::REQUIRED, 'City title');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -30,6 +29,7 @@ class CityAddCommand extends ContainerAwareCommand
 
         if ($dm->getRepository('MBHHotelBundle:City')->findOneBy(['title' => $input->getArgument('city')])) {
             $output->writeln('<error>Error. City already exist in the database!!!</error>');
+
             return false;
         }
 
@@ -42,12 +42,11 @@ class CityAddCommand extends ContainerAwareCommand
         }
 
         $region = $dm->createQueryBuilder('MBHHotelBundle:Region')
-                      ->field('title')->equals($input->getArgument('region'))
-                      ->field('country.id')->equals($country->getId())
-                      ->limit(1)
-                      ->getQuery()
-                      ->getSingleResult()
-        ;
+            ->field('title')->equals($input->getArgument('region'))
+            ->field('country.id')->equals($country->getId())
+            ->limit(1)
+            ->getQuery()
+            ->getSingleResult();
 
         if (!$region) {
             $region = new Region();
@@ -74,10 +73,11 @@ class CityAddCommand extends ContainerAwareCommand
             $arg = $this->getHelper('dialog')->askAndValidate(
                 $output,
                 '<question>Please enter a country title:</question>',
-                function($arg) {
+                function ($arg) {
                     if (empty($arg)) {
                         throw new \Exception('Country title can not be empty');
                     }
+
                     return $arg;
                 }
             );
@@ -88,10 +88,11 @@ class CityAddCommand extends ContainerAwareCommand
             $arg = $this->getHelper('dialog')->askAndValidate(
                 $output,
                 '<question>Please enter a region title:</question>',
-                function($arg) {
+                function ($arg) {
                     if (empty($arg)) {
                         throw new \Exception('Region title can not be empty');
                     }
+
                     return $arg;
                 }
             );
@@ -102,10 +103,11 @@ class CityAddCommand extends ContainerAwareCommand
             $arg = $this->getHelper('dialog')->askAndValidate(
                 $output,
                 '<question>Please enter a city title:</question>',
-                function($arg) {
+                function ($arg) {
                     if (empty($arg)) {
                         throw new \Exception('City title can not be empty');
                     }
+
                     return $arg;
                 }
             );

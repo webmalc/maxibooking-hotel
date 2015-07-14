@@ -213,12 +213,7 @@ class HotelController extends Controller
      */
     public function extendedAction(Hotel $entity)
     {
-        $this->get('mbh.translatable_listener')->setDefaultLocale('en_EN');
-
-        //$country = $this->dm->getRepository('MBHHotelBundle:Country')->findOneBy([]);
-        /*var_dump($country->getId());
-        var_dump($country->getTitle());*/
-
+        $country = $this->dm->getRepository('MBHHotelBundle:Country')->findOneBy([]);
 
         $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),

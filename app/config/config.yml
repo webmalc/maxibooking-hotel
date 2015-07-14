@@ -129,8 +129,9 @@ doctrine_mongodb:
 # StofDoctrineExtensionsBundle Configuration
 stof_doctrine_extensions:
     default_locale: ru_RU
-    class:
-        translatable:  MBH\Bundle\BaseBundle\EventListener\TranslatableListener
+    translation_fallback: true
+    #class:
+    #    translatable:  MBH\Bundle\BaseBundle\EventListener\TranslatableListener
     mongodb:
         default:
             blameable:      true

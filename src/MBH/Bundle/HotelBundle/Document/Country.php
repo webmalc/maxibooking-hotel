@@ -18,7 +18,6 @@ use Gedmo\Translatable\Translatable;
  */
 class Country extends Base implements Translatable
 {
-
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
