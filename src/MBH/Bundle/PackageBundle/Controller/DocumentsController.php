@@ -250,7 +250,6 @@ class DocumentsController extends Controller
             throw $this->createNotFoundException();
         }
 
-
         $templateGeneratorFactory = new DocumentTemplateGeneratorFactory();
         $templateGeneratorFactory->setContainer($this->container);
 

@@ -1,62 +1,65 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8">
-    <style>
-        .indent {
-            text-indent: 1.5em;
-        }
-
-        .document {
-            width: 900px;
-        }
-
-        .header {
-            width: 100%;
-            border-bottom: solid 2px;
-        }
-
-        .table {
-            width: 900px;
-        }
-
-        .table td {
-            padding: 5px;
-        }
-
-        .table .field {
-            /*height: 40px;*/
-            font-size: 14px;
-        }
-
-        .table .field .title {
-            float: left;
-            width: 80px;
-        }
-
-        .table .field .title div:first-child {
-            text-transform: uppercase;
-        }
-        .table .field .field .title div:last-child {
-            font-size: 13px;
-        }
-
-        .table td {
-            clear: both;
-        }
-
-        .area {
-            border-bottom: 1px solid #000000;
-        }
-
-        .table .area {
-            height: 30px;
-            margin-left: 81px;
-            font-size: 14px
-        }
-    </style>
+    <title>Registration Card</title>
 </head>
+
 <body>
+
+<style>
+    .indent {
+        text-indent: 1.5em;
+    }
+
+    .document {
+        width: 900px;
+    }
+
+    .header {
+        width: 100%;
+        border-bottom: solid 2px;
+    }
+
+    .table {
+        width: 900px;
+    }
+
+    .table td {
+        padding: 5px;
+    }
+
+    .table .field {
+        /*height: 40px;*/
+        font-size: 14px;
+    }
+
+    .table .field .title {
+        float: left;
+        width: 80px;
+    }
+
+    .table .field .title div:first-child {
+        text-transform: uppercase;
+    }
+    .table .field .field .title div:last-child {
+        font-size: 13px;
+    }
+
+    .table td {
+        clear: both;
+    }
+
+    .area {
+        border-bottom: 1px solid #000000;
+    }
+
+    .table .area {
+        height: 30px;
+        margin-left: 81px;
+        font-size: 14px
+    }
+</style>
 
 {% set organization = null %}
 {% set tourist = null %}
@@ -105,7 +108,9 @@
                 </div>
             </td>
             <td style="width: 20%">
-                <img src="{{ asset(hotel.logoUrl, absolute=true) }}" style="height: 80px;float: right;">
+                {% if hotel.logoUrl %}
+                    <img src="{{ asset(hotel.logoUrl, absolute=true) }}" style="height: 80px;float: right;">
+                {% endif %}
             </td>
         </tr>
     </table>
