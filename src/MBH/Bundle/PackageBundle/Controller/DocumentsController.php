@@ -269,7 +269,8 @@ class DocumentsController extends Controller
         $html = $templateGenerator->getTemplate();
 
         $content = $this->get('knp_snappy.pdf')->getOutputFromHtml($html, [
-            'cookie' => [$request->getSession()->getName() => $request->getSession()->getId()]
+            'cookie' => [$request->getSession()->getName() => $request->getSession()->getId()],
+            'dpi' => 125
         ]);
 
         return new Response($content, 200, [
