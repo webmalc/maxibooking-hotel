@@ -2,3 +2,5 @@ services:
     mbh.vega.vega_export:
           class: MBH\Bundle\VegaBundle\Services\VegaExport
           arguments: [@service_container]
+    mbh.vega.dictionary_provider:
+          class: MBH\Bundle\VegaBundle\Services\DictionaryProvider

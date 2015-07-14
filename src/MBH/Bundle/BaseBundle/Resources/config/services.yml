@@ -120,3 +120,11 @@ services:
         arguments: [@doctrine_mongodb]
         tags:
             - { name: form.type, alias: mbh_city }
+
+    #mbh.translatable_listener:
+    #    class: MBH\Bundle\BaseBundle\EventListener\TranslatableListener
+    #    calls:
+    #          - [ setDefaultLocale, [ 'ru_RU' ] ]
+    #          - [ setAnnotationReader, [ @annotation_reader ] ]
+    #    tags:
+    #          - { name: doctrine.event_subscriber, connection: default }

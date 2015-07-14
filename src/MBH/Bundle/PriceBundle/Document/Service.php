@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -14,6 +15,8 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @ODM\Document(collection="Service")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ *
+ * @ODM\HasLifecycleCallbacks
  */
 class Service extends Base
 {
@@ -69,7 +72,15 @@ class Service extends Base
      * )
      */
     protected $title;
-    
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     * @Assert\Regex(pattern="/^[a-zA-Z0-9 ]+$/")
+     */
+    protected $internationalTitle;
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -210,6 +221,22 @@ class Service extends Base
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInternationalTitle()
+    {
+        return $this->internationalTitle;
+    }
+
+    /**
+     * @param string $internationalTitle
+     */
+    public function setInternationalTitle($internationalTitle)
+    {
+        $this->internationalTitle = $internationalTitle;
     }
 
     /**
@@ -451,5 +478,16 @@ class Service extends Base
     public function getUpdatedBy()
     {
         return $this->updatedBy;
+    }
+
+
+    /**
+     * @ODM\PreUpdate()
+     */
+    public function preUpdate()
+    {
+        if(!$this->internationalTitle && $this->fullTitle) {
+            $this->internationalTitle = Helper::translateToLat($this->fullTitle);
+        }
     }
 }

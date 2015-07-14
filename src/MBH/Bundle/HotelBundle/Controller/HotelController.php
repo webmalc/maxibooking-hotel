@@ -13,6 +13,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\Response;
 
 class HotelController extends Controller
 {
@@ -212,6 +213,8 @@ class HotelController extends Controller
      */
     public function extendedAction(Hotel $entity)
     {
+        $country = $this->dm->getRepository('MBHHotelBundle:Country')->findOneBy([]);
+
         $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),
             'config' => $this->container->getParameter('mbh.hotel')

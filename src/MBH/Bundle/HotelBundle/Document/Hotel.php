@@ -5,6 +5,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\PackageBundle\Document\Organization;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
@@ -958,12 +959,6 @@ class Hotel extends Base
         $this->housings = $housings;
     }
 
-
-
-
-
-
-
     /**
      * @return string
      */
@@ -1011,12 +1006,12 @@ class Hotel extends Base
     }
 
     /**
-     * @return UploadedFile|null
+     * @return File|null
      */
     public function getFile()
     {
         if (!$this->file && $this->logo && is_file($this->getPath())) {
-            $this->file = new UploadedFile($this->getPath(), $this->getLogo());
+            $this->file = new File($this->getPath());
         }
 
         return $this->file;
@@ -1024,24 +1019,20 @@ class Hotel extends Base
 
     public function getLogoUrl()
     {
-        if($this->getFile()) {
-            return '/upload/hotelLogos/'.$this->getFile()->getClientOriginalName();
+        if($this->getFile() instanceof File) {
+            return '/upload/hotelLogos/'.$this->getLogo();
         }
         return null;
     }
 
     public function uploadFile()
     {
-        if (null === $this->getFile()) {
-            return;
-        }
+        if ($this->getFile() instanceof UploadedFile) { //$this->getFile()->getPath() != $this->getUploadRootDir()
+            if($this->getLogo()) {
+                $this->setLogo($this->getId(). '_' . uniqid() . '.'.$this->getFile()->getClientOriginalExtension());
+            }
 
-        if($this->getLogo()) {
-            $this->setLogo($this->getId(). '_' . uniqid() . '.'.$this->getFile()->getClientOriginalExtension());
-        }
-
-        if($this->getFile()->getPath() != $this->getUploadRootDir()) {
-            $this->getFile()->move($this->getUploadRootDir(), $this->getLogo());
+            $this->file = $this->getFile()->move($this->getUploadRootDir(), $this->getLogo());
         }
     }
 

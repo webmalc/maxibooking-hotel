@@ -22,7 +22,8 @@ class AddressObjectDecomposedType extends AbstractType
             ->add('zip_code', 'text', [])
             ->add('region', 'text', [])
             ->add('district', 'document', [
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion'
+                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
+                'empty_value' => ''
             ])
             ->add('settlement', 'text', [])
             ->add('urbanarea', 'text', [])

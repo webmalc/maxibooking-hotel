@@ -38,8 +38,8 @@ class VegaExport
     public function __construct(Container $container)
     {
         $this->container = $container;
-        $this->documentTypes = $this->container->getParameter('mbh.vega.document.types');
-        $this->scanTypes = $this->container->getParameter('mbh.vega.document.scan.types');
+        $this->documentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
+        $this->scanTypes = $this->container->get('mbh.vega.dictionary_provider')->getScanTypes();
     }
 
     /**
@@ -91,7 +91,7 @@ class VegaExport
     {
         $orderDocuments = [];
         $documents = $order->getDocuments();
-        $vegaTypes = array_keys($this->container->getParameter('mbh.vega.document.types'));
+        $vegaTypes = array_keys($this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes());
         foreach ($documents as $document) {
             if ($document->getTourist() && $document->getTourist()->getId() == $tourist->getId() && in_array($document->getType(), $vegaTypes)) {
                 $orderDocuments[] = $document;

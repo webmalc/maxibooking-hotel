@@ -25,23 +25,26 @@ class Builder extends ContainerAware
         $menu = $factory->createItem('Docs Generation');
         $translator = $this->container->get('translator');
 
+        $rootItem = $menu->addChild('actions', [
+            'label' => $translator->trans('package.actions', [], 'MBHPackageBundle')
+        ]);
 
-        $menu->setAttribute('class', 'dropdown-menu');
-        $menu->setChildrenAttributes([
+        $rootItem->setAttribute('class', 'dropdown-menu');
+        $rootItem->setChildrenAttributes([
             'class' => 'dropdown-menu',
             'role' => 'menu',
             'data-id' => $package->getId()
         ]);
 
-        $menu
+        $rootItem
             ->addChild('Docs header', [
                 'label' => $translator->trans('package.actions.docs', [], 'MBHPackageBundle')
             ])
             ->setAttribute('dropdown_header', true);
 
-        $this->addDocumentTemplateItems($menu, $package);
+        $this->addDocumentTemplateItems($rootItem, $package);
 
-        $menu
+        $rootItem
             ->addChild('Search Header', [
                 'label' => $translator->trans('package.actions.search', [], 'MBHPackageBundle')
             ])
@@ -50,14 +53,14 @@ class Builder extends ContainerAware
                 'dropdown_header' => true
             ]);
 
-        $menu
+        $rootItem
             ->addChild('Package search', [
                 'uri' => $this->container->get('router')->generate('package_search').'#'.twig_urlencode_filter(['s' => $searchQuery]),
                 'label' => $translator->trans('package.actions.find_similar', [], 'MBHPackageBundle')
             ])
             ->setAttribute('icon', 'fa fa-search');
 
-        $menu
+        $rootItem
             ->addChild('Order search ', [
                 'route' => 'package_search',
                 'routeParameters' => ['order' => $package->getOrder()->getId()],
@@ -69,13 +72,13 @@ class Builder extends ContainerAware
                 'level' => 2,
             ]);
 
-        $menu
+        $rootItem
             ->addChild('Delete Header', [
                 'label' => $translator->trans('package.actions.delete', [], 'MBHPackageBundle')
             ])
             ->setAttribute('dropdown_header', true);
 
-        $menu
+        $rootItem
             ->addChild('Delete', [
                 'route' => 'package_delete',
                 'routeParameters' => ['id' => $package->getId()],
@@ -85,7 +88,7 @@ class Builder extends ContainerAware
                 'icon' => 'fa fa-trash-o',
                 'class' => 'delete-link'
             ]);
-        $menu
+        $rootItem
             ->addChild('Order delete', [
                 'route' => 'package_search',
                 'routeParameters' => ['order' => $package->getOrder()->getId()],

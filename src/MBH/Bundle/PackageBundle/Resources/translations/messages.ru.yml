@@ -192,6 +192,8 @@ form.organizationType.group_location: 'Адресные данные'
 form.organizationType.address: 'Адрес'
 form.organizationType.default_hotels: 'По умолчанию для'
 form.organizationType.default_hotels_help: 'Отели, для которых эта организация будет использоваться по умолчанию'
+
+# Вид документов
 package.document.type_passport: Паспорт
 package.document.type_foreign_passport: Загран. паспорт
 package.document.type_insurance: Мед. страховка
@@ -216,6 +218,7 @@ templateDocument.form.confirmation.hasServices: Включить услуги?
 templateDocument.form.confirmation.hasStamp: Добавить печать?
 
 templateDocument.type.confirmation: Подтверждение
+templateDocument.type.confirmation_en: Подтверждение (EN)
 templateDocument.type.registration_card: Регистрационная карта
 templateDocument.type.evidence: Свидетельство о регистрации по месту пребывания
 templateDocument.type.form: Форма N 1-Г

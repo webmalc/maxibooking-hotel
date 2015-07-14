@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 
+use MBH\Bundle\VegaBundle\Services\DictionaryProvider;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -13,11 +14,14 @@ use Symfony\Component\Form\FormBuilderInterface;
  */
 class DocumentRelationType extends AbstractType
 {
-    private $documentTypes;
+    /**
+     * @var DictionaryProvider
+     */
+    private $dictionaryProvider;
 
-    public function setDocumentTypes(array $documentTypes)
+    public function setDictionaryProvider(DictionaryProvider $dictionaryProvider)
     {
-        $this->documentTypes = $documentTypes;
+        $this->dictionaryProvider = $dictionaryProvider;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -26,15 +30,17 @@ class DocumentRelationType extends AbstractType
 
         $builder
             ->add('type', 'choice', [
-                'choices' => $this->documentTypes,
+                'choices' => $this->dictionaryProvider->getDocumentTypes(),
                 //'group' => $group,
                 'required' => false,
+                'empty_value' => ''
             ])
             ->add('authority_organ', 'document', [
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaFMS',
                 //'property_path' => 'code',
                 //'group' => $group,
                 'required' => false,
+                'empty_value' => ''
             ])
             ->add('authority', 'text', [
                 //'group' => $group,

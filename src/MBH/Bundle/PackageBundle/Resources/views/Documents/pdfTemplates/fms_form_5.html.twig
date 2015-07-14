@@ -1,68 +1,68 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8">
-    <style>
-        .indent {
-            text-indent: 1.5em;
-        }
-
-        .document {
-            width: 900px;
-        }
-
-        .header {
-            width: 100%;
-            border-bottom: solid 2px;
-        }
-
-        .table {
-            width: 900px;
-        }
-
-        .table td {
-            padding: 5px;
-        }
-
-        .table .field {
-            /*height: 40px;*/
-            font-size: 14px;
-        }
-
-        .table .field .title {
-            float: left;
-            width: 80px;
-        }
-
-        .table .field .title div:first-child {
-            text-transform: uppercase;
-        }
-        .table .field .field .title div:last-child {
-            font-size: 13px;
-        }
-
-        .table td {
-            clear: both;
-        }
-
-        .area {
-            border-bottom: 1px solid #000000;
-        }
-
-        .table .area {
-            height: 30px;
-            margin-left: 81px;
-            font-size: 14px
-        }
-    </style>
+    <title>Fms Form 5</title>
 </head>
 <body>
+
+<style>
+    .indent {
+        text-indent: 1.5em;
+    }
+
+    .document {
+        width: 900px;
+    }
+
+    .header {
+        width: 100%;
+        border-bottom: solid 2px;
+    }
+
+    .table {
+        width: 900px;
+    }
+
+    .table td {
+        padding: 5px;
+    }
+
+    .table .field {
+        /*height: 40px;*/
+        font-size: 14px;
+    }
+
+    .table .field .title {
+        float: left;
+        width: 80px;
+    }
+
+    .table .field .title div:first-child {
+        text-transform: uppercase;
+    }
+    .table .field .field .title div:last-child {
+        font-size: 13px;
+    }
+
+    .table td {
+        clear: both;
+    }
+
+    .area {
+        border-bottom: 1px solid #000000;
+    }
+
+    .table .area {
+        height: 30px;
+        margin-left: 81px;
+        font-size: 14px
+    }
+</style>
 
 {% set organization = null %}
 {% set tourist = null %}
 {% set hotel = null %}
-
-
 
 
 {% set arrival = null %}
@@ -85,8 +85,6 @@
 {% endif %}
 
 
-
-
 {% if entity.order and entity.order.organization %}
     {% set organization = entity.order.organization %}
 {% endif %}
@@ -94,6 +92,8 @@
 {% if entity.roomType and entity.roomType.hotel %}
     {% set hotel = entity.roomType.hotel %}
 {% endif %}
+
+
 
 
 {% for tourist in tourists %}
@@ -180,7 +180,7 @@
                                     <div class="title">
                                         Прибыл
                                     </div>
-                                    <div class="area">{% if entity.arrivalTime %}{{ entity.arrivalTime|date('d.m.Y') }}{% endif %}</div>
+                                    <div class="area">{{ arrival }}</div>
                                 </div>
                             </td>
                         </tr>
@@ -198,7 +198,7 @@
                                     <div class="title">
                                         Выбыл
                                     </div>
-                                    <div class="area">{% if entity.deletedAt %}{{ entity.departureTime|date('d.m.Y') }}{% endif %}</div>
+                                    <div class="area">{{ departure }}</div>
                                 </div>
                             </td>
                         </tr>
@@ -228,7 +228,7 @@
                                     <div class="title" style="margin-left: 30px">
                                         Область
                                     </div>
-                                    <div class="area">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district }}{% endif %}</div>
+                                    <div class="area">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district|capitalize }}{% endif %}</div>
                                 </div>
                             </td>
                         </tr>
@@ -238,7 +238,7 @@
                                     <div class="title" style="margin-left: 30px">
                                         Район
                                     </div>
-                                    <div class="area">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.mainRegion }}{% endif %}</div>
+                                    <div class="area">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.mainRegion|capitalize }}{% endif %}</div>
                                 </div>
                             </td>
                         </tr>
@@ -248,7 +248,7 @@
                                     <div class="title" style="margin-left: 30px; width: 70px">
                                         Нас. пункт
                                     </div>
-                                    <div class="area" style="margin-left: 100px"></div>
+                                    <div class="area" style="margin-left: 100px">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district|capitalize }}{% endif %}</div>
                                 </div>
                             </td>
                             <td>
@@ -288,7 +288,7 @@
                                     <div class="title" style="width: 45px">
                                         Серия
                                     </div>
-                                    <div class="area" style="margin-left: 45px">{% if tourist and tourist.documentRelation and tourist.documentRelation.series %} {{ tourist.documentRelation.series }} {% endif %}</div>
+                                    <div class="area" style="margin-left: 45px">{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.series }} {% endif %}</div>
                                 </div>
                             </td>
                             <td>
@@ -296,7 +296,7 @@
                                     <div class="title" style="width: 20px">
                                         №
                                     </div>
-                                    <div class="area" style="margin-left: 20px">{% if tourist and tourist.documentRelation and tourist.documentRelation.number %} {{ tourist.documentRelation.number }} {% endif %}</div>
+                                    <div class="area" style="margin-left: 20px">{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.number }} {% endif %}</div>
                                 </div>
                             </td>
                             <td>
@@ -314,7 +314,7 @@
                             <td colspan="3">
                                 <div class="field">
                                     <div class="area" style="margin-left: 0px">
-                                        {% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrgan %} {{ tourist.documentRelation.authorityOrgan|capitalize }} {% endif %}
+                                        {% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan|capitalize }} {% endif %}
                                     </div>
                                 </div>
                             </td>
@@ -325,7 +325,7 @@
                                     <div class="title" style="width: 240px">
                                         7. Адрес места жительства: Страна
                                     </div>
-                                    <div class="area" style="margin-left: 240px">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.country %} {{ tourist.addressObjectDecomposed.country }} {% endif %}</div>
+                                    <div class="area" style="margin-left: 240px">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.country }} {% endif %}</div>
                                 </div>
                             </td>
                         </tr>
@@ -335,7 +335,7 @@
                                     <div class="title" style="width: 40px;">
                                         Обл.
                                     </div>
-                                    <div class="area" style="margin-left: 40px">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.settlement %} {{ tourist.addressObjectDecomposed.settlement }} {% endif %}</div>
+                                    <div class="area" style="margin-left: 40px">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.settlement }} {% endif %}</div>
                                 </div>
                             </td>
                             <td>
@@ -343,7 +343,7 @@
                                     <div class="title"  style="width: 45px">
                                         Город
                                     </div>
-                                    <div class="area" style="margin-left: 45px">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.city %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
+                                    <div class="area" style="margin-left: 45px">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
                                 </div>
                             </td>
                         </tr>
@@ -353,7 +353,7 @@
                                     <div class="title" style="width: 45px;">
                                         Район
                                     </div>
-                                    <div class="area" style="margin-left: 45px">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.district %} {{ tourist.addressObjectDecomposed.district }} {% endif %}</div>
+                                    <div class="area" style="margin-left: 45px">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.district|capitalize }} {% endif %}</div>
                                 </div>
                             </td>
                             <td>
@@ -361,7 +361,7 @@
                                     <div class="title" style="width: 75px;">
                                         Нас. пункт
                                     </div>
-                                    <div class="area" style="margin-left: 75px">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.urbanArea %} {{ tourist.addressObjectDecomposed.urbanArea }} {% endif %}</div>
+                                    <div class="area" style="margin-left: 75px">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.urbanArea }} {% endif %}</div>
                                 </div>
                             </td>
                         </tr>
@@ -371,7 +371,7 @@
                                     <div class="title" style="width: 45px;">
                                         Улица
                                     </div>
-                                    <div class="area" style="margin-left: 45px;">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.street %} {{ tourist.addressObjectDecomposed.street }} {% endif %}</div>
+                                    <div class="area" style="margin-left: 45px;">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.street }} {% endif %}</div>
                                 </div>
                             </td>
                         </tr>
@@ -381,7 +381,7 @@
                                     <div class="title" style="width: 40px;">
                                         Дом
                                     </div>
-                                    <div class="area" style="margin-left: 40px;"></div>
+                                    <div class="area" style="margin-left: 40px;">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.house }} {% endif %}</div>
                                 </div>
                             </td>
                             <td>
@@ -389,7 +389,7 @@
                                     <div class="title" style="width: 30px;">
                                         Кв.
                                     </div>
-                                    <div class="area" style="margin-left: 30px;"></div>
+                                    <div class="area" style="margin-left: 30px;">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.flat }} {% endif %}</div>
                                 </div>
                             </td>
                         </tr>
@@ -399,7 +399,7 @@
                                     <div class="title" style="width: 130px">
                                         Зарегистрировано
                                     </div>
-                                    <div class="area" style="margin-left: 130px"></div>
+                                    <div class="area" style="margin-left: 130px">{{ arrival }}</div>
                                 </div>
                             </td>
                         </tr>

@@ -140,6 +140,6 @@ class Region extends Base
 
     public function __toString()
     {
-        return $this->getTitle();
+        return (string) $this->getTitle();
     }
 }

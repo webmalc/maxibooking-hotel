@@ -235,18 +235,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
-        $form = $this->createForm(
-            new PackageMainType(),
-            $entity,
-            [
-                'price' => $this->get('security.authorization_checker')->isGranted([
-                    'ROLE_BOOKKEEPER',
-                    'ROLE_SENIOR_MANAGER'
-                ]),
-                'hotel' => $entity->getRoomType()->getHotel(),
-                'corrupted' => $entity->getCorrupted()
-            ]
-        );
+
+        $form = $this->createForm(new PackageMainType(), $entity, [
+            'price' => $this->get('security.authorization_checker')->isGranted([
+                'ROLE_BOOKKEEPER',
+                'ROLE_SENIOR_MANAGER'
+            ]),
+            'hotel' => $entity->getRoomType()->getHotel(),
+            'corrupted' => $entity->getCorrupted()
+        ]);
 
         return [
             'entity' => $entity,

@@ -2,9 +2,9 @@
 <html lang="ru">
 <head>
     <meta charset="utf-8">
-    <title>Confirmation</title>
+    <title>Confirmation EN</title>
 </head>
-
+<body>
 <style>
     .document{
         padding-top: 0px;
@@ -57,8 +57,6 @@
         padding: 3px;
     }
 </style>
-
-<body>
 <div class="document">
     {% set hotel = null %}
     {% set tourist = null %}
@@ -79,11 +77,11 @@
     <div class="header">
         <div class="title">
             <p>
-                Подтверждение
+                BOOKING CONFIRMATION
                 {% if formParams.hasFull is defined and formParams.hasFull %}
-                    заказа № {{ entity.order.id }} от {{ entity.order.createdAt|date("d.m.Y") }} г.
+                    № {{ entity.order.id }} FROM {{ entity.order.createdAt|date("d.m.Y") }}
                 {% else %}
-                    брони № {{ entity.number }} от {{ entity.createdAt|date("d.m.Y") }} г.
+                    № {{ entity.number }} FROM {{ entity.createdAt|date("d.m.Y") }}
                 {% endif %}
             </p>
         </div>
@@ -98,12 +96,15 @@
     <hr>
 
     <div class="main">
-        <p class="indent">Отель {% if hotel and hotel.name %}<strong>"{{ hotel.name }}"</strong>{% else %}____________________{% endif %}, расположенный по
-            адресу: {% if hotel and hotel.country and hotel.city and hotel.street %}
-            {{ hotel.country.title }}, {% if hotel.region %}{{ hotel.region.title }},{% endif %} г. {{ hotel.city.title }}{% if hotel.settlement %}, {{ hotel.settlement }}{% endif %}, {{ hotel.street }},
-                {% if hotel.house %} д. {{ hotel.house }}{% endif %}{% if hotel.corpus %}, кор. {{ hotel.corpus }}{% endif %}{% if hotel.flat %}, кв. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %},
-            ИНН {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %}, извещает
-            Заказчика:
+        <p class="indent">
+            The Hotel {% if hotel and hotel.name %}<strong>“{{ hotel.name|transToLat }}”</strong>{% else %}____________________{% endif %} with an address at
+
+            {#Russia, Krasnodar region, Mostovskoy city, Chuguevka village, str. Smirnova 11, bldg. A, fl. 246, TIN 123123810923#}
+            {% if hotel and hotel.country and hotel.city and hotel.street %}
+            {{ hotel.country }}, {% if hotel.region %} {{ hotel.region|transToLat }}, {% endif %} {{ hotel.city|transToLat }} city{% if hotel.settlement|transToLat %}, {{ hotel.settlement|transToLat }}{% endif %}, str. {{ hotel.street|transToLat }},
+            {% if hotel.house %} {{ hotel.house }}{% endif %}{% if hotel.corpus %}, bldg. {{ hotel.corpus|transToLat }}{% endif %}{% if hotel.flat %}, fl. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %},
+            TIN {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %},
+            informs the Client:
         </p>
 
 
@@ -116,11 +117,11 @@
             <table border="0">
                 <tbody>
                 <tr>
-                    <td style="width: 40px">Ф.И.О.</td>
+                    <td style="width: 80px">Full name</td>
                     <td style="width: 60%;">
-                        <div class="area">&nbsp{% if tourist %}{{ tourist.fullName }}{% endif %}</div>
+                        <div class="area">&nbsp{% if tourist %}{{ tourist.fullName|transToLat }}{% endif %}</div>
                     </td>
-                    <td style="width: 130px">дата рождения</td>
+                    <td style="width: 90px">Date of birth</td>
                     <td><div class="area">&nbsp{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div></td>
                 </tr>
                 </tbody>
@@ -128,13 +129,13 @@
             <table border="0">
                 <tbody>
                 <tr>
-                    <td style="width: 20px">адрес</td>
+                    <td style="width: 20px">Address</td>
                     <td>
                         <div class="area">&nbsp
                             {% if tourist and tourist.addressObjectDecomposed %}
-                                {{ tourist.addressObjectDecomposed.country }}, {{ tourist.addressObjectDecomposed.region }}{% if tourist.addressObjectDecomposed.city %}, г. {{ tourist.addressObjectDecomposed.city }}{% endif %}{% if tourist.addressObjectDecomposed.street %}, ул. {{ tourist.addressObjectDecomposed.street }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
-                                д. {{ tourist.addressObjectDecomposed.house }}{% if tourist.addressObjectDecomposed.corpus %}, кор. {{ tourist.addressObjectDecomposed.corpus }}{% endif %}{% if tourist.addressObjectDecomposed.flat %}, кв. {{ tourist.addressObjectDecomposed.flat }}{% endif %}
-                                {% endif %}
+                                {{ tourist.addressObjectDecomposed.country|transToLat }}, {{ tourist.addressObjectDecomposed.region|transToLat }}{% if tourist.addressObjectDecomposed.city %}, {{ tourist.addressObjectDecomposed.city|transToLat }} city{% endif %}{% if tourist.addressObjectDecomposed.street %}, str. {{ tourist.addressObjectDecomposed.street|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
+                                {{ tourist.addressObjectDecomposed.house }}{% if tourist.addressObjectDecomposed.corpus %}, bldg. {{ tourist.addressObjectDecomposed.corpus|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.flat %}, fl. {{ tourist.addressObjectDecomposed.flat }}{% endif %}
+                            {% endif %}
                             {% endif %}
                         </div>
                     </td>
@@ -144,10 +145,12 @@
             <table border="0">
                 <tbody>
                 <tr>
-                    <td>тип документа</td>
-                    <td style="width: 45%"><div class="area">&nbsp{% if documentRelation and documentRelation.type %}{{ documentRelation.type|trans({})|capitalize }}{% endif %}</div></td>
+                    <td>Document</td>
+                    <td style="width: 55%">
+                        <div class="area">&nbsp{% if documentRelation and documentRelation.type %}{{ documentRelation.type|trans|capitalize }}{% endif %}</div>
+                    </td>
 
-                    <td>серия</td>
+                    <td>Series</td>
                     <td style="width: 15%"><div class="area">&nbsp{% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% endif %}</div></td>
 
                     <td>№</td>
@@ -158,12 +161,12 @@
             <table border="0">
                 <tbody>
                 <tr>
-                    <td style="width: 50px">выдан</td>
+                    <td style="width: 70px">Issued by</td>
                     <td>
                         <div class="area">
                             &nbsp
                             {% if documentRelation and documentRelation.authority %}
-                                {{ documentRelation.authority }}{% if documentRelation and documentRelation.issued %},
+                                {{ documentRelation.authority|transToLat }}{% if documentRelation and documentRelation.issued %},
                                 {{ documentRelation.issued|date('d.m.Y') }}
                             {% endif %}
                             {% endif %}
@@ -175,10 +178,10 @@
         </div>
 
         <p>
-            о нижеследующем:
+            about the following:
         </p>
         <p>
-            Отель гарантированно бронирует для Заказчика следующие услуги:
+            The Hotel guaranteed booked for the Client the following services:
         </p>
 
         <!-- Services -->
@@ -186,11 +189,11 @@
             <thead>
             <tr>
                 <th style="width: 30px;">№</td>
-                <th style="width: 100px;">Наименование услуг</th>
-                <th style="width: 30px;">{{ "package.pdf.amount"|trans({}, "MBHPackageBundle") }}</td>
-                <th style="width: 30px;">{{ "package.pdf.unit"|trans({}, "MBHPackageBundle") }}</td>
-                <th style="width: 100px;">Цена</td>
-                <th style="width: 100px;">Сумма</td>
+                <th style="width: 100px;">Services</th>
+                <th style="width: 30px;">Qty</td>
+                <th style="width: 30px;">Unit</td>
+                <th style="width: 100px;">Price</td>
+                <th style="width: 100px;">Amount</td>
             </tr>
             </thead>
             <tbody>
@@ -206,13 +209,13 @@
                 <tr>
                     <td align="center">{{ counter }}</td>
                     <td>
-                        {{ "package.pdf.living_in_hotel"|trans({}, "MBHPackageBundle") }} {{ package.begin|date('d.m.Y') }} - {{ package.end|date('d.m.Y') }}
+                        {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ package.begin|date('d.m.Y') }} - {{ package.end|date('d.m.Y') }}
                         {% if package.roomType and package.roomType.internationalTitle %}
                             ({{ package.roomType.internationalTitle }})
                         {% endif %}
                     </td>
                     <td align="center">{{ package.nights }}</td>
-                    <td align="center">{{ "package.pdf.noch"|trans({}, "MBHPackageBundle") }}</td>
+                    <td align="center">nights</td>
                     <td align="right">{{ (package.packagePrice(true)/entity.nights)|round(1)|number_format(2) }}</td>
                     <td align="right">{{ package.packagePrice(true)|number_format(2) }}</td>
                 </tr>
@@ -223,9 +226,9 @@
                     {% set counter = counter + 1 %}
                     <tr>
                         <td align="center">{{ counter }}</td>
-                        <td>{{ serviceGroup.byService.name }}</td>
+                        <td>{{ serviceGroup.byService.internationalTitle }}</td>
                         <td align="center">{{ serviceGroup.actuallyAmount }}</td>
-                        <td align="center">шт.</td>
+                        <td align="center">pcs.</td>
                         <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
                         <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
                     </tr>
@@ -236,42 +239,42 @@
 
         <table border="0" width="100%">
             <tr>
-                <td align="right"><strong>Итого:</strong></td>
+                <td align="right"><strong>Total:</strong></td>
                 <td align="right" style="width: 100px;"><strong>{{ total|number_format(2) }}</strong></td>
             </tr>
             <tr>
-                <td align="right"><strong>В том числе НДС:</strong></td>
+                <td align="right"><strong>Including VAT:</strong></td>
                 <td align="right"><strong>0</strong></td>
             </tr>
         </table>
 
-        <p>Всего заказано услуг {{ entity.services|length + packages|length }}, на сумму {{ total|number_format(2) }} руб.<br>
-            <strong>{{ total|num2str|capitalize }}</strong>
+        <p>Total booked services {{ entity.services|length + packages|length }}, in the amount of {{ total|number_format(2) }} rub.<br>
+            <strong>{{ total|num2enStr|capitalize }} rub.</strong>
         </p>
 
         <p>
-            Примечание: в случае несвоевременного отказа от заказанных услуг, Отель имеет право на удержание компенсации из внесенной предоплаты.
+            Note: In case of late rejection of booked services the Hotel has the right to retain compensation from the prepayment.
         </p>
 
         <table class="signatures" cellpadding="0" cellspacing="0">
             <tr>
                 <td style="width: 40%">
-                    <h3>Отель</h3>
+                    <h3>The Hotel</h3>
                     <div class="area"></div>
                 </td>
                 <td style="width: 20%"></td>
                 <td style="width: 40%">
-                    <h3>Заказчик</h3>
+                    <h3>The Client</h3>
                     <div class="area"></div>
                 </td>
             </tr>
             <tr>
                 <td align="center">
-                    {% if hotel and hotel.organization %}{{ hotel.organization.directorFio }}{% endif %}
+                    {% if hotel and hotel.organization %}{{ hotel.organization.directorFio|transToLat }}{% endif %}
                 </td>
                 <td></td>
                 <td align="center">
-                    {% if tourist %}{{ tourist.lastNameWithInitials }}{% endif %}
+                    {% if tourist %}{{ tourist.lastNameWithInitials|transToLat }}{% endif %}
                 </td>
             </tr>
         </table>
