@@ -269,8 +269,10 @@ class DocumentsController extends Controller
 
         $content = $this->get('knp_snappy.pdf')->getOutputFromHtml($html, [
             'cookie' => [$request->getSession()->getName() => $request->getSession()->getId()],
-            'dpi' => 125
+            //'disable-smart-shrinking' => true,
         ]);
+
+        //return new Response($html);
 
         return new Response($content, 200, [
             'Content-Type' => 'application/pdf',

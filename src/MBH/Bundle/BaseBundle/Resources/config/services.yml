@@ -1,3 +1,6 @@
+imports:
+    - { resource: doctrine_extensions.yml }
+
 services:
     twig.text_extension:
         class: Twig_Extensions_Extension_Text

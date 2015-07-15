@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\HotelBundle\Document\Country;
 use MBH\Bundle\VegaBundle\Document\VegaRegion;
 
 /**
@@ -12,8 +13,8 @@ use MBH\Bundle\VegaBundle\Document\VegaRegion;
 class AddressObjectDecomposed
 {
     /**
-     * @var String
-     * @ODM\String
+     * @var Country|null
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Country")
      */
     protected $country;
     /**
@@ -74,7 +75,7 @@ class AddressObjectDecomposed
     protected $flat;
 
     /**
-     * @return String
+     * @return Country|null
      */
     public function getCountry()
     {
@@ -82,9 +83,9 @@ class AddressObjectDecomposed
     }
 
     /**
-     * @param String $country
+     * @param Country|null $country
      */
-    public function setCountry($country)
+    public function setCountry(Country $country = null)
     {
         $this->country = $country;
     }

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <title>Pdf</title>
+    </head>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+    <body>
+        <style>
+            body{
+                font-family: "Open Sans"; /*Arial*/
+                font-size: 16px;
+            }
+            .document{
+                padding-top: 0px;
+                width: 900px;
+                margin: 0 auto;
+            }
+            .ib{
+                display: inline-block;
+            }
+            .area {
+                border-bottom: solid #000000 1px;
+            }
+            .left {
+                float: left;
+            }
+            .right {
+                float: right;
+            }
+            .center {
+                text-align: center;
+            }
+            .indent {
+                text-indent: 1.5em;
+            }
+            .upper {
+                text-transform: uppercase;
+            }
+        </style>
+        <div class="document">
+            {% block document %}{% endblock %}
+        </div>
+    </body>
+</html>

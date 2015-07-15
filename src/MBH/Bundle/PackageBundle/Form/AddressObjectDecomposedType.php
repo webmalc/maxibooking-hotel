@@ -17,7 +17,9 @@ class AddressObjectDecomposedType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('country', 'text', [])
+            ->add('country', 'document', [
+                'class' => 'MBH\Bundle\HotelBundle\Document\Country'
+            ])
             ->add('city', 'text', [])
             ->add('zip_code', 'text', [])
             ->add('region', 'text', [])

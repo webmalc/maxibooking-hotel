@@ -1,34 +1,13 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <title>Receipt</title>
-</head>
-<body>
-
-<style>
-    .indent {
-        text-indent: 1.5em;
-    }
-
-    .area {
-        border-bottom: 1px solid #000000;
-    }
-
-    .document {
-        width: 900px;
-    }
-    .document h3 {
-        text-align: center;
-    }
-</style>
-
-{# % set tourist = entity.mainTourist % #}
-
-<div class="document">
+{% extends 'MBHPackageBundle:Documents/pdfTemplates:layout.html.twig' %}
+{% block document %}
+    <style>
+        body{
+            font-size: 14.5px;
+        }
+    </style>
 {% for tourist in tourists %}
     {% for i in 1..2 %}
-        <h3>Расписка</h3>
+        <h3 class="center">Расписка</h3>
         <div>
             <p>Я, <strong>{% if tourist %}{{ tourist.generateFullName }}{% endif %}</strong></p>
             <p>
@@ -150,8 +129,5 @@
     {% if loop.index < tourists|length %}
         <div style="page-break-after: always;"></div>
     {% endif %}
-
 {% endfor %}
-</div>
-</body>
-</html>
+{% endblock %}

@@ -1,34 +1,9 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <title>Evidence</title>
-</head>
-<body>
+{% extends 'MBHPackageBundle:Documents/pdfTemplates:layout.html.twig' %}
+{% block document %}
 
 <style>
-    .indent {
-        text-indent: 1.5em;
-    }
-
-    .document {
-        width: 900px;
-    }
-
     .header {
         text-align: center;
-    }
-
-    .ib{
-        display: inline-block;
-    }
-
-    .area {
-        border-bottom: solid #000000 1px;
-    }
-
-    .upper {
-        text-transform: uppercase;
     }
 </style>
 
@@ -167,30 +142,9 @@
         </tbody>
     </table>
 
-    <!--
-    <div>
-        <div style="float:right">
-            <div style="display: inline-block">
-                &nbsp<div class="area" style="width: 200px"></div>
-                Подпись
-            </div>
-            <div style="display: inline-block">
-                &nbsp<div class="area" style="width: 200px;"></div>
-                фамилия
-            </div>
-        </div>
-
-        <div>
-            М.П <div class="area" style="width: 40px; display: inline-block"></div>г.
-        </div>
-    </div>
-    -->
-
     {% if loop.index < tourists|length %}
         <div style="page-break-after: always;"></div>
     {% endif %}
 
 {% endfor %}
-</div>
-</body>
-</html>
+{% endblock %}

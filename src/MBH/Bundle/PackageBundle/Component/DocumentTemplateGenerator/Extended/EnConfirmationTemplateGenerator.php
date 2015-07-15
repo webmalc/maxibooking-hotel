@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator\Extended;
 
+use Gedmo\Translatable\TranslatableListener;
+
 /**
  * Class EnConfirmationTemplateGenerator
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
@@ -15,14 +17,21 @@ class EnConfirmationTemplateGenerator extends ConfirmationTemplateGenerator
         $currentLocale = $translator->getLocale();
         $translator->setLocale('en');
 
-        $hotel = $this->package->getRoomType()->getHotel();
+        /** @var TranslatableListener $translatableListener */
+        $translatableListener = $this->container->get('gedmo.listener.translatable');
+        $translatableListener->setTranslatableLocale('en_EN'); // not work..
 
-        $country = $hotel->getCountry();
-        if($country) {
+        if($country = $this->package->getRoomType()->getHotel()->getCountry()) { //todo remove
             $country->setTranslatableLocale('en_EN');
             $this->container->get('doctrine_mongodb')->getManager()->refresh($country);
         }
-        //var_dump($translator->trans('package.document.type_passport')); die();
+
+        if($this->package->getOrder() && $this->package->getOrder()->getMainTourist() && //todo remove
+            $this->package->getOrder()->getMainTourist()->getAddressObjectDecomposed() &&
+            $country = $this->package->getOrder()->getMainTourist()->getAddressObjectDecomposed()->getCountry()) {
+            $country->setTranslatableLocale('en_EN');
+            $this->container->get('doctrine_mongodb')->getManager()->refresh($country);
+        }
 
         $html = parent::getTemplate();
         $translator->setLocale($currentLocale);

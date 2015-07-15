@@ -1,43 +1,28 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <title>Form 1G</title>
-</head>
-<body>
+{% extends 'MBHPackageBundle:Documents/pdfTemplates:layout.html.twig' %}
+{% block document %}
+    <style>
+        body{
+            font-size: 15px;
+        }
 
-<style>
-    .indent {
-        text-indent: 1.5em;
-    }
+        .left-block {
+            float: left;
+        }
 
-    .area {
-        border-bottom: 1px solid #000000;
-    }
+        .left-block div {
+            margin: 3px 0px;
+        }
 
-    .center {
-        text-align: center;
-    }
+        .right-block {
+            float: right;
+            width: 350px;
+        }
 
-    .left {
-        float: left;
-    }
-
-    .right {
-        float: right;
-    }
-
-    .ib {
-        display: inline-block;
-    }
-
-    .document {
-        /*width: 840px;*/
-    }
-</style>
-
-<div class="document">
-{% for tourist in tourists %}
+        .right-block div {
+            margin: 5px 0px;
+        }
+    </style>
+    {% for tourist in tourists %}
     <div>
         <div style="float: right;">
             Утверждена<br>
@@ -66,25 +51,6 @@
             </tr>
             </tbody>
         </table>
-
-        <style>
-            .left-block {
-                float: left;
-            }
-
-            .left-block div {
-                margin: 3px 0px;
-            }
-
-            .right-block {
-                float: right;
-                width: 350px;
-            }
-
-            .right-block div {
-                margin: 5px 0px;
-            }
-        </style>
 
         <div>
             <div class="left-block">
@@ -308,6 +274,4 @@
     {% endif %}
 
 {% endfor %}
-</div>
-</body>
-</html>
+{% endblock %}

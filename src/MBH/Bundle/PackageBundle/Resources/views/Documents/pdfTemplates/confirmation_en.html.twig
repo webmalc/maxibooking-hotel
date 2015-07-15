@@ -1,63 +1,39 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <title>Confirmation EN</title>
-</head>
-<body>
-<style>
-    .document{
-        padding-top: 0px;
-        width: 900px;
-        margin: 0 auto;
-    }
+{% extends 'MBHPackageBundle:Documents/pdfTemplates:layout.html.twig' %}
+{% block document %}
+    <style>
+        /* Header */
+        .header .title {
+            float: left;
+            padding-top: 10px;
+            width:90%;
+        }
+        .header .title p {
+            font-weight: bold;
+            font-size: 22px
+        }
+        .header .logo {
+            float: right;
+            width:10%;
+        }
+        .header .logo img{
+            height: 80px; max-width: 200px;
+        }
 
-    .ib{
-        display: inline-block;
-    }
+        .main{
+            padding-top: 20px;
+        }
 
-    .area {
-        border-bottom: solid #000000 1px;
-    }
-
-    .left {
-        float: left;
-    }
-
-    /* Header */
-    .header .title {
-        float: left;
-        padding-top: 10px;
-        width:90%;
-    }
-    .header .title p {
-        font-weight: bold;
-        font-size: 22px
-    }
-    .header .logo {
-        float: right;
-        width:10%;
-    }
-    .header .logo img{
-        height: 80px; max-width: 200px;
-    }
-
-    .main{
-        padding-top: 20px;
-    }
-
-    .indent {
-        text-indent: 1.5em;
-    }
-    .table {
-        margin: 10px 0px 10px 0px;
-        width: 100%;
-    }
-    .table td {
-        padding: 3px;
-    }
-</style>
-<div class="document">
+        .indent {
+            text-indent: 1.5em;
+        }
+        .table {
+            margin: 10px 0px 10px 0px;
+            width: 100%;
+        }
+        .table td {
+            padding: 3px;
+        }
+    </style>
     {% set hotel = null %}
     {% set tourist = null %}
     {% set documentRelation = null %}
@@ -133,8 +109,10 @@
                     <td>
                         <div class="area">&nbsp
                             {% if tourist and tourist.addressObjectDecomposed %}
-                                {{ tourist.addressObjectDecomposed.country|transToLat }}, {{ tourist.addressObjectDecomposed.region|transToLat }}{% if tourist.addressObjectDecomposed.city %}, {{ tourist.addressObjectDecomposed.city|transToLat }} city{% endif %}{% if tourist.addressObjectDecomposed.street %}, str. {{ tourist.addressObjectDecomposed.street|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
-                                {{ tourist.addressObjectDecomposed.house }}{% if tourist.addressObjectDecomposed.corpus %}, bldg. {{ tourist.addressObjectDecomposed.corpus|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.flat %}, fl. {{ tourist.addressObjectDecomposed.flat }}{% endif %}
+                                {% if tourist.addressObjectDecomposed.country %}
+                                    {{ tourist.addressObjectDecomposed.country }}{% if tourist.addressObjectDecomposed.region %}, {{ tourist.addressObjectDecomposed.region|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.city %}, {{ tourist.addressObjectDecomposed.city|transToLat }} city{% endif %}{% if tourist.addressObjectDecomposed.street %}, str. {{ tourist.addressObjectDecomposed.street|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.house %},
+                                    {{ tourist.addressObjectDecomposed.house }}{% if tourist.addressObjectDecomposed.corpus %}, bldg. {{ tourist.addressObjectDecomposed.corpus|transToLat }}{% endif %}{% if tourist.addressObjectDecomposed.flat %}, fl. {{ tourist.addressObjectDecomposed.flat }}{% endif %}
+                                {% endif %}
                             {% endif %}
                             {% endif %}
                         </div>
@@ -296,6 +274,4 @@
             }
         </style>
     </div>
-</div>
-</body>
-</html>
+{% endblock %}

@@ -143,6 +143,8 @@ class CitiesLoadCommand extends ContainerAwareCommand
                     $this->dm->persist($city);
                 }
             }
+
+            $total++;
         }
 
         $this->dm->flush();
