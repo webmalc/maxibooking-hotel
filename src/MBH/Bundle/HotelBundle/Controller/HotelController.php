@@ -58,8 +58,6 @@ class HotelController extends Controller
      */
     public function indexAction()
     {
-        dump($this->container->getParameter('mailer_user_arrival_links'));
-
         $entities = $this->dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('s')
             ->sort('fullTitle', 'asc')
             ->getQuery()
