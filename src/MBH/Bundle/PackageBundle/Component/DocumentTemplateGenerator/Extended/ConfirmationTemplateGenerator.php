@@ -24,7 +24,7 @@ class ConfirmationTemplateGenerator extends DefaultDocumentTemplateGenerator
         $packageServices = [];
 
         /** @var PackageServiceGroupByService[] $packageServicesByType */
-        $packageServicesByType = [];
+        $packageServicesByType = []; //todo mongo aggregation, move to repository
 
         $total = 0;
         if($hasFull) {

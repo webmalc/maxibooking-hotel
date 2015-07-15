@@ -88,8 +88,8 @@
                     <td align="center">{{ counter }}</td>
                     <td>
                         {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ package.begin|date('d.m.Y') }} - {{ package.end|date('d.m.Y') }}
-                        {% if package.roomType and package.roomType.title %}
-                            ({{ package.roomType.title }})
+                        {% if package.roomType and package.roomType.fullTitle %}
+                            ({{ package.roomType.fullTitle }})
                         {% endif %}
                     </td>
                     <td align="center">{{ package.nights }}</td>

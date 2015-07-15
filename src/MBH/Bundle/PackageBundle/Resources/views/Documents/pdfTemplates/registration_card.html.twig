@@ -184,7 +184,7 @@
                                 <div>Место рождения</div>
                             </div>
                             <div class="area"
-                                 style="margin-left: 150px;">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.city }}{% endif %}</div>
+                                 style="margin-left: 150px;">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.country|capitalize ~ ' ' ~ tourist.birthplace.city }}{% endif %}</div>
                         </div>
                     </td>
                 </tr>
@@ -299,7 +299,7 @@
                                 <div>Type</div>
                                 <div>Тип</div>
                             </div>
-                            <div class="area">{% if entity.accommodation and entity.accommodation.roomType %}{{ entity.accommodation.roomType.name }}{% endif %}</div>
+                            <div class="area">{% if entity.accommodation and entity.accommodation.roomType %}{{ entity.accommodation.roomType.fullTitle }}{% endif %}</div>
                         </div>
                     </td>
                     <td colspan="6">
@@ -308,7 +308,7 @@
                                 <div>Room</div>
                                 <div>Номер</div>
                             </div>
-                            <div class="area">{% if entity.accommodation %}{{ entity.accommodation.name }}{% endif %}</div>
+                            <div class="area">{% if entity.accommodation %}{{ entity.accommodation.fullTitle }}{% endif %}</div>
                         </div>
                     </td>
                 </tr>
@@ -595,7 +595,7 @@
                                         <div>Номер</div>
                                     </div>
                                     <div class="area"
-                                         style="margin-left: 61px">{% if entity.accommodation %}{{ entity.accommodation.name }}{% endif %}</div>
+                                         style="margin-left: 61px">{% if entity.accommodation %}{{ entity.accommodation.fullTitle }}{% endif %}</div>
                                 </div>
                             </td>
                         </tr>
