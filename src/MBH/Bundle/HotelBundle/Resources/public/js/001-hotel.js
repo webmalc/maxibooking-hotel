@@ -26,7 +26,6 @@ $(document).ready(function () {
         maxboostedstep: 1
     });
 
-    console.log(1);
     $('#mbh_bundle_hotelbundle_hotel_extended_type_city').select2({
         minimumInputLength: 3,
         allowClear: true,

@@ -1,7 +1,7 @@
 {% extends 'MBHPackageBundle:Documents/pdfTemplates:layout.html.twig' %}
 {% block document %}
     <style>
-        body{
+        body {
             font-size: 15px;
         }
 
@@ -23,255 +23,310 @@
         }
     </style>
     {% for tourist in tourists %}
-    <div>
-        <div style="float: right;">
-            Утверждена<br>
-            Приказом Министерства финансов<br>
-            Российской Федерации<br>
-            от 13 декабря 1993 г.N 121<br>
-            <br>
-            Форма N 1-Г
+        <div>
+            <div style="float: right; margin-bottom: 20px">
+                Утверждена<br>
+                Приказом Министерства финансов<br>
+                Российской Федерации<br>
+                от 13 декабря 1993 г. № 121<br>
+                <br>
+                Форма № 1-Г
+            </div>
+
+            <table border="1" style="width: 900px;text-align: center;" cellpadding="0" cellspacing="0">
+                <tbody>
+                <tr>
+                    <td style="width: 25%">
+                        АНКЕТА № 3
+                    </td>
+                    <td style="width: 25%">
+                        Заказ № {{ entity.order.id }}
+                    </td>
+                    <td style="width: 25%">
+                        Авто
+                    </td>
+                    <td style="width: 25%">
+                        № счета {{ entity.number }}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div>
+                <div class="left-block">
+                    <div>
+                        1. Фамилия
+                        <div style="width: 360px" class="area ib">
+                            &nbsp{% if tourist %} {{ tourist.lastName }} {% endif %}</div>
+                    </div>
+                    <div>
+                        2. Имя
+                        <div style="width: 400px" class="area ib">
+                            &nbsp{% if tourist %} {{ tourist.firstName }} {% endif %}</div>
+                    </div>
+                    <div>
+                        3. Отчество
+                        <div style="width: 360px" class="area ib">
+                            &nbsp{% if tourist %} {{ tourist.patronymic }} {% endif %}</div>
+                    </div>
+                    <div>
+                        4. Дата рождения
+                        <div style="width: 160px" class="area ib">
+                            &nbsp{% if tourist and tourist.birthday %} {{ tourist.birthday|date('d.m.Y') }} {% endif %}</div>
+                        г.
+                    </div>
+                    <div>
+                        <div class="ib left ">5.Место рождения</div>
+                        <div style="width: 310px" class="area ib">
+                            &nbsp{% if tourist and tourist.birthplace %} {{ tourist.birthplace.district ~ ' ' ~ tourist.birthplace.city }}{% endif %}</div>
+                    </div>
+                    <div>
+                        <div class="left">
+                            <div class="ib">6.серия</div>
+                            <div class="ib">
+                                <div style="width: 110px" class="area ib">
+                                    &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.series }} {% endif %}
+                                </div>
+                            </div>
+                            <div class="ib">№</div>
+                            <div class="ib">
+                                <div style="width: 110px" class="area ib">
+                                    &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.number }} {% endif %}
+                                </div>
+                            </div>
+                            <div class="ib">выдан</div>
+                        </div>
+                        <div class="ib">
+                            <div class="lb">
+                                <div style="width: 100px" class="area ib">
+                                    &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
+                                </div>
+                                <div style="text-align: center">
+                                    <small>(когда)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-block">
+                    <div>
+                        <div style="width: 130px" class="ib left">Комната №</div>
+                        <div style="width: 220px"
+                             class="area ib">{% if entity.accommodation %} {{ entity.accommodation.fullTitle }} {% endif %}</div>
+                        <div style="clear:both;"></div>
+                    </div>
+                    <div>
+                        <div style="width: 150px" class="ib left">Индекс поселения</div>
+                        <div style="width: 200px" class="area ib">&nbsp</div>
+                        <div style="clear:both;"></div>
+                    </div>
+
+                    {% set arrival = null %}
+                    {% set departure = null %}
+
+                    {% if entity.begin %}
+                        {% set arrival = entity.begin|date('d.m.Y 14:00') %}
+                    {% endif %}
+
+                    {% if entity.end %}
+                        {% set departure = entity.end|date('d.m.Y 12:00') %}
+                    {% endif %}
+
+                    {% if entity.arrivalTime %}
+                        {% set arrival = entity.arrivalTime|date('d.m.Y  H:i') %}
+                    {% endif %}
+
+                    {% if entity.departureTime %}
+                        {% set departure = entity.departureTime|date('d.m.Y H:i') %}
+                    {% endif %}
+
+                    <div>
+                        <div class="ib left">Прибыл &nbsp</div>
+                        <div class="ib">
+                            <div style="width: 280px" class="area ib left">
+                                &nbsp{% if arrival %} {{ arrival }} {% endif %}</div>
+                            <div class="center">
+                                <small>(дата, часы)</small>
+                            </div>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="ib left">Выбыл &nbsp</div>
+                        <div class="ib">
+                            <div style="width: 290px" class="area ib left">
+                                &nbsp{% if departure  %} {{ departure }} {% endif %}</div>
+                            <div class="center">
+                                <small>(дата, часы)</small>
+                            </div>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="clear: both"></div>
+            </div>
         </div>
 
-        <table border="1" style="width: 840px;text-align: center;" cellpadding="0" cellspacing="0">
-            <tbody>
-            <tr>
-                <td>
-                    АНКЕТА № 3
-                </td>
-                <td>
-                    Путевка №
-                </td>
-                <td>
-                    Авто
-                </td>
-                <td>
-                    № счета {{ entity.number }}
-                </td>
-            </tr>
-            </tbody>
-        </table>
 
-        <div>
-            <div class="left-block">
-                <div>
-                    1. Фамилия
-                    <div style="width: 360px" class="area ib">&nbsp{% if tourist %} {{ tourist.lastName }} {% endif %}</div>
+        <style>
+            .center-block div {
+                margin: 3px 0px;
+            }
+        </style>
+
+        <div class="center-block">
+            <div>
+                <div style="width: 900px" class="area ib left">
+                    &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan|capitalize }} {% endif %}</div>
+                <div class="center">
+                    <small>(наименования органа внутренних дел, выдавшего документ)</small>
                 </div>
-                <div>
-                    2. Имя
-                    <div style="width: 400px" class="area ib">&nbsp{% if tourist %} {{ tourist.firstName }} {% endif %}</div>
-                </div>
-                <div>
-                    3. Отчество
-                    <div style="width: 360px" class="area ib">&nbsp{% if tourist %} {{ tourist.patronymic }} {% endif %}</div>
-                </div>
-                <div>
-                    4. Дата рождения
-                    <div style="width: 160px" class="area ib">
-                        &nbsp{% if tourist and tourist.birthday %} {{ tourist.birthday|date('d.m.Y') }} {% endif %}</div>
-                    г.
-                </div>
-                <div>
-                    <div class="ib left ">5.Место рождения</div>
-                    <div style="width: 310px" class="area ib">
-                        &nbsp{% if tourist and tourist.birthplace %} {{ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.district }}{% endif %}</div>
-                </div>
-                <div>
-                    <div class="left">
-                        <div class="ib">6.серии</div>
-                        <div class="ib">
-                            <div style="width: 110px" class="area ib">
-                                &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.series }} {% endif %}
-                            </div>
-                        </div>
-                        <div class="ib">№</div>
-                        <div class="ib">
-                            <div style="width: 110px" class="area ib">
-                                &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.number }} {% endif %}
-                            </div>
-                        </div>
-                        <div class="ib">выдан</div>
+            </div>
+
+            <div>
+                <div>7. Адрес постоянного места жительства</div>
+                <div class="ib">
+                    <div style="width: 900px" class="area ib left">
+                        &nbsp
+                        {% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.city %}
+                            {{ tourist.addressObjectDecomposed.region }},
+                            г. {{ tourist.addressObjectDecomposed.city }}{% if tourist.addressObjectDecomposed.street %},
+                            ул. {{ tourist.addressObjectDecomposed.street }},
+                            {% if tourist.addressObjectDecomposed.house %}
+                                {% if tourist.addressObjectDecomposed.house %} д. {{ tourist.addressObjectDecomposed.house }}
+                                    {% if tourist.addressObjectDecomposed.corpus %},
+                                        кор. {{ tourist.addressObjectDecomposed.corpus }}
+                                    {% endif %}
+                                    {% if tourist.addressObjectDecomposed.flat %},
+                                        кв. {{ tourist.addressObjectDecomposed.flat }}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                        {% endif %}
                     </div>
-                    <div class="ib">
-                        <div class="lb">
-                            <div style="width: 100px" class="area ib">
-                                &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
-                            </div>
-                            <div style="text-align: center"><small>(когда)</small></div>
-                        </div>
+                    <div class="center">
+                        <small>(республика, край, область, округ, район, город, пгт, село, деревня, аул, улица, дом,
+                            корпус, квартира)
+                        </small>
                     </div>
                 </div>
             </div>
 
-            <div class="right-block">
-                <div>
-                    <div style="width: 130px" class="ib left">Комната №</div>
-                    <div style="width: 180px" class="area ib">{% if entity.accommodation %} {{ entity.accommodation.fullTitle }} {% endif %}</div>
-                    <div style="clear:both;"></div>
+            <div>
+                8. Цель приезда
+                <div style="width: 775px" class="area ib">
+                    &nbsp{% if entity.purposeOfArrival %}{{ ('mbh.package.arrivals.' ~ entity.purposeOfArrival)|trans({}, 'MBHPackageBundle') }}{% endif %}
                 </div>
-                <div>
-                    <div style="width: 150px" class="ib left">Индекс поселения</div>
-                    <div style="width: 160px" class="area ib">&nbsp</div>
-                    <div style="clear:both;"></div>
-                </div>
-                <div>
-                    <div class="ib left">Прибыл &nbsp</div>
-                    <div class="ib">
-                        <div style="width: 200px" class="area ib left">&nbsp{% if entity.begin %} {{ entity.begin|date('d.m.Y H:i') }} {% endif %}</div>
-                        <div class="center">
-                            <small>(дата, часы)</small>
-                        </div>
-                        <div style="clear: both;"></div>
+            </div>
+            <div>
+                9. Срок проживания до {% if entity.end %} {{ entity.end|date('d.m.Y') }} {% endif %}
+            </div>
+            <div>
+                10. Продление проживания
+                <div style="width: 690px" class="area ib">&nbsp</div>
+            </div>
+            <div>
+                11. С памяткой о правилах пожарной безопасности ознакомлен
+            </div>
+        </div>
+
+        <div>
+            <div class="right">
+                <div class="ib left">Подпись &nbsp</div>
+                <div class="ib">
+                    <div style="width: 200px" class="area ib left">&nbsp</div>
+                    <div class="center">
+                        <small>(лица, прибывшего в гостиницу)</small>
                     </div>
-                </div>
-                <div>
-                    <div class="ib left">Выбыл &nbsp</div>
-                    <div class="ib">
-                        <div style="width: 205px" class="area ib left">&nbsp{% if entity.begin %} {{ entity.end|date('d.m.Y H:i') }} {% endif %}</div>
-                        <div class="center">
-                            <small>(дата, часы)</small>
-                        </div>
-                        <div style="clear: both;"></div>
-                    </div>
+                    <div style="clear: both;"></div>
                 </div>
             </div>
             <div style="clear: both"></div>
         </div>
-    </div>
 
-
-    <style>
-        .center-block div {
-            margin: 3px 0px;
-        }
-    </style>
-
-    <div class="center-block">
-        <div class="ib">
-            <div style="width: 820px" class="area ib left">
-                &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan|capitalize }} {% endif %}</div>
-            <div class="center">
-                <small>(наименования органа внутренних дел, выдавшего документ)</small>
-            </div>
-            <div style="clear:both;"></div>
-        </div>
-
-        <div>
-            <div>7. Адрес постоянного места жительства &nbsp</div>
-            <div class="ib">
-                <div style="width: 820px" class="area ib left">
-                    &nbsp
-                    {% if tourist and tourist.addressObjectDecomposed %}
-                        {{ tourist.addressObjectDecomposed.city }}
-                        {% if tourist.addressObjectDecomposed.street %}
-                            ул. {{ tourist.addressObjectDecomposed.street }}
-                            {% if tourist.addressObjectDecomposed.house %}
-                                д. {{ tourist.addressObjectDecomposed.house }}
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}</div>
-                <div class="center">
-                    <small>Ул. д.</small>
-                </div>
-                <div style="clear: both;"></div>
-            </div>
-        </div>
-
-        <div>
-            8. Цель приезда
-            <div style="width: 690px" class="area ib">
-                &nbsp{% if entity.purposeOfArrival %}{{ ('mbh.package.arrivals.' ~ entity.purposeOfArrival)|trans({}, 'MBHPackageBundle') }}{% endif %}
-            </div>
-        </div>
-        <div>
-            9. Срок проживания до {% if entity.end %} {{ entity.end|date('d.m.Y') }} {% endif %}
-        </div>
-        <div>
-            10. Продление проживания
-            <div style="width: 610px" class="area ib">&nbsp</div>
-        </div>
-        <div>
-            11. С памяткой о правилах пожарной безопасности ознакомлен
-        </div>
-    </div>
-
-    <div>
-        <div class="right">
-            <div class="ib left">Подпись &nbsp</div>
-            <div class="ib">
-                <div style="width: 200px" class="area ib left">&nbsp</div>
-                <div class="center">
-                    <small>(лица, прибывшего в гостиницу)</small>
-                </div>
-                <div style="clear: both;"></div>
-            </div>
-        </div>
-        <div style="clear: both"></div>
-    </div>
-
-    <div style="page-break-after: always;"></div>
-
-    <div>
-        <div style="width: 220px; float: right; font-weight: bold">Обратная сторона Ф. N 1-Г</div>
-        <div style="clear: both"></div>
-    </div>
-
-    <div style="margin-top: 30px">
-        <div>
-            Поселен(а) "
-            <div style="width: 30px" class="area ib">&nbsp</div>
-            "
-            <div style="width: 600px" class="area ib">&nbsp</div>
-            20
-            <div style="width: 30px" class="area ib">&nbsp</div>
-            г.
-        </div>
-
-        <div style="margin-top: 10px">
-            город (селение) &nbsp
-            <div style="width: 680px" class="area ib">
-                &nbsp{% if entity.roomType and entity.roomType.hotel %} {{ entity.roomType.hotel.city }} {% if entity.roomType.hotel.street %} {{ ' ул.' ~ entity.roomType.hotel.street }} {% endif %} {% endif %}
-            </div>
-        </div>
-
-        <div style="margin-top: 10px">
-            гостиница
-            <div style="width: 730px" class="area ib">
-                &nbsp{% if entity.roomType and entity.roomType.hotel %} {{ entity.roomType.hotel.name }} {% endif %}
-            </div>
-        </div>
-
-        <div style="margin-top: 10px">
-            <div class="ib left">На дополнительное место в номере согласен(а) &nbsp</div>
-            <div class="ib">
-                <div style="width: 390px" class="area ib left">&nbsp</div>
-                <div class="center">
-                    <small>(подпись лица, прибывшего в гостиницу)</small>
-                </div>
-                <div style="clear: both;"></div>
-            </div>
-        </div>
-
-        <div>
-            <div class="ib left">Согласен(а) на проживание в номере с оплатой всех мест &nbsp</div>
-            <div class="ib">
-                <div style="width: 320px" class="area ib left">&nbsp</div>
-                <div class="center">
-                    <small>(подпись лица, прибывшего в гостиницу)</small>
-                </div>
-                <div style="clear: both;"></div>
-            </div>
-        </div>
-
-        <div>
-            Подпись ответственного лица
-            <div style="width: 150px" class="area ib">&nbsp</div>
-        </div>
-    </div>
-    {% if loop.index < tourists|length %}
         <div style="page-break-after: always;"></div>
-    {% endif %}
 
-{% endfor %}
+        <div>
+            <div style="width: 220px; float: right; font-weight: bold">Обратная сторона Ф. № 1-Г</div>
+            <div style="clear: both"></div>
+        </div>
+
+        <div style="margin-top: 30px">
+            <div>
+                Поселен(а) "
+                <div style="width: 30px" class="area ib">&nbsp</div>
+                "
+                <div style="width: 690px" class="area ib">&nbsp</div>
+                20
+                <div style="width: 30px" class="area ib">&nbsp</div>
+                г.
+            </div>
+
+            {% set location = '' %}
+
+            {% if entity.accommodation and entity.accommodation.housing and entity.accommodation.housing.city and entity.accommodation.housing.street %}
+                {% set location = ' г. ' ~ entity.accommodation.housing.city  ~ ', ' ~ entity.accommodation.housing.settlement ~ ' ' ~ entity.accommodation.housing.street ~ ' д.' ~ entity.accommodation.housing.house %}
+            {% endif %}
+
+            {% if not location and entity.roomType.hotel.city and entity.roomType.hotel.street %}
+                {% set location = ' г. ' ~ entity.roomType.hotel.city  ~ ', ' ~ entity.roomType.hotel.settlement ~ ', ' ~ entity.roomType.hotel.street %}
+                {% if entity.roomType.hotel.house %}
+                    {% set location = location ~ ', д. ' ~ entity.roomType.hotel.house %}
+                    {% if entity.roomType.hotel.corpus %}
+                        {% set location = location ~ ', кор. ' ~ entity.roomType.hotel.corpus %}
+                        {% if entity.roomType.hotel.flat %}
+                            {% set location = location ~  ', кв. ' ~ entity.roomType.hotel.flat %}
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+
+            <div style="margin-top: 10px">
+                город (селение) &nbsp
+                <div style="width: 760px" class="area ib">
+                    &nbsp{{ location }}
+                </div>
+            </div>
+
+            <div style="margin-top: 10px">
+                гостиница
+                <div style="width: 810px" class="area ib">
+                    &nbsp{% if entity.roomType and entity.roomType.hotel %} {{ entity.roomType.hotel.name }} {% endif %}
+                </div>
+            </div>
+
+            <div style="margin-top: 10px">
+                <div class="ib left">На дополнительное место в номере согласен(а) &nbsp</div>
+                <div class="ib">
+                    <div style="width: 530px" class="area ib left">&nbsp</div>
+                    <div class="center">
+                        <small>(подпись лица, прибывшего в гостиницу)</small>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="ib left">Согласен(а) на проживание в номере с оплатой всех мест &nbsp</div>
+                <div class="ib">
+                    <div style="width: 460px" class="area ib left">&nbsp</div>
+                    <div class="center">
+                        <small>(подпись лица, прибывшего в гостиницу)</small>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+            </div>
+
+            <div>
+                Подпись ответственного лица
+                <div style="width: 150px" class="area ib">&nbsp</div>
+            </div>
+        </div>
+        {% if loop.index < tourists|length %}
+            <div style="page-break-after: always;"></div>
+        {% endif %}
+
+    {% endfor %}
 {% endblock %}

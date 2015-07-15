@@ -29,6 +29,44 @@
             font-size: 14px
         }
     </style>#}
+    <style>
+        .two-list {
+            width: 900px;
+            margin-top: 20px;
+            border: solid #000000 1px;
+        }
+
+        .form {
+            float: left;
+            border-right: solid #000000 2px;
+            width: 448px;
+        }
+
+        .form table {
+            font-size: 12px;
+        }
+
+        .form table .field .title {
+            float: left;
+            width: 80px;
+        }
+
+        .form table td {
+            clear: both;
+            line-height: 1.3;
+        }
+
+        .form table .field .area {
+            margin-left: 81px;
+        }
+
+        table.main {
+            border-collapse: collapse;
+        }
+        table.main td {
+            padding: 1px 0;
+        }
+    </style>
 
     {% set organization = null %}
     {% set tourist = null %}
@@ -66,45 +104,6 @@
 
     {% for tourist in tourists %}
         <div>
-            <style>
-                .two-list {
-                    width: 900px;
-                    margin-top: 20px;
-                    border: solid #000000 1px;
-                }
-
-                .form {
-                    float: left;
-                    border-right: solid #000000 2px;
-                    width: 445px;
-                }
-
-                .form table {
-                    font-size: 12px;
-                }
-
-                .form table .field .title {
-                    float: left;
-                    width: 80px;
-                }
-
-                .form table td {
-                    clear: both;
-                }
-
-                .form table .field .area {
-                    margin-left: 81px;
-                }
-
-                table.main {
-                    border-collapse: collapse;
-                }
-                table.main td {
-                    padding: 1px 0;
-                    border1: 0px solid red !important;
-                }
-            </style>
-
             <div class="two-list">
                 <div class="form">
                     <table style="margin-top:5px;width: 445px" class="center">
@@ -143,7 +142,7 @@
                             </div>
                         </div>
 
-                        <table class="main" style="width: 420x; margin: 25px 10px 0">
+                        <table class="main" style="width: 420px; margin: 25px 10px 0">
                             <thead>
                             </thead>
                             <tbody>
@@ -216,41 +215,41 @@
                             </tr>
                             <tr>
                                 <td colspan="3">
-                                    <div class="field">
-                                        <div class="title" style="margin-left: 30px">
+                                    <div class="field" style="margin-left: 30px">
+                                        <div class="title" style="width: 70px">
                                             Область
                                         </div>
-                                        <div class="area">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district|capitalize }}{% endif %}</div>
+                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district|capitalize }}{% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="3">
-                                    <div class="field">
-                                        <div class="title" style="margin-left: 30px">
+                                    <div class="field" style="margin-left: 30px">
+                                        <div class="title" style="width: 70px">
                                             Район
                                         </div>
-                                        <div class="area">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.mainRegion|capitalize }}{% endif %}</div>
+                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.mainRegion|capitalize }}{% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="3">
-                                    <div class="field">
-                                        <div class="title">
+                                    <div class="field" style="margin-left: 30px">
+                                        <div class="title" style="width: 70px">
                                             Нас. пункт
                                         </div>
-                                        <div class="area">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district|capitalize }}{% endif %}</div>
+                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district|capitalize }}{% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="3">
-                                    <div class="field">
-                                        <div class="title">
+                                    <div class="field" style="margin-left: 30px">
+                                        <div class="title" style="width: 70px">
                                             Город
                                         </div>
-                                        <div class="area">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.city }}{% endif %}</div>
+                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.city }}{% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -268,7 +267,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width: 280px;">
-                                            8. Документ, удостоверяющий личноть
+                                            8. Документ, удостоверяющий личность
                                         </div>
                                         <!--<div class="area" style="margin-left: 240px">&nbsp</div>-->
                                     </div>
@@ -337,11 +336,31 @@
                             <tr>
                                 <td colspan="3">
                                     <div class="field">
-                                        <div class="title" style="width: 240px">
-                                            9. Адрес места жительства: страна
+                                        <div class="title" style="width: 215px">
+                                            9. Адрес места жительства: &nbsp&nbsp Страна
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 240px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.country }} {% endif %}</div>
+                                             style="margin-left: 216px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.country }} {% endif %}</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <div class="field">
+                                        <div class="title" style="width: 30px;">
+                                            Обл.
+                                        </div>
+                                        <div class="area"
+                                             style="margin-left: 31px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.settlement }} {% endif %}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="field">
+                                        <div class="title" style="width: 40px">
+                                            Город
+                                        </div>
+                                        <div class="area"
+                                             style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -349,116 +368,93 @@
                                 <td colspan="2">
                                     <div class="field">
                                         <div class="title" style="width: 40px;">
-                                            Обл.
-                                        </div>
-                                        <div class="area"
-                                             style="margin-left: 40px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.settlement }} {% endif %}</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="field">
-                                        <div class="title" style="width: 45px">
-                                            Город
-                                        </div>
-                                        <div class="area"
-                                             style="margin-left: 45px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <div class="field">
-                                        <div class="title" style="width: 45px;">
                                             Район
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 45px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.district|capitalize }} {% endif %}</div>
+                                             style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.district|capitalize }} {% endif %}</div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="field">
-                                        <div class="title" style="width: 75px;">
+                                        <div class="title" style="width: 65px;">
                                             Нас. пункт
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 75px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.urbanArea }} {% endif %}</div>
+                                             style="margin-left: 66px">&nbsp{% if tourist and tourist.addressObjectDecomposed %}{{ tourist.addressObjectDecomposed.urbanArea }}{% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="3">
                                     <div class="field">
-                                        <div class="title" style="width: 45px;">
+                                        <div class="title" style="width: 40px;">
                                             Улица
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 45px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.street }} {% endif %}</div>
+                                             style="margin-left: 41px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.street }} {% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
                                     <div class="field">
-                                        <div class="title" style="width: 40px;">
+                                        <div class="title" style="width: 30px;">
                                             Дом
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 40px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.house }} {% endif %}</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="field">
-                                        <div class="title" style="width: 40px;">
-                                            Кор.
-                                        </div>
-                                        <div class="area"
-                                             style="margin-left: 40px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.corpus }} {% endif %}</div>
+                                             style="margin-left: 31px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.house }} {% endif %}</div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="field">
                                         <div class="title" style="width: 30px;">
+                                            Кор.
+                                        </div>
+                                        <div class="area"
+                                             style="margin-left: 31px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.corpus }} {% endif %}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="field">
+                                        <div class="title" style="width: 25px;">
                                             Кв.
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 30px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.flat }} {% endif %}</div>
+                                             style="margin-left: 25px;">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.flat }} {% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="3">
-                                    <div>
-                                        <div class="field ib" style="width:205px;">
-                                            <div class="title">
-                                               10. Прибыл
-                                            </div>
-                                            <div class="area">&nbsp{{ arrival }}</div>
+                                    <div class="field ib" style="width:49%">
+                                        <div class="title" style="width: 70px">
+                                           10. Прибыл
                                         </div>
-                                        <div class="field ib" style="width:205px">
-                                            <div class="title" style="width:60px">
-                                                Выбыл
-                                            </div>
-                                            <div class="area" style="margin-left: 45px;">&nbsp{{ departure }}</div>
+                                        <div class="area" style="margin-left: 71px">&nbsp{{ arrival }}</div>
+                                    </div>
+                                    <div class="field ib" style="width:50%">
+                                        <div class="title" style="width:45px">
+                                            Выбыл
                                         </div>
-                                        <div style="clear:both;"></div>
+                                        <div class="area" style="margin-left: 46px;">&nbsp{{ departure }}</div>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2">
                                     <div class="field">
-                                        <div class="title" style="width: 145px">
+                                        <div class="title" style="width: 125px">
                                             11. Зарегистрировал
                                         </div>
-                                        <div class="area" style="margin-left: 146px">&nbsp{{ arrival }}</div>
+                                        <div class="area" style="margin-left: 126px">&nbsp{{ arrival }}</div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="field">
-                                        <div class="title">
+                                        <div class="title" style="width: 60px;">
                                             Подпись
                                         </div>
-                                        <div class="area">&nbsp</div>
+                                        <div style="margin-left: 61px" class="area">&nbsp</div>
                                     </div>
                                 </td>
                             </tr>
@@ -470,7 +466,7 @@
                 <style>
                     .left-form {
                         float: left;
-                        width: 445px;
+                        width: 450px;
                     }
 
                     .left-form .block {
