@@ -2,7 +2,9 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
 use MBH\Bundle\PackageBundle\Form\TouristExtendedType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -184,10 +186,128 @@ class TouristController extends Controller
     {
         $form = $this->createForm(new TouristExtendedType(), $entity);
 
-        if ($request->isMethod('PUT')) {
+        if ($request->isMethod(Request::METHOD_PUT)) {
             $form->submit($request);
 
             if ($form->isValid()) {
+                $this->dm->persist($entity);
+                $this->dm->flush();
+
+                $request->getSession()->getFlashBag()
+                    ->set('success',
+                        $this->get('translator')->trans('controller.touristController.record_edited_success'));
+
+                return $this->afterSaveRedirect('tourist', $entity->getId());
+            }
+        }
+
+        return [
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        ];
+    }
+
+    /**
+     * @Route("/{id}/edit/birthplace", name="tourist_edit_birthplace")
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     */
+    public function editBirthplaceAction(Tourist $entity, Request $request)
+    {
+        $form = $this->createForm('mbh_birthplace', $entity->getBirthplace());
+
+        if ($request->isMethod(Request::METHOD_PUT)) {
+            $form->submit($request);
+
+            if ($form->isValid()) {
+                $entity->setBirthday($form->getData());
+                $this->dm->persist($entity);
+                $this->dm->flush();
+
+                $request->getSession()->getFlashBag()
+                    ->set('success',
+                        $this->get('translator')->trans('controller.touristController.record_edited_success'));
+
+                return $this->afterSaveRedirect('tourist', $entity->getId());
+            }
+        }
+
+        return [
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        ];
+    }
+
+    /**
+     * @Route("/{id}/edit/document", name="tourist_edit_document")
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     */
+    public function editDocumentAction(Tourist $entity, Request $request)
+    {
+        $form = $this->createForm('mbh_document_relation', $entity->getDocumentRelation());
+
+        if ($request->isMethod(Request::METHOD_PUT)) {
+            $form->submit($request);
+
+            if ($form->isValid()) {
+                $entity->setDocumentRelation($form->getData());
+                $this->dm->persist($entity);
+                $this->dm->flush();
+
+                $request->getSession()->getFlashBag()
+                    ->set('success',
+                        $this->get('translator')->trans('controller.touristController.record_edited_success'));
+
+                return $this->afterSaveRedirect('tourist', $entity->getId());
+            }
+        }
+
+        return [
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        ];
+    }
+
+    /**
+     * @Route("/authority_organ_json_list", name="authority_organ_json_list", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     */
+    public function authorityOrganListAction(Request $request)
+    {
+        $query = $request->get('query');
+        $list = [];
+        $entities = $this->dm->getRepository('MBHVegaBundle:VegaFMS')->findBy(['name' => new \MongoRegex('/.*'.$query.'.*/ui')], null, 20);
+        foreach($entities as $entity) {
+            $list[$entity->getId()] = $entity->getName();
+        }
+        return new JsonResponse($list);
+    }
+
+    /**
+     * @Route("/{id}/edit/address", name="tourist_edit_address")
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     */
+    public function editAddressAction(Tourist $entity, Request $request)
+    {
+        $form = $this->createForm('mbh_address_object_decomposed', $entity->getAddressObjectDecomposed());
+
+        if ($request->isMethod(Request::METHOD_PUT)) {
+            $form->submit($request);
+
+            if ($form->isValid()) {
+                $entity->setAddressObjectDecomposed($form->getData());
                 $this->dm->persist($entity);
                 $this->dm->flush();
 

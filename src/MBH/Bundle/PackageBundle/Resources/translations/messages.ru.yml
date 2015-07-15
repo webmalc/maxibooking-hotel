@@ -224,3 +224,43 @@ templateDocument.type.evidence: Свидетельство о регистрац
 templateDocument.type.form: Форма N 1-Г
 templateDocument.type.receipt: Расписка
 templateDocument.type.act: Акт
+
+
+form.TouristExtendedType.group.person: Персональные данные
+form.TouristExtendedType.group.documentRelation: Удостоверение личности
+form.TouristExtendedType.group.liveAddress: Место проживания
+form.TouristExtendedType.citizenship: Гражданство
+form.TouristExtendedType.birthplace: Место рождения
+form.TouristExtendedType.documentRelation: Документ
+form.TouristExtendedType.documentRelation: Документ
+form.TouristExtendedType.address_object: Адрес проживания
+form.TouristExtendedType.address_object_decomposed: Адрес проживания
+form.TouristExtendedType.address_object_combined: Адрес проживания
+
+form.BirthplaceType.country: Страна
+form.BirthplaceType.city: Город
+form.BirthplaceType.main_region: Регион
+form.BirthplaceType.district: Район
+form.BirthplaceType.settlement: Населенный пункт
+
+
+form.DocumentRelation.type: Тип
+form.DocumentRelation.authority_organ: Код подразделения ФМС
+form.DocumentRelation.authority: Орган выдачи документа
+form.DocumentRelation.series: Серия
+form.DocumentRelation.number: Номер
+form.DocumentRelation.issued: Выдан
+form.DocumentRelation.relation: Связь лица с документом
+
+
+form.AddressObjectDecomposedType.country: Страна
+form.AddressObjectDecomposedType.city: Город
+form.AddressObjectDecomposedType.zip_code: Почтовый индекс
+form.AddressObjectDecomposedType.region: Регион
+form.AddressObjectDecomposedType.district: Район
+form.AddressObjectDecomposedType.settlement: Населенный пункт
+form.AddressObjectDecomposedType.urbanarea: Городской район
+form.AddressObjectDecomposedType.street: Улица
+form.AddressObjectDecomposedType.house: Дом
+form.AddressObjectDecomposedType.corpus: Корпус
+form.AddressObjectDecomposedType.flat: Квартира

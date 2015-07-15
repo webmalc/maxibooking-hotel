@@ -18,21 +18,41 @@ class AddressObjectDecomposedType extends AbstractType
     {
         $builder
             ->add('country', 'document', [
+                'label' => 'form.AddressObjectDecomposedType.country',
                 'class' => 'MBH\Bundle\HotelBundle\Document\Country'
             ])
-            ->add('city', 'text', [])
-            ->add('zip_code', 'text', [])
-            ->add('region', 'text', [])
-            ->add('district', 'document', [
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
-                'empty_value' => ''
+            ->add('city', 'text', [
+                'label' => 'form.AddressObjectDecomposedType.city',
             ])
-            ->add('settlement', 'text', [])
-            ->add('urbanarea', 'text', [])
-            ->add('street', 'text', [])
-            ->add('house', 'text', [])
-            ->add('corpus', 'text', [])
-            ->add('flat', 'text', []);
+            ->add('zip_code', 'text', [
+                'label' => 'form.AddressObjectDecomposedType.zip_code',
+            ])
+            ->add('region', 'text', [
+                'label' => 'form.AddressObjectDecomposedType.region',
+            ])
+            /*->add('district', 'document', [
+                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
+                'label' => 'form.AddressObjectDecomposedType.district',
+                'empty_value' => ''
+            ])*/
+            ->add('settlement', 'text', [
+                'label' => 'form.AddressObjectDecomposedType.settlement',
+            ])
+            ->add('urbanarea', 'text', [
+                'label' => 'form.AddressObjectDecomposedType.urbanarea',
+            ])
+            ->add('street', 'text', [
+                'label' => 'form.AddressObjectDecomposedType.street',
+            ])
+            ->add('house', 'text', [
+                'label' => 'form.AddressObjectDecomposedType.house',
+            ])
+            ->add('corpus', 'text', [
+                'label' => 'form.AddressObjectDecomposedType.corpus',
+            ])
+            ->add('flat', 'text', [
+                'label' => 'form.AddressObjectDecomposedType.flat',
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

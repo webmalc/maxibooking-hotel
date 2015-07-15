@@ -26,35 +26,40 @@ class DocumentRelationType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $group = 'DocumentRelation';
-
         $builder
             ->add('type', 'choice', [
                 'choices' => $this->dictionaryProvider->getDocumentTypes(),
                 //'group' => $group,
+                'label' => 'form.DocumentRelation.type',
                 'required' => false,
                 'empty_value' => ''
             ])
-            ->add('authority_organ', 'document', [
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaFMS',
+            ->add('authority_organ', 'text',/*'document',*/ [
+                //'class' => 'MBH\Bundle\VegaBundle\Document\VegaFMS',
+                //'empty_value' => ''
+                'label' => 'form.DocumentRelation.authority_organ',
                 //'property_path' => 'code',
                 //'group' => $group,
                 'required' => false,
-                'empty_value' => ''
+                'mapped' => false,
             ])
             ->add('authority', 'text', [
                 //'group' => $group,
                 'required' => false,
+                'label' => 'form.DocumentRelation.authority',
             ])
             ->add('series', 'text', [
                 //'group' => $group,
                 'required' => false,
+                'label' => 'form.DocumentRelation.series',
             ])
             ->add('number', 'text', [
                 //'group' => $group,
                 'required' => false,
+                'label' => 'form.DocumentRelation.number',
             ])
             ->add('issued', 'date', [
+                'label' => 'form.DocumentRelation.issued',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 //'group' => $group,
@@ -62,6 +67,7 @@ class DocumentRelationType extends AbstractType
                 'attr' => ['class' => 'input-small', 'data-date-format' => 'dd.mm.yyyy'],
             ])
             ->add('relation', 'choice', [
+                'label' => 'form.DocumentRelation.relation',
                 'choices' => [
                     'ВЛАДЕЛИЦ',
                     'ВПИСАН',

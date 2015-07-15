@@ -98,5 +98,36 @@ $(document).ready(function () {
         })
         $('#organization_city').select2("val", detail.city)
     });
+
+    $('#mbh_document_relation_authority_organ').select2({
+        minimumInputLength: 3,
+        ajax: {
+            url: Routing.generate('authority_organ_json_list'),
+            dataType: 'json',
+            data: function (term) {
+                return {
+                    query: term // search term
+                };
+            },
+            results: function (data) {
+                var results = [];
+                $.each(data, function(k, v) {
+                    results.push({id: k, text: v});
+                });
+
+                console.log(results);
+                return { results: results };
+            }
+        },
+        initSelection: function(element, callback) {
+            var id = $(element).val();
+            if (id !== "") {
+                $.ajax(Routing.generate('authority_organ_json_list') + '/' + id, {
+                    dataType: "json"
+                }).done(function(data) { callback(data); });
+            }
+        },
+        dropdownCssClass: "bigdrop"
+    })
 });
 

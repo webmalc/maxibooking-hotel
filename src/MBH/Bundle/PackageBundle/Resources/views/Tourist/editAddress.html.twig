@@ -1,0 +1,25 @@
+{% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
+
+{% set small_title = "редактирование гостя #" ~ entity.id %}
+
+{% block content %}
+    {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 5, 'entity': entity} %}
+
+    {{ form_start(form, {'action': path('tourist_edit_address', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'tourist_delete' } %}
+    {{ form_end(form) }}
+
+    <!-- DELETE -->
+    {% if entity.note %}
+        <div class="alert alert-warning package-main-info">
+            {% for k in entity.note|split(';') %}
+                {% set v = k|split('=') %}
+                <strong>{{ v[0] }}</strong> - {{ v[1] }}<br>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <!-- DELETE -->
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tourist_delete' } %}
+{% endblock %}
