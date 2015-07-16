@@ -19,21 +19,26 @@ class BirthplaceType extends AbstractType
             ->add('country', 'document', [
                 'label' => 'form.BirthplaceType.country',
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
-                'empty_value' => ''
+                'empty_value' => '',
+                'required' => false,
             ])
             ->add('city', 'text', [//'mbh_city'
                 'label' => 'form.BirthplaceType.city',
+                'required' => false,
             ])
             ->add('main_region', 'text', [
                 'label' => 'form.BirthplaceType.main_region',
+                'required' => false,
             ])
             ->add('district', 'document', [
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
                 'label' => 'form.BirthplaceType.district',
-                'empty_value' => ''
+                'empty_value' => '',
+                'required' => false,
             ])
             ->add('settlement', 'text', [
                 'label' => 'form.BirthplaceType.settlement',
+                'required' => false,
             ]);
     }
     /**

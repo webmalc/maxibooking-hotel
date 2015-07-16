@@ -3,7 +3,10 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 
-use MBH\Bundle\VegaBundle\Services\DictionaryProvider;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\VegaBundle\Service\DictionaryProvider;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -20,9 +23,19 @@ class DocumentRelationType extends AbstractType
      */
     private $dictionaryProvider;
 
+    /**
+     * @var ManagerRegistry
+     */
+    private $managerRegistry;
+
     public function setDictionaryProvider(DictionaryProvider $dictionaryProvider)
     {
         $this->dictionaryProvider = $dictionaryProvider;
+    }
+
+    public function setManagerRegistry(ManagerRegistry $managerRegistry)
+    {
+        $this->managerRegistry = $managerRegistry;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -32,7 +45,11 @@ class DocumentRelationType extends AbstractType
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
                 'label' => 'form.TouristExtendedType.citizenship',
                 'group' => 'form.touristType.general_info',
-                'empty_value' => ''
+                'query_builder' => function(DocumentRepository $repository){
+                    return $repository->createQueryBuilder()->sort(['name' => 1]);
+                },
+                'empty_value' => '',
+                'required' => false,
             ])
             ->add('type', 'choice', [
                 'choices' => $this->dictionaryProvider->getDocumentTypes(),
@@ -49,7 +66,6 @@ class DocumentRelationType extends AbstractType
                 //'property_path' => 'code',
                 //'group' => $group,
                 'required' => false,
-                'mapped' => false,
                 'property_path' => 'documentRelation.authorityOrgan'
             ])
             ->add('authority', 'text', [
@@ -89,6 +105,7 @@ class DocumentRelationType extends AbstractType
                 'required' => false,
                 'property_path' => 'documentRelation.relation'
             ]);
+        $builder->get('authorityOrgan')->addModelTransformer(new EntityToIdTransformer($this->managerRegistry->getManager(), 'MBH\Bundle\VegaBundle\Document\VegaFMS'));
     }
 
     /**

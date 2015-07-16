@@ -2,10 +2,9 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\PackageBundle\Form\DocumentRelationType;
 use MBH\Bundle\PackageBundle\Form\TouristExtendedType;
+use MBH\Bundle\VegaBundle\Document\VegaFMS;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -190,7 +189,6 @@ class TouristController extends Controller
             $form->submit($request);
 
             if ($form->isValid()) {
-                $entity->setBirthday($form->getData());
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
@@ -218,16 +216,6 @@ class TouristController extends Controller
      */
     public function editDocumentAction(Tourist $entity, Request $request)
     {
-        /*$form = $this->createFormBuilder()
-            ->add('citizenship', 'document', [
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
-                'label' => 'form.TouristExtendedType.citizenship',
-                'group' => 'form.touristType.general_info',
-                'empty_value' => '',
-            ])
-            ->add('documentRelation', 'mbh_document_relation', [])->getForm();*/
-        //$form->setData($entity);
-
         $form = $this->createForm('mbh_document_relation', $entity);
 
         if ($request->isMethod(Request::METHOD_PUT)) {
@@ -259,15 +247,34 @@ class TouristController extends Controller
      */
     public function authorityOrganListAction(Request $request)
     {
-        $query = $request->get('query');
-        $list = [];
-        $entities = $this->dm->getRepository('MBHVegaBundle:VegaFMS')->findBy(['name' => new \MongoRegex('/.*' . $query . '.*/ui')],
-            null, 20);
-        foreach ($entities as $entity) {
-            $list[$entity->getId()] = $entity->getName();
+        if($query = $request->get('query')) {
+            $list = [];
+            $entities = $this->dm->getRepository('MBHVegaBundle:VegaFMS')->findBy(['name' => new \MongoRegex('/.*' . $query . '.*/ui')],
+                ['name' => 1], 50);
+            foreach ($entities as $entity) {
+                $list[$entity->getId()] = $entity->getName();
+            }
+
+            return new JsonResponse($list);
         }
 
-        return new JsonResponse($list);
+        return new JsonResponse([]);
+    }
+
+    /**
+     * @Route("/authority_organ/{id}", name="ajax_authority_organ", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHVegaBundle:VegaFMS")
+     */
+    public function authorityOrganAction(VegaFMS $entity)
+    {
+        return new JsonResponse([
+            'id' => $entity->getId(),
+            'text' => $entity->getName()
+        ]);
+
+        return new JsonResponse([]);
     }
 
     /**

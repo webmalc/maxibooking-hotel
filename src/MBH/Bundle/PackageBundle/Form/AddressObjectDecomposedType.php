@@ -19,7 +19,7 @@ class AddressObjectDecomposedType extends AbstractType
         $builder
             ->add('country', 'document', [
                 'label' => 'form.AddressObjectDecomposedType.country',
-                'class' => 'MBH\Bundle\HotelBundle\Document\Country',
+                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
                 'required' => false,
             ])
             ->add('city', 'text', [

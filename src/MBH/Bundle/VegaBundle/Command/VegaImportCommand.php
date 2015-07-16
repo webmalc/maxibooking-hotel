@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use MBH\Bundle\VegaBundle\Service\FriendlyFormatter;
 
 
 /**
@@ -74,7 +75,7 @@ class VegaImportCommand extends ContainerAwareCommand
 
     private function importRegion()
     {
-        $this->dm->getRepository('MBHVegaBundle:VegaRegion')->clear();
+        $this->dm->getRepository('MBHVegaBundle:VegaRegion')->createQueryBuilder()->remove()->getQuery()->execute();
 
         $this->progress->start();
 
@@ -86,7 +87,8 @@ class VegaImportCommand extends ContainerAwareCommand
                 $line = trim(iconv('windows-1251', 'UTF-8', $line));
                 if($line) {
                     $fms = new VegaRegion();
-                    $fms->setName($line);
+                    $fms->setOriginalName($line);
+                    $fms->setName(FriendlyFormatter::convertRegion($line));
 
                     $this->dm->persist($fms);
                     $this->progress->advance();
@@ -102,7 +104,7 @@ class VegaImportCommand extends ContainerAwareCommand
 
     private function importState()
     {
-        $this->dm->getRepository('MBHVegaBundle:VegaState')->clear();
+        $this->dm->getRepository('MBHVegaBundle:VegaState')->createQueryBuilder()->remove()->getQuery()->execute();
 
         $this->progress->start();
 
@@ -114,7 +116,8 @@ class VegaImportCommand extends ContainerAwareCommand
                 $line = trim(iconv('windows-1251', 'UTF-8', $line));
                 if($line) {
                     $fms = new VegaState();
-                    $fms->setName($line);
+                    $fms->setOriginalName($line);
+                    $fms->setName(FriendlyFormatter::convertCountry($line));
 
                     $this->dm->persist($fms);
                     $this->progress->advance();
@@ -130,7 +133,7 @@ class VegaImportCommand extends ContainerAwareCommand
 
     private function importFMS()
     {
-        $this->dm->getRepository('MBHVegaBundle:VegaFMS')->clear();
+        $this->dm->getRepository('MBHVegaBundle:VegaFMS')->createQueryBuilder()->remove()->getQuery()->execute();
 
         $this->progress->start(8523);
 
@@ -148,8 +151,8 @@ class VegaImportCommand extends ContainerAwareCommand
                     if($data[1] && $data[2]){
                         $fms = new VegaFMS();
                         $fms->setCode($data[2]);
-                        $fms->setName($data[1]);
-
+                        $fms->setOriginalName($data[1]);
+                        $fms->setName(FriendlyFormatter::convertFMS($data[1]));
                         $this->dm->persist($fms);
 
                         $this->progress->advance();

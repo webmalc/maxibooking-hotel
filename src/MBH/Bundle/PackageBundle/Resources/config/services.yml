@@ -51,5 +51,6 @@ services:
             class: MBH\Bundle\PackageBundle\Form\DocumentRelationType
             calls:
                    - [setDictionaryProvider, [@mbh.vega.dictionary_provider]]
+                   - [setManagerRegistry, [@doctrine_mongodb]]
             tags:
                 - { name: form.type, alias: mbh_document_relation }

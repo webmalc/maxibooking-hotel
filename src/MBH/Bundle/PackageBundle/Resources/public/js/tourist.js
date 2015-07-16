@@ -99,8 +99,9 @@ $(document).ready(function () {
         $('#organization_city').select2("val", detail.city)
     });
 
-    $('#mbh_document_relation_authority_organ').select2({
+    $('#mbh_document_relation_authorityOrgan').select2({
         minimumInputLength: 3,
+        placeholder: "Сделайте выбор",
         allowClear: true,
         ajax: {
             url: Routing.generate('authority_organ_json_list'),
@@ -123,7 +124,7 @@ $(document).ready(function () {
         initSelection: function(element, callback) {
             var id = $(element).val();
             if (id !== "") {
-                $.ajax(Routing.generate('authority_organ_json_list') + '/' + id, {
+                $.ajax(Routing.generate('ajax_authority_organ', {id: id}), {
                     dataType: "json"
                 }).done(function(data) { callback(data); });
             }

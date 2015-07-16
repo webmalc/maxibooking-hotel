@@ -53,7 +53,7 @@ class BirthPlace
     /**
      * @param VegaState $country
      */
-    public function setCountry(VegaState $country)
+    public function setCountry(VegaState $country = null)
     {
         $this->country = $country;
     }
@@ -100,7 +100,7 @@ class BirthPlace
     /**
      * @param VegaRegion $district
      */
-    public function setDistrict(VegaRegion $district)
+    public function setDistrict(VegaRegion $district = null)
     {
         $this->district = $district;
     }

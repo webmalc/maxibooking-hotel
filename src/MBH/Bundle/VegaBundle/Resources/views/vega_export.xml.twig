@@ -5,7 +5,7 @@
         {% if tourist.birthPlace %}
             <birthPlace {% if tourist.birthPlace.mainRegion %} main_region="{{ tourist.birthPlace.mainRegion }}" {% endif %} city="{{ tourist.birthPlace.city }}" settlement="{{ tourist.birthPlace.settlement }}">
                 {% if tourist.birthPlace.country %}
-                    <country type="S_STATE" dictvalue="{{ tourist.birthPlace.country.name }}" />{% endif %}
+                    <country type="S_STATE" dictvalue="{{ tourist.birthPlace.country.originalName }}" />{% endif %}
             </birthPlace>
         {% endif %}
     </person>
@@ -15,7 +15,7 @@
                 {% if tourist.documentRelation.type %}
                     <type type="S_DOCUM" dictvalue="{{ tourist.documentRelation.type }}" />{% endif %}
                 {% if tourist.documentRelation.authorityOrgan %}
-                    <authorityOrgan type="S_FMS" dictvalue="{{ tourist.documentRelation.authorityOrgan }}" />
+                    <authorityOrgan type="S_FMS" dictvalue="{{ tourist.documentRelation.authorityOrgan.originalName }}" />
                 {% endif %}
             </document>
             {% if tourist.documentRelation.relation %}
@@ -29,7 +29,7 @@
                 <addressObject type="ADDROBJ" dictvalue="{{ tourist.addressObjectDecomposed.addressObject }}"/>
             {% endif %}
             {% if tourist.addressObjectDecomposed %}
-                <addressObjectDecomposed region="{{ tourist.addressObjectDecomposed.district.name }}" city="{{ tourist.addressObjectDecomposed.city }}" settlement="{{ tourist.addressObjectDecomposed.settlement }}" street="{{ tourist.addressObjectDecomposed.street }}"/>
+                <addressObjectDecomposed region="{{ tourist.addressObjectDecomposed.district.originalName }}" city="{{ tourist.addressObjectDecomposed.city }}" settlement="{{ tourist.addressObjectDecomposed.settlement }}" street="{{ tourist.addressObjectDecomposed.street }}"/>
                 {#
                 <housing value="160" type="S_HOUSEPART" dictvalue="ДОМ"/>
                 <housing value="А" type="S_HOUSEPART" dictvalue="ЛИТЕРА"/>

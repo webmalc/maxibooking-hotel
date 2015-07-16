@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\VegaBundle\Services;
+namespace MBH\Bundle\VegaBundle\Service;
 
 use Symfony\Component\Yaml\Yaml;
 

@@ -24,6 +24,13 @@ class VegaState extends Base
     protected $name;
 
     /**
+     * @var string
+     * @ODM\String
+     * @Gedmo\Versioned
+     */
+    protected $originalName;
+
+    /**
      * @return string
      */
     public function getName()
@@ -37,6 +44,31 @@ class VegaState extends Base
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOriginalName()
+    {
+        return $this->originalName;
+    }
+
+    /**
+     * @param $originalName
+     */
+    public function setOriginalName($originalName)
+    {
+        $this->originalName = $originalName;
+    }
+
+    /**
+     * @deprecated
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->getName();
     }
 
     public function __toString()

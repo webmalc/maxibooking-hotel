@@ -23,6 +23,13 @@ class VegaRegion extends Base
     protected $name;
 
     /**
+     * @var string
+     * @ODM\String
+     * @Gedmo\Versioned
+     */
+    protected $originalName;
+
+    /**
      * @return string
      */
     public function getName()
@@ -36,5 +43,21 @@ class VegaRegion extends Base
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOriginalName()
+    {
+        return $this->originalName;
+    }
+
+    /**
+     * @param $originalName
+     */
+    public function setOriginalName($originalName)
+    {
+        $this->originalName = $originalName;
     }
 }
