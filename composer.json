@@ -34,7 +34,8 @@
     "iampersistent/mongodb-acl-bundle": "*@stable",
     "liip/imagine-bundle": "*@stable",
     "jms/translation-bundle": "*@stable",
-    "jms/di-extra-bundle": "*@stable"
+    "jms/di-extra-bundle": "*@stable",
+    "liuggio/excelbundle": "^2.0@dev"
   },
   "require-dev": {
     "sensio/generator-bundle": "~2.3"

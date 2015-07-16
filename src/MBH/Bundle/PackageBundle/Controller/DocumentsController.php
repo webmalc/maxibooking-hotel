@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -329,6 +330,48 @@ class DocumentsController extends Controller
 
         $response = new Response($str, 200);
         $response->headers->set('Content-Type', $entity->getStamp()->getMimeType());
+
+        return $response;
+    }
+
+    /**
+     * @Route("/xls", name="xls")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @return Response
+     */
+    public function xlsAction()
+    {
+        $phpExcelObject = $this->get('phpexcel')->createPHPExcelObject(realpath(__DIR__.'/../Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija.xls'));
+        $phpExcelObject->setActiveSheetIndex()
+            ->setCellValue('W13', 'А')
+            ->setCellValue('AA13', 'Р')
+            ->setCellValue('AE13', 'О')
+            ->setCellValue('AI13', 'Ф')
+            ->setCellValue('AM13', 'И');
+
+        $phpExcelObject->setActiveSheetIndex(1)
+            ->setCellValue('AE14', 'М')
+            ->setCellValue('AI14', 'О')
+            ->setCellValue('AM14', 'С')
+            ->setCellValue('AQ14', 'К')
+            ->setCellValue('AU14', 'О');
+
+
+
+        $phpExcelObject->setActiveSheetIndex(0);
+
+        $writer = $this->get('phpexcel')->createWriter($phpExcelObject);
+        $response = $this->get('phpexcel')->createStreamedResponse($writer);
+
+        $dispositionHeader = $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            'stream-file.xls'
+        );
+        $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
+        $response->headers->set('Pragma', 'public');
+        $response->headers->set('Cache-Control', 'maxage=1');
+        $response->headers->set('Content-Disposition', $dispositionHeader);
 
         return $response;
     }
