@@ -101,6 +101,7 @@ $(document).ready(function () {
 
     $('#mbh_document_relation_authority_organ').select2({
         minimumInputLength: 3,
+        allowClear: true,
         ajax: {
             url: Routing.generate('authority_organ_json_list'),
             dataType: 'json',

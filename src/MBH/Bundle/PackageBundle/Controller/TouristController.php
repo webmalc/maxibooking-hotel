@@ -176,39 +176,6 @@ class TouristController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit/extended", name="tourist_edit_extended")
-     * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
-     * @Template()
-     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
-     */
-    public function editExtendedAction(Tourist $entity, Request $request)
-    {
-        $form = $this->createForm(new TouristExtendedType(), $entity);
-
-        if ($request->isMethod(Request::METHOD_PUT)) {
-            $form->submit($request);
-
-            if ($form->isValid()) {
-                $this->dm->persist($entity);
-                $this->dm->flush();
-
-                $request->getSession()->getFlashBag()
-                    ->set('success',
-                        $this->get('translator')->trans('controller.touristController.record_edited_success'));
-
-                return $this->afterSaveRedirect('tourist', $entity->getId());
-            }
-        }
-
-        return [
-            'entity' => $entity,
-            'form' => $form->createView(),
-            'logs' => $this->logs($entity)
-        ];
-    }
-
-    /**
      * @Route("/{id}/edit/birthplace", name="tourist_edit_birthplace")
      * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_USER')")
@@ -251,13 +218,22 @@ class TouristController extends Controller
      */
     public function editDocumentAction(Tourist $entity, Request $request)
     {
-        $form = $this->createForm('mbh_document_relation', $entity->getDocumentRelation());
+        /*$form = $this->createFormBuilder()
+            ->add('citizenship', 'document', [
+                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
+                'label' => 'form.TouristExtendedType.citizenship',
+                'group' => 'form.touristType.general_info',
+                'empty_value' => '',
+            ])
+            ->add('documentRelation', 'mbh_document_relation', [])->getForm();*/
+        //$form->setData($entity);
+
+        $form = $this->createForm('mbh_document_relation', $entity);
 
         if ($request->isMethod(Request::METHOD_PUT)) {
             $form->submit($request);
 
             if ($form->isValid()) {
-                $entity->setDocumentRelation($form->getData());
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
@@ -285,10 +261,12 @@ class TouristController extends Controller
     {
         $query = $request->get('query');
         $list = [];
-        $entities = $this->dm->getRepository('MBHVegaBundle:VegaFMS')->findBy(['name' => new \MongoRegex('/.*'.$query.'.*/ui')], null, 20);
-        foreach($entities as $entity) {
+        $entities = $this->dm->getRepository('MBHVegaBundle:VegaFMS')->findBy(['name' => new \MongoRegex('/.*' . $query . '.*/ui')],
+            null, 20);
+        foreach ($entities as $entity) {
             $list[$entity->getId()] = $entity->getName();
         }
+
         return new JsonResponse($list);
     }
 

@@ -6,6 +6,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 use MBH\Bundle\VegaBundle\Services\DictionaryProvider;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class DocumentRelationType
@@ -27,14 +28,21 @@ class DocumentRelationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('citizenship', 'document', [
+                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
+                'label' => 'form.TouristExtendedType.citizenship',
+                'group' => 'form.touristType.general_info',
+                'empty_value' => ''
+            ])
             ->add('type', 'choice', [
                 'choices' => $this->dictionaryProvider->getDocumentTypes(),
                 //'group' => $group,
                 'label' => 'form.DocumentRelation.type',
                 'required' => false,
-                'empty_value' => ''
+                'empty_value' => '',
+                'property_path' => 'documentRelation.type'
             ])
-            ->add('authority_organ', 'text',/*'document',*/ [
+            ->add('authorityOrgan', 'text',/*'document',*/ [
                 //'class' => 'MBH\Bundle\VegaBundle\Document\VegaFMS',
                 //'empty_value' => ''
                 'label' => 'form.DocumentRelation.authority_organ',
@@ -42,21 +50,25 @@ class DocumentRelationType extends AbstractType
                 //'group' => $group,
                 'required' => false,
                 'mapped' => false,
+                'property_path' => 'documentRelation.authorityOrgan'
             ])
             ->add('authority', 'text', [
                 //'group' => $group,
                 'required' => false,
                 'label' => 'form.DocumentRelation.authority',
+                'property_path' => 'documentRelation.authority'
             ])
             ->add('series', 'text', [
                 //'group' => $group,
                 'required' => false,
                 'label' => 'form.DocumentRelation.series',
+                'property_path' => 'documentRelation.series'
             ])
             ->add('number', 'text', [
                 //'group' => $group,
                 'required' => false,
                 'label' => 'form.DocumentRelation.number',
+                'property_path' => 'documentRelation.number',
             ])
             ->add('issued', 'date', [
                 'label' => 'form.DocumentRelation.issued',
@@ -65,6 +77,7 @@ class DocumentRelationType extends AbstractType
                 //'group' => $group,
                 'required' => false,
                 'attr' => ['class' => 'input-small', 'data-date-format' => 'dd.mm.yyyy'],
+                'property_path' => 'documentRelation.issued'
             ])
             ->add('relation', 'choice', [
                 'label' => 'form.DocumentRelation.relation',
@@ -74,8 +87,22 @@ class DocumentRelationType extends AbstractType
                 ],
                 //'group' => $group,
                 'required' => false,
+                'property_path' => 'documentRelation.relation'
             ]);
     }
+
+    /**
+     * Configures the options for this type.
+     *
+     * @param OptionsResolver $resolver The resolver for the options.
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'data_class' => 'MBH\Bundle\PackageBundle\Document\Tourist'
+        ]);
+    }
+
 
     /**
      * Returns the name of this type.

@@ -196,12 +196,6 @@ class Tourist extends Base implements PayerInterface
     protected $birthplace;
 
     /**
-     * @var string
-     * @ODM\String
-     */
-    protected $addressObject;
-
-    /**
      * @var AddressObjectDecomposed
      * @ODM\EmbedOne(targetDocument="AddressObjectDecomposed")
      */
@@ -724,22 +718,6 @@ class Tourist extends Base implements PayerInterface
     }
 
     /**
-     * @return string
-     */
-    public function getAddressObject()
-    {
-        return $this->addressObject;
-    }
-
-    /**
-     * @param string $addressObject
-     */
-    public function setAddressObject($addressObject)
-    {
-        $this->addressObject = $addressObject;
-    }
-
-    /**
      * @return AddressObjectDecomposed
      */
     public function getAddressObjectDecomposed()
@@ -769,6 +747,36 @@ class Tourist extends Base implements PayerInterface
     public function setAddressObjectCombined($addressObjectCombined)
     {
         $this->addressObjectCombined = $addressObjectCombined;
+    }
+
+
+    /**
+     * @ODM\PrePersist
+     * @ODM\PreUpdate
+     */
+    public function preSave()
+    {
+        if($this->getAddressObjectDecomposed() && $this->getAddressObjectDecomposed()->getCountry())
+            $this->fillAddressObject();
+    }
+
+    private function fillAddressObject()
+    {
+        $chain = [
+            $this->getAddressObjectDecomposed()->getCountry()->getTitle(),
+            $this->getAddressObjectDecomposed()->getRegion(),
+            $this->getAddressObjectDecomposed()->getCity(),
+            $this->getAddressObjectDecomposed()->getStreet(),
+            $this->getAddressObjectDecomposed()->getHouse(),
+            $this->getAddressObjectDecomposed()->getCorpus(),
+            $this->getAddressObjectDecomposed()->getFlat()
+        ];
+
+        $chain = array_map('strval', $chain);
+        if(($lastKey = array_search('', $chain)) !== false)
+            $chain = array_slice($chain, 0, $lastKey);
+
+        $this->setAddressObjectCombined(implode(' ', $chain));
     }
 
     /**

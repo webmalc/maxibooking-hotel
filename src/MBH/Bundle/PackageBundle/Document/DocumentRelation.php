@@ -19,9 +19,9 @@ class DocumentRelation
     protected $type;
     /**
      * @var VegaFMS
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaFMS")
+     * @ODM\ReferenceOne(name="authority_organ", targetDocument="MBH\Bundle\VegaBundle\Document\VegaFMS")
      */
-    protected $authority_organ;
+    protected $authorityOrgan;
     /**
      * @var String
      * @ODM\String
@@ -69,15 +69,15 @@ class DocumentRelation
      */
     public function getAuthorityOrgan()
     {
-        return $this->authority_organ;
+        return $this->authorityOrgan;
     }
 
     /**
-     * @param VegaFMS $authority_organ
+     * @param VegaFMS $authorityOrgan
      */
-    public function setAuthorityOrgan(VegaFMS $authority_organ = null)
+    public function setAuthorityOrgan(VegaFMS $authorityOrgan = null)
     {
-        $this->authority_organ = $authority_organ;
+        $this->authorityOrgan = $authorityOrgan;
     }
 
     /**

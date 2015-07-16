@@ -19,16 +19,20 @@ class AddressObjectDecomposedType extends AbstractType
         $builder
             ->add('country', 'document', [
                 'label' => 'form.AddressObjectDecomposedType.country',
-                'class' => 'MBH\Bundle\HotelBundle\Document\Country'
+                'class' => 'MBH\Bundle\HotelBundle\Document\Country',
+                'required' => false,
             ])
             ->add('city', 'text', [
                 'label' => 'form.AddressObjectDecomposedType.city',
+                'required' => false,
             ])
             ->add('zip_code', 'text', [
                 'label' => 'form.AddressObjectDecomposedType.zip_code',
+                'required' => false,
             ])
             ->add('region', 'text', [
                 'label' => 'form.AddressObjectDecomposedType.region',
+                'required' => false,
             ])
             /*->add('district', 'document', [
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
@@ -37,22 +41,39 @@ class AddressObjectDecomposedType extends AbstractType
             ])*/
             ->add('settlement', 'text', [
                 'label' => 'form.AddressObjectDecomposedType.settlement',
+                'required' => false,
             ])
             ->add('urbanarea', 'text', [
                 'label' => 'form.AddressObjectDecomposedType.urbanarea',
+                'required' => false,
             ])
             ->add('street', 'text', [
                 'label' => 'form.AddressObjectDecomposedType.street',
+                'required' => false,
             ])
             ->add('house', 'text', [
                 'label' => 'form.AddressObjectDecomposedType.house',
+                'required' => false,
             ])
             ->add('corpus', 'text', [
                 'label' => 'form.AddressObjectDecomposedType.corpus',
+                'required' => false,
             ])
             ->add('flat', 'text', [
                 'label' => 'form.AddressObjectDecomposedType.flat',
+                'required' => false,
+            ])
+            /*->add('address_object_combined', 'text', [
+                'label' => 'form.TouristExtendedType.address_object_combined',
+                'group' => 'form.touristType.contact_info',
+                'required' => false,
+            ])*/
+            ->add('address_object', 'text', [
+                'label' => 'form.TouristExtendedType.address_object',
+                'required' => false,
+                'help' => 'Передача адреса в виде кода (AOID) Федеральной информационной адресной системы (ФИАС)'
             ]);
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -213,8 +213,6 @@ class HotelController extends Controller
      */
     public function extendedAction(Hotel $entity)
     {
-        $country = $this->dm->getRepository('MBHHotelBundle:Country')->findOneBy([]);
-
         $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),
             'config' => $this->container->getParameter('mbh.hotel')

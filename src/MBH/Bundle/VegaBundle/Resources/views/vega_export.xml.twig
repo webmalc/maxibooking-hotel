@@ -25,8 +25,8 @@
     {% endif %}
     {% if tourist.documentRelation or tourist.addressObjectDecomposed or tourist.addressObjectCombined %}
         <liveAddress>
-            {% if tourist.addressObject %}
-                <addressObject type="ADDROBJ" dictvalue="{{ tourist.addressObject }}"/>
+            {% if tourist.addressObjectDecomposed %}
+                <addressObject type="ADDROBJ" dictvalue="{{ tourist.addressObjectDecomposed.addressObject }}"/>
             {% endif %}
             {% if tourist.addressObjectDecomposed %}
                 <addressObjectDecomposed region="{{ tourist.addressObjectDecomposed.district.name }}" city="{{ tourist.addressObjectDecomposed.city }}" settlement="{{ tourist.addressObjectDecomposed.settlement }}" street="{{ tourist.addressObjectDecomposed.street }}"/>

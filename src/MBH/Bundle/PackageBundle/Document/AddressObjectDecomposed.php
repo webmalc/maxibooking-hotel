@@ -9,6 +9,7 @@ use MBH\Bundle\VegaBundle\Document\VegaRegion;
 /**
  * @ODM\EmbeddedDocument
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ * @ODM\HasLifecycleCallbacks
  */
 class AddressObjectDecomposed
 {
@@ -73,6 +74,12 @@ class AddressObjectDecomposed
      * @ODM\String
      */
     protected $flat;
+
+    /**
+     * @var string
+     * @ODM\String
+     */
+    protected $addressObject;
 
     /**
      * @return Country|null
@@ -248,6 +255,22 @@ class AddressObjectDecomposed
     public function setFlat($flat)
     {
         $this->flat = $flat;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddressObject()
+    {
+        return $this->addressObject;
+    }
+
+    /**
+     * @param string $addressObject
+     */
+    public function setAddressObject($addressObject)
+    {
+        $this->addressObject = $addressObject;
     }
 
     /*public function __toString()

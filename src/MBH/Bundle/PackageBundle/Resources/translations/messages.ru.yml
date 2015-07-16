@@ -233,7 +233,7 @@ form.TouristExtendedType.citizenship: Гражданство
 form.TouristExtendedType.birthplace: Место рождения
 form.TouristExtendedType.documentRelation: Документ
 form.TouristExtendedType.documentRelation: Документ
-form.TouristExtendedType.address_object: Адрес проживания
+form.TouristExtendedType.address_object: Адрес в виде кода
 form.TouristExtendedType.address_object_decomposed: Адрес проживания
 form.TouristExtendedType.address_object_combined: Адрес проживания
 
