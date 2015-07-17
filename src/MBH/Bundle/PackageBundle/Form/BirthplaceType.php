@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\DataMapper\PropertyPathMapper;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -19,6 +20,9 @@ class BirthplaceType extends AbstractType
             ->add('country', 'document', [
                 'label' => 'form.BirthplaceType.country',
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
+                'query_builder' => function(DocumentRepository $repository){
+                    return $repository->createQueryBuilder()->sort(['name' => 1]);
+                },
                 'empty_value' => '',
                 'required' => false,
             ])
@@ -33,6 +37,9 @@ class BirthplaceType extends AbstractType
             ->add('district', 'document', [
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
                 'label' => 'form.BirthplaceType.district',
+                'query_builder' => function(DocumentRepository $repository){
+                    return $repository->createQueryBuilder()->sort(['name' => 1]);
+                },
                 'empty_value' => '',
                 'required' => false,
             ])

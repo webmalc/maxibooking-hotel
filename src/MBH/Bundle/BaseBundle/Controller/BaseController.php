@@ -49,7 +49,7 @@ class BaseController extends Controller
     /**
      * Get entity logs
      * @param object $entity
-     * @return \Gedmo\Loggable\Entity\LogEntr[]|null
+     * @return \Gedmo\Loggable\Document\LogEntry[]|null
      */
     public function logs($entity)
     {
@@ -57,17 +57,15 @@ class BaseController extends Controller
             return null;
         }
 
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        
-        $logs = $dm->getRepository('Gedmo\Loggable\Document\LogEntry')->getLogEntries($entity);
-        
+        $logs = $this->dm->getRepository('Gedmo\Loggable\Document\LogEntry')->getLogEntries($entity);
+
         if (empty($logs)) {
             return null;
         }
-        
+
         return array_slice($logs, 0, $this->container->getParameter('mbh.logs.max'));
     }
-    
+
     /**
      * Redirect after entity save
      * @param string $route
@@ -79,13 +77,12 @@ class BaseController extends Controller
     public function afterSaveRedirect($route, $id, array $params = [], $suffix = '_edit')
     {
         if ($this->getRequest()->get('save') !== null) {
-            
             return $this->redirect($this->generateUrl($route . $suffix, array_merge(['id' => $id], $params)));
         }
-        
+
         return $this->redirect($this->generateUrl($route, $params));
     }
-    
+
     /**
      * Delete entity
      * @param int $id
@@ -105,13 +102,13 @@ class BaseController extends Controller
             }
 
             if (method_exists($entity, 'getHotel')) {
-                if(!$this->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+                if (!$this->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
                     throw $this->createNotFoundException();
                 }
             }
 
             if ($entity instanceof Hotel) {
-                if(!$this->get('mbh.hotel.selector')->checkPermissions($entity)) {
+                if (!$this->get('mbh.hotel.selector')->checkPermissions($entity)) {
                     throw $this->createNotFoundException();
                 }
             }
@@ -119,18 +116,13 @@ class BaseController extends Controller
             $this->dm->remove($entity);
             $this->dm->flush($entity);
 
-            $this->getRequest()
-                ->getSession()
-                ->getFlashBag()
+            $this->getRequest()->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.baseController.delete_record_success'));
 
         } catch (DeleteException $e) {
-            $this->getRequest()
-                ->getSession()
-                ->getFlashBag()
+            $this->getRequest()->getSession()->getFlashBag()
                 ->set('danger', $e->getMessage());
         }
-
 
         return $this->redirectToRoute($route, $params);
     }

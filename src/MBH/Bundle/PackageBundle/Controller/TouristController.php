@@ -75,9 +75,8 @@ class TouristController extends Controller
     public function newAction()
     {
         $entity = new Tourist();
-        $form = $this->createForm(
-            new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
-        );
+        $form = $this->createForm(new TouristType(), $entity,
+            ['genders' => $this->container->getParameter('mbh.gender.types')]);
 
         return [
             'form' => $form->createView(),
@@ -95,18 +94,16 @@ class TouristController extends Controller
     public function createAction(Request $request)
     {
         $entity = new Tourist();
-        $form = $this->createForm(
-            new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
-        );
-        $form->submit($request);
+        $form = $this->createForm(new TouristType(), $entity,
+            ['genders' => $this->container->getParameter('mbh.gender.types')]);
 
+        $form->submit($request);
         if ($form->isValid()) {
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success',
-                    $this->get('translator')->trans('controller.touristController.record_created_success'));
+            $request->getSession()->getFlashBag()->set('success',
+                $this->get('translator')->trans('controller.touristController.record_created_success'));
 
             return $this->afterSaveRedirect('tourist', $entity->getId());
         }
@@ -128,12 +125,10 @@ class TouristController extends Controller
      */
     public function updateAction(Request $request, Tourist $entity)
     {
-        $form = $this->createForm(
-            new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
-        );
+        $form = $this->createForm(new TouristType(), $entity,
+            ['genders' => $this->container->getParameter('mbh.gender.types')]);
 
         $form->submit($request);
-
         if ($form->isValid()) {
 
             $this->dm->persist($entity);
@@ -163,9 +158,8 @@ class TouristController extends Controller
      */
     public function editAction(Tourist $entity)
     {
-        $form = $this->createForm(
-            new TouristType(), $entity, ['genders' => $this->container->getParameter('mbh.gender.types')]
-        );
+        $form = $this->createForm(new TouristType(), $entity,
+            ['genders' => $this->container->getParameter('mbh.gender.types')]);
 
         return [
             'entity' => $entity,
@@ -192,9 +186,8 @@ class TouristController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()
-                    ->set('success',
-                        $this->get('translator')->trans('controller.touristController.record_edited_success'));
+                $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.touristController.record_edited_success'));
 
                 return $this->afterSaveRedirect('tourist', $entity->getId());
             }
@@ -225,9 +218,8 @@ class TouristController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()
-                    ->set('success',
-                        $this->get('translator')->trans('controller.touristController.record_edited_success'));
+                $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.touristController.record_edited_success'));
 
                 return $this->afterSaveRedirect('tourist', $entity->getId());
             }
@@ -247,18 +239,16 @@ class TouristController extends Controller
      */
     public function authorityOrganListAction(Request $request)
     {
+        $list = [];
         if($query = $request->get('query')) {
-            $list = [];
-            $entities = $this->dm->getRepository('MBHVegaBundle:VegaFMS')->findBy(['name' => new \MongoRegex('/.*' . $query . '.*/ui')],
-                ['name' => 1], 50);
+            $repository = $this->dm->getRepository('MBHVegaBundle:VegaFMS');
+            $entities = $repository->findBy(['name' => new \MongoRegex('/.*' . $query . '.*/ui')], ['name' => 1], 50);
             foreach ($entities as $entity) {
                 $list[$entity->getId()] = $entity->getName();
             }
-
-            return new JsonResponse($list);
         }
 
-        return new JsonResponse([]);
+        return new JsonResponse($list);
     }
 
     /**
@@ -273,8 +263,6 @@ class TouristController extends Controller
             'id' => $entity->getId(),
             'text' => $entity->getName()
         ]);
-
-        return new JsonResponse([]);
     }
 
     /**
@@ -296,9 +284,8 @@ class TouristController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()
-                    ->set('success',
-                        $this->get('translator')->trans('controller.touristController.record_edited_success'));
+                $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.touristController.record_edited_success'));
 
                 return $this->afterSaveRedirect('tourist', $entity->getId());
             }

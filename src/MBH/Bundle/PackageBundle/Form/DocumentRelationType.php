@@ -98,7 +98,7 @@ class DocumentRelationType extends AbstractType
             ->add('relation', 'choice', [
                 'label' => 'form.DocumentRelation.relation',
                 'choices' => [
-                    'ВЛАДЕЛИЦ',
+                    'ВЛАДЕЛЕЦ',
                     'ВПИСАН',
                 ],
                 //'group' => $group,

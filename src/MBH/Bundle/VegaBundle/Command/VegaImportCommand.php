@@ -4,6 +4,7 @@ namespace MBH\Bundle\VegaBundle\Command;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\VegaBundle\Document\VegaDocumentType;
 use MBH\Bundle\VegaBundle\Document\VegaFMS;
 use MBH\Bundle\VegaBundle\Document\VegaRegion;
 use MBH\Bundle\VegaBundle\Document\VegaState;
@@ -51,14 +52,17 @@ class VegaImportCommand extends ContainerAwareCommand
     {
         $this->progress = new ProgressBar($output);
 
-        $output->writeln('Import FMS');
+        $output->writeln("Import FMS");
         $this->importFMS();
-        $output->writeln('Import State');
+        $output->writeln("\nImport State");
         $this->importState();
-        $output->writeln('Import Region');
+        $output->writeln("\nImport Region");
         $this->importRegion();
 
-        $output->writeln('Done');
+        $output->writeln("\nImport Document Type");
+        $this->importDocumentType();
+
+        $output->writeln("\nDone");
     }
 
     /**
@@ -73,71 +77,14 @@ class VegaImportCommand extends ContainerAwareCommand
         return $root.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'data';
     }
 
-    private function importRegion()
-    {
-        $this->dm->getRepository('MBHVegaBundle:VegaRegion')->createQueryBuilder()->remove()->getQuery()->execute();
-
-        $this->progress->start();
-
-        if($resource = fopen($this->getResourcesFolderName().DIRECTORY_SEPARATOR.'dict_region.csv', 'r'))
-        {
-            fgetcsv($resource, 1000, ';');
-            while($data = fgetcsv($resource, 1000, ";")){
-                $line = reset($data);
-                $line = trim(iconv('windows-1251', 'UTF-8', $line));
-                if($line) {
-                    $fms = new VegaRegion();
-                    $fms->setOriginalName($line);
-                    $fms->setName(FriendlyFormatter::convertRegion($line));
-
-                    $this->dm->persist($fms);
-                    $this->progress->advance();
-                }
-            }
-        }
-
-        $this->dm->flush();
-        $this->progress->advance();
-
-        $this->progress->finish();
-    }
-
-    private function importState()
-    {
-        $this->dm->getRepository('MBHVegaBundle:VegaState')->createQueryBuilder()->remove()->getQuery()->execute();
-
-        $this->progress->start();
-
-        if($resource = fopen($this->getResourcesFolderName().DIRECTORY_SEPARATOR.'dict_s_state.csv', 'r'))
-        {
-            fgetcsv($resource, 1000, ';');
-            while($data = fgetcsv($resource, 1000, ";")){
-                $line = reset($data);
-                $line = trim(iconv('windows-1251', 'UTF-8', $line));
-                if($line) {
-                    $fms = new VegaState();
-                    $fms->setOriginalName($line);
-                    $fms->setName(FriendlyFormatter::convertCountry($line));
-
-                    $this->dm->persist($fms);
-                    $this->progress->advance();
-                }
-            }
-        }
-
-        $this->dm->flush();
-        $this->progress->advance();
-
-        $this->progress->finish();
-    }
 
     private function importFMS()
     {
         $this->dm->getRepository('MBHVegaBundle:VegaFMS')->createQueryBuilder()->remove()->getQuery()->execute();
+        $filePath = $this->getResourcesFolderName().DIRECTORY_SEPARATOR.'dict_s_fms.csv';
+        $this->progress->start(8645);
 
-        $this->progress->start(8523);
-
-        if($resource = fopen($this->getResourcesFolderName().DIRECTORY_SEPARATOR.'dict_s_fms.csv', 'r'))
+        if($resource = fopen($filePath, 'r'))
         {
             fgetcsv($resource, 1000, ';');
             while($data = fgetcsv($resource, 1000, ";")){
@@ -164,6 +111,90 @@ class VegaImportCommand extends ContainerAwareCommand
         $this->dm->flush();
         $this->progress->advance();
 
+        $this->progress->finish();
+    }
+
+
+    private function importState()
+    {
+        $this->dm->getRepository('MBHVegaBundle:VegaState')->createQueryBuilder()->remove()->getQuery()->execute();
+        $filePath = $this->getResourcesFolderName().DIRECTORY_SEPARATOR.'dict_s_state.csv';
+        $this->progress->start(285);
+
+        if($resource = fopen($filePath, 'r'))
+        {
+            fgetcsv($resource, 1000, ';');
+            while($data = fgetcsv($resource, 1000, ";")){
+                $line = reset($data);
+                $line = trim(iconv('windows-1251', 'UTF-8', $line));
+                if($line) {
+                    $fms = new VegaState();
+                    $fms->setOriginalName($line);
+                    $fms->setName(FriendlyFormatter::convertCountry($line));
+
+                    $this->dm->persist($fms);
+                    $this->progress->advance();
+                }
+            }
+        }
+
+        $this->dm->flush();
+        $this->progress->advance();
+
+        $this->progress->finish();
+    }
+
+
+    private function importRegion()
+    {
+        $this->dm->getRepository('MBHVegaBundle:VegaRegion')->createQueryBuilder()->remove()->getQuery()->execute();
+        $filePath = $this->getResourcesFolderName().DIRECTORY_SEPARATOR.'dict_region.csv';
+        $this->progress->start(87);
+
+        if($resource = fopen($filePath, 'r'))
+        {
+            fgetcsv($resource, 1000, ';');
+            while($data = fgetcsv($resource, 1000, ";")){
+                $line = reset($data);
+                $line = trim(iconv('windows-1251', 'UTF-8', $line));
+                if($line) {
+                    $fms = new VegaRegion();
+                    $fms->setOriginalName($line);
+                    $fms->setName(FriendlyFormatter::convertRegion($line));
+
+                    $this->dm->persist($fms);
+                    $this->progress->advance();
+                }
+            }
+        }
+
+        $this->dm->flush();
+
+        $this->progress->advance();
+        $this->progress->finish();
+    }
+
+
+    public function importDocumentType()
+    {
+        $this->dm->getRepository('MBHVegaBundle:VegaDocumentType')->createQueryBuilder()->remove()->getQuery()->execute();
+        $documentTypes = $this->getContainer()->get('mbh.vega.dictionary_provider')->getDocumentTypes();
+
+        $this->progress->start(count($documentTypes) + 1);
+
+        foreach($documentTypes as $code => $name){
+            $documentType = new VegaDocumentType();
+            $documentType
+                ->setCode($code)
+                ->setOriginalName($name)
+                ->setName(FriendlyFormatter::convertDocumentType($name));
+
+            $this->dm->persist($documentType);
+            $this->progress->advance();
+        }
+        $this->dm->flush();
+
+        $this->progress->advance();
         $this->progress->finish();
     }
 }
