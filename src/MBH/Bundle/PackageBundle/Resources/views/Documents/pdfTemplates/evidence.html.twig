@@ -27,7 +27,7 @@
             <div style="margin-left: 62px;">
                 <div class="area">&nbsp
                     {% if tourist %}
-            {{ tourist.fullName }}{% if tourist.birthday %}, {{ tourist.birthday|date('d.m.Y') }} г. р.{% endif %}{% if tourist.birthplace and tourist.birthplace.country and tourist.birthplace.city %}, {{ tourist.birthplace.country|capitalize ~ ' ' ~ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.city }}{% endif %}
+            {{ tourist.fullName }}{% if tourist.birthday %}, {{ tourist.birthday|date('d.m.Y') }} г. р.{% endif %}{% if tourist.birthplace and tourist.birthplace.country and tourist.birthplace.city %}, {{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.city }}{% endif %}
         {% endif %}
                 </div>
                 <div style="display: block; font-size: 12px; font-weight: normal;">(Ф.И.О., год и место рождения)</div>
@@ -68,7 +68,7 @@
 
     <div>
         Свидетельство выдано к документу, удостоверяющему личность:
-        <br>вид <div class="area ib" style="width: 475px">&nbsp{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type]|capitalize }}{% endif %}</div>,
+        <br>вид <div class="area ib" style="width: 475px">&nbsp{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type] }}{% endif %}</div>,
         серия <div class="area ib" style="width: 150px">&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</div>,
         № <div class="area ib" style="width: 155px">&nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %}</div>
     </div>
@@ -82,7 +82,7 @@
         </div>
         <div style="margin-left: 202px;">
             <div class="area">
-                &nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.authorityOrgan.name|capitalize }}{% endif %}
+                &nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.authorityOrgan.name }}{% endif %}
             </div>
             <div style="display: block; font-size: 12px; font-weight: normal;">(наименование органа, учреждения, выдавшего документ)</div>
         </div>

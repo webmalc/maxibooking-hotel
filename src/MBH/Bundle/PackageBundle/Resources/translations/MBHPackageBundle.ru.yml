@@ -239,7 +239,7 @@ package.service.items: '{% amount %} шт.'
 package.service.per_persons: '{0} на {% persons %} гостей|{1} на {% persons %} гостя|]1,Inf] на {% persons %} гостей'
 package.service.nights_amount: Количество суток
 package.service.nights: Суток
-package.service.guests_amount: Количество гостей
+package.service.guests_amount: Гостей
 package.service.guests: Гостей
 package.service.amount: Количество
 package.service.short_amount: Кол.

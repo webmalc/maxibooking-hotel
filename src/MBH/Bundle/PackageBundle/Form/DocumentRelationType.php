@@ -38,9 +38,19 @@ class DocumentRelationType extends AbstractType
         $this->managerRegistry = $managerRegistry;
     }
 
+    /**
+     * @todo replace documentTypes by VagaDocumentType
+     * @see \MBH\Bundle\VegaBundle\Document\VegaDocumentType
+     *
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $dictTypes = array_keys($this->dictionaryProvider->getDictTypes());
+        $documentTypes = array_map(['\MBH\Bundle\VegaBundle\Service\FriendlyFormatter', 'convertDocumentType'], $this->dictionaryProvider->getDocumentTypes());
+
+        asort($documentTypes);
 
         //main
         $builder
@@ -50,16 +60,12 @@ class DocumentRelationType extends AbstractType
                 'group' => 'form.DocumentRelation.citizenship',
                 'query_builder' => function(DocumentRepository $repository){
                     return $repository->createQueryBuilder()->sort(['name' => 1]);
-                },
-                'empty_value' => '',
-                'required' => false,
+                }
             ])
             ->add('type', 'choice', [
-                'choices' => array_map(['\MBH\Bundle\VegaBundle\Service\FriendlyFormatter', 'convertDocumentType'], $this->dictionaryProvider->getDocumentTypes()),
+                'choices' => $documentTypes,
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.type',
-                'required' => false,
-                'empty_value' => '',
                 'property_path' => 'documentRelation.type'
             ])
             ->add('series', 'text', [
@@ -94,7 +100,6 @@ class DocumentRelationType extends AbstractType
                 'label' => 'form.DocumentRelation.relation',
                 'choices' => array_combine($dictTypes, $dictTypes),
                 'data' => 'owner',
-                'required' => false,
                 'property_path' => 'documentRelation.relation'
             ]);
 

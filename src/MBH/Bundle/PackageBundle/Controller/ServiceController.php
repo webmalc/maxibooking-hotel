@@ -38,9 +38,9 @@ class ServiceController extends BaseController
             $categories = $hotel->getServicesCategories();
             foreach($categories as $category) {
                 $group = $hotel->getName().':'.mb_strtolower($category->getName());
-                $services[$group][$category->getId()] = 'Все услеги';
+                $services[$group][$category->getId()] = $category->getName().':'.'Все услуги';
                 foreach ($category->getServices() as $service) {
-                    $services[$group][$service->getId()] = $service->getName();
+                    $services[$group][$service->getId()] = $category->getName().':'.$service->getName();
                 }
             }
         }

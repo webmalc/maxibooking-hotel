@@ -180,7 +180,7 @@
                                 <div>Место рождения</div>
                             </div>
                             <div class="area"
-                                 style="margin-left: 130px;">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.country|capitalize ~ ' ' ~ tourist.birthplace.city }}{% endif %}</div>
+                                 style="margin-left: 130px;">{% if tourist and tourist.birthplace %}{{ tourist.birthplace.country ~ ' ' ~ tourist.birthplace.mainRegion ~ '  ' ~ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.settlement }}{% endif %}</div>
                         </div>
                     </td>
                 </tr>
@@ -201,7 +201,7 @@
                                 <div>Выдан</div>
                             </div>
                             <div class="area">
-                                {% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrgan %} {{ tourist.documentRelation.authorityOrgan|capitalize }} {% endif %}
+                                {% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrgan %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}
                                 {% if tourist and tourist.documentRelation and tourist.documentRelation.issued %} {{ tourist.documentRelation.issued|date('d.m.Y') }} {% endif %}
                             </div>
                         </div>
@@ -235,7 +235,7 @@
                                 <div>Субъект РФ</div>
                             </div>
                             <div class="area"
-                                 style="margin-left: 110px">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.district }} {% endif %}</div>
+                                 style="margin-left: 110px">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.region %} {{ tourist.addressObjectDecomposed.region }} {% endif %}</div>
                         </div>
                     </td>
                     <td colspan="5">

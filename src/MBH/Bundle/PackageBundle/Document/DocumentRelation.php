@@ -57,11 +57,13 @@ class DocumentRelation
     }
 
     /**
-     * @param String $type
+     * @param string $type
+     * @return $this
      */
     public function setType($type)
     {
         $this->type = $type;
+        return $this;
     }
 
     /**
@@ -90,10 +92,12 @@ class DocumentRelation
 
     /**
      * @param String $authority
+     * @return $this
      */
     public function setAuthority($authority)
     {
         $this->authority = $authority;
+        return $this;
     }
 
     /**

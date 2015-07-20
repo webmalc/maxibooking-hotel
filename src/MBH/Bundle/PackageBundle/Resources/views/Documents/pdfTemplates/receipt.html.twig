@@ -15,7 +15,7 @@
             </p>
 
             <p>
-                Вид документа <span class="area" style="display: inline-block; width: 350px">{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type]|capitalize }}{% endif %}</span>
+                Вид документа <span class="area" style="display: inline-block; width: 350px">{% if tourist and tourist.documentRelation %}{{ vegaDocumentTypes[tourist.documentRelation.type] }}{% endif %}</span>
                 серия <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.series }}{% endif %}</span>
                 номер <span class="area" style="display: inline-block; width: 125px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.number }}{% endif %}</span>
             </p>
@@ -24,10 +24,10 @@
                 выданный <span class="area" style="display: inline-block; width: 90px">{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}</span> г.,
                 Место рождения <span class="area" style="display: inline-block; width: 505px">
                     &nbsp {% if tourist and tourist.birthPlace %}
-                        {{ tourist.birthPlace.country|capitalize }}
+                        {{ tourist.birthPlace.country }}
                         {{ tourist.birthPlace.mainRegion }}
                         {{ tourist.birthPlace.city }}
-                        {{ tourist.birthPlace.district|capitalize }}
+                        {{ tourist.birthPlace.district }}
                     {% endif %}
                 </span>
             </p>
@@ -45,7 +45,7 @@
             </div>-->
 
             <p>
-                Гражданоство <span class="area" style="display: inline-block; width: 300px">{% if tourist %}{{ tourist.citizenship|capitalize }}{% endif %}</span>
+                Гражданоство <span class="area" style="display: inline-block; width: 300px">{% if tourist %}{{ tourist.citizenship }}{% endif %}</span>
             </p>
             <div>
                 <div style="float: left; width: 240px">

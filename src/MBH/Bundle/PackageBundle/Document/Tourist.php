@@ -750,7 +750,7 @@ class Tourist extends Base implements PayerInterface
     /**
      * @param VegaState $citizenship
      */
-    public function setCitizenship(VegaState $citizenship)
+    public function setCitizenship(VegaState $citizenship = null)
     {
         $this->citizenship = $citizenship;
     }

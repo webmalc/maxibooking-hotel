@@ -182,6 +182,10 @@ class TouristController extends Controller
         $entity->getBirthplace() ?: $entity->setBirthplace(new BirthPlace());
         $entity->getDocumentRelation() ?: $entity->setDocumentRelation(new DocumentRelation());
 
+        //Default Value
+        $entity->getCitizenship() ?: $entity->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
+        $entity->getDocumentRelation()->getType() ?: $entity->getDocumentRelation()->setType('vega_russian_passport');
+
         $form = $this->createForm('mbh_document_relation', $entity);
 
         if ($request->isMethod(Request::METHOD_PUT)) {
@@ -194,7 +198,9 @@ class TouristController extends Controller
                 $request->getSession()->getFlashBag()->set('success',
                     $this->get('translator')->trans('controller.touristController.record_edited_success'));
 
-                return $this->afterSaveRedirect('tourist', $entity->getId());
+                return $this->isSavedRequest() ?
+                    $this->redirectToRoute('tourist_edit_document', ['id' => $entity->getId()]) :
+                    $this->redirectToRoute('tourist');
             }
         }
 
@@ -209,11 +215,16 @@ class TouristController extends Controller
      * @Route("/regions", name="get_json_regions", options={"expose"=true})
      * @Method("GET")
      */
-    public function ajaxRegionAction()
+    public function ajaxRegionAction(Request $request)
     {
-        $entities = $this->dm->getRepository('MBHHotelBundle:Region')->findBy([], null, 30);
         $list = [];
-        foreach($entities as $entity) {
+        $criteria = [];
+        if($value = $request->get('value')) {
+            $criteria = ['title' => new \MongoRegex('/.*' . $value . '.*/ui')];
+        }
+
+        $entities = $this->dm->getRepository('MBHHotelBundle:Region')->findBy($criteria, ['title' => 1], 50);
+        foreach ($entities as $entity) {
             $list[$entity->getId()] = $entity->getTitle();
         }
         return new JsonResponse(['data' => $list]);
@@ -273,7 +284,9 @@ class TouristController extends Controller
                 $request->getSession()->getFlashBag()->set('success',
                     $this->get('translator')->trans('controller.touristController.record_edited_success'));
 
-                return $this->afterSaveRedirect('tourist', $entity->getId());
+                return $this->isSavedRequest() ?
+                    $this->redirectToRoute('tourist_edit_address', ['id' => $entity->getId()]) :
+                    $this->redirectToRoute('tourist');
             }
         }
 

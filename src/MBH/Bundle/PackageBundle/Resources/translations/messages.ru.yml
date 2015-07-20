@@ -108,7 +108,8 @@ form.touristType.placeholder_address: г. Москва, пр-кт Мира, д.6
 form.touristType.document: Документ
 form.touristType.placeholder_document: Паспорт: 4545№345678, выдан 28 сентября 2002 г. 2 отделением милиции Г. Москвы
 form.touristType.phone: Телефон
-form.touristType.mobile_phone: Моб. тел.
+form.touristType.mobile_phone: Моб. телефон
+form.touristType.placeholder_messenger: Skype или WhatsApp
 form.touristType.messenger: Мессенджер
 form.touristType.placeholder_phone: +7(925)3456512
 form.touristType.email: E-mail
@@ -242,7 +243,7 @@ form.TouristExtendedType.address_object_combined: Адрес проживани�
 
 form.BirthplaceType.country: Страна
 form.BirthplaceType.city: Город
-form.BirthplaceType.main_region: Регион
+form.BirthplaceType.main_region: Регион (область)
 form.BirthplaceType.district: Район
 form.BirthplaceType.settlement: Населенный пункт
 
@@ -252,7 +253,7 @@ form.DocumentRelation.authority_organ: Код подразделения ФМС
 form.DocumentRelation.authority: Орган выдачи документа
 form.DocumentRelation.series: Серия
 form.DocumentRelation.number: Номер
-form.DocumentRelation.issued: Выдан
+form.DocumentRelation.issued: Дата выдачи
 form.DocumentRelation.relation: Связь лица с документом
 
 form.DocumentRelation.citizenship: 'Гражданство'

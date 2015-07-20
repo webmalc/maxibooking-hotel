@@ -59,6 +59,7 @@ class TouristType extends AbstractType
             ])
             ->add('messenger', 'text', [
                 'label' => 'form.touristType.messenger',
+                'attr' => ['placeholder' => 'form.touristType.placeholder_messenger'],
                 'group' => 'form.touristType.contact_info',
                 'required' => false,
             ])

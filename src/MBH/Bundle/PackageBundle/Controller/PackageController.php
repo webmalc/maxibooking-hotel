@@ -424,19 +424,22 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      * @ParamConverter("tourist", class="MBHPackageBundle:Tourist")
      */
-    public function guestDeleteAction(Request $request, Package $entity, $tourist)
+    public function guestDeleteAction(Request $request, Package $entity, Tourist $tourist)
     {
         if (!$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
+        //$tourist->removePackage($entity);
         $entity->removeTourist($tourist);
+
+        $this->dm->persist($tourist);
         $this->dm->persist($entity);
         $this->dm->flush();
 
         $request->getSession()->getFlashBag()->set('success', 'Гость успешно удален.');
 
-        return $this->redirect($this->generateUrl('package_guest', ['id' => $entity->getId()]));
+        return $this->redirectToRoute('package_guest', ['id' => $entity->getId()]);
     }
 
     /**
@@ -444,7 +447,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @param Request $request
      * @param Package $entity
-     * @return array|\MBH\Bundle\BaseBundle\Controller\Response
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Doctrine\ODM\MongoDB\LockException
      * @Route("/{id}/services", name="package_service")
      * @Method({"GET", "PUT"})
@@ -465,16 +468,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->setPackage($entity);
 
 
-        $form = $this->createForm(
-            new PackageServiceType(),
-            $packageService,
-            [
-                'package' => $entity,
-            ]
-        );
+        $form = $this->createForm(new PackageServiceType(), $packageService, [
+            'package' => $entity
+        ]);
 
         if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
-
             $form->submit($request);
 
             if ($form->isValid()) {

@@ -46,7 +46,6 @@ $(document).ready(function () {
     });
     checkRelationDistrict();*/
 
-
     /*$('#mbh_document_relation_main_region').typeahead({
         name: 'regions',
         local: ['test', 'abc', 'def', '123123'],
@@ -59,6 +58,47 @@ $(document).ready(function () {
         //remote: Routing.generate('get_json_regions') + '?q=%QUERY'
     });
     $('#mbh_document_relation_main_region').typeahead('open');*/
+
+    /*var $region = $('#mbh_document_relation_main_region');
+    $region.select2({
+        minimumInputLength: 3,
+        ajax: {
+            url: Routing.generate('get_json_regions'),
+            dataType: 'json',
+            data: function (selectedValue) {
+                return {
+                    value: selectedValue
+                };
+            },
+            results: function (data) {
+                var result = [];
+                console.log(data);
+                $.each(data.data, function(k, v){
+                    result.push({id:v, text: v});
+                })
+                console.log(result)
+
+                return { results: result };
+            }
+        },
+        initSelection: function(element, callback) {
+            var value = $(element).val();
+            if (value !== "") {
+                $.ajax(Routing.generate('get_json_regions'), {
+                    dataType: "json",
+                    data: {value: value}
+                }).done(function(data) {
+                    var result = {};
+                    for(var key in data.data) {
+                        result[data.data[key]] = data.data[key];
+                    }
+                    data = {data: result};
+                    callback(data);
+                });
+            }
+        },
+        dropdownCssClass: "bigdrop"
+    })*/
 
     //payer select2
     $('#mbh_bundle_packagebundle_package_guest_type_tourist, .findGuest').on("select2-selecting", function(e) {
@@ -89,6 +129,8 @@ $(document).ready(function () {
     });
 
 
+    //$('#mbh_document_relation_citizenship').select({'allowClear' : false});
+
     var details = {};
     var array_values = function (input) {
         var tmp_arr = new Array(), cnt = 0;
@@ -116,8 +158,6 @@ $(document).ready(function () {
                 $.each(data.list, function(k, v){
                     data.list[k].text = v.text + ' ' + '(ИНН ' + detailArray[k]['inn'] +')' + (detailArray[k]['fio'] ? ' ' + detailArray[k]['fio'] : '')
                 });
-
-                console.log(data.list)
 
                 return { results: data.list };
             }

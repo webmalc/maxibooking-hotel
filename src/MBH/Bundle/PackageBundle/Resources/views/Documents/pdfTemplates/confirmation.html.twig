@@ -114,7 +114,7 @@
                 <tbody>
                 <tr>
                     <td>тип документа</td>
-                    <td style="width: 45%"><div class="area">&nbsp{% if documentRelation and documentRelation.type %}{{ documentRelation.type|trans({})|capitalize }}{% endif %}</div></td>
+                    <td style="width: 45%"><div class="area">&nbsp{% if documentRelation and documentRelation.type %}{{ vegaDocumentTypes[documentRelation.type] }}{% endif %}</div></td>
 
                     <td>серия</td>
                     <td style="width: 15%"><div class="area">&nbsp{% if documentRelation and documentRelation.series %}{{ documentRelation.series }}{% endif %}</div></td>

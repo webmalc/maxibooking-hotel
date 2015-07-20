@@ -219,7 +219,7 @@
                                         <div class="title" style="width: 70px">
                                             Область
                                         </div>
-                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district|capitalize }}{% endif %}</div>
+                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.mainRegion }}{% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -229,17 +229,7 @@
                                         <div class="title" style="width: 70px">
                                             Район
                                         </div>
-                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.mainRegion|capitalize }}{% endif %}</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="3">
-                                    <div class="field" style="margin-left: 30px">
-                                        <div class="title" style="width: 70px">
-                                            Нас. пункт
-                                        </div>
-                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district|capitalize }}{% endif %}</div>
+                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.district }}{% endif %}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -255,11 +245,21 @@
                             </tr>
                             <tr>
                                 <td colspan="3">
+                                    <div class="field" style="margin-left: 30px">
+                                        <div class="title" style="width: 70px">
+                                            Нас. пункт
+                                        </div>
+                                        <div class="area" style="margin-left: 71px">&nbsp{% if tourist and tourist.birthplace %}{{ tourist.birthplace.settlement }}{% endif %}</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
                                     <div class="field">
                                         <div class="title" style="width: 120px">
                                             7. Гражданство
                                         </div>
-                                        <div class="area" style="margin-left: 121px">&nbsp{{ tourist.citizenship|capitalize }}</div>
+                                        <div class="area" style="margin-left: 121px">&nbsp{{ tourist.citizenship }}</div>
                                     </div>
                                 </td>
                             </tr>
@@ -279,7 +279,7 @@
                                         <div class="title"></div>
                                         <div class="area" style="margin-left:0px">&nbsp
                                             {% if tourist and tourist.documentRelation and tourist.documentRelation.type %}
-                                                {{ vegaDocumentTypes[tourist.documentRelation.type]|capitalize }}
+                                                {{ vegaDocumentTypes[tourist.documentRelation.type] }}
                                             {% endif %}
                                         </div>
                                     </div>
@@ -328,7 +328,7 @@
                                 <td colspan="3">
                                     <div class="field">
                                         <div class="area" style="margin-left: 0px">
-                                            &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan|capitalize }} {% endif %}
+                                            &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}
                                         </div>
                                     </div>
                                 </td>
@@ -351,7 +351,7 @@
                                             Обл.
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 31px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.settlement }} {% endif %}</div>
+                                             style="margin-left: 31px">&nbsp{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.region %} {{ tourist.addressObjectDecomposed.region.name }} {% endif %}</div>
                                     </div>
                                 </td>
                                 <td>
@@ -371,7 +371,7 @@
                                             Район
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.district|capitalize }} {% endif %}</div>
+                                             style="margin-left: 41px">&nbsp{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.district }} {% endif %}</div>
                                     </div>
                                 </td>
                                 <td>
@@ -380,7 +380,7 @@
                                             Нас. пункт
                                         </div>
                                         <div class="area"
-                                             style="margin-left: 66px">&nbsp{% if tourist and tourist.addressObjectDecomposed %}{{ tourist.addressObjectDecomposed.urbanArea }}{% endif %}</div>
+                                             style="margin-left: 66px">&nbsp{% if tourist and tourist.addressObjectDecomposed %}{{ tourist.addressObjectDecomposed.settlement }}{% endif %}</div>
                                     </div>
                                 </td>
                             </tr>

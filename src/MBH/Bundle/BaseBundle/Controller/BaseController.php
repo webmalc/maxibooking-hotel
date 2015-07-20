@@ -76,11 +76,18 @@ class BaseController extends Controller
      */
     public function afterSaveRedirect($route, $id, array $params = [], $suffix = '_edit')
     {
-        if ($this->getRequest()->get('save') !== null) {
-            return $this->redirect($this->generateUrl($route . $suffix, array_merge(['id' => $id], $params)));
-        }
+        return $this->isSavedRequest() ?
+            $this->redirectToRoute($route . $suffix, array_merge(['id' => $id], $params)) :
+            $this->redirectToRoute($route, $params);
+    }
 
-        return $this->redirect($this->generateUrl($route, $params));
+    /**
+     * Is saved request and need stay on current page
+     * @return bool
+     */
+    protected function isSavedRequest()
+    {
+        return $this->getRequest()->get('save') !== null;
     }
 
     /**

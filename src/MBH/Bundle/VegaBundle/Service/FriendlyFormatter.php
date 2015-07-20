@@ -11,24 +11,26 @@ class FriendlyFormatter
 {
     const CHARSET = "UTF-8";
 
+    private static $specialCountryTitles = [
+        'США', 'СССР', 'КНДР', 'ЮАР', 'ГДР', 'ЧССР'
+    ];
+
     public static function convertCountry($country)
     {
-        $specialNames = [
-            'США', 'СССР', 'КНДР', 'ЮАР', 'ГДР', 'ЧССР'
-        ];
-        if (in_array($country, $specialNames)) {
+        if (in_array($country, self::$specialCountryTitles)) {
             return $country;
         }
 
-        $result = str_replace(' И ', ' и ', $country);
-        $result = mb_convert_case($result, MB_CASE_TITLE, self::CHARSET);
+        $result = mb_convert_case($country, MB_CASE_TITLE, self::CHARSET);
+        $wrongCountryTitles = [];
+        foreach(self::$specialCountryTitles as $title) {
+            $wrongCountryTitles[] = mb_convert_case($title, MB_CASE_TITLE, self::CHARSET);
+        }
 
-        return $result;
-    }
+        $search = array_merge([' Без ', ' И ', ' В '], $wrongCountryTitles);
+        $replace = array_merge([' без ', ' и ', ' в '], self::$specialCountryTitles);
+        $result = str_replace($search, $replace, $result);
 
-    public static function convertCitizen($citizen)
-    {
-        $result = mb_convert_case($citizen, MB_CASE_TITLE, self::CHARSET);
         return $result;
     }
 
@@ -120,8 +122,8 @@ class FriendlyFormatter
     {
         $result = mb_convert_case($name, MB_CASE_TITLE, self::CHARSET);
 
-        $search = array_merge([' По ','О', ' В ', ' На ', 'Рф', 'Иг', 'Св-Во', 'Лбг', 'лбг']);
-        $replace = array_merge([' по ','о', ' в ', ' на ', 'РФ', 'ИГ', 'Св-во', 'ЛБГ', 'ЛБГ']);
+        $search = array_merge([' По ','О', ' В ', ' На ', 'Рф', 'Иг', 'Св-Во', 'Лбг', 'лбг', 'Ссср', 'С ']);
+        $replace = array_merge([' по ','о', ' в ', ' на ', 'РФ', 'ИГ', 'Св-во', 'ЛБГ', 'ЛБГ', 'СССР', 'с ']);
 
         $result = str_replace($search, $replace, $result);
         return $result;
