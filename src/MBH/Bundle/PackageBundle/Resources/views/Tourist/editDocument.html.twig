@@ -3,7 +3,7 @@
 {% set small_title = "редактирование гостя #" ~ entity.id %}
 
 {% block content %}
-    {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 3, 'entity': entity} %}
+    {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 2, 'entity': entity} %}
 
     {{ form_start(form, {'action': path('tourist_edit_document', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}

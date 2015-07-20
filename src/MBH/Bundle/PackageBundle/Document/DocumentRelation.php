@@ -139,7 +139,7 @@ class DocumentRelation
     /**
      * @param \DateTime $issued
      */
-    public function setIssued($issued)
+    public function setIssued(\DateTime $issued = null)
     {
         $this->issued = $issued;
     }

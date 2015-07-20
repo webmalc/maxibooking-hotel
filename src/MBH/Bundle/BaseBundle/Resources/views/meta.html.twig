@@ -73,6 +73,7 @@
             <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
             <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
 
+
             {% if app.environment == 'dev' %}
 
                 <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
@@ -80,7 +81,6 @@
                 {% javascripts filter='uglifyjs2'
                 '@MBHBaseBundle/Resources/public/js/vendor/after/*'
                 '@MBHBaseBundle/Resources/public/js/app/*'
-
                 %}
                 <script type="text/javascript" src="{{ asset_url }}"></script>
                 {% endjavascripts %}

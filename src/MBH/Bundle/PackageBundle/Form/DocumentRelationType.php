@@ -40,11 +40,14 @@ class DocumentRelationType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $dictTypes = array_keys($this->dictionaryProvider->getDictTypes());
+
+        //main
         $builder
             ->add('citizenship', 'document', [
                 'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
                 'label' => 'form.TouristExtendedType.citizenship',
-                'group' => 'form.touristType.general_info',
+                'group' => 'form.DocumentRelation.citizenship',
                 'query_builder' => function(DocumentRepository $repository){
                     return $repository->createQueryBuilder()->sort(['name' => 1]);
                 },
@@ -52,60 +55,96 @@ class DocumentRelationType extends AbstractType
                 'required' => false,
             ])
             ->add('type', 'choice', [
-                'choices' => $this->dictionaryProvider->getDocumentTypes(),
-                //'group' => $group,
+                'choices' => array_map(['\MBH\Bundle\VegaBundle\Service\FriendlyFormatter', 'convertDocumentType'], $this->dictionaryProvider->getDocumentTypes()),
+                'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.type',
                 'required' => false,
                 'empty_value' => '',
                 'property_path' => 'documentRelation.type'
             ])
-            ->add('authorityOrgan', 'text',/*'document',*/ [
-                //'class' => 'MBH\Bundle\VegaBundle\Document\VegaFMS',
-                //'empty_value' => ''
-                'label' => 'form.DocumentRelation.authority_organ',
-                //'property_path' => 'code',
-                //'group' => $group,
-                'required' => false,
-                'property_path' => 'documentRelation.authorityOrgan'
-            ])
-            ->add('authority', 'text', [
-                //'group' => $group,
-                'required' => false,
-                'label' => 'form.DocumentRelation.authority',
-                'property_path' => 'documentRelation.authority'
-            ])
             ->add('series', 'text', [
-                //'group' => $group,
+                'group' => 'form.DocumentRelation.main',
                 'required' => false,
                 'label' => 'form.DocumentRelation.series',
                 'property_path' => 'documentRelation.series'
             ])
             ->add('number', 'text', [
-                //'group' => $group,
+                'group' => 'form.DocumentRelation.main',
                 'required' => false,
                 'label' => 'form.DocumentRelation.number',
                 'property_path' => 'documentRelation.number',
             ])
+            ->add('authorityOrgan', 'text', [
+                'group' => 'form.DocumentRelation.main',
+                'label' => 'form.DocumentRelation.authority',
+                'required' => false,
+                'property_path' => 'documentRelation.authorityOrgan'
+            ])
             ->add('issued', 'date', [
+                'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.issued',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                //'group' => $group,
                 'required' => false,
-                'attr' => ['class' => 'input-small', 'data-date-format' => 'dd.mm.yyyy'],
+                'attr' => ['class' => 'input-small datepicker', 'data-date-format' => 'dd.mm.yyyy'],
                 'property_path' => 'documentRelation.issued'
             ])
             ->add('relation', 'choice', [
+                'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.relation',
-                'choices' => [
-                    'ВЛАДЕЛЕЦ',
-                    'ВПИСАН',
-                ],
-                //'group' => $group,
+                'choices' => array_combine($dictTypes, $dictTypes),
+                'data' => 'owner',
                 'required' => false,
                 'property_path' => 'documentRelation.relation'
             ]);
-        $builder->get('authorityOrgan')->addModelTransformer(new EntityToIdTransformer($this->managerRegistry->getManager(), 'MBH\Bundle\VegaBundle\Document\VegaFMS'));
+
+        $builder->get('authorityOrgan')
+            ->addModelTransformer(new EntityToIdTransformer($this->managerRegistry->getManager(), 'MBH\Bundle\VegaBundle\Document\VegaFMS'));
+
+        //birthplace
+        $builder
+            ->add('country', 'document', [
+                'group' => 'form.DocumentRelation.birthplace',
+                'label' => 'form.BirthplaceType.country',
+                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
+                'query_builder' => function(DocumentRepository $repository){
+                    return $repository->createQueryBuilder()->sort(['name' => 1]);
+                },
+                'empty_value' => '',
+                'required' => false,
+                'property_path' => 'birthplace.country'
+            ])
+            ->add('main_region', 'text', [
+                'group' => 'form.DocumentRelation.birthplace',
+                'label' => 'form.BirthplaceType.main_region',
+                'required' => false,
+                'property_path' => 'birthplace.main_region',
+                'attr' => ['class' => 'typeahead']
+            ])
+            ->add('district', 'text', [
+                'group' => 'form.DocumentRelation.birthplace',
+                /*'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
+                'query_builder' => function(DocumentRepository $repository){
+                    return $repository->createQueryBuilder()->sort(['name' => 1]);
+                },
+                'empty_value' => '',
+                */
+                'label' => 'form.BirthplaceType.district',
+                'required' => false,
+                'property_path' => 'birthplace.district'
+            ])
+            ->add('city', 'text', [//'mbh_city'
+                'group' => 'form.DocumentRelation.birthplace',
+                'label' => 'form.BirthplaceType.city',
+                'required' => false,
+                'property_path' => 'birthplace.city'
+            ])
+            ->add('settlement', 'text', [
+                'group' => 'form.DocumentRelation.birthplace',
+                'label' => 'form.BirthplaceType.settlement',
+                'required' => false,
+                'property_path' => 'birthplace.settlement'
+            ]);
     }
 
     /**

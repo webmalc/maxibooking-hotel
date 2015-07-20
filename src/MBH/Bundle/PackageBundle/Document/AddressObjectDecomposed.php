@@ -30,14 +30,14 @@ class AddressObjectDecomposed
      */
     protected $zipCode;
     /**
-     * @var VegaRegion
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaRegion")
+     * @var String
+     * @ODM\String
      */
     protected $district;
 
     /**
-     * @var String
-     * @ODM\String
+     * @var VegaRegion
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaRegion")
      */
     protected $region;
 
@@ -131,7 +131,7 @@ class AddressObjectDecomposed
     }
 
     /**
-     * @return VegaRegion
+     * @return string
      */
     public function getDistrict()
     {
@@ -139,15 +139,15 @@ class AddressObjectDecomposed
     }
 
     /**
-     * @param VegaRegion $district
+     * @param string $district
      */
-    public function setDistrict(VegaRegion $district = null)
+    public function setDistrict( $district = null)
     {
         $this->district = $district;
     }
 
     /**
-     * @return mixed
+     * @return VegaRegion
      */
     public function getRegion()
     {
@@ -155,9 +155,9 @@ class AddressObjectDecomposed
     }
 
     /**
-     * @param mixed $region
+     * @param VegaRegion $region
      */
-    public function setRegion($region)
+    public function setRegion(VegaRegion $region = null)
     {
         $this->region = $region;
     }

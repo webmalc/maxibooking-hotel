@@ -1,4 +1,4 @@
-/*global window, $ */
+/*global window, Routing $ */
 $(document).ready(function () {
     'use strict';
 
@@ -12,12 +12,53 @@ $(document).ready(function () {
         });
     });
 
-    $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday, .guestBirthday, #mbh_tourist_extended_documentRelation_issued').datepicker({
+    $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday, .guestBirthday').datepicker({
         language: "ru",
         autoclose: true,
         startView: 2
     });
 
+    /*$('#mbh_document_relation_relation').select2({allowClear: false});
+    var $countrySelect = $('#mbh_document_relation_country'),
+        $districtSelect = $('#mbh_document_relation_district'),
+        $otherDistrictInput = $('#mbh_document_relation_otherDistrict');
+
+    var $clone =  $otherDistrictInput.clone();
+    $otherDistrictInput.closest('.form-group').remove();
+    $otherDistrictInput = $clone;
+
+    $districtSelect.parent().append($otherDistrictInput);
+
+    var checkRelationDistrict = function () {
+        var isRussia = $countrySelect.find('option[value=' + $countrySelect.val() + ']').text() === 'Россия';
+        if(isRussia) {
+            $districtSelect.prop("disabled", false);
+            $otherDistrictInput.hide();
+            $districtSelect.select2("container").show();
+        } else {
+            $districtSelect.select2("container").hide();
+            $districtSelect.prop("disabled", true);
+            $otherDistrictInput.show();
+        }
+    }
+    $countrySelect.on('change', function () {
+        checkRelationDistrict();
+    });
+    checkRelationDistrict();*/
+
+
+    /*$('#mbh_document_relation_main_region').typeahead({
+        name: 'regions',
+        local: ['test', 'abc', 'def', '123123'],
+        source: function (query, process){
+            console.log(query, process);
+            var result = [{id: 1, name: "33"}, {id: 1, name: "44"}];
+            var result = ["33", "44"];
+            process(result)
+        },
+        //remote: Routing.generate('get_json_regions') + '?q=%QUERY'
+    });
+    $('#mbh_document_relation_main_region').typeahead('open');*/
 
     //payer select2
     $('#mbh_bundle_packagebundle_package_guest_type_tourist, .findGuest').on("select2-selecting", function(e) {

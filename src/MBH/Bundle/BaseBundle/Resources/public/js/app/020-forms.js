@@ -87,7 +87,7 @@ $(document).ready(function () {
         autoclose: true
     });
 
-    $('.datepicker, #mbh_bundle_packagebundle_touristtype_birthday').keyup(function (e) {
+    $('.datepicker').keyup(function (e) {
 
         if (e.keyCode == 8 || e.keyCode == 46 || e.keyCode == 37) {
             return;

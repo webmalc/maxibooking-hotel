@@ -37,6 +37,11 @@ class DictionaryProvider
         return $this->getDictionary('housepart');
     }
 
+    public function getDictTypes()
+    {
+        return $this->getDictionary('dict_type_sv');
+    }
+
     /**
      * @return array
      */

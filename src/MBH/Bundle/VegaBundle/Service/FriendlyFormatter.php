@@ -120,8 +120,8 @@ class FriendlyFormatter
     {
         $result = mb_convert_case($name, MB_CASE_TITLE, self::CHARSET);
 
-        $search = array_merge([' По ', ' В ', ' На ']);
-        $replace = array_merge([' по ', ' в ', ' на ']);
+        $search = array_merge([' По ','О', ' В ', ' На ', 'Рф', 'Иг', 'Св-Во', 'Лбг', 'лбг']);
+        $replace = array_merge([' по ','о', ' в ', ' на ', 'РФ', 'ИГ', 'Св-во', 'ЛБГ', 'ЛБГ']);
 
         $result = str_replace($search, $replace, $result);
         return $result;

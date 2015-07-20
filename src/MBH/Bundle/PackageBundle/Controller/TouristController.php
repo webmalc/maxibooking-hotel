@@ -3,6 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Document\BirthPlace;
+use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Form\TouristExtendedType;
 use MBH\Bundle\VegaBundle\Document\VegaFMS;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -169,38 +171,6 @@ class TouristController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit/birthplace", name="tourist_edit_birthplace")
-     * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
-     * @Template()
-     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
-     */
-    public function editBirthplaceAction(Tourist $entity, Request $request)
-    {
-        $form = $this->createForm('mbh_birthplace', $entity->getBirthplace());
-
-        if ($request->isMethod(Request::METHOD_PUT)) {
-            $form->submit($request);
-
-            if ($form->isValid()) {
-                $this->dm->persist($entity);
-                $this->dm->flush();
-
-                $request->getSession()->getFlashBag()->set('success',
-                    $this->get('translator')->trans('controller.touristController.record_edited_success'));
-
-                return $this->afterSaveRedirect('tourist', $entity->getId());
-            }
-        }
-
-        return [
-            'entity' => $entity,
-            'form' => $form->createView(),
-            'logs' => $this->logs($entity)
-        ];
-    }
-
-    /**
      * @Route("/{id}/edit/document", name="tourist_edit_document")
      * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_USER')")
@@ -209,6 +179,9 @@ class TouristController extends Controller
      */
     public function editDocumentAction(Tourist $entity, Request $request)
     {
+        $entity->getBirthplace() ?: $entity->setBirthplace(new BirthPlace());
+        $entity->getDocumentRelation() ?: $entity->setDocumentRelation(new DocumentRelation());
+
         $form = $this->createForm('mbh_document_relation', $entity);
 
         if ($request->isMethod(Request::METHOD_PUT)) {
@@ -232,6 +205,19 @@ class TouristController extends Controller
         ];
     }
 
+    /**
+     * @Route("/regions", name="get_json_regions", options={"expose"=true})
+     * @Method("GET")
+     */
+    public function ajaxRegionAction()
+    {
+        $entities = $this->dm->getRepository('MBHHotelBundle:Region')->findBy([], null, 30);
+        $list = [];
+        foreach($entities as $entity) {
+            $list[$entity->getId()] = $entity->getTitle();
+        }
+        return new JsonResponse(['data' => $list]);
+    }
     /**
      * @Route("/authority_organ_json_list", name="authority_organ_json_list", options={"expose"=true})
      * @Method("GET")

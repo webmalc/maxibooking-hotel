@@ -23,7 +23,7 @@ form.hotelExtendedType.hotel_amenities: Удобства отеля
 form.hotelExtendedType.vega_address_id: ID адреса для ПК "Вега"
 form.hotelExtendedType.vega_address_id_help: ID адреса для ПК "Вега"
 form.hotelType.name: Название
-form.hotelType.general_info: Общаяя информация
+form.hotelType.general_info: Общая информация
 form.taskType.general_info: Добавление задачи
 form.hotelType.placeholder_my_hotel: Мой отель
 form.hotelType.inner_name: Внутреннее название
@@ -40,7 +40,7 @@ form.hotelType.is_default: Выбран по умолчанию?
 form.hotelType.logo: Логотип
 form.hotelType.is_default_maxibooking: Выбран по умолчанию при входе в MaxiBooking
 form.roomType.name: Название
-form.roomType.general_info: Общаяя информация
+form.roomType.general_info: Общая информация
 form.roomType.inner_name: Внутреннее название
 form.roomType.placeholder_27_with_repair: 27 (c ремонтом)
 form.roomType.maxibooking_inner_name: Название для использования внутри MaxiBooking
@@ -62,7 +62,7 @@ form.roomTypeGenerateRoomsType.too_many_generation_numbers: Слишком бо�
 form.roomTypeGenerateRoomsType.housing: Корпус
 form.roomTypeGenerateRoomsType.floor: Этаж
 form.roomTypeType.name: Название
-form.roomTypeType.general_info: Общаяя информация
+form.roomTypeType.general_info: Общая информация
 form.roomTypeType.comfort_plus: Комфорт плюс
 form.roomTypeType.inner_name: Внутреннее название
 form.roomTypeType.international_title: Международное название

@@ -5,8 +5,8 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\DataMapper\PropertyPathMapper;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class BirthplaceType
@@ -48,6 +48,20 @@ class BirthplaceType extends AbstractType
                 'required' => false,
             ]);
     }
+
+    /**
+     * Configures the options for this type.
+     *
+     * @param OptionsResolver $resolver The resolver for the options.
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'data_class' => 'MBH\Bundle\PackageBundle\Document\BirthPlace'
+        ]);
+    }
+
+
     /**
      * Returns the name of this type.
      *
