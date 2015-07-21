@@ -270,19 +270,14 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $oldPackage = clone $entity;
-        $form = $this->createForm(
-            new PackageMainType(),
-            $entity,
-            [
-                'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER']),
-                'hotel' => $entity->getRoomType()->getHotel(),
-                'corrupted' => $entity->getCorrupted()
-            ]
-        );
+        $form = $this->createForm(new PackageMainType(), $entity, [
+            'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER']),
+            'hotel' => $entity->getRoomType()->getHotel(),
+            'corrupted' => $entity->getCorrupted()
+        ]);
 
         $form->submit($request);
         if ($form->isValid()) {
-
             //check by search
             $result = $this->container->get('mbh.order')->updatePackage($oldPackage, $entity);
             if ($result instanceof Package) {
@@ -521,19 +516,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $service->setTime($entity->getBegin());
         }
 
-        $form = $this->createForm(
-            new PackageServiceType(),
-            $service,
-            [
-                'package' => $entity,
-            ]
-        );
+        $form = $this->createForm(new PackageServiceType(), $service, ['package' => $entity]);
 
-        if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
+        if ($request->getMethod() == Request::METHOD_PUT && $this->container->get('mbh.package.permissions')->check($entity)) {
             $form->submit($request);
-
             if ($form->isValid()) {
-
                 $this->dm->persist($service);
                 $this->dm->flush();
 
@@ -541,12 +528,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     $this->get('translator')->trans('controller.packageController.service_edit_success')
                 );
 
-                if ($request->get('save') !== null) {
-                    return $this->redirect($this->generateUrl('package_service_edit',
-                        ['id' => $entity->getId(), 'serviceId' => $service->getId()]));
-                }
-
-                return $this->redirect($this->generateUrl('package_service', ['id' => $entity->getId()]));
+                return $request->get('save') !== null ?
+                    $this->redirectToRoute('package_service_edit',
+                         ['id' => $entity->getId(), 'serviceId' => $service->getId()]) :
+                    $this->redirectToRoute('package_service', ['id' => $entity->getId()]);
             }
         }
 

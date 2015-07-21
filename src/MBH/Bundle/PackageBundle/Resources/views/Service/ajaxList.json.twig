@@ -1,19 +1,21 @@
 {
     "recordsTotal": "{{ recordsFiltered }}",
     "recordsFiltered": "{{ recordsFiltered }}",
-    "total" : "{{ total.total }}",
-    "persons" : "{{ total.persons }}",
+    "totals" : {{ totals|raw }},
     "data": [
         {% for item in results %}
             [
                 "<i class='fa fa-plug text-center'></i>",
-                "{% if item.package and item.package.order and item.package.order.payer %} {{ item.package.order.payer.name }} {% else %} Не указан {% endif %} <br><small> <a class='external' href='{{ path("package_service", {id: item.package.id}) }}' rel='main' target='_blank'> <i class='fa fa-external-link'></i> {{ item.package.numberWithPrefix }} </a></small>",
-                "{% if item.begin|mbh_format == item.end|mbh_format %} {{ item.begin|mbh_format }} {% else %} {{ item.begin|mbh_format }} - {{ item.end|mbh_format }} {% endif %} {% if item.nights and item.nights > 0 %} <br><small> {{ plural(item.nights, 'order.packages.noch'|trans({}, 'MBHPackageBundle') ,  'order.packages.nochi'|trans({}, 'MBHPackageBundle') ,  'order.packages.nochei'|trans({}, 'MBHPackageBundle') ) }} </small> {% endif %}",
-                "{{ item.service.name }} <br><small>{{ "package.service.items"|transchoice(item.persons, {'{% amount %}' : item.amount }, "MBHPackageBundle") }} {% if item.calcType in ['per_night', 'per_stay']  %} {{ "package.service.per_persons"|transchoice(item.persons, {'{% persons %}' : item.persons }, "MBHPackageBundle") }} {% endif %}</small>",
-                "<div class='text-right {% if item.deleted %} mark-deleted {% endif %}'>{{ item.price|number_format(2) }} <br><small>{{ config.calcTypes[item.calcType] }}</small> </div>",
-                "<div class='text-right {% if item.package and item.package and item.package.order %}{% if item.package.order.isPaid %}text-success{% elseif item.package.order.paid > 0 %}text-warning{% else %}text-danger{% endif %}{% endif %}'>{{ item.total|number_format(2) }}</div>",
-                "{{ item.note }}",
-                "{{ item.createdAt|date("d.m.Y") }}"
+                "{{ item.package.number }} <small><a class='external' href='{{ path("package_service", {id: item.package.id}) }}' rel='main' target='_blank'><i class='fa fa-external-link'></i></a></small>",
+                "{% if item.service.date %}{% if item.begin %}{{ item.begin|mbh_format }}{% else %}<small><a href='{{ path("package_service", {id: item.package.id}) }}' class='danger'>&lt;дата не указана&gt;</a></small>{% endif %}{% else %}{{ item.begin|mbh_format }} - {{ item.end|mbh_format }}{% endif %}{% if item.service.time %}<br>{% if item.time %}{{ item.time|date('H:i') }}{% else %}<small><a href='{{ path("package_service", {id: item.package.id}) }}' class='danger'>&lt;время не указано&gt;</a></small>{% endif %}{% endif %}",
+                "{{ item.service.name }}",
+                "{{ item.calcType == 'per_night' ? item.nights : '' }}",
+                "{{ item.calcType != 'not_applicable' ? item.persons : '' }}",
+                "{{ item.amount }}",
+                "{% if item.package and item.package.order and item.package.order.payer %} {{ item.package.order.payer.firstName is defined ? item.package.order.payer.lastName ~ ' ' ~ item.package.order.payer.firstName|first ~ '. ' ~ item.package.order.payer.patronymic|first ~ '.' : item.package.order.payer.name }}{% else %} <a href='{{ path("package_service", {id: item.package.id}) }}' class='danger'>&lt;не указан&gt;</a> {% endif %}",
+                "<div class='text-right'>{{ item.total|number_format(2) }}</div>",
+                "{% if item.package and item.package and item.package.order %}<div class='label label-as-badge label-{% if item.package.order.isPaid %}success'>OK{% elseif item.package.order.paid > 0 %}warning'>- {{ item.package.order.debt|number_format(2) }}{% else %}danger'>- {{ item.package.order.debt|number_format(2) }}{% endif %}</div>{% endif %}",
+                "{{ item.note }}"
             ] {% if loop.index != results|length %} , {% endif %}
         {% endfor %}
     ]

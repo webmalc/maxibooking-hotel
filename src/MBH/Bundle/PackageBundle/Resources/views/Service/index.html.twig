@@ -42,39 +42,35 @@
 
 
     <table id="service-table"
-           class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+           class="table not-auto-datatable table-striped table-hover table-condensed table-icons">
         <thead>
         <tr>
             <th class="td-xss"></th>
-            <th class="td-md">{{ "package.service.package"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-xss">#</th>
             <th class="td-md text-center">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
-            <th>{{ "package.service"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-md text-right">{{ "package.service.price"|trans({}, "MBHPackageBundle") }}</th>
+            <th>{{ "package.service.title"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-xss">{{ "package.service.nights"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-xss">{{ "package.service.guests"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-xss">{{ "package.service.amount"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-md">{{ "package.service.tourist"|trans({}, "MBHPackageBundle") }}</th>
             <th class="td-md text-right">{{ "package.service.result"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-md text-right">{{ "package.service.payment"|trans({}, "MBHPackageBundle") }}</th>
             <th>{{ "package.service.comment"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-md text-center">{{ "package.service.createAt"|trans({}, "MBHPackageBundle") }}</th>
         </tr>
         </thead>
         <tbody>
         </tbody>
-        <tfoot>
-        <tr>
-            <td colspan="4"></td>
-            <td class="text-right"><strong>{{ 'views.cash.index.result'|trans({}, 'MBHCashBundle') }}:</strong></td>
-            <td class="text-right">
-                <div>
-                    <strong id="total"></strong>
-                </div>
-                <div>
-                    &nbsp;<small id="total-persons" class="hide"><em></em> {{ "package.service.guests"|trans({}, "MBHPackageBundle")|lower }}</small>
-                </div>
-            </td>
-            <td>
-            </td>
-            <td>
-            </td>
-        </tr>
-        </tfoot>
     </table>
+
+    <div class="text-center alert alert-warning" id="service-summary">
+        <span class="service-summary-row"><b>{{ 'package.service.nights'|trans({}, 'MBHPackageBundle') }}
+                : </b> <span id="service-summary-nights">-</span></span>
+        <span class="service-summary-row"><b>{{ 'package.service.guests'|trans({}, 'MBHPackageBundle') }}
+                : </b> <span id="service-summary-guests">-</span></span>
+        <span class="service-summary-row"><b>{{ 'package.service.amount'|trans({}, 'MBHPackageBundle') }}
+                : </b> <span id="service-summary-amount">-</span></span>
+        <span class="service-summary-row"><b>{{ 'package.service.result'|trans({}, 'MBHPackageBundle') }}
+                : </b> <span id="service-summary-result">-</span></span>
+    </div>
 
 {% endblock %}

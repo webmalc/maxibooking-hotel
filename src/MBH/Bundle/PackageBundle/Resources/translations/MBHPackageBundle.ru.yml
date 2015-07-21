@@ -244,11 +244,15 @@ package.service.guests: Гостей
 package.service.amount: Количество
 package.service.short_amount: Кол.
 package.service.package: Бронь
+package.service.tourist: Заказчик
+package.service.title: Наименование
 package.service.order: Заказ
 package.service.date: Дата
 package.service.price: Цена
 package.service.calculation_type: Тип расчета
-package.service.result: Итог
+package.service.result: Стоимость
+package.service.payment: Оплата
+package.service.dept: Долг
 package.service.comment: Комментарий
 package.service.creation_date: Дата создания
 package.service.createAt: Создана

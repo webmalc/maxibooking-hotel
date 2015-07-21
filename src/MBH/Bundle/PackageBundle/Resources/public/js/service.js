@@ -54,10 +54,14 @@ $(document).ready(function () {
                     nightsDiv.show();
                 }
                 priceInput.show();
-                amountInput.val(services.service_amount);
+                //amountInput.val(services.service_amount);
                 amountInput.show();
-                if (info.date) dateDiv.show();
-                if (info.time) timeDiv.show();
+                if (info.date) {
+                    dateDiv.show();
+                }
+                if (info.time) {
+                    timeDiv.show();
+                }
 
                 var peoplesStr = (info.calcType === 'per_night' || info.calcType === 'per_stay') ? ' за 1 человека ' : ' ';
 
@@ -122,35 +126,47 @@ $(document).ready(function () {
         "autoWidth": false,
         "ajax": {
             "url": Routing.generate('ajax_service_list'),
+            "method" : 'post',
             "data": function (d) {
                 d = $.extend(d, $serviceFilterForm.serializeObject());
                 d.services = $('#select-services').select2('val');
+                console.log(d);
             },
             beforeSend: function () {processing = true; }
         },
         "aoColumns": [
-            {"name": "icon", "bSortable": false},
-            {"name": "order"},
-            null,
+            {"name": "icon", "bSortable": false, "class" : "td-xss text-center"},
+            {"name": "number", "bSortable": false, "class" : "td-xss text-center"},
+            {"name": "date", "class" : "text-center"},
             {"name": "service", "bSortable": false},
-            null,
-            {"name": "total", "bSortable": false},
-            {"name": "note", "bSortable": false},
-            {"name": "createAt", "bSortable": true}
+            {"name": "nights", "class" : "td-xss text-center"},
+            {"name": "persons", "class" : "td-xss text-center"},
+            {"name": "amount", "class" : "td-xss text-center"},
+            {"name": "order", "class" : "text-right", "bSortable": false},
+            {"name": "total"},
+            {"name": "payment", "class" : "text-center", "bSortable": false},
+            {"name": "note", "bSortable": false}
         ],
         "fnDrawCallback" : function (settings) {
             processing = false;
             var $markDeleted = $serviceTable.find('.mark-deleted');
             $markDeleted.closest('tr').addClass('danger');
-            console.log(settings.json);
-            $('#total').html(settings.json.total);
-            $('#total-persons').removeClass('hide').find('em').html(settings.json.persons);
+            var totals = settings.json.totals;
+            for (var k in totals) {
+                $('#service-summary-' + k).html(totals[k] + ' ');
+            }
         }
     }).fnDraw();
 
-    $serviceFilterForm.find('input,select').on('change switchChange.bootstrapSwitch', function () {
+    $serviceFilterForm.find('input, select').on('change switchChange.bootstrapSwitch', function () {
         if (!processing) {
             $serviceTable.dataTable().fnDraw();
         }
     });
+
+    /*$serviceFilterForm.find('select').on('select2-selecting', function () {
+        if (!processing) {
+            $serviceTable.dataTable().fnDraw();
+        }
+    });*/
 })

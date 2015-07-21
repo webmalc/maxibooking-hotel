@@ -3,16 +3,14 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 
-use Doctrine\MongoDB\Query\Expr;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
-use MBH\Bundle\PriceBundle\Document\Service;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -52,7 +50,7 @@ class ServiceController extends BaseController
 
     /**
      * @Route("/service/ajax", name="ajax_service_list", defaults={"_format"="json"}, options={"expose"=true})
-     * @Method("GET")
+     * @Method("POST")
      * @Security("is_granted('ROLE_USER')")
      * @Template()
      */
@@ -70,29 +68,32 @@ class ServiceController extends BaseController
             $end = new \DateTime('midnight +1 day');
         }
 
+        /** @var DocumentRepository $repository */
         $repository = $this->dm->getRepository('MBHPackageBundle:PackageService');
 
-        $qb = $repository->createQueryBuilder();
-        $qb->addNor($qb->expr()
-            ->addOr($qb->expr()
-                ->field('begin')->gt($begin)->addAnd($qb->expr()->field('begin')->gt($end))
-            )->addOr($qb->expr()
-                ->field('end')->lt($begin)->addAnd($qb->expr()->field('end')->lt($end))
+        $queryBuilder = $repository->createQueryBuilder();
+        $queryBuilder->addNor($queryBuilder->expr()
+            ->addOr($queryBuilder->expr()
+                ->field('begin')->gt($begin)->addAnd($queryBuilder->expr()->field('begin')->gt($end))
+            )->addOr($queryBuilder->expr()
+                ->field('end')->lt($begin)->addAnd($queryBuilder->expr()->field('end')->lt($end))
             )
         );
 
         $tableParams = ClientDataTableParams::createFromRequest($request);
         $tableParams->setSortColumnFields([
-            1 => 'package.id',
+            //1 => 'package.id',
             2 => 'begin',
-            4 => 'price',
-            7 => 'createdAt',
+            4 => 'nights',
+            5 => 'persons',
+            6 => 'amount',
+            8 => 'total',
         ]);
 
-        $qb->skip($tableParams->getStart())->limit($tableParams->getLength());
+        $queryBuilder->skip($tableParams->getStart())->limit($tableParams->getLength());
 
         if ($firstSort = $tableParams->getFirstSort()) {
-            $qb->sort($firstSort[0], $firstSort[1]);
+            $queryBuilder->sort($firstSort[0], $firstSort[1]);
         }
 
         if ($services) {
@@ -104,7 +105,10 @@ class ServiceController extends BaseController
                 }
             }
 
-            $qb->field('service.id')->in($services);
+            $queryBuilder->field('service.id')
+                //->equals($services)
+                ->in($services);
+            ;
         }
 
         if ($request->get('deleted') == 'on') {
@@ -112,15 +116,35 @@ class ServiceController extends BaseController
         }
 
         /** @var \MBH\Bundle\PackageBundle\Document\PackageService[] $results */
-        $results = $qb->getQuery()->execute()->toArray();
+        $results = $queryBuilder->getQuery()->execute()->toArray();
 
-        $total = $qb->group([], ['total' => 0, 'persons' => 0])->reduce('function(obj, prev){
-            prev.persons += obj.persons;
-            prev.total += obj.persons * obj.price;
-        }')->getQuery()->getSingleResult();
+        $totals = [
+            'nights' => 0,
+            'guests' => 0,
+            'amount' => 0,
+            'result' => 0,
+            'payment' => 0,
+            'dept' => 0,
+        ];
+        /*$totals = $queryBuilder->group([], $totals)->reduce('function(obj, prev){
+            prev.nights += ((obj.nights && obj.calcType == "per_night") ? parseFloat(obj.nights) : 0);
+            prev.guests += ((obj.persons && obj.calcType != "not_applicable") ? parseFloat(obj.persons) : 0);
+            prev.amount += (obj.amount ? parseFloat(obj.amount) : 0);
+            prev.result += (obj.total ? parseFloat(obj.total) : 0);//obj.persons * obj.price;
+        }')->getQuery()->getSingleResult();*/
 
-        if(!$total)
-            $total = ['persons' => 0, 'total' => 0];
+        foreach($results as $service) {
+            if($service->getCalcType() == 'per_night')
+                $totals['nights'] += intval($service->getNights());
+            if($service->getCalcType() != 'not_applicable') {
+                $totals['guests'] += intval($service->getPersons());
+            }
+            $totals['amount'] += intval($service->getAmount());
+            $totals['result'] += $service->getTotal();
+        }
+
+        $totals['result'] = number_format($totals['result'], 2);
+        $totals = json_encode($totals);
 
         if($request->get('deleted') == 'on') {
             $this->dm->getFilterCollection()->enable('softdeleteable') ;
@@ -129,7 +153,7 @@ class ServiceController extends BaseController
         return [
             'results' => $results,
             'recordsFiltered' => count($results),
-            'total' => $total,
+            'totals' => $totals,
             'config' => $this->container->getParameter('mbh.services'),
         ];
     }
