@@ -34,7 +34,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         $config = $this->hotel->getBookingConfig();
 
         $form = $this->createForm(
-            new BookingType(), $config
+            $this->get('mbh.channelmanager.booking_type'), $config
         );
 
         return [
@@ -63,7 +63,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $config->setHotel($hotel);
         }
         $form = $this->createForm(
-            new BookingType(), $config
+            $this->get('mbh.channelmanager.booking_type'), $config
         );
 
         $form->handleRequest($request);

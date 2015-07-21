@@ -5,6 +5,10 @@ form.bookingType.booking_api_com_access_login: Логин (username) для до
 form.bookingType.password: Пароль
 form.bookingType.booking_api_com_password_access: Пароль (password) для доступа к API Booking.com
 form.bookingType.hotel_id: ID отеля
+form.bookingType.currency: Валюта
+form.bookingType.currency_help: Валюта конвертации цен
+form.bookingType.currencyDefaultRatio: Курс по умолчанию
+form.bookingType.currencyDefaultRatio_help: Курс, используемый при недоступности курса ЦБ РФ
 form.bookingType.hotel_id_in_booking_com: ID отеля в Booking.com
 form.oktogoType.is_included: Включен?
 form.oktogoType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
