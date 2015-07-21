@@ -7,13 +7,12 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
- * Class VegaRegion
- * @ODM\Document(collection="vega_region")
+ * Class VegaDocumentType
+ * @ODM\Document(collection="vega_document_type", repositoryClass="\MBH\Bundle\VegaBundle\Document\VegaDocumentTypeRepository")
  * @Gedmo\Loggable
- * @package MBH\Bundle\VegaBundle\Document
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
-class VegaRegion extends Base
+class VegaDocumentType extends Base
 {
     /**
      * @var string
@@ -30,19 +29,29 @@ class VegaRegion extends Base
     protected $originalName;
 
     /**
+     * @var string
+     * @ODM\String
+     * @ODM\UniqueIndex
+     * @Gedmo\Versioned
+     */
+    protected $code;
+
+    /**
      * @return string
      */
     public function getName()
     {
-        return $this->name;
+        return $this->name;//is_string($this->getOriginalName()) ? FriendlyFormatter::convertDocumentType($this->getOriginalName()) : null;
     }
 
     /**
      * @param string $name
+     * @return self
      */
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
     }
 
     /**
@@ -54,10 +63,30 @@ class VegaRegion extends Base
     }
 
     /**
-     * @param $originalName
+     * @param string $originalName
+     * @return self
      */
     public function setOriginalName($originalName)
     {
         $this->originalName = $originalName;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param string $code
+     * @return self
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
+        return $this;
     }
 }

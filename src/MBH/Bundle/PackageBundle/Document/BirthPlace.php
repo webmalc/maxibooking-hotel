@@ -19,20 +19,20 @@ class BirthPlace
     protected $country;
 
     /**
-     * @var String
+     * @var string
      * @ODM\String
      */
     protected $city;
 
     /**
-     * @var String
+     * @var string
      * @ODM\String
      */
     protected $mainRegion;
 
     /**
-     * @var VegaRegion
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaRegion")
+     * @var string
+     * @ODM\String
      */
     protected $district;
 
@@ -53,7 +53,7 @@ class BirthPlace
     /**
      * @param VegaState $country
      */
-    public function setCountry(VegaState $country)
+    public function setCountry(VegaState $country = null)
     {
         $this->country = $country;
     }
@@ -98,9 +98,9 @@ class BirthPlace
     }
 
     /**
-     * @param VegaRegion $district
+     * @param string $district
      */
-    public function setDistrict(VegaRegion $district)
+    public function setDistrict($district)
     {
         $this->district = $district;
     }

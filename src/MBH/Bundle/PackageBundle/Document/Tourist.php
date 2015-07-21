@@ -53,7 +53,9 @@ class Tourist extends Base implements PayerInterface
      */
     public $mainPackages;
 
-    /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="payer") */
+    /**
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="payer")
+     */
     protected $cashDocuments;
     
     /**
@@ -161,7 +163,27 @@ class Tourist extends Base implements PayerInterface
      * )
      */
     protected $phone;
-    
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     * @Assert\Length(
+     *      min=2,
+     *      minMessage= "validator.document.Tourist.min_phone",
+     *      max=100,
+     *      maxMessage= "validator.document.Tourist.max_phone"
+     * )
+     */
+    protected $mobilePhone;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    protected $messenger;
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -413,6 +435,38 @@ class Tourist extends Base implements PayerInterface
     public function getPhone()
     {
         return $this->phone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMobilePhone()
+    {
+        return $this->mobilePhone;
+    }
+
+    /**
+     * @param string $mobilePhone
+     */
+    public function setMobilePhone($mobilePhone)
+    {
+        $this->mobilePhone = $mobilePhone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessenger()
+    {
+        return $this->messenger;
+    }
+
+    /**
+     * @param string $messenger
+     */
+    public function setMessenger($messenger)
+    {
+        $this->messenger = $messenger;
     }
 
     /**
@@ -696,7 +750,7 @@ class Tourist extends Base implements PayerInterface
     /**
      * @param VegaState $citizenship
      */
-    public function setCitizenship(VegaState $citizenship)
+    public function setCitizenship(VegaState $citizenship = null)
     {
         $this->citizenship = $citizenship;
     }
@@ -756,15 +810,15 @@ class Tourist extends Base implements PayerInterface
      */
     public function preSave()
     {
-        if($this->getAddressObjectDecomposed() && $this->getAddressObjectDecomposed()->getCountry())
+        if($this->getAddressObjectDecomposed() && $this->getAddressObjectDecomposed()->getCountry() && $this->getAddressObjectDecomposed()->getRegion())
             $this->fillAddressObject();
     }
 
     private function fillAddressObject()
     {
         $chain = [
-            $this->getAddressObjectDecomposed()->getCountry()->getTitle(),
-            $this->getAddressObjectDecomposed()->getRegion(),
+            $this->getAddressObjectDecomposed()->getCountry()->getName(),
+            $this->getAddressObjectDecomposed()->getRegion()->getName(),
             $this->getAddressObjectDecomposed()->getCity(),
             $this->getAddressObjectDecomposed()->getStreet(),
             $this->getAddressObjectDecomposed()->getHouse(),

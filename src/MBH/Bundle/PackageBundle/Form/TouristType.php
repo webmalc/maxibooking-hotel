@@ -35,7 +35,7 @@ class TouristType extends AbstractType
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'required' => false,
-                'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small'),
+                'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'),
             ))
             ->add('sex', 'choice', [
                 'label' => 'form.touristType.gender',
@@ -50,6 +50,18 @@ class TouristType extends AbstractType
                 'group' => 'form.touristType.contact_info',
                 'required' => false,
                 'attr' => ['placeholder' => 'form.touristType.placeholder_phone']
+            ])
+            ->add('mobilePhone', 'text', [
+                'label' => 'form.touristType.mobile_phone',
+                'group' => 'form.touristType.contact_info',
+                'required' => false,
+                'attr' => ['placeholder' => 'form.touristType.placeholder_phone']
+            ])
+            ->add('messenger', 'text', [
+                'label' => 'form.touristType.messenger',
+                'attr' => ['placeholder' => 'form.touristType.placeholder_messenger'],
+                'group' => 'form.touristType.contact_info',
+                'required' => false,
             ])
             ->add('email', 'text', [
                 'label' => 'form.touristType.email',

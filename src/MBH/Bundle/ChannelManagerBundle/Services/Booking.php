@@ -185,14 +185,18 @@ class Booking extends Base
             $order->setChannelManagerStatus('modified');
             $order->setDeletedAt(null);
         }
+
+        $orderPrice = $this->currencyConvertToRub($config, (float)$reservation->totalprice);
+
         $order->setChannelManagerType('booking')
             ->setChannelManagerId((string)$reservation->id)
             ->setChannelManagerHumanId(empty((string)$customer->loyalty_id) ? null : (string)$customer->loyalty_id)
             ->setMainTourist($payer)
             ->setConfirmed(false)
             ->setStatus('channel_manager')
-            ->setPrice((float)$reservation->totalprice)
-            ->setTotalOverwrite((float)$reservation->totalprice)
+            ->setPrice($orderPrice)
+            ->setOriginalPrice((float)$reservation->totalprice)
+            ->setTotalOverwrite($orderPrice)
             ->setNote('remarks='.(string)$customer->remarks);
 
         if (!empty((string)$customer->cc_number)) {
@@ -214,7 +218,7 @@ class Booking extends Base
                 ->setOperation('fee')
                 ->setOrder($order)
                 ->setTouristPayer($payer)
-                ->setTotal((float)$reservation->commissionamount);
+                ->setTotal($this->currencyConvertToRub($config, (float)$reservation->commissionamount));
             $this->dm->persist($fee);
             $this->dm->flush();
         }
@@ -229,11 +233,15 @@ class Booking extends Base
             if (isset($roomTypes[(string)$room->id])) {
                 $roomType = $roomTypes[(string)$room->id]['doc'];
             } else {
-                $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy([
-                    'hotel.id' => $config->getHotel()->getId(), 'isEnabled' => true, 'deletedAt' => null
-                ]);
+                $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
+                    [
+                        'hotel.id' => $config->getHotel()->getId(),
+                        'isEnabled' => true,
+                        'deletedAt' => null
+                    ]
+                );
                 $corrupted = true;
-                $errorMessage = 'ERROR: invalid roomType #' . (string)$room->id . '. ';
+                $errorMessage = 'ERROR: invalid roomType #'.(string)$room->id.'. ';
 
                 if (!$roomType) {
                     continue;
@@ -263,7 +271,7 @@ class Booking extends Base
                 }
                 $total += (float)$price;
                 $date = $helper->getDateFromString((string)$price['date'], 'Y-m-d');
-                $pricesByDate[$date->format('d_m_Y')] = (float)$price;
+                $pricesByDate[$date->format('d_m_Y')] = $this->currencyConvertToRub($config, (float)$price);
             }
             if (!$tariff) {
                 $tariff = $this->createTariff($config, $rateId);
@@ -271,13 +279,14 @@ class Booking extends Base
                     continue;
                 }
                 $corrupted = true;
-                $errorMessage .= 'ERROR: Not mapped rate <' . $tariff->getName() . '>. ';
+                $errorMessage .= 'ERROR: Not mapped rate <'.$tariff->getName().'>. ';
             }
 
             $packageNote = 'remarks: '.$room->remarks.'; extra_info: '.$room->extra_info.'; facilities: '.$room->facilities.'; max_children: '.$room->max_children;
-            $packageNote .='; commissionamount='.$room->commissionamount.'; currencycode = '.$room->currencycode . '; ';
+            $packageNote .= '; commissionamount='.$room->commissionamount.'; currencycode = '.$room->currencycode.'; ';
             $packageNote .= $errorMessage;
 
+            $packageTotal = $this->currencyConvertToRub($config, (float)$total);
             $package = new Package();
             $package
                 ->setChannelManagerId((string)$room->roomreservation_id)
@@ -290,8 +299,9 @@ class Booking extends Base
                 ->setChildren(0)
                 ->setIsSmoking((int)$room->smoking ? true : false)
                 ->setPricesByDate($pricesByDate)
-                ->setPrice((float)$total)
-                ->setTotalOverwrite((float)$total)
+                ->setPrice($packageTotal)
+                ->setOriginalPrice((float)$total)
+                ->setTotalOverwrite($packageTotal)
                 ->setNote($packageNote)
                 ->setOrder($order)
                 ->setCorrupted($corrupted)
@@ -313,23 +323,28 @@ class Booking extends Base
                         ->setIsCustomPrice(true)
                         ->setNights(empty((string)$addon->nights) ? null : (int)$addon->nights)
                         ->setPersons(empty((string)$addon->persons) ? null : (int)$addon->persons)
-                        ->setPrice(empty((string)$addon->price_per_unit) ? null : (float)$addon->price_per_unit)
-                        ->setTotalOverwrite((float)$addon->totalprice)
+                        ->setPrice(
+                            empty((string)$addon->price_per_unit) ? null : $this->currencyConvertToRub(
+                                $config,
+                                (float)$addon->price_per_unit
+                            )
+                        )
+                        ->setTotalOverwrite($this->currencyConvertToRub($config, (float)$addon->totalprice))
                         ->setPackage($package);
                     $this->dm->persist($packageService);
                     $package->addService($packageService);
                 }
             }
 
-            $package->setServicesPrice($servicesTotal);
-            $package->setTotalOverwrite((float)$room->totalprice);
+            $package->setServicesPrice($this->currencyConvertToRub($config, (float)$servicesTotal));
+            $package->setTotalOverwrite($this->currencyConvertToRub($config, (float)$room->totalprice));
 
             $order->addPackage($package);
             $this->dm->persist($package);
             $this->dm->persist($order);
             $this->dm->flush();
         }
-        $order->setTotalOverwrite((float)$reservation->totalprice);
+        $order->setTotalOverwrite($this->currencyConvertToRub($config, (float)$reservation->totalprice));
         $this->dm->persist($order);
         $this->dm->flush();
 
@@ -381,7 +396,8 @@ class Booking extends Base
                 $end,
                 $config->getHotel(),
                 $roomType ? [$roomType->getId()] : [],
-                null, true
+                null,
+                true
             );
 
             foreach ($roomTypes as $roomTypeId => $roomType) {
@@ -458,8 +474,11 @@ class Booking extends Base
                         if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
                             $info = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
                             $data[$roomType['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
-                                'price' => $info->getPrice(),
-                                'price1' => $info->getSinglePrice() ? $info->getSinglePrice() : null,
+                                'price' => $this->currencyConvertFromRub($config, $info->getPrice()),
+                                'price1' => $info->getSinglePrice() ? $this->currencyConvertFromRub(
+                                    $config,
+                                    $info->getSinglePrice()
+                                ) : null,
                                 'closed' => false
                             ];
 
@@ -548,10 +567,10 @@ class Booking extends Base
                         if (isset($restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
                             $info = $restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')];
                             $data[$roomType['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
-                                'minimumstay_arrival' => (int) $info->getMinStayArrival(),
-                                'maximumstay_arrival' => (int) $info->getMaxStayArrival(),
-                                'minimumstay' => (int) $info->getMinStay(),
-                                'maximumstay' => (int) $info->getMaxStay(),
+                                'minimumstay_arrival' => (int)$info->getMinStayArrival(),
+                                'maximumstay_arrival' => (int)$info->getMaxStayArrival(),
+                                'minimumstay' => (int)$info->getMinStay(),
+                                'maximumstay' => (int)$info->getMaxStay(),
                                 'closedonarrival' => $info->getClosedOnArrival() ? 1 : 0,
                                 'closedondeparture' => $info->getClosedOnDeparture() ? 1 : 0,
                                 'closed' => $info->getClosed() || !$price ? 1 : 0,

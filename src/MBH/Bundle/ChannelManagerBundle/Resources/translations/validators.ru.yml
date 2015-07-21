@@ -11,3 +11,4 @@ validator.document.vashotelConfig.no_api_key_specified: Не указан клю
 validator.document.vashotelConfig.no_hotel_id_specified: Не указан Id отеля
 roomtype.validation: 'Выбрано более одного типа номера'
 tarifftype.validation: 'Выбрано более одного типа тарифа'
+validator.default_currency: Курс по умолчанию обязателен к заполнению

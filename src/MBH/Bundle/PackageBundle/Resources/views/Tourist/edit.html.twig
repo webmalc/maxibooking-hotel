@@ -11,14 +11,14 @@
     {{ form_end(form) }}
 
     <!-- DELETE -->
-    {% if entity.note %}
+    {#% if entity.note %}
     <div class="alert alert-warning package-main-info">
         {% for k in entity.note|split(';') %}
             {% set v = k|split('=') %}
             <strong>{{ v[0] }}</strong> - {{ v[1] }}<br>
         {% endfor %}
     </div>
-    {% endif %}
+    {% endif #}
     <!-- DELETE -->
 
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tourist_delete' } %}

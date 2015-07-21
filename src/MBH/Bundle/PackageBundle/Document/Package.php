@@ -147,6 +147,18 @@ class Package extends Base implements JsonSerializable
     protected $price;
 
     /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Float()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=0,
+     *      minMessage= "validator.document.order.price_less_zero"
+     * )
+     */
+    protected $originalPrice;
+
+    /**
      * @var float
      * @Gedmo\Versioned
      * @ODM\Float()
@@ -1128,6 +1140,25 @@ class Package extends Base implements JsonSerializable
     public function jsonSerialize()
     {
         $this->toArray();
+    }
+
+    /**
+     * @return int
+     */
+    public function getOriginalPrice()
+    {
+        return $this->originalPrice ? $this->originalPrice : $this->getPrice();
+    }
+
+    /**
+     * @param int $originalPrice
+     * @return self
+     */
+    public function setOriginalPrice($originalPrice)
+    {
+        $this->originalPrice = $originalPrice;
+
+        return $this;
     }
 
 }

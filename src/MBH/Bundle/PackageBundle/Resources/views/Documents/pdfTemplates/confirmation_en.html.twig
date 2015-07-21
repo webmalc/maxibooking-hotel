@@ -97,7 +97,7 @@
                     <td style="width: 60%;">
                         <div class="area">&nbsp{% if tourist %}{{ tourist.fullName|transToLat }}{% endif %}</div>
                     </td>
-                    <td style="width: 90px">Date of birth</td>
+                    <td style="width: 100px">Date of birth</td>
                     <td><div class="area">&nbsp{% if tourist and tourist.birthday %}{{ tourist.birthday|date('d.m.Y') }}{% endif %}</div></td>
                 </tr>
                 </tbody>
@@ -125,7 +125,7 @@
                 <tr>
                     <td>Document</td>
                     <td style="width: 55%">
-                        <div class="area">&nbsp{% if documentRelation and documentRelation.type %}{{ documentRelation.type|trans|capitalize }}{% endif %}</div>
+                        <div class="area">&nbsp{% if documentRelation and documentRelation.type %}{{ vegaDocumentTypes[documentRelation.type] }}{% endif %}</div>
                     </td>
 
                     <td>Series</td>

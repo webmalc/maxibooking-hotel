@@ -1,4 +1,4 @@
-/*global window, $ */
+/*global window, Routing $ */
 $(document).ready(function () {
     'use strict';
 
@@ -12,12 +12,93 @@ $(document).ready(function () {
         });
     });
 
-    $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday, .guestBirthday, #mbh_tourist_extended_documentRelation_issued').datepicker({
+    $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday, .guestBirthday').datepicker({
         language: "ru",
         autoclose: true,
         startView: 2
     });
 
+    /*$('#mbh_document_relation_relation').select2({allowClear: false});
+    var $countrySelect = $('#mbh_document_relation_country'),
+        $districtSelect = $('#mbh_document_relation_district'),
+        $otherDistrictInput = $('#mbh_document_relation_otherDistrict');
+
+    var $clone =  $otherDistrictInput.clone();
+    $otherDistrictInput.closest('.form-group').remove();
+    $otherDistrictInput = $clone;
+
+    $districtSelect.parent().append($otherDistrictInput);
+
+    var checkRelationDistrict = function () {
+        var isRussia = $countrySelect.find('option[value=' + $countrySelect.val() + ']').text() === 'Россия';
+        if(isRussia) {
+            $districtSelect.prop("disabled", false);
+            $otherDistrictInput.hide();
+            $districtSelect.select2("container").show();
+        } else {
+            $districtSelect.select2("container").hide();
+            $districtSelect.prop("disabled", true);
+            $otherDistrictInput.show();
+        }
+    }
+    $countrySelect.on('change', function () {
+        checkRelationDistrict();
+    });
+    checkRelationDistrict();*/
+
+    /*$('#mbh_document_relation_main_region').typeahead({
+        name: 'regions',
+        local: ['test', 'abc', 'def', '123123'],
+        source: function (query, process){
+            console.log(query, process);
+            var result = [{id: 1, name: "33"}, {id: 1, name: "44"}];
+            var result = ["33", "44"];
+            process(result)
+        },
+        //remote: Routing.generate('get_json_regions') + '?q=%QUERY'
+    });
+    $('#mbh_document_relation_main_region').typeahead('open');*/
+
+    /*var $region = $('#mbh_document_relation_main_region');
+    $region.select2({
+        minimumInputLength: 3,
+        ajax: {
+            url: Routing.generate('get_json_regions'),
+            dataType: 'json',
+            data: function (selectedValue) {
+                return {
+                    value: selectedValue
+                };
+            },
+            results: function (data) {
+                var result = [];
+                console.log(data);
+                $.each(data.data, function(k, v){
+                    result.push({id:v, text: v});
+                })
+                console.log(result)
+
+                return { results: result };
+            }
+        },
+        initSelection: function(element, callback) {
+            var value = $(element).val();
+            if (value !== "") {
+                $.ajax(Routing.generate('get_json_regions'), {
+                    dataType: "json",
+                    data: {value: value}
+                }).done(function(data) {
+                    var result = {};
+                    for(var key in data.data) {
+                        result[data.data[key]] = data.data[key];
+                    }
+                    data = {data: result};
+                    callback(data);
+                });
+            }
+        },
+        dropdownCssClass: "bigdrop"
+    })*/
 
     //payer select2
     $('#mbh_bundle_packagebundle_package_guest_type_tourist, .findGuest').on("select2-selecting", function(e) {
@@ -48,6 +129,8 @@ $(document).ready(function () {
     });
 
 
+    //$('#mbh_document_relation_citizenship').select({'allowClear' : false});
+
     var details = {};
     var array_values = function (input) {
         var tmp_arr = new Array(), cnt = 0;
@@ -76,8 +159,6 @@ $(document).ready(function () {
                     data.list[k].text = v.text + ' ' + '(ИНН ' + detailArray[k]['inn'] +')' + (detailArray[k]['fio'] ? ' ' + detailArray[k]['fio'] : '')
                 });
 
-                console.log(data.list)
-
                 return { results: data.list };
             }
         },
@@ -99,8 +180,9 @@ $(document).ready(function () {
         $('#organization_city').select2("val", detail.city)
     });
 
-    $('#mbh_document_relation_authority_organ').select2({
+    $('#mbh_document_relation_authorityOrgan').select2({
         minimumInputLength: 3,
+        placeholder: "Сделайте выбор",
         allowClear: true,
         ajax: {
             url: Routing.generate('authority_organ_json_list'),
@@ -123,7 +205,7 @@ $(document).ready(function () {
         initSelection: function(element, callback) {
             var id = $(element).val();
             if (id !== "") {
-                $.ajax(Routing.generate('authority_organ_json_list') + '/' + id, {
+                $.ajax(Routing.generate('ajax_authority_organ', {id: id}), {
                     dataType: "json"
                 }).done(function(data) { callback(data); });
             }

@@ -1,6 +1,6 @@
 services:
     mbh.vega.vega_export:
-          class: MBH\Bundle\VegaBundle\Services\VegaExport
+          class: MBH\Bundle\VegaBundle\Service\VegaExport
           arguments: [@service_container]
     mbh.vega.dictionary_provider:
-          class: MBH\Bundle\VegaBundle\Services\DictionaryProvider
+          class: MBH\Bundle\VegaBundle\Service\DictionaryProvider

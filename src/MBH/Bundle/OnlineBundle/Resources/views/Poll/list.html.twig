@@ -5,7 +5,7 @@
 
 {% if hotel is defined and hotel %}
     {% set hotelName = hotel.name %}
-    {% if hotel.logo %}
+    {% if hotel.file %}
         {% set logo = hotel.logoUrl %}
     {% endif %}
     {% if hotel.organization %}

@@ -270,19 +270,14 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $oldPackage = clone $entity;
-        $form = $this->createForm(
-            new PackageMainType(),
-            $entity,
-            [
-                'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER']),
-                'hotel' => $entity->getRoomType()->getHotel(),
-                'corrupted' => $entity->getCorrupted()
-            ]
-        );
+        $form = $this->createForm(new PackageMainType(), $entity, [
+            'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER']),
+            'hotel' => $entity->getRoomType()->getHotel(),
+            'corrupted' => $entity->getCorrupted()
+        ]);
 
         $form->submit($request);
         if ($form->isValid()) {
-
             //check by search
             $result = $this->container->get('mbh.order')->updatePackage($oldPackage, $entity);
             if ($result instanceof Package) {
@@ -424,19 +419,22 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      * @ParamConverter("tourist", class="MBHPackageBundle:Tourist")
      */
-    public function guestDeleteAction(Request $request, Package $entity, $tourist)
+    public function guestDeleteAction(Request $request, Package $entity, Tourist $tourist)
     {
         if (!$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
+        //$tourist->removePackage($entity);
         $entity->removeTourist($tourist);
+
+        $this->dm->persist($tourist);
         $this->dm->persist($entity);
         $this->dm->flush();
 
         $request->getSession()->getFlashBag()->set('success', 'Гость успешно удален.');
 
-        return $this->redirect($this->generateUrl('package_guest', ['id' => $entity->getId()]));
+        return $this->redirectToRoute('package_guest', ['id' => $entity->getId()]);
     }
 
     /**
@@ -444,7 +442,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @param Request $request
      * @param Package $entity
-     * @return array|\MBH\Bundle\BaseBundle\Controller\Response
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Doctrine\ODM\MongoDB\LockException
      * @Route("/{id}/services", name="package_service")
      * @Method({"GET", "PUT"})
@@ -465,16 +463,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->setPackage($entity);
 
 
-        $form = $this->createForm(
-            new PackageServiceType(),
-            $packageService,
-            [
-                'package' => $entity,
-            ]
-        );
+        $form = $this->createForm(new PackageServiceType(), $packageService, [
+            'package' => $entity
+        ]);
 
         if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
-
             $form->submit($request);
 
             if ($form->isValid()) {
@@ -523,19 +516,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $service->setTime($entity->getBegin());
         }
 
-        $form = $this->createForm(
-            new PackageServiceType(),
-            $service,
-            [
-                'package' => $entity,
-            ]
-        );
+        $form = $this->createForm(new PackageServiceType(), $service, ['package' => $entity]);
 
-        if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
+        if ($request->getMethod() == Request::METHOD_PUT && $this->container->get('mbh.package.permissions')->check($entity)) {
             $form->submit($request);
-
             if ($form->isValid()) {
-
                 $this->dm->persist($service);
                 $this->dm->flush();
 
@@ -543,12 +528,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     $this->get('translator')->trans('controller.packageController.service_edit_success')
                 );
 
-                if ($request->get('save') !== null) {
-                    return $this->redirect($this->generateUrl('package_service_edit',
-                        ['id' => $entity->getId(), 'serviceId' => $service->getId()]));
-                }
-
-                return $this->redirect($this->generateUrl('package_service', ['id' => $entity->getId()]));
+                return $request->get('save') !== null ?
+                    $this->redirectToRoute('package_service_edit',
+                         ['id' => $entity->getId(), 'serviceId' => $service->getId()]) :
+                    $this->redirectToRoute('package_service', ['id' => $entity->getId()]);
             }
         }
 

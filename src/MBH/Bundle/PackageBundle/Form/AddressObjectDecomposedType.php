@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -19,34 +20,36 @@ class AddressObjectDecomposedType extends AbstractType
         $builder
             ->add('country', 'document', [
                 'label' => 'form.AddressObjectDecomposedType.country',
-                'class' => 'MBH\Bundle\HotelBundle\Document\Country',
+                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
+                'query_builder' => function(DocumentRepository $repository) {
+                    return $repository->createQueryBuilder()->sort(['name' => 1]);
+                },
+                'required' => false,
+            ])
+            ->add('region', 'document', [
+                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
+                'label' => 'form.AddressObjectDecomposedType.region',
+                'query_builder' => function(DocumentRepository $repository) {
+                    return $repository->createQueryBuilder()->sort(['name' => 1]);
+                },
                 'required' => false,
             ])
             ->add('city', 'text', [
                 'label' => 'form.AddressObjectDecomposedType.city',
                 'required' => false,
             ])
-            ->add('zip_code', 'text', [
-                'label' => 'form.AddressObjectDecomposedType.zip_code',
-                'required' => false,
-            ])
-            ->add('region', 'text', [
-                'label' => 'form.AddressObjectDecomposedType.region',
-                'required' => false,
-            ])
-            /*->add('district', 'document', [
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
-                'label' => 'form.AddressObjectDecomposedType.district',
-                'empty_value' => ''
-            ])*/
             ->add('settlement', 'text', [
                 'label' => 'form.AddressObjectDecomposedType.settlement',
                 'required' => false,
             ])
-            ->add('urbanarea', 'text', [
-                'label' => 'form.AddressObjectDecomposedType.urbanarea',
+            ->add('district', 'text', [
+                'label' => 'form.AddressObjectDecomposedType.district',
                 'required' => false,
             ])
+            /*->add('urbanarea', 'text', [
+                'label' => 'form.AddressObjectDecomposedType.urbanarea',
+                'required' => false,
+            ])*/
             ->add('street', 'text', [
                 'label' => 'form.AddressObjectDecomposedType.street',
                 'required' => false,
@@ -63,11 +66,10 @@ class AddressObjectDecomposedType extends AbstractType
                 'label' => 'form.AddressObjectDecomposedType.flat',
                 'required' => false,
             ])
-            /*->add('address_object_combined', 'text', [
-                'label' => 'form.TouristExtendedType.address_object_combined',
-                'group' => 'form.touristType.contact_info',
+            ->add('zip_code', 'text', [
+                'label' => 'form.AddressObjectDecomposedType.zip_code',
                 'required' => false,
-            ])*/
+            ])
             ->add('address_object', 'text', [
                 'label' => 'form.TouristExtendedType.address_object',
                 'required' => false,

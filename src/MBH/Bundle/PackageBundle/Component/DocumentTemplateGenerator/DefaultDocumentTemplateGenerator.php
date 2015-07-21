@@ -58,6 +58,7 @@ class DefaultDocumentTemplateGenerator extends AbstractDocumentTemplateGenerator
     protected function getAdditionalParams()
     {
         $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
+        $vegaDocumentTypes = array_map(['\MBH\Bundle\VegaBundle\Service\FriendlyFormatter', 'convertDocumentType'], $vegaDocumentTypes);
 
         return [
             'vegaDocumentTypes' => $vegaDocumentTypes,

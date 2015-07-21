@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\Country;
 use MBH\Bundle\VegaBundle\Document\VegaRegion;
+use MBH\Bundle\VegaBundle\Document\VegaState;
 
 /**
  * @ODM\EmbeddedDocument
@@ -14,8 +15,8 @@ use MBH\Bundle\VegaBundle\Document\VegaRegion;
 class AddressObjectDecomposed
 {
     /**
-     * @var Country|null
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Country")
+     * @var VegaState|null
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaState")
      */
     protected $country;
     /**
@@ -29,14 +30,14 @@ class AddressObjectDecomposed
      */
     protected $zipCode;
     /**
-     * @var VegaRegion
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaRegion")
+     * @var String
+     * @ODM\String
      */
     protected $district;
 
     /**
-     * @var String
-     * @ODM\String
+     * @var VegaRegion
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaRegion")
      */
     protected $region;
 
@@ -82,7 +83,7 @@ class AddressObjectDecomposed
     protected $addressObject;
 
     /**
-     * @return Country|null
+     * @return VegaState|null
      */
     public function getCountry()
     {
@@ -90,9 +91,9 @@ class AddressObjectDecomposed
     }
 
     /**
-     * @param Country|null $country
+     * @param VegaState|null $country
      */
-    public function setCountry(Country $country = null)
+    public function setCountry(VegaState $country = null)
     {
         $this->country = $country;
     }
@@ -130,7 +131,7 @@ class AddressObjectDecomposed
     }
 
     /**
-     * @return VegaRegion
+     * @return string
      */
     public function getDistrict()
     {
@@ -138,15 +139,15 @@ class AddressObjectDecomposed
     }
 
     /**
-     * @param VegaRegion $district
+     * @param string $district
      */
-    public function setDistrict(VegaRegion $district = null)
+    public function setDistrict( $district = null)
     {
         $this->district = $district;
     }
 
     /**
-     * @return mixed
+     * @return VegaRegion
      */
     public function getRegion()
     {
@@ -154,9 +155,9 @@ class AddressObjectDecomposed
     }
 
     /**
-     * @param mixed $region
+     * @param VegaRegion $region
      */
-    public function setRegion($region)
+    public function setRegion(VegaRegion $region = null)
     {
         $this->region = $region;
     }

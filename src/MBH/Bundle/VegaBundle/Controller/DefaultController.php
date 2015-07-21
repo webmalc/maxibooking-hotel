@@ -2,26 +2,34 @@
 
 namespace MBH\Bundle\VegaBundle\Controller;
 
-use MBH\Bundle\PackageBundle\Document\Tourist;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\PackageBundle\Document\Tourist;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @Route("/")
- */
-class DefaultController extends Controller
+
+
+class DefaultController extends BaseController
 {
     /**
-     * @Route("/", name="vega_default")
+     * @Route("/{id}/export", name="vega_export")
      * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
-    public function indexAction()
+    public function exportAction(Tourist $entity)
     {
-        return $this->render('MBHVegaBundle:Default:index.html.twig', array('name' => 12));
+        //$entity->getPackages()
+
+        $xml = $this->get('mbh.vega.vega_export')->getXML($entity);
+
+        $response = new Response($xml);
+        $response->headers->set('Content-Type', 'text/xml');
+
+        return $response;
     }
 }

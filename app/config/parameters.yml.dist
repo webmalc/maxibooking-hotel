@@ -1,25 +1,46 @@
 parameters:
-    mailer_transport: smtp
-    mailer_host: 127.0.0.1
-    mailer_user: null
-    mailer_password: null
-    locale: ru
-    secret: I5Uv5dLKYqA8qe4XyX6XLxrT3
-    debug_toolbar: true
-    debug_redirects: false
-    use_assetic_controller: true
-    mongodb_url: 'mongodb://mbh:password@localhost:27017/mbh'
-    mongodb_database: mbh
-    mbh_environment: prod
-    mbh_payment_systems_change: false
 
-    router.request_context.host: example.com
-    router.request_context.scheme: https
-    router.request_context.base_url:
+  #SMTP server
+  mailer_transport: smtp
+  mailer_host: smtp.example.com
+  mailer_user: robot@example.com
+  mailer_password: password
 
-    mailer.user.arrival.links:
-        about: 'http://google.ru/'
-        rooms: 'http://google.ru/'
-        map: 'http://google.ru/'
-        contacts: 'http://google.ru/'
-        poll: 'http://google.ru/'
+  #MongoBD
+  mongodb_url: 'mongodb://mbh:password@localhost:27017/mbh'
+  mongodb_database: mbh
+
+  #Security
+  secret: mySyperSecretKeyForSymfony
+  mbhs_key: mySyperSecretKeyForMBHS
+  mbh_environment: prod
+
+  #System
+  locale: ru
+  debug_toolbar: true
+  debug_redirects: false
+  use_assetic_controller: true
+  router.request_context.host: 'example.com'
+  router.request_context.scheme: http
+  router.request_context.base_url: null
+  mbh_timezone: 'default'
+
+  #Packages
+  mbh_package_arrival_time: 12
+  mbh_package_notpaid_time: '-5 days'
+
+  #Mailer
+  mailer_user_arrival_links:
+    about: 'http://example.com/'
+    rooms: 'http://example.com/'
+    map: 'http://example.com/'
+    contacts: 'http://example.com/'
+    poll: 'http://example.com'
+
+  #Cash
+  mbh_payment_systems_change: true
+  currency_ratio_fix: 1.015
+
+  #Online form
+  online_form_sites: ['http://example.com', 'http://example.com']
+  online_form_result_url: 'http://example.com/results/'

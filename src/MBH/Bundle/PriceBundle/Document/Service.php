@@ -20,7 +20,6 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  */
 class Service extends Base
 {
-
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -77,7 +76,7 @@ class Service extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\Regex(pattern="/^[a-zA-Z0-9 ]+$/")
+     * @Assert\Regex(pattern="/^[a-zA-Z0-9 \(\)-]+$/")
      */
     protected $internationalTitle;
 
@@ -131,6 +130,7 @@ class Service extends Base
     protected $code;
     
     /**
+     * @todo rename isSystem
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -140,6 +140,7 @@ class Service extends Base
     protected $system = false;
     
     /**
+     * @todo rename hasDate
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -149,6 +150,7 @@ class Service extends Base
     protected $date = false;
 
     /**
+     * @todo rename hasTime
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()

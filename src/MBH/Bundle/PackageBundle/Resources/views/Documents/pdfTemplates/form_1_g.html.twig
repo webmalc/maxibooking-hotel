@@ -78,7 +78,7 @@
                     <div>
                         <div class="ib left ">5.Место рождения</div>
                         <div style="width: 310px" class="area ib">
-                            &nbsp{% if tourist and tourist.birthplace %} {{ tourist.birthplace.district ~ ' ' ~ tourist.birthplace.city }}{% endif %}</div>
+                            &nbsp{% if tourist and tourist.birthplace %} {{ tourist.birthplace.mainRegion ~ ' ' ~ tourist.birthplace.district ~ ' ' ~ tourist.birthplace.city ~ ' ' ~ tourist.birthplace.settlement }}{% endif %}</div>
                     </div>
                     <div>
                         <div class="left">
@@ -178,7 +178,7 @@
         <div class="center-block">
             <div>
                 <div style="width: 900px" class="area ib left">
-                    &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan|capitalize }} {% endif %}</div>
+                    &nbsp{% if tourist and tourist.documentRelation %} {{ tourist.documentRelation.authorityOrgan }} {% endif %}</div>
                 <div class="center">
                     <small>(наименования органа внутренних дел, выдавшего документ)</small>
                 </div>

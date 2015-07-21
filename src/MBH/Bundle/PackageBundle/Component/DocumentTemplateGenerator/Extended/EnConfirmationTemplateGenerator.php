@@ -18,7 +18,7 @@ class EnConfirmationTemplateGenerator extends ConfirmationTemplateGenerator
         $translator->setLocale('en');
 
         /** @var TranslatableListener $translatableListener */
-        $translatableListener = $this->container->get('gedmo.listener.translatable');
+        /*$translatableListener = $this->container->get('gedmo.listener.translatable');
         $translatableListener->setTranslatableLocale('en_EN'); // not work..
 
         if($country = $this->package->getRoomType()->getHotel()->getCountry()) { //todo remove
@@ -32,7 +32,7 @@ class EnConfirmationTemplateGenerator extends ConfirmationTemplateGenerator
             $country->setTranslatableLocale('en_EN');
             $this->container->get('doctrine_mongodb')->getManager()->refresh($country);
         }
-
+*/
         $html = parent::getTemplate();
         $translator->setLocale($currentLocale);
 

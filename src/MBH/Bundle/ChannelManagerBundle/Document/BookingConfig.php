@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Document;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
+use MBH\Bundle\ChannelManagerBundle\Lib\CurrencyConfigInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -12,13 +13,15 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as MBHValidator;
 
 /**
  * @ODM\Document(collection="BookingConfig")
  * @Gedmo\Loggable
+ * @MBHValidator\Currency
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class BookingConfig extends Base implements BaseInterface
+class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterface
 {
 
     public function getName()
@@ -60,6 +63,20 @@ class BookingConfig extends Base implements BaseInterface
      * @Assert\NotNull(message="validator.document.bookingConfig.no_hotel_id_specified")
      */
     protected $hotelId;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    protected $currency;
+
+    /**
+     * @var float
+     * @Gedmo\Versioned
+     * @ODM\Float()
+     */
+    protected $currencyDefaultRatio;
 
     /**
      * @var array
@@ -249,4 +266,44 @@ class BookingConfig extends Base implements BaseInterface
     {
         return $this->services;
     }
+
+    /**
+     * @return string
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     * @return self
+     */
+    public function setCurrency($currency)
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCurrencyDefaultRatio()
+    {
+        return $this->currencyDefaultRatio;
+    }
+
+    /**
+     * @param float $currencyDefaultRatio
+     * @return self
+     */
+    public function setCurrencyDefaultRatio($currencyDefaultRatio)
+    {
+        $this->currencyDefaultRatio = $currencyDefaultRatio;
+
+        return $this;
+    }
+
+
 }

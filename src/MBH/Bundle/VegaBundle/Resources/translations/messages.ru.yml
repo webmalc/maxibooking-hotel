@@ -25,3 +25,6 @@ vega_ig_arrival_notice:  'УВЕДОМЛЕНИЕ О ПРИБЫТИИ ИГ/ЛБГ
 vega_return_certificate: 'СВИДЕТЕЛЬСТВО НА ВОЗВРАЩЕНИЕ'
 vega_non_citizen_passport: 'ПАСПОРТ НЕГРАЖДАНИНА'
 vega_national_id_republic_of_kazakhstan': 'УДОСТОВЕРЕНИЕ ЛИЧНОСТИ ГРАЖДАНИНА РЕСПУБЛИКИ КАЗАХСТАН'
+
+owner: Владелец документа
+inscribed: Вписан в документ

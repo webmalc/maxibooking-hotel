@@ -430,8 +430,6 @@ class PackageService extends Base
     }        
 
     /**
-     * Set isCustomPrice
-     *
      * @param boolean $isCustomPrice
      * @return self
      */
@@ -442,8 +440,6 @@ class PackageService extends Base
     }
 
     /**
-     * Get isCustomPrice
-     *
      * @return boolean $isCustomPrice
      */
     public function getIsCustomPrice()
@@ -452,8 +448,6 @@ class PackageService extends Base
     }
 
     /**
-     * Set totalOverwrite
-     *
      * @param float $totalOverwrite
      * @return self
      */
@@ -464,8 +458,6 @@ class PackageService extends Base
     }
 
     /**
-     * Get totalOverwrite
-     *
      * @return float $totalOverwrite
      */
     public function getTotalOverwrite()
@@ -474,8 +466,6 @@ class PackageService extends Base
     }
 
     /**
-     * Set begin
-     *
      * @param \DateTime $begin
      * @return self
      */
@@ -486,8 +476,6 @@ class PackageService extends Base
     }
 
     /**
-     * Get begin
-     *
      * @return \DateTime $begin
      */
     public function getBegin()
@@ -496,8 +484,6 @@ class PackageService extends Base
     }
 
     /**
-     * Set end
-     *
      * @param \DateTime $end
      * @return self
      */
@@ -508,8 +494,6 @@ class PackageService extends Base
     }
 
     /**
-     * Get end
-     *
      * @return \DateTime $end
      */
     public function getEnd()
@@ -518,8 +502,6 @@ class PackageService extends Base
     }
 
     /**
-     * Set time
-     *
      * @param \DateTime $time
      * @return self
      */
@@ -530,8 +512,6 @@ class PackageService extends Base
     }
 
     /**
-     * Get time
-     *
      * @return \DateTime $time
      */
     public function getTime()
