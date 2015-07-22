@@ -342,28 +342,7 @@ class DocumentsController extends Controller
      */
     public function xlsAction()
     {
-        $phpExcelObject = $this->get('phpexcel')->createPHPExcelObject(realpath(__DIR__.'/../Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija.xls'));
-        $phpExcelObject->setActiveSheetIndex()
-            ->setCellValue('W13', 'А')
-            ->setCellValue('AA13', 'Р')
-            ->setCellValue('AE13', 'О')
-            ->setCellValue('AI13', 'Ф')
-            ->setCellValue('AM13', 'И');
-
-        $phpExcelObject->setActiveSheetIndex(1)
-            ->setCellValue('AE14', 'М')
-            ->setCellValue('AI14', 'О')
-            ->setCellValue('AM14', 'С')
-            ->setCellValue('AQ14', 'К')
-            ->setCellValue('AU14', 'О');
-
-
-
-        $phpExcelObject->setActiveSheetIndex(0);
-
-        $writer = $this->get('phpexcel')->createWriter($phpExcelObject);
-        $response = $this->get('phpexcel')->createStreamedResponse($writer);
-
+        $response = $this->get('mbh.package.notice_stay_place_xls_generator')->generateResponse();
         $dispositionHeader = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
             'stream-file.xls'
