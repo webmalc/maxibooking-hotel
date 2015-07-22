@@ -254,6 +254,7 @@ form.DocumentRelation.authority: Орган выдачи документа
 form.DocumentRelation.series: Серия
 form.DocumentRelation.number: Номер
 form.DocumentRelation.issued: Дата выдачи
+form.DocumentRelation.expiry: Действителен до
 form.DocumentRelation.relation: Связь лица с документом
 
 form.DocumentRelation.citizenship: 'Гражданство'

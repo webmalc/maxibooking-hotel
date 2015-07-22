@@ -43,6 +43,11 @@ class DocumentRelation
      */
     protected $issued;
     /**
+     * @var \DateTime
+     * @ODM\Date
+     */
+    protected $expiry;
+    /**
      * @var integer
      * @ODM\Int
      */
@@ -146,6 +151,22 @@ class DocumentRelation
     public function setIssued(\DateTime $issued = null)
     {
         $this->issued = $issued;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getExpiry()
+    {
+        return $this->expiry;
+    }
+
+    /**
+     * @param \DateTime $expiry
+     */
+    public function setExpiry(\DateTime $expiry = null)
+    {
+        $this->expiry = $expiry;
     }
 
     /**

@@ -95,6 +95,15 @@ class DocumentRelationType extends AbstractType
                 'attr' => ['class' => 'input-small datepicker', 'data-date-format' => 'dd.mm.yyyy'],
                 'property_path' => 'documentRelation.issued'
             ])
+            ->add('expiry', 'date', [
+                'group' => 'form.DocumentRelation.main',
+                'label' => 'form.DocumentRelation.expiry',
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'required' => false,
+                'attr' => ['class' => 'input-small datepicker', 'data-date-format' => 'dd.mm.yyyy'],
+                'property_path' => 'documentRelation.expiry'
+            ])
             ->add('relation', 'choice', [
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.relation',

@@ -8,6 +8,7 @@ use MBH\Bundle\PackageBundle\Document\OrderRepository;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Form\OrderDocumentType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -335,14 +336,16 @@ class DocumentsController extends Controller
     }
 
     /**
-     * @Route("/xls", name="xls")
+     * @Route("/{id}/xls/{tourist}", name="xls")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     * @ParamConverter("tourist", class="MBHPackageBundle:Tourist", name="tourist")
      * @return Response
      */
-    public function xlsAction()
+    public function xlsAction(Package $package, Tourist $tourist)
     {
-        $response = $this->get('mbh.package.notice_stay_place_xls_generator')->generateResponse();
+        $response = $this->get('mbh.package.notice_stay_place_xls_generator')->generateResponse($package, $tourist);
         $dispositionHeader = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
             'stream-file.xls'

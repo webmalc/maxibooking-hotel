@@ -4,6 +4,8 @@ namespace MBH\Bundle\PackageBundle\Component;
 
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -36,110 +38,175 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface
 
         $this->phpExcel = $this->container->get('phpexcel');
 
-        $path = realpath(__DIR__.'/../Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija.xls');
-        $this->phpExcelObject = $this->phpExcel->createPHPExcelObject($path);
+        $this->phpExcelObject = $this->phpExcel->createPHPExcelObject($this->getXlsPath());
     }
 
-    public function generateResponse()
+    private function getXlsPath()
     {
-        /*$this->phpExcelObject->setActiveSheetIndex()
-            ->setCellValue('W13', 'А')
-            ->setCellValue('AA13', 'Р')
-            ->setCellValue('AE13', 'О')
-            ->setCellValue('AI13', 'Ф')
-            ->setCellValue('AM13', 'И');
+        return realpath(__DIR__.'/../Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija.xls');
+    }
 
-        $this->phpExcelObject->setActiveSheetIndex(1)
-            ->setCellValue('AE14', 'М')
-            ->setCellValue('AI14', 'О')
-            ->setCellValue('AM14', 'С')
-            ->setCellValue('AQ14', 'К')
-            ->setCellValue('AU14', 'О');*/
+    public function generateResponse(Package $package, Tourist $tourist)
+    {
+        $documentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
+        $hotel = $package->getRoomType()->getHotel();
 
-
-        $this->write('Иванов Иван Анатольевич', 'W13');
+        if($fullName = $tourist->getFullName()) {
+            $fullName = mb_substr($fullName, 0, 65);
+            if(mb_strlen($fullName) > 35) {
+                $fullName = explode(' ', $fullName);
+                $lastName = array_pop($fullName);
+                $this->write(implode(' ', $fullName), 'W13');
+                $this->write($lastName, 'W15');
+            }else {
+                $this->write($fullName, 'W13');
+            }
+        }
         //$this->write('', 'W15');
 
-        $this->write('Российская федерация', 'AA16');
-        $this->write('03', 'AE21');
-        $this->write('12', 'AU21');
-        $this->write('1988', 'BG21');
+        if($tourist->getCitizenship()) {
+            $this->write($tourist->getCitizenship()->getName(), 'AA18');
+        }
+        if($tourist->getBirthday()) {
+            $this->write($tourist->getBirthday()->format('d'), 'AE21');
+            $this->write($tourist->getBirthday()->format('m'), 'AU21');
+            $this->write($tourist->getBirthday()->format('Y'), 'BG21');
+        }
         $this->phpExcelObject->getActiveSheet()->setCellValue('CY21', 'X');
 
-        $this->write('Россия г.Москва ул.Дмитровская д.23 кв.2', 'AE24');
-        $this->write('Паспорт', 'BC30');
-        $this->write('3587', 'DC37');
-        $this->write('78574324', 'DW37');
+        if($birthplace = $tourist->getBirthplace()) {
+            if($birthplace->getCountry() && $birthplace->getMainRegion()) {
+                $city = $birthplace->getCountry()->getName() . ' ' . $birthplace->getMainRegion();
+                // . ' ' . $birthplace->getCity() . ' ' . $tourist->getBirthplace()->getDistrict();
+                $this->write(mb_substr($city, 0, 33), 'AE24');
+            }
 
+            $this->write($birthplace->getCity() . ' ' . $birthplace->getSettlement(), 'AE27');
+        }
 
-        $this->write('20', 'AA40');
-        $this->write('05', 'AQ40');
-        $this->write('2011', 'BC40');
+        if($documentRelation = $tourist->getDocumentRelation()) {
+            if($documentRelation->getType() && array_key_exists($documentRelation->getType(), $documentTypes)) {
+                $this->write($documentTypes[$documentRelation->getType()], 'BC30');
+            }
+            $this->write($documentRelation->getSeries(), 'DC30');
+            $this->write($documentRelation->getNumber(), 'DW30');
 
-        $this->write('20', 'CM37');
-        $this->write('05', 'DC37');
-        $this->write('2021', 'DO37');
+            if($issued = $documentRelation->getIssued()) {
+                $this->write($issued->format('d'), 'AA32');
+                $this->write($issued->format('m'), 'AQ32');
+                $this->write($issued->format('Y'), 'BC32');
+            }
 
-        $this->phpExcelObject->getActiveSheet()->setCellValue('BO43', 'X');
+            if($expiry = $documentRelation->getExpiry()) { //Скрок действия
+                $this->write($expiry->format('d'), 'CM32');
+                $this->write($expiry->format('m'), 'DC32');
+                $this->write($expiry->format('Y'), 'DO32');
+            }
+        }
 
-        $this->write('Инженер', 'W45');
+        //$this->phpExcelObject->getActiveSheet()->setCellValue('W37', 'X');
+        //$this->write($tourist->getVisa()->getSeries(), 'DC37');
+        //$this->write($tourist->getVisa()->getNumber(), 'DW37');
 
-        $this->write('20', 'AI47');
-        $this->write('07', 'AY47');
-        $this->write('2015', 'BK47');
+        $purposeList = [
+            'study' => 'CA43',
+            'tourism'=> 'AY43',
+            'work' => 'CM43',
+            //'residence' => 'CY43',
+            'other' => 'EQ43',
+        ];
+        if($package->getPurposeOfArrival() && array_key_exists($package->getPurposeOfArrival(), $purposeList)) {
+            $this->phpExcelObject->getActiveSheet()->setCellValue($purposeList[$package->getPurposeOfArrival()], 'X'); //Цель въезда
+        }
 
-        $this->write('01', 'DO47');
-        $this->write('08', 'EE47');
-        $this->write('2015', 'EQ47');
+        //$this->write('Инженер', 'W45');
 
-        $this->write('5653', 'AQ49');
-        $this->write('2698432', 'BK49');
+        /*
+        $this->write('02'), 'AI47');
+        $this->write('02'), 'AY47');
+        $this->write('02'), 'BK47');
 
-        $this->write('Сведения о законных', 'AA51');
+        $this->write('02', 'DO47');
+        $this->write('02', 'EE47');
+        $this->write('02', 'EQ47');
 
-        $this->write('Россия г.Москва', 'AA57');
+        //$this->write('5653', 'AQ49'); //Миграционная карта
+        //$this->write('2698432', 'BK49');
+        //$this->write('Сведения о законных', 'AA51');
+        //$this->write($hotel->getCity() + ' ' +$hotel->getSettlement() + ' ' + $hotel->getStreet() + ' ' + $hotel->getHouse(), 'AA57');
+        */
 
-        $this->write('Иванов Иван Анатольевич', 'W69');
-        $this->write('Российская федерация', 'AA74');
+        if($fullName = $tourist->getFullName()) {
+            $fullName = mb_substr($fullName, 0, 65);
+            if(mb_strlen($fullName) > 35) {
+                $fullName = explode(' ', $fullName);
+                $lastName = array_pop($fullName);
+                $this->write(implode(' ', $fullName), 'W69');
+                $this->write($lastName, 'W71');
+            }else {
+                $this->write($fullName, 'W69');
+            }
+        }
 
-        $this->write('03', 'AE77');
-        $this->write('12', 'AU77');
-        $this->write('1988', 'BG77');
+        //$this->write('', 'W71');
+        $this->write($tourist->getCitizenship(), 'AA74');
 
-        $this->phpExcelObject->getActiveSheet()->setCellValue('DC77', 'X');
+        if($tourist->getBirthday()) {
+            $this->write($tourist->getBirthday()->format('d'), 'AE77');
+            $this->write($tourist->getBirthday()->format('m'), 'AU77');
+            $this->write($tourist->getBirthday()->format('Y'), 'BG77');
+        }
 
-        $this->write('Паспорт', 'BC80');
-        $this->write('3587', 'DC80');
-        $this->write('78574324', 'DW80');
+        $sexList = ['male' => 'DC77', 'female' => 'DW77'];
+        if(array_key_exists($tourist->getSex(), $sexList)) {
+            $this->phpExcelObject->getActiveSheet()->setCellValue($sexList[$tourist->getSex()], 'X');
+        }
 
-        $this->write('Краснодарский край', 'AE83');
-        $this->write('Новая улица', 'W91');
+        if($documentRelation = $tourist->getDocumentRelation()) {
+            if($documentRelation->getType() && array_key_exists($documentRelation->getType(), $documentTypes)) {
+                $this->write($documentTypes[$documentRelation->getType()], 'BC80');
+            }
+            $this->write($documentRelation->getSeries(), 'DC80');
+            $this->write($documentRelation->getNumber(), 'DW80');
+        }
 
-        $this->write('32', 'S93');
-        $this->write('4', 'AQ93');
-        $this->write('', 'BS93');
-        $this->write('37', 'CU93');
+        $this->write($hotel->getRegion()->getTitle(), 'AE83');
+        if($hotel->getCity()) {
+            //$this->write($hotel->getCity()->getTitle(), 'W86');
+            $this->write($hotel->getCity()->getTitle() . ' ' . $hotel->getSettlement(), 'AE88');//Населенный пункт
+        }
+        $this->write($hotel->getStreet(), 'W91');
 
-        $this->write('01', 'AQ95');
-        $this->write('08', 'BG95');
-        $this->write('2015', 'BS95');
+        $this->write($hotel->getHouse(), 'S93');
+        $this->write($hotel->getCorpus(), 'AQ93');
+        //$this->write('', 'BS93'); //строение
+        $this->write($hotel->getFlat(), 'CU93');
+
+        $this->write($package->getBegin()->format('d'), 'AQ95');
+        $this->write($package->getBegin()->format('m'), 'BG95');
+        $this->write($package->getBegin()->format('Y'), 'BS95');
 
 
         // two sheet
         $this->phpExcelObject->setActiveSheetIndex(1);
 
-        $this->write('Краснодарский край', 'AE14');
-        $this->write('Новая улица', 'W22');
-        $this->write('3', 'S24');
-        $this->write('12', 'AQ24');
-        $this->write('1', 'BS24');
-        $this->write('10', 'CU24');
-        $this->write('94957548864', 'DS24');
+        if($hotel->getRegion()) {
+            $this->write($hotel->getRegion()->getTitle(), 'AE14');
+        }
+        if($hotel->getCity()) {
+            $this->write($hotel->getCity()->getTitle(), 'W17'); //Район Город или другой
+        }
+        $this->write($hotel->getSettlement(), 'AE19'); //Населенный пункт
+        $this->write($hotel->getStreet(), 'W22');
+        $this->write($hotel->getHouse(), 'S24');
+        $this->write($hotel->getCorpus(), 'AQ24');
+        $this->write('', 'BS24');
+        $this->write($hotel->getFlat(), 'CU24');
+        //$this->write('94957548864', 'DS24');
         $this->phpExcelObject->getActiveSheet()->setCellValue('EE26', 'X');
 
-        $this->write('Киселев Владимир', 'W28');
+        /*$this->write($organization->getDirectorFio(), 'W28');
         $this->write('Петрович', 'W31');
-
         $this->write('24', 'DO28');
         $this->write('02', 'EE28');
         $this->write('1979', 'EQ28');
@@ -163,16 +230,19 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface
         $this->write('', 'BS49');
         $this->write('45', 'CU49');
         $this->write('85967748555', 'DS49');
+        */
 
-        $this->write('Гостинечный комплекс', 'AA51');
-        $this->write('9584765377', 'S60');
+        if($organization = $hotel->getOrganization()) {
+            $this->write($organization->getName(), 'AA51');
+            $this->write($organization->getInn(), 'S60');
 
-        $this->write('01', 'DO69');
-        $this->write('08', 'EE69');
-        $this->write('2015', 'EQ69');
+            //$this->write($organization->getDirectorFio(), 'W71');
+            //$this->write('Петрович', 'W73');
+        }
 
-        $this->write('Киселев Владимир', 'W71');
-        $this->write('Петрович', 'W73');
+        $this->write($package->getEnd()->format('d'), 'DO69');
+        $this->write($package->getEnd()->format('m'), 'EE69');
+        $this->write($package->getEnd()->format('Y'), 'EQ69');
 
         $this->phpExcelObject->setActiveSheetIndex(0);
         return $this->phpExcel->createStreamedResponse($this->phpExcel->createWriter($this->phpExcelObject));
@@ -187,6 +257,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface
     protected function write($word, $startCell = 'A0', $range = self::DEFAULT_LETTER_RANGE)
     {
         $word = mb_strtoupper($word, 'UTF-8');
+        $word = preg_replace('~[^A-ZА-Я 0-9]+~', '', $word);
+
         list ($rowLetter, $lineNumber) = $this->explodeCell($startCell);
 
         $activeCell = $startCell;
