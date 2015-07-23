@@ -25,6 +25,9 @@ class TemplateGeneratorFactory implements GeneratorFactoryInterface
     const TYPE_RECEIPT = 'receipt';
     const TYPE_ACT = 'act';
 
+    /**
+     * @var ContainerInterface
+     */
     protected $container;
 
     protected function getExtendedTypes()
@@ -77,24 +80,7 @@ class TemplateGeneratorFactory implements GeneratorFactoryInterface
     public function createFormByType($type)
     {
         if ($type == self::TYPE_CONFIRMATION_EN ||$type == self::TYPE_CONFIRMATION || $type == self::TYPE_ACT) {
-            /** @var FormBuilder $formBuilder */
-            $formBuilder = $this->container->get('form.factory')->createBuilder('form');
-
-            $formBuilder
-                ->add('hasFull', 'checkbox', [
-                    'required' => false,
-                    'label' => 'templateDocument.form.confirmation.hasFull'
-                ])
-                ->add('hasServices', 'checkbox', [
-                    'required' => false,
-                    'label' => 'templateDocument.form.confirmation.hasServices'
-                ])
-                ->add('hasStamp', 'checkbox', [
-                    'required' => false,
-                    'label' => 'templateDocument.form.confirmation.hasStamp'
-                ]);
-
-            return $formBuilder->getForm();
+            return $this->container->get('form.factory')->create(new Template\Type\ConfirmationTemplateType());
         }
 
         return null;

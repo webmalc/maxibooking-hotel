@@ -11,7 +11,8 @@ use MBH\Bundle\PackageBundle\DocumentGenerator\DocumentResponseGeneratorInterfac
 interface TemplateGeneratorInterface extends DocumentResponseGeneratorInterface
 {
     /**
+     * @param array $formData
      * @return string
      */
-    public function getTemplate();
+    public function getTemplate(array $formData);
 }

@@ -4,17 +4,21 @@ namespace MBH\Bundle\PackageBundle\DocumentGenerator\Xls;
 
 
 use MBH\Bundle\PackageBundle\DocumentGenerator\GeneratorFactoryInterface;
+use MBH\Bundle\PackageBundle\DocumentGenerator\Xls\Type\NoticeStayPlaceXlsType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Form\FormBuilder;
 
 /**
  * Class DocumentXlsGeneratorFactory
+ *
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
 class XlsGeneratorFactory implements GeneratorFactoryInterface
 {
     const TYPE_NOTICE = 'xls_notice';
 
+    /**
+     * @var ContainerInterface
+     */
     protected $container;
 
     /**
@@ -39,16 +43,7 @@ class XlsGeneratorFactory implements GeneratorFactoryInterface
     public function createFormByType($type)
     {
         if ($type == self::TYPE_NOTICE) {
-            /** @var FormBuilder $formBuilder */
-            $formBuilder = $this->container->get('form.factory')->createBuilder('form');
-
-            $formBuilder->add('tourist', 'document', [
-                'required' => true,
-                'class' => 'MBH\Bundle\PackageBundle\Document\Tourist',
-                'label' => 'form.task.tourist'
-            ]);
-
-            return $formBuilder->getForm();
+            return $this->container->get('form.factory')->create(new NoticeStayPlaceXlsType());
         }
 
         return null;

@@ -13,12 +13,12 @@ use MBH\Bundle\PackageBundle\DocumentGenerator\Template\DefaultTemplateGenerator
  */
 class ConfirmationTemplateGenerator extends DefaultTemplateGenerator
 {
-    protected function getAdditionalParams()
+    protected function getAdditionalParams($formData)
     {
-        $params =  parent::getAdditionalParams();
+        $params =  parent::getAdditionalParams($formData);
 
-        $hasServices = isset($this->formParams['hasServices']) && $this->formParams['hasServices'];
-        $hasFull = isset($this->formParams['hasFull']) && $this->formParams['hasFull'];
+        $hasServices = isset($formData['hasServices']) && $formData['hasServices'];
+        $hasFull = isset($formData['hasFull']) && $formData['hasFull'];
 
         /** @var PackageService[] $packageServices */
         $packageServices = [];
@@ -28,9 +28,9 @@ class ConfirmationTemplateGenerator extends DefaultTemplateGenerator
 
         $total = 0;
         if($hasFull) {
-            $packages = $this->formParams['package']->getOrder()->getPackages();
+            $packages = $formData['package']->getOrder()->getPackages();
         } else {
-            $packages = [$this->formParams['package']];
+            $packages = [$formData['package']];
         }
         foreach($packages as $package) {
             $packageServices = array_merge(iterator_to_array($package->getServices()), $packageServices);

@@ -256,19 +256,18 @@ class DocumentsController extends Controller
 
         $generatorFactory = $this->get('mbh.package.document_factory');
 
-        $formParams = [];
+        $formData = [];
         if($request->isMethod(Request::METHOD_POST) && $generatorFactory->hasForm($type)) {
             $form = $generatorFactory->createFormByType($type);
             $form->submit($request);
             if ($form->isValid()) {
-                $formParams = $form->getData();
+                $formData = $form->getData();
+                $formData['package'] = $entity;
             }
         }
 
         $documentGenerator = $generatorFactory->createGeneratorByType($type);
-        $formParams['package'] = $entity;
-        $documentGenerator->setFormParams($formParams);
-        $response = $documentGenerator->generateResponse();
+        $response = $documentGenerator->generateResponse($formData);
 
         return $response;
     }

@@ -12,12 +12,11 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
  */
 class RegistrationCardTemplateGenerator extends DefaultTemplateGenerator
 {
-    protected function getAdditionalParams()
+    protected function getAdditionalParams($formData)
     {
-        $params = parent::getAdditionalParams();
+        $params = parent::getAdditionalParams($formData);
 
-        $tourists = $this->formParams['package']->getTourists(); //guests
-
+        $tourists = $formData['package']->getTourists(); //guests
         if(count($tourists) == 0) {
             $fakeTourist = new Tourist(); // empty form
             $tourists = [$fakeTourist];

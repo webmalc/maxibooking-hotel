@@ -18,11 +18,6 @@ class DefaultTemplateGenerator implements TemplateGeneratorInterface, ContainerA
     protected $container;
 
     /**
-     * @var array
-     */
-    protected $formParams;
-
-    /**
      * @var string
      */
     protected $type;
@@ -30,14 +25,6 @@ class DefaultTemplateGenerator implements TemplateGeneratorInterface, ContainerA
     public function __construct($type)
     {
         $this->type = $type;
-    }
-
-    /**
-     * @param array $formParams
-     */
-    public function setFormParams(array $formParams)
-    {
-        $this->formParams = $formParams;
     }
 
     /**
@@ -55,7 +42,7 @@ class DefaultTemplateGenerator implements TemplateGeneratorInterface, ContainerA
     /**
      * @return array
      */
-    protected function getAdditionalParams()
+    protected function getAdditionalParams($formData)
     {
         $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
         $vegaDocumentTypes = array_map(['\MBH\Bundle\VegaBundle\Service\FriendlyFormatter', 'convertDocumentType'], $vegaDocumentTypes);
@@ -66,14 +53,15 @@ class DefaultTemplateGenerator implements TemplateGeneratorInterface, ContainerA
     }
 
     /**
+     * @param array $formData
      * @return string
      */
-    public function getTemplate()
+    public function getTemplate(array $formData)
     {
         $params = [
-            'entity' => $this->formParams['package'],
-            'formParams' => $this->formParams,
-        ] + $this->getAdditionalParams();
+            'entity' => $formData['package'],
+            'formParams' => $formData,
+        ] + $this->getAdditionalParams($formData);
 
         $html = $this->container->get('templating')->render($this->getTemplateName(), $params);
 
@@ -83,17 +71,17 @@ class DefaultTemplateGenerator implements TemplateGeneratorInterface, ContainerA
     /**
      * @return Response
      */
-    public function generateResponse()
+    public function generateResponse(array $formData)
     {
         $request = $this->container->get('request_stack')->getCurrentRequest();
-        $content = $this->container->get('knp_snappy.pdf')->getOutputFromHtml($this->getTemplate(), [
+        $content = $this->container->get('knp_snappy.pdf')->getOutputFromHtml($this->getTemplate($formData), [
             'cookie' => [$request->getSession()->getName() => $request->getSession()->getId()],
             //'disable-smart-shrinking' => true,
         ]);
         return new Response($content, 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => //'attachment;
-            'filename="'.$this->type.'_'.$this->formParams['package']->getNumberWithPrefix().'.pdf"'
+            'filename="'.$this->type.'_'.$formData['package']->getNumberWithPrefix().'.pdf"'
         ]);
     }
 

@@ -8,6 +8,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
@@ -16,6 +17,8 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentResponseGeneratorInterface
 {
+    const DEFAULT_LETTER_RANGE = 3;
+
     /**
      * @var ContainerInterface
      */
@@ -31,59 +34,47 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
      */
     private $phpExcelObject;
 
-    protected $formParams;
-
-    const DEFAULT_LETTER_RANGE = 3;
-
     public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
 
         $this->phpExcel = $this->container->get('phpexcel');
-
         $this->phpExcelObject = $this->phpExcel->createPHPExcelObject($this->getXlsPath());
     }
 
     private function getXlsPath()
     {
-        return realpath(__DIR__.'/../../Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija.xls');
-    }
-
-    /**
-     * @param array $formParams
-     */
-    public function setFormParams(array $formParams)
-    {
-        $this->formParams = $formParams;
+        return realpath(__DIR__ . '/../../Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija.xls');
     }
 
 
-    public function generateResponse()
+    public function generateResponse(array $formData)
     {
-        $package = $this->formParams['package'];
-        $tourist = $this->formParams['tourist'];
-        if(!$package instanceof Package || !$tourist instanceof Tourist)
+        $package = $formData['package'];
+        $tourist = $formData['tourist'];
+        if (!$package instanceof Package || !$tourist instanceof Tourist) {
             throw new \LogicException();
+        }
 
         $documentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
         $hotel = $package->getRoomType()->getHotel();
 
         $this->write($tourist->getFullName(), 'W13');
-        $this->write(mb_substr($tourist->getFullName() . ' ' . $tourist->getPatronymic(), 0 , 65), 'W15');
+        $this->write(mb_substr($tourist->getFullName() . ' ' . $tourist->getPatronymic(), 0, 65), 'W15');
         //$this->write('', 'W15');
 
-        if($tourist->getCitizenship()) {
+        if ($tourist->getCitizenship()) {
             $this->write($tourist->getCitizenship()->getName(), 'AA18');
         }
-        if($tourist->getBirthday()) {
-            $this->write($tourist->getBirthday()->format('d'), 'AE21');
-            $this->write($tourist->getBirthday()->format('m'), 'AU21');
-            $this->write($tourist->getBirthday()->format('Y'), 'BG21');
+        if ($birthday = $tourist->getBirthday()) {
+            $this->write($birthday->format('d'), 'AE21');
+            $this->write($birthday->format('m'), 'AU21');
+            $this->write($birthday->format('Y'), 'BG21');
         }
         $this->phpExcelObject->getActiveSheet()->setCellValue('CY21', 'X');
 
-        if($birthplace = $tourist->getBirthplace()) {
-            if($birthplace->getCountry() && $birthplace->getMainRegion()) {
+        if ($birthplace = $tourist->getBirthplace()) {
+            if ($birthplace->getCountry() && $birthplace->getMainRegion()) {
                 $city = $birthplace->getCountry()->getName() . ' ' . $birthplace->getMainRegion();
                 // . ' ' . $birthplace->getCity() . ' ' . $tourist->getBirthplace()->getDistrict();
                 $this->write(mb_substr($city, 0, 33), 'AE24');
@@ -92,20 +83,20 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
             $this->write($birthplace->getCity() . ' ' . $birthplace->getSettlement(), 'AE27');
         }
 
-        if($documentRelation = $tourist->getDocumentRelation()) {
-            if($documentRelation->getType() && array_key_exists($documentRelation->getType(), $documentTypes)) {
+        if ($documentRelation = $tourist->getDocumentRelation()) {
+            if ($documentRelation->getType() && array_key_exists($documentRelation->getType(), $documentTypes)) {
                 $this->write($documentTypes[$documentRelation->getType()], 'BC30');
             }
             $this->write($documentRelation->getSeries(), 'DC30');
             $this->write($documentRelation->getNumber(), 'DW30');
 
-            if($issued = $documentRelation->getIssued()) {
+            if ($issued = $documentRelation->getIssued()) {
                 $this->write($issued->format('d'), 'AA32');
                 $this->write($issued->format('m'), 'AQ32');
                 $this->write($issued->format('Y'), 'BC32');
             }
 
-            if($expiry = $documentRelation->getExpiry()) { //Скрок действия
+            if ($expiry = $documentRelation->getExpiry()) { //Скрок действия
                 $this->write($expiry->format('d'), 'CM32');
                 $this->write($expiry->format('m'), 'DC32');
                 $this->write($expiry->format('Y'), 'DO32');
@@ -118,36 +109,37 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
 
         $purposeList = [
             'study' => 'CA43',
-            'tourism'=> 'AY43',
+            'tourism' => 'AY43',
             'work' => 'CM43',
             //'residence' => 'CY43',
             'other' => 'EQ43',
         ];
-        if($package->getPurposeOfArrival() && array_key_exists($package->getPurposeOfArrival(), $purposeList)) {
-            $this->phpExcelObject->getActiveSheet()->setCellValue($purposeList[$package->getPurposeOfArrival()], 'X'); //Цель въезда
+        if ($package->getPurposeOfArrival() && array_key_exists($package->getPurposeOfArrival(), $purposeList)) {
+            $this->phpExcelObject->getActiveSheet()->setCellValue($purposeList[$package->getPurposeOfArrival()],
+                'X'); //Цель въезда
         }
 
         //$this->write('Инженер', 'W45');
 
         $this->write($tourist->getFullName(), 'W69');
-        $this->write(mb_substr($tourist->getFullName() . ' ' . $tourist->getPatronymic(), 0 , 65), 'W71');
+        $this->write(mb_substr($tourist->getFullName() . ' ' . $tourist->getPatronymic(), 0, 65), 'W71');
 
         //$this->write('', 'W71');
         $this->write($tourist->getCitizenship(), 'AA74');
 
-        if($tourist->getBirthday()) {
-            $this->write($tourist->getBirthday()->format('d'), 'AE77');
-            $this->write($tourist->getBirthday()->format('m'), 'AU77');
-            $this->write($tourist->getBirthday()->format('Y'), 'BG77');
+        if ($birthday = $tourist->getBirthday()) {
+            $this->write($birthday->format('d'), 'AE77');
+            $this->write($birthday->format('m'), 'AU77');
+            $this->write($birthday->format('Y'), 'BG77');
         }
 
         $sexList = ['male' => 'DC77', 'female' => 'DW77'];
-        if(array_key_exists($tourist->getSex(), $sexList)) {
+        if (array_key_exists($tourist->getSex(), $sexList)) {
             $this->phpExcelObject->getActiveSheet()->setCellValue($sexList[$tourist->getSex()], 'X');
         }
 
-        if($documentRelation = $tourist->getDocumentRelation()) {
-            if($documentRelation->getType() && array_key_exists($documentRelation->getType(), $documentTypes)) {
+        if ($documentRelation = $tourist->getDocumentRelation()) {
+            if ($documentRelation->getType() && array_key_exists($documentRelation->getType(), $documentTypes)) {
                 $this->write($documentTypes[$documentRelation->getType()], 'BC80');
             }
             $this->write($documentRelation->getSeries(), 'DC80');
@@ -155,7 +147,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         }
 
         $this->write($hotel->getRegion()->getTitle(), 'AE83');
-        if($hotel->getCity()) {
+        if ($hotel->getCity()) {
             //$this->write($hotel->getCity()->getTitle(), 'W86');
             $this->write($hotel->getCity()->getTitle() . ' ' . $hotel->getSettlement(), 'AE88');//Населенный пункт
         }
@@ -174,10 +166,10 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         // two sheet
         $this->phpExcelObject->setActiveSheetIndex(1);
 
-        if($hotel->getRegion()) {
+        if ($hotel->getRegion()) {
             $this->write($hotel->getRegion()->getTitle(), 'AE14');
         }
-        if($hotel->getCity()) {
+        if ($hotel->getCity()) {
             $this->write($hotel->getCity()->getTitle(), 'W17'); //Район Город или другой
         }
         $this->write($hotel->getSettlement(), 'AE19'); //Населенный пункт
@@ -189,7 +181,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         //$this->write('94957548864', 'DS24');
         $this->phpExcelObject->getActiveSheet()->setCellValue('EE26', 'X');
 
-        if($organization = $hotel->getOrganization()) {
+        if ($organization = $hotel->getOrganization()) {
             $this->write($organization->getName(), 'AA51');
             $this->write($organization->getInn(), 'S60');
         }
@@ -199,7 +191,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         $this->write($package->getEnd()->format('Y'), 'EQ69');
 
         $this->phpExcelObject->setActiveSheetIndex(0);
-        $response = $this->phpExcel->createStreamedResponse($this->phpExcel->createWriter($this->phpExcelObject, 'Excel2007'));
+        $response = $this->phpExcel->createStreamedResponse($this->phpExcel->createWriter($this->phpExcelObject,
+            'Excel2007'));
 
         $dispositionHeader = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
@@ -226,14 +219,14 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
 
         $activeCell = $startCell;
         $activeRowLetter = $rowLetter;
-        foreach(preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY) as $letter) {
+        foreach (preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY) as $letter) {
             $letter = trim($letter);
             $this->phpExcelObject->getActiveSheet()->setCellValue($activeCell, $letter);
 
             $rowLetterIndex = \PHPExcel_Cell::columnIndexFromString($activeRowLetter);
             $rowLetterIndex += $range;
             $activeRowLetter = \PHPExcel_Cell::stringFromColumnIndex($rowLetterIndex);
-            $activeCell = $activeRowLetter.$lineNumber;
+            $activeCell = $activeRowLetter . $lineNumber;
         }
     }
 
@@ -245,7 +238,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
     protected function explodeCell($cell)
     {
         preg_match('~([A-Z]+)(\d+)~', $cell, $result);
-        if(count($result) !== 3) {
+        if (count($result) !== 3) {
             throw new \InvalidArgumentException("Passed Xls cell is not valid");//Exception
         }
         array_shift($result); //shift first element

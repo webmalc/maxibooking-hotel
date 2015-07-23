@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\PackageBundle\DocumentGenerator;
 
-
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -12,12 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 interface DocumentResponseGeneratorInterface
 {
     /**
+     * @param array $formData
      * @return Response
      */
-    public function generateResponse();
-
-    /**
-     * @param array $formParams
-     */
-    public function setFormParams(array $formParams);
+    public function generateResponse(array $formData);
 }

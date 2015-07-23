@@ -6,7 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
 /**
  * Interface DocumentGeneratorFactoryInterface
- * Factory. Create DocumentGenerator By Type
+ * AbstractFactory. Create DocumentResponseGeneratorInterface by type and Form
  */
 interface GeneratorFactoryInterface extends ContainerAwareInterface
 {
