@@ -3,18 +3,20 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator\DocumentTemplateGeneratorFactory;
+use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\PackageBundle\Document\OrderRepository;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\DocumentGenerator\ChainGeneratorFactory;
+use MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory;
+use MBH\Bundle\PackageBundle\DocumentGenerator\Xls\XlsGeneratorFactory;
 use MBH\Bundle\PackageBundle\Form\OrderDocumentType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use MBH\Bundle\PackageBundle\Document\OrderDocument;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -240,7 +242,7 @@ class DocumentsController extends Controller
      * Return pdf doc
      *
      * @Route("/{id}/pdf/{type}", name="package_pdf", requirements={
-     *      "type" : "confirmation|confirmation_en|registration_card|fms_form_5|evidence|form_1_g|receipt|act"
+     *      "type" : "confirmation|confirmation_en|registration_card|fms_form_5|evidence|form_1_g|receipt|act|xls_notice"
      * })
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_USER')")
@@ -252,35 +254,23 @@ class DocumentsController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $templateGeneratorFactory = new DocumentTemplateGeneratorFactory();
-        $templateGeneratorFactory->setContainer($this->container);
+        $generatorFactory = $this->get('mbh.package.document_factory');
 
         $formParams = [];
-        if($templateGeneratorFactory->hasForm($type) && $request->isMethod(Request::METHOD_POST)) {
-            $form = $templateGeneratorFactory->createFormByType($type);
+        if($request->isMethod(Request::METHOD_POST) && $generatorFactory->hasForm($type)) {
+            $form = $generatorFactory->createFormByType($type);
             $form->submit($request);
             if ($form->isValid()) {
                 $formParams = $form->getData();
             }
         }
 
-        $templateGenerator = $templateGeneratorFactory->createGeneratorByType($type);
-        $templateGenerator->setPackage($entity);
-        $templateGenerator->setFormParams($formParams);
-        $html = $templateGenerator->getTemplate();
+        $documentGenerator = $generatorFactory->createGeneratorByType($type);
+        $formParams['package'] = $entity;
+        $documentGenerator->setFormParams($formParams);
+        $response = $documentGenerator->generateResponse();
 
-        $content = $this->get('knp_snappy.pdf')->getOutputFromHtml($html, [
-            'cookie' => [$request->getSession()->getName() => $request->getSession()->getId()],
-            //'disable-smart-shrinking' => true,
-        ]);
-
-        //return new Response($html);
-
-        return new Response($content, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => //'attachment;
-             'filename="'.$type.'_'.$entity->getNumberWithPrefix().'.pdf"'
-        ]);
+        return $response;
     }
 
     /**
@@ -290,9 +280,11 @@ class DocumentsController extends Controller
      */
     public function documentModalFormAction(Package $entity, $type)
     {
-        $templateGeneratorFactory = new DocumentTemplateGeneratorFactory();
-        $templateGeneratorFactory->setContainer($this->container);
-        $form = $templateGeneratorFactory->createFormByType($type);
+        $generatorFactory = $this->get('mbh.package.document_factory');
+        if(!$generatorFactory->hasForm($type))
+            throw $this->createNotFoundException();
+
+        $form = $generatorFactory->createFormByType($type);
 
         $html = $this->renderView('MBHPackageBundle:Documents:documentModalForm.html.twig', [
             'form' => $form->createView(),
@@ -331,29 +323,6 @@ class DocumentsController extends Controller
 
         $response = new Response($str, 200);
         $response->headers->set('Content-Type', $entity->getStamp()->getMimeType());
-
-        return $response;
-    }
-
-    /**
-     * @Route("/{id}/xls/{tourist}", name="xls")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
-     * @ParamConverter("tourist", class="MBHPackageBundle:Tourist", name="tourist")
-     * @return Response
-     */
-    public function xlsAction(Package $package, Tourist $tourist)
-    {
-        $response = $this->get('mbh.package.notice_stay_place_xls_generator')->generateResponse($package, $tourist);
-        $dispositionHeader = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            'stream-file.xls'
-        );
-        $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
-        $response->headers->set('Pragma', 'public');
-        $response->headers->set('Cache-Control', 'maxage=1');
-        $response->headers->set('Content-Disposition', $dispositionHeader);
 
         return $response;
     }

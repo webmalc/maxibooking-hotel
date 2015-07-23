@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator\Extended;
+namespace MBH\Bundle\PackageBundle\DocumentGenerator\Template\Extended;
 
 use Gedmo\Translatable\TranslatableListener;
 

@@ -1,8 +1,9 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator;
+namespace MBH\Bundle\PackageBundle\DocumentGenerator\Template;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use MBH\Bundle\PackageBundle\DocumentGenerator\GeneratorFactoryInterface;
+use MBH\Bundle\PackageBundle\DocumentGenerator\Template;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\FormBuilder;
 
@@ -13,7 +14,7 @@ use Symfony\Component\Form\FormBuilder;
  *
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
-class DocumentTemplateGeneratorFactory implements ContainerAwareInterface
+class TemplateGeneratorFactory implements GeneratorFactoryInterface
 {
     const TYPE_CONFIRMATION = 'confirmation';
     const TYPE_CONFIRMATION_EN = 'confirmation_en';
@@ -43,7 +44,7 @@ class DocumentTemplateGeneratorFactory implements ContainerAwareInterface
     /**
      * @return array
      */
-    public static function getAvailableTypes()
+    public function getAvailableTypes()
     {
         return [
             self::TYPE_CONFIRMATION,
@@ -75,9 +76,10 @@ class DocumentTemplateGeneratorFactory implements ContainerAwareInterface
      */
     public function createFormByType($type)
     {
-        /** @var FormBuilder $formBuilder */
-        $formBuilder = $this->container->get('form.factory')->createBuilder('form');
         if ($type == self::TYPE_CONFIRMATION_EN ||$type == self::TYPE_CONFIRMATION || $type == self::TYPE_ACT) {
+            /** @var FormBuilder $formBuilder */
+            $formBuilder = $this->container->get('form.factory')->createBuilder('form');
+
             $formBuilder
                 ->add('hasFull', 'checkbox', [
                     'required' => false,
@@ -91,9 +93,11 @@ class DocumentTemplateGeneratorFactory implements ContainerAwareInterface
                     'required' => false,
                     'label' => 'templateDocument.form.confirmation.hasStamp'
                 ]);
+
+            return $formBuilder->getForm();
         }
 
-        return $formBuilder->getForm();
+        return null;
     }
 
     /**
@@ -109,7 +113,7 @@ class DocumentTemplateGeneratorFactory implements ContainerAwareInterface
      * Create TemplateGenerator by type
      *
      * @param $type
-     * @return DefaultDocumentTemplateGenerator
+     * @return TemplateGeneratorInterface
      */
     public function createGeneratorByType($type)
     {
@@ -139,13 +143,13 @@ class DocumentTemplateGeneratorFactory implements ContainerAwareInterface
 
     /**
      * @param $type
-     * @return DefaultDocumentTemplateGenerator
+     * @return DefaultTemplateGenerator
      */
     private function createExtendType($type)
     {
         $extendedTypes = $this->getExtendedTypes();
         $className = __NAMESPACE__ . '\\' . 'Extended' . '\\' . $extendedTypes[$type];
-        /** @var DefaultDocumentTemplateGenerator $generator */
+        /** @var DefaultTemplateGenerator $generator */
         $generator = new $className($type);
 
         return $generator;
@@ -153,6 +157,6 @@ class DocumentTemplateGeneratorFactory implements ContainerAwareInterface
 
     private function createByDefault($type)
     {
-        return new DefaultDocumentTemplateGenerator($type);
+        return new DefaultTemplateGenerator($type);
     }
 }

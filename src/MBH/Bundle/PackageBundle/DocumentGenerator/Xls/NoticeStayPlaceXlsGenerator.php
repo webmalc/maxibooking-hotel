@@ -1,19 +1,20 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Component;
+namespace MBH\Bundle\PackageBundle\DocumentGenerator\Xls;
 
 
-use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\PackageBundle\DocumentGenerator\DocumentResponseGeneratorInterface;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * Class NoticeStayPlaceXlsGenerator
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
-class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface
+class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentResponseGeneratorInterface
 {
     /**
      * @var ContainerInterface
@@ -30,6 +31,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface
      */
     private $phpExcelObject;
 
+    protected $formParams;
+
     const DEFAULT_LETTER_RANGE = 3;
 
     public function setContainer(ContainerInterface $container = null)
@@ -43,25 +46,30 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface
 
     private function getXlsPath()
     {
-        return realpath(__DIR__.'/../Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija.xls');
+        return realpath(__DIR__.'/../../Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija.xls');
     }
 
-    public function generateResponse(Package $package, Tourist $tourist)
+    /**
+     * @param array $formParams
+     */
+    public function setFormParams(array $formParams)
     {
+        $this->formParams = $formParams;
+    }
+
+
+    public function generateResponse()
+    {
+        $package = $this->formParams['package'];
+        $tourist = $this->formParams['tourist'];
+        if(!$package instanceof Package || !$tourist instanceof Tourist)
+            throw new \LogicException();
+
         $documentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
         $hotel = $package->getRoomType()->getHotel();
 
-        if($fullName = $tourist->getFullName()) {
-            $fullName = mb_substr($fullName, 0, 65);
-            if(mb_strlen($fullName) > 35) {
-                $fullName = explode(' ', $fullName);
-                $lastName = array_pop($fullName);
-                $this->write(implode(' ', $fullName), 'W13');
-                $this->write($lastName, 'W15');
-            }else {
-                $this->write($fullName, 'W13');
-            }
-        }
+        $this->write($tourist->getFullName(), 'W13');
+        $this->write(mb_substr($tourist->getFullName() . ' ' . $tourist->getPatronymic(), 0 , 65), 'W15');
         //$this->write('', 'W15');
 
         if($tourist->getCitizenship()) {
@@ -121,32 +129,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface
 
         //$this->write('Инженер', 'W45');
 
-        /*
-        $this->write('02'), 'AI47');
-        $this->write('02'), 'AY47');
-        $this->write('02'), 'BK47');
-
-        $this->write('02', 'DO47');
-        $this->write('02', 'EE47');
-        $this->write('02', 'EQ47');
-
-        //$this->write('5653', 'AQ49'); //Миграционная карта
-        //$this->write('2698432', 'BK49');
-        //$this->write('Сведения о законных', 'AA51');
-        //$this->write($hotel->getCity() + ' ' +$hotel->getSettlement() + ' ' + $hotel->getStreet() + ' ' + $hotel->getHouse(), 'AA57');
-        */
-
-        if($fullName = $tourist->getFullName()) {
-            $fullName = mb_substr($fullName, 0, 65);
-            if(mb_strlen($fullName) > 35) {
-                $fullName = explode(' ', $fullName);
-                $lastName = array_pop($fullName);
-                $this->write(implode(' ', $fullName), 'W69');
-                $this->write($lastName, 'W71');
-            }else {
-                $this->write($fullName, 'W69');
-            }
-        }
+        $this->write($tourist->getFullName(), 'W69');
+        $this->write(mb_substr($tourist->getFullName() . ' ' . $tourist->getPatronymic(), 0 , 65), 'W71');
 
         //$this->write('', 'W71');
         $this->write($tourist->getCitizenship(), 'AA74');
@@ -205,39 +189,9 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface
         //$this->write('94957548864', 'DS24');
         $this->phpExcelObject->getActiveSheet()->setCellValue('EE26', 'X');
 
-        /*$this->write($organization->getDirectorFio(), 'W28');
-        $this->write('Петрович', 'W31');
-        $this->write('24', 'DO28');
-        $this->write('02', 'EE28');
-        $this->write('1979', 'EQ28');
-
-        $this->write('Паспорт', 'BC34');
-        $this->write('3587', 'DC37');
-        $this->write('78574324', 'DW37');
-
-        $this->write('11', 'AA36');
-        $this->write('02', 'AQ36');
-        $this->write('2000', 'BC36');
-
-        $this->write('11', 'CM36');
-        $this->write('02', 'DC36');
-        $this->write('2025', 'DO36');
-
-        $this->write('Республика Татарстан', 'AE39');
-        $this->write('Суздолькая', 'W47');
-        $this->write('9', 'S49');
-        $this->write('', 'AQ49');
-        $this->write('', 'BS49');
-        $this->write('45', 'CU49');
-        $this->write('85967748555', 'DS49');
-        */
-
         if($organization = $hotel->getOrganization()) {
             $this->write($organization->getName(), 'AA51');
             $this->write($organization->getInn(), 'S60');
-
-            //$this->write($organization->getDirectorFio(), 'W71');
-            //$this->write('Петрович', 'W73');
         }
 
         $this->write($package->getEnd()->format('d'), 'DO69');
@@ -245,7 +199,16 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface
         $this->write($package->getEnd()->format('Y'), 'EQ69');
 
         $this->phpExcelObject->setActiveSheetIndex(0);
-        return $this->phpExcel->createStreamedResponse($this->phpExcel->createWriter($this->phpExcelObject));
+        $response = $this->phpExcel->createStreamedResponse($this->phpExcel->createWriter($this->phpExcelObject, 'Excel2007'));
+
+        $dispositionHeader = $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            'stream-file.xls'
+        );
+        $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
+        $response->headers->set('Content-Disposition', $dispositionHeader);
+
+        return $response;
     }
 
     /**

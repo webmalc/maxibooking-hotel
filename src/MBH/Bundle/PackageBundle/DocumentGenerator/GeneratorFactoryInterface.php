@@ -1,0 +1,36 @@
+<?php
+
+namespace MBH\Bundle\PackageBundle\DocumentGenerator;
+
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+
+/**
+ * Interface DocumentGeneratorFactoryInterface
+ * Factory. Create DocumentGenerator By Type
+ */
+interface GeneratorFactoryInterface extends ContainerAwareInterface
+{
+    /**
+     * @return string[]
+     */
+    public function getAvailableTypes();
+
+    /**
+     * @param $type
+     * @return \Symfony\Component\Form\Form|null
+     */
+    public function createFormByType($type);
+
+    /**
+     * @param $type
+     * @return bool
+     */
+    public function hasForm($type);
+
+    /**
+     * @param string $type
+     * @return DocumentResponseGeneratorInterface
+     * @throws \InvalidArgumentException
+     */
+    public function createGeneratorByType($type);
+}

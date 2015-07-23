@@ -4,8 +4,10 @@ namespace MBH\Bundle\PackageBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\MenuItem;
-use MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator\DocumentTemplateGeneratorFactory;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\DocumentGenerator\ChainGeneratorFactory;
+use MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory;
+use MBH\Bundle\PackageBundle\DocumentGenerator\Xls\XlsGeneratorFactory;
 use Symfony\Component\DependencyInjection\ContainerAware;
 
 /**
@@ -18,7 +20,7 @@ class Builder extends ContainerAware
     {
         $package = $options['package'];
         $searchQuery = $options['searchQuery'];
-        if(!$package instanceof Package) {
+        if (!$package instanceof Package) {
             throw new \InvalidArgumentException();
         }
 
@@ -55,7 +57,7 @@ class Builder extends ContainerAware
 
         $rootItem
             ->addChild('Package search', [
-                'uri' => $this->container->get('router')->generate('package_search').'#'.twig_urlencode_filter(['s' => $searchQuery]),
+                'uri' => $this->container->get('router')->generate('package_search') . '#' . twig_urlencode_filter(['s' => $searchQuery]),
                 'label' => $translator->trans('package.actions.find_similar', [], 'MBHPackageBundle')
             ])
             ->setAttribute('icon', 'fa fa-search');
@@ -105,20 +107,20 @@ class Builder extends ContainerAware
     private function addDocumentTemplateItems(MenuItem $menu, Package $package)
     {
         $translator = $this->container->get('translator');
-        $types = DocumentTemplateGeneratorFactory::getAvailableTypes();
-        $generateFactory = new DocumentTemplateGeneratorFactory($this->container);
+        $generatorFactory = $this->container->get('mbh.package.document_factory');
+        $types = $generatorFactory->getAvailableTypes();
 
-        foreach($types as $type) {
-            $hasForm = $generateFactory->hasForm($type);
+        foreach ($types as $type) {
+            $hasForm = $generatorFactory->hasForm($type);
             $options = [
-                'label' => $translator->trans('package.actions.'.$type, [], 'MBHPackageBundle')
+                'label' => $translator->trans('package.actions.' . $type, [], 'MBHPackageBundle')
             ];
-            if(!$hasForm) {
+            if (!$hasForm) {
                 $options['route'] = 'package_pdf';
                 $options['routeParameters'] = ['type' => $type, 'id' => $package->getId()];
             }
             $item = $menu->addChild($type, $options);
-            if($hasForm) {
+            if ($hasForm) {
                 $item->setLinkAttributes([
                     'data-type' => $type,
                     'data-toggle' => 'modal',

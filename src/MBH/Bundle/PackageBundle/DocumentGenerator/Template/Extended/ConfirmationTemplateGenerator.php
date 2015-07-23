@@ -1,17 +1,17 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator\Extended;
+namespace MBH\Bundle\PackageBundle\DocumentGenerator\Template\Extended;
 
 
-use MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator\DefaultDocumentTemplateGenerator;
 use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
 use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PackageBundle\DocumentGenerator\Template\DefaultTemplateGenerator;
 
 /**
  * Class ConfirmationTemplateGenerator
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
-class ConfirmationTemplateGenerator extends DefaultDocumentTemplateGenerator
+class ConfirmationTemplateGenerator extends DefaultTemplateGenerator
 {
     protected function getAdditionalParams()
     {
@@ -28,9 +28,9 @@ class ConfirmationTemplateGenerator extends DefaultDocumentTemplateGenerator
 
         $total = 0;
         if($hasFull) {
-            $packages = $this->package->getOrder()->getPackages();
+            $packages = $this->formParams['package']->getOrder()->getPackages();
         } else {
-            $packages = [$this->package];
+            $packages = [$this->formParams['package']];
         }
         foreach($packages as $package) {
             $packageServices = array_merge(iterator_to_array($package->getServices()), $packageServices);

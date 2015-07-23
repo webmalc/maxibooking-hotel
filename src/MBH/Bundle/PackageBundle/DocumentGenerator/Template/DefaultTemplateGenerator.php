@@ -1,22 +1,17 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator;
+namespace MBH\Bundle\PackageBundle\DocumentGenerator\Template;
 
-use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class DefaultDocumentTemplateGenerator
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
-class DefaultDocumentTemplateGenerator extends AbstractDocumentTemplateGenerator implements ContainerAwareInterface
+class DefaultTemplateGenerator implements TemplateGeneratorInterface, ContainerAwareInterface
 {
-    /**
-     * @var Package
-     */
-    protected $package;
-
     /**
      * @var ContainerInterface
      */
@@ -27,13 +22,18 @@ class DefaultDocumentTemplateGenerator extends AbstractDocumentTemplateGenerator
      */
     protected $formParams;
 
-    public function setPackage(Package $package)
+    /**
+     * @var string
+     */
+    protected $type;
+
+    public function __construct($type)
     {
-        $this->package = $package;
+        $this->type = $type;
     }
 
     /**
-     * @param $formParams
+     * @param array $formParams
      */
     public function setFormParams(array $formParams)
     {
@@ -71,7 +71,7 @@ class DefaultDocumentTemplateGenerator extends AbstractDocumentTemplateGenerator
     public function getTemplate()
     {
         $params = [
-            'entity' => $this->package,
+            'entity' => $this->formParams['package'],
             'formParams' => $this->formParams,
         ] + $this->getAdditionalParams();
 
@@ -79,6 +79,24 @@ class DefaultDocumentTemplateGenerator extends AbstractDocumentTemplateGenerator
 
         return $html;
     }
+
+    /**
+     * @return Response
+     */
+    public function generateResponse()
+    {
+        $request = $this->container->get('request_stack')->getCurrentRequest();
+        $content = $this->container->get('knp_snappy.pdf')->getOutputFromHtml($this->getTemplate(), [
+            'cookie' => [$request->getSession()->getName() => $request->getSession()->getId()],
+            //'disable-smart-shrinking' => true,
+        ]);
+        return new Response($content, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => //'attachment;
+            'filename="'.$this->type.'_'.$this->formParams['package']->getNumberWithPrefix().'.pdf"'
+        ]);
+    }
+
 
     /**
      * @return string
