@@ -228,7 +228,7 @@ templateDocument.type.evidence: Свидетельство о регистрац
 templateDocument.type.form: Форма N 1-Г
 templateDocument.type.receipt: Расписка
 templateDocument.type.act: Акт
-templateDocument.type.xls_notice: Уведомление о прибытии иностранного гражданина
+templateDocument.type.xls_notice: Уведомление о прибытии ИГ
 
 
 form.TouristExtendedType.group.person: Персональные данные

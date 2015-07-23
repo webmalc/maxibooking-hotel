@@ -5,7 +5,6 @@ namespace MBH\Bundle\PackageBundle\DocumentGenerator\Template;
 use MBH\Bundle\PackageBundle\DocumentGenerator\GeneratorFactoryInterface;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Template;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Form\FormBuilder;
 
 
 /**
@@ -75,12 +74,13 @@ class TemplateGeneratorFactory implements GeneratorFactoryInterface
 
     /**
      * @param $type
+     * @param $options
      * @return \Symfony\Component\Form\Form
      */
-    public function createFormByType($type)
+    public function createFormByType($type, $options = [])
     {
         if ($type == self::TYPE_CONFIRMATION_EN ||$type == self::TYPE_CONFIRMATION || $type == self::TYPE_ACT) {
-            return $this->container->get('form.factory')->create(new Template\Type\ConfirmationTemplateType());
+            return $this->container->get('form.factory')->create(new Template\Type\ConfirmationTemplateType(), null, $options);
         }
 
         return null;

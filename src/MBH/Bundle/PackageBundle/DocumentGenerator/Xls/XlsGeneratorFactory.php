@@ -38,12 +38,14 @@ class XlsGeneratorFactory implements GeneratorFactoryInterface
 
     /**
      * @param $type
+     * @param $options
      * @return \Symfony\Component\Form\Form|null
      */
-    public function createFormByType($type)
+    public function createFormByType($type, $options = [])
     {
         if ($type == self::TYPE_NOTICE) {
-            return $this->container->get('form.factory')->create(new NoticeStayPlaceXlsType());
+            $dm = $this->container->get('doctrine_mongodb')->getManager();
+            return $this->container->get('form.factory')->create(new NoticeStayPlaceXlsType($dm), null, $options);
         }
 
         return null;

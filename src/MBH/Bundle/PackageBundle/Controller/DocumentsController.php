@@ -258,13 +258,20 @@ class DocumentsController extends Controller
 
         $formData = [];
         if($request->isMethod(Request::METHOD_POST) && $generatorFactory->hasForm($type)) {
-            $form = $generatorFactory->createFormByType($type);
+            $options = [];
+            if($type == XlsGeneratorFactory::TYPE_NOTICE) {
+                $options['tourists'] = $entity->getTourists();
+                $options['tourists'][] = $entity->getMainTourist();
+            }
+            $form = $generatorFactory->createFormByType($type, $options);
             $form->submit($request);
             if ($form->isValid()) {
                 $formData = $form->getData();
-                $formData['package'] = $entity;
-            }
+            }/*else {
+                throw $this->createNotFoundException();
+            }*/
         }
+        $formData['package'] = $entity;
 
         $documentGenerator = $generatorFactory->createGeneratorByType($type);
         $response = $documentGenerator->generateResponse($formData);
@@ -283,7 +290,12 @@ class DocumentsController extends Controller
         if(!$generatorFactory->hasForm($type))
             throw $this->createNotFoundException();
 
-        $form = $generatorFactory->createFormByType($type);
+        $options = [];
+        if($type == XlsGeneratorFactory::TYPE_NOTICE) {
+            $options['tourists'] = $entity->getTourists();
+            $options['tourists'][] = $entity->getMainTourist();
+        }
+        $form = $generatorFactory->createFormByType($type, $options);
 
         $html = $this->renderView('MBHPackageBundle:Documents:documentModalForm.html.twig', [
             'form' => $form->createView(),

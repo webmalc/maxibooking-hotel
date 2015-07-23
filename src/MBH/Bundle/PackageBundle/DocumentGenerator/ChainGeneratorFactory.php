@@ -43,12 +43,13 @@ class ChainGeneratorFactory implements GeneratorFactoryInterface
 
     /**
      * @param $type
+     * @param $options
      * @return \Symfony\Component\Form\Form
      */
-    public function createFormByType($type)
+    public function createFormByType($type, $options = [])
     {
         foreach($this->factories as $factory) {
-            $form = $factory->createFormByType($type);
+            $form = $factory->createFormByType($type, $options);
             if($form) {
                 return $form;
             }

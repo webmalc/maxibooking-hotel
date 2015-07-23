@@ -7,6 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 /**
  * Interface DocumentGeneratorFactoryInterface
  * AbstractFactory. Create DocumentResponseGeneratorInterface by type and Form
+ * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
 interface GeneratorFactoryInterface extends ContainerAwareInterface
 {
@@ -17,9 +18,10 @@ interface GeneratorFactoryInterface extends ContainerAwareInterface
 
     /**
      * @param $type
+     * @param $options
      * @return \Symfony\Component\Form\Form|null
      */
-    public function createFormByType($type);
+    public function createFormByType($type, $options = []);
 
     /**
      * @param $type

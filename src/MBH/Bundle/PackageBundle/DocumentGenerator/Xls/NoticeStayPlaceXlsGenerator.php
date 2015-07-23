@@ -3,12 +3,12 @@
 namespace MBH\Bundle\PackageBundle\DocumentGenerator\Xls;
 
 
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PackageBundle\DocumentGenerator\DocumentResponseGeneratorInterface;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
@@ -59,8 +59,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         $documentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
         $hotel = $package->getRoomType()->getHotel();
 
-        $this->write($tourist->getFullName(), 'W13');
-        $this->write(mb_substr($tourist->getFullName() . ' ' . $tourist->getPatronymic(), 0, 65), 'W15');
+        $this->write($tourist->getLastName(), 'W13');
+        $this->write(mb_substr($tourist->getFirstName() . ' ' . $tourist->getPatronymic(), 0, 65), 'W15');
         //$this->write('', 'W15');
 
         if ($tourist->getCitizenship()) {
@@ -115,14 +115,14 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
             'other' => 'EQ43',
         ];
         if ($package->getPurposeOfArrival() && array_key_exists($package->getPurposeOfArrival(), $purposeList)) {
-            $this->phpExcelObject->getActiveSheet()->setCellValue($purposeList[$package->getPurposeOfArrival()],
-                'X'); //Цель въезда
+            $purposeCell = $purposeList[$package->getPurposeOfArrival()];
+            $this->phpExcelObject->getActiveSheet()->setCellValue($purposeCell, 'X'); //Цель въезда
         }
 
         //$this->write('Инженер', 'W45');
 
-        $this->write($tourist->getFullName(), 'W69');
-        $this->write(mb_substr($tourist->getFullName() . ' ' . $tourist->getPatronymic(), 0, 65), 'W71');
+        $this->write($tourist->getLastName(), 'W69');
+        $this->write(mb_substr($tourist->getFirstName() . ' ' . $tourist->getPatronymic(), 0, 65), 'W71');
 
         //$this->write('', 'W71');
         $this->write($tourist->getCitizenship(), 'AA74');
@@ -191,14 +191,29 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         $this->write($package->getEnd()->format('Y'), 'EQ69');
 
         $this->phpExcelObject->setActiveSheetIndex(0);
-        $response = $this->phpExcel->createStreamedResponse($this->phpExcel->createWriter($this->phpExcelObject,
-            'Excel2007'));
+
+
+        $this->phpExcelObject = $this->phpExcel->createPHPExcelObject($this->getXlsPath());
+
+        $drawing = new \PHPExcel_Worksheet_Drawing();
+        $drawing->setPath(dirname($this->getXlsPath()).'/square.jpg');
+        //$drawing->setName('Sample image');
+        //$drawing->setDescription('Sample image');
+        $drawing->setHeight(28);
+        $drawing->setWidth(28);
+        $drawing->setResizeProportional(true);
+        $drawing->setOffsetX(43.6);
+        $drawing->setOffsetY(33);
+        $drawing->setWorksheet($this->phpExcelObject->getActiveSheet());
+
+        $response = $this->phpExcel->createStreamedResponse(
+            $this->phpExcel->createWriter($this->phpExcelObject, 'Excel2007'));
 
         $dispositionHeader = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            'stream-file.xls'
+            Helper::translateToLat($tourist->getFullName()).'.xls'
         );
-        $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
+        $response->headers->set('Content-Type', 'application/ms-excel; charset=utf-8');//text/vnd.ms-excel
         $response->headers->set('Content-Disposition', $dispositionHeader);
 
         return $response;
@@ -239,7 +254,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
     {
         preg_match('~([A-Z]+)(\d+)~', $cell, $result);
         if (count($result) !== 3) {
-            throw new \InvalidArgumentException("Passed Xls cell is not valid");//Exception
+            throw new \InvalidArgumentException("Passed Xls cell is not valid");
         }
         array_shift($result); //shift first element
         return $result;

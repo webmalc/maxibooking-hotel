@@ -101,7 +101,7 @@ package.actions.evidence: Свидетельство о регистрации
 package.actions.form_1_g: Анкета (Форма 1-Г)
 package.actions.receipt: Расписка
 package.actions.act: Акт
-package.actions.xls_notice: Уведомление о прибытии иностранного гражданина
+package.actions.xls_notice: Уведомление о прибытии ИГ
 
 package.actions.find_similar:  Найти похожую
 package.actions.cancel: Отмена
