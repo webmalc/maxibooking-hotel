@@ -1,0 +1,102 @@
+{% if data is not defined or data is empty %}
+    <div class="alert alert-warning">
+        <i class="fa fa-exclamation-circle"> </i> {{ 'report.users.error'|trans({}, 'MBHPackageBundle') }}
+    </div>
+{% else %}
+    {% set cats = {
+    'sold': 'Реализовано номеров',
+    'services': 'Реализовано услуг',
+    'price': 'Стоимость номеров',
+    'servicesPrice': 'Стоимость услуг',
+    'packagePrice': 'Стоимость броней',
+    'paid': 'Получено'
+    } %}
+
+    <table id="user-report-table"
+           class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+        <tbody>
+
+        {% for username, userData in data %}
+
+        {% set firstData = userData|first %}
+
+        <tr class="mbh-grid-header1 info">
+            <td colspan="{{ dates|length + 2 }}">
+                <strong>{{ firstData.user }}</strong>{% if username != firstData.user %} - <small>{{ username }}</small>{% endif %}
+            </td>
+        </tr>
+
+        <tr class="header">
+            <td class="first-th"></td>
+            {% for date in dates %}
+                <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
+            {% endfor %}
+            <td>Итого</td>
+        </tr>
+
+        {% for categoryId, category in cats %}
+        <tr>
+            <td class="first-td">
+                <small>{{ category }}</small>
+            </td>
+
+            {% for day, date in dates %}
+                {% if attribute(userData, day) is defined %}
+                    {% set info =  attribute(userData, day) %}
+                {% else %}
+                    {% set info = null %}
+                {% endif %}
+                <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}">
+                    {% if info %}
+                        {% if categoryId == 'price' or categoryId == 'servicesPrice' or categoryId == 'paid' or categoryId == "packagePrice" %}
+                            {{ attribute(info, categoryId)|number_format(2) }}
+                        {% else %}
+                            {{ attribute(info, categoryId) }}
+                        {% endif %}
+                    {% endif %}
+                </td>
+            {% endfor %}
+            <td class="content-total">
+                <strong>
+                {% set userTotal = attribute(total, username) %}
+                {% if categoryId == 'price' or categoryId == 'servicesPrice' or categoryId == 'paid' or categoryId == "packagePrice" %}
+                    {{ attribute(userTotal, categoryId)|number_format(2)|default('') }}
+                {% else %}
+                    {{ attribute(userTotal, categoryId)|default('') }}
+                {% endif %}
+                </strong>
+            </td>
+            {% endfor %}
+            {% endfor %}
+        </tr>
+
+        <tr class="mbh-grid-header1 warning">
+        <td colspan="{{ dates|length + 2 }}"><strong>Все пользователи</strong></td>
+        </tr>
+
+        {% for categoryId, category in cats %}
+            <tr>
+                <td class="first-td">
+                    <small>{{ category }}</small>
+                </td>
+                {% for day, date in dates %}
+                    <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}"></td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        {% if categoryId == 'price' or categoryId == 'servicesPrice' or categoryId == 'paid' or categoryId == "packagePrice" %}
+                            {{ attribute(allTotal, categoryId)|number_format(2)|default('') }}
+                        {% else %}
+                            {{ attribute(allTotal, categoryId)|default('') }}
+                        {% endif %}
+                    </strong>
+                </td>
+            </tr>
+        {% endfor %}
+
+
+        </tbody>
+    </table>
+
+
+{% endif %}

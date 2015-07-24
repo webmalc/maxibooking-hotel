@@ -318,6 +318,7 @@ source.index.edit_record: Редактирование записи
 source.index.delete_record: Удаление записи
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Невозможно удалить запись с существующими бронями. Брони: '
 analytics.layout.report: Отчеты
+report.layout.title: Отчеты
 package.index.summary.total: Сумма
 package.index.summary.paid: Оплачено
 package.index.summary.debt: Долг
@@ -368,3 +369,7 @@ mbh.package.arrivals.work: "Работа/стажировка"
 mbh.package.arrivals.study: "Курсы/учеба"
 mbh.package.arrivals.residence: "Временное проживание"
 mbh.package.arrivals.other: "Другое"
+
+report.users.small_title: 'Пользователи'
+report.users.error: 'Брони не найдены'
+

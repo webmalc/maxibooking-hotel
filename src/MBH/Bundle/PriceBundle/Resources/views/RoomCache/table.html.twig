@@ -35,7 +35,7 @@
                     {% endfor %}
                 </tr>
 
-                {% set cats = {'totalRooms': 'В продаже', 'packagesCount': 'Забранировано', 'packagesCountPercent': 'Забранировано в процентах (%)', 'leftRooms': 'Осталось'} %}
+                {% set cats = {'totalRooms': 'В продаже', 'packagesCount': 'Забранировано', 'packagesCountPercent': 'Забранировано в %', 'leftRooms': 'Осталось'} %}
                 {% if tariff is null and false %}
                     {% set cats = cats|merge({'isClosed': 'Закрыто'}) %}
                 {% endif %}
@@ -82,8 +82,10 @@
                                 {% else %}
                                     <small>
                                         <span class="text-{{ categoryId == 'leftRooms' ? 'success bold' : 'info' }}">
-                                        {% if roomCache is not null %}
+                                        {% if roomCache is not null and categoryId != 'packagesCountPercent' %}
                                             {{ attribute(roomCache, categoryId) }}
+                                        {% elseif roomCache is not null and categoryId == 'packagesCountPercent' %}
+                                            <small>{{ roomCache.packagesCountPercent }}%</small>
                                         {% elseif roomCache is null and dayRoomCache is not null and categoryId == 'packagesCount' %}
                                             {{ dayRoomCache.getPackageCountByTariff(tariff) }}
                                         {% elseif roomCache is null and dayRoomCache is not null and categoryId == 'leftRooms' %}

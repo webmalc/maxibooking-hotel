@@ -295,6 +295,25 @@ class PackageService extends Base
     }
 
     /**
+     * @return int
+     */
+    public function getTotalAmount()
+    {
+        $result = $this->getAmount();
+
+        if ($this->getCalcType() == 'per_night') {
+            $result *= $this->getNights();
+        }
+
+        if (!in_array($this->getCalcType(), ['not_applicable', 'day_percent'])) {
+            $result *= $this->getPersons();
+        }
+
+        return $result;
+
+    }
+
+    /**
      * @return float
      */
     public function getTotal()
