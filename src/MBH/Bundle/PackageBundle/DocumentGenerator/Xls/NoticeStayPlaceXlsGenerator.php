@@ -44,7 +44,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
 
     private function getXlsPath()
     {
-        return realpath(__DIR__ . '/../../Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija.xls');
+        return realpath(__DIR__ . '/../../Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija.XLS');
     }
 
 
@@ -191,23 +191,14 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         $this->write($package->getEnd()->format('Y'), 'EQ69');
 
         $this->phpExcelObject->setActiveSheetIndex(0);
+        $this->setSquaresOnActiveSheet();
+        $this->phpExcelObject->setActiveSheetIndex(1);
+        $this->setSquaresOnActiveSheet();
 
-
-        $this->phpExcelObject = $this->phpExcel->createPHPExcelObject($this->getXlsPath());
-
-        $drawing = new \PHPExcel_Worksheet_Drawing();
-        $drawing->setPath(dirname($this->getXlsPath()).'/square.jpg');
-        //$drawing->setName('Sample image');
-        //$drawing->setDescription('Sample image');
-        $drawing->setHeight(28);
-        $drawing->setWidth(28);
-        $drawing->setResizeProportional(true);
-        $drawing->setOffsetX(43.6);
-        $drawing->setOffsetY(33);
-        $drawing->setWorksheet($this->phpExcelObject->getActiveSheet());
+        $this->phpExcelObject->setActiveSheetIndex(0);
 
         $response = $this->phpExcel->createStreamedResponse(
-            $this->phpExcel->createWriter($this->phpExcelObject, 'Excel2007'));
+            $this->phpExcel->createWriter($this->phpExcelObject));//, 'Excel2007'
 
         $dispositionHeader = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
@@ -217,6 +208,52 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         $response->headers->set('Content-Disposition', $dispositionHeader);
 
         return $response;
+    }
+
+    protected function squareDrawingPrototype()
+    {
+        $drawingPrototype = new \PHPExcel_Worksheet_Drawing();
+        $drawingPrototype->setPath(dirname($this->getXlsPath()).'/square.jpg');
+        $drawingPrototype->setResizeProportional(false);
+        $drawingPrototype->setHeight(27);
+        $drawingPrototype->setWidth(29);
+        return $drawingPrototype;
+    }
+
+    protected function setSquaresOnActiveSheet()
+    {
+        $drawingPrototype = $this->squareDrawingPrototype();
+        $sheet = $this->phpExcelObject->getActiveSheet();
+
+        $drawing = clone($drawingPrototype);
+        //$drawing->setOffsetX(43.6);
+        //$drawing->setOffsetY(33);
+        $drawing->setCoordinates('L3');
+        $drawing->setWorksheet($sheet);
+
+        $drawing = clone($drawingPrototype);
+        //$drawing->setOffsetX(645);
+        //$drawing->setOffsetY(33);
+        $drawing->setCoordinates('EY3');
+        $drawing->setWorksheet($sheet);
+
+        $drawing = clone($drawingPrototype);
+        //$drawing->setOffsetX(43.6);
+        //$drawing->setOffsetY(1080);
+        $drawing->setCoordinates($this->phpExcelObject->getActiveSheetIndex() == 0 ? 'L97' : 'L83');
+        $drawing->setWorksheet($sheet);
+
+        $drawing = clone($drawingPrototype);
+        //$drawing->setOffsetY(1080);
+        //$drawing->setOffsetX(525);
+        $drawing->setCoordinates($this->phpExcelObject->getActiveSheetIndex() == 0 ? 'DV97' : 'DV83');
+        $drawing->setWorksheet($sheet);
+
+        $drawing = clone($drawingPrototype);
+        //$drawing->setOffsetY(1080);
+        //$drawing->setOffsetX(645);
+        $drawing->setCoordinates($this->phpExcelObject->getActiveSheetIndex() == 0 ? 'EZ97' : 'EZ83');
+        $drawing->setWorksheet($sheet);
     }
 
     /**
@@ -246,7 +283,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
     }
 
     /**
-     * Get separate Letter and number of cell
+     * Letter and number of cell
      * @param $cell
      * @return array [letter, number]
      */

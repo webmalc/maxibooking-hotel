@@ -32,9 +32,12 @@ class NoticeStayPlaceXlsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $tourists = [];
+
         /** @var Tourist $tourist */
         foreach($options['tourists'] as $tourist) {
-            $tourists[$tourist->getId()] = $tourist->getFullName();
+            if($tourist) {
+                $tourists[$tourist->getId()] = $tourist->getFullName();
+            }
         }
         $builder->add('tourist', 'choice', [
             'required' => true,

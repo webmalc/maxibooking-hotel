@@ -675,9 +675,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $request->getSession()->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
 
-        /*if (!empty($request->get('order'))) {
+        if (!empty($request->get('order'))) {
             return $this->redirect($this->generateUrl('package_order_packages', ['id' => $orderId]));
-        }*/
+        }
 
         return $this->redirectToRoute('package');
     }

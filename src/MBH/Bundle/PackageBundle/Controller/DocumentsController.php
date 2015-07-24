@@ -255,6 +255,9 @@ class DocumentsController extends Controller
         }
 
         $generatorFactory = $this->get('mbh.package.document_factory');
+        if(!in_array($type, $generatorFactory->getAvailableTypes())) {
+            throw $this->createNotFoundException();
+        }
 
         $formData = [];
         if($request->isMethod(Request::METHOD_POST) && $generatorFactory->hasForm($type)) {
@@ -287,8 +290,9 @@ class DocumentsController extends Controller
     public function documentModalFormAction(Package $entity, $type)
     {
         $generatorFactory = $this->get('mbh.package.document_factory');
-        if(!$generatorFactory->hasForm($type))
+        if(!$generatorFactory->hasForm($type)) {
             throw $this->createNotFoundException();
+        }
 
         $options = [];
         if($type == XlsGeneratorFactory::TYPE_NOTICE) {
@@ -330,7 +334,6 @@ class DocumentsController extends Controller
             '/orderDocuments/5554599b7d3d6494118b4567'//$entity->getStamp()->getPathname()
         );
         $str = $binary->getContent();*/
-
 
         $response = new Response($str, 200);
         $response->headers->set('Content-Type', $entity->getStamp()->getMimeType());

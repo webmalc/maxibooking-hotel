@@ -84,7 +84,7 @@ class Builder extends ContainerAware
             ->addChild('Delete', [
                 'route' => 'package_delete',
                 'routeParameters' => ['id' => $package->getId()],
-                'label' => $translator->trans('package.actions.delete', [], 'MBHPackageBundle')
+                'label' => $translator->trans('package.actions.delete', [], 'MBHPackageBundle'),
             ])
             ->setAttributes([
                 'icon' => 'fa fa-trash-o',
@@ -94,7 +94,7 @@ class Builder extends ContainerAware
             ->addChild('Order delete', [
                 'route' => 'package_search',
                 'routeParameters' => ['order' => $package->getOrder()->getId()],
-                'label' => $translator->trans('order.navbar.delete_order', [], 'MBHPackageBundle')
+                'label' => $translator->trans('order.navbar.delete_order', [], 'MBHPackageBundle'),
             ])
             ->setAttributes([
                 'icon' => 'fa fa-trash-o',
