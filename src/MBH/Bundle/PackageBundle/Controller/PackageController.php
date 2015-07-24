@@ -679,7 +679,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             return $this->redirect($this->generateUrl('package_order_edit', ['id' => $orderId, 'packageId' => $entity->getId()]));
         }
 
-        return $this->redirect($this->generateUrl('package'));
+        return $this->redirectToRoute('package');
     }
 
 }

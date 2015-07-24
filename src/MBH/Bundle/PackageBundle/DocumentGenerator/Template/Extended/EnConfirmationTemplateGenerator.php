@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator\Extended;
+namespace MBH\Bundle\PackageBundle\DocumentGenerator\Template\Extended;
 
 use Gedmo\Translatable\TranslatableListener;
 
@@ -10,7 +10,7 @@ use Gedmo\Translatable\TranslatableListener;
  */
 class EnConfirmationTemplateGenerator extends ConfirmationTemplateGenerator
 {
-    public function getTemplate()
+    public function getTemplate(array $formData)
     {
         /** @var \Symfony\Component\Translation\DataCollectorTranslator $translator */
         $translator = $this->container->get('translator');
@@ -33,7 +33,7 @@ class EnConfirmationTemplateGenerator extends ConfirmationTemplateGenerator
             $this->container->get('doctrine_mongodb')->getManager()->refresh($country);
         }
 */
-        $html = parent::getTemplate();
+        $html = parent::getTemplate($formData);
         $translator->setLocale($currentLocale);
 
         return $html;

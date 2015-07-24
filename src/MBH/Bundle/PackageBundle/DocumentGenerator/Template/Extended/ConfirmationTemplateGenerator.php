@@ -1,24 +1,24 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator\Extended;
+namespace MBH\Bundle\PackageBundle\DocumentGenerator\Template\Extended;
 
 
-use MBH\Bundle\PackageBundle\Component\DocumentTemplateGenerator\DefaultDocumentTemplateGenerator;
 use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
 use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PackageBundle\DocumentGenerator\Template\DefaultTemplateGenerator;
 
 /**
  * Class ConfirmationTemplateGenerator
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
-class ConfirmationTemplateGenerator extends DefaultDocumentTemplateGenerator
+class ConfirmationTemplateGenerator extends DefaultTemplateGenerator
 {
-    protected function getAdditionalParams()
+    protected function prepareParams(array $formData)
     {
-        $params =  parent::getAdditionalParams();
+        $params =  parent::prepareParams($formData);
 
-        $hasServices = isset($this->formParams['hasServices']) && $this->formParams['hasServices'];
-        $hasFull = isset($this->formParams['hasFull']) && $this->formParams['hasFull'];
+        $hasServices = isset($formData['hasServices']) && $formData['hasServices'];
+        $hasFull = isset($formData['hasFull']) && $formData['hasFull'];
 
         /** @var PackageService[] $packageServices */
         $packageServices = [];
@@ -28,9 +28,9 @@ class ConfirmationTemplateGenerator extends DefaultDocumentTemplateGenerator
 
         $total = 0;
         if($hasFull) {
-            $packages = $this->package->getOrder()->getPackages();
+            $packages = $formData['package']->getOrder()->getPackages();
         } else {
-            $packages = [$this->package];
+            $packages = [$formData['package']];
         }
         foreach($packages as $package) {
             $packageServices = array_merge(iterator_to_array($package->getServices()), $packageServices);

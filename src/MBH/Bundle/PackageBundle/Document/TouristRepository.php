@@ -25,6 +25,29 @@ class TouristRepository extends DocumentRepository
     }
 
     /**
+     * @param Package $package
+     * @return Tourist[]
+     */
+    public function getForeignTouristsByPackage(Package $package)
+    {
+        $tourists = $package->getTourists();
+        $tourists[] = $package->getMainTourist();
+
+        $foreignTourists = [];
+        /** @var Tourist $tourist */
+        foreach($tourists as $tourist) {
+            if($tourist) {
+                $citizenship = $tourist->getCitizenship();
+                if($citizenship === null || ($citizenship && $citizenship->getName() != "Россия")) {
+                    $foreignTourists[] = $tourist;
+                }
+            }
+        }
+
+        return $foreignTourists;
+    }
+
+    /**
      * @param string $lastName
      * @param string $firstName
      * @param string $patronymic

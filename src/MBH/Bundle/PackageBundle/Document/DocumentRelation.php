@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\VegaBundle\Document\VegaFMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class DocumentRelation
@@ -40,8 +41,15 @@ class DocumentRelation
     /**
      * @var \DateTime
      * @ODM\Date
+     * @Assert\Date()
      */
     protected $issued;
+    /**
+     * @var \DateTime
+     * @ODM\Date
+     * @Assert\Date()
+     */
+    protected $expiry;
     /**
      * @var integer
      * @ODM\Int
@@ -57,7 +65,7 @@ class DocumentRelation
     }
 
     /**
-     * @param string $type
+     * @param string $type32.4
      * @return $this
      */
     public function setType($type)
@@ -149,6 +157,22 @@ class DocumentRelation
     }
 
     /**
+     * @return \DateTime
+     */
+    public function getExpiry()
+    {
+        return $this->expiry;
+    }
+
+    /**
+     * @param \DateTime $expiry
+     */
+    public function setExpiry(\DateTime $expiry = null)
+    {
+        $this->expiry = $expiry;
+    }
+
+    /**
      * @return int
      */
     public function getRelation()
@@ -162,5 +186,13 @@ class DocumentRelation
     public function setRelation($relation)
     {
         $this->relation = $relation;
+    }
+    
+    /**
+     * @Assert\True(message = "The start date must be before the end date")
+     */
+    public function isDateRangeValid()
+    {
+        return !($this->issued && $this->expiry && $this->issued->getTimestamp() > $this->expiry->getTimestamp());
     }
 }

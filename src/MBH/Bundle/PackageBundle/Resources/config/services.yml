@@ -54,3 +54,17 @@ services:
                    - [setManagerRegistry, [@doctrine_mongodb]]
             tags:
                 - { name: form.type, alias: mbh_document_relation }
+    mbh.package.document_tempalte_factory:
+            class: MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory
+            calls:
+                   - [setContainer, [@service_container]]
+    mbh.package.document_xls_factory:
+            class: MBH\Bundle\PackageBundle\DocumentGenerator\Xls\XlsGeneratorFactory
+            calls:
+                   - [setContainer, [@service_container]]
+    mbh.package.document_factory:
+            class: MBH\Bundle\PackageBundle\DocumentGenerator\ChainGeneratorFactory
+            calls:
+                   - [addFactory, [@mbh.package.document_tempalte_factory]]
+                   - [addFactory, [@mbh.package.document_xls_factory]]
+                   - [setContainer, [@service_container]]

@@ -228,6 +228,7 @@ templateDocument.type.evidence: Свидетельство о регистрац
 templateDocument.type.form: Форма N 1-Г
 templateDocument.type.receipt: Расписка
 templateDocument.type.act: Акт
+templateDocument.type.xls_notice: Уведомление о прибытии ИГ
 
 
 form.TouristExtendedType.group.person: Персональные данные
@@ -254,6 +255,7 @@ form.DocumentRelation.authority: Орган выдачи документа
 form.DocumentRelation.series: Серия
 form.DocumentRelation.number: Номер
 form.DocumentRelation.issued: Дата выдачи
+form.DocumentRelation.expiry: Действителен до
 form.DocumentRelation.relation: Связь лица с документом
 
 form.DocumentRelation.citizenship: 'Гражданство'
