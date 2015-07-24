@@ -37,9 +37,7 @@ class NoticeStayPlaceXlsType extends AbstractType
         foreach($options['tourists'] as $tourist) {
             if($tourist) {
                 $citizenship = $tourist->getCitizenship();
-                if($citizenship === null || ($citizenship && $citizenship->getName() != "Россия")) {
-                    $tourists[$tourist->getId()] = $tourist->getFullName() . ' (' . ($citizenship ? $citizenship->getName() : 'Не указано') . ')';
-                }
+                $tourists[$tourist->getId()] = $tourist->getFullName() . ' (' . ($citizenship ? $citizenship->getName() : 'Не указано') . ')';
             }
         }
         $builder->add('tourist', 'choice', [

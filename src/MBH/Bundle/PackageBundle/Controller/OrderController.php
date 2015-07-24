@@ -309,19 +309,18 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()
-                ->getFlashBag()
-                ->set('success',
+            $request->getSession()->getFlashBag()->set('success',
                     $this->get('translator')->trans('controller.orderController.organization_added_success'));
 
             if ($request->get('save') !== null) {
-                return $this->redirect($this->generateUrl('package_order_organization_edit',
-                    ['id' => $entity->getId(), 'packageId' => $package->getId()]));
+                return $this->redirectToRoute('package_order_organization_edit',
+                    ['id' => $entity->getId(), 'packageId' => $package->getId()]);
             }
 
-            return $this->redirect($this->generateUrl('package',
-                ['id' => $entity->getId(), 'packageId' => $package->getId()]));
+            return $this->redirectToRoute('package',
+                ['id' => $entity->getId(), 'packageId' => $package->getId()]);
         }
+
         return [
             'entity' => $entity,
             'logs' => $this->logs($entity),

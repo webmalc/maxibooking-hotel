@@ -273,7 +273,7 @@ $(document).ready(function () {
         $body = $modal.find('.modal-body'),
         $submitButton = $modal.find('.btn.btn-primary'),
         $modalTitle = $modal.find('.modal-title');
-    $submitButton.on('click', function(){
+    $submitButton.on('click', function () {
         $body.find('form').trigger('submit');
     });
     $modal.on('show.bs.modal', function (event) {
@@ -282,19 +282,22 @@ $(document).ready(function () {
             entityId = $button.closest('ul').data('id');
 
         $.ajax(Routing.generate('document_modal_form', {id: entityId, type: type}), {
-            'success' : function(response) {
+            'success' : function (response) {
                 $body.html(response.html);
 
                 var $em = $modalTitle.find('em');
                 $em.text(response.name);
 
-                $body.find("input[type=checkbox]").bootstrapSwitch({
-                    'size': 'small',
-                    'onText': 'да',
-                    'offText': 'нет',
-                    'labelText': '<i class="fa fa-arrows-h" style="opacity: 0.6;"></i>'
-                });
-                $body.find("select").select2();
+                $submitButton.attr('disabled', response.error);
+                if(!response.error) {
+                    $body.find("input[type=checkbox]").bootstrapSwitch({
+                        'size': 'small',
+                        'onText': 'да',
+                        'offText': 'нет',
+                        'labelText': '<i class="fa fa-arrows-h" style="opacity: 0.6;"></i>'
+                    });
+                    $body.find("select").select2();
+                }
             }
         });
     }).on('close.bs.modal', function () {

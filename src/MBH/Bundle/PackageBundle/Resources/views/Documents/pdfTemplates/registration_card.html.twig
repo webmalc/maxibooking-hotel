@@ -149,7 +149,7 @@
                                 <div>Пол</div>
                             </div>
                             <div class="area"
-                                 style="margin-left: 40px;">{% if tourist %} {{ ('form.touristType.sex_' ~ tourist.sex)|trans }} / {{ tourist.sex|first|upper }} {% endif %}</div>
+                                 style="margin-left: 40px;">{% if tourist and tourist.sex != 'unknown' %} {{ ('form.touristType.sex_' ~ tourist.sex)|trans }} / {{ tourist.sex|first|upper }} {% endif %}</div>
                         </div>
                     </td>
                     <td colspan="4" style="width: 33%">

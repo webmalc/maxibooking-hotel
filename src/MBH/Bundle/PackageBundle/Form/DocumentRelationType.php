@@ -169,7 +169,8 @@ class DocumentRelationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MBH\Bundle\PackageBundle\Document\Tourist'
+            'data_class' => 'MBH\Bundle\PackageBundle\Document\Tourist',
+            //'cascade_validation' => true
         ]);
     }
 

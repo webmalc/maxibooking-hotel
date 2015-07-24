@@ -42,31 +42,24 @@ class HotelSelector
     public function getSelected()
     {
         $session = $this->container->get('session');
-
         $id = $session->get('selected_hotel_id');
 
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->container
-                ->get('doctrine_mongodb')
-                ->getManager()
-        ;
-
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $hotelRepository = $dm->getRepository('MBHHotelBundle:Hotel');
         if (!empty($id)) {
-            $hotel = $dm->getRepository('MBHHotelBundle:Hotel')
-                    ->find($id)
-            ;
+            $hotel = $hotelRepository->find($id);
             if ($hotel && $this->checkPermissions($hotel)) {
                 return $hotel;
-
             }
             $session->remove('selected_hotel_id');
         }
 
         // Select first hotel
-        $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('s')
-                ->sort('isDefault', 'desc')
-                ->getQuery()
-                ->execute()
+        $hotels = $hotelRepository->createQueryBuilder('s')
+            ->sort('isDefault', 'desc')
+            ->getQuery()
+            ->execute()
         ;
 
         foreach ($hotels as $hotel) {
@@ -89,14 +82,9 @@ class HotelSelector
         $session->remove('selected_hotel_id');
         
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->container
-                ->get('doctrine_mongodb')
-                ->getManager()
-        ;
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $hotel = $dm->getRepository('MBHHotelBundle:Hotel')->find($id);
 
-        $hotel = $dm->getRepository('MBHHotelBundle:Hotel')
-                ->find($id)
-        ;
         if ($hotel && $this->checkPermissions($hotel)) {
             $session->set('selected_hotel_id', (string) $hotel->getId());
             return $hotel;

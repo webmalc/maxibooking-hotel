@@ -263,16 +263,15 @@ class DocumentsController extends Controller
         if($request->isMethod(Request::METHOD_POST) && $generatorFactory->hasForm($type)) {
             $options = [];
             if($type == XlsGeneratorFactory::TYPE_NOTICE) {
-                $options['tourists'] = $entity->getTourists();
-                $options['tourists'][] = $entity->getMainTourist();
+                $options['tourists'] = $this->dm->getRepository('MBHPackageBundle:Tourist')->getForeignTouristsByPackage($entity);
             }
             $form = $generatorFactory->createFormByType($type, $options);
             $form->submit($request);
             if ($form->isValid()) {
                 $formData = $form->getData();
-            }/*else {
+            } else {
                 throw $this->createNotFoundException();
-            }*/
+            }
         }
         $formData['package'] = $entity;
 
@@ -295,20 +294,30 @@ class DocumentsController extends Controller
         }
 
         $options = [];
+        $error = null;
         if($type == XlsGeneratorFactory::TYPE_NOTICE) {
-            $options['tourists'] = $entity->getTourists();
-            $options['tourists'][] = $entity->getMainTourist();
+            $options['tourists'] = $this->dm->getRepository('MBHPackageBundle:Tourist')->getForeignTouristsByPackage($entity);
+            if(empty($options['tourists'])) {
+                $error = 'В данной брони нет иностранных граждан';
+            }
         }
-        $form = $generatorFactory->createFormByType($type, $options);
 
-        $html = $this->renderView('MBHPackageBundle:Documents:documentModalForm.html.twig', [
-            'form' => $form->createView(),
-            'type' => $type,
-            'entity' => $entity
-        ]);
+        if($error) {
+            $html = $this->renderView('MBHPackageBundle:Documents:documentModalError.html.twig', [
+                'error' => $error
+            ]);
+        } else {
+            $form = $generatorFactory->createFormByType($type, $options);
+            $html = $this->renderView('MBHPackageBundle:Documents:documentModalForm.html.twig', [
+                'form' => $form->createView(),
+                'type' => $type,
+                'entity' => $entity
+            ]);
+        }
 
         return new JsonResponse([
             'html' => $html,
+            'error' => $error,
             'name' => $this->get('translator')->trans('templateDocument.type.'. $type)
         ]);
     }
