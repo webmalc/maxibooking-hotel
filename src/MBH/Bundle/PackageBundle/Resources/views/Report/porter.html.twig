@@ -1,0 +1,53 @@
+{% extends "MBHPackageBundle::layout.html.twig" %}
+
+{% set title = 'report.layout.title'|trans({}, 'MBHPackageBundle') %}
+{% set small_title = 'report.porter.small_title'|trans({}, 'MBHPackageBundle') %}
+{% set title_url = path('report_porter') %}
+
+{% block content %}
+
+    <div class="well" id="porter-report-filter-well">
+        <form id="porter-report-filter" class="form-inline filter-form" role="form">
+            <div class="input">
+                <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
+                <input type="text" name="begin" id="porter-report-filter-begin"
+                       class="datepicker porter-report-filter begin-datepiker not-set-date form-control input-sm"
+                       data-date-format="dd.mm.yyyy"
+                       value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
+            </div>
+            <div class="input">
+                - &nbsp
+                <input type="text" name="end" id="porter-report-filter-end"
+                       class="datepicker porter-report-filter end-datepiker not-set-date form-control input-sm"
+                       data-date-format="dd.mm.yyyy"
+                       value="{{ app.request.get('end') is empty ?  'now'|date_modify("+1 day")|date('d.m.Y') : app.request.get('end') }}">
+            </div>
+
+            <div class="input">
+                <i class="fa fa-clock-o"></i>&nbsp;
+                <select class="datepiker-period-select" data-placeholder="Период">
+                    <option></option>
+                    <option value="{{ 'now'|date('d.m.Y') }}-{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
+                        сегодня
+                    </option>
+                    <option value="{{ 'now'|date_modify('-1 day')|date('d.m.Y') }}-{{ 'now'|date('d.m.Y') }}">
+                        вчера
+                    </option>
+                    <option value="{{ 'now'|date_modify('-2 days')|date('d.m.Y') }}-{{ 'now'|date_modify('-1 day')|date('d.m.Y') }}">
+                        позавчера
+                    </option>
+                    <option value="{{ 'now'|date_modify('-7 days')|date('d.m.Y') }}-{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
+                        неделя
+                    </option>
+                    <option value="{{ 'now'|date_modify('-1 month')|date('d.m.Y') }}-{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
+                        месяц
+                    </option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <div id="porter-report-table-wrapper" class="scrolling"></div>
+
+
+{% endblock %}

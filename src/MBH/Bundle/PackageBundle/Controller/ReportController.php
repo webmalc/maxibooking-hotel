@@ -22,6 +22,21 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     /**
      * Packages by users report.
      *
+     * @Route("/porter", name="report_porter")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function porterAction()
+    {
+        return [
+
+        ];
+    }
+
+    /**
+     * Packages by users report.
+     *
      * @Route("/users/index", name="report_users")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
@@ -394,6 +409,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function pollsViewAction(Order $order)
     {
+        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
+        }
         return [
             'order' => $order
         ];

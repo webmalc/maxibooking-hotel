@@ -1,4 +1,4 @@
-/*global window, document, Routing, console, $ */
+/*global window, document, Routing, console, str, $ */
 
 $.fn.serializeObject = function () {
     'use strict';
@@ -106,6 +106,20 @@ $(document).ready(function () {
         }
 
     }).attr("autocomplete", "off");
+
+    //datepiker select
+    (function () {
+        var select = $('.datepiker-period-select'),
+            setDates = function () {
+                alert(select.val());
+            };
+
+        if (!select.length) {
+            return;
+        }
+        select.change(setDates)
+        setDates();
+    }());
 
     (function () {
         var begin = $('.begin-datepiker'),

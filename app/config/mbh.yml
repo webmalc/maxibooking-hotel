@@ -123,17 +123,12 @@ parameters:
         vashotel:
           title: 'ВашОтель.RU'
           service: 'mbh.channelmanager.vashotel'
-          password: N4H18zzmjreJmCJ
+          password: jguuE26t684Fl
         booking:
           title: 'Booking.com'
           service: 'mbh.channelmanager.booking'
           username: maxibookingXML
           password: bMBhv6tds5i
-        #hotelinn:
-         # title: 'Hotel-inn'
-          #service: 'mbh.channelmanager.hotelinn'
-          #username: maxibookingXML
-          #password: bMBhv6tds5i
 
 
     #параметры логов
