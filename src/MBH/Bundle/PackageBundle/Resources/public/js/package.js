@@ -294,9 +294,10 @@ $(document).ready(function () {
                     'offText': 'нет',
                     'labelText': '<i class="fa fa-arrows-h" style="opacity: 0.6;"></i>'
                 });
+                $body.find("select").select2();
             }
         });
-    }).on('close.bs.modal', function(event) {
+    }).on('close.bs.modal', function () {
         var $modal = $(this);
         var $body = $modal.find('.modal-body');
         $body.empty();

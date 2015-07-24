@@ -12,9 +12,9 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
  */
 class RegistrationCardTemplateGenerator extends DefaultTemplateGenerator
 {
-    protected function getAdditionalParams($formData)
+    protected function prepareParams(array $formData)
     {
-        $params = parent::getAdditionalParams($formData);
+        $params = parent::prepareParams($formData);
 
         $tourists = $formData['package']->getTourists(); //guests
         if(count($tourists) == 0) {
@@ -22,8 +22,7 @@ class RegistrationCardTemplateGenerator extends DefaultTemplateGenerator
             $tourists = [$fakeTourist];
         }
 
-        return $params + [
-            'tourists' => $tourists
-        ];
+        $params['tourists'] = $tourists;
+        return $params;
     }
 }

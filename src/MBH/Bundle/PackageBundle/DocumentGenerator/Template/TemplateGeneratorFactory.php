@@ -35,7 +35,7 @@ class TemplateGeneratorFactory implements GeneratorFactoryInterface
             self::TYPE_CONFIRMATION => 'ConfirmationTemplateGenerator',
             self::TYPE_CONFIRMATION_EN => 'EnConfirmationTemplateGenerator',
             self::TYPE_REGISTRATION_CARD => 'RegistrationCardTemplateGenerator',
-            self::TYPE_FMS_FORM_5 => 'RegistrationCardTemplateGenerator',
+            self::TYPE_FMS_FORM_5 => 'FMSForm5TemplateGenerator',
             self::TYPE_EVIDENCE => 'RegistrationCardTemplateGenerator',
             self::TYPE_FORM_1_G => 'RegistrationCardTemplateGenerator',
             self::TYPE_RECEIPT => 'RegistrationCardTemplateGenerator',
@@ -141,6 +141,10 @@ class TemplateGeneratorFactory implements GeneratorFactoryInterface
         return $generator;
     }
 
+    /**
+     * @param $type
+     * @return DefaultTemplateGenerator
+     */
     private function createByDefault($type)
     {
         return new DefaultTemplateGenerator($type);

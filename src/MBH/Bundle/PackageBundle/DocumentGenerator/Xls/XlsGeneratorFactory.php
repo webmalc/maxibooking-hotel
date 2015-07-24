@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\DocumentGenerator\Xls;
 
 
+use MBH\Bundle\PackageBundle\DocumentGenerator\DocumentResponseGeneratorInterface;
 use MBH\Bundle\PackageBundle\DocumentGenerator\GeneratorFactoryInterface;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Xls\Type\NoticeStayPlaceXlsType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -60,7 +61,10 @@ class XlsGeneratorFactory implements GeneratorFactoryInterface
         return $type == self::TYPE_NOTICE;
     }
 
-
+    /**
+     * @param string $type
+     * @return DocumentResponseGeneratorInterface
+     */
     public function createGeneratorByType($type)
     {
         if($type == self::TYPE_NOTICE) {

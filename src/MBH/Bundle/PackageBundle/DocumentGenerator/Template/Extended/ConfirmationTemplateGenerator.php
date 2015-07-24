@@ -13,9 +13,9 @@ use MBH\Bundle\PackageBundle\DocumentGenerator\Template\DefaultTemplateGenerator
  */
 class ConfirmationTemplateGenerator extends DefaultTemplateGenerator
 {
-    protected function getAdditionalParams($formData)
+    protected function prepareParams(array $formData)
     {
-        $params =  parent::getAdditionalParams($formData);
+        $params =  parent::prepareParams($formData);
 
         $hasServices = isset($formData['hasServices']) && $formData['hasServices'];
         $hasFull = isset($formData['hasFull']) && $formData['hasFull'];
