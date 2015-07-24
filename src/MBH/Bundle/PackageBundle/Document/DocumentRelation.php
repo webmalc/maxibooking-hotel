@@ -187,7 +187,7 @@ class DocumentRelation
     {
         $this->relation = $relation;
     }
-    
+
     /**
      * @Assert\True(message = "The start date must be before the end date")
      */
