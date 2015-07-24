@@ -146,7 +146,9 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
             $this->write($documentRelation->getNumber(), 'DW80');
         }
 
-        $this->write($hotel->getRegion()->getTitle(), 'AE83');
+        if($hotel->getRegion()) {
+            $this->write($hotel->getRegion()->getTitle(), 'AE83');
+        }
         if ($hotel->getCity()) {
             //$this->write($hotel->getCity()->getTitle(), 'W86');
             $this->write($hotel->getCity()->getTitle() . ' ' . $hotel->getSettlement(), 'AE88');//Населенный пункт
