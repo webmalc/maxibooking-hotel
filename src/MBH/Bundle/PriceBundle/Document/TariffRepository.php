@@ -9,6 +9,27 @@ class TariffRepository extends DocumentRepository
 {
 
     /**
+     * Get Tariffs with > 1 package
+     * @return array
+     */
+    public function getWithPackages()
+    {
+        $ids = $this->getDocumentManager()
+            ->getRepository('MBHPackageBundle:Package')
+            ->createQueryBuilder()
+            ->distinct('tariff.$id')
+            ->getQuery()
+            ->execute()
+        ;
+
+        return $this->createQueryBuilder()
+            ->field('id')->in(iterator_to_array($ids))
+            ->getQuery()
+            ->execute()
+            ;
+    }
+
+    /**
      * @param Hotel $hotel
      * @param mixed $online
      * @return array|null|object

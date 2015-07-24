@@ -18,6 +18,140 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
  */
 class ReportController extends Controller implements CheckHotelControllerInterface
 {
+
+    /**
+     * Packages by users report.
+     *
+     * @Route("/users/index", name="report_users")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function  userAction()
+    {
+        $roomTypes = $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+            ->getWithPackages();
+        $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
+            ->getWithPackages();
+        $users = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->createQueryBuilder()
+            ->distinct('createdBy')
+            ->getQuery()
+            ->execute();
+        return [
+            'users' => $users,
+            'tariffs' => $tariffs,
+            'roomTypes' => $roomTypes
+        ];
+    }
+
+    /**
+     * Packages by users report.
+     *
+     * @Route("/users/table", name="report_users_table", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function  userTableAction(Request $request)
+    {
+        $helper = $this->container->get('mbh.helper');
+
+        //dates
+        $begin = $helper->getDateFromString($request->get('begin'));
+        $begin ?: $begin = new \DateTime('midnight - 14 days');
+
+        $end = $helper->getDateFromString($request->get('end'));
+        if (!$end || $end->diff($begin)->format("%a") > 750 || $end <= $begin) {
+            $end = new \DateTime('midnight + 1 day');
+        }
+
+        $qb = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->createQueryBuilder()
+            ->field('createdAt')->gte($begin)
+            ->field('createdAt')->lte($end)
+            ->field('createdBy')->notEqual(null)
+            ->sort('createdAt');
+
+        if ($request->get('users') && is_array($request->get('users'))) {
+            $qb->field('createdBy')->in($request->get('users'));
+        }
+        if ($request->get('roomTypes') && is_array($request->get('roomTypes'))) {
+            $qb->field('roomType.id')->in($request->get('roomTypes'));
+        }
+        if ($request->get('tariffs') && is_array($request->get('tariffs'))) {
+            $qb->field('tariff.id')->in($request->get('tariffs'));
+        }
+
+        $packages = $qb->getQuery()->execute();
+
+        $data = $dates = $total = $allTotal = [];
+
+        $default = [
+            'sold' => 0,
+            'price' => 0,
+            'services' => 0,
+            'packagePrice' => 0,
+            'servicesPrice' => 0,
+            'paid' => 0,
+        ];
+
+        foreach ($packages as $package) {
+            $day = $package->getCreatedAt()->format('d.m.Y');
+            $user = $package->getCreatedBy();
+            $dates[$day] = $package->getCreatedAt();
+            $default['date'] = $package->getCreatedAt();
+            $default['user'] = $package->getCreatedBy();
+
+            $userDoc = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => $default['user']]);
+            if ($userDoc) {
+                $default['user'] = $userDoc->getFullName(true);
+            }
+
+            if (empty($data[$user][$day])) {
+                $data[$user][$day] = $default;
+            }
+            if (empty($total[$user])) {
+                $total[$user] = $default;
+            }
+            foreach ($package->getServices() as $packageService) {
+                $data[$user][$day]['services'] += $packageService->getTotalAmount();
+                $total[$user]['services'] += $packageService->getTotalAmount();
+            }
+
+            $data[$user][$day]['sold']++;
+            $data[$user][$day]['packagePrice'] += $package->getPackagePrice();
+            $data[$user][$day]['price'] += $package->getPrice();
+            $data[$user][$day]['servicesPrice'] += $package->getServicesPrice();
+            $data[$user][$day]['paid'] += $package->getPaid();
+
+            $total[$user]['sold']++;
+            $total[$user]['price'] += $package->getPackagePrice();
+            $total[$user]['packagePrice'] += $package->getPrice();
+            $total[$user]['servicesPrice'] += $package->getServicesPrice();
+            $total[$user]['paid'] += $package->getPaid();
+
+
+        }
+        $allTotal = $default;
+        foreach ($total as $tData) {
+            foreach ($tData as $k => $val) {
+                if ($k != 'date') {
+                    $allTotal[$k]  += $val;
+                }
+            }
+        }
+
+        return [
+            'allTotal' => $allTotal,
+            'begin' => $begin,
+            'end' => $end,
+            'data' => $data,
+            'dates' => $dates,
+            'total' => $total
+        ];
+    }
+
     /**
      * Accommodation report.
      *
@@ -52,12 +186,12 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         //dates
         $begin = $helper->getDateFromString($request->get('begin'));
-        if(!$begin) {
+        if (!$begin) {
             $begin = new \DateTime('00:00');
             $begin->modify('-4 days');
         }
         $end = $helper->getDateFromString($request->get('end'));
-        if(!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
+        if (!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
             $end = clone $begin;
             $end->modify('+40 days');
         }
@@ -116,7 +250,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                     //packages
                     $packageInfo = $packageCells = [];
                     foreach ($packages as $package) {
-                        if ($package->getAccommodation()->getId() == $roomId  && $package->getBegin() <= $day && $package->getEnd() >= $day) {
+                        if ($package->getAccommodation()->getId() == $roomId && $package->getBegin() <= $day && $package->getEnd() >= $day) {
 
                             $packageCells[] = [
                                 'package' => $package,
@@ -133,8 +267,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                         //package info
                         if ($package->getAccommodation()->getId() == $roomId) {
 
-                            $package->getBegin() >=  $begin ? $packageBegin = $package->getBegin() : $packageBegin = $begin;
-                            $package->getEnd() <=  $end ? $packageEnd = $package->getEnd() : $packageEnd = $end;
+                            $package->getBegin() >= $begin ? $packageBegin = $package->getBegin() : $packageBegin = $begin;
+                            $package->getEnd() <= $end ? $packageEnd = $package->getEnd() : $packageEnd = $end;
                             $nights = $packageBegin->diff($packageEnd)->format('%a');
                             $package->getBegin() > $begin ? $margin = $package->getBegin()->diff($begin)->format('%a') : $margin = 0;
 
@@ -186,13 +320,13 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function fmsAction(Request $request)
     {
-        if($request->isMethod('POST')) {
+        if ($request->isMethod('POST')) {
             $helper = $this->get('mbh.helper');
             $begin = $helper->getDateFromString($request->get('begin'));
             $end = $helper->getDateFromString($request->get('end'));
             $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-            if(!$hotel || !$begin || !$end || !$hotel->getRoomTypes()) {
+            if (!$hotel || !$begin || !$end || !$hotel->getRoomTypes()) {
                 $this->createNotFoundException();
             }
 
@@ -243,8 +377,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         $orders = $this->dm
             ->getRepository('MBHPackageBundle:Order')
-            ->fetchWithPolls($begin, $end, true)
-        ;
+            ->fetchWithPolls($begin, $end, true);
 
         return [
             'orders' => $orders

@@ -192,6 +192,20 @@ class PackageSubscriber implements EventSubscriber
             }
         }
 
+        //Calc package
+        if($entity instanceof Package) {
+            try {
+                foreach ($entity->getServices() as $packageService) {
+                    $packageService->setDeletedAt(new \DateTime());
+                    $dm->persist($packageService);
+                }
+                $entity->setServicesPrice(0);
+                $dm->persist($entity);
+                $dm->flush();
+            } catch (\Exception $e) {
+
+            }
+        }
         return;
     }
 

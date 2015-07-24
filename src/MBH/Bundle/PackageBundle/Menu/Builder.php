@@ -5,7 +5,6 @@ namespace MBH\Bundle\PackageBundle\Menu;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\MenuItem;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\DocumentGenerator\ChainGeneratorFactory;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Xls\XlsGeneratorFactory;
 use Symfony\Component\DependencyInjection\ContainerAware;
@@ -86,19 +85,19 @@ class Builder extends ContainerAware
                 'routeParameters' => ['id' => $package->getId()],
                 'label' => $translator->trans('package.actions.delete', [], 'MBHPackageBundle'),
             ])
+            ->setLinkAttribute('class', 'delete-link')
             ->setAttributes([
                 'icon' => 'fa fa-trash-o',
-                'class' => 'delete-link'
             ]);
         $rootItem
             ->addChild('Order delete', [
-                'route' => 'package_search',
-                'routeParameters' => ['order' => $package->getOrder()->getId()],
+                'route' => 'package_order_delete',
+                'routeParameters' => ['id' => $package->getOrder()->getId()],
                 'label' => $translator->trans('order.navbar.delete_order', [], 'MBHPackageBundle'),
             ])
+            ->setLinkAttribute('class', 'delete-link')
             ->setAttributes([
-                'icon' => 'fa fa-trash-o',
-                'class' => 'delete-link'
+                'icon' => 'fa fa-trash-o'
             ]);
 
         return $menu;

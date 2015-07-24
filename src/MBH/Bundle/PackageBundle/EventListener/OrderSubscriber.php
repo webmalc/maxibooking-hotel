@@ -133,6 +133,13 @@ class OrderSubscriber implements EventSubscriber
         if ($entity instanceof Order)
         {
             foreach($entity->getPackages() as $package) {
+
+                foreach ($package->getServices() as $packageService) {
+                    $packageService->setDeletedAt(new \DateTime());
+                    $dm->persist($packageService);
+                }
+
+                $package->setServicesPrice(0);
                 $package->setDeletedAt(new \DateTime());
                 $dm->persist($package);
                 $end = clone $package->getEnd();
