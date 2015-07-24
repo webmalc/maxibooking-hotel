@@ -84,19 +84,19 @@ class Builder extends ContainerAware
                 'routeParameters' => ['id' => $package->getId()],
                 'label' => $translator->trans('package.actions.delete', [], 'MBHPackageBundle')
             ])
+            ->setLinkAttribute('class', 'delete-link')
             ->setAttributes([
                 'icon' => 'fa fa-trash-o',
-                'class' => 'delete-link'
             ]);
         $rootItem
             ->addChild('Order delete', [
-                'route' => 'package_search',
-                'routeParameters' => ['order' => $package->getOrder()->getId()],
-                'label' => $translator->trans('order.navbar.delete_order', [], 'MBHPackageBundle')
+                'route' => 'package_order_delete',
+                'routeParameters' => ['id' => $package->getOrder()->getId()],
+                'label' => $translator->trans('order.navbar.delete_order', [], 'MBHPackageBundle'),
             ])
+            ->setLinkAttribute('class', 'delete-link')
             ->setAttributes([
-                'icon' => 'fa fa-trash-o',
-                'class' => 'delete-link'
+                'icon' => 'fa fa-trash-o'
             ]);
 
         return $menu;

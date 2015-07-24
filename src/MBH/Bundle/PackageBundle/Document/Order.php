@@ -419,6 +419,11 @@ class Order extends Base
         $this->price = 0;
 
         foreach ($this->getPackages() as $package) {
+
+            if ($package->getDeletedAt()) {
+                continue;
+            }
+
             if (empty($excludePackage) || $excludePackage->getId() != $package->getId()) {
                 $this->price += $package->getPrice();
             }
