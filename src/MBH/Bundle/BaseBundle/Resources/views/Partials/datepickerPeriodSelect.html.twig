@@ -1,0 +1,21 @@
+<div class="input">
+    <i class="fa fa-clock-o"></i>&nbsp;
+    <select class="datepiker-period-select" data-placeholder="Период">
+        <option></option>
+        <option value="{{ 'now'|date('d.m.Y') }}-{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
+            сегодня
+        </option>
+        <option value="{{ 'now'|date_modify('-1 day')|date('d.m.Y') }}-{{ 'now'|date('d.m.Y') }}">
+            вчера
+        </option>
+        <option value="{{ 'now'|date_modify('-2 days')|date('d.m.Y') }}-{{ 'now'|date_modify('-1 day')|date('d.m.Y') }}">
+            позавчера
+        </option>
+        <option value="{{ 'now'|date_modify('-7 days')|date('d.m.Y') }}-{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
+            неделя
+        </option>
+        <option value="{{ 'now'|date_modify('-1 month')|date('d.m.Y') }}-{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
+            месяц
+        </option>
+    </select>
+</div>

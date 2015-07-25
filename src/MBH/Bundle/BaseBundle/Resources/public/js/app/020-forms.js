@@ -109,14 +109,22 @@ $(document).ready(function () {
 
     //datepiker select
     (function () {
-        var select = $('.datepiker-period-select'),
+        var select = $('select.datepiker-period-select'),
+            begin = $('.begin-datepiker'),
+            end = $('.end-datepiker'),
             setDates = function () {
-                alert(select.val());
+                if(!select.val()) {
+                   return;
+                }
+                var dates = select.val().split('-');
+                begin.val(dates[0]).trigger('change');
+                end.val(dates[1]).trigger('change');
             };
 
-        if (!select.length) {
+        if (!select.length || !begin.length || !end.length) {
             return;
         }
+        $('.datepiker-period-select').css('width', '130px');
         select.change(setDates)
         setDates();
     }());

@@ -76,8 +76,8 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-star']);
         $menu['reports']->addChild('report_user', ['route' => 'report_users', 'label' => 'Менеджеры'])
             ->setAttributes(['icon' => 'fa fa-user']);
-        //$menu['reports']->addChild('report_porter', ['route' => 'report_porter', 'label' => 'Портье'])
-        //    ->setAttributes(['icon' => 'fa fa-clock-o']);
+        $menu['reports']->addChild('report_porter', ['route' => 'report_porter', 'label' => 'Портье'])
+            ->setAttributes(['icon' => 'fa fa-clock-o']);
 
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
             ->setAttributes(['icon' => 'fa fa-file-archive-o']);*/
