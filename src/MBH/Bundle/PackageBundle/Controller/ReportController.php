@@ -20,7 +20,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 {
 
     /**
-     * Packages by users report.
+     * Porter report.
      *
      * @Route("/porter", name="report_porter")
      * @Method("GET")
@@ -29,8 +29,51 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function porterAction()
     {
-        return [
+        return [];
+    }
 
+    /**
+     * Porter report table.
+     *
+     * @Route("/porter/table", name="report_porter_table", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function  porterTableAction(Request $request)
+    {
+        $helper = $this->container->get('mbh.helper');
+
+        //dates
+        $begin = $helper->getDateFromString($request->get('begin'));
+        $end = $helper->getDateFromString($request->get('end'));
+
+        if (!$end || $end->diff($begin)->format("%a") > 750 || $end < $begin) {
+            return ['error' => true];
+        }
+        $to = clone $end;
+        if ($end != $begin) {
+            $to->modify('-1 day');
+        }
+
+        $repo = $this->dm->getRepository('MBHPackageBundle:Package');
+        $arrivals = $repo->fetch([
+            'begin' => $begin, 'end' => $to, 'dates' => 'begin', 'hotel' => $this->hotel
+        ]);
+        $lives = $repo->fetch([
+            'live_begin' => $begin,
+            'live_end' => $end,
+            'filter' => 'live_between',
+            'checkIn' => true,
+            'checkOut' => false,
+            'hotel' => $this->hotel
+        ]);
+
+        return [
+            'begin' => $begin,
+            'end' => $end,
+            'arrivals' => $arrivals,
+            'lives' => $lives
         ];
     }
 
@@ -152,7 +195,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         foreach ($total as $tData) {
             foreach ($tData as $k => $val) {
                 if ($k != 'date') {
-                    $allTotal[$k]  += $val;
+                    $allTotal[$k] += $val;
                 }
             }
         }

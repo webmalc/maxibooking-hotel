@@ -248,6 +248,13 @@ class PackageRepository extends DocumentRepository
                 $qb->addOr($qb->expr()->field('accommodation')->exists(false));
                 $qb->addOr($qb->expr()->field('accommodation')->equals(null));
             }
+
+            // live_between
+            if ($data['filter'] == 'live_between' && isset($data['live_begin']) && isset($data['live_end'])) {
+
+                $qb->field('begin')->lte($data['live_end']);
+                $qb->field('end')->gte($data['live_begin']);
+            }
         }
 
         if (isset($data['createdBy']) && $data['createdBy'] != null) {

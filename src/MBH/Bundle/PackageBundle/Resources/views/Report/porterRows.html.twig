@@ -1,0 +1,31 @@
+{% if entity.isCheckIn and entity.accommodation %}{% set checkIn = true %}{% else %}{% set checkIn = false %}{% endif %}
+{% if entity.isCheckOut and entity.accommodation %}{% set checkOut = true %}{% else %}{% set checkOut = false %}{% endif %}
+<tr class="{% if entity.deletedAt or entity.corrupted %}danger{% elseif not entity.order.confirmed %}info{% endif %}">
+    <td class="text-center">
+        <i class="fa fa-clock-o"></i>
+    </td>
+    <td class="text-center">
+        <a class='btn btn-sm {{ checkIn or checkOut ? 'check-button' }} {{ checkIn ? 'check-in-button' }} {{ checkOut ? 'check-out-button' }} {% if entity.deletedAt %}btn-danger{% else %}btn-success{% endif %}' href='{{ path('package_edit', {'id': entity.id}) }}' rel='main' title='{{ 'package.json.edit_record'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>{% if checkIn or checkOut %}<span>{% endif %}{{ entity.numberWithPrefix }}{% if checkIn %}</span>{% endif %}</a>{% if entity.deletedAt %}<br><small><i class='fa fa-trash-o'> </i> {{ 'package.json.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}{% if entity.corrupted %}<br><small><i class='fa fa-exclamation-circle'> </i> {{ 'package.json.corrupted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
+    </td>
+    <td class="text-center">
+        <span class='{{ entity.order.deletedAt ? 'btn-danger' : '' }}'>{{ entity.order }}</span>{% if entity.order.deletedAt %}<br><small><i class='fa fa-trash-o'> </i> {{ 'package.json.deleted_order'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
+    </td>
+    <td>
+        {{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}<br><small>{{ plural(entity.nights, "package.json.noch"|trans({}, "MBHPackageBundle"), "package.json.nochi"|trans({}, "MBHPackageBundle"), "package.json.nochei"|trans({}, "MBHPackageBundle")) }}</small>
+    </td>
+    <td>
+        {{ entity.roomType }}<br><small><a data-toggle='tooltip' title='{{ "package.json.go_to_placement"|trans({}, "MBHPackageBundle") }}' href='{{ path('package_accommodation', {'id': entity.id}) }}' class='{{ entity.accommodation ? '' : 'danger' }}'>{% if entity.accommodation and entity.accommodation.roomType %}{{ entity.accommodation.name(entity.roomType.id == entity.accommodation.roomType.id ? false : true) }}{% else %}&lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a></small>
+    </td>
+    <td>
+        <a data-toggle='tooltip' href='{{ path('package_order_tourist_edit', {'id': entity.order.id, 'packageId': entity.id}) }}' title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}' class='{{ entity.order.mainTourist ? '' : 'danger' }}'>{% if entity.order.mainTourist %}{{ entity.order.mainTourist.lastNameWithInitials }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a><small><br>{% if entity.adults > 0 %}{{ entity.adults }} вз.{% endif %}{% if entity.adults > 0 and entity.children > 0 %}+{% endif %}{% if entity.children > 0 %}{{ entity.children }} рб.{% endif %}</small>
+    </td>
+    <td class="text-right">
+        <a data-toggle='tooltip' title='{{ "package.json.go_to_calculations"|trans({}, "MBHPackageBundle") }}' href='{{ path('package_order_cash', {'id': entity.order.id, 'packageId': entity.id}) }}' class='text {% if entity.order.isPaid %}text-success'{% elseif entity.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}>{{ entity.price|number_format(2) }}</a><br><small><i class='fa fa-sliders'> </i> {{ entity.tariff.name }}</small>
+    </td>
+    <td class="text-center">
+        {% if type == 'arrivals' %}
+            <i class="fa fa-{{ checkIn ? 'check text-success' : '' }}"></i>
+        {% elseif type == 'lives' %}
+        {% endif %}
+    </td>
+</tr>

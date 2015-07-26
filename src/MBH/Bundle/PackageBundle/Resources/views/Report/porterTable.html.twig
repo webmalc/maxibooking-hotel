@@ -1,0 +1,81 @@
+{% if error is defined %}
+    <div class="alert alert-warning">
+        <i class="fa fa-exclamation-circle"> </i> {{ 'report.porter.error'|trans({}, 'MBHPackageBundle') }}
+    </div>
+{% else %}
+
+    <!-- ARRIVAL -->
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Заезд
+                <small>({{ begin|mbh_format }} - {{ end|mbh_format }})</small>
+            </h3>
+        </div>
+        <div class="panel-body">
+
+            {% if arrivals|length %}
+            <table class="table package-table table-hover table-condensed table-striped">
+                <thead>
+                <tr>
+                    <th class="td-xxs"></th>
+                    <th class="td-xs">#</th>
+                    <th class="td-xs">{{ 'package.index.order'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md">{{ 'package.index.dates'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th>{{ 'package.index.placement'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md">{{ 'package.index.guests'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md">{{ 'package.index.price'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-xs">Заехали</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for entity in arrivals %}
+                        {% include 'MBHPackageBundle:Report:porterRows.html.twig' with {'entity': entity, 'type': 'arrivals'} %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p>{{ 'report.porter.arrivals.empty'|trans({}, 'MBHPackageBundle') }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+
+    <!-- LIVE -->
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Проживание
+                <small>({{ begin|mbh_format }} - {{ end|mbh_format }})</small>
+            </h3>
+        </div>
+        <div class="panel-body">
+
+            {% if lives|length %}
+            <table class="table package-table table-hover table-condensed table-striped">
+                <thead>
+                <tr>
+                    <th class="td-xxs"></th>
+                    <th class="td-xs">#</th>
+                    <th class="td-xs">{{ 'package.index.order'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md">{{ 'package.index.dates'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th>{{ 'package.index.placement'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md">{{ 'package.index.guests'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md">{{ 'package.index.price'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md">Информация</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for entity in lives %}
+                        {% include 'MBHPackageBundle:Report:porterRows.html.twig' with {'entity': entity, 'type': 'lives'} %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p>{{ 'report.porter.live.empty'|trans({}, 'MBHPackageBundle') }}</p>
+            {% endif %}
+        </div>
+
+        </div>
+    </div>
+
+{% endif %}

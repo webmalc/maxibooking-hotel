@@ -374,3 +374,7 @@ mbh.package.arrivals.other: "Другое"
 report.users.small_title: 'Пользователи'
 report.users.error: 'Брони не найдены'
 
+report.porter.small_title: 'Портье'
+report.porter.error: 'Даты заданы неверно'
+report.porter.arrivals.empty: 'Брони не найдены'
+report.porter.live.empty: 'Брони не найдены'

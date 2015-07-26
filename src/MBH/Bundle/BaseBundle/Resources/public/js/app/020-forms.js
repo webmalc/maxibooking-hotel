@@ -113,11 +113,11 @@ $(document).ready(function () {
             begin = $('.begin-datepiker'),
             end = $('.end-datepiker'),
             setDates = function () {
-                if(!select.val()) {
-                   return;
+                if (!select.val()) {
+                    return;
                 }
                 var dates = select.val().split('-');
-                begin.val(dates[0]).trigger('change');
+                begin.val(dates[0]);
                 end.val(dates[1]).trigger('change');
             };
 
