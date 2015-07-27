@@ -1,0 +1,18 @@
+{% set s = {
+'nights': 0, 'guests': 0, 'price': 0, 'paid': 0, 'debt': 0, 'total': entities|length
+} %}
+
+{% for entity in entities %}
+    {% include 'MBHPackageBundle:Report:porterRows.html.twig' with {'entity': entity, 'type': type, 'statuses': statuses} %}
+
+    {% set s = s|merge({'nights': s.nights + entity.nights}) %}
+    {% set s = s|merge({'guests': s.guests + entity.adults + entity.children}) %}
+    {% set s = s|merge({'price': s.price + entity.order.price}) %}
+    {% set s = s|merge({'paid': s.paid + entity.order.paid}) %}
+    {% set s = s|merge({'debt': s.debt + entity.order.debt}) %}
+
+{% endfor %}
+</tbody>
+</table>
+
+{% include 'MBHPackageBundle:Report:porterSummary.html.twig' with {'summary': s} %}

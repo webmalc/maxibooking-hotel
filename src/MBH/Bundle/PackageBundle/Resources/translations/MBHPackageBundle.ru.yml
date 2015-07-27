@@ -192,6 +192,7 @@ package.index.guests: Гости
 package.index.price: Стоимость
 package.index.created: Создана
 package.index.selection: 'Подбор'
+package.index.porter_link: 'Отчет портье'
 package.json.reservation_type: Тип брони:
 package.json.edit_record: Редактирование записи
 package.json.deleted: удалена
@@ -378,3 +379,8 @@ report.porter.small_title: 'Портье'
 report.porter.error: 'Даты заданы неверно'
 report.porter.arrivals.empty: 'Брони не найдены'
 report.porter.live.empty: 'Брони не найдены'
+report.porter.live.debt: Оплатата
+report.porter.live.departure: Выезд
+report.porter.live.table: Проживающие
+report.porter.arrivals.table: Заезжающие
+

@@ -58,7 +58,12 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         $repo = $this->dm->getRepository('MBHPackageBundle:Package');
         $arrivals = $repo->fetch([
-            'begin' => $begin, 'end' => $to, 'dates' => 'begin', 'hotel' => $this->hotel
+            'begin' => $begin,
+            'end' => $to,
+            'dates' => 'begin',
+            'checkIn' => false,
+            'checkOut' => false,
+            'hotel' => $this->hotel
         ]);
         $lives = $repo->fetch([
             'live_begin' => $begin,
@@ -66,14 +71,17 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'filter' => 'live_between',
             'checkIn' => true,
             'checkOut' => false,
-            'hotel' => $this->hotel
+            'hotel' => $this->hotel,
+            'order' => 'end',
+            'dir' => 'asc'
         ]);
 
         return [
             'begin' => $begin,
             'end' => $end,
             'arrivals' => $arrivals,
-            'lives' => $lives
+            'lives' => $lives,
+            'statuses' => $this->container->getParameter('mbh.package.statuses'),
         ];
     }
 

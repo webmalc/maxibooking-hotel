@@ -1161,4 +1161,20 @@ class Package extends Base implements JsonSerializable
         return $this;
     }
 
+    /**
+     * @return float
+     */
+    public function getDebt()
+    {
+        return $this->order->getDebt();
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getPaidStatus()
+    {
+        return $this->order->getPaidStatus();
+    }
+
 }

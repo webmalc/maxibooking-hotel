@@ -7,8 +7,8 @@
     <!-- ARRIVAL -->
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Заезд
-                <small>({{ begin|mbh_format }} - {{ end|mbh_format }})</small>
+            <h3 class="panel-title">{{ 'report.porter.arrivals.table'|trans({}, 'MBHPackageBundle') }}
+                ({{ begin|mbh_format }} - {{ end|mbh_format }})
             </h3>
         </div>
         <div class="panel-body">
@@ -23,16 +23,13 @@
                     <th class="td-md">{{ 'package.index.dates'|trans({}, 'MBHPackageBundle') }}</th>
                     <th>{{ 'package.index.placement'|trans({}, 'MBHPackageBundle') }}</th>
                     <th class="td-md">{{ 'package.index.guests'|trans({}, 'MBHPackageBundle') }}</th>
-                    <th class="td-md">{{ 'package.index.price'|trans({}, 'MBHPackageBundle') }}</th>
-                    <th class="td-xs">Заехали</th>
+                    <th class="td-md text-right">{{ 'package.index.price'|trans({}, 'MBHPackageBundle') }}</th>
                 </tr>
                 </thead>
                 <tbody>
-                    {% for entity in arrivals %}
-                        {% include 'MBHPackageBundle:Report:porterRows.html.twig' with {'entity': entity, 'type': 'arrivals'} %}
-                    {% endfor %}
-                </tbody>
-            </table>
+                    {% include 'MBHPackageBundle:Report:porterBody.html.twig' with {'entities': arrivals, 'type': 'arrivals', 'statuses': statuses} %}
+
+
             {% else %}
                 <p>{{ 'report.porter.arrivals.empty'|trans({}, 'MBHPackageBundle') }}</p>
             {% endif %}
@@ -41,11 +38,10 @@
 
 
     <!-- LIVE -->
-
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Проживание
-                <small>({{ begin|mbh_format }} - {{ end|mbh_format }})</small>
+            <h3 class="panel-title">{{ 'report.porter.live.table'|trans({}, 'MBHPackageBundle') }}
+                ({{ begin|mbh_format }} - {{ end|mbh_format }})
             </h3>
         </div>
         <div class="panel-body">
@@ -60,16 +56,14 @@
                     <th class="td-md">{{ 'package.index.dates'|trans({}, 'MBHPackageBundle') }}</th>
                     <th>{{ 'package.index.placement'|trans({}, 'MBHPackageBundle') }}</th>
                     <th class="td-md">{{ 'package.index.guests'|trans({}, 'MBHPackageBundle') }}</th>
-                    <th class="td-md">{{ 'package.index.price'|trans({}, 'MBHPackageBundle') }}</th>
-                    <th class="td-md">Информация</th>
+                    <th class="td-md text-right">{{ 'package.index.price'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md text-right">{{ 'report.porter.live.debt'|trans({}, 'MBHPackageBundle') }}</th>
+                    <th class="td-md">{{ 'report.porter.live.departure'|trans({}, 'MBHPackageBundle') }}</th>
                 </tr>
                 </thead>
                 <tbody>
-                    {% for entity in lives %}
-                        {% include 'MBHPackageBundle:Report:porterRows.html.twig' with {'entity': entity, 'type': 'lives'} %}
-                    {% endfor %}
-                </tbody>
-            </table>
+                    {% include 'MBHPackageBundle:Report:porterBody.html.twig' with {'entities': lives, 'type': 'lives', 'statuses': statuses} %}
+
             {% else %}
                 <p>{{ 'report.porter.live.empty'|trans({}, 'MBHPackageBundle') }}</p>
             {% endif %}

@@ -1,0 +1,20 @@
+<div class="text-center alert alert-warning package-summary">
+    <span class="package-summary-row">
+        <b>Броней:</b> {{ summary.total }}
+    </span>
+    <span class="package-summary-row">
+        <b>Ночей:</b> {{ summary.nights }}
+    </span>
+    <span class="package-summary-row">
+        <b>Гостей:</b> {{ summary.guests }}
+    </span>
+    <span class="package-summary-row">
+        <b>Сумма:</b> {{ summary.price|number_format(2) }}
+    </span>
+    <span class="package-summary-row">
+        <b>Оплачено:</b> {{ summary.paid|number_format(2) }}
+    </span>
+    <span class="package-summary-row">
+        <b>Долг:</b> {{ summary.debt|number_format(2) }}
+    </span>
+</div>
