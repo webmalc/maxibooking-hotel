@@ -1,6 +1,7 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
+    - { resource: version.yml }
     - { resource: mbh.yml }
 
 framework:
