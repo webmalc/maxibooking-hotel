@@ -167,7 +167,7 @@ class FormConfig extends Base
     public function getPaymentTypes($online = true)
     {
         if (!$online) {
-            $this->paymentTypes = array_diff($this->paymentTypes, ["online_full", "online_first_day"]);
+            $this->paymentTypes = array_diff($this->paymentTypes, ["online_full", "online_first_day", "online_half"]);
         }
 
         return $this->paymentTypes;

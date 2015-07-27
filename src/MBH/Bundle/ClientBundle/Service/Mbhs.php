@@ -66,7 +66,7 @@ class Mbhs
 
         try {
             $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/sms/send');
-            $request->getQuery()->set('url', $this->request->getSchemeAndHttpHost());
+            $request->getQuery()->set('url', $this->getSchemeAndHttpHost());
             $request->getQuery()->set('key', $this->config['key']);
             $request->getQuery()->set('sms', $text);
             $request->getQuery()->set('phone', $phone);
@@ -123,7 +123,7 @@ class Mbhs
 
         try {
             $request = $this->guzzle->get(base64_decode($this->config['mbhs']) . 'client/login');
-            $request->getQuery()->set('url', $this->request->getSchemeAndHttpHost());
+            $request->getQuery()->set('url', $this->getSchemeAndHttpHost());
             $request->getQuery()->set('key', $this->config['key']);
             $request->getQuery()->set('ip', $ip);
 
@@ -146,6 +146,7 @@ class Mbhs
      */
     public function sendPackageInfo(Package $package, $ip)
     {
+        $ip = $this->getIp($ip);
         if (!$this->checkIp) {
             return false;
         }
@@ -154,7 +155,7 @@ class Mbhs
             $request = $this->guzzle
                 ->post(base64_decode($this->config['mbhs']) . 'client/package/log')
                 ->setBody(json_encode(array_merge($package->toArray(), [
-                    'url' => $this->request->getSchemeAndHttpHost(),
+                    'url' => $this->getSchemeAndHttpHost(),
                     'key' => $this->config['key'],
                     'ip' => $ip
                 ])))
@@ -171,5 +172,34 @@ class Mbhs
         }
 
         return $request;
+    }
+
+    /**
+     * @param $ip
+     * @return string
+     */
+    public function getIp($ip)
+    {
+        if (php_sapi_name() == 'cli' && !$ip) {
+            $host = gethostname();
+            $ip = gethostbyname($host);
+        }
+
+        return $ip;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSchemeAndHttpHost()
+    {
+        if (php_sapi_name() == 'cli') {
+            $result = $this->container->getParameter('router.request_context.scheme') . '://';
+            $result .= $this->container->getParameter('router.request_context.host');
+        } else {
+            $result = $this->request->getSchemeAndHttpHost();
+        }
+
+        return $result;
     }
 }
