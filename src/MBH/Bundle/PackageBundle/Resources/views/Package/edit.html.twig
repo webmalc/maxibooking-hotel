@@ -66,10 +66,14 @@
                             <div class="col-md-4">
                                 <strong>{{ 'package.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong></div>
                             <div class="col-md-8"><span
-                                        class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}</span>{% if entity.deletedAt %} &nbsp;
+                                        class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }} {% if entity.status == 'channel_manager' %}({{ entity.channelManagerType }}){% endif %}</span>
+
+                                {% if entity.deletedAt %} &nbsp;
                                 <small class="text-danger"><i
                                         class="fa fa-trash-o"> </i> {{ 'package.edit.deleted'|trans({}, 'MBHPackageBundle') }}
-                                </small>{% endif %}</div>
+                                </small>
+                                {% endif %}
+                            </div>
                         </div>
                         <div class="row spacer-top">
                             <div class="col-md-4">

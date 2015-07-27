@@ -57,6 +57,7 @@ twig:
           6: 'Сб'
           7: 'Вс'
         environment: "%mbh.environment%"
+        version: "%mbh.version%"
 
 # Assetic Configuration
 # Assetic Configuration

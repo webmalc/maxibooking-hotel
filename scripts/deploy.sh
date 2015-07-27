@@ -52,6 +52,11 @@ if [[ $2 == 'new' ]]; then
 
     echo -e "${GREEN}Move parameters.yml${NC}"
     ssh $SERVER $MOVE_PARAMS
+
+    echo -e "${GREEN}New permisssion${NC}"
+    ssh $SERVER 'chmod -R 777 '$FOLDER'protectedUpload'
+    ssh $SERVER 'chmod -R 777 '$FOLDER'web/upload'
+    ssh $SERVER 'chmod -R 777 '$FOLDER'web/media'
 fi
 
 echo -e "${GREEN}Start mbh:demo:apc${NC}"

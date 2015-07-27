@@ -77,7 +77,7 @@ class Builder extends ContainerAware
         $menu['reports']->addChild('report_user', ['route' => 'report_users', 'label' => 'Менеджеры'])
             ->setAttributes(['icon' => 'fa fa-user']);
         $menu['reports']->addChild('report_porter', ['route' => 'report_porter', 'label' => 'Портье'])
-            ->setAttributes(['icon' => 'fa fa-clock-o']);
+            ->setAttributes(['icon' => 'fa fa-bell-o']);
 
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
             ->setAttributes(['icon' => 'fa fa-file-archive-o']);*/
@@ -171,7 +171,7 @@ class Builder extends ContainerAware
                 ->getUser()
         ;
         if ($this->container->get('security.context')->isGranted('ROLE_ADMIN_HOTEL')) {
-            $menu->addChild('management', ['url' => 'http://google.ru', 'label' => '&nbsp;'])
+            $menu->addChild('management', ['url' => '#', 'label' => '&nbsp;'])
                     ->setAttributes([
                         'icon' => 'fa fa-gears fa-lg',
                         'id' => 'menu-toggle-link',
@@ -202,7 +202,13 @@ class Builder extends ContainerAware
                     'route' => 'user_profile',
                     'label' => 'Смена пароля'
                 ])
-                ->setAttributes(['divider_append' => true, 'icon' => 'fa fa-lock'])
+                ->setAttributes(['icon' => 'fa fa-lock'])
+        ;
+        $menu['login']->addChild('version', [
+            'route' => '_welcome',
+            'label' => 'Версия ' . $this->container->getParameter('mbh.version')
+        ])
+            ->setAttributes(['divider_append' => true, 'icon' => 'fa fa-info-circle'])
         ;
         $menu['login']->addChild('logout', ['route' => 'fos_user_security_logout', 'label' => 'Выйти'])
                 ->setAttribute('icon', 'fa fa-sign-out')
