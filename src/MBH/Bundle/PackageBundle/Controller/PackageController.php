@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PackageBundle\Form\OrderTouristType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -361,7 +362,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new PackageGuestType());
+        $form = $this->createForm(new OrderTouristType());
 
         if ($request->getMethod() == 'PUT' && $this->container->get('mbh.package.permissions')->check($entity)) {
             $form->submit($request);
@@ -369,28 +370,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             if ($form->isValid()) {
 
                 $data = $form->getData();
-                $criteria = [
-                    'firstName' => $data['firstName'],
-                    'lastName' => $data['lastName']
-                ];
-                if (!empty($data['patronymic'])) {
-                    $criteria['patronymic'] = $data['patronymic'];
-                }
-                if (!empty($data['birthday'])) {
-                    $criteria['birthday'] = $data['birthday'];
-                }
-
-                $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->findOneBy($criteria);
-
-                if (empty($tourist)) {
-                    $tourist = new Tourist();
-                    $tourist->setFirstName($data['firstName'])
-                        ->setLastName($data['lastName'])
-                        ->setPatronymic($data['patronymic'])
-                        ->setBirthday($data['birthday']);
-                    $this->dm->persist($tourist);
-                }
-
+                $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                    $data['lastName'], $data['firstName'], $data['patronymic'], $data['birthday'], $data['email'],
+                    $data['phone']
+                );
                 $entity->addTourist($tourist);
 
                 $this->dm->persist($entity);
@@ -417,15 +400,13 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
-     * @ParamConverter("tourist", class="MBHPackageBundle:Tourist")
+     * @ParamConverter("tourist", class="MBHPackageBundle:Tourist", options={"id" = "touristId"})
      */
     public function guestDeleteAction(Request $request, Package $entity, Tourist $tourist)
     {
         if (!$this->container->get('mbh.package.permissions')->check($entity) || !$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
-
-        //$tourist->removePackage($entity);
         $entity->removeTourist($tourist);
 
         $this->dm->persist($tourist);

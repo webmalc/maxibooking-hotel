@@ -35,7 +35,6 @@
                         <th class="td-sm">{{ 'package.guest.age'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-sm">{{ 'package.guest.passport'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-sm">{{ 'package.guest.address'|trans({}, 'MBHPackageBundle') }}</th>
-                        {#<th class="td-sm">{{ 'package.guest.main'|trans({}, 'MBHPackageBundle') }}</th>#}
                         <th class="td-md"></th>
                     </tr>
                     </thead>
@@ -65,13 +64,6 @@
                                     <span class="text-muted"><i class="fa fa-times"></i></span>
                                 {% endif %}
                             </td>
-                            {#<td class="text-center">
-                                {% if entity.order.mainTourist is not null and entity.order.mainTourist.id == tourist.id %}
-                                    <span class="text-success"><i class="fa fa-check"></i></span>
-                                {% else %}
-                                    <span class="text-muted"><i class="fa fa-times"></i></span>
-                                {% endif %}
-                            </td>#}
                             <td class="table-actions-td text-center">
                                 {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                                 <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}"
@@ -92,25 +84,10 @@
             {% endif %}
 
             {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
-                {#% if entity.tourists|length < totalGuests %#}
                     {{ form_start(form, {'action': path('package_guest', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
                     {{ form_widget(form) }}
                     {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity} %}
                     {{ form_end(form) }}
-                {#% else %}
-                    <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
-                        <div class="container">
-                            <ul class="nav navbar-nav navbar-right">
-                                <li>
-                                    <button data-href="{{ path('package_delete', {'id': entity.id}) }}"
-                                            class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"></i>
-                                        Удалить
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                {% endif %#}
             {% endif %}
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
 

@@ -11,6 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
+use Zend\Stdlib\JsonSerializable;
 
 /**
  * @ODM\Document(collection="Tourists", repositoryClass="MBH\Bundle\PackageBundle\Document\TouristRepository")
@@ -18,8 +19,50 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  */
-class Tourist extends Base implements PayerInterface
+class Tourist extends Base implements JsonSerializable, PayerInterface
 {
+    public function jsonSerialize()
+    {
+        return [
+            'firstName' => $this->firstName,
+            'lastName' => $this->lastName,
+            'patronymic' => $this->patronymic,
+            'birthday' => $this->birthday ? $this->birthday->format('d.m.Y') : null,
+            'phone' => $this->phone,
+            'email' => $this->email,
+        ];
+    }
+
+    /**
+     * Cleans phone numbers
+     * @param $phone
+     * @return string
+     */
+    public static function cleanPhone($phone)
+    {
+        return preg_replace("/[^0-9]/", "", $phone);
+    }
+
+    /**
+     * Returns formatted phone number
+     * @param string $phone
+     * @param boolean $original
+     * @return string
+     */
+    public static function formatPhone($phone, $original = false)
+    {
+        $phone = self::cleanPhone($phone);
+
+        if ($original || strlen($phone) < 7) {
+            return $phone;
+        } else {
+            return empty($phone) ? null : '+ ' . substr($phone, 0, strlen($phone) - 7) . ' ' .
+                substr($phone, -7, 3) . '-' .
+                substr($phone, -4, 2) . '-' .
+                substr($phone, -2, 2);
+        }
+    }
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -31,7 +74,7 @@ class Tourist extends Base implements PayerInterface
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -47,17 +90,12 @@ class Tourist extends Base implements PayerInterface
      * @ODM\ReferenceMany(targetDocument="Package", nullable="true", mappedBy="tourists")
      */
     public $packages;
-    
-    /**
-     * @ODM\ReferenceMany(targetDocument="Package", nullable="true", mappedBy="mainTourist")
-     */
-    public $mainPackages;
 
     /**
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="payer")
      */
     protected $cashDocuments;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -71,7 +109,7 @@ class Tourist extends Base implements PayerInterface
      * )
      */
     protected $firstName;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -85,7 +123,7 @@ class Tourist extends Base implements PayerInterface
      * )
      */
     protected $lastName;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -98,14 +136,14 @@ class Tourist extends Base implements PayerInterface
      * )
      */
     protected $patronymic;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\String(name="fullName")
      */
     protected $fullName;
-    
+
     /**
      * @var \DateTime
      * @Gedmo\Versioned
@@ -113,44 +151,18 @@ class Tourist extends Base implements PayerInterface
      * @Assert\Date()
      */
     protected $birthday;
-    
+
     /**
      * @var \string
      * @Gedmo\Versioned
      * @ODM\String(name="sex")
      * @Assert\Choice(
-     *      choices = {"male", "female", "unknown"}, 
+     *      choices = {"male", "female", "unknown"},
      *      message =  "validator.document.Tourist.wrong_gender"
      * )
      */
     protected $sex = 'unknown';
-    
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="address")
-     * @Assert\Length(
-     *      min=2,
-     *      minMessage= "validator.document.Tourist.min_address",
-     *      max=100,
-     *      maxMessage= "validator.document.Tourist.max_address"
-     * )
-     */
-    //protected $address;
-    
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="document")
-     * @Assert\Length(
-     *      min=2,
-     *      minMessage= "validator.document.Tourist.min_document",
-     *      max=100,
-     *      maxMessage= "validator.document.Tourist.max_document"
-     * )
-     */
-    //protected $document;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -191,7 +203,7 @@ class Tourist extends Base implements PayerInterface
      * @Assert\Email()
      */
     protected $email;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -243,7 +255,7 @@ class Tourist extends Base implements PayerInterface
      */
     public function setFirstName($firstName)
     {
-        $this->firstName = $firstName;
+        $this->firstName = mb_convert_case(mb_strtolower($firstName), MB_CASE_TITLE);
         return $this;
     }
 
@@ -257,9 +269,9 @@ class Tourist extends Base implements PayerInterface
         if ($this->firstName == 'н/д') {
             return '';
         }
-        return $this->firstName;
+        return mb_convert_case(mb_strtolower($this->firstName), MB_CASE_TITLE);
     }
-    
+
     /**
      * @param string $fullName
      * @return self
@@ -286,7 +298,7 @@ class Tourist extends Base implements PayerInterface
      */
     public function setLastName($lastName)
     {
-        $this->lastName = $lastName;
+        $this->lastName = mb_convert_case(mb_strtolower($lastName), MB_CASE_TITLE);
         return $this;
     }
 
@@ -301,7 +313,7 @@ class Tourist extends Base implements PayerInterface
             return '';
         }
 
-        return $this->lastName;
+        return mb_convert_case(mb_strtolower($this->lastName), MB_CASE_TITLE);
     }
 
     /**
@@ -312,7 +324,7 @@ class Tourist extends Base implements PayerInterface
      */
     public function setPatronymic($patronymic)
     {
-        $this->patronymic = $patronymic;
+        $this->patronymic = mb_convert_case(mb_strtolower($patronymic), MB_CASE_TITLE);
         return $this;
     }
 
@@ -323,7 +335,7 @@ class Tourist extends Base implements PayerInterface
      */
     public function getPatronymic()
     {
-        return $this->patronymic;
+        return mb_convert_case(mb_strtolower($this->patronymic), MB_CASE_TITLE);
     }
 
     /**
@@ -371,19 +383,6 @@ class Tourist extends Base implements PayerInterface
     }
 
     /**
-     * Set address
-     *
-     * @deprecated
-     * @param string $address
-     * @return self
-     */
-    public function setAddress($address)
-    {
-        //$this->address = $address;
-        return $this;
-    }
-
-    /**
      * Get address
      *
      * @return string $address
@@ -423,26 +422,27 @@ class Tourist extends Base implements PayerInterface
      */
     public function setPhone($phone)
     {
-        $this->phone = $phone;
+        $this->phone = self::cleanPhone($phone);
         return $this;
     }
 
     /**
      * Get phone
-     *
+     * @param boolean $original
      * @return string $phone
      */
-    public function getPhone()
+    public function getPhone($original=false)
     {
-        return $this->phone;
+        return self::formatPhone($this->phone, $original);
     }
 
     /**
+     * @param boolean $original
      * @return string
      */
-    public function getMobilePhone()
+    public function getMobilePhone($original=false)
     {
-        return $this->mobilePhone;
+        return self::formatPhone($this->mobilePhone, $original);
     }
 
     /**
@@ -450,7 +450,7 @@ class Tourist extends Base implements PayerInterface
      */
     public function setMobilePhone($mobilePhone)
     {
-        $this->mobilePhone = $mobilePhone;
+        $this->mobilePhone = self::cleanPhone($mobilePhone);;
     }
 
     /**
@@ -512,7 +512,7 @@ class Tourist extends Base implements PayerInterface
     {
         return $this->note;
     }
-    
+
     /**
      * Gender guess
      * @return "unknown"|"male"|"female"
@@ -520,7 +520,7 @@ class Tourist extends Base implements PayerInterface
     public function guessGender()
     {
         $end = mb_substr($this->getPatronymic(), -2, 2, 'UTF-8');
-        
+
         $gender = 'unknown';
         if ($end == 'ич' || $end == 'лы') {
             $gender = 'male';
@@ -528,37 +528,41 @@ class Tourist extends Base implements PayerInterface
         if ($end == 'на' || $end == 'зы') {
             $gender = 'female';
         }
-        
+
         return $gender;
     }
-    
+
     /**
      * @ODM\PrePersist
      */
     public function prePersist()
     {
-        if(empty($this->sex) || $this->sex  == 'unknown') {
+        if (empty($this->sex) || $this->sex == 'unknown') {
             $this->sex = $this->guessGender();
         }
-        
+
         $this->fullName = $this->generateFullName();
     }
-    
+
     /**
      * @ODM\preUpdate
      */
     public function preUpdate()
     {
+        if (empty($this->sex) || $this->sex == 'unknown') {
+            $this->sex = $this->guessGender();
+        }
+
         $this->fullName = $this->generateFullName();
     }
-    
+
     /**
      * @return string
      */
     public function generateFullName()
     {
         $name = $this->getLastName() . ' ' . $this->getFirstName();
-        
+
         return (empty($this->getPatronymic())) ? $name : $name . ' ' . $this->getPatronymic();
     }
 
@@ -567,15 +571,14 @@ class Tourist extends Base implements PayerInterface
      */
     public function generateFullNameWithAge()
     {
-        return $this->generateFullName(). ($this->getBirthday() ? ' ('.$this->getBirthday()->format('d.m.Y').'), возраст: '.$this->getAge() : '');
+        return $this->generateFullName() . ($this->getBirthday() ? ' (' . $this->getBirthday()->format('d.m.Y') . '), возраст: ' . $this->getAge() : '');
     }
 
     public function __construct()
     {
         $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->mainPackages = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
      * Add package
      *
@@ -607,45 +610,15 @@ class Tourist extends Base implements PayerInterface
     }
 
     /**
-     * Add mainPackage
-     *
-     * @param \MBH\Bundle\PackageBundle\Document\Package $mainPackage
-     */
-    public function addMainPackage(\MBH\Bundle\PackageBundle\Document\Package $mainPackage)
-    {
-        $this->mainPackages[] = $mainPackage;
-    }
-
-    /**
-     * Remove mainPackage
-     *
-     * @param \MBH\Bundle\PackageBundle\Document\Package $mainPackage
-     */
-    public function removeMainPackage(\MBH\Bundle\PackageBundle\Document\Package $mainPackage)
-    {
-        $this->mainPackages->removeElement($mainPackage);
-    }
-
-    /**
-     * Get mainPackages
-     *
-     * @return \Doctrine\Common\Collections\Collection $mainPackages
-     */
-    public function getMainPackages()
-    {
-        return $this->mainPackages;
-    }
-    
-    /**
      * Get age
-     * @return int 
+     * @return int
      */
     public function getAge()
     {
         if ($this->getBirthday()) {
             $now = new \DateTime();
             $diff = $now->diff($this->getBirthday());
-            
+
             return $diff->y;
         }
 
@@ -810,7 +783,7 @@ class Tourist extends Base implements PayerInterface
      */
     public function preSave()
     {
-        if($this->getAddressObjectDecomposed() && $this->getAddressObjectDecomposed()->getCountry() && $this->getAddressObjectDecomposed()->getRegion())
+        if ($this->getAddressObjectDecomposed() && $this->getAddressObjectDecomposed()->getCountry() && $this->getAddressObjectDecomposed()->getRegion())
             $this->fillAddressObject();
     }
 
@@ -827,7 +800,7 @@ class Tourist extends Base implements PayerInterface
         ];
 
         $chain = array_map('strval', $chain);
-        if(($lastKey = array_search('', $chain)) !== false)
+        if (($lastKey = array_search('', $chain)) !== false)
             $chain = array_slice($chain, 0, $lastKey);
 
         $this->setAddressObjectCombined(implode(' ', $chain));

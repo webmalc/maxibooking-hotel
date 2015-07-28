@@ -69,63 +69,68 @@ class TouristRepository extends DocumentRepository
         $note = null
     ) {
         $dm = $this->getDocumentManager();
+        $tourist  = null;
+        $lastName = mb_convert_case(mb_strtolower($lastName), MB_CASE_TITLE);
+        $firstName = mb_convert_case(mb_strtolower($firstName), MB_CASE_TITLE);
+        !$patronymic ?: $patronymic = mb_convert_case(mb_strtolower($patronymic), MB_CASE_TITLE);
+        !$phone ?: $phone = Tourist::cleanPhone($phone);
 
         // find tourist
         if ($email || $birthday || $phone) {
-            $qb = $this->createQueryBuilder('q')
+            $qb = $this->createQueryBuilder()
                 ->field('lastName')->equals($lastName)
-                ->field('firstName')->equals($firstName);
-            if ($patronymic) {
-                $qb->field('patronymic')->equals($patronymic);
-            }
+                ->field('firstName')->equals($firstName)
+                ->field('deletedAt')->equals(null)
+            ;
+
             if (!empty($email)) {
                 $qb->addOr($qb->expr()->field('email')->equals($email));
             }
             if (!empty($phone)) {
                 $qb->addOr($qb->expr()->field('phone')->equals($phone));
+                $qb->addOr($qb->expr()->field('mobilePhone')->equals($phone));
             }
             if (!empty($birthday)) {
                 $qb->addOr($qb->expr()->field('birthday')->equals($birthday));
             }
-
             $tourist = $qb->getQuery()->getSingleResult();
-
-            if ($tourist) {
-                if ($phone) {
-                    $tourist->setPhone($phone);
-                }
-                if ($birthday) {
-                    $tourist->setBirthday($birthday);
-                }
-                if ($email) {
-                    $tourist->setEmail($email);
-                }
-                if ($address) {
-                    $tourist->setAddress($address);
-                }
-                if ($note) {
-                    $tourist->setNote($note);
-                }
-                $dm->persist($tourist);
-                $dm->flush($tourist);
-
-                return $tourist;
-            }
-
         }
 
-        // create tourist
-        $tourist = new Tourist();
-        $tourist->setLastName($lastName)
-            ->setFirstName($firstName)
-            ->setPatronymic($patronymic)
-            ->setEmail($email)
-            ->setPhone($phone)
-            ->setAddress($address)
-            ->setNote($note);
+        // empty tourist
+        if (!$tourist) {
+            $qb = $this->createQueryBuilder()
+                ->field('lastName')->equals($lastName)
+                ->field('firstName')->equals($firstName)
+                ->field('deletedAt')->equals(null)
+                ->field('email')->equals(null)
+                ->field('phone')->equals(null)
+                ->field('birthday')->equals(null)
+            ;
 
+            $tourist = $qb->getQuery()->getSingleResult();
+        }
+        // new tourist
+        if (!$tourist || $tourist->getDeletedAt()) {
+            $tourist = new Tourist();
+            $tourist->setLastName($lastName)
+                ->setFirstName($firstName)
+            ;
+        }
+
+        if ($patronymic) {
+            $tourist->setPatronymic($patronymic);
+        }
+        if ($email) {
+            $tourist->setEmail($email);
+        }
+        if ($phone) {
+            $tourist->setPhone($phone);
+        }
         if ($birthday) {
             $tourist->setBirthday($birthday);
+        }
+        if ($note || $address) {
+            $tourist->setNote($address ?  'Address: ' . $address . "\n\n" . $note : $note);
         }
 
         $dm->persist($tourist);

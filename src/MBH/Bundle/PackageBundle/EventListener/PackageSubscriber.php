@@ -5,6 +5,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
@@ -169,11 +170,17 @@ class PackageSubscriber implements EventSubscriber
 
                     foreach ($relatedPackages as $relatedPackage) {
 
-                        if (!$relatedPackage instanceof Package) {
+                        if ($relatedPackage instanceof PackageService) {
                             $relatedPackage = $relatedPackage->getPackage();
                         }
 
-                        $relatedPackagesIds[] = $relatedPackage->getNumberWithPrefix();
+                        if ($relatedPackage instanceof Order) {
+                            foreach ($relatedPackage->getPackages() as $d) {
+                                $relatedPackagesIds[] = $d->getNumberWithPrefix();
+                            }
+                        } else {
+                            $relatedPackagesIds[] = $relatedPackage->getNumberWithPrefix();
+                        }
                     }
                     throw new DeleteException($this->container->get('translator')->trans('eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations') . ' ' . implode(', ', $relatedPackagesIds));
                 }

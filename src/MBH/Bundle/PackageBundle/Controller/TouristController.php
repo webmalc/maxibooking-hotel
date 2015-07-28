@@ -50,6 +50,7 @@ class TouristController extends Controller
             ->createQueryBuilder('r')
             ->skip($request->get('start'))
             ->limit($request->get('length'))
+            ->field('deletedAt')->equals(null)
             ->sort('fullName', 'asc');
 
         $search = $request->get('search')['value'];
@@ -309,6 +310,19 @@ class TouristController extends Controller
         return $this->deleteEntity($id, 'MBHPackageBundle:Tourist', 'tourist');
     }
 
+    /**
+     * Get city by query
+     *
+     * @Route("/get/{id}/json", name="json_tourist", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_BOOKKEEPER'])")
+     * @ParamConverter("tourist", class="MBHPackageBundle:Tourist")
+     * @return JsonResponse
+     */
+    public function jsonEntryAction(Tourist $tourist)
+    {
+        return new JsonResponse($tourist);
+    }
 
     /**
      * Get city by query
