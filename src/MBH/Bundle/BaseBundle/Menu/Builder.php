@@ -64,20 +64,22 @@ class Builder extends ContainerAware
         
         $menu['reports']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Размещение'])
             ->setAttributes(['icon' => 'fa fa-table']);
-        $menu['reports']->addChild('organizations', ['route' => 'organizations', 'label' => 'Организации'])
-            ->setAttributes(['icon' => 'fa fa-users']);
-        $menu['reports']->addChild('clients', ['route' => 'tourist', 'label' => 'Клиенты'])
-            ->setAttributes(['icon' => 'fa fa-male']);
-        $menu['reports']->addChild('analytics', ['route' => 'analytics', 'label' => 'Аналитика'])
-            ->setAttributes(['icon' => 'fa fa-bar-chart']);
+        $menu['reports']->addChild('report_porter', ['route' => 'report_porter', 'label' => 'Портье'])
+            ->setAttributes(['icon' => 'fa fa-bell']);
         $menu['reports']->addChild('service_list', ['route' => 'service_list', 'label' => 'Услуги'])
             ->setAttributes(['icon' => 'fa fa-plug']);
-        $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'Оценки'])
-            ->setAttributes(['icon' => 'fa fa-star']);
+        $menu['reports']->addChild('clients', ['route' => 'tourist', 'label' => 'Клиенты'])
+            ->setAttributes(['icon' => 'fa fa-male']);
+        $menu['reports']->addChild('organizations', ['route' => 'organizations', 'label' => 'Организации'])
+            ->setAttributes(['icon' => 'fa fa-users']);
         $menu['reports']->addChild('report_user', ['route' => 'report_users', 'label' => 'Менеджеры'])
             ->setAttributes(['icon' => 'fa fa-user']);
-        $menu['reports']->addChild('report_porter', ['route' => 'report_porter', 'label' => 'Портье'])
-            ->setAttributes(['icon' => 'fa fa-bell-o']);
+        $menu['reports']->addChild('analytics', ['route' => 'analytics', 'label' => 'Аналитика'])
+            ->setAttributes(['icon' => 'fa fa-bar-chart']);
+        $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'Оценки'])
+            ->setAttributes(['icon' => 'fa fa-star']);
+
+
 
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
             ->setAttributes(['icon' => 'fa fa-file-archive-o']);*/

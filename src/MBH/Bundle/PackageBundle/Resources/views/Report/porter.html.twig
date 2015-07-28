@@ -20,7 +20,7 @@
                 <input type="text" name="end" id="porter-report-filter-end"
                        class="datepicker porter-report-filter end-datepiker not-set-date form-control input-sm"
                        data-date-format="dd.mm.yyyy"
-                       value="{{ app.request.get('end') is empty ?  'now'|date_modify("+1 day")|date('d.m.Y') : app.request.get('end') }}">
+                       value="{{ app.request.get('end') is empty ?  'now'|date('d.m.Y') : app.request.get('end') }}">
             </div>
 
             {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}

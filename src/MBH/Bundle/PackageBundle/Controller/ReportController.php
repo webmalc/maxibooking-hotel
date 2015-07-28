@@ -343,13 +343,16 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                             }
 
                             //name
-                            if ($nights < 3 || !$package->getMainTourist()) {
+                            if (!$package->getMainTourist()) {
                                 $name = $package->getNumberWithPrefix();
                             } else {
                                 $name = $package->getMainTourist()->getLastNameWithInitials();
                             }
-                            $name = mb_substr($name, 0, $nights * 4);
-                            $padding = round(($nights * 47 - mb_strlen($name) * 5) / 2) + 18;
+
+                            if (mb_strlen($name) > $nights * 5) {
+                                $name = mb_substr($name, 0, $nights * 5) . '.';
+                            }
+                            $padding = round(($nights * 47 - mb_strlen($name) * 5) / 2) + 16;
 
                             $packageInfo[] = [
                                 'doc' => $package,
