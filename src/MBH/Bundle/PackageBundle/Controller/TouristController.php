@@ -343,8 +343,12 @@ class TouristController extends Controller
             if ($payer) {
                 $text = $payer->getFullName();
 
-                if (!empty($payer->getBirthday())) {
-                    $text .= ' (' . $payer->getBirthday()->format('d.m.Y') . ')';
+                if ($payer->getBirthday() || $payer->getPhone() || $payer->getEmail()) {
+                    $pieces = [];
+                    !$payer->getBirthday() ?: $pieces[] = $payer->getBirthday()->format('d.m.Y');
+                    !$payer->getPhone() ?: $pieces[] = $payer->getPhone();
+                    !$payer->getEmail() ?: $pieces[] = $payer->getEmail();
+                    $text .= ' (' . implode(', ', $pieces) . ')';
                 }
 
                 return new JsonResponse([
@@ -354,18 +358,26 @@ class TouristController extends Controller
             }
         }
 
-        $payers = $this->dm->getRepository('MBHPackageBundle:Tourist')->createQueryBuilder('q')
-            ->field('fullName')->equals(new \MongoRegex('/.*' . $request->get('query') . '.*/i'))
+        $regex = new \MongoRegex('/.*' . $request->get('query') . '.*/i');
+        $qb = $this->dm->getRepository('MBHPackageBundle:Tourist')->createQueryBuilder('q')
             ->sort(['fullName' => 'asc', 'birthday' => 'desc'])
-            ->getQuery()
-            ->execute();
+        ;
+        $qb->addOr($qb->expr()->field('fullName')->equals($regex));
+        $qb->addOr($qb->expr()->field('email')->equals($regex));
+        $qb->addOr($qb->expr()->field('phone')->equals($regex));
+
+        $payers = $qb->getQuery()->execute();
 
         $data = [];
 
         foreach ($payers as $payer) {
             $text = $payer->getFullName();
-            if (!empty($payer->getBirthday())) {
-                $text .= ' (' . $payer->getBirthday()->format('d.m.Y') . ')';
+            if ($payer->getBirthday() || $payer->getPhone() || $payer->getEmail()) {
+                $pieces = [];
+                !$payer->getBirthday() ?: $pieces[] = $payer->getBirthday()->format('d.m.Y');
+                !$payer->getPhone() ?: $pieces[] = $payer->getPhone();
+                !$payer->getEmail() ?: $pieces[] = $payer->getEmail();
+                $text .= ' (' . implode(', ', $pieces) . ')';
             }
 
             $data[] = [
