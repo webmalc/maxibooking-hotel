@@ -151,7 +151,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         $packages = $qb->getQuery()->execute();
 
-        $data = $dates = $total = $allTotal = [];
+        $data = $dates = $total = $allTotal = $dayTotal = [];
 
         $default = [
             'sold' => 0,
@@ -180,27 +180,31 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             if (empty($total[$user])) {
                 $total[$user] = $default;
             }
+            if (empty($dayTotal[$day])) {
+                $dayTotal[$day] = $default;
+            }
             foreach ($package->getServices() as $packageService) {
                 $data[$user][$day]['services'] += $packageService->getTotalAmount();
                 $total[$user]['services'] += $packageService->getTotalAmount();
             }
 
-            $data[$user][$day]['sold']++;
-            $data[$user][$day]['packagePrice'] += $package->getPackagePrice();
-            $data[$user][$day]['price'] += $package->getPrice();
-            $data[$user][$day]['servicesPrice'] += $package->getServicesPrice();
-            $data[$user][$day]['paid'] += $package->getPaid();
+            $add = function($entry, $package) {
+                $entry['sold']++;
+                $entry['packagePrice'] += $package->getPackagePrice();
+                $entry['price'] += $package->getPrice();
+                $entry['servicesPrice'] += $package->getServicesPrice();
+                $entry['paid'] += $package->getPaid();
 
-            $total[$user]['sold']++;
-            $total[$user]['price'] += $package->getPackagePrice();
-            $total[$user]['packagePrice'] += $package->getPrice();
-            $total[$user]['servicesPrice'] += $package->getServicesPrice();
-            $total[$user]['paid'] += $package->getPaid();
+                return $entry;
+            };
 
+            $data[$user][$day] = $add($data[$user][$day], $package);
+            $total[$user] = $add($total[$user], $package);
+            $dayTotal[$day] = $add($dayTotal[$day], $package);
 
         }
         $allTotal = $default;
-        foreach ($total as $tData) {
+        foreach ($total as $i => $tData) {
             foreach ($tData as $k => $val) {
                 if ($k != 'date') {
                     $allTotal[$k] += $val;
@@ -210,6 +214,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         return [
             'allTotal' => $allTotal,
+            'dayTotal' => $dayTotal,
             'begin' => $begin,
             'end' => $end,
             'data' => $data,

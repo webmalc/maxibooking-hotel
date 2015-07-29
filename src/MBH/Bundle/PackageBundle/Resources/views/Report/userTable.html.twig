@@ -4,11 +4,11 @@
     </div>
 {% else %}
     {% set cats = {
-    'sold': 'Реализовано номеров',
+    'sold': 'Реализовано броней',
     'services': 'Реализовано услуг',
-    'price': 'Стоимость номеров',
+    'packagePrice': 'Стоимость проживания',
     'servicesPrice': 'Стоимость услуг',
-    'packagePrice': 'Стоимость броней',
+    'price': 'Стоимость броней',
     'paid': 'Получено'
     } %}
 
@@ -74,13 +74,35 @@
         <td colspan="{{ dates|length + 2 }}"><strong>Все пользователи</strong></td>
         </tr>
 
+        <tr class="header">
+            <td class="first-th"></td>
+            {% for date in dates %}
+                <td {% if date|date('N') >= 6 %}class="text-danger"{% endif %}>{{ date|mbh_format }}</td>
+            {% endfor %}
+            <td>Итого</td>
+        </tr>
+
         {% for categoryId, category in cats %}
             <tr>
                 <td class="first-td">
                     <small>{{ category }}</small>
                 </td>
                 {% for day, date in dates %}
-                    <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}"></td>
+
+                    {% if attribute(dayTotal, day) is defined %}
+                        {% set info =  attribute(dayTotal, day) %}
+                    {% else %}
+                        {% set info = null %}
+                    {% endif %}
+                    <td class="content {% if date|date('N') >= 6 %} weekend{% endif %}">
+                        {% if info %}
+                            {% if categoryId == 'price' or categoryId == 'servicesPrice' or categoryId == 'paid' or categoryId == "packagePrice" %}
+                                {{ attribute(info, categoryId)|number_format(2) }}
+                            {% else %}
+                                {{ attribute(info, categoryId) }}
+                            {% endif %}
+                        {% endif %}
+                    </td>
                 {% endfor %}
                 <td class="content-total">
                     <strong>

@@ -405,7 +405,7 @@ class Booking extends Base
                     if (isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])) {
                         $info = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
                         $data[$roomType['syncId']][$day->format('Y-m-d')] = [
-                            'roomstosell' => $info->getLeftRooms()
+                            'roomstosell' => $info->getLeftRooms() > 0 ? $info->getLeftRooms() : 0
                         ];
                     } else {
                         $data[$roomType['syncId']][$day->format('Y-m-d')] = [

@@ -82,7 +82,7 @@ class RoomType extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\Regex(pattern="/^[a-zA-Z0-9 \(\)-]+$/", message="validator.document.roomType.internationalTitle.only_english")
+     * @Assert\Regex(pattern="/^[^А-Яа-я]+$/iu", message="validator.document.roomType.internationalTitle.only_english")
      */
     protected $internationalTitle;
 
