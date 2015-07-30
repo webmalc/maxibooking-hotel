@@ -26,40 +26,40 @@ class FixturesCommand extends ContainerAwareCommand
      */
     private $serviceCategories = [
       'Питание' => [
-          'Breakfast' => ['name' => 'Завтрак', 'calcType' => 'per_night'],
-          'Continental breakfast' => ['name' => 'Континентальный завтрак', 'calcType' => 'per_night'],
-          'American breakfast' => ['name' => 'Американский завтрак', 'calcType' => 'per_night'],
-          'Buffet breakfast' => ['name' => 'Завтрак-буфет', 'calcType' => 'per_night'],
-          'Full english breakfast' => ['name' => 'Полный английский завтрак', 'calcType' => 'per_night'],
-          'Lunch' => ['name' => 'Обед', 'calcType' => 'per_night'],
-          'Dinner' => ['name' => 'Ужин', 'calcType' => 'per_night'],
-          'Half board' => ['name' => 'Полупансион', 'calcType' => 'per_night'],
-          'Full board' => ['name' => 'Полный пансион', 'calcType' => 'per_night'],
-          'Breakfast for Children' => ['name' => 'Детский завтрак', 'calcType' => 'per_night'],
-          'Continental breakfast for Children' => ['name' => 'Детский континентальный завтрак', 'calcType' => 'per_night'],
-          'American breakfast for Children' => ['name' => 'Детский американский завтрак', 'calcType' => 'per_night'],
-          'Buffet breakfast for Children' => ['name' => 'Детский завтрак-буфет', 'calcType' => 'per_night'],
-          'Full english breakfast for Children' => ['name' => 'Детский полный английский завтрак', 'calcType' => 'per_night'],
-          'Lunch for Children' => ['name' => 'Детский обед', 'calcType' => 'per_night'],
-          'Dinner for Children' => ['name' => 'Детский ужин', 'calcType' => 'per_night'],
-          'Half board for Children' => ['name' => 'Детский полупансион', 'calcType' => 'per_night'],
-          'Full board for Children' => ['name' => 'Детский полный пансион', 'calcType' => 'per_night'],
+          'Breakfast' => ['name' => 'Завтрак', 'calcType' => 'per_night', 'enabled' => false],
+          'Continental breakfast' => ['name' => 'Континентальный завтрак', 'calcType' => 'per_night', 'enabled' => false],
+          'American breakfast' => ['name' => 'Американский завтрак', 'calcType' => 'per_night', 'enabled' => false],
+          'Buffet breakfast' => ['name' => 'Завтрак-буфет', 'calcType' => 'per_night', 'enabled' => false],
+          'Full english breakfast' => ['name' => 'Полный английский завтрак', 'calcType' => 'per_night', 'enabled' => false],
+          'Lunch' => ['name' => 'Обед', 'calcType' => 'per_night', 'enabled' => false],
+          'Dinner' => ['name' => 'Ужин', 'calcType' => 'per_night', 'enabled' => false],
+          'Half board' => ['name' => 'Полупансион', 'calcType' => 'per_night', 'enabled' => false],
+          'Full board' => ['name' => 'Полный пансион', 'calcType' => 'per_night', 'enabled' => false],
+          'Breakfast for Children' => ['name' => 'Детский завтрак', 'calcType' => 'per_night', 'enabled' => false],
+          'Continental breakfast for Children' => ['name' => 'Детский континентальный завтрак', 'calcType' => 'per_night', 'enabled' => false],
+          'American breakfast for Children' => ['name' => 'Детский американский завтрак', 'calcType' => 'per_night', 'enabled' => false],
+          'Buffet breakfast for Children' => ['name' => 'Детский завтрак-буфет', 'calcType' => 'per_night', 'enabled' => false],
+          'Full english breakfast for Children' => ['name' => 'Детский полный английский завтрак', 'calcType' => 'per_night', 'enabled' => false],
+          'Lunch for Children' => ['name' => 'Детский обед', 'calcType' => 'per_night', 'enabled' => false],
+          'Dinner for Children' => ['name' => 'Детский ужин', 'calcType' => 'per_night', 'enabled' => false],
+          'Half board for Children' => ['name' => 'Детский полупансион', 'calcType' => 'per_night', 'enabled' => false],
+          'Full board for Children' => ['name' => 'Детский полный пансион', 'calcType' => 'per_night', 'enabled' => false],
       ],
       'Размещение' => [
-          'Extrabed' => ['name' => 'Дополнительная кровать', 'calcType' => 'per_night'],
-          'Infant' => ['name' => 'Инфант', 'calcType' => 'per_night'],
-          'Early check-in'  => ['name' => 'Ранний заезд', 'calcType' => 'day_percent'],
-          'Late check-out'  => ['name' => 'Поздний выезд', 'calcType' => 'day_percent'],
+          'Extrabed' => ['name' => 'Дополнительная кровать', 'calcType' => 'per_night', 'enabled' => true],
+          'Infant' => ['name' => 'Инфант', 'calcType' => 'per_night', 'enabled' => true],
+          'Early check-in'  => ['name' => 'Ранний заезд', 'calcType' => 'day_percent', 'enabled' => true],
+          'Late check-out'  => ['name' => 'Поздний выезд', 'calcType' => 'day_percent', 'enabled' => true],
       ],
       'Опции' => [
-          'WiFi' => ['name' => 'WiFi', 'calcType' => 'per_night'],
-          'Internet' => ['name' => 'Интернет', 'calcType' => 'per_night'],
-          'Parking space' => ['name' => 'Парковка', 'calcType' => 'per_night'],
-          'Babycot' => ['name' => 'Детская кровать', 'calcType' => 'per_night'],
+          'WiFi' => ['name' => 'WiFi', 'calcType' => 'per_night', 'enabled' => false],
+          'Internet' => ['name' => 'Интернет', 'calcType' => 'per_night', 'enabled' => false],
+          'Parking space' => ['name' => 'Парковка', 'calcType' => 'per_night', 'enabled' => false],
+          'Babycot' => ['name' => 'Детская кровать', 'calcType' => 'per_night', 'enabled' => false],
 
       ],
       'Трансфер' => [
-            'Transfer' => ['name' => 'Трансфер', 'calcType' => 'not_applicable', 'date' => true, 'time' => true]
+            'Transfer' => ['name' => 'Трансфер', 'calcType' => 'not_applicable', 'date' => true, 'time' => true, 'enabled' => false]
       ]
     ];
 
@@ -266,7 +266,7 @@ class FixturesCommand extends ContainerAwareCommand
                     $service = new Service;
                     $service->setCode($code)
                             ->setSystem(true)
-                            ->setIsEnabled(true)
+                            ->setIsEnabled($info['enabled'])
                             ->setFullTitle($info['name'])
                             ->setPrice(0)
                             ->setCalcType($info['calcType'])
