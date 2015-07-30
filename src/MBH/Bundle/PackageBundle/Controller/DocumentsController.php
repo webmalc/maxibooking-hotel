@@ -23,6 +23,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 
 /**
  * @Route("/")
@@ -30,7 +32,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
  *
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class DocumentsController extends Controller
+class DocumentsController extends Controller implements CheckHotelControllerInterface, DeletableControllerInterface
 {
     /**
      * @param Request $request
@@ -192,7 +194,7 @@ class DocumentsController extends Controller
         $orderDocument = $entity->getDocument($name);
         $permissions = $this->container->get('mbh.package.permissions');
         
-        if (!$orderDocument || !$permissions->checkHotel($entity)) {
+        if (!$orderDocument || !$permissions->checkHotel($entity) || $package->getDeletedAt()) {
             throw $this->createNotFoundException();
         }
 

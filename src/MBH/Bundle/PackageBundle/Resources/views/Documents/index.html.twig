@@ -2,7 +2,7 @@
 
 {% set small_title = 'package.guest.edit_reservation'|trans({}, 'MBHPackageBundle') ~ package.numberWithPrefix %}
 
-{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.guest.deleted'|trans({}, 'MBHPackageBundle')~'</span>' %}{% endif %}
+{% if package.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~ ' (' ~ package.deletedAt|date('d.m.Y H:i') ~ ') </span>' %}{% endif %}
 
 {% block content %}
 
@@ -78,8 +78,9 @@
                                        data-toggle="tooltip">
                                         <i class="fa fa-download"></i>
                                     </a>
+                                    {% if package.deletedAt is empty %}
                                     <a rel="main" href="{{ path('order_document_edit',  {'id': entity.id, 'packageId': package.id, 'name': document.name}) }}"
-                                       class="btn btn-success btn-xs  {#remove-package-document#}">
+                                       class="btn btn-success btn-xs">
                                         <i class="fa fa-pencil-square-o"></i>
                                     </a>
                                     <a href="{{ path('order_remove_document', {'id': entity.id, 'packageId': package.id, 'name': document.name}) }}"
@@ -87,9 +88,10 @@
                                        data-toggle="tooltip"
                                        data-package="{{ entity.id }}"
                                        data-text="{{ 'controller.documentsController.confirm_remove'|trans({'%filename%': document.originalName}) }}"
-                                       class="btn btn-danger btn-xs delete-link  {#remove-package-document#}">
+                                       class="btn btn-danger btn-xs delete-link">
                                         <i class="fa fa-trash-o"></i>
                                     </a>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -103,7 +105,7 @@
                 </div>
             {% endif %}
 
-            {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
+            {% if package.deletedAt is empty and checkPackagePermissions(entity) %}
                 {{ form_start(form, {'action': path('order_documents', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'hidden-print form-horizontal' }}) }}
                 {{ form_widget(form) }}
                 {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package} %}

@@ -89,7 +89,8 @@ ssh $SERVER $DB
 
 if [[ $2 == 'new' ]]; then
     echo -e "${GREEN}Upload fixtures${NC}"
-    ssh $SERVER $FOLDER'bin/console mbh:base:fixtures --cities'
+    ssh $SERVER $FOLDER'bin/console mbh:base:fixtures'
+    ssh $SERVER $FOLDER'bin/console mbh:city:load'
     ssh $SERVER $FOLDER'bin/console mbh:vega:import'
     ssh $SERVER $FOLDER'bin/console mbh:currency:load'
 fi
