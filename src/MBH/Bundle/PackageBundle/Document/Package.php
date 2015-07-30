@@ -619,7 +619,9 @@ class Package extends Base implements JsonSerializable
      */
     public function addTourist(\MBH\Bundle\PackageBundle\Document\Tourist $tourist)
     {
-        $this->tourists[] = $tourist;
+        if (!$this->tourists->contains($tourist)) {
+            $this->tourists[] = $tourist;
+        }
     }
 
     /**

@@ -239,6 +239,12 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
                 $data['phone']
             );
             $entity->setMainTourist($tourist);
+
+            if ($data['addToPackage']) {
+                $package->addTourist($tourist);
+                $this->dm->persist($package);
+            }
+
             $this->dm->persist($entity);
             $this->dm->flush();
 

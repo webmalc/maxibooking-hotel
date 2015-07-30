@@ -15,6 +15,7 @@ form.orderTouristType.placeholder_second_name: Иванович
 form.orderTouristType.min_second_name: Слишком короткое отчество
 form.orderTouristType.max_second_name: Слишком длинное отчество
 form.orderTouristType.birth_date: Дата рождения
+form.orderTouristType.add_to_package: Добавить как гостя?
 form.orderTouristType.phone: Телефон
 form.orderTouristType.phone: Телефон
 form.orderTouristType.email: E-mail
