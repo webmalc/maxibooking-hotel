@@ -7,6 +7,7 @@ use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\Moneymail;
 use MBH\Bundle\ClientBundle\Document\Payanyway;
 use MBH\Bundle\ClientBundle\Document\Robokassa;
+use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -172,6 +173,13 @@ class ClientConfigController extends Controller  implements CheckHotelController
                         ->setMoneymailKey($form->get('moneymailKey')->getData())
                     ;
                     $entity->setMoneymail($moneymail);
+                    break;
+                case 'uniteller':
+                    $uniteller = new Uniteller();
+                    $uniteller->setUnitellerShopIDP($form->get('unitellerShopIDP')->getData())
+                        ->setUnitellerPassword($form->get('unitellerPassword')->getData())
+                    ;
+                    $entity->setUniteller($uniteller);
                     break;
                 default:
                     break;

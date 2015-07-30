@@ -14,6 +14,7 @@
         {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
         {{ form_end(form) }}
 
+        <div class="alert alert-warning">URL для уведомлений: {{ url('online_form_check_order') }}</div>
         </div>
     </div>
 

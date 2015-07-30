@@ -68,7 +68,7 @@ class Payanyway implements PaymentSystemInterface
         return $this->payanywayKey;
     }
 
-    public function getFormData(CashDocument $cashDocument, $url = null)
+    public function getFormData(CashDocument $cashDocument, $url = null , $checkUrl = null)
     {
 
     }

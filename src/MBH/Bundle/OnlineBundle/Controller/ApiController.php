@@ -102,7 +102,11 @@ class ApiController extends Controller
         //save commission
         if (isset($response['commission']) && is_numeric($response['commission'])) {
             $commission = clone $cashDocument;
-            $commission->setTotal((float) $response['commission'])
+            $commissionTotal = (float) $response['commission'];
+            if (isset($response['commissionPercent']) && $response['commissionPercent']) {
+                $commissionTotal = $commissionTotal * $cashDocument->getTotal();
+            }
+            $commission->setTotal($commissionTotal)
                        ->setOperation('fee')
             ;
             $dm->persist($commission);
@@ -316,11 +320,12 @@ class ApiController extends Controller
         } else {
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig', [
-                    'data' => array_merge(['test' => false,
+                    'data' => array_merge(['test' => true,
                         'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
                             ['%total%' => number_format($request->total, 2), '%order_id%' => $order->getId()],
                             'MBHOnlineBundle')
                     ], $clientConfig->getFormData($order->getCashDocuments()[0],
+                        $this->container->getParameter('online_form_result_url'),
                         $this->generateUrl('online_form_check_order', [], true)))
                 ]
             );

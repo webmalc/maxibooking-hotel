@@ -71,7 +71,7 @@ class Moneymail implements PaymentSystemInterface
     /**
      * @inheritdoc
      */
-    public function getFormData(CashDocument $cashDocument, $url = null)
+    public function getFormData(CashDocument $cashDocument, $url = null , $checkUrl = null)
     {
         $payer = $cashDocument->getPayer();
         $createdAt = clone $cashDocument->getCreatedAt();

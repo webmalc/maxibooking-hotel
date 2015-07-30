@@ -50,7 +50,7 @@ class ClientConfig extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail"})
+     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller"})
      */
     protected $paymentSystem;
 
@@ -71,6 +71,12 @@ class ClientConfig extends Base
      * @ODM\EmbedOne(targetDocument="Moneymail")
      */
     protected $moneymail;
+
+    /**
+     * @var Uniteller
+     * @ODM\EmbedOne(targetDocument="Uniteller")
+     */
+    protected $uniteller;
 
     /**
      * Set sendSms
@@ -158,6 +164,28 @@ class ClientConfig extends Base
     public function getMoneymail()
     {
         return $this->moneymail;
+    }
+
+    /**
+     * Set uniteller
+     *
+     * @param \MBH\Bundle\ClientBundle\Document\Uniteller $uniteller
+     * @return self
+     */
+    public function setUniteller(\MBH\Bundle\ClientBundle\Document\Uniteller $uniteller)
+    {
+        $this->uniteller = $uniteller;
+        return $this;
+    }
+
+    /**
+     * Get uniteller
+     *
+     * @return \MBH\Bundle\ClientBundle\Document\Uniteller $uniteller
+     */
+    public function getUniteller()
+    {
+        return $this->uniteller;
     }
 
     /**

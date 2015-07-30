@@ -15,6 +15,7 @@ class ClientPaymentSystemType extends AbstractType
         $robokassaMerchantLogin = $robokassaMerchantPass1 = $robokassaMerchantPass2 = null;
         $payanywayMntId = $payanywayKey = null;
         $moneymailShopIDP = $moneymailKey = null;
+        $unitellerShopIDP = $unitellerPassword = null;
         $default = $options['default'];
 
         if ($entity) {
@@ -25,6 +26,9 @@ class ClientPaymentSystemType extends AbstractType
             $payanywayKey = $entity->getPayanyway() ? $entity->getPayanyway()->getPayanywayKey() : '';
             $moneymailShopIDP = $entity->getMoneymail() ? $entity->getMoneymail()->getMoneymailShopIDP() : '';
             $moneymailKey = $entity->getMoneymail() ? $entity->getMoneymail()->getMoneymailKey() : '';
+            $unitellerShopIDP = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerShopIDP() : '';
+            $unitellerPassword = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerPassword() : '';
+
             if ($entity->getPaymentSystem()) {
                 $default = $entity->getPaymentSystem();
             }
@@ -42,7 +46,7 @@ class ClientPaymentSystemType extends AbstractType
         } else {
             $builder
                 ->add(
-                   'paymentSystem',
+                    'paymentSystem',
                     'choice',
                     [
                         'label' => 'form.clientPaymentSystemType.payment_system',
@@ -129,6 +133,28 @@ class ClientPaymentSystemType extends AbstractType
                     'attr' => ['class' => 'payment-system-params moneymail'],
                     'mapped' => false,
                     'data' => $moneymailKey
+                ]
+            )
+            ->add(
+                'unitellerShopIDP',
+                'text',
+                [
+                    'label' => 'form.clientPaymentSystemType.uniteller_shop_id',
+                    'required' => false,
+                    'attr' => ['class' => 'payment-system-params uniteller'],
+                    'mapped' => false,
+                    'data' => $unitellerShopIDP
+                ]
+            )
+            ->add(
+                'unitellerPassword',
+                'text',
+                [
+                    'label' => 'form.clientPaymentSystemType.uniteller_password',
+                    'required' => false,
+                    'attr' => ['class' => 'payment-system-params uniteller'],
+                    'mapped' => false,
+                    'data' => $unitellerPassword
                 ]
             );
 

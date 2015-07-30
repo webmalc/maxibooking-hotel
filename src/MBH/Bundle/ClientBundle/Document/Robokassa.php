@@ -96,7 +96,7 @@ class Robokassa  implements PaymentSystemInterface
         return $this->robokassaMerchantPass2;
     }
 
-    public function getFormData(CashDocument $cashDocument, $url = null)
+    public function getFormData(CashDocument $cashDocument, $url = null , $checkUrl = null)
     {
 
     }

@@ -116,7 +116,8 @@ parameters:
       moneymail: 'MoneyMail'
       robokassa: 'Robokassa'
       payanyway: 'PayAnyWay'
-    mbh.payment_systems.default: moneymail
+      uniteller: 'Uniteller'
+    mbh.payment_systems.default: uniteller
     mbh.payment_systems.change: %mbh_payment_systems_change%
 
     #параметры Channel manager
