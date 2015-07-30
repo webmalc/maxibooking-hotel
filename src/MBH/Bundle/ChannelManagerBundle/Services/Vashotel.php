@@ -665,7 +665,6 @@ class Vashotel extends Base
                             $serviceDoc = $this->dm->getRepository('MBHPriceBundle:Service')->findOneBy(
                                 [
                                     '$or' => [['title' => $serviceName], ['fullTitle' => $serviceName]],
-                                    'isEnabled' => true,
                                     'deletedAt' => null,
                                     'category.id' => ['$in' => $helper->toIds($config->getHotel()->getServicesCategories())]
                                 ]
@@ -676,7 +675,6 @@ class Vashotel extends Base
                                 $serviceCategory = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->findOneBy([
                                     '$or' => [['title' => 'Vashotel.ru'], ['fullTitle' => 'Vashotel.ru']],
                                     'system' => true,
-                                    'isEnabled' => true,
                                     'deletedAt' => null,
                                     'hotel.id' => $config->getHotel()->getId()
 
@@ -752,7 +750,7 @@ class Vashotel extends Base
                 //breakfast
                 if ($breakfastCount) {
                     $breakfastService = $this->dm->getRepository('MBHPriceBundle:Service')->findOneBy([
-                       'code' => 'Breakfast', 'isEnabled' => true, 'deletedAt' => null
+                       'code' => 'Breakfast', 'deletedAt' => null
                     ]);
                     if ($breakfastService) {
                         $breakfast = new PackageService();

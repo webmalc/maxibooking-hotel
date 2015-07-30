@@ -55,12 +55,20 @@ $(document).ready(function () {
     });
 
     //BootstrapSwitch configuration
-    $('input[type="checkbox"]').not('.plain-html').bootstrapSwitch({
+    var bootstrapSwitchConfig = {
         'size': 'small',
         'onText': 'да',
         'offText': 'нет',
         'labelText': '<i class="fa fa-arrows-h" style="opacity: 0.6;"></i>',
-    });
+    };
+    $('input[type="checkbox"]')
+        .not('.plain-html')
+        .not('.checkbox-mini')
+        .bootstrapSwitch(bootstrapSwitchConfig);
+
+    bootstrapSwitchConfig.size = 'mini'
+    bootstrapSwitchConfig.labelText = '&nbsp;'
+    $('.checkbox-mini').bootstrapSwitch(bootstrapSwitchConfig);
 
     //Select2 configuration
     $('select').not('.plain-html').select2({

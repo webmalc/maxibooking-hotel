@@ -316,7 +316,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         foreach ($config->getServices() as $configService) {
             $service = $configService->getService();
 
-            if (empty($configService->getServiceId()) || !$service->getIsEnabled() || !empty($service->getDeletedAt())) {
+            if (empty($configService->getServiceId()) || !empty($service->getDeletedAt())) {
                 continue;
             }
 

@@ -57,19 +57,20 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $entries = $request->get('entries');
         $serviceRepository = $this->dm->getRepository('MBHPriceBundle:Service');
 
-        /*todo find _id => [$in => $ids] if($entries) {
-            $services = $serviceRepository->findBy(['_id' => ['$in' => $entries]]);
-        }*/
-        foreach ($entries as $id => $price) {
+        foreach ($entries as $id => $data) {
             $entity = $serviceRepository->find($id);
+            $price = (float) $data['price'];
+            isset($data['enabled']) && $data['enabled'] ? $isEnabled = true : $isEnabled = false;
 
-            if (!$entity || $entity->getPrice() == $price || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+            if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
                 continue;
             }
 
-            $entity->setPrice((empty($price)) ? null : (float)$price);
+            $entity->setPrice((empty($price)) ? null : (float)$price)
+                ->setIsEnabled($isEnabled)
+            ;
             $this->dm->persist($entity);
-        }
+        };
         $this->dm->flush();
 
         $request->getSession()

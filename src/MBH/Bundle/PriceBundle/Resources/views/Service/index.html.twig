@@ -45,20 +45,24 @@
                                 <th class="td-xl">Цена</th>
                                 <th class="td-md">Тип расчета</th>
                                 <th class="td-sm">Дата</th>
+                                <th class="td-sm">Влкючена</th>
                                 <th class="td-md"></th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for entry in entity.services %}
-                                <tr {% if entry.isEnabled is empty %} class='danger'{% endif %}>
+                                <tr>
                                     <td><i class="fa fa-plug"></i></td>
                                     <td><a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entity.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
                                     <td>
                                         <span class="hidden">{{ entry.price }}</span>
-                                        <input name="entries[{{ entry.id }}]" class="form-control spinner-0f {{ entry.calcType == 'day_percent' ? 'percent-spinner' : 'price-spinner'}} input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}">
+                                        <input name="entries[{{ entry.id }}][price]" class="form-control spinner-0f {{ entry.calcType == 'day_percent' ? 'percent-spinner' : 'price-spinner'}} input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}">
                                     </td>
                                     <td class="text-center">{{ config.calcTypes[entry.calcType]|default('Штука') }}</td>
                                     <td class="text-center">{% if entry.date %}<i class="fa fa-check text-success"></i>{% endif %}</td>
+                                    <td class="text-center">
+                                        <input class="checkbox-mini" name="entries[{{ entry.id }}][enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
+                                    </td>
                                     <td class="text-center">
                                         <div class='btn-list'>
                                             <a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
