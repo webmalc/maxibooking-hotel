@@ -90,4 +90,8 @@
             <small>&nbsp;</small>
         </td>
     {% endif %}
+    {% set note = entity.order.note ~ " " ~ entity.note %}
+    <td>
+        <small>{{ note|truncate(80)|nl2br }}</small>
+    </td>
 </tr>
