@@ -63,6 +63,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'dates' => 'begin',
             'checkIn' => false,
             'checkOut' => false,
+            'order' => 3,
+            'dir' => 'asc',
             'hotel' => $this->hotel
         ]);
         $lives = $repo->fetch([
@@ -72,7 +74,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'checkIn' => true,
             'checkOut' => false,
             'hotel' => $this->hotel,
-            'order' => 'end',
+            'order' => 8,
             'dir' => 'asc'
         ]);
 

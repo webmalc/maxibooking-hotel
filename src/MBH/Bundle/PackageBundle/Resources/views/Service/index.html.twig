@@ -20,19 +20,35 @@
                        data-date-format="dd.mm.yyyy" value="{{ "now"|date("d.m.Y") }}">
             </div>
 
+            {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
+
             <div class="input">
                 <i class="fa fa-plug" title='{{ "package.service.index.filter"|trans({}, "MBHPackageBundle") }}'
-                   data-toggle='tooltip'></i>&nbsp
-                <select name="services" id="select-services" id="filter" multiple>
-                    {% for group, serviceList in services %}
+                                  data-toggle='tooltip'></i>&nbsp
+
+                <select name="category" id="select-category" id="filter" data-placeholder="Категория">
+                    <option></option>
+                    {% for group, catsList in categories %}
                         <optgroup label="{{ group }}">
-                            {% for key, service in serviceList %}
-                                <option value="{{ key }}">{{ service }}</option>
+                            {% for key, cat in catsList %}
+                                <option value="{{ key }}">{{ cat }}</option>
                             {% endfor %}
                         </optgroup>
                     {% endfor %}
                 </select>
-                &nbsp;
+            </div>
+
+            <div class="input">
+                - &nbsp
+                <select name="service" id="select-service" id="filter" data-placeholder="Услуга">
+                    <option></option>
+                    {% for key, service in services %}
+                        <option value="{{ key }}" data-category="{{ service.category.id }}">{{ service }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="input">
                 <i class="fa fa-trash-o" title='{{ "package.service.index.show_deleted"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i>
                 &nbsp;
                 <input name="deleted" type="checkbox">

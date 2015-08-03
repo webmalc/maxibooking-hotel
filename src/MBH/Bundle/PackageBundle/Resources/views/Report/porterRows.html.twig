@@ -83,4 +83,11 @@
             <small>&nbsp;</small>
         </td>
     {% endif %}
+
+    {% if type == 'arrivals' %}
+        <td class="text-right">
+            {{ entity.begin|mbh_format }}<br>
+            <small>&nbsp;</small>
+        </td>
+    {% endif %}
 </tr>

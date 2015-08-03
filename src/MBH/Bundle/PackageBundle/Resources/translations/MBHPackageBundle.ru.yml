@@ -381,6 +381,7 @@ report.porter.arrivals.empty: 'Брони не найдены'
 report.porter.live.empty: 'Брони не найдены'
 report.porter.live.debt: Оплата
 report.porter.live.departure: Выезд
+report.porter.live.arrival: Заезд
 report.porter.live.table: Проживающие
 report.porter.arrivals.table: Заезжающие
 

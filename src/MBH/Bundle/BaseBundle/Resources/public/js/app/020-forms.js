@@ -1,4 +1,4 @@
-/*global window, document, Routing, console, str, $ */
+/*global window, document, Routing, console, str, $, select2 */
 
 $.fn.serializeObject = function () {
     'use strict';
@@ -121,7 +121,9 @@ $(document).ready(function () {
             begin = $('.begin-datepiker'),
             end = $('.end-datepiker'),
             setDates = function () {
+                var period = begin.val() + '-' + end.val();
                 if (!select.val()) {
+                    select.select2("val", period);
                     return;
                 }
                 var dates = select.val().split('-');

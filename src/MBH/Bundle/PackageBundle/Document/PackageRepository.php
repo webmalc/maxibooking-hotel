@@ -311,7 +311,8 @@ class PackageRepository extends DocumentRepository
             4 => 'roomType',
             5 => 'mainTourist',
             6 => 'price',
-            7 => 'createdAt'
+            7 => 'createdAt',
+            8 => 'end'
         ];
         if (isset($data['order']) && isset($cols[$data['order']])) {
             $order = $cols[$data['order']];

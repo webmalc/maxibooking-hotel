@@ -163,95 +163,6 @@ class PackageService extends Base
      */
     protected $isCustomPrice = false;
     
-
-    /**
-     * Set service
-     *
-     * @param \MBH\Bundle\PriceBundle\Document\Service $service
-     * @return self
-     */
-    public function setService(\MBH\Bundle\PriceBundle\Document\Service $service)
-    {
-        $this->service = $service;
-        return $this;
-    }
-
-    /**
-     * Get service
-     *
-     * @return \MBH\Bundle\PriceBundle\Document\Service $service
-     */
-    public function getService()
-    {
-        return $this->service;
-    }
-
-    /**
-     * Set package
-     *
-     * @param \MBH\Bundle\PackageBundle\Document\Package $package
-     * @return self
-     */
-    public function setPackage(\MBH\Bundle\PackageBundle\Document\Package $package)
-    {
-        $this->package = $package;
-        return $this;
-    }
-
-    /**
-     * Get package
-     *
-     * @return \MBH\Bundle\PackageBundle\Document\Package $package
-     */
-    public function getPackage()
-    {
-        return $this->package;
-    }
-
-    /**
-     * Set price
-     *
-     * @param int $price
-     * @return self
-     */
-    public function setPrice($price)
-    {
-        $this->price = $price;
-        return $this;
-    }
-
-    /**
-     * Get price
-     *
-     * @return float $price
-     */
-    public function getPrice()
-    {
-        return $this->price;
-    }
-
-    /**
-     * Set amount
-     *
-     * @param int $amount
-     * @return self
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
-        return $this;
-    }
-
-    /**
-     * Get amount
-     *
-     * @return int $amount
-     */
-    public function getAmount()
-    {
-        return $this->amount;
-    }
-
     /**
      * @return int
      * @throws \Exception
@@ -273,25 +184,91 @@ class PackageService extends Base
     }
 
     /**
-     * @return int
+     * Get service
+     *
+     * @return \MBH\Bundle\PriceBundle\Document\Service $service
      */
-    public function calcTotal()
+    public function getService()
     {
-        if (!empty($this->getTotalOverwrite())) {
-            return $this->getTotalOverwrite();
-        }
+        return $this->service;
+    }
 
-        $price = $this->getPrice() * $this->getAmount();
-        
-        if ($this->getCalcType() == 'per_night') {
-            $price *= $this->getNights();
-        }
+    /**
+     * Set service
+     *
+     * @param \MBH\Bundle\PriceBundle\Document\Service $service
+     * @return self
+     */
+    public function setService(\MBH\Bundle\PriceBundle\Document\Service $service)
+    {
+        $this->service = $service;
+        return $this;
+    }
 
-        if (!in_array($this->getCalcType(), ['not_applicable', 'day_percent'])) {
-            $price *= $this->getPersons();
-        }
+    /**
+     * Get amount
+     *
+     * @return int $amount
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
 
-        return $price;
+    /**
+     * Set amount
+     *
+     * @param int $amount
+     * @return self
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+        return $this;
+    }
+
+    /**
+     * Get persons
+     *
+     * @return int $persons
+     */
+    public function getPersons()
+    {
+        return $this->persons;
+    }
+
+    /**
+     * Set persons
+     *
+     * @param int $persons
+     * @return self
+     */
+    public function setPersons($persons)
+    {
+        $this->persons = $persons;
+        return $this;
+    }
+
+    /**
+     * Get nights
+     *
+     * @return int $nights
+     */
+    public function getNights()
+    {
+        return $this->nights;
+    }
+
+    /**
+     * Set nights
+     *
+     * @param int $nights
+     * @return self
+     */
+    public function setNights($nights)
+    {
+        $this->nights = $nights;
+        return $this;
     }
 
     /**
@@ -311,6 +288,11 @@ class PackageService extends Base
 
         return $result;
 
+    }
+
+    public function getCalcType()
+    {
+        return $this->getService()->getCalcType();
     }
 
     /**
@@ -336,50 +318,76 @@ class PackageService extends Base
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function calcTotal()
+    {
+        if (!empty($this->getTotalOverwrite())) {
+            return $this->getTotalOverwrite();
+        }
 
+        $price = $this->getPrice() * $this->getAmount();
+
+        if ($this->getCalcType() == 'per_night') {
+            $price *= $this->getNights();
+        }
+
+        if (!in_array($this->getCalcType(), ['not_applicable', 'day_percent'])) {
+            $price *= $this->getPersons();
+        }
+
+        return $price;
+    }
 
     /**
-     * Set persons
-     *
-     * @param int $persons
+     * @return float $totalOverwrite
+     */
+    public function getTotalOverwrite()
+    {
+        return $this->totalOverwrite;
+    }
+
+    /**
+     * @param float $totalOverwrite
      * @return self
      */
-    public function setPersons($persons)
+    public function setTotalOverwrite($totalOverwrite)
     {
-        $this->persons = $persons;
+        $this->totalOverwrite = $totalOverwrite;
         return $this;
     }
 
     /**
-     * Get persons
+     * Get price
      *
-     * @return int $persons
+     * @return float $price
      */
-    public function getPersons()
+    public function getPrice()
     {
-        return $this->persons;
+        return $this->price;
     }
-
+    
     /**
-     * Set nights
+     * Set price
      *
-     * @param int $nights
+     * @param int $price
      * @return self
      */
-    public function setNights($nights)
+    public function setPrice($price)
     {
-        $this->nights = $nights;
+        $this->price = $price;
         return $this;
     }
 
     /**
-     * Get nights
+     * Get note
      *
-     * @return int $nights
+     * @return string $note
      */
-    public function getNights()
+    public function getNote()
     {
-        return $this->nights;
+        return $this->note;
     }
     
     /**
@@ -395,27 +403,9 @@ class PackageService extends Base
     }
 
     /**
-     * Get note
-     *
-     * @return string $note
-     */
-    public function getNote()
-    {
-        return $this->note;
-    }
-    
-    /**
      * @ODM\PrePersist
      */
     public function prePersist()
-    {
-        $this->setDefaults();
-    }
-
-    /**
-     * @ODM\preUpdate
-     */
-    public function preUpdate()
     {
         $this->setDefaults();
     }
@@ -436,52 +426,21 @@ class PackageService extends Base
         if (!$service->getTime()) {
             $this->setTime(null);
         }
-        $nights = clone $this->getBegin();
-        $nights->modify('+' . $this->getNights() . ' days');
-        $this->setEnd($nights);
+        $end = clone $this->getBegin();
+        if (!$service->getDate()) {
+            $end->modify('+' . $this->getNights() . ' days');
+        }
+        $this->setEnd($end);
 
         $this->total = $this->calcTotal();
     }
     
-    public function getCalcType()
-    {
-        return $this->getService()->getCalcType();
-    }        
-
     /**
-     * @param boolean $isCustomPrice
-     * @return self
+     * @return \DateTime $begin
      */
-    public function setIsCustomPrice($isCustomPrice)
+    public function getBegin()
     {
-        $this->isCustomPrice = $isCustomPrice;
-        return $this;
-    }
-
-    /**
-     * @return boolean $isCustomPrice
-     */
-    public function getIsCustomPrice()
-    {
-        return $this->isCustomPrice;
-    }
-
-    /**
-     * @param float $totalOverwrite
-     * @return self
-     */
-    public function setTotalOverwrite($totalOverwrite)
-    {
-        $this->totalOverwrite = $totalOverwrite;
-        return $this;
-    }
-
-    /**
-     * @return float $totalOverwrite
-     */
-    public function getTotalOverwrite()
-    {
-        return $this->totalOverwrite;
+        return $this->begin;
     }
 
     /**
@@ -495,11 +454,59 @@ class PackageService extends Base
     }
 
     /**
-     * @return \DateTime $begin
+     * Get package
+     *
+     * @return \MBH\Bundle\PackageBundle\Document\Package $package
      */
-    public function getBegin()
+    public function getPackage()
     {
-        return $this->begin;
+        return $this->package;
+    }
+
+    /**
+     * Set package
+     *
+     * @param \MBH\Bundle\PackageBundle\Document\Package $package
+     * @return self
+     */
+    public function setPackage(\MBH\Bundle\PackageBundle\Document\Package $package)
+    {
+        $this->package = $package;
+        return $this;
+    }
+
+    /**
+     * @ODM\preUpdate
+     */
+    public function preUpdate()
+    {
+        $this->setDefaults();
+    }
+
+    /**
+     * @return boolean $isCustomPrice
+     */
+    public function getIsCustomPrice()
+    {
+        return $this->isCustomPrice;
+    }
+
+    /**
+     * @param boolean $isCustomPrice
+     * @return self
+     */
+    public function setIsCustomPrice($isCustomPrice)
+    {
+        $this->isCustomPrice = $isCustomPrice;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime $end
+     */
+    public function getEnd()
+    {
+        return $this->end;
     }
 
     /**
@@ -513,11 +520,11 @@ class PackageService extends Base
     }
 
     /**
-     * @return \DateTime $end
+     * @return \DateTime $time
      */
-    public function getEnd()
+    public function getTime()
     {
-        return $this->end;
+        return $this->time;
     }
 
     /**
@@ -528,14 +535,6 @@ class PackageService extends Base
     {
         $this->time = $time;
         return $this;
-    }
-
-    /**
-     * @return \DateTime $time
-     */
-    public function getTime()
-    {
-        return $this->time;
     }
 
     public function __toString()

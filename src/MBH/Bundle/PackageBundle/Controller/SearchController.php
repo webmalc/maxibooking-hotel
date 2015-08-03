@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -30,13 +30,12 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $results = $tariffResults = false;
 
         $form = $this->createForm(
             new SearchType(), [], [
                 'security' => $this->container->get('mbh.hotel.selector'),
                 'dm' => $dm,
-                'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
+                'hotel' => $this->hotel,
                 'orderId' => $request->get('order')
             ]
         );

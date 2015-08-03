@@ -59,7 +59,7 @@ class CashDocumentType extends AbstractType
                 'label' => 'form.cashDocumentType.operation_type',
                 'required' => true,
                 'multiple' => false,
-                'empty_value' => '',
+                'expanded' => true,
                 'group' => $options['groupName'],
                 'choices' => $options['operations']
             ])
