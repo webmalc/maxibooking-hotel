@@ -119,7 +119,48 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
             $this->phpExcelObject->getActiveSheet()->setCellValue($purposeCell, 'X'); //Цель въезда
         }
 
-        //$this->write('Инженер', 'W45');
+        if($visa = $tourist->getVisa()) {
+            $types = [
+                'visa' => 'W37',
+                'residence' => 'AY37',
+                'temporary_residence_permit' => 'CM37',
+            ];
+            if(array_key_exists($visa->getType(), $types)) {
+                $this->write('X', $types[$visa->getType()]);
+            }
+            $this->write($visa->getSeries(), 'DC37');
+            $this->write($visa->getNumber(), 'DW37');
+
+            if($issued = $visa->getIssued()) {
+                $this->write($issued->format('d'), 'AA40');
+                $this->write($issued->format('m'), 'AQ40');
+                $this->write($issued->format('Y'), 'BC40');
+            }
+
+            if($expiry = $visa->getExpiry()) {
+                $this->write($expiry->format('d'), 'CM40');
+                $this->write($expiry->format('m'), 'DC40');
+                $this->write($expiry->format('Y'), 'DO40');
+            }
+        }
+
+        if($migration = $tourist->getMigration()) {
+            $this->write($migration->getProfession(), 'W45');
+
+            $this->write($migration->getSeries(), 'AQ49');
+            $this->write($migration->getNumber(), 'BK49');
+
+            $this->write($migration->getRepresentative(), 'AA51', 19);
+            $this->write($migration->getAddress(), 'AA57', 19);
+        }
+
+        $this->write($package->getBegin()->format('d'), 'AI47');
+        $this->write($package->getBegin()->format('m'), 'AY47');
+        $this->write($package->getBegin()->format('Y'), 'BK47');
+
+        $this->write($package->getEnd()->format('d'), 'DO47');
+        $this->write($package->getEnd()->format('m'), 'EE47');
+        $this->write($package->getEnd()->format('Y'), 'EQ47');
 
         $this->write($tourist->getLastName(), 'W69');
         $this->write(mb_substr($tourist->getFirstName() . ' ' . $tourist->getPatronymic(), 0, 65), 'W71');
@@ -261,10 +302,11 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
     /**
      * @param $word
      * @param string $startCell
+     * @param null|int $breakLineLength
      * @param int $range
      * @throws \PHPExcel_Exception
      */
-    protected function write($word, $startCell = 'A0', $range = self::DEFAULT_LETTER_RANGE)
+    protected function write($word, $startCell = 'A0', $breakLineLength = null, $range = self::DEFAULT_LETTER_RANGE)
     {
         $word = mb_strtoupper($word, 'UTF-8');
         $word = preg_replace('~[^A-ZА-Я 0-9]+~', '', $word);
@@ -273,13 +315,23 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
 
         $activeCell = $startCell;
         $activeRowLetter = $rowLetter;
-        foreach (preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY) as $letter) {
+        $letters = array_values(preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY));
+        foreach ($letters as $i => &$letter) {
             $letter = trim($letter);
             $this->phpExcelObject->getActiveSheet()->setCellValue($activeCell, $letter);
 
             $rowLetterIndex = \PHPExcel_Cell::columnIndexFromString($activeRowLetter);
             $rowLetterIndex += $range;
             $activeRowLetter = \PHPExcel_Cell::stringFromColumnIndex($rowLetterIndex);
+
+            if($breakLineLength && ($i + 1)%$breakLineLength == 0) {
+                $lineNumber = $lineNumber + 2;
+                $activeRowLetter = $rowLetter;
+                if(trim($letters[$i+1]) == ''){
+                    unset($letters[$i+1]);
+                }
+            }
+
             $activeCell = $activeRowLetter . $lineNumber;
         }
     }
@@ -287,6 +339,9 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
     /**
      * Letter and number of cell
      * @param $cell
+     *
+     * @todo use \PHPExcel_Cell::coordinateFromString
+     * @see \PHPExcel_Cell::coordinateFromString
      * @return array [letter, number]
      */
     protected function explodeCell($cell)

@@ -88,10 +88,10 @@ class OrganizationController extends Controller
             $sort = [$column => $order['dir'] == 'desc' ? 1 : -1];
         }
 
-
-        $organizations = $this->dm->getRepository('MBHPackageBundle:Organization')->findBy($criteria, $sort,
+        $organizationRepository = $this->dm->getRepository('MBHPackageBundle:Organization');
+        $organizations = $organizationRepository->findBy($criteria, $sort,
             $request->get('length'), $request->get('start'));
-        $recordsTotal = $this->dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder()->setQueryArray($criteria)->getQuery()->count();
+        $recordsTotal = $organizationRepository->createQueryBuilder()->setQueryArray($criteria)->getQuery()->count();
 
         $response = $this->render('MBHPackageBundle:Organization:json.json.twig', [
             'organizations' => $organizations,

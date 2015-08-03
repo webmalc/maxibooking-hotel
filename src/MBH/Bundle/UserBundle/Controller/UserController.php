@@ -144,10 +144,8 @@ class UserController extends Controller
 
             }
         }
-        $form = $this->createForm(
-            new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity,
-            ['admin' => $entity->hasRole('ROLE_ADMIN'), 'hotels' => $hasHotels]
+        $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
+            $entity, ['admin' => $entity->hasRole('ROLE_ADMIN'), 'hotels' => $hasHotels]
         );
 
         return array(

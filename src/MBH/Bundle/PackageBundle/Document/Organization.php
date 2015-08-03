@@ -336,7 +336,7 @@ class Organization implements PayerInterface
      */
     public function getLocation()
     {
-        return $this->getCity() . ', ' . $this->getStreet() . ' ' . $this->getHouse();
+        return ($this->getCity() ? $this->getCity()->getTitle() : '') . ', ' . $this->getStreet() . ' ' . $this->getHouse();
     }
 
     /**

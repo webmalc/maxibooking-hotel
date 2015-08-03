@@ -39,6 +39,7 @@ views.hotel.tabs.additional_settings: 'Дополнительные настро
 views.hotel.tabs.birthplace: 'Место рождения'
 views.hotel.tabs.document_relation: 'Удостоверение личности'
 views.hotel.tabs.address: 'Адрес'
+views.hotel.tabs.visa: 'Виза'
 views.hotel.tabs.main_info_required: "Необходимо заполнить основную информацию!"
 views.roomType.edit.edit_room_type: "редактирование типа номера #"
 views.roomType.editRoom.edit_room_type: "редактирование номера для типа номера <"

@@ -53,6 +53,25 @@ class User extends BaseUser
     protected $lastName;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="patronymic")
+     * @Assert\Length(
+     *      min=2,
+     *      max=100
+     * )
+     */
+    protected $patronymic;
+
+    /**
+     * @var \DateTime
+     * @Gedmo\Versioned
+     * @ODM\Date(name="birthday")
+     * @Assert\Date()
+     */
+    protected $birthday;
+
+    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -145,6 +164,38 @@ class User extends BaseUser
     public function getLastName()
     {
         return $this->lastName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPatronymic()
+    {
+        return $this->patronymic;
+    }
+
+    /**
+     * @param string $patronymic
+     */
+    public function setPatronymic($patronymic)
+    {
+        $this->patronymic = $patronymic;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getBirthday()
+    {
+        return $this->birthday;
+    }
+
+    /**
+     * @param \DateTime $birthday
+     */
+    public function setBirthday($birthday)
+    {
+        $this->birthday = $birthday;
     }
 
     /**

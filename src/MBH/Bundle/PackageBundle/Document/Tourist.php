@@ -246,6 +246,16 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
      * @ODM\EmbedOne(targetDocument="DocumentRelation")
      */
     protected $documentRelation;
+    /**
+     * @var Migration|null
+     * @ODM\EmbedOne(targetDocument="Migration")
+     */
+    protected $migration;
+    /**
+     * @var Visa|null
+     * @ODM\EmbedOne(targetDocument="Visa")
+     */
+    protected $visa;
 
     /**
      * Set firstName
@@ -820,5 +830,37 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     public function setDocumentRelation(DocumentRelation $documentRelation = null)
     {
         $this->documentRelation = $documentRelation;
+    }
+
+    /**
+     * @return Migration|null
+     */
+    public function getMigration()
+    {
+        return $this->migration;
+    }
+
+    /**
+     * @param Migration $migration
+     */
+    public function setMigration(Migration $migration = null)
+    {
+        $this->migration = $migration;
+    }
+
+    /**
+     * @return Visa|null
+     */
+    public function getVisa()
+    {
+        return $this->visa;
+    }
+
+    /**
+     * @param Visa $visa
+     */
+    public function setVisa(Visa $visa = null)
+    {
+        $this->visa = $visa;
     }
 }
