@@ -6,16 +6,10 @@
                 <input type="radio" {{ block('widget_attributes') }}{% if child.vars.value is defined %} value="{{ child.vars.value }}"{% endif %}{% if child.vars.checked %} checked="checked"{% endif %} />
                 {{ child.vars.label }}
             </label>
-                {% endfor %}
+            {% endfor %}
         </div>
     {% endspaceless %}
 {% endblock choice_widget_expanded %}
-
-{% block radio_widget %}
-    {% spaceless %}
-        <input type="radio" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
-    {% endspaceless %}
-{% endblock radio_widget %}
 
 {% block form_widget_compound %}
     <div {% if not form.parent %} class="well" {% endif %} {{ block('widget_container_attributes') }}>
