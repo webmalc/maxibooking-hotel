@@ -39,6 +39,7 @@ class CashController extends Controller
 
         return [
             'methods' => $methods,
+            'users' => $this->dm->getRepository('MBHUserBundle:User')->findBy(['enabled' => true], ['username' => 'asc']),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
         ];
     }
@@ -49,11 +50,13 @@ class CashController extends Controller
         $clientDataTableParams = ClientDataTableParams::createFromRequest($request);
         $clientDataTableParams->setSortColumnFields([
             1 => 'number',
+            2 => 'total',
             3 => 'total',
-            4 => 'total',
+            4 => 'operation',
             6 => 'documentDate',
             7 => 'paidDate',
-            8 => 'deletedAt'
+            8 => 'createdBy',
+            9 => 'deletedAt'
         ]);
 
         $queryCriteria->skip = $clientDataTableParams->getStart();
@@ -97,6 +100,8 @@ class CashController extends Controller
         $queryCriteria->orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
 
         $queryCriteria->deleted = $request->get('deleted');
+
+        $queryCriteria->createdBy = $request->get('user');
 
         return $queryCriteria;
     }

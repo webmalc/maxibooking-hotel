@@ -18,6 +18,11 @@ interface PayerInterface
     /**
      * @return string
      */
+    public function getShortName();
+
+    /**
+     * @return string
+     */
     public function getEmail();
 
     /**

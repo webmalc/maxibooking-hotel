@@ -21,6 +21,11 @@ use Zend\Stdlib\JsonSerializable;
  */
 class Tourist extends Base implements JsonSerializable, PayerInterface
 {
+    public function getShortName()
+    {
+        return $this->getLastNameWithInitials();
+    }
+
     public function jsonSerialize()
     {
         return [
@@ -673,7 +678,11 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
 
     public function getLastNameWithInitials()
     {
-        $result = $this->getLastName() . ' ' . mb_substr($this->getFirstName(), 0, 1) . '.';
+        $result = $this->getLastName();
+
+        if (!empty($this->getFirstName())) {
+            $result .= ' ' . mb_substr($this->getFirstName(), 0, 1) . '.';
+        }
 
         if (!empty($this->getPatronymic())) {
             $result .= mb_substr($this->getPatronymic(), 0, 1) . '.';
