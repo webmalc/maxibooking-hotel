@@ -40,7 +40,7 @@
 
             <div class="input">
                 - &nbsp
-                <select name="service" id="select-service" id="filter" data-placeholder="Услуга">
+                <select name="service" id="select-service" id="filter" data-placeholder="Все услуги">
                     <option></option>
                     {% for key, service in services %}
                         <option value="{{ key }}" data-category="{{ service.category.id }}">{{ service }}</option>
@@ -61,16 +61,16 @@
            class="table not-auto-datatable table-striped table-hover table-condensed table-icons">
         <thead>
         <tr>
-            <th class="td-xss"></th>
-            <th class="td-xss">#</th>
-            <th class="td-md text-center">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-xxs"></th>
+            <th class="td-xs">#</th>
+            <th class="td-md">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
             <th>{{ "package.service.title"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-xss">{{ "package.service.nights"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-xss">{{ "package.service.guests"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-xss">{{ "package.service.amount"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-xs"><i class="fa fa-moon-o" data-toggle="tooltip" title="{{ "package.service.nights"|trans({}, "MBHPackageBundle") }}"></i></th>
+            <th class="td-xs"><i class="fa fa-male" data-toggle="tooltip" title="{{ "package.service.guests"|trans({}, "MBHPackageBundle") }}"></i></th>
+            <th class="td-xs"><i class="fa fa-signal" data-toggle="tooltip" title="{{ "package.service.amount"|trans({}, "MBHPackageBundle") }}"></i></th>
             <th class="td-md">{{ "package.service.tourist"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-md text-right">{{ "package.service.result"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-md text-right">{{ "package.service.payment"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-sm text-right">{{ "package.service.result"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-sm text-right">{{ "package.service.payment"|trans({}, "MBHPackageBundle") }}</th>
             <th>{{ "package.service.comment"|trans({}, "MBHPackageBundle") }}</th>
         </tr>
         </thead>

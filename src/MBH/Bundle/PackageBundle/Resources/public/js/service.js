@@ -165,13 +165,13 @@ $(document).ready(function () {
         "aoColumns": [
             {"name": "icon", "bSortable": false, "class" : "td-xss text-center"},
             {"name": "number", "bSortable": false, "class" : "td-xss text-center"},
-            {"name": "date", "class" : "text-center"},
+            {"name": "date"},
             {"name": "service", "bSortable": false},
             {"name": "nights", "class" : "td-xss text-center"},
             {"name": "persons", "class" : "td-xss text-center"},
             {"name": "amount", "class" : "td-xss text-center"},
             {"name": "order", "class" : "text-right", "bSortable": false},
-            {"name": "total"},
+            {"name": "total", "class" : "text-right", "bSortable": false},
             {"name": "payment", "class" : "text-center", "bSortable": false},
             {"name": "note", "bSortable": false}
         ],
@@ -183,6 +183,7 @@ $(document).ready(function () {
             for (var k in totals) {
                 $('#service-summary-' + k).html(totals[k] + ' ');
             }
+            $('.deleted-entry').closest('tr').addClass('danger');
         }
     }).fnDraw();
 
