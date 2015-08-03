@@ -66,9 +66,11 @@ $(document).ready(function () {
     $('.room-cache-overview-filter').change(function () {
         showTable();
     });
+
     //generator
     (function () {
         var rooms = $('input.delete-rooms'),
+            quotas = $('#mbh_bundle_pricebundle_room_cache_generator_type_quotas'),
             showMessage = function () {
                 rooms.each(function () {
                     var text = parseInt($(this).val(), 10) === -1 ? 'Дни будет удалены' : '';
@@ -76,8 +78,15 @@ $(document).ready(function () {
                         next('.col-md-6').
                         html('<span class="text-danger text-left input-errors">' + text +  '</span>');
                 });
+            },
+            showTariffs = function () {
+                var tariffs = $('#mbh_bundle_pricebundle_room_cache_generator_type_tariffs').closest('div.form-group');
+                tariffs.toggle(quotas.prop('checked'));
             };
+
+        showTariffs();
         showMessage();
         rooms.change(showMessage);
+        quotas.on('change switchChange.bootstrapSwitch', showTariffs);
     }());
 });

@@ -24,7 +24,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'format' => 'dd.MM.yyyy',
                     'data' => new \DateTime('midnight'),
                     'required' => true,
-                    'attr' => array('class' => 'datepicker begin-datepiker', 'data-date-format' => 'dd.mm.yyyy'),
+                    'attr' => array('class' => 'datepicker begin-datepiker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
                     'constraints' => [new NotBlank(), new Date()],
                 ))
                 ->add('end', 'date', array(
@@ -32,7 +32,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
                     'required' => true,
-                    'attr' => array('class' => 'datepicker end-datepiker', 'data-date-format' => 'dd.mm.yyyy'),
+                    'attr' => array('class' => 'datepicker end-datepiker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
                     'constraints' => [new NotBlank(), new Date()],
                 ))
                 ->add('weekdays', 'choice', [
@@ -45,7 +45,7 @@ class RoomCacheGeneratorType extends AbstractType
                 ])
                 ->add('roomTypes', 'document', [
                     'label' => 'Типы номеров',
-                    'required' => false,
+                    'required' => true,
                     'multiple' => true,
                     'class' => 'MBHHotelBundle:RoomType',
                     'query_builder' => function(DocumentRepository $dr) use ($options) {
@@ -53,6 +53,12 @@ class RoomCacheGeneratorType extends AbstractType
                     },
                     'help' => 'Типы номеров для готорых будет произведена генерация наличия мест',
                     'attr' => array('placeholder' => $options['hotel']. ': все типы номеров'),
+                ])
+                ->add('quotas', 'checkbox', [
+                    'label' => 'Установить квоты?',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'Установить квоты номеров по тарифам?'
                 ])
                 ->add('tariffs', 'document', [
                     'label' => 'Тарифы',

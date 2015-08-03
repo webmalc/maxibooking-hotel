@@ -198,4 +198,29 @@ $(document).ready(function () {
         },
         dropdownCssClass: "bigdrop"
     });
+
+    //remember inputs
+    (function () {
+        var inputs = $('.input-remember'),
+            load = function () {
+                inputs.each(function () {
+                    var el = $(this),
+                        cookie = $.cookie('input_' + el.attr('id'));
+
+                    if (cookie) {
+                        el.val(cookie);
+                    }
+                });
+            },
+            remember = function () {
+                inputs.each(function () {
+                    var el = $(this);
+                    if (el.val() && el.attr('id')) {
+                        $.cookie('input_' + el.attr('id'), el.val(), {expires: 7});
+                    }
+                });
+            };
+        load();
+        inputs.change(remember);
+    }());
 });
