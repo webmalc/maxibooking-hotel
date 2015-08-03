@@ -156,8 +156,8 @@ $(document).ready(function () {
             input.val(null);
 
             if ($(this).attr('id') == 'package-table-quick-reset') {
-                $('#package-table').dataTable().fnDraw();
-                return;
+                $('#package-table-filter input, #package-table-filter select').phoenix('remove');
+                window.location.reload();
             }
 
             $(this).removeClass('label-default').addClass('btn-info');

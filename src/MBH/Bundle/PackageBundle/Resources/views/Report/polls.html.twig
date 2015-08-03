@@ -7,7 +7,7 @@
 {% block content %}
 
     <div class="well" id="polls-report-filter-well">
-        <form id="polls-report-filter" action="{{ path('report_polls' ) }}" class="form-inline filter-form" role="form">
+        <form id="polls-report-filter" action="{{ path('report_polls' ) }}" class="form-inline filter-form remember" role="form">
             <div class="input">
                 <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
                 <input type="text" name="begin" id="polls-report-filter-begin" class="datepicker polls-report-filter begin-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-45 days")|date('d.m.Y') : app.request.get('begin')}}">

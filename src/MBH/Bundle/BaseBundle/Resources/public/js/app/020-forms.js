@@ -20,6 +20,8 @@ $.fn.serializeObject = function () {
 $(document).ready(function () {
     'use strict';
 
+    $('form.remember input, form.remember select, form.remember textarea').phoenix();
+
     $(".timepicker").timepicker({
         showMeridian: false
     });
