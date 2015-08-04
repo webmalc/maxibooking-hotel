@@ -88,7 +88,7 @@ class Booking extends Base
                 ['config' => $config, 'params' => $this->params, 'lastChange' => false]
             );
             $sendResult = $this->sendXml(static::BASE_SECURE_URL.'reservations', $request, null, true);
-            $this->log($sendResult->asXML());
+            $this->log('Reservations count: ' . count($sendResult->reservation));
 
             foreach ($sendResult->reservation as $reservation) {
 

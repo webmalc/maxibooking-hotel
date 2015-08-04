@@ -817,7 +817,7 @@ class Vashotel extends Base
                 $this->templating->render(static::ORDERS_TEMPLATE, $data)
             );
 
-            $this->log($response->asXML());
+            //$this->log($response->asXML());
 
             if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
                 continue;
