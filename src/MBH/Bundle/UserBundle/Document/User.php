@@ -4,6 +4,8 @@ namespace MBH\Bundle\UserBundle\Document;
 
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
+use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -53,6 +55,25 @@ class User extends BaseUser
     protected $lastName;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="patronymic")
+     * @Assert\Length(
+     *      min=2,
+     *      max=100
+     * )
+     */
+    protected $patronymic;
+
+    /**
+     * @var \DateTime
+     * @Gedmo\Versioned
+     * @ODM\Date(name="birthday")
+     * @Assert\Date()
+     */
+    protected $birthday;
+
+    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -79,6 +100,18 @@ class User extends BaseUser
      * @Assert\Type(type="boolean")
      */
     protected $reports = true;
+
+    /**
+     * @var DocumentRelation
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\PackageBundle\Document\DocumentRelation")
+     */
+    protected $documentRelation;
+
+    /**
+     * @var AddressObjectDecomposed
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed")
+     */
+    protected $addressObjectDecomposed;
 
     /**
      * Hook timestampable behavior
@@ -145,6 +178,38 @@ class User extends BaseUser
     public function getLastName()
     {
         return $this->lastName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPatronymic()
+    {
+        return $this->patronymic;
+    }
+
+    /**
+     * @param string $patronymic
+     */
+    public function setPatronymic($patronymic)
+    {
+        $this->patronymic = $patronymic;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getBirthday()
+    {
+        return $this->birthday;
+    }
+
+    /**
+     * @param \DateTime $birthday
+     */
+    public function setBirthday($birthday)
+    {
+        $this->birthday = $birthday;
     }
 
     /**
@@ -232,5 +297,37 @@ class User extends BaseUser
     public function getReports()
     {
         return $this->reports;
+    }
+
+    /**
+     * @return DocumentRelation
+     */
+    public function getDocumentRelation()
+    {
+        return $this->documentRelation;
+    }
+
+    /**
+     * @param DocumentRelation $documentRelation
+     */
+    public function setDocumentRelation(DocumentRelation $documentRelation = null)
+    {
+        $this->documentRelation = $documentRelation;
+    }
+
+    /**
+     * @return AddressObjectDecomposed
+     */
+    public function getAddressObjectDecomposed()
+    {
+        return $this->addressObjectDecomposed;
+    }
+
+    /**
+     * @param AddressObjectDecomposed $addressObjectDecomposed
+     */
+    public function setAddressObjectDecomposed(AddressObjectDecomposed $addressObjectDecomposed = null)
+    {
+        $this->addressObjectDecomposed = $addressObjectDecomposed;
     }
 }

@@ -286,6 +286,7 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
     /**
      * @Route("/document/{id}/modal_form/{type}", name="document_modal_form", options={"expose"=true})
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     * @Security("is_granted('ROLE_USER')")
      * @Template()
      */
     public function documentModalFormAction(Package $entity, $type)
@@ -310,6 +311,9 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
             ]);
         } else {
             $form = $generatorFactory->createFormByType($type, $options);
+            if($type == XlsGeneratorFactory::TYPE_NOTICE) {
+                $form->setData(['user' => $this->getUser()]);
+            }
             $html = $this->renderView('MBHPackageBundle:Documents:documentModalForm.html.twig', [
                 'form' => $form->createView(),
                 'type' => $type,

@@ -1,0 +1,23 @@
+{% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
+
+{% set small_title = "редактирование гостя #" ~ entity.id %}
+
+{% block content %}
+    {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 4, 'entity': entity} %}
+
+    {{ form_start(form, {'action': path('tourist_edit_visa', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    <div class="well">
+        <fieldset>
+            <legend>Миграционная карта</legend>
+            {{ form_widget(form.migration) }}
+        </fieldset>
+        <fieldset>
+            <legend>Виза</legend>
+            {{ form_widget(form.visa) }}
+        </fieldset>
+    </div>
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'tourist_delete' } %}
+    {{ form_end(form) }}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tourist_delete' } %}
+{% endblock %}

@@ -5,7 +5,11 @@ namespace MBH\Bundle\PackageBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
+use MBH\Bundle\PackageBundle\Document\Migration;
+use MBH\Bundle\PackageBundle\Document\Visa;
 use MBH\Bundle\PackageBundle\Form\TouristExtendedType;
+use MBH\Bundle\PackageBundle\Form\TouristMigrationType;
+use MBH\Bundle\PackageBundle\Form\TouristVisaType;
 use MBH\Bundle\VegaBundle\Document\VegaFMS;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -201,6 +205,48 @@ class TouristController extends Controller
 
                 return $this->isSavedRequest() ?
                     $this->redirectToRoute('tourist_edit_document', ['id' => $entity->getId()]) :
+                    $this->redirectToRoute('tourist');
+            }
+        }
+
+        return [
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        ];
+    }
+
+    /**
+     *
+     * @Route("/{id}/edit/visa", name="tourist_edit_visa")
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     */
+    public function editVisaAction(Tourist $entity, Request $request)
+    {
+        $entity->getMigration() ?: $entity->setMigration(new Migration());
+        $entity->getVisa() ?: $entity->setVisa(new Visa());
+        $entity->getVisa()->getType() ?: $entity->getVisa()->setType('visa');
+
+        $form = $this->createFormBuilder($entity)
+            ->add('migration', new TouristMigrationType())
+            ->add('visa', new TouristVisaType())
+            ->getForm();
+
+        if ($request->isMethod(Request::METHOD_PUT)) {
+            $form->submit($request);
+
+            if ($form->isValid()) {
+                $this->dm->persist($entity);
+                $this->dm->flush();
+
+                $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.touristController.record_edited_success'));
+
+                return $this->isSavedRequest() ?
+                    $this->redirectToRoute('tourist_edit_visa', ['id' => $entity->getId()]) :
                     $this->redirectToRoute('tourist');
             }
         }

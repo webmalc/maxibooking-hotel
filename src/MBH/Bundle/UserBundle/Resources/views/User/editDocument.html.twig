@@ -4,13 +4,13 @@
 
 {% block content %}
 
-    {% include 'MBHUserBundle:User:tabs.html.twig' with {'active': 1, 'entity': entity} %}
+    {% include 'MBHUserBundle:User:tabs.html.twig' with {'active': 2, 'entity': entity} %}
 
-    {{ form_start(form, {'action': path('user_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('user_document_edit', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'user_delete' } %}
     {{ form_end(form) }}
-    
+
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'user_delete' } %}
-    
+
 {% endblock %}

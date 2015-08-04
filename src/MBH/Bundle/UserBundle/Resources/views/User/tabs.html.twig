@@ -1,8 +1,7 @@
 {% set menu = [
-    {'route': 'tourist_edit', 'title': '<i class="fa fa-info-circle"></i> '~ 'views.hotel.tabs.main_info'|trans({}, 'MBHHotelBundle')},
-    {'route': 'tourist_edit_document', 'title': '<i class="fa fa-book"></i> '~ 'views.hotel.tabs.document_relation'|trans({}, 'MBHHotelBundle')},
-    {'route': 'tourist_edit_address', 'title': '<i class="fa fa-map-marker"></i> '~ 'views.hotel.tabs.address'|trans({}, 'MBHHotelBundle')},
-    {'route': 'tourist_edit_visa', 'title': '<i class="fa fa-book"></i> '~ 'views.hotel.tabs.visa'|trans({}, 'MBHHotelBundle')},
+{'route': 'user_edit', 'title': '<i class="fa fa-info-circle"></i> '~ 'views.user.tabs.main_info'|trans({})},
+{'route': 'user_document_edit', 'title': '<i class="fa fa-book"></i> '~ 'views.user.tabs.document_relation'|trans({})},
+{'route': 'user_address_edit', 'title': '<i class="fa fa-map-marker"></i> '~ 'views.user.tabs.address'|trans({})},
 ] %}
 
 <ul class="nav nav-tabs" role="tablist">
@@ -10,7 +9,7 @@
         {% if entity is null and loop.index != 1 %}
             <li class="disabled">
                 <a href="#" role="tab" data-toggle="tooltip"
-                   title={{ 'views.hotel.tabs.main_info_required'|trans({}, 'MBHHotelBundle') }}>{{ item.title|raw }}</a>
+                   title={{ 'views.user.tabs.main_info_required'|trans({}) }}>{{ item.title|raw }}</a>
             </li>
         {% else %}
             <li {% if loop.index == active %}class="active"{% endif %}>

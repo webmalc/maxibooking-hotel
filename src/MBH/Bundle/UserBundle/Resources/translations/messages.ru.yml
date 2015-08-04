@@ -15,8 +15,11 @@ form.userType.surname: Фамилия
 form.userType.general_info: Общая информация
 form.userType.placeholder_surname: Иванов
 form.userType.name: Имя
+form.userType.patronymic: Отчество
+form.userType.birth_date: Дата роджения
 form.userType.general_info: Общая информация
 form.userType.placeholder_name: Иван
+form.userType.placeholder_patronymic: Иванович
 controller.profileController.new_password_saved_success: 'Новый пароль успешно сохранен.'
 controller.profileController.record_saved_success: 'Запись успешно создана.'
 controller.profileController.record_edited_success: 'Запись успешно отредактирована.'
@@ -32,3 +35,8 @@ form.userType.reports_help: Получать ли отчеты на электр
 
 form.userType.errors: Ошибки?
 form.userType.errors_help: Получать ли ошибки на электронную почту?
+
+views.user.tabs.main_info_required: "Необходимо заполнить основную информацию!"
+views.user.tabs.main_info: "Основная информация"
+views.user.tabs.document_relation: "Удостоверение личности"
+views.user.tabs.address: "Адрес"
