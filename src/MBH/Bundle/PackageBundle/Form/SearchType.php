@@ -37,10 +37,11 @@ class SearchType extends AbstractType
                 $roomTypes[$hotel->getName()][$roomType->getId()] = $roomType->getName();
             }
         }
-        $data = [];
+
+        /*$data = [];
         if ($options['hotel']) {
             $data = ['allrooms_' . $options['hotel']->getId()];
-        }
+        }*/
 
         $builder
                 ->add('order', 'integer', [
@@ -56,7 +57,7 @@ class SearchType extends AbstractType
                     'multiple' => true,
                     'error_bubbling' => true,
                     'choices' => $roomTypes,
-                    'data' => $data,
+                    //'data' => $data,
                 ])
                 ->add('tariff', 'document', [
                     'label' => 'form.searchType.tariff',

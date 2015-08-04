@@ -1,4 +1,4 @@
-/*global window, document, Routing, console, str, $ */
+/*global window, document, Routing, console, str, $, select2 */
 
 $.fn.serializeObject = function () {
     'use strict';
@@ -19,6 +19,8 @@ $.fn.serializeObject = function () {
 
 $(document).ready(function () {
     'use strict';
+
+    $('form.remember input, form.remember select, form.remember textarea').phoenix();
 
     $(".timepicker").timepicker({
         showMeridian: false
@@ -121,7 +123,9 @@ $(document).ready(function () {
             begin = $('.begin-datepiker'),
             end = $('.end-datepiker'),
             setDates = function () {
+                var period = begin.val() + '-' + end.val();
                 if (!select.val()) {
+                    select.select2("val", period);
                     return;
                 }
                 var dates = select.val().split('-');
@@ -196,4 +200,29 @@ $(document).ready(function () {
         },
         dropdownCssClass: "bigdrop"
     });
+
+    //remember inputs
+    (function () {
+        var inputs = $('.input-remember'),
+            load = function () {
+                inputs.each(function () {
+                    var el = $(this),
+                        cookie = $.cookie('input_' + el.attr('id'));
+
+                    if (cookie) {
+                        el.val(cookie);
+                    }
+                });
+            },
+            remember = function () {
+                inputs.each(function () {
+                    var el = $(this);
+                    if (el.val() && el.attr('id')) {
+                        $.cookie('input_' + el.attr('id'), el.val(), {expires: 7});
+                    }
+                });
+            };
+        load();
+        inputs.change(remember);
+    }());
 });

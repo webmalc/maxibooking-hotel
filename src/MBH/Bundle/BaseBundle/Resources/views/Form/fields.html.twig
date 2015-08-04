@@ -1,3 +1,16 @@
+{% block choice_widget_expanded %}
+    {% spaceless %}
+        <div {{ block('widget_container_attributes') }} class="btn-group" data-toggle="buttons">
+            {% for child in form %}
+            <label class="btn btn-sm btn-default {% if child.vars.checked %} active{% endif %}">
+                <input type="radio" {{ block('widget_attributes') }}{% if child.vars.value is defined %} value="{{ child.vars.value }}"{% endif %}{% if child.vars.checked %} checked="checked"{% endif %} />
+                {{ child.vars.label }}
+            </label>
+            {% endfor %}
+        </div>
+    {% endspaceless %}
+{% endblock choice_widget_expanded %}
+
 {% block form_widget_compound %}
     <div {% if not form.parent %} class="well" {% endif %} {{ block('widget_container_attributes') }}>
         {% if form.parent is empty %}

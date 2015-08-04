@@ -5,7 +5,7 @@
 {% block content %}
 
     <div class="well" id="room-overview-filter-well">
-        <form id="room-overview-filter" class="form-inline filter-form" role="form">
+        <form id="room-overview-filter" class="form-inline filter-form remember" role="form">
             <div class="input">
                 <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
                 <input type="text" id="room-overview-filter-begin" class="datepicker room-overview-filter begin-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">

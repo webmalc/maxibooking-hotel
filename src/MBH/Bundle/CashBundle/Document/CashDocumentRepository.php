@@ -183,6 +183,11 @@ class CashDocumentRepository extends DocumentRepository
             $qb->field('method')->in($criteria->methods);
         }
 
+        if ($criteria->createdBy) {
+
+            $qb->field('createdBy')->equals($criteria->createdBy);
+        }
+
         if ($criteria->isPaid) {
             $qb->field('isPaid')->equals(true);
         }

@@ -1,4 +1,4 @@
-/*global window, $, services, document */
+/*global window, $, services, document, select2 */
 $(document).ready(function () {
     "use strict";
 
@@ -96,6 +96,7 @@ $(document).ready(function () {
                 }
             }
             ;
+        timeInput.timepicker({showMeridian: false});
         nightsDiv.change(calc);
         personsDiv.change(calc);
         amountInput.change(calc);
@@ -111,10 +112,37 @@ $(document).ready(function () {
 /**
  * @author Aleksandr Arofikin
  */
-/*global window, $, document, Routing*/
-/*jslint regexp: true */
 $(document).ready(function () {
     'use strict';
+
+    //Service selector
+    (function () {
+        var catSelect = $('#select-category'),
+            serviceSelect = $('#select-service'),
+            servicesHtml = serviceSelect.html(),
+            show = function () {
+                serviceSelect.prop('disabled', true);
+                serviceSelect.html(servicesHtml);
+
+                var catId = catSelect.val();
+                if (!catId) {
+                    return null;
+                }
+                serviceSelect.children('option').each(function () {
+                    if ($(this).attr('data-category') !== catId && $(this).val() !== '') {
+                        $(this).remove();
+                    }
+                })
+
+                serviceSelect.select2('destroy');
+                serviceSelect.select2({allowClear: true, width: 'element'});
+                serviceSelect.prop('disabled', false);
+
+            };
+        show();
+        catSelect.change(show);
+    }());
+
     var $serviceFilterForm = $('#service-filter'),
         $serviceTable = $('#service-table'),
         processing = false;
@@ -129,21 +157,21 @@ $(document).ready(function () {
             "method" : 'post',
             "data": function (d) {
                 d = $.extend(d, $serviceFilterForm.serializeObject());
-                d.services = $('#select-services').select2('val');
-                console.log(d);
+                d.service = $('#select-service').select2('val');
+                d.category = $('#select-category').select2('val');
             },
-            beforeSend: function () {processing = true; }
+            beforeSend: function () {processing = true;}
         },
         "aoColumns": [
             {"name": "icon", "bSortable": false, "class" : "td-xss text-center"},
             {"name": "number", "bSortable": false, "class" : "td-xss text-center"},
-            {"name": "date", "class" : "text-center"},
+            {"name": "date"},
             {"name": "service", "bSortable": false},
             {"name": "nights", "class" : "td-xss text-center"},
             {"name": "persons", "class" : "td-xss text-center"},
             {"name": "amount", "class" : "td-xss text-center"},
             {"name": "order", "class" : "text-right", "bSortable": false},
-            {"name": "total"},
+            {"name": "total", "class" : "text-right", "bSortable": false},
             {"name": "payment", "class" : "text-center", "bSortable": false},
             {"name": "note", "bSortable": false}
         ],
@@ -155,18 +183,13 @@ $(document).ready(function () {
             for (var k in totals) {
                 $('#service-summary-' + k).html(totals[k] + ' ');
             }
+            $('.deleted-entry').closest('tr').addClass('danger');
         }
     }).fnDraw();
 
     $serviceFilterForm.find('input, select').on('change switchChange.bootstrapSwitch', function () {
-        if (!processing) {
+        if (!processing || 1) {
             $serviceTable.dataTable().fnDraw();
         }
     });
-
-    /*$serviceFilterForm.find('select').on('select2-selecting', function () {
-        if (!processing) {
-            $serviceTable.dataTable().fnDraw();
-        }
-    });*/
 })

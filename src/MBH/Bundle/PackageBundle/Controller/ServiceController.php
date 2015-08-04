@@ -30,21 +30,30 @@ class ServiceController extends BaseController
      */
     public function indexAction()
     {
-        $services = [];
+        $services = $categories = [];
 
-        foreach($this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
-            $categories = $hotel->getServicesCategories();
-            foreach($categories as $category) {
-                $group = $hotel->getName().':'.mb_strtolower($category->getName());
-                $services[$group][$category->getId()] = $category->getName().':'.'Все услуги';
-                foreach ($category->getServices() as $service) {
-                    $services[$group][$service->getId()] = $category->getName().':'.$service->getName();
+        foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findBy(['isEnabled' => true], ['fullTitle' => 'asc', 'title' => 'asc']) as $hotel) {
+
+            $serviceCats = $this->dm
+                ->getRepository('MBHPriceBundle:ServiceCategory')
+                ->findBy(['hotel.id' => $hotel->getId(), 'isEnabled' => true], ['fullTitle' => 'asc', 'title' => 'asc']);
+
+            foreach ($serviceCats as $category) {
+                $categories[(string)$hotel][$category->getId()] = (string)$category;
+
+                $serviceDocs = $serviceCats = $this->dm
+                    ->getRepository('MBHPriceBundle:Service')
+                    ->findBy(['category.id' => $category->getId(), 'isEnabled' => true], ['fullTitle' => 'asc', 'title' => 'asc']);
+
+                foreach ($serviceDocs as $serviceDoc) {
+                    $services[$serviceDoc->getId()] = $serviceDoc;
                 }
             }
         }
 
         return [
-            'services' => $services
+            'services' => $services,
+            'categories' => $categories
         ];
     }
 
@@ -58,7 +67,21 @@ class ServiceController extends BaseController
     {
         $begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
         $end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
-        $services = $request->get('services');
+        $service = $request->get('service');
+        $category = $request->get('category');
+        $services = null;
+
+        //cat services
+        if (!empty($category) && empty($service)) {
+            $serviceDocs = $serviceCats = $this->dm
+                ->getRepository('MBHPriceBundle:Service')
+                ->findBy(['category.id' => $category, 'isEnabled' => true]);
+
+            $services = $this->get('mbh.helper')->toIds($serviceDocs);
+
+        } else if (!empty($service)) {
+            $services = [$service];
+        }
 
         if (!$begin) {
             $begin = new \DateTime('midnight -7 days');
@@ -96,19 +119,8 @@ class ServiceController extends BaseController
             $queryBuilder->sort($firstSort[0], $firstSort[1]);
         }
 
-        if ($services) {
-            /** @var ServiceCategory[] $categories */
-            $categories = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->createQueryBuilder()->field('id')->in($services)->getQuery()->execute();
-            foreach ($categories as $category) {
-                foreach ($category->getServices() as $service) {
-                    $services[] = $service->getId();
-                }
-            }
-
-            $queryBuilder->field('service.id')
-                //->equals($services)
-                ->in($services);
-            ;
+        if ($services !== null && is_array($services)) {
+            $queryBuilder->field('service.id')->in($services);
         }
 
         if ($request->get('deleted') == 'on') {
@@ -126,17 +138,11 @@ class ServiceController extends BaseController
             'payment' => 0,
             'dept' => 0,
         ];
-        /*$totals = $queryBuilder->group([], $totals)->reduce('function(obj, prev){
-            prev.nights += ((obj.nights && obj.calcType == "per_night") ? parseFloat(obj.nights) : 0);
-            prev.guests += ((obj.persons && obj.calcType != "not_applicable") ? parseFloat(obj.persons) : 0);
-            prev.amount += (obj.amount ? parseFloat(obj.amount) : 0);
-            prev.result += (obj.total ? parseFloat(obj.total) : 0);//obj.persons * obj.price;
-        }')->getQuery()->getSingleResult();*/
 
-        foreach($results as $service) {
-            if($service->getCalcType() == 'per_night')
+        foreach ($results as $service) {
+            if ($service->getCalcType() == 'per_night')
                 $totals['nights'] += intval($service->getNights());
-            if($service->getCalcType() != 'not_applicable') {
+            if ($service->getCalcType() != 'not_applicable') {
                 $totals['guests'] += intval($service->getPersons());
             }
             $totals['amount'] += intval($service->getAmount());
@@ -146,8 +152,8 @@ class ServiceController extends BaseController
         $totals['result'] = number_format($totals['result'], 2);
         $totals = json_encode($totals);
 
-        if($request->get('deleted') == 'on') {
-            $this->dm->getFilterCollection()->enable('softdeleteable') ;
+        if ($request->get('deleted') == 'on') {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
         }
 
         return [

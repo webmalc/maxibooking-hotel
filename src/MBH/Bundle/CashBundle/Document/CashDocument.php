@@ -393,10 +393,12 @@ class CashDocument extends Base
 
     /**
      * @param mixed $documentDate
+     * @return $this
      */
     public function setDocumentDate(\DateTime $documentDate = null)
     {
         $this->documentDate = $documentDate;
+        return $this;
     }
 
     /**
@@ -409,10 +411,12 @@ class CashDocument extends Base
 
     /**
      * @param \DateTime $paidDate
+     * @return $this
      */
     public function setPaidDate(\DateTime $paidDate = null)
     {
         $this->paidDate = $paidDate;
+        return $this;
     }
 
     /**

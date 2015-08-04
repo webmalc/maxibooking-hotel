@@ -83,4 +83,15 @@
             <small>&nbsp;</small>
         </td>
     {% endif %}
+
+    {% if type == 'arrivals' %}
+        <td class="text-right">
+            {{ entity.begin|mbh_format }}<br>
+            <small>&nbsp;</small>
+        </td>
+    {% endif %}
+    {% set note = entity.order.note ~ " " ~ entity.note %}
+    <td>
+        <small>{{ note|truncate(80)|nl2br }}</small>
+    </td>
 </tr>

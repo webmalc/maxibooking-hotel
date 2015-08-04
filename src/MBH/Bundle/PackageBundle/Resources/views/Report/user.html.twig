@@ -7,7 +7,7 @@
 {% block content %}
 
     <div class="well" id="users-report-filter-well">
-        <form id="users-report-filter" class="form-inline filter-form" role="form">
+        <form id="users-report-filter" class="form-inline filter-form remember" role="form">
             <div class="input">
                 <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
                 <input type="text" name="begin" id="users-report-filter-begin" class="datepicker users-report-filter begin-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-14 days")|date('d.m.Y') : app.request.get('begin')}}">
@@ -16,6 +16,8 @@
                 - &nbsp
                 <input type="text" name="end" id="users-report-filter-end" class="datepicker users-report-filter end-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ?  'now'|date_modify("+1 day")|date('d.m.Y') : app.request.get('end')}}">
             </div>
+
+            {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
             
             <div class="input">
                 <i class="fa fa-user" title='Пользователь' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="Пользователь" id="users-report-filter-users" class="users-report-filter form-control input-sm">

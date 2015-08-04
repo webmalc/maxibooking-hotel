@@ -44,6 +44,7 @@ class CashDocumentType extends AbstractType
                 'data' => $options['payer'] ? $options['payer'] : null,
                 'group' => $options['groupName'],
                 'choices' => ['' => ''] + $payers,
+                'data' => key($payers),
                 'attr' => [
                     'placeholder' => 'form.cashDocumentType.placeholder_fio',
                     'style' => 'min-width: 500px',
@@ -59,7 +60,7 @@ class CashDocumentType extends AbstractType
                 'label' => 'form.cashDocumentType.operation_type',
                 'required' => true,
                 'multiple' => false,
-                'empty_value' => '',
+                'expanded' => true,
                 'group' => $options['groupName'],
                 'choices' => $options['operations']
             ])
@@ -73,15 +74,7 @@ class CashDocumentType extends AbstractType
                 'label' => 'form.cashDocumentType.payment_way',
                 'required' => true,
                 'multiple' => false,
-                'empty_value' => '',
-                'group' => $options['groupName'],
-                'choices' => $options['methods']
-            ])
-            ->add('method', 'choice', [
-                'label' => 'form.cashDocumentType.payment_way',
-                'required' => true,
-                'multiple' => false,
-                'empty_value' => '',
+                'expanded' => true,
                 'group' => $options['groupName'],
                 'choices' => $options['methods']
             ])
@@ -108,7 +101,6 @@ class CashDocumentType extends AbstractType
             ->add('number', 'text', [
                 'label' => 'form.cashDocumentType.number',
                 'group' => $options['groupName'],
-                //'attr' => ['class' => 'input-sm'],
                 'required' => true,
             ])
             ->add('note', 'textarea', [

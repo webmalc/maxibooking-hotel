@@ -92,12 +92,16 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             ->getQuery()
             ->execute();
 
-        if (!$request->isMethod("PUT")) { //default values
-            $cash->setDocumentDate(new \DateTime('now'));
-            $cash->setIsPaid(true);
-            $cash->setPaidDate(new \DateTime('now'));
-            $cash->setOrder($entity);
-            $cash->setNumber($cashDocumentRepository->generateNewNumber($cash));
+        //Defaults
+        if (!$request->isMethod("PUT")) {
+            $cash
+                ->setOperation('in')
+                ->setMethod('cash')
+                ->setDocumentDate(new \DateTime('now'))
+                ->setIsPaid(true)
+                ->setPaidDate(new \DateTime('now'))
+                ->setOrder($entity)
+                ->setNumber($cashDocumentRepository->generateNewNumber($cash));
         }
 
         $form = $this->createForm(new CashDocumentType($this->dm), $cash,

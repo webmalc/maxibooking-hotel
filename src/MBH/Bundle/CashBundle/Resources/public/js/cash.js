@@ -67,6 +67,7 @@ $(document).ready(function () {
         $showNoPaidCheckbox = $('#show_no_paid'),
         $deletedCheckbox = $('#deleted-checkbox'),
         $byDayCheckbox = $('#by_day'),
+        $user = $('#user'),
         getFormData = function () {
             var data = {};
             if (!$('#begin').val() && defaultBeginValue) {
@@ -79,6 +80,7 @@ $(document).ready(function () {
             data.show_no_paid = $showNoPaidCheckbox.prop("checked") ? 1 : 0;
             data.by_day = $byDayCheckbox.prop("checked") ? 1 : 0;
             data.deleted = $deletedCheckbox.prop("checked") ? 1 : 0;
+            data.user = $user.val();
 
             return data;
         },
@@ -116,12 +118,13 @@ $(document).ready(function () {
         "aoColumns": [
             {"bSortable": false}, // icon
             null, // prefix
-            {"bSortable": false}, // payer
-            {"bSortable": false}, // in
+            null, // in
             null, // out
-            {"bSortable": false}, //operation
+            null, //operation
+            {"bSortable": false}, // payer
             null, // date
             null, // isPaid
+            null, // user
             null, // deletedAt
             {"bSortable": false, "class": "table-actions-td"} // actions
         ],
