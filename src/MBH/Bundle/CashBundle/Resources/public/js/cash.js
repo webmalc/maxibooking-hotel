@@ -215,5 +215,12 @@ $(document).ready(function () {
         }
         sw.switch();
     });
+
+    $('#1c-export').on('click', function (e){
+        e.preventDefault();
+        var data = getFormData();
+        var href = $(this).attr('href');
+        window.open(href + '?' + jQuery.param(data));
+    });
 });
 

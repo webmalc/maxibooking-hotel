@@ -100,7 +100,7 @@ class CashDocumentRepository extends DocumentRepository
      *
      * @author Aleksandr Arofikin <sashaaro@gmail.com>
      */
-    public function getListForCash(CashDocumentQueryCriteria $criteria, $byDays = false)
+    public function findByCriteria(CashDocumentQueryCriteria $criteria, $byDays = false)
     {
         $qb = $this->queryCriteriaToBuilder($criteria);
 

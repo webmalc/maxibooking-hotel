@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
+use MBH\Bundle\CashBundle\Document\CashDocumentRepository;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\CashBundle\Form\CashDocumentType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\Response;
 
 class CashController extends Controller
 {
@@ -44,33 +46,16 @@ class CashController extends Controller
         ];
     }
 
+    /**
+     * @param Request $request
+     * @return CashDocumentQueryCriteria
+     */
     private function requestToCashCriteria(Request $request)
     {
         $queryCriteria = new CashDocumentQueryCriteria();
-        $clientDataTableParams = ClientDataTableParams::createFromRequest($request);
-        $clientDataTableParams->setSortColumnFields([
-            1 => 'number',
-            2 => 'total',
-            3 => 'total',
-            4 => 'operation',
-            6 => 'documentDate',
-            7 => 'paidDate',
-            8 => 'createdBy',
-            9 => 'deletedAt'
-        ]);
-
-        $queryCriteria->skip = $clientDataTableParams->getStart();
-        $queryCriteria->limit = $clientDataTableParams->getLength();
 
         $queryCriteria->sortBy = 'createdAt';
         $queryCriteria->sortDirection = -1;//SORT_DESC;
-
-        if ($getFirstSort = $clientDataTableParams->getFirstSort()) {
-            $queryCriteria->sortBy = [$getFirstSort[0]];
-            $queryCriteria->sortDirection = [$getFirstSort[1]];
-        }
-
-        $queryCriteria->search = $clientDataTableParams->getSearch();
 
         $method = $request->get('method');
         $availableMethods = $this->container->getParameter('mbh.cash.methods');
@@ -107,6 +92,35 @@ class CashController extends Controller
     }
 
     /**
+     * @param CashDocumentQueryCriteria $queryCriteria
+     * @param Request $request
+     */
+    private function handleClientDataTableParams(CashDocumentQueryCriteria $queryCriteria, Request $request)
+    {
+        $clientDataTableParams = ClientDataTableParams::createFromRequest($request);
+        $clientDataTableParams->setSortColumnFields([
+            1 => 'number',
+            2 => 'total',
+            3 => 'total',
+            4 => 'operation',
+            6 => 'documentDate',
+            7 => 'paidDate',
+            8 => 'createdBy',
+            9 => 'deletedAt'
+        ]);
+
+        $queryCriteria->skip = $clientDataTableParams->getStart();
+        $queryCriteria->limit = $clientDataTableParams->getLength();
+
+        if ($getFirstSort = $clientDataTableParams->getFirstSort()) {
+            $queryCriteria->sortBy = [$getFirstSort[0]];
+            $queryCriteria->sortDirection = [$getFirstSort[1]];
+        }
+
+        $queryCriteria->search = $clientDataTableParams->getSearch();
+    }
+
+    /**
      * Lists all entities as json.
      *
      * @Route("/json", name="cash_json", defaults={"_format"="json"}, options={"expose"=true})
@@ -123,12 +137,14 @@ class CashController extends Controller
         $repository = $this->dm->getRepository('MBHCashBundle:CashDocument');
 
         $queryCriteria = $this->requestToCashCriteria($request);
+        $this->handleClientDataTableParams($queryCriteria, $request);
+
         $isByDay = $request->get('by_day');
         if ($isByDay) {
             $queryCriteria->isPaid = true;
         }
 
-        $results = $repository->getListForCash($queryCriteria, $isByDay);
+        $results = $repository->findByCriteria($queryCriteria, $isByDay);
 
         $params = [
             "draw" => $request->get('draw'),
@@ -165,6 +181,113 @@ class CashController extends Controller
     }
 
     /**
+     * @Route("/export/1c", name="cash_1c_export", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_BOOKKEEPER')")
+     * @param Request $request
+     * @return Response
+     */
+    public function export1cAction(Request $request)
+    {
+        $queryCriteria = $this->requestToCashCriteria($request);
+        $queryCriteria->limit = 1000;
+
+        /** @var CashDocumentRepository $cashDocumentRepository */
+        $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
+        $cashDocuments = $cashDocumentRepository->findByCriteria($queryCriteria);
+
+        $text = '';
+        foreach($cashDocuments as $cashDocument) {
+            /*$cashDocument->getNumber();
+            $cashDocument->getCreatedAt()->format('d.m.Y');
+            $cashDocument->getOrganizationPayer()->getCheckingAccount();
+            $cashDocument->getIsPaid() ? $cashDocument->getPaidDate()->format('d.m.Y') : '';
+            $cashDocument->getPayer()->getName()
+            $cashDocument->getOrganizationPayer()->getInn();
+            $cashDocument->getOrganizationPayer()->getKpp();
+            $cashDocument->getOrganizationPayer()->getBankBik();
+            $cashDocument->getOrganizationPayer()->getCorrespondentAccount();
+            $cashDocument->getHotel()->getOrganization()->getCorrespondentAccount();
+            $cashDocument->getPaidDate()->format('d.m.Y');
+            if($organization = $cashDocument->getHotel()->getOrganization()) {
+                $organization->getName();
+                $organization->getInn();
+                $organization->getKpp();
+                $organization->getCheckingAccount();
+                $organization->getBank();
+                $organization->getBankBik();
+                $organization->getCorrespondentAccount();
+            }
+            $cashDocument->getMethod();
+            */
+
+            $text .= sprintf('СекцияДокумент=Платежное поручение
+Номер=537154
+Дата=16.07.2014
+Сумма='.$cashDocument->getTotal().'
+ПлательщикСчет=40911810049000011000
+ДатаСписано=
+Плательщик=ЗАПАДНО-УРАЛЬСКИЙ БАНК ОАО "СБЕРБАНК РОССИИ"//ЗЫРЯНОВА ЕЛЕНА СЕРГЕЕВНА//26859356266//614000 ПЕРМЬ МЕХАНОШИНА д.10 кв.44//
+ПлательщикИНН=7707083893
+ПлательщикКПП=590202001
+ПлательщикРасчСчет=40911810049000011000
+ПлательщикБанк1=ЗАПАДНО-УРАЛЬСКИЙ БАНК ОАО "СБЕРБАНК РОССИИ"
+ПлательщикБИК=045773603
+ПлательщикКорсчет=30101810900000000603
+ПолучательСчет=40702810938250018461
+ДатаПоступило=16.07.2014
+Получатель=ООО "МАРКОНТ И КО"
+ПолучательИНН=7725807500
+ПолучательКПП=772501001
+ПолучательРасчСчет=40702810938250018461
+ПолучательБанк1=Московский банк ОАО "Сбербанк России"
+ПолучательБИК=044525225
+ПолучательКорсчет=30101810400000000225
+ВидПлатежа=электронно
+ВидОплаты=01
+Код=
+СтатусСоставителя=
+ПоказательКБК=
+ОКАТО=
+ПоказательОснования=
+ПоказательПериода=
+ПоказательНомера=
+ПоказательДаты=
+ПоказательТипа=
+Очередность=5
+НазначениеПлатежа=ЗА 15/07/2014; ФИО: ЗЫРЯНОВА ЕЛЕНА СЕРГЕЕВНА; АДРЕС: Г ПЕРМЬ УЛ МЕХАНОШИНА Д 10 КВ 44; ДОП_ИНФ: ЗА ТУРИСТИЧЕСКУЮ ПУТЕВКУ ПО ДОГОВОРУ N 2-16696 ОТ 14.07.2014; КОНТАКТ: 89197101886;
+КонецДокумента');
+        }
+
+        $responseContent = sprintf(
+            '1CClientBankExchange
+ВерсияФормата=1.02
+Кодировка=Windows
+Отправитель=
+Получатель=
+ДатаСоздания='.date('d.m.Y').'
+ВремяСоздания='.date('H.i.s').'
+ДатаНачала='.$queryCriteria->begin->format('d.m.Y').'
+ДатаКонца='.$queryCriteria->end->format('d.m.Y').'
+РасчСчет=40702810938250018461
+СекцияРасчСчет
+ДатаНачала=16.07.2014
+ДатаКонца=16.07.2014
+НачальныйОстаток=216692.84
+РасчСчет=40702810938250018461
+ВсегоСписано=215711
+ВсегоПоступило=190574
+КонечныйОстаток=191555.84
+КонецРасчСчет
+'.$text.'
+КонецФайла');
+
+        $response = new Response($responseContent);
+        $response->headers->set('Content-Type','text/plain');
+        return $response;
+    }
+
+    /**
      * Displays a form to edit an existing entity.
      *
      * @Route("/{id}/edit", name="cash_edit")
@@ -180,13 +303,11 @@ class CashController extends Controller
 
         $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
 
-        $form = $this->createForm(new CashDocumentType($this->dm), $entity,
-            [
-                'methods' => $this->container->getParameter('mbh.cash.methods'),
-                'operations' => $this->container->getParameter('mbh.cash.operations'),
-                'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity->getOrder()),
-            ]
-        );
+        $form = $this->createForm(new CashDocumentType($this->dm), $entity, [
+            'methods' => $this->container->getParameter('mbh.cash.methods'),
+            'operations' => $this->container->getParameter('mbh.cash.operations'),
+            'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity->getOrder()),
+        ]);
 
         if($request->isMethod("PUT")){
             $form->submit($request);
@@ -195,7 +316,8 @@ class CashController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans('controller.cashController.edit_record_success'));
+                $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.cashController.edit_record_success'));
 
                 return $this->afterSaveRedirect('cash', $entity->getId());
             }
