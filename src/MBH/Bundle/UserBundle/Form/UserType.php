@@ -77,7 +77,6 @@ class UserType extends AbstractType
             ]);
 
         if (!$options['admin']) {
-
             $builder->add('hotels', 'document', [
                 'group' => 'form.userType.settings',
                 'label' => 'form.userType.hotels',
@@ -151,13 +150,11 @@ class UserType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(
-            array(
-                'data_class' => 'MBH\Bundle\UserBundle\Document\User',
-                'admin' => false,
-                'hotels' => []
-            )
-        );
+        $resolver->setDefaults([
+            'data_class' => 'MBH\Bundle\UserBundle\Document\User',
+            'admin' => false,
+            'hotels' => []
+        ]);
     }
 
     public function getName()

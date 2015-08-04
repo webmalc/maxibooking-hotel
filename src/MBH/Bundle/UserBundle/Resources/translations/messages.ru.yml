@@ -35,3 +35,8 @@ form.userType.reports_help: Получать ли отчеты на электр
 
 form.userType.errors: Ошибки?
 form.userType.errors_help: Получать ли ошибки на электронную почту?
+
+views.user.tabs.main_info_required: "Необходимо заполнить основную информацию!"
+views.user.tabs.main_info: "Основная информация"
+views.user.tabs.document_relation: "Удостоверение личности"
+views.user.tabs.address: "Адрес"

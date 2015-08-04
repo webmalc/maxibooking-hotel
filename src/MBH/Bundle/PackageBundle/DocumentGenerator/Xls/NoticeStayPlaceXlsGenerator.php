@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PackageBundle\DocumentGenerator\DocumentResponseGeneratorInterface;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -52,7 +53,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
     {
         $package = $formData['package'];
         $tourist = $formData['tourist'];
-        if (!$package instanceof Package || !$tourist instanceof Tourist) {
+        $user = $formData['user'];
+        if (!$package instanceof Package || !$tourist instanceof Tourist || !$user instanceof User) {
             throw new \LogicException();
         }
 
@@ -223,6 +225,57 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         $this->write($hotel->getFlat(), 'CU24');
         //$this->write('94957548864', 'DS24');
         $this->phpExcelObject->getActiveSheet()->setCellValue('EE26', 'X');
+
+        $this->write($user->getLastName(), 'W28');
+        $this->write($user->getFirstName().' '.$user->getPatronymic(), 'W31');
+        if($birthplace = $user->getBirthday()) {
+            $this->write($birthplace->format('d'), 'DO28');
+            $this->write($birthplace->format('m'), 'EE28');
+            $this->write($birthplace->format('Y'), 'EQ28');
+        }
+
+        if($documentRelation = $user->getDocumentRelation()) {
+            if ($documentRelation->getType() && array_key_exists($documentRelation->getType(), $documentTypes)) {
+                $this->write($documentTypes[$documentRelation->getType()], 'BC34');
+            }
+
+            $this->write($documentRelation->getSeries(), 'DC34');
+            $this->write($documentRelation->getNumber(), 'DW34');
+            if($issued = $documentRelation->getIssued()) {
+                $this->write($issued->format('d'), 'AA36');
+                $this->write($issued->format('m'), 'AQ36');
+                $this->write($issued->format('Y'), 'BC36');
+            }
+            if($expiry = $documentRelation->getExpiry()) {
+                $this->write($expiry->format('d'), 'CM36');
+                $this->write($expiry->format('m'), 'DC36');
+                $this->write($expiry->format('Y'), 'DO36');
+            }
+        }
+
+        if($addressObjectDecomposed = $user->getAddressObjectDecomposed()) {
+            if($region = $addressObjectDecomposed->getRegion()) {
+                $this->write($region->getName(), 'AE39');
+            }
+
+            if($district = $addressObjectDecomposed->getDistrict()) {
+                $this->write($district, 'W42');
+            }
+            if($settlement = $addressObjectDecomposed->getSettlement()) {
+                $this->write($settlement, 'AE44');
+            }
+
+            if($street = $addressObjectDecomposed->getStreet()) {
+                $this->write($street, 'W47');
+            }
+
+            $this->write($addressObjectDecomposed->getHouse(), 'S49');
+            $this->write($addressObjectDecomposed->getCorpus(), 'AQ49');
+            $this->write($addressObjectDecomposed->getFlat(), 'CU49');
+        }
+
+        //$this->write($user->get, 'DS49');phone
+
 
         if ($organization = $hotel->getOrganization()) {
             $this->write($organization->getName(), 'AA51');

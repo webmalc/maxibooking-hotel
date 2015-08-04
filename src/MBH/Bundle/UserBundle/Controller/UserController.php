@@ -3,11 +3,14 @@
 namespace MBH\Bundle\UserBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
+use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MyAllocator\phpsdk\src\Api\AssociateUserToPMS;
 use MyAllocator\phpsdk\src\Api\HelloVendor;
 use MyAllocator\phpsdk\src\Api\HelloWorld;
 use MyAllocator\phpsdk\src\Object\Auth;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,10 +63,8 @@ class UserController extends Controller
     {
         $entity = new User();
 
-        $form = $this->createForm(
-            new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity,
-            ['admin' => $entity->hasRole('ROLE_ADMIN')]
+        $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
+            $entity, ['admin' => $entity->hasRole('ROLE_ADMIN')]
         );
 
         return array(
@@ -82,10 +83,8 @@ class UserController extends Controller
     public function createAction(Request $request)
     {
         $entity = new User(array());
-        $form = $this->createForm(
-            new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity,
-            ['admin' => $entity->hasRole('ROLE_ADMIN')]
+        $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
+            $entity, ['admin' => $entity->hasRole('ROLE_ADMIN')]
         );
         $form->submit($request);
 
@@ -95,7 +94,7 @@ class UserController extends Controller
 
             $this->updateAcl($entity, $form);
 
-            $this->getRequest()->getSession()->getFlashBag()
+            $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.profileController.record_saved_success'));
 
             return $this->afterSaveRedirect('user', $entity->getId());
@@ -114,15 +113,10 @@ class UserController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
+     * @ParamConverter(name="entity", class="MBHUserBundle:User")
      */
-    public function editAction($id)
+    public function editAction(User $entity)
     {
-        $entity = $this->dm->getRepository('MBHUserBundle:User')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
         $hasHotels = [];
         $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         foreach ($hotels as $hotel) {
@@ -155,6 +149,70 @@ class UserController extends Controller
         );
     }
 
+
+
+    /**
+     * @Route("/{id}/edit/document", name="user_document_edit")
+     * @Method({"GET","PUT"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template()
+     * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     */
+    public function editDocumentAction(User $entity, Request $request)
+    {
+        $entity->getDocumentRelation() ?: $entity->setDocumentRelation(new DocumentRelation());
+
+        $form = $this->createForm('mbh_document_relation', $entity, [
+            'data_class' => 'MBH\Bundle\UserBundle\Document\User',
+            'citizenship' => false,
+            'birthplace' => false
+        ]);
+
+        if($request->isMethod(Request::METHOD_PUT)) {
+            $form->submit($request);
+            if($form->isValid()) {
+                $this->get('fos_user.user_manager')->updateUser($entity);
+
+                return $this->redirectToRoute('user_document_edit', ['id' => $entity->getId()]);
+            }
+        }
+
+        return array(
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        );
+    }
+
+    /**
+     * @Route("/{id}/edit/address", name="user_address_edit")
+     * @Method({"GET","PUT"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template()
+     * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     */
+    public function editAddressAction(User $entity, Request $request)
+    {
+        $entity->getAddressObjectDecomposed() ?: $entity->setAddressObjectDecomposed(new AddressObjectDecomposed());
+
+        $form = $form = $this->createForm('mbh_address_object_decomposed', $entity->getAddressObjectDecomposed());
+
+        if($request->isMethod(Request::METHOD_PUT)) {
+            $form->submit($request);
+            if($form->isValid()) {
+                $this->get('fos_user.user_manager')->updateUser($entity);
+
+                return $this->redirectToRoute('user_address_edit', ['id' => $entity->getId()]);
+            }
+        }
+
+        return array(
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        );
+    }
+
     /**
      * Edits an existing entity.
      *
@@ -162,19 +220,12 @@ class UserController extends Controller
      * @Method("PUT")
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template("MBHUserBundle:User:edit.html.twig")
+     * @ParamConverter(name="entity", class="MBHUserBundle:User")
      */
-    public function updateAction(Request $request, $id)
+    public function updateAction(Request $request, User $entity)
     {
-        $entity = $this->dm->getRepository('MBHUserBundle:User')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        $form = $this->createForm(
-            new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity,
-            ['admin' => $entity->hasRole('ROLE_ADMIN')]
+        $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
+            $entity, ['admin' => $entity->hasRole('ROLE_ADMIN')]
         );
 
         $form->submit($request);

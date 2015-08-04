@@ -1,4 +1,4 @@
-/*global window, $, console, document */
+/*global window, $, console, document, Routing */
 $(document).ready(function () {
     'use strict';
 
@@ -16,4 +16,39 @@ $(document).ready(function () {
         startDate: new Date("1 January 1987"),
         autoclose: true
     });*/
+
+    $('#mbh_document_relation_authorityOrgan').select2({
+        minimumInputLength: 3,
+        placeholder: "Сделайте выбор",
+        allowClear: true,
+        ajax: {
+            url: Routing.generate('authority_organ_json_list'),
+            dataType: 'json',
+            data: function (term) {
+                return {
+                    query: term // search term
+                };
+            },
+            results: function (data) {
+                var results = [];
+                $.each(data, function (k, v) {
+                    results.push({id: k, text: v});
+                });
+
+                console.log(results);
+                return {results: results};
+            }
+        },
+        initSelection: function (element, callback) {
+            var id = $(element).val();
+            if (id !== "") {
+                $.ajax(Routing.generate('ajax_authority_organ', {id: id}), {
+                    dataType: "json"
+                }).done(function (data) {
+                    callback(data);
+                });
+            }
+        },
+        dropdownCssClass: "bigdrop"
+    })
 })

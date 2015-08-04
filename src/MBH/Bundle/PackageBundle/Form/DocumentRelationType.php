@@ -53,15 +53,18 @@ class DocumentRelationType extends AbstractType
         asort($documentTypes);
 
         //main
+        if($options['citizenship']) {
+            $builder
+                ->add('citizenship', 'document', [
+                    'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
+                    'label' => 'form.TouristExtendedType.citizenship',
+                    'group' => 'form.DocumentRelation.citizenship',
+                    'query_builder' => function(DocumentRepository $repository){
+                        return $repository->createQueryBuilder()->sort(['name' => 1]);
+                    }
+                ]);
+        }
         $builder
-            ->add('citizenship', 'document', [
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
-                'label' => 'form.TouristExtendedType.citizenship',
-                'group' => 'form.DocumentRelation.citizenship',
-                'query_builder' => function(DocumentRepository $repository){
-                    return $repository->createQueryBuilder()->sort(['name' => 1]);
-                }
-            ])
             ->add('type', 'choice', [
                 'choices' => $documentTypes,
                 'group' => 'form.DocumentRelation.main',
@@ -116,49 +119,51 @@ class DocumentRelationType extends AbstractType
             ->addModelTransformer(new EntityToIdTransformer($this->managerRegistry->getManager(), 'MBH\Bundle\VegaBundle\Document\VegaFMS'));
 
         //birthplace
-        $builder
-            ->add('country', 'document', [
-                'group' => 'form.DocumentRelation.birthplace',
-                'label' => 'form.BirthplaceType.country',
-                'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
-                'query_builder' => function(DocumentRepository $repository){
-                    return $repository->createQueryBuilder()->sort(['name' => 1]);
-                },
-                'empty_value' => '',
-                'required' => false,
-                'property_path' => 'birthplace.country'
-            ])
-            ->add('main_region', 'text', [
-                'group' => 'form.DocumentRelation.birthplace',
-                'label' => 'form.BirthplaceType.main_region',
-                'required' => false,
-                'property_path' => 'birthplace.main_region',
-                'attr' => ['class' => 'typeahead']
-            ])
-            ->add('district', 'text', [
-                'group' => 'form.DocumentRelation.birthplace',
-                /*'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
-                'query_builder' => function(DocumentRepository $repository){
-                    return $repository->createQueryBuilder()->sort(['name' => 1]);
-                },
-                'empty_value' => '',
-                */
-                'label' => 'form.BirthplaceType.district',
-                'required' => false,
-                'property_path' => 'birthplace.district'
-            ])
-            ->add('city', 'text', [//'mbh_city'
-                'group' => 'form.DocumentRelation.birthplace',
-                'label' => 'form.BirthplaceType.city',
-                'required' => false,
-                'property_path' => 'birthplace.city'
-            ])
-            ->add('settlement', 'text', [
-                'group' => 'form.DocumentRelation.birthplace',
-                'label' => 'form.BirthplaceType.settlement',
-                'required' => false,
-                'property_path' => 'birthplace.settlement'
-            ]);
+        if($options['birthplace']) {
+            $builder
+                ->add('country', 'document', [
+                    'group' => 'form.DocumentRelation.birthplace',
+                    'label' => 'form.BirthplaceType.country',
+                    'class' => 'MBH\Bundle\VegaBundle\Document\VegaState',
+                    'query_builder' => function(DocumentRepository $repository){
+                        return $repository->createQueryBuilder()->sort(['name' => 1]);
+                    },
+                    'empty_value' => '',
+                    'required' => false,
+                    'property_path' => 'birthplace.country'
+                ])
+                ->add('main_region', 'text', [
+                    'group' => 'form.DocumentRelation.birthplace',
+                    'label' => 'form.BirthplaceType.main_region',
+                    'required' => false,
+                    'property_path' => 'birthplace.main_region',
+                    'attr' => ['class' => 'typeahead']
+                ])
+                ->add('district', 'text', [
+                    'group' => 'form.DocumentRelation.birthplace',
+                    /*'class' => 'MBH\Bundle\VegaBundle\Document\VegaRegion',
+                    'query_builder' => function(DocumentRepository $repository){
+                        return $repository->createQueryBuilder()->sort(['name' => 1]);
+                    },
+                    'empty_value' => '',
+                    */
+                    'label' => 'form.BirthplaceType.district',
+                    'required' => false,
+                    'property_path' => 'birthplace.district'
+                ])
+                ->add('city', 'text', [//'mbh_city'
+                    'group' => 'form.DocumentRelation.birthplace',
+                    'label' => 'form.BirthplaceType.city',
+                    'required' => false,
+                    'property_path' => 'birthplace.city'
+                ])
+                ->add('settlement', 'text', [
+                    'group' => 'form.DocumentRelation.birthplace',
+                    'label' => 'form.BirthplaceType.settlement',
+                    'required' => false,
+                    'property_path' => 'birthplace.settlement'
+                ]);
+        }
     }
 
     /**
@@ -171,6 +176,8 @@ class DocumentRelationType extends AbstractType
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\PackageBundle\Document\Tourist',
             //'cascade_validation' => true
+            'citizenship' => true,
+            'birthplace' => true,
         ]);
     }
 

@@ -48,6 +48,9 @@ class NoticeStayPlaceXlsType extends AbstractType
             'label_attr' => ['class' => 'col-md-4'],
         ]);
         $builder->get('tourist')->addModelTransformer(new EntityToIdTransformer($this->dm, 'MBH\Bundle\PackageBundle\Document\Tourist'));
+
+        $builder->add('user', 'hidden');
+        $builder->get('user')->addModelTransformer(new EntityToIdTransformer($this->dm, 'MBH\Bundle\UserBundle\Document\User'));
     }
 
     /**

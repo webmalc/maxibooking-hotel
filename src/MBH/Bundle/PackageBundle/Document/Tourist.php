@@ -218,7 +218,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     protected $note;
 
     /**
-     * @var string
+     * @var VegaState|null
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaState")
      */
     protected $citizenship;

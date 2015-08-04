@@ -4,6 +4,8 @@ namespace MBH\Bundle\UserBundle\Document;
 
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
+use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -98,6 +100,18 @@ class User extends BaseUser
      * @Assert\Type(type="boolean")
      */
     protected $reports = true;
+
+    /**
+     * @var DocumentRelation
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\PackageBundle\Document\DocumentRelation")
+     */
+    protected $documentRelation;
+
+    /**
+     * @var AddressObjectDecomposed
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed")
+     */
+    protected $addressObjectDecomposed;
 
     /**
      * Hook timestampable behavior
@@ -283,5 +297,37 @@ class User extends BaseUser
     public function getReports()
     {
         return $this->reports;
+    }
+
+    /**
+     * @return DocumentRelation
+     */
+    public function getDocumentRelation()
+    {
+        return $this->documentRelation;
+    }
+
+    /**
+     * @param DocumentRelation $documentRelation
+     */
+    public function setDocumentRelation(DocumentRelation $documentRelation = null)
+    {
+        $this->documentRelation = $documentRelation;
+    }
+
+    /**
+     * @return AddressObjectDecomposed
+     */
+    public function getAddressObjectDecomposed()
+    {
+        return $this->addressObjectDecomposed;
+    }
+
+    /**
+     * @param AddressObjectDecomposed $addressObjectDecomposed
+     */
+    public function setAddressObjectDecomposed(AddressObjectDecomposed $addressObjectDecomposed = null)
+    {
+        $this->addressObjectDecomposed = $addressObjectDecomposed;
     }
 }
