@@ -196,6 +196,12 @@ class Order extends Base
     protected $pollQuestions;
 
     /**
+     * @var CreditCard
+     * @ODM\EmbedOne(targetDocument="CreditCard")
+     */
+    protected $creditCard;
+
+    /**
      * @var array
      * @ODM\EmbedMany(targetDocument="OrderDocument")
      */
@@ -510,7 +516,7 @@ class Order extends Base
 
     /**
      * Set card
-     *
+     * @deprecated
      * @param string $card
      * @return self
      */
@@ -522,7 +528,7 @@ class Order extends Base
 
     /**
      * Get card
-     *
+     * @deprecated
      * @return string $card
      */
     public function getCard()
@@ -855,5 +861,21 @@ class Order extends Base
         $this->originalPrice = $originalPrice;
 
         return $this;
+    }
+
+    /**
+     * @return CreditCard
+     */
+    public function getCreditCard()
+    {
+        return $this->creditCard;
+    }
+
+    /**
+     * @param CreditCard $creditCard
+     */
+    public function setCreditCard(CreditCard $creditCard = null)
+    {
+        $this->creditCard = $creditCard;
     }
 }

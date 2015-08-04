@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -200,9 +201,15 @@ class Booking extends Base
             ->setNote('remarks='.(string)$customer->remarks);
 
         if (!empty((string)$customer->cc_number)) {
-            $order->setCard(
-                'cc_cvc: '.$customer->cc_cvc.'; cc_expiration_date: '.$customer->cc_expiration_date.'; cc_name: '.$customer->cc_name.'; cc_number: '.$customer->cc_number.'; cc_type: '.$customer->cc_type
-            );
+            $card = new CreditCard();
+            $card->setType($customer->cc_type)
+                ->setNumber($customer->cc_number)
+                ->setDate($customer->cc_expiration_date)
+                ->setCardholder($customer->cc_name)
+                ->setCvc($customer->cc_cvc)
+            ;
+
+            $order->setCreditCard($card);
         }
 
         $this->dm->persist($order);
@@ -275,6 +282,7 @@ class Booking extends Base
             }
             if (!$tariff) {
                 $tariff = $this->createTariff($config, $rateId);
+
                 if (!$tariff) {
                     continue;
                 }
@@ -313,7 +321,7 @@ class Booking extends Base
             if ($room->addons->addon) {
                 foreach ($room->addons->addon as $addon) {
                     $servicesTotal += (float)$addon->totalprice;
-                    if (!$services[(int)$addon->type]) {
+                    if (empty($services[(int)$addon->type])) {
                         continue;
                     }
 
