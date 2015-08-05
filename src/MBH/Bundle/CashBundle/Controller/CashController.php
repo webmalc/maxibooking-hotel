@@ -198,52 +198,33 @@ class CashController extends Controller
 
         $text = '';
         foreach($cashDocuments as $cashDocument) {
-            /*$cashDocument->getNumber();
-            $cashDocument->getCreatedAt()->format('d.m.Y');
-            $cashDocument->getOrganizationPayer()->getCheckingAccount();
-            $cashDocument->getIsPaid() ? $cashDocument->getPaidDate()->format('d.m.Y') : '';
-            $cashDocument->getPayer()->getName()
-            $cashDocument->getOrganizationPayer()->getInn();
-            $cashDocument->getOrganizationPayer()->getKpp();
-            $cashDocument->getOrganizationPayer()->getBankBik();
-            $cashDocument->getOrganizationPayer()->getCorrespondentAccount();
-            $cashDocument->getHotel()->getOrganization()->getCorrespondentAccount();
-            $cashDocument->getPaidDate()->format('d.m.Y');
-            if($organization = $cashDocument->getHotel()->getOrganization()) {
-                $organization->getName();
-                $organization->getInn();
-                $organization->getKpp();
-                $organization->getCheckingAccount();
-                $organization->getBank();
-                $organization->getBankBik();
-                $organization->getCorrespondentAccount();
-            }
-            $cashDocument->getMethod();
-            */
+            $organizationPayer = $cashDocument->getOrganizationPayer() ? $cashDocument->getOrganizationPayer() : new Organization();
+            $hotelOrganization = $cashDocument->getHotel()->getOrganization();
 
             $text .= sprintf('СекцияДокумент=Платежное поручение
-Номер=537154
-Дата=16.07.2014
+Номер='.$cashDocument->getNumber().'
+Дата='.$cashDocument->getCreatedAt()->format('d.m.Y').'
 Сумма='.$cashDocument->getTotal().'
-ПлательщикСчет=40911810049000011000
-ДатаСписано=
-Плательщик=ЗАПАДНО-УРАЛЬСКИЙ БАНК ОАО "СБЕРБАНК РОССИИ"//ЗЫРЯНОВА ЕЛЕНА СЕРГЕЕВНА//26859356266//614000 ПЕРМЬ МЕХАНОШИНА д.10 кв.44//
-ПлательщикИНН=7707083893
-ПлательщикКПП=590202001
-ПлательщикРасчСчет=40911810049000011000
-ПлательщикБанк1=ЗАПАДНО-УРАЛЬСКИЙ БАНК ОАО "СБЕРБАНК РОССИИ"
-ПлательщикБИК=045773603
-ПлательщикКорсчет=30101810900000000603
-ПолучательСчет=40702810938250018461
-ДатаПоступило=16.07.2014
-Получатель=ООО "МАРКОНТ И КО"
-ПолучательИНН=7725807500
-ПолучательКПП=772501001
-ПолучательРасчСчет=40702810938250018461
-ПолучательБанк1=Московский банк ОАО "Сбербанк России"
-ПолучательБИК=044525225
-ПолучательКорсчет=30101810400000000225
-ВидПлатежа=электронно
+ПлательщикСчет='.$organizationPayer->getCheckingAccount().'
+ДатаСписано='.($cashDocument->getIsPaid() ? $cashDocument->getPaidDate()->format('d.m.Y') : '').'
+Плательщик='.$cashDocument->getPayer()->getName(). //ЗАПАДНО-УРАЛЬСКИЙ БАНК ОАО "СБЕРБАНК РОССИИ"//ЗЫРЯНОВА ЕЛЕНА СЕРГЕЕВНА//26859356266//614000 ПЕРМЬ МЕХАНОШИНА д.10 кв.44//
+'
+ПлательщикИНН='.$organizationPayer->getInn().'
+ПлательщикКПП='.$organizationPayer->getKpp().'
+ПлательщикРасчСчет='.$organizationPayer->getCheckingAccount().'
+ПлательщикБанк1='.$organizationPayer->getBank().'
+ПлательщикБИК='.$organizationPayer->getBankBik().'
+ПлательщикКорсчет='.$organizationPayer->getCorrespondentAccount().'
+ПолучательСчет='.$hotelOrganization->getCorrespondentAccount().'
+ДатаПоступило='.$cashDocument->getPaidDate()->format('d.m.Y').'
+Получатель='.$hotelOrganization->getName().'
+ПолучательИНН='.$hotelOrganization->getInn().'
+ПолучательКПП='.$hotelOrganization->getKpp().'
+ПолучательРасчСчет='.$hotelOrganization->getCheckingAccount().'
+ПолучательБанк1='.$hotelOrganization->getBank().'
+ПолучательБИК='.$hotelOrganization->getBankBik().'
+ПолучательКорсчет='.$hotelOrganization->getCorrespondentAccount().'
+ВидПлатежа='.$cashDocument->getMethod().'
 ВидОплаты=01
 Код=
 СтатусСоставителя=
@@ -256,7 +237,8 @@ class CashController extends Controller
 ПоказательТипа=
 Очередность=5
 НазначениеПлатежа=ЗА 15/07/2014; ФИО: ЗЫРЯНОВА ЕЛЕНА СЕРГЕЕВНА; АДРЕС: Г ПЕРМЬ УЛ МЕХАНОШИНА Д 10 КВ 44; ДОП_ИНФ: ЗА ТУРИСТИЧЕСКУЮ ПУТЕВКУ ПО ДОГОВОРУ N 2-16696 ОТ 14.07.2014; КОНТАКТ: 89197101886;
-КонецДокумента');
+КонецДокумента
+');
         }
 
         $responseContent = sprintf(
@@ -279,8 +261,8 @@ class CashController extends Controller
 ВсегоПоступило=190574
 КонечныйОстаток=191555.84
 КонецРасчСчет
-'.$text.'
-КонецФайла');
+'.$text.'КонецФайла
+');
 
         $response = new Response($responseContent);
         $response->headers->set('Content-Type','text/plain');
