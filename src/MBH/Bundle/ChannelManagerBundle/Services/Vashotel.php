@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
+use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -531,9 +532,14 @@ class Vashotel extends Base
             $card = $reservation->credit_card;
             if ($type == 'credit_card_secured' && !empty($card)) {
 
-                $order->setCard(
-                    'cvc: '.$card->cvc.'; valid: '.$card->valid.'; cardholder: '.$card->cardholder.'; number: '.$card->number.'; type: '.$card->type
-                );
+                $card = new CreditCard();
+                $card->setType($card->type)
+                    ->setNumber($card->number)
+                    ->setDate($card->valid)
+                    ->setCardholder($card->cardholder)
+                    ->setCvc($card->cvc)
+                ;
+                $order->setCreditCard($card);
             }
 
             $this->dm->persist($order);
@@ -811,7 +817,7 @@ class Vashotel extends Base
                 $this->templating->render(static::ORDERS_TEMPLATE, $data)
             );
 
-            $this->log($response->asXML());
+            //$this->log($response->asXML());
 
             if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
                 continue;
