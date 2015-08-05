@@ -105,6 +105,8 @@ form.userType.users: Исполнитель
 form.userType.date: Дата
 
 # corpus
-
-controller.corpus.updated_success: Копрус успешно сохранен
-controller.corpus.created_success: Копрус успешно добавлен
+views.form.corpus.group.main: Общая информация
+views.form.corpus.group.address: Адрес
+views.form.corpus.group.config: Настройки
+controller.corpus.updated_success: Корпус успешно сохранен
+controller.corpus.created_success: Корпус успешно добавлен

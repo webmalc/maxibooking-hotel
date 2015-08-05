@@ -50,7 +50,7 @@ class HousingController extends BaseController
     }
 
     /**
-     * @Route("/edit/{id}", name="housing_edit")
+     * @Route("/edit/{id}", name="housings_edit")
      * @Method("GET")
      * @Template()
      * @ParamConverter("entity", class="MBHHotelBundle:Housing")
@@ -86,7 +86,7 @@ class HousingController extends BaseController
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.corpus.created_success'));
 
-            return $this->afterSaveRedirect('housing', $entity->getId());
+            return $this->afterSaveRedirect('housings', $entity->getId());
         }
 
         return [

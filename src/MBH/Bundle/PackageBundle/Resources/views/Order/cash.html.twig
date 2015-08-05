@@ -66,6 +66,7 @@
                             <td class="text-center">{% if cash.isPaid is empty %}<span class="label label-danger">{{ 'order.cash.no'|trans({}, 'MBHPackageBundle') }}</span>{% else %} {{ cash.paidDate|date('d.m.Y') }} {% endif %}</td>
                             <td>{% if cash.deletedAt %}{{ cash.deletedAt|date('d.m.Y') }}{% endif %}</td>
                             <td class="table-actions-td text-right">
+
                                 {% if checkPackagePermissions(entity) and not cash.deletedAt %}
                                     {% if cash.orderDocument %}
                                         <a href="{{ path('order_document_view', {name: cash.orderDocument.name, download: 1}) }}" class="btn btn-info btn-xs" title="" data-toggle="tooltip" data-original-title="Скачать">
@@ -80,7 +81,19 @@
                                     {% if not cash.isPaid %}
                                         {% if cash.operation == 'in' and cash.method == 'electronic' %}
                                             {% if clientConfig and clientConfig.paymentSystem %}
-                                                {% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': data|merge({'buttonClasses': 'btn-xs', 'test': true})} %}
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="fa fa-cc-visa"></i>&nbsp; <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-buttons">
+                                                        <li>
+                                                            {% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': data|merge({'buttonClasses': 'btn-xs', 'test': true})} %}
+                                                        </li>
+                                                        <li>
+                                                            <button class="btn btn-warning btn-xs"><i class="fa fa-ruble"></i>&nbsp;снять</button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             {% endif %}
                                         {% endif %}
                                     {% endif %}

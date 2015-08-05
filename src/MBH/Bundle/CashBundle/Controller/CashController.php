@@ -34,8 +34,7 @@ class CashController extends Controller
 
         $methods = array_slice($methods, 0, 2, true) +
             ['cashless_electronic' => "Безнал (в т.ч. электронные)"] +
-            array_slice($methods, 2, count($methods) - 1, true)
-        ;
+            array_slice($methods, 2, count($methods) - 1, true);
 
         return [
             'methods' => $methods,
@@ -175,8 +174,11 @@ class CashController extends Controller
      */
     public function editAction(CashDocument $entity, Request $request)
     {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel()))
+        $this->dm->getFilterCollection()->disable('softdeleteable');
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
+        }
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
 
@@ -188,7 +190,7 @@ class CashController extends Controller
             ]
         );
 
-        if($request->isMethod("PUT")){
+        if ($request->isMethod("PUT")) {
             $form->submit($request);
 
             if ($form->isValid()) {
@@ -217,6 +219,7 @@ class CashController extends Controller
      */
     public function deleteAction($id)
     {
+        $this->dm->getFilterCollection()->disable('softdeleteable');
         return $this->deleteEntity($id, 'MBHCashBundle:CashDocument', 'cash');
     }
 
@@ -231,7 +234,6 @@ class CashController extends Controller
     {
         $this->dm->getFilterCollection()->disable('softdeleteable');
         $entity = $this->dm->getRepository('MBHCashBundle:CashDocument')->find($id);
-        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity || !$entity->getIsPaid() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             return new JsonResponse([
@@ -239,6 +241,8 @@ class CashController extends Controller
                 'message' => 'CashDocument not found'
             ]);
         }
+        $this->dm->getFilterCollection()->enable('softdeleteable');
+
         $entity->setIsConfirmed(true);
         $this->dm->persist($entity);
         $this->dm->flush();
@@ -260,7 +264,6 @@ class CashController extends Controller
     {
         $this->dm->getFilterCollection()->disable('softdeleteable');
         $entity = $this->dm->getRepository('MBHCashBundle:CashDocument')->find($id);
-        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             return new JsonResponse([
@@ -268,16 +271,17 @@ class CashController extends Controller
                 'message' => 'CashDocument not found'
             ]);
         }
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         $paidDate = \DateTime::createFromFormat('d.m.Y', $request->get('paidDate'));
-        if(!$paidDate)
+        if (!$paidDate)
             $paidDate = new \DateTime();
 
         $entity->setPaidDate($paidDate);
         $entity->setIsPaid(true);
 
         $violationList = $this->get('validator')->validate($entity);
-        if($violationList->count() > 0){
+        if ($violationList->count() > 0) {
             return new JsonResponse([
                 'error' => true,
                 'message' => $violationList->get(0)->getMessage()

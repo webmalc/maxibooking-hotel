@@ -30,49 +30,56 @@ class HousingType extends AbstractType
         $builder
             ->add('name', 'text', [
                 'label' => 'views.corpus.name',
+                'group' => 'views.form.corpus.group.main',
                 'translation_domain' => 'MBHHotelBundle'
             ])
             ->add('internalName', 'text', [
                 'required' => false,
+                'group' => 'views.form.corpus.group.main',
                 'label' => 'views.corpus.internal_name',
                 'translation_domain' => 'MBHHotelBundle'
             ])
             ->add('city', 'text', [
                 'required' => false,
+                'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.city',
                 'translation_domain' => 'MBHHotelBundle'
             ])
             ->add('settlement', 'text', [
                 'required' => false,
+                'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.settlement',
                 'translation_domain' => 'MBHHotelBundle'
             ])
             ->add('street', 'text', [
                 'required' => false,
+                'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.street',
                 'translation_domain' => 'MBHHotelBundle'
             ])
             ->add('house', 'text', [
                 'required' => false,
+                'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.house',
                 'translation_domain' => 'MBHHotelBundle'
             ])
             ->add('corpus', 'text', [
                 'required' => false,
+                'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.corpus',
                 'translation_domain' => 'MBHHotelBundle'
             ])
             ->add('flat', 'text', [
                 'required' => false,
+                'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.flat',
                 'translation_domain' => 'MBHHotelBundle'
-            ]);
-
-        $builder->add('vega_address_id', 'number', [
-            'label' => 'form.hotelExtendedType.vega_address_id',
-            'help' => 'form.hotelExtendedType.vega_address_id_help',
-            //'group' => 'form.hotelExtendedType.integration',
-            'required' => false
+            ])
+            ->add('vega_address_id', 'number', [
+                'label' => 'form.hotelExtendedType.vega_address_id',
+                'help' => 'form.hotelExtendedType.vega_address_id_help',
+                'group' => 'views.form.corpus.group.config',
+                'required' => false
         ]);
 
         $builder->get('city')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHHotelBundle:City'));

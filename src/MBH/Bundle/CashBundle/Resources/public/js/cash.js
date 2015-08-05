@@ -86,7 +86,7 @@ $(document).ready(function () {
         },
         drawCallback = function (settings) {
             $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
-            $('.deleted-entry').closest('tr').addClass('danger');
+            $('.deleted-entry').closest('tr').addClass('danger disable-double-click');
             $('.not-confirmed-entry').closest('tr').addClass('info');
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
             deleteLink();
