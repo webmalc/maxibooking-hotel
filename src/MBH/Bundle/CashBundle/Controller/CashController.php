@@ -4,8 +4,10 @@ namespace MBH\Bundle\CashBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
+use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -251,6 +253,43 @@ class CashController extends Controller
             'error' => false,
             'message' => $this->get('translator')->trans('controller.cashController.payment_confirmed_success')
         ]);
+    }
+
+    /**
+     * Get money from order card.
+     *
+     * @Route("/{id}/card/money", name="cash_card_money")
+     * @Method("GET")
+     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_BOOKKEEPER'])")
+     * @ParamConverter("entity", class="MBHCashBundle:CashDocument")
+     */
+    public function getMoneyFromCardAction(CashDocument $entity)
+    {
+        $this->dm->getFilterCollection()->disable('softdeleteable');
+        $order = $entity->getOrder();
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        if (!$this->get('mbh.hotel.selector')->checkPermissions($entity->getHotel()) || !$order->getCreditCard()
+            || !$clientConfig || $clientConfig->getPaymentSystem() != 'uniteller'
+        ) {
+            throw $this->createNotFoundException();
+        }
+
+        /** @var Uniteller $uniteller */
+        $uniteller = $clientConfig->getPaymentSystemDoc();
+
+        try {
+            $request = $this->get('guzzle.client')
+                ->post(Uniteller::DO_CHECK_URL)
+                ->addPostFields($uniteller->getCheckPaymentData($entity))
+                ->send()
+            ;
+
+            dump((string) $request);
+
+        } catch (Exception $e) {
+            throw $this->createNotFoundException();
+        }
+        exit();
     }
 
     /**

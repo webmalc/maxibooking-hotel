@@ -89,9 +89,11 @@
                                                         <li>
                                                             {% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': data|merge({'buttonClasses': 'btn-xs', 'test': true})} %}
                                                         </li>
+                                                        {% if clientConfig.paymentSystem == 'uniteller' and entity.creditCard and entity.creditCard.cvc %}
                                                         <li>
-                                                            <button class="btn btn-warning btn-xs"><i class="fa fa-ruble"></i>&nbsp;снять</button>
+                                                            <button onclick="location.href = '{{ path('cash_card_money', {'id': cash.id}) }}'" class="btn btn-warning btn-xs"><i class="fa fa-ruble"></i>&nbsp;списать</button>
                                                         </li>
+                                                        {% endif %}
                                                     </ul>
                                                 </div>
                                             {% endif %}
