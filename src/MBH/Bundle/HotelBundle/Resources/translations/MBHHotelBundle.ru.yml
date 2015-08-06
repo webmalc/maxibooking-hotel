@@ -7,6 +7,7 @@ views.task.index.roomType: Тип комнаты
 views.task.index.users:   Исполнитель
 views.task.index.guest:    Клиент
 views.task.index.role: Роли
+views.task.index.groups: Группы
 views.task.index.createAt: Создано
 views.task.index.updateAt: Обновлено
 views.hotel.edit.editing_number: "редактирование #"

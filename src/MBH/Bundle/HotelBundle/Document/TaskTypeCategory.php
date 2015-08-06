@@ -13,7 +13,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
 
 
 /**
- * @ODM\Document()
+ * @ODM\Document(repositoryClass="MBH\Bundle\HotelBundle\Document\TaskTypeCategoryRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="title")

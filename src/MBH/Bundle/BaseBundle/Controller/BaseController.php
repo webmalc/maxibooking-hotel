@@ -82,7 +82,7 @@ class BaseController extends Controller
     }
 
     /**
-     * Is saved request and need stay on current page
+     * Is saved request and whether need to stay on current page
      * @return bool
      */
     protected function isSavedRequest()

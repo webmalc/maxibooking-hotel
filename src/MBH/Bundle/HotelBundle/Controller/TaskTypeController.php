@@ -108,7 +108,9 @@ class TaskTypeController extends Controller
                 $request->getSession()->getFlashBag()
                     ->set('success', $this->get('translator')->trans('controller.TaskTypeController.record_edited_success'))
                 ;
-                return $this->afterSaveRedirect('tasktype', $entity->getId());
+                return $this->isSavedRequest() ?
+                    $this->redirectToRoute('tasktype_edit', ['id' => $entity->getId()]) :
+                    $this->redirectToRoute('tasktype', ['category' => $entity->getCategory()->getId()]);
             }
         }
 
@@ -137,6 +139,7 @@ class TaskTypeController extends Controller
             throw $this->createNotFoundException('Type have existing tasks');
         }
 
-        return $this->deleteEntity($entity->getId(), 'MBHHotelBundle:TaskType', 'tasktype');
+        return $this->deleteEntity($entity->getId(), 'MBHHotelBundle:TaskType',
+            'tasktype', ['category' => $entity->getCategory()->getId()]);
     }
 }

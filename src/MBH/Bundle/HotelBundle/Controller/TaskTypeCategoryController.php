@@ -38,7 +38,9 @@ class TaskTypeCategoryController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                return $this->redirectToRoute('tasktype');
+                return $this->isSavedRequest() ?
+                    $this->redirectToRoute('task_type_category_edit', ['id' => $entity->getId()]) :
+                    $this->redirectToRoute('tasktype', ['category' => $entity->getId()]);
             };
         }
 
@@ -66,7 +68,9 @@ class TaskTypeCategoryController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                return $this->redirectToRoute('tasktype');
+                return $this->isSavedRequest() ?
+                    $this->redirectToRoute('task_type_category_edit', ['id' => $entity->getId()]) :
+                    $this->redirectToRoute('tasktype', ['category' => $entity->getId()]);
             };
         }
 
