@@ -21,6 +21,7 @@ $(document).ready(function () {
                 data.begin = $('#task-filter-begin').val();
                 data.end = $('#task-filter-end').val();
                 data.status = $('#task-filter-status').select2('val');
+                data.priotiry = $('#task-filter-priority').select2('val');
             }
         },
         "order": [[ 9, "desc" ]], //createdAt

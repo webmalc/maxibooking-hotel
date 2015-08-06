@@ -18,6 +18,13 @@
                     <option value="{{ key }}">{{ status.title }}</option>
                 {% endfor %}
             </select>
+            &nbsp;<i class="fa fa-balance-scale" title='{{ "task.priority"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i>&nbsp;
+            <select id="task-filter-priority">
+                <option></option>
+                {% for key,priority in priorities %}
+                    <option value="{{ key }}">{{ priority }}</option>
+                {% endfor %}
+            </select>
         </form>
     </div>
 
