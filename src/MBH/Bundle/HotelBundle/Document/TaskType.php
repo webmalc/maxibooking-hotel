@@ -58,7 +58,7 @@ class TaskType extends Base
 
     /**
      * @var TaskTypeCategory|null
-     * @ODM\ReferenceOne(targetDocument="TaskTypeCategory")
+     * @ODM\ReferenceOne(targetDocument="TaskTypeCategory", inversedBy="types")
      */
     protected $category;
     /**

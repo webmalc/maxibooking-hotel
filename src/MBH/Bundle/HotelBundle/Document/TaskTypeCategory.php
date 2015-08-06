@@ -68,6 +68,12 @@ class TaskTypeCategory extends Base
     protected $code;
 
     /**
+     * @var TaskType[]
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\TaskType", mappedBy="category")
+     */
+    protected $types;
+
+    /**
      * @return string
      */
     public function getTitle()
@@ -129,6 +135,22 @@ class TaskTypeCategory extends Base
     public function setCode($code)
     {
         $this->code = $code;
+    }
+
+    /**
+     * @return TaskType[]
+     */
+    public function getTypes()
+    {
+        return $this->types;
+    }
+
+    /**
+     * @param TaskType[] $types
+     */
+    public function setTypes($types)
+    {
+        $this->types = $types;
     }
 
     /**

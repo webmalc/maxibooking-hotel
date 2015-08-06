@@ -53,14 +53,14 @@ class TaskTypeController extends Controller
 
         /** @var TaskType[] $entities */
         $entities = [];
-        if($category) {
+        /*if($category) {
             $entities = $taskTypeRepository->createQueryBuilder('s')
                 ->field('category.id')->equals($category->getId())
                 ->sort('title', 'asc')
                 ->getQuery()->execute();
 
             $entity->setCategory($category);
-        }
+        }*/
 
         $form = $this->createForm(new TaskTypeType($this->dm), $entity);
 
