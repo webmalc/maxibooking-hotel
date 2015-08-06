@@ -5,13 +5,64 @@ namespace MBH\Bundle\HotelBundle\Document;
 use MBH\Bundle\BaseBundle\Document\AbstractBaseRepository;
 use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
 
+/**
+ * Class RoomRepository
+ * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ */
 class RoomRepository extends AbstractBaseRepository
 {
     public function findByCriteria(QueryCriteriaInterface $criteria)
     {
         return;
     }
-    
+
+
+    /**
+     * @param Room[] $rooms
+     * @return array
+     */
+    public function optGroupRooms(array $rooms)
+    {
+        foreach ($rooms as $roomTypeRooms) {
+            $result[$roomTypeRooms[0]->getRoomType()->getName()] = [];
+            foreach ($roomTypeRooms as $room) {
+                $result[$roomTypeRooms[0]->getRoomType()->getName()][$room->getId()] = $room;
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * @param Hotel $hotel
+     * @param bool|true $grouped
+     * @return mixed
+     */
+    public function getRoomsByType(Hotel $hotel, $grouped = true)
+    {
+        foreach ($hotel->getRoomTypes() as $roomType) {
+            $hotelRoomTypes[] = $roomType->getId();
+        }
+
+        // rooms
+        $qb = $this->createQueryBuilder('r')->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
+            ->inToArray('roomType.id', $hotelRoomTypes)
+        ;
+
+        $roomDocs = $qb->getQuery()->execute();
+
+        if (!$grouped) {
+            return $roomDocs;
+        }
+        foreach ($roomDocs as $room) {
+            $groupedRooms[$room->getRoomType()->getId()][] = $room;
+        }
+
+        return $groupedRooms;
+    }
+
+
     /**
      * @param \DateTime $begin
      * @param \DateTime $end

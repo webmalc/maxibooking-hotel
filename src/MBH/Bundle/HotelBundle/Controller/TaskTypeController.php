@@ -4,6 +4,8 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Document\TaskType;
+use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
+use MBH\Bundle\HotelBundle\Form\TaskTypeCategoryType;
 use MBH\Bundle\HotelBundle\Form\TaskTypeType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -22,31 +24,47 @@ class TaskTypeController extends Controller
 {
     /**
      *
-     * @Route("/", name="tasktype")
+     * @Route("/{category}", name="tasktype", defaults={"category"=null}, requirements={
+     *    "category": "\w*"
+     * })
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, $category = null)
     {
-        $entity = new TaskType();
-        $form = $this->createForm(new TaskTypeType(), $entity);
-
-        $entities = $this->dm->getRepository('MBHHotelBundle:TaskType')->createQueryBuilder('s')
-            ->sort('title', 'asc')
-            ->getQuery()
-            ->execute();
-
-        if (!count($entities)) {
-            foreach ($this->container->getParameter('mbh.default.taskType') as $default) {
-                $new = new TaskType();
-                $new->setTitle($default);
-                $this->dm->persist($new);
+        if($category) {
+            $category = $this->dm->getRepository('MBHHotelBundle:TaskTypeCategory')->find($category);
+            if(!$category) {
+                throw $this->createNotFoundException();
             }
-            $this->dm->flush();
         }
 
-        if ($request->isMethod('POST')) {
+        /** @var TaskTypeCategory[] $taskTypeCategories */
+        $taskTypeCategories = $this->dm->getRepository('MBHHotelBundle:TaskTypeCategory')->findAll();
+
+        /** @var TaskTypeCategory $category */
+        if(!$category) {
+            $category = reset($taskTypeCategories);
+        }
+
+        $entity = new TaskType();
+        $taskTypeRepository = $this->dm->getRepository('MBHHotelBundle:TaskType');
+
+        /** @var TaskType[] $entities */
+        $entities = [];
+        if($category) {
+            $entities = $taskTypeRepository->createQueryBuilder('s')
+                ->field('category.id')->equals($category->getId())
+                ->sort('title', 'asc')
+                ->getQuery()->execute();
+
+            $entity->setCategory($category);
+        }
+
+        $form = $this->createForm(new TaskTypeType($this->dm), $entity);
+
+        if ($request->isMethod(Request::METHOD_POST)) {
             $form->submit($request);
 
             if($form->isValid()) {
@@ -55,12 +73,15 @@ class TaskTypeController extends Controller
 
                 $request->getSession()->getFlashBag()
                     ->set('success', $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
-                return $this->redirect($this->generateUrl('tasktype'));
+                return $this->redirectToRoute('tasktype', ['category' => $entity->getCategory()->getId()]);
             }
         }
+
         return [
             'form' => $form->createView(),
-            'entities' => $entities
+            'entities' => $entities,
+            'taskTypeCategories' => $taskTypeCategories,
+            'activeCategory' => $category
         ];
     }
 
@@ -68,14 +89,28 @@ class TaskTypeController extends Controller
      * Displays a form to edit an existing entity.
      *
      * @Route("/{id}/edit", name="tasktype_edit")
-     * @Method("GET")
+     * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template()
      * @ParamConverter("entity", class="MBHHotelBundle:TaskType")
      */
-    public function editAction(TaskType $entity)
+    public function editAction(Request $request, TaskType $entity)
     {
-        $form = $this->createForm(new TaskTypeType(), $entity, []);
+        $form = $this->createForm(new TaskTypeType($this->dm), $entity, []);
+
+        if($request->isMethod(Request::METHOD_PUT)) {
+            $form->submit($request);
+
+            if ($form->isValid()) {
+                $this->dm->persist($entity);
+                $this->dm->flush();
+
+                $request->getSession()->getFlashBag()
+                    ->set('success', $this->get('translator')->trans('controller.TaskTypeController.record_edited_success'))
+                ;
+                return $this->afterSaveRedirect('tasktype', $entity->getId());
+            }
+        }
 
         return [
             'entity' => $entity,
@@ -91,42 +126,17 @@ class TaskTypeController extends Controller
      * @Route("/{id}/delete", name="tasktype_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
-     */
-    public function deleteAction($id)
-    {
-        return $this->deleteEntity($id, 'MBHHotelBundle:TaskType', 'tasktype');
-
-    }
-
-    /**
-     * Edits an existing entity.
-     *
-     * @Route("/{id}", name="tasktype_update")
-     * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN')")
-     * @Template("MBHHotelBundle:TaskType:edit.html.twig")
      * @ParamConverter("entity", class="MBHHotelBundle:TaskType")
      */
-    public function updateAction(Request $request, TaskType $entity)
+    public function deleteAction(TaskType $entity)
     {
-        $form = $this->createForm(new TaskTypeType(), $entity, []);
-
-        $form->submit($request);
-
-        if ($form->isValid()) {
-            $this->dm->persist($entity);
-            $this->dm->flush();
-
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.TaskTypeController.record_edited_success'))
-            ;
-            return $this->afterSaveRedirect('tasktype', $entity->getId());
+        if($entity->isSystem())
+            throw $this->createNotFoundException('Is system type');
+        $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
+        if($taskRepository->getCountByType($entity) > 0) {
+            throw $this->createNotFoundException('Type have existing tasks');
         }
 
-        return array(
-            'entity' => $entity,
-            'form' => $form->createView(),
-            'logs' => $this->logs($entity)
-        );
+        return $this->deleteEntity($entity->getId(), 'MBHHotelBundle:TaskType', 'tasktype');
     }
 }

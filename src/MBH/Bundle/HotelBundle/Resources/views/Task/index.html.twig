@@ -34,7 +34,6 @@
             <th class="td-md">{{ 'views.task.index.roomType'|trans({}, 'MBHHotelBundle') }}</th>
             <th class="td-md">{{ 'views.task.index.users'|trans({}, 'MBHHotelBundle') }}</th>
             <th class="td-sm">{{ 'views.task.index.role'|trans({}, 'MBHHotelBundle') }}</th>
-            <th class="td-md">{{ 'views.task.index.guest'|trans({}, 'MBHHotelBundle') }}</th>
             <th class="td-sm">{{ 'views.task.index.createAt'|trans({}, 'MBHHotelBundle') }}</th>
             <th class="td-sm">{{ 'views.task.index.updateAt'|trans({}, 'MBHHotelBundle') }}</th>
             <th class="td-md"></th>
@@ -56,7 +55,6 @@
                     <td>{{ task.room.roomType.title }}</td>
                     <td>{% if task.performer %}{{ task.performer.fullName }} {% endif %}</td>
                     <td>{{ task.role }}</td>
-                    <td>{% if task.guest %} {{ task.guest.fullName }} {% endif %}</td>
                     <td>{{ task.createdAt|date('d.m.Y') }}</td>
                     <td>{{ task.updatedAt|date('d.m.Y') }}</td>
                     <td class="table-actions-td text-right">

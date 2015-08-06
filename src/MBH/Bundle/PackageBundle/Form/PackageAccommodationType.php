@@ -9,21 +9,13 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class PackageAccommodationType extends AbstractType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $rooms = [];
-        foreach ($options['rooms'] as $roomTypeRooms) {
-            $rooms[$roomTypeRooms[0]->getRoomType()->getName()] = [];
-            foreach ($roomTypeRooms as $room) {
-
-                $rooms[$roomTypeRooms[0]->getRoomType()->getName()][$room->getId()] = $room;
-            }
-        }
+        $optGroupRooms = $options['optGroupRooms'];
 
         if ($options['roomType']) {
             $name = $options['roomType']->getName();
-            uksort($rooms, function ($a, $b) use ($name) {
+            uksort($optGroupRooms, function ($a, $b) use ($name) {
                 if ($a == $name) {
                     return -1;
                 }
@@ -39,21 +31,17 @@ class PackageAccommodationType extends AbstractType
                 'empty_value' => '',
                 'class' => 'MBHHotelBundle:Room',
                 'group' => 'form.packageAccommodationType.choose_placement',
-                'choices' => $rooms,
+                'choices' => $optGroupRooms,
                 'property' => 'name',
                 'constraints' => new NotBlank()
             ])
-            ->add(
-                'purposeOfArrival',
-                'choice',
-                [
-                    'label' => 'form.packageMainType.arrival_purpose',
-                    'required' => false,
-                    'group' => 'form.packageAccommodationType.choose_placement',
-                    'multiple' => false,
-                    'choices' => $options['arrivals'],
-                ]
-            )
+            ->add('purposeOfArrival', 'choice', [
+                'label' => 'form.packageMainType.arrival_purpose',
+                'required' => false,
+                'group' => 'form.packageAccommodationType.choose_placement',
+                'multiple' => false,
+                'choices' => $options['arrivals'],
+                ])
             ->add('isCheckIn', 'checkbox', [
                 'label' => 'form.packageAccommodationType.are_guests_checked_in',
                 'value' => true,
@@ -92,7 +80,7 @@ class PackageAccommodationType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
-            'rooms' => [],
+            'optGroupRooms' => [],
             'arrivals' => [],
             'isHostel' => false,
             'roomType' => null

@@ -42,7 +42,7 @@ class Task extends Base
      * @ODM\ReferenceOne(targetDocument="TaskType")
      * @ Assert\NotNull(message="validator.document.task.taskType_no_selected")
      */
-    protected $taskType;
+    protected $type;
 
     /**
      * @var string
@@ -72,12 +72,6 @@ class Task extends Base
      * )
      */
     protected $description;
-
-    /**
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Tourist")
-     */
-    protected $guest;
 
     /**
      * @var string Perform role
@@ -114,12 +108,12 @@ class Task extends Base
     /**
      * Set taskType
      *
-     * @param TaskType $taskType
+     * @param TaskType $type
      * @return self
      */
-    public function setTaskType(TaskType $taskType)
+    public function setType(TaskType $type)
     {
-        $this->taskType = $taskType;
+        $this->type = $type;
 
         return $this;
     }
@@ -129,9 +123,9 @@ class Task extends Base
      *
      * @return TaskType $taskType
      */
-    public function getTaskType()
+    public function getType()
     {
-        return $this->taskType;
+        return $this->type;
     }
 
     /**
@@ -202,29 +196,6 @@ class Task extends Base
     public function getDescription()
     {
         return $this->description;
-    }
-
-    /**
-     * Set guest
-     *
-     * @param \MBH\Bundle\PackageBundle\Document\Tourist $guest
-     * @return self
-     */
-    public function setGuest(\MBH\Bundle\PackageBundle\Document\Tourist $guest)
-    {
-        $this->guest = $guest;
-
-        return $this;
-    }
-
-    /**
-     * Get guest
-     *
-     * @return \MBH\Bundle\PackageBundle\Document\Tourist
-     */
-    public function getGuest()
-    {
-        return $this->guest;
     }
 
     /**

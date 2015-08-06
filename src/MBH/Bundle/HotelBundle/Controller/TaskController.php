@@ -18,15 +18,11 @@ use MBH\Bundle\HotelBundle\Form\TaskType;
 
 /**
  * Class TaskController
- * @package MBH\Bundle\HotelBundle\Controller
  * @Route("/task")
  */
 class TaskController extends Controller
 {
-
     /**
-     * List entities
-     *
      * @Route("/", name="task")
      * @Method("GET")
      * @Security("is_granted('ROLE_USER')")
@@ -128,11 +124,16 @@ class TaskController extends Controller
         $entity = new Task();
         $roles = $this->container->getParameter('security.role_hierarchy.roles');
         $roles = array_map(function($item) {return array_combine($item, $item);}, $roles);
+
+        $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
+        $statuses = $this->getParameter('mbh.task.statuses');
+        $entity->setStatus('open');
         $form = $this->createForm(new TaskType(), $entity, [
-                'roles' => $roles,
-                'priorities' => $this->container->getParameter('mbh.tasktype.priority')
-            ]
-        );
+            'roles' => $roles,
+            'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
+            'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
+            'optGroupRooms' => $roomRepository->optGroupRooms($roomRepository->getRoomsByType($this->hotel, true))
+        ]);
 
         if ($request->isMethod('POST')) {
             $form->submit($request);
@@ -143,13 +144,13 @@ class TaskController extends Controller
                 $request->getSession()->getFlashBag()->set('success',
                     $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
 
-                return $this->redirect($this->generateUrl('task'));
+                return $this->afterSaveRedirect('task', $entity->getId());
             }
         }
 
-        return array(
+        return [
             'form' => $form->createView(),
-        );
+        ];
     }
 
     /**
@@ -166,12 +167,15 @@ class TaskController extends Controller
         $roles = $this->container->getParameter('security.role_hierarchy.roles');
         $roles = array_map(function($item) {return array_combine($item, $item);}, $roles);
 
+        $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
+        $statuses = $this->getParameter('mbh.task.statuses');
         $form = $this->createForm(new TaskType(), $entity, [
-                'roles' => $roles,
-                'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
-                'scenario' => TaskType::SCENARIO_EDIT
-            ]
-        );
+            'roles' => $roles,
+            'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
+            'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
+            'optGroupRooms' => $roomRepository->optGroupRooms($roomRepository->getRoomsByType($this->hotel, true)),
+            'scenario' => TaskType::SCENARIO_EDIT
+        ]);
 
         if($request->isMethod("PUT")) {
             $form->submit($request);

@@ -1,8 +1,8 @@
-{% extends "MBHHotelBundle:TaskType:layout.html.twig" %}
+{% extends "MBHHotelBundle:TaskTypeCategory:layout.html.twig" %}
 
 {% block content %}
 
-    {{ form_start(form, {'action': path('tasktype_edit',  {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('task_type_category_edit',  {'id': entity.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'delete_route': 'tasktype_delete'}%}
     {{ form_end(form) }}

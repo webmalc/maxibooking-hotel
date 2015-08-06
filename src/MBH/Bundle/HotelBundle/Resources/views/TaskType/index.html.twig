@@ -3,6 +3,30 @@
 
 {% block content %}
 
+    <ul style="margin-bottom: 20px" class="nav nav-tabs" role="tablist">
+        {% for category in taskTypeCategories %}
+            <li {% if activeCategory.id == category.id %}class="active"{% endif %}>
+                <a href="{{ path('tasktype', {category: category.id}) }}" {# role="tab" data-toggle="tab"#}>
+                    <i class="fa fa-plug"></i> {{category.title}}
+                    {% if category.isSystem %}<small class="transparent"><i class="fa fa-lock"></i></small>{% endif %}
+                </a>
+            </li>
+        {% endfor %}
+        <li>
+            <a href="{{ path('task_type_category_new') }}"><i class="fa fa-plus"></i> Новая категория типов задач</a>
+        </li>
+    </ul>
+
+    {% if not activeCategory.isSystem %}
+        <div class="btn-list spacer-bottom text-right">
+            <a href="{{ path('task_type_category_edit', {id: activeCategory.id}) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Редактировать категорию типов задач <{{ activeCategory.title }}>">
+                <i class="fa fa-edit"></i> Редактировать</a>
+            <a href="{{ path('task_type_category_delete', {id: activeCategory.id}) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Удалить категорию типов задач <{{ activeCategory.title }}>">
+                <i class="fa fa-trash-o"></i> Удалить
+            </a>
+        </div>
+    {% endif %}
+
     <table class="table {#not-auto-datatable#} table-striped table-hover table-condensed table-icons table-actions">
         <thead>
         <tr>
@@ -19,6 +43,7 @@
                 <td class="text-center table-icon"><i class="fa fa-cog"></i></td>
                 <td>
                     <a href="{{ path('tasktype_edit', { 'id': entity.id }) }}" rel="main" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">{{ entity.title }}</a>
+                    &nbsp{% if entity.isSystem %}<small class="transparent"><i class="fa fa-lock"></i></small>{% endif %}
                 </td>
                 <td>{{ entity.createdAt|date('d.m.Y') }}</td>
 
@@ -26,9 +51,11 @@
                     <a href="{{ path('tasktype_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
                         <i class="fa fa-pencil-square-o"></i>
                     </a>
-                    <a href="{{ path('tasktype_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
-                        <i class="fa fa-trash-o"></i>
-                    </a>
+                    {% if not entity.isSystem %}
+                        <a href="{{ path('tasktype_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
+                            <i class="fa fa-trash-o"></i>
+                        </a>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

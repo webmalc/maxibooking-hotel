@@ -42,4 +42,18 @@ class TaskRepository extends DocumentRepository
 
         return $this->findBy($criteria, $queryCriteria->sort, $queryCriteria->limit, $queryCriteria->offset);
     }
+
+    /**
+     * @param TaskType $type
+     * @return int
+     */
+    public function getCountByType(TaskType $type)
+    {
+        $query = $this->createQueryBuilder()
+            ->field('type.id')->equals($type->getId())
+            ->count()
+            ->getQuery();
+
+        return $query->execute();
+    }
 }

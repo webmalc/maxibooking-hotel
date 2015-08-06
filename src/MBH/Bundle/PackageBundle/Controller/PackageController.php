@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Form\OrderTouristType;
@@ -570,9 +571,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $this->dm->getFilterCollection()->enable('softdeleteable');
         }
 
-        $groupedRooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
-            $entity->getBegin(), $entity->getEnd(), $this->hotel, null, null, $entity->getId(), true
+        /** @var RoomRepository $roomRepository */
+        $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
+        $groupedRooms = $roomRepository->fetchAccommodationRooms($entity->getBegin(), $entity->getEnd(),
+            $this->hotel, null, null, $entity->getId(), true
         );
+        $optGroupRooms = $roomRepository->optGroupRooms($groupedRooms);
 
         $this->dm->getFilterCollection()->enable('softdeleteable');
 
@@ -585,7 +589,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $form = $this->createForm(new PackageAccommodationType(), $entity, [
-            'rooms' => $groupedRooms,
+            'optGroupRooms' => $optGroupRooms,
             'isHostel' => $this->hotel->getIsHostel(),
             'roomType' => $entity->getRoomType(),
             'arrivals' => $this->container->getParameter('mbh.package.arrivals'),

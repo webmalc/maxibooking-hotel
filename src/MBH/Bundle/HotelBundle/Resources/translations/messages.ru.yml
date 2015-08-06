@@ -82,24 +82,30 @@ form.roomTypeType.is_room_included_in_search: Используется ли ти
 form.roomTypeType.room_space: Площадь номера (м2)
 controller.hotelController.record_created_success: 'Запись успешно создана.'
 controller.hotelController.record_edited_success: 'Запись успешно отредактирована.'
-controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'
 controller.roomTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
 controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'
+controller.TaskTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
+controller.TaskTypeController.record_edited_success: 'Запись успешно отредактирована.'
 form.taskType.title: Название
+form.taskType.category: Категория
 form.task.taskType: Тип задачи
 form.task.status: Статус
 form.task.room: Комната
 form.task.priority: Приоритет
 form.task.tourist: Турист
-form.task.date: Дата
+form.task.date: Дата и время
 form.task.general_room: Тип комнаты
 form.task.placeholder_taskType: Задача
 form.task.creationalDate: Создано
 form.task.updatableDate: Обновлено
 form.task.description: Комментарий
-form.task.general_group_add: Добавление задачи
-form.task.general_group_edit: Редактирование задачи
+form.task.status: Статус
 form.task.roomType: Тип номера
+
+form.task.group.general_add: Добавление задачи
+form.task.group.general_edit: Редактирование задачи
+form.task.group.assign: Назначить
+form.task.group.settings: Настройки
 
 form.userType.users: Исполнитель
 form.userType.date: Дата
@@ -108,3 +114,8 @@ form.userType.date: Дата
 
 controller.corpus.updated_success: Копрус успешно сохранен
 controller.corpus.created_success: Копрус успешно добавлен
+
+
+form.taskTypeCategory.general_info: Добавление категории задач
+form.taskTypeCategory.title: Название
+form.taskTypeCategory.fullTitle: Внутреннее название

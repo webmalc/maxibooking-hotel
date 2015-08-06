@@ -1,0 +1,11 @@
+#mbh_bundle_hotelbundle_task_date_date {
+    width: 90px;
+    margin-right: 8px;
+}
+#mbh_bundle_hotelbundle_task_date_time {
+    width: 60px;
+}
+
+#mbh_bundle_hotelbundle_task_date input {
+    display: inline-block !important;
+}

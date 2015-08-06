@@ -31,7 +31,6 @@ $(document).ready(function () {
             {"name" : "type", "bSortable" : false},
             {"name" : "priority"},
             {"bSortable" : false},
-            {"class" : 'text-center', "bSortable" : false},
             {"bSortable" : false},
             {"bSortable" : false},
             {"name" : "createdAt"},
@@ -42,15 +41,6 @@ $(document).ready(function () {
             processing = false;
         }
     });
-    var $taskDate = $('#mbh_bundle_hotelbundle_task_date');
-    if ($taskDate) {
-        $taskDate.datepicker({
-            language: "ru",
-            autoclose: true,
-            startView: 2,
-            format: 'dd.mm.yyyy'
-        });
-    }
 
     $taskTableFilterForm.find('input, textarea, select').on('change', function () {
         if (!processing) {
@@ -58,4 +48,13 @@ $(document).ready(function () {
             $('#task-table').dataTable().fnDraw();
         }
     });
+    var $date = $('#mbh_bundle_hotelbundle_task_date_date'),
+        $time = $('#mbh_bundle_hotelbundle_task_date_time'),
+        datePickerOptions = {
+            language: "ru",
+            autoclose: true,
+            format: 'dd.mm.yyyy'
+        };
+    $time.timepicker({showMeridian: false});
+    $date.datepicker(datePickerOptions);
 });

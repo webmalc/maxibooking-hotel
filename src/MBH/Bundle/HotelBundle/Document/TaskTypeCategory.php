@@ -13,12 +13,12 @@ use Gedmo\Blameable\Traits\BlameableDocument;
 
 
 /**
- * @ODM\Document(repositoryClass="MBH\Bundle\HotelBundle\Document\TaskTypeRepository")
+ * @ODM\Document()
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="title")
  */
-class TaskType extends Base
+class TaskTypeCategory extends Base
 {
     /**
      * Hook timestampable behavior
@@ -39,28 +39,28 @@ class TaskType extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="title")
-     * @Assert\NotBlank()
+     * @ODM\String
      * @Assert\Length(
      *      min=2,
-     *      minMessage="validator.document.taskType.min_title",
-     *      max=100,
-     *      maxMessage="validator.document.taskType.max_title",
+     *      max=100
      * )
      */
     protected $title;
-
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String
+     * @Assert\Length(
+     *      min=2,
+     *      max=100
+     * )
+     */
+    protected $fullTitle;
     /**
      * @var bool
      * @ODM\Boolean()
      */
     protected $isSystem;
-
-    /**
-     * @var TaskTypeCategory|null
-     * @ODM\ReferenceOne(targetDocument="TaskTypeCategory")
-     */
-    protected $category;
     /**
      * @var string
      * @ODM\String()
@@ -68,29 +68,35 @@ class TaskType extends Base
     protected $code;
 
     /**
-     * Set title
-     *
-     * @param string $title
-     * @return self
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-        return $this;
-    }
-    /**
-     * Get title
-     *
-     * @return string $title
+     * @return string
      */
     public function getTitle()
     {
         return $this->title;
     }
 
-    public function __toString()
+    /**
+     * @param string $title
+     */
+    public function setTitle($title)
     {
-        return $this->title;
+        $this->title = $title;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullTitle()
+    {
+        return $this->fullTitle;
+    }
+
+    /**
+     * @param string $fullTitle
+     */
+    public function setFullTitle($fullTitle)
+    {
+        $this->fullTitle = $fullTitle;
     }
 
     /**
@@ -110,22 +116,6 @@ class TaskType extends Base
     }
 
     /**
-     * @return TaskTypeCategory|null
-     */
-    public function getCategory()
-    {
-        return $this->category;
-    }
-
-    /**
-     * @param TaskTypeCategory|null $category
-     */
-    public function setCategory(TaskTypeCategory $category = null)
-    {
-        $this->category = $category;
-    }
-
-    /**
      * @return string
      */
     public function getCode()
@@ -140,4 +130,14 @@ class TaskType extends Base
     {
         $this->code = $code;
     }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string) $this->getTitle();
+    }
+
+
 }
