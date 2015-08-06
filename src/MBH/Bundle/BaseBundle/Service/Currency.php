@@ -101,4 +101,12 @@ class Currency
 
         return round(($amount / $currency->getRatio()) * $this->container->getParameter('mbh.currency.ratio.fix'), 2);
     }
+
+    /**
+     * @return array
+     */
+    public function info()
+    {
+        return $this->container->getParameter('mbh.currency.data')[$this->container->getParameter('locale.currency')];
+    }
 }

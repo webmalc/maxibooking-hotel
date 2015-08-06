@@ -49,6 +49,10 @@ class Order
 
     public function updatePackage(Package $old, Package $new)
     {
+        if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
+        }
+
         //check changes
         if (
             $old->getBegin() == $new->getBegin() &&

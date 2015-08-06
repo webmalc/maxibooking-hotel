@@ -4,8 +4,10 @@ namespace MBH\Bundle\CashBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
+use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\CashBundle\Document\CashDocumentRepository;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -36,8 +38,7 @@ class CashController extends Controller
 
         $methods = array_slice($methods, 0, 2, true) +
             ['cashless_electronic' => "Безнал (в т.ч. электронные)"] +
-            array_slice($methods, 2, count($methods) - 1, true)
-        ;
+            array_slice($methods, 2, count($methods) - 1, true);
 
         return [
             'methods' => $methods,
@@ -280,8 +281,11 @@ class CashController extends Controller
      */
     public function editAction(CashDocument $entity, Request $request)
     {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel()))
+        $this->dm->getFilterCollection()->disable('softdeleteable');
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
+        }
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
 
@@ -291,7 +295,7 @@ class CashController extends Controller
             'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity->getOrder()),
         ]);
 
-        if($request->isMethod("PUT")){
+        if ($request->isMethod("PUT")) {
             $form->submit($request);
 
             if ($form->isValid()) {
@@ -321,6 +325,7 @@ class CashController extends Controller
      */
     public function deleteAction($id)
     {
+        $this->dm->getFilterCollection()->disable('softdeleteable');
         return $this->deleteEntity($id, 'MBHCashBundle:CashDocument', 'cash');
     }
 
@@ -335,7 +340,6 @@ class CashController extends Controller
     {
         $this->dm->getFilterCollection()->disable('softdeleteable');
         $entity = $this->dm->getRepository('MBHCashBundle:CashDocument')->find($id);
-        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity || !$entity->getIsPaid() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             return new JsonResponse([
@@ -343,6 +347,8 @@ class CashController extends Controller
                 'message' => 'CashDocument not found'
             ]);
         }
+        $this->dm->getFilterCollection()->enable('softdeleteable');
+
         $entity->setIsConfirmed(true);
         $this->dm->persist($entity);
         $this->dm->flush();
@@ -351,6 +357,43 @@ class CashController extends Controller
             'error' => false,
             'message' => $this->get('translator')->trans('controller.cashController.payment_confirmed_success')
         ]);
+    }
+
+    /**
+     * Get money from order card.
+     *
+     * @Route("/{id}/card/money", name="cash_card_money")
+     * @Method("GET")
+     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_BOOKKEEPER'])")
+     * @ParamConverter("entity", class="MBHCashBundle:CashDocument")
+     */
+    public function getMoneyFromCardAction(CashDocument $entity)
+    {
+        $this->dm->getFilterCollection()->disable('softdeleteable');
+        $order = $entity->getOrder();
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        if (!$this->get('mbh.hotel.selector')->checkPermissions($entity->getHotel()) || !$order->getCreditCard()
+            || !$clientConfig || $clientConfig->getPaymentSystem() != 'uniteller'
+        ) {
+            throw $this->createNotFoundException();
+        }
+
+        /** @var Uniteller $uniteller */
+        $uniteller = $clientConfig->getPaymentSystemDoc();
+
+        try {
+            $request = $this->get('guzzle.client')
+                ->post(Uniteller::DO_CHECK_URL)
+                ->addPostFields($uniteller->getCheckPaymentData($entity))
+                ->send()
+            ;
+
+            dump((string) $request);
+
+        } catch (Exception $e) {
+            throw $this->createNotFoundException();
+        }
+        exit();
     }
 
     /**
@@ -364,7 +407,6 @@ class CashController extends Controller
     {
         $this->dm->getFilterCollection()->disable('softdeleteable');
         $entity = $this->dm->getRepository('MBHCashBundle:CashDocument')->find($id);
-        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             return new JsonResponse([
@@ -372,16 +414,17 @@ class CashController extends Controller
                 'message' => 'CashDocument not found'
             ]);
         }
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         $paidDate = \DateTime::createFromFormat('d.m.Y', $request->get('paidDate'));
-        if(!$paidDate)
+        if (!$paidDate)
             $paidDate = new \DateTime();
 
         $entity->setPaidDate($paidDate);
         $entity->setIsPaid(true);
 
         $violationList = $this->get('validator')->validate($entity);
-        if($violationList->count() > 0){
+        if ($violationList->count() > 0) {
             return new JsonResponse([
                 'error' => true,
                 'message' => $violationList->get(0)->getMessage()

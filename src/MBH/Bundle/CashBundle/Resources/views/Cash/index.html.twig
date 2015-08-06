@@ -50,7 +50,7 @@
                 </select>
             </div>
             <div class="input">
-                <i class="fa fa fa-rub" title="{{ 'views.cash.index.show_no_paid'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip" style="opacity: 0.5"></i>
+                <i class="{{ currency().icon }}" title="{{ 'views.cash.index.show_no_paid'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip" style="opacity: 0.5"></i>
                 &nbsp;
                 <input type="checkbox" name="show_no_paid" id="show_no_paid">
 

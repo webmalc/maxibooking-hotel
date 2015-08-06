@@ -90,7 +90,7 @@
                         {% if price.val %}
                             <br>
                             <small style="color:#888;">
-                                {{ price.val > 0 ? 'Долг' : 'Перепл.' }}: {{ price.val|number_format(2) }}  руб.
+                                {{ price.val > 0 ? 'Долг' : 'Перепл.' }}: {{ price.val|number_format(2) }}  {{ currency().text }}
                             </small>
                         {% endif %}
                     </td>
@@ -106,7 +106,7 @@
                 <b>Гостей:</b>  {{ guests }}
             </div>
             <div style="width:33%;float:left;text-align:center;font-family:Tahoma,Arial;color:#333;font-size:14px;">
-                <b>Долг:</b> {{ debt|number_format(2) }} руб.
+                <b>Долг:</b> {{ debt|number_format(2) }} {{ currency().text }}
             </div>
         </div>
         <br>

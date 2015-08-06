@@ -14,6 +14,7 @@ class PackageRepository extends DocumentRepository
      * @param \DateTime $end
      * @param null $rooms
      * @param null $excludePackages
+     * @param boolean $departure
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
@@ -21,13 +22,17 @@ class PackageRepository extends DocumentRepository
         \DateTime $begin = null,
         \DateTime $end = null,
         $rooms = null,
-        $excludePackages = null
+        $excludePackages = null,
+        $departure = true
     ) {
         $qb = $this->createQueryBuilder('s');
         $qb->field('accommodation')->exists(true)
-            ->field('accommodation')->notEqual(null)
-            ->addOr($qb->expr()->field('departureTime')->exists(false))
-            ->addOr($qb->expr()->field('departureTime')->equals(null));
+            ->field('accommodation')->notEqual(null);
+
+        if ($departure) {
+            $qb->addOr($qb->expr()->field('departureTime')->exists(false))
+                ->addOr($qb->expr()->field('departureTime')->equals(null));
+        }
 
         if ($begin) {
             $qb->field('end')->gte($begin);

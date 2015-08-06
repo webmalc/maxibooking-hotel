@@ -5,8 +5,8 @@
 <b>Заехали:</b> {{ data.doc.isCheckIn ? 'да' : 'нет' }}<br>
 <b>Выехали:</b> {{ data.doc.isCheckOut ? 'да' : 'нет' }}<br>
 <b>Гости:</b> {{ data.doc.adults }}+{{ data.doc.children }}<br>
-<b>Стоимость:</b> {{ data.doc.order.price }} руб.<br>
-<b>Долг:</b> {{ data.doc.order.debt }} руб.<br>
+<b>Стоимость:</b> {{ data.doc.order.price }} {{ currency().text }}<br>
+<b>Долг:</b> {{ data.doc.order.debt }} {{ currency().text }}<br>
 {% if data.doc.services is not empty %}
     <b>Услуги:</b>
     {{ data.doc.services|join(', ') }}

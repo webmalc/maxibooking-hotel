@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +15,8 @@ class Uniteller implements PaymentSystemInterface
 {
 
     const COMMISSION = 0.035;
+
+    const DO_CHECK_URL = 'https://wpay.uniteller.ru/api/1/iacheck';
 
     /**
      * @var string
@@ -69,6 +72,37 @@ class Uniteller implements PaymentSystemInterface
     public function getUnitellerPassword()
     {
         return $this->unitellerPassword;
+    }
+
+    public function getCheckPaymentData(CashDocument $cashDocument)
+    {
+        $order = $cashDocument->getOrder();
+        $card = $order->getCreditCard();
+
+        if (!$order || !$card || !$card->getCvc()) {
+            throw new Exception('Invalid order document or card document.');
+        }
+
+        $data =  [
+            'PAN' => $card->getNumber(),
+            'ExpYear' => $card->getYear(),
+            'ExpMonth' => $card->getMonth(),
+            'Subtotal' => (string) $cashDocument->getTotal(),
+            'CVV' => $card->getCvc(),
+            'ShopID' => $this->getUnitellerShopIDP(),
+            'OrderID' => $cashDocument->getId()
+        ];
+
+        //Signature
+        $params = $data;
+        $params['Password'] = $this->getUnitellerPassword();
+        foreach ($params as $key => $value) {
+            $params[$key] = md5($value);
+        }
+
+        $data['Signature'] = mb_strtoupper(md5(implode('', $params)));
+
+        return $data;
     }
 
     /**

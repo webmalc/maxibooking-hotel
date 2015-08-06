@@ -1,4 +1,4 @@
-/*global window, $, alert, document, Routing, deleteLink */
+/*global window, $, alert, document, Routing, deleteLink, mbh */
 var cashDocumentConfirmation = function (link) {
     'use strict';
     var icon = link.find('i'),
@@ -56,7 +56,7 @@ $(document).ready(function () {
         decimals: 2,
         boostat: 5,
         maxboostedstep: 10,
-        postfix: '<i class="fa fa-ruble"></i>'
+        postfix: '<i class="' + mbh.currency.icon + '"></i>'
     });
 
     var $filterSelectElement = $('#filter'),
@@ -86,7 +86,7 @@ $(document).ready(function () {
         },
         drawCallback = function (settings) {
             $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
-            $('.deleted-entry').closest('tr').addClass('danger');
+            $('.deleted-entry').closest('tr').addClass('danger disable-double-click');
             $('.not-confirmed-entry').closest('tr').addClass('info');
             $('.not-paid-entry').closest('tr').addClass('transparent-tr');
             deleteLink();

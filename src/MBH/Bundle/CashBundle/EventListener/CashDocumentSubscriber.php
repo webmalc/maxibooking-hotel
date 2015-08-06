@@ -69,6 +69,7 @@ class CashDocumentSubscriber implements EventSubscriber
      */
     private function createPdfOrderDocument(CashDocument $document, DocumentManager $dm)
     {
+        $currency = $this->container->get('mbh.currency')->info();
         $orderDocument = new OrderDocument();
         $orderDocument->setName('Счёт на оплату');
         $orderDocument->setOriginalName('bill_'.$document->getNumber().'_'.$document->getDocumentDate()->format('d.m.Y').'.pdf');
@@ -77,7 +78,7 @@ class CashDocumentSubscriber implements EventSubscriber
         $orderDocument->setType('invoice_for_payment');
         $orderDocument->setMimeType('application/pdf');
         $orderDocument->setExtension('pdf');
-        $orderDocument->setComment('Счёт №'.$document->getNumber().' от '.$document->getDocumentDate()->format('d.m.Y').' ('.$document->getTotal().' руб.)');
+        $orderDocument->setComment('Счёт №'.$document->getNumber().' от '.$document->getDocumentDate()->format('d.m.Y').' ('.$document->getTotal().' ' . $currency['text'] . ')');
         $orderDocument->setTourist($document->getTouristPayer());
         $orderDocument->setOrganization($document->getOrganizationPayer());
 

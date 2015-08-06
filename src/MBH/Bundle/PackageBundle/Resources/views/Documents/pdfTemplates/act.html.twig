@@ -133,7 +133,7 @@
             </tr>
         </table>
 
-        <p>Всего оказано услуг {{ entity.services|length + 1 }}, на сумму {{ total|number_format(2) }} руб.<br>
+        <p>Всего оказано услуг {{ entity.services|length + 1 }}, на сумму {{ total|number_format(2) }} {{ currency().text }}<br>
             <strong>{{ total|num2str|capitalize }}</strong></p>
 
         <p>{{ "package.pdf.conditions"|trans({}, "MBHPackageBundle") }}</p>

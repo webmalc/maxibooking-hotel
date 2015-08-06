@@ -1,4 +1,4 @@
-/*global window, $, services, document, datepicker, deleteLink, Routing */
+/*global window, $, services, document, datepicker, deleteLink, Routing, mbh */
 $(document).ready(function () {
     'use strict';
 
@@ -10,7 +10,7 @@ $(document).ready(function () {
         step: 0.1,
         decimals: 2,
         maxboostedstep: 10,
-        postfix: '<i class="fa fa-ruble"></i>'
+        postfix: '<i class="' + mbh.currency.icon + '"></i>'
     });
     $('#mbh_bundle_packagebundle_package_service_type_amount, \n\
        #mbh_bundle_packagebundle_package_service_type_nights, \n\
@@ -36,7 +36,7 @@ $(document).ready(function () {
         decimals: 2,
         boostat: 10,
         maxboostedstep: 20,
-        postfix: '<i class="fa fa-rub"></i>'
+        postfix: '<i class="' + mbh.currency.icon + '"></i>'
     });
 
     //package filter select 2

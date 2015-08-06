@@ -320,7 +320,7 @@ class ApiController extends Controller
         } else {
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig', [
-                    'data' => array_merge(['test' => true,
+                    'data' => array_merge(['test' => false,
                         'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
                             ['%total%' => number_format($request->total, 2), '%order_id%' => $order->getId()],
                             'MBHOnlineBundle')

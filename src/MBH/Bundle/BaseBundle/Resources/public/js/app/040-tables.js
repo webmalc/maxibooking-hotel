@@ -41,7 +41,7 @@ $(document).ready(function() {
     });
 
     //Dblclick href
-    $('table.table-striped').on('dblclick', 'tbody tr', function() {
+    $('table.table-striped').on('dblclick', 'tbody tr:not(".disable-double-click")', function() {
         var link = $(this).find('a[rel="main"]');
         if (link.length) {
             window.location.href = link.attr('href');

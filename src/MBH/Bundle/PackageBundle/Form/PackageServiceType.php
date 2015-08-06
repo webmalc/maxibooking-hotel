@@ -48,7 +48,7 @@ class PackageServiceType extends AbstractType
             ->add('nights', 'text', [
                 'label' => 'form.packageServiceType.nights_amount',
                 'required' => true,
-                'data' => 1,
+                //'data' => 1,
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
                 'constraints' => new NotBlank(),
@@ -57,7 +57,7 @@ class PackageServiceType extends AbstractType
             ->add('persons', 'text', [
                 'label' => 'form.packageServiceType.guests_amount',
                 'required' => true,
-                'data' => 1,
+                //'data' => 1,
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
                 'constraints' => new NotBlank(),
@@ -81,7 +81,7 @@ class PackageServiceType extends AbstractType
             ->add('amount', 'text', [
                 'label' => 'form.packageServiceType.amount',
                 'required' => true,
-                'data' => 1,
+                //'data' => 1,
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
                 'constraints' => new NotBlank(),

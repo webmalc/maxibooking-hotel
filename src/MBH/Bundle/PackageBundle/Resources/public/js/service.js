@@ -1,4 +1,4 @@
-/*global window, $, services, document, select2 */
+/*global window, $, services, document, select2, mbh */
 $(document).ready(function () {
     "use strict";
 
@@ -28,8 +28,8 @@ $(document).ready(function () {
                 dateDiv.hide();
                 timeDiv.hide();
                 dateInput.val(dateInput.val() || dateDefault);
-                personsInput.val(1);
-                nightsInput.val(1);
+                personsInput.val(personsInput.val() || 1);
+                nightsInput.val(nightsInput.val() || 1);
                 amountHelp.html('');
                 serviceHelp.html('<small>Услуга для добавления к броне</small>');
             },
@@ -40,17 +40,17 @@ $(document).ready(function () {
                 if (serviceInput.val() !== null && typeof info !== 'undefined') {
                     var nights = nightsInput.val(),
                         price = priceInput.val() * amountInput.val() * nights * personsInput.val();
-                    amountHelp.html($.number(price, 2) + ' руб. за ' + amountInput.val() + ' шт.');
+                    amountHelp.html($.number(price, 2) + ' ' + mbh.currency.text + ' за ' + amountInput.val() + ' шт.');
                 }
             },
             show = function (info) {
                 hide();
                 if (info.calcType === 'per_night' || info.calcType === 'per_stay') {
-                    personsInput.val(services.package_guests);
+                    personsInput.val(personsInput.val() || services.package_guests);
                     personsDiv.show();
                 }
                 if (info.calcType === 'per_night') {
-                    nightsInput.val(services.package_duration);
+                    nightsInput.val(nightsInput.val() || services.package_duration);
                     nightsDiv.show();
                 }
                 priceInput.show();
@@ -66,7 +66,7 @@ $(document).ready(function () {
                 var peoplesStr = (info.calcType === 'per_night' || info.calcType === 'per_stay') ? ' за 1 человека ' : ' ';
 
                 if (info.calcType !== 'day_percent') {
-                    serviceHelp.html($.number(info.price, 2) + ' рублей' + peoplesStr + info.calcTypeStr);
+                    serviceHelp.html($.number(info.price, 2) + ' ' + mbh.currency.text + peoplesStr + info.calcTypeStr);
                 } else {
                     serviceHelp.html(info.priceRaw + '% ' + info.calcTypeStr);
                 }
@@ -81,7 +81,6 @@ $(document).ready(function () {
                     if (info.calcType === 'day_percent' && services.package_prices_by_date && dateInput.val()) {
                         var dayPrice = services.package_prices_by_date[dateInput.val()];
                         if (dayPrice) {
-
                             priceNew = (dayPrice * info.priceRaw) / 100;
                         }
                     }

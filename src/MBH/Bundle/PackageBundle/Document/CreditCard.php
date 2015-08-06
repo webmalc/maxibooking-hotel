@@ -147,6 +147,29 @@ class CreditCard implements \JsonSerializable
         }
     }
 
+    public function getYear()
+    {
+        if (!empty($this->getDate())) {
+            $arr = explode('/', $this->getDate());
+
+            if (isset($arr[1])) {
+                return $arr[1];
+            }
+        }
+
+        return null;
+    }
+
+    public function getMonth()
+    {
+        if (!empty($this->getDate())) {
+            return explode('/', $this->getDate())[0];
+
+        }
+
+        return null;
+    }
+
     /**
      * @param string $type
      * @return CreditCard

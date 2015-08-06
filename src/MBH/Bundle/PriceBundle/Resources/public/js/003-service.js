@@ -1,4 +1,4 @@
-/*global window, document, $ */
+/*global window, document, $, mbh */
 $(document).ready(function () {
     'use strict';
 
@@ -10,7 +10,7 @@ $(document).ready(function () {
                 if (calcType.val() === 'day_percent') {
                     icon.html('%');
                 } else {
-                    icon.html('<i class="fa fa-ruble"></i>');
+                    icon.html('<i class="' + mbh.currency.icon + '"></i>');
                 }
             };
 

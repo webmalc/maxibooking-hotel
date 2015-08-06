@@ -37,7 +37,7 @@ class Builder extends ContainerAware
         ;
         //Prices links
         $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Номера и цены'])
-            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-ruble']);
+            ->setAttributes(['dropdown' => true, 'icon' => $this->container->get('mbh.currency')->info()['icon']]);
 
         /*$menu->addChild('task', ['route' => 'task', 'label' => 'Задачи'])
             ->setAttributes(['icon' => 'fa fa-tasks']);*/
@@ -47,7 +47,7 @@ class Builder extends ContainerAware
         $menu['prices']->addChild('room_cache', ['route' => 'room_cache_overview', 'label' => 'Номера в продаже'])
             ->setAttributes(['icon' => 'fa fa-bed']);
         $menu['prices']->addChild('price_cache', ['route' => 'price_cache_overview', 'label' => 'Цены'])
-            ->setAttributes(['icon' => 'fa fa-ruble']);
+            ->setAttributes(['icon' => $this->container->get('mbh.currency')->info()['icon']]);
         $menu['prices']->addChild('restrictions', ['route' => 'restriction_overview', 'label' => 'Условия и ограничения'])
             ->setAttributes(['icon' => 'fa fa-exclamation-circle']);
         $menu['prices']->addChild('services', ['route' => 'price_service_category', 'label' => 'Услуги'])
@@ -55,7 +55,7 @@ class Builder extends ContainerAware
 
         // cash
         $menu->addChild('cash', ['route' => 'cash', 'label' => 'Касса'])
-            ->setAttribute('icon', 'fa fa-ruble')
+            ->setAttribute('icon', $this->container->get('mbh.currency')->info()['icon'])
         ;
 
         // report

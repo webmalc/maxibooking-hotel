@@ -131,7 +131,7 @@
     <div style="clear: both"></div>
 
     <div class="conclusion">
-        <div>Всего наименований 1, на сумму {{ cashDocument.total }} руб</div>
+        <div>Всего наименований 1, на сумму {{ cashDocument.total }} {{ currency().text }}</div>
         <strong>{{ cashDocument.total|num2str|capitalize }}</strong>
     </div>
 
