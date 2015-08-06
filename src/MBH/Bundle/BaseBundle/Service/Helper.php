@@ -15,9 +15,15 @@ class Helper
      */
     protected $container;
 
+    /**
+     * @var \Symfony\Component\Translation\IdentityTranslator
+     */
+    protected $tr;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->tr = $this->container->get('translator');
     }
 
     /**
@@ -83,13 +89,13 @@ class Helper
         $m = $n % 10;
         $j = $n % 100;
         if ($m == 0 || $m >= 5 || ($j >= 10 && $j <= 20)) {
-            return $n . ' ' . $s3;
+            return $n . ' ' . $this->tr->trans($s3);
         }
         if ($m >= 2 && $m <= 4) {
-            return $n . ' ' . $s2;
+            return $n . ' ' . $this->tr->trans($s2);
         }
 
-        return $n . ' ' . $s1;
+        return $n . ' ' . $this->tr->trans($s1);
     }
 
     /**
