@@ -28,8 +28,8 @@ $(document).ready(function () {
                 dateDiv.hide();
                 timeDiv.hide();
                 dateInput.val(dateInput.val() || dateDefault);
-                personsInput.val(1);
-                nightsInput.val(1);
+                personsInput.val(personsInput.val() || 1);
+                nightsInput.val(nightsInput.val() || 1);
                 amountHelp.html('');
                 serviceHelp.html('<small>Услуга для добавления к броне</small>');
             },
@@ -46,11 +46,11 @@ $(document).ready(function () {
             show = function (info) {
                 hide();
                 if (info.calcType === 'per_night' || info.calcType === 'per_stay') {
-                    personsInput.val(services.package_guests);
+                    personsInput.val(personsInput.val() || services.package_guests);
                     personsDiv.show();
                 }
                 if (info.calcType === 'per_night') {
-                    nightsInput.val(services.package_duration);
+                    nightsInput.val(nightsInput.val() || services.package_duration);
                     nightsDiv.show();
                 }
                 priceInput.show();
@@ -81,7 +81,6 @@ $(document).ready(function () {
                     if (info.calcType === 'day_percent' && services.package_prices_by_date && dateInput.val()) {
                         var dayPrice = services.package_prices_by_date[dateInput.val()];
                         if (dayPrice) {
-
                             priceNew = (dayPrice * info.priceRaw) / 100;
                         }
                     }
