@@ -38,6 +38,9 @@ class TaskTypeCategoryController extends Controller
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
+                $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
+
                 return $this->isSavedRequest() ?
                     $this->redirectToRoute('task_type_category_edit', ['id' => $entity->getId()]) :
                     $this->redirectToRoute('tasktype', ['category' => $entity->getId()]);
@@ -67,6 +70,9 @@ class TaskTypeCategoryController extends Controller
                 //$entity->setIsSystem(false);
                 $this->dm->persist($entity);
                 $this->dm->flush();
+
+                $request->getSession()->getFlashBag()
+                    ->set('success', $this->get('translator')->trans('controller.TaskTypeController.record_edited_success'));
 
                 return $this->isSavedRequest() ?
                     $this->redirectToRoute('task_type_category_edit', ['id' => $entity->getId()]) :
