@@ -2,20 +2,35 @@
 
 namespace MBH\Bundle\HotelBundle\Document\QueryCriteria;
 
+use MBH\Bundle\BaseBundle\Document\AbstractQueryCriteria;
 /**
  * Class TaskQueryCriteria
- * @package MBH\Bundle\HotelBundle\Document\QueryCriteria
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
-class TaskQueryCriteria extends \MBH\Bundle\BaseBundle\Document\AbstractQueryCriteria
+class TaskQueryCriteria extends AbstractQueryCriteria
 {
+    /**
+     * @var array
+     */
     public $sort = [];
-
+    /**
+     * @var int
+     */
     public $offset = 0;
-
+    /**
+     * @var int
+     */
     public $limit;
 
+    /**
+     * @var string
+     */
     public $status;
+
+    /**
+     * @var string
+     */
+    public $priority;
 
     /**
      * @todo DateRange Object

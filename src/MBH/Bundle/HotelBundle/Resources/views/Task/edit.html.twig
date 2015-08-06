@@ -4,7 +4,7 @@
 
 {% block content %}
 
-    {{ form_start(form, {'action': path('task_new'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('task_edit', {id: entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:new.html.twig' %}
     {{ form_end(form) }}

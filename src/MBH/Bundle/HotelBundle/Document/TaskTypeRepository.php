@@ -24,4 +24,27 @@ class TaskTypeRepository extends DocumentRepository
 
         return $query->execute();
     }
+
+    public function getOptCategoryGroupList()
+    {
+        $categoryRepository = $this->dm->getRepository('MBHHotelBundle:TaskTypeCategory');
+        $categories = $categoryRepository->findAll();
+        $list = [];
+        foreach($categories as $category) {
+            /** @var TaskType[] $types */
+            $types = $this->createQueryBuilder()
+                ->field('category.id')->equals($category->getId())
+                ->select(['title'])
+                ->getQuery()->execute();
+
+            $typeList = [];
+            foreach($types as $type) {
+                $typeList[$type->getId()] = $type->getTitle();
+            }
+
+            $list[$category->getTitle()] = $typeList;
+        }
+
+        return $list;
+    }
 }

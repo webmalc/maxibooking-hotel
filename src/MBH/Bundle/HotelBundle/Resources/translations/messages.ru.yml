@@ -86,14 +86,16 @@ controller.roomTypeController.rooms_generation_success: 'Номера успеш
 controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'
 controller.TaskTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
 controller.TaskTypeController.record_edited_success: 'Запись успешно отредактирована.'
+
 form.taskType.title: Название
 form.taskType.category: Категория
-form.task.taskType: Тип задачи
+form.task.type: Тип задачи
 form.task.status: Статус
 form.task.room: Комната
 form.task.priority: Приоритет
 form.task.tourist: Турист
 form.task.date: Дата и время
+form.task.roles: Группа
 form.task.general_room: Тип комнаты
 form.task.placeholder_taskType: Задача
 form.task.creationalDate: Создано

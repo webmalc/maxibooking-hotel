@@ -67,6 +67,9 @@ class TaskController extends Controller
         if ($request->get('status')){
             $queryCriteria->status = $request->get('status');
         }
+        if ($request->get('priority')){
+            $queryCriteria->priority = $request->get('priority');
+        }
         $helper = $this->get('mbh.helper');
         if($request->get('begin')) {
             $queryCriteria->begin = $helper->getDateFromString($request->get('begin'));
@@ -122,22 +125,13 @@ class TaskController extends Controller
     public function newAction(Request $request)
     {
         $entity = new Task();
-        $roles = $this->container->getParameter('security.role_hierarchy.roles');
-        $roles = array_map(function($item) {return array_combine($item, $item);}, $roles);
-
-        $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
-        $statuses = $this->getParameter('mbh.task.statuses');
         $entity->setStatus('open');
-        $form = $this->createForm(new TaskType(), $entity, [
-            'roles' => $roles,
-            'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
-            'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
-            'optGroupRooms' => $roomRepository->optGroupRooms($roomRepository->getRoomsByType($this->hotel, true))
-        ]);
+        $entity->setPriority('average');
 
-        if ($request->isMethod('POST')) {
-            $form->submit($request);
-            if ($form->isValid()) {
+        $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions());
+
+        if ($request->isMethod(Request::METHOD_POST)) {
+            if ($form->submit($request)->isValid()) {
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
@@ -153,6 +147,20 @@ class TaskController extends Controller
         ];
     }
 
+    private function getFormTaskTypeOptions()
+    {
+        $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
+        $statuses = $this->getParameter('mbh.task.statuses');
+
+        return [
+            'taskTypes' => $this->dm->getRepository('MBHHotelBundle:TaskType')->getOptCategoryGroupList(),
+            'roles' => $this->container->getParameter('security.role_hierarchy.roles'),
+            'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
+            'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
+            'optGroupRooms' => $roomRepository->optGroupRooms($roomRepository->getRoomsByType($this->hotel, true)),
+        ];
+    }
+
     /**
      * Edits an existing entity.
      *
@@ -164,23 +172,12 @@ class TaskController extends Controller
      */
     public function editAction(Request $request, Task $entity)
     {
-        $roles = $this->container->getParameter('security.role_hierarchy.roles');
-        $roles = array_map(function($item) {return array_combine($item, $item);}, $roles);
-
-        $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
-        $statuses = $this->getParameter('mbh.task.statuses');
-        $form = $this->createForm(new TaskType(), $entity, [
-            'roles' => $roles,
-            'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
-            'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
-            'optGroupRooms' => $roomRepository->optGroupRooms($roomRepository->getRoomsByType($this->hotel, true)),
+        $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions() + [
             'scenario' => TaskType::SCENARIO_EDIT
         ]);
 
-        if($request->isMethod("PUT")) {
-            $form->submit($request);
-
-            if ($form->isValid()) {
+        if($request->isMethod(Request::METHOD_PUT)) {
+            if ($form->submit($request)->isValid()) {
                 $this->dm->persist($entity);
                 $this->dm->flush();
 

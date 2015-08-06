@@ -38,6 +38,7 @@ class Task extends Base
     use BlameableDocument;
 
     /**
+     * @var TaskType|null
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="TaskType")
      * @ Assert\NotNull(message="validator.document.task.taskType_no_selected")
@@ -53,6 +54,9 @@ class Task extends Base
      */
     protected $status;
 
+    /**
+     * @var string
+     */
     protected $previousStatus;
 
     /**
@@ -108,10 +112,10 @@ class Task extends Base
     /**
      * Set taskType
      *
-     * @param TaskType $type
+     * @param TaskType|null $type
      * @return self
      */
-    public function setType(TaskType $type)
+    public function setType(TaskType $type = null)
     {
         $this->type = $type;
 
@@ -119,9 +123,7 @@ class Task extends Base
     }
 
     /**
-     * Get taskType
-     *
-     * @return TaskType $taskType
+     * @return TaskType|null
      */
     public function getType()
     {
@@ -286,22 +288,17 @@ class Task extends Base
     }
 
     /**
-     * @ODM\PrePersist
-     */
-    public function prePersist()
-    {
-        $this->status = 'open';
-    }
-
-    /**
      * @Assert\Callback
      * @author Aleksandr Arofikin <sashaaro@gmail.com>
      */
     public function validate(ExecutionContextInterface $context)
     {
-        if (!$this->isStatusChainValid()) {
+        /*if (!$this->isStatusChainValid()) {
             $context->buildViolation('Settled status is not correct')->atPath('status')->addViolation();
-        };
+        };*/
+        if(!$this->role && !$this->performer) {
+            $context->buildViolation('validator.task.assignment')->addViolation();
+        }
     }
 
     /**

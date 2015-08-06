@@ -32,6 +32,10 @@ class TaskRepository extends DocumentRepository
             $criteria['$and'][] = ['status' => $queryCriteria->status];
         }
 
+        if ($queryCriteria->priority) {
+            $criteria['$and'][] = ['priority' => $queryCriteria->priority];
+        }
+
         if ($queryCriteria->begin) {
             $criteria['$and'][] = ['createdAt' => ['$gte' => $queryCriteria->begin]];
         }

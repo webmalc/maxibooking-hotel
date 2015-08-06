@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -19,6 +20,14 @@ class TaskType extends AbstractType
     const SCENARIO_NEW = 'SCENARIO_NEW';
     const SCENARIO_EDIT = 'SCENARIO_EDIT';
 
+    protected $dm;
+
+    public function __construct($dm)
+    {
+        $this->dm = $dm;
+    }
+
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         if($options['scenario'] == self::SCENARIO_NEW) {
@@ -27,15 +36,19 @@ class TaskType extends AbstractType
             $generalGroup = 'form.task.group.general_edit';
         }
 
+        $roles = [];
+        foreach ($options['roles'] as $key => $role) {
+            $roles[$key] = $key;
+        }
+
         $statuses = $options['statuses'];
 
         $builder
-            ->add('type', 'document', [
-                'label' => 'form.task.taskType',
+            ->add('type', 'choice', [
+                'label' => 'form.task.type',
                 'group' => $generalGroup,
-                'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
-                'required' => true,
-                //'attr' => ['placeholder' => 'form.task.attr_taskType']
+                'choices' => $options['taskTypes'],
+                'required' => true
             ])
             ->add('priority', 'choice', [
                 'label' => 'form.task.priority',
@@ -70,11 +83,11 @@ class TaskType extends AbstractType
                 'required' => true,
             ])
             ->add('role', 'choice', [
-                'label' => 'form.userType.roles',
+                'label' => 'form.task.roles',
                 'group' => 'form.task.group.assign',
                 //'multiple' => true,
-                'choices' => $options['roles'],
-                'translation_domain' => 'MBHUserBundleRoles',
+                'choices' => $roles,
+                'choice_translation_domain' => 'MBHUserBundleRoles',
                 'attr' => array('class' => "chzn-select roles"),
                 'required' => false
             ])
@@ -97,6 +110,8 @@ class TaskType extends AbstractType
                 'expanded' => true,
             ])
         ;
+
+        $builder->get('type')->addModelTransformer(new EntityToIdTransformer($this->dm, 'MBH\Bundle\HotelBundle\Document\TaskType'));
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -104,6 +119,7 @@ class TaskType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Task',
             'roles' => [],
+            'taskTypes' => [],
             'priorities' => [],
             'optGroupRooms' => [],
             'statuses' => [],
