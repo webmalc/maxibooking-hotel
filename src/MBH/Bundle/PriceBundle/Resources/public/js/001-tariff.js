@@ -1,4 +1,4 @@
-/*global window, $, document */
+/*global window, $, document, mbh */
 $(document).ready(function () {
     'use strict';
 
@@ -11,7 +11,7 @@ $(document).ready(function () {
         decimals: 2,
         step: 0.1,
         maxboostedstep: 10000000,
-        postfix: '<i class="fa fa-ruble"></i>'
+        postfix: '<i class="' + mbh.currency.icon + '"></i>'
     });
 
     $('.percent-spinner').TouchSpin({

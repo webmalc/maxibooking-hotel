@@ -90,6 +90,14 @@ class Extension extends \Twig_Extension
     /**
      * @return array
      */
+    public function currency()
+    {
+        return $this->container->get('mbh.currency')->info();
+    }
+
+    /**
+     * @return array
+     */
     public function getFilters()
     {
         return [
@@ -102,4 +110,13 @@ class Extension extends \Twig_Extension
         ];
     }
 
+    /**
+     * @return array
+     */
+    public function getFunctions()
+    {
+        return [
+            'currency' => new \Twig_Function_Method($this, 'currency', array('is_safe' => array('html')))
+        ];
+    }
 }

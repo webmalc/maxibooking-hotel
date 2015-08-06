@@ -14,7 +14,7 @@
         <div class="tab-pane active" id="home">
 
             <div class="alert alert-warning">
-                <i class="fa fa-ruble"></i>
+                <i class="{{ currency().icon }}"></i>
                 {{ 'order.cash.paid_price'|trans({}, 'MBHPackageBundle') }} {{ entity.paid|number_format(2) }} / {{ entity.price|number_format(2) }}
                 &nbsp;
                 {% if entity.isPaid %}
@@ -44,7 +44,7 @@
                     {% for cash in docs %}
                         {% set data = clientConfig.getFormData(cash, null, url('online_form_check_order')) %}
                         <tr class="{{ cash.isConfirmed is empty and cash.isPaid ? 'info' }} {{ cash.deletedAt ? 'danger' }} {{ cash.isPaid is empty ? 'transparent-tr' }} {% if cash.operation == 'in' and cash.deletedAt is empty and cash.method == 'electronic' and not cash.isPaid and not(data.disabled is defined and data.disabled) %} visa-tr {% endif %}">
-                            <td class="text-center"><i class='fa fa-ruble'></i></td>
+                            <td class="text-center"><i class='{{ currency().icon }}'></i></td>
                             <td>{{ cash.number }}</th>
                             <td>{{ cash.payer }}</td>
                             <td class="text-right">
@@ -87,13 +87,13 @@
                                                     </button>
                                                     <ul class="dropdown-menu dropdown-buttons">
                                                         <li>
-                                                            {% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': data|merge({'buttonClasses': 'btn-xs', 'test': true})} %}
+                                                            {% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': data|merge({'buttonClasses': 'btn-xs', 'test': false})} %}
                                                         </li>
-                                                        {% if clientConfig.paymentSystem == 'uniteller' and entity.creditCard and entity.creditCard.cvc %}
+                                                        <!--{% if clientConfig.paymentSystem == 'uniteller' and entity.creditCard and entity.creditCard.cvc %}
                                                         <li>
-                                                            <button onclick="location.href = '{{ path('cash_card_money', {'id': cash.id}) }}'" class="btn btn-warning btn-xs"><i class="fa fa-ruble"></i>&nbsp;списать</button>
+                                                            <button onclick="location.href = '{{ path('cash_card_money', {'id': cash.id}) }}'" class="btn btn-warning btn-xs"><i class="{{ currency().icon }}"></i>&nbsp;списать</button>
                                                         </li>
-                                                        {% endif %}
+                                                        {% endif %}-->
                                                     </ul>
                                                 </div>
                                             {% endif %}

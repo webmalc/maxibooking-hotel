@@ -1,4 +1,4 @@
-/*global window, $, alert, document, Routing, deleteLink */
+/*global window, $, alert, document, Routing, deleteLink, mbh */
 var cashDocumentConfirmation = function (link) {
     'use strict';
     var icon = link.find('i'),
@@ -56,7 +56,7 @@ $(document).ready(function () {
         decimals: 2,
         boostat: 5,
         maxboostedstep: 10,
-        postfix: '<i class="fa fa-ruble"></i>'
+        postfix: '<i class="' + mbh.currency.icon + '"></i>'
     });
 
     var $filterSelectElement = $('#filter'),

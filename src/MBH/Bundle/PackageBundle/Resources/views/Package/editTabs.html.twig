@@ -56,7 +56,7 @@
         'route': 'package_order_tourist_edit',
         'order': true,
         'title': '<i class="fa fa-users"></i> ' ~ 'order.tabs.payer'|trans({}, 'MBHPackageBundle'),
-        'append': entity.order.payer ? entity.order.payer.shortName : 'no'
+        'append': entity.order.payer ? entity.order.payer.shortName : 'dash'
     },
     {
         'route': 'package_guest',
@@ -68,7 +68,7 @@
         'route': 'package_service',
         'order': false,
         'title': '<i class="fa fa-plug"></i> '~'package.editTabs.services'|trans({}, 'MBHPackageBundle')~' <small class="badge">' ~ services ~ '</small>',
-        'append': entity.services|length > 0 ? plural(entity.services|length, 'service', 'services1', 'services2') ~ ', ' ~ entity.servicesPrice|number_format(2) : 'no',
+        'append': entity.services|length > 0 ? plural(entity.services|length, 'service', 'services1', 'services2') ~ ', ' ~ entity.servicesPrice|number_format(2) : 'dash',
     },
     {
         'route': 'package_accommodation',
@@ -79,14 +79,14 @@
     {
         'route': 'package_order_cash',
         'order': true,
-        'title': '<i class="fa fa-ruble"></i> '~'order.tabs.calculations'|trans({}, 'MBHPackageBundle')~' <small class="label ' ~ price.class ~ ' label-as-badge">' ~ price.val ~  '</i></small>',
+        'title': '<i class="' ~ currency().icon ~ '"></i> '~'order.tabs.calculations'|trans({}, 'MBHPackageBundle')~' <small class="label ' ~ price.class ~ ' label-as-badge">' ~ price.val ~  '</i></small>',
         'append': entity.order.paid|number_format(2) ~ '/' ~ entity.order.price|number_format(2),
     },
     {
         'route': 'order_documents',
         'order': true,
         'title': '<i class="fa fa-file"></i> '~'package.editTabs.documents'|trans({}, 'MBHPackageBundle')~' <small class="badge">' ~ documents ~ '</small>',
-        'append': entity.order.documents|length > 0 ? entity.order.documents|length : 'no',
+        'append': entity.order.documents|length > 0 ? entity.order.documents|length : 'dash',
     }
 ] %}
 

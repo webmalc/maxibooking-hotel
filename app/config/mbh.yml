@@ -1,6 +1,10 @@
 parameters:
-
+    #currencies
     mbh.currency.ratio.fix: %currency_ratio_fix%
+    mbh.currency.data:
+      rub: {text: 'руб.', small: 'коп.', icon: 'fa fa-ruble'}
+      eur: {text: '€', small: '¢', icon: 'fa fa-eur'}
+      uah: {text: 'грн.', small: 'коп.', icon: 'fa fa-money'}
 
     #timezone. default - deafult server timezone
     mbh.timezone: "%mbh_timezone%"

@@ -1,4 +1,4 @@
-/*global window, $, services, document, select2 */
+/*global window, $, services, document, select2, mbh */
 $(document).ready(function () {
     "use strict";
 
@@ -40,7 +40,7 @@ $(document).ready(function () {
                 if (serviceInput.val() !== null && typeof info !== 'undefined') {
                     var nights = nightsInput.val(),
                         price = priceInput.val() * amountInput.val() * nights * personsInput.val();
-                    amountHelp.html($.number(price, 2) + ' руб. за ' + amountInput.val() + ' шт.');
+                    amountHelp.html($.number(price, 2) + ' ' + mbh.currency.text + ' за ' + amountInput.val() + ' шт.');
                 }
             },
             show = function (info) {
@@ -66,7 +66,7 @@ $(document).ready(function () {
                 var peoplesStr = (info.calcType === 'per_night' || info.calcType === 'per_stay') ? ' за 1 человека ' : ' ';
 
                 if (info.calcType !== 'day_percent') {
-                    serviceHelp.html($.number(info.price, 2) + ' рублей' + peoplesStr + info.calcTypeStr);
+                    serviceHelp.html($.number(info.price, 2) + ' ' + mbh.currency.text + peoplesStr + info.calcTypeStr);
                 } else {
                     serviceHelp.html(info.priceRaw + '% ' + info.calcTypeStr);
                 }

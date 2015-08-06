@@ -44,11 +44,12 @@ overpaid: Переплачено
 confirmed: 'подтвержден'
 not.confirmed: 'не подтвержден'
 no: 'нет'
+dash: '-'
 
 service: 'услуга'
 services1: 'услуги'
 services2: 'услуг'
 
 not.stopped: 'не заехал'
-stopped: 'заехал'
-left: 'выехал'
+stopped: 'заехали'
+left: 'выехали'
