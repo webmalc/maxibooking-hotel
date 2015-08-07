@@ -1,5 +1,6 @@
 /*global window, $, services, document, datepicker, deleteLink, Routing, mbh */
-$(document).ready(function () {
+
+var docReadyPackages = function () {
     'use strict';
 
     //spinners
@@ -305,5 +306,39 @@ $(document).ready(function () {
         var $body = $modal.find('.modal-body');
         $body.empty();
     });
+}
+
+$(document).ready(function () {
+    'use strict';
+    docReadyPackages();
+
+    //package ajax tabs
+    (function () {
+        var tabs = $('#package-tabs');
+        if (!tabs.length) {
+            return null;
+        }
+        tabs.find('li > a').click(function (e) {
+            e.preventDefault();
+            $('.tab-pane').html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+            tabs.find('li').removeClass('active');
+            $(this).closest('li').addClass('active');
+            var href = $(this).attr('href');
+            $.get(href, function (content) {
+                if (typeof window.history.pushState == 'function') {
+                    window.history.pushState(null, null, href);
+                }
+                $('.tab-content').replaceWith(content);
+                docReadyForms();
+                docReadyTables();
+                docReadyTourists();
+                docReadyServices();
+                docReadyPackages();
+                docReadyCash();
+                docReadyDocs();
+
+            });
+        });
+    }());
 });
 

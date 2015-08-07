@@ -1,5 +1,5 @@
 /*global document, window, $ */
-$(document).ready(function () {
+var docReadyDocs = function () {
     'use strict';
     $('#documents-table').dataTable({
         pageLength: 10,
@@ -8,4 +8,9 @@ $(document).ready(function () {
         stateSave: true,
         "bLengthChange": false
     });
+};
+
+$(document).ready(function () {
+    'use strict';
+    docReadyDocs();
 });

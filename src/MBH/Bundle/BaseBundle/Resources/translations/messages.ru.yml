@@ -50,6 +50,6 @@ service: 'услуга'
 services1: 'услуги'
 services2: 'услуг'
 
-not.stopped: 'не заехал'
+not.stopped: 'не заехали'
 stopped: 'заехали'
 left: 'выехали'

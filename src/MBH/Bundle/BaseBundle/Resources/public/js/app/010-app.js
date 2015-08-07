@@ -118,7 +118,6 @@ $(document).ready(function () {
     //fancybox
     $('.fancybox').fancybox();
     $('.image-fancybox').fancybox({'type': 'image'});
-    $('input[type=file]').bootstrapFileInput();
 
     //popovers
     $('[data-toggle="popover"]').popover();

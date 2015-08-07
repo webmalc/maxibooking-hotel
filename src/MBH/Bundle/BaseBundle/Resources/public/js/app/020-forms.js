@@ -17,7 +17,7 @@ $.fn.serializeObject = function () {
     return o;
 };
 
-$(document).ready(function () {
+var docReadyForms = function () {
     'use strict';
 
     $('form.remember input, form.remember select, form.remember textarea').phoenix();
@@ -94,7 +94,8 @@ $(document).ready(function () {
     $('.datepicker').datepicker({
         language: "ru",
         todayHighlight: true,
-        autoclose: true
+        autoclose: true,
+        format: 'dd.mm.yyyy'
     });
 
     $('.datepicker').keyup(function (e) {
@@ -225,4 +226,12 @@ $(document).ready(function () {
         load();
         inputs.change(remember);
     }());
+
+    $('input[type=file]').bootstrapFileInput();
+};
+
+$(document).ready(function () {
+    'use strict';
+
+    docReadyForms();
 });

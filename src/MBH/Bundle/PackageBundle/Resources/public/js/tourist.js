@@ -1,5 +1,6 @@
-/*global document, window, Routing, $ */
-$(document).ready(function () {
+/*global window, $, services, document, datepicker, deleteLink, Routing, mbh */
+
+var docReadyTourists = function () {
     'use strict';
 
     //roomType rooms datatables
@@ -115,5 +116,12 @@ $(document).ready(function () {
         },
         dropdownCssClass: "bigdrop"
     })
+}
+
+/*global document, window, Routing, $ */
+$(document).ready(function () {
+    'use strict';
+
+    docReadyTourists();
 });
 
