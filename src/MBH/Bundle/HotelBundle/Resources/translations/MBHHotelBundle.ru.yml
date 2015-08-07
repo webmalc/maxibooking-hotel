@@ -2,14 +2,25 @@ views.tasktype.index.name: Название
 views.tasktype.index.created: Создан
 views.task.index.status: Cтатус
 views.task.index.tasktype: Тип задачи
+views.task.index.task: Задачи
 views.task.index.priority: Приоритет
+views.task.index.performer: Исполнитель
+views.task.index.group: Группа
 views.task.index.roomType: Тип комнаты
+views.task.index.room: Комната
 views.task.index.users:   Исполнитель
+views.task.index.assign:   Назначена
 views.task.index.guest:    Клиент
 views.task.index.role: Роли
+views.task.index.group: Группа
 views.task.index.groups: Группы
 views.task.index.createAt: Создано
 views.task.index.updateAt: Обновлено
+
+views.filter.placeholder.status: Статус
+views.filter.placeholder.status: Обновлено
+views.filter.placeholder.priority: Приоритет
+
 views.hotel.edit.editing_number: "редактирование #"
 views.hotel.extended.editing_number: "редактирование #"
 views.hotel.extended.close: Закрыть

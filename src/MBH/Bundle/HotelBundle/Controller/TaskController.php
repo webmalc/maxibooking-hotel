@@ -35,6 +35,8 @@ class TaskController extends Controller
             'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
             'statuses' => $this->container->getParameter('mbh.task.statuses'),//todo translate
             'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
+            'performers' => $this->dm->getRepository('MBHUserBundle:User')->findAll(),
+            'groups' => $this->getRoleList(),
             'tasks' => []
         ];
     }
@@ -168,12 +170,18 @@ class TaskController extends Controller
 
         return [
             'taskTypes' => $this->dm->getRepository('MBHHotelBundle:TaskType')->getOptCategoryGroupList(),
-            'roles' => $this->container->getParameter('security.role_hierarchy.roles'),
+            'roles' => $this->getRoleList(),
             'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
             'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
             'optGroupRooms' => $roomRepository->optGroupRooms($roomRepository->getRoomsByType($this->hotel, true)),
             'hotel' => $this->hotel
         ];
+    }
+
+    private function getRoleList()
+    {
+        $roles = array_keys($this->container->getParameter('security.role_hierarchy.roles'));
+        return array_combine($roles, $roles);
     }
 
     /**

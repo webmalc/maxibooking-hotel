@@ -42,11 +42,7 @@ class TaskType extends AbstractType
             $generalGroup = 'form.task.group.general_edit';
         }
 
-        $roles = [];
-        foreach ($options['roles'] as $key => $role) {
-            $roles[$key] = $key;
-        }
-
+        $roles = $options['roles'];
         $statuses = $options['statuses'];
         /** @var Hotel $hotel */
         $hotel = $options['hotel'];

@@ -24,7 +24,7 @@ $(document).ready(function () {
                 data.priority = $('#task-filter-priority').select2('val');
             }
         },
-        "order": [[ 9, "desc" ]], //createdAt
+        "order": [[ 7, "desc" ]], //createdAt
         "aoColumns": [
             {"bSortable" : false},
             {"name" : "number", "class" : 'text-center'},
@@ -33,9 +33,8 @@ $(document).ready(function () {
             {"name" : "priority"},
             {"bSortable" : false},
             {"bSortable" : false},
-            {"bSortable" : false},
             {"name" : "createdAt"},
-            {"name" : "updatedAt"},
+            //{"name" : "updatedAt"},
             {"bSortable" : false}
         ],
         "drawCallback": function (settings) {
@@ -70,8 +69,7 @@ $(document).ready(function () {
         $roomsSelect = $('#mbh_bundle_hotelbundle_task_rooms'),
         roomsSelectHtml = $roomsSelect.html();
 
-    var firstCall = true;
-    var allOption = '<optgroup label="Все"><option value="all">Выбрать все</option></optgroup>',
+    var firstCall = true,
         changeHousingAndFloor = function (e) {
             $roomsSelect.val('');
             if(!firstCall) {
@@ -79,11 +77,11 @@ $(document).ready(function () {
             }
             var housing = $housingSelect.val(),
                 floor = $floorSelect.val(),
-                $roomsSelectHtml = $('<select>' + allOption + roomsSelectHtml + '</select>');
+                $roomsSelectHtml = $('<select>' + roomsSelectHtml + '</select>');
 
             $roomsSelectHtml.find('option').map(function() {
                 var isChecked = (!housing|| this.getAttribute("data-housing") == housing)
-                    && (!floor || this.getAttribute("data-floor") == floor) || this.value == 'all';
+                    && (!floor || this.getAttribute("data-floor") == floor);
                 if(!isChecked)
                     $(this).remove();
             });
@@ -96,22 +94,19 @@ $(document).ready(function () {
     $housingSelect.on('change', changeHousingAndFloor);
     $floorSelect.on('change', changeHousingAndFloor);
     changeHousingAndFloor();
-
-    $roomsSelect.append('<div id="hidden-inputs"></div>');
-
-
-    var originalRoomsSelectName = $roomsSelect.attr('name');
-    $roomsSelect.on('change', function() {
-        $('#hidden-inputs').empty();
-        $roomsSelect.attr('name', originalRoomsSelectName);
-        if($(this).val() == 'all') {
-            var inputs = '';
-            $roomsSelect.find('option').each(function(){
-                if(this.value != 'all')
-                    inputs += '<input type="hidden" name="' + originalRoomsSelectName + '" value="'+ this.value +'">'
-            });
-            $roomsSelect.attr('name', 'fake');//.attr('disabled', 'disabled');
-            $('#hidden-inputs').append(inputs);
-        }
-    });
+    $roomsSelect.parent().append(
+        '<div class="btn-group pull-right" style="margin-top: 3px" role="group">' +
+        '<div class="btn btn-xs btn-default clickable" id="select-all-rooms">Выбрать все</div>' +
+        '<div class="btn btn-xs btn-default clickable" id="clear-rooms">Очистить</div>' +
+        '<div>'
+    )
+    $('#select-all-rooms').on('click', function() {
+        console.log('all');
+        $roomsSelect.find("option").prop("selected","selected");
+        $roomsSelect.trigger("change");
+    })
+    $('#clear-rooms').on('click', function() {
+        console.log('clear');
+        $roomsSelect.select2('val', null);
+    })
 });
