@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use MBH\Bundle\UserBundle\Document\User;
 
@@ -16,16 +17,24 @@ class TaskRepository extends DocumentRepository
 {
     /**
      * Tasks that user can accept to process
+     * @param TaskQueryCriteria $queryCriteria
      * @return Task[]
+     * @throws Exception
      */
-    public function getAcceptableTasksByUser(User $user, TaskQueryCriteria $queryCriteria)
+    public function getAcceptableTasksByUser(TaskQueryCriteria $queryCriteria)
     {
         $criteria = [];
-        if (!in_array('ROLE_ADMIN', $user->getRoles())) { //todo move to criteria prop isAdmin
+        if ($queryCriteria->onlyOwned) {
+            if(!$queryCriteria->performerId) {
+                throw new Exception();
+            }
             $criteria['$or'] = [
-                ['performer' => $user->getId()],
-                ['role' => ['$in' => $user->getRoles()]]
+                ['performer.id' => $queryCriteria->performerId],
             ];
+
+            if($queryCriteria->roles) {
+                $criteria['$or'][] = ['role' => ['$in' => $queryCriteria->roles]];
+            }
         }
 
         if ($queryCriteria->status) {

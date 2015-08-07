@@ -37,9 +37,20 @@ class TaskQueryCriteria extends AbstractQueryCriteria
      * @var \DateTime|null
      */
     public $begin;
-
     /**
      * @var \DateTime|null
      */
     public $end;
+    /**
+     * @var bool
+     */
+    public $onlyOwned;
+    /**
+     * @var string
+     */
+    public $performerId;
+    /**
+     * @var string[]
+     */
+    public $roles = [];
 }

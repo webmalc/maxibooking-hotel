@@ -92,9 +92,12 @@ form.taskType.category: Категория
 form.task.type: Тип задачи
 form.task.status: Статус
 form.task.room: Комната
+form.task.rooms: Комнаты
 form.task.priority: Приоритет
 form.task.tourist: Турист
 form.task.date: Дата и время
+form.task.housing: Корпус
+form.task.floor: Этаж
 form.task.roles: Группа
 form.task.general_room: Тип комнаты
 form.task.placeholder_taskType: Задача

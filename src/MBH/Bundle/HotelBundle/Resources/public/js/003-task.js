@@ -64,4 +64,54 @@ $(document).ready(function () {
             $time.val('0:00');
         }
     });
+
+    var $housingSelect = $('#mbh_bundle_hotelbundle_task_housing'),
+        $floorSelect = $('#mbh_bundle_hotelbundle_task_floor'),
+        $roomsSelect = $('#mbh_bundle_hotelbundle_task_rooms'),
+        roomsSelectHtml = $roomsSelect.html();
+
+    var firstCall = true;
+    var allOption = '<optgroup label="Все"><option value="all">Выбрать все</option></optgroup>',
+        changeHousingAndFloor = function (e) {
+            $roomsSelect.val('');
+            if(!firstCall) {
+                roomsSelectHtml = roomsSelectHtml.replace('selected="selected"', '');
+            }
+            var housing = $housingSelect.val(),
+                floor = $floorSelect.val(),
+                $roomsSelectHtml = $('<select>' + allOption + roomsSelectHtml + '</select>');
+
+            $roomsSelectHtml.find('option').map(function() {
+                var isChecked = (!housing|| this.getAttribute("data-housing") == housing)
+                    && (!floor || this.getAttribute("data-floor") == floor) || this.value == 'all';
+                if(!isChecked)
+                    $(this).remove();
+            });
+            var newHtml = $roomsSelectHtml.html();
+            $roomsSelect.select2('destroy').html(newHtml).select2();
+
+            firstCall = false;
+        };
+
+    $housingSelect.on('change', changeHousingAndFloor);
+    $floorSelect.on('change', changeHousingAndFloor);
+    changeHousingAndFloor();
+
+    $roomsSelect.append('<div id="hidden-inputs"></div>');
+
+
+    var originalRoomsSelectName = $roomsSelect.attr('name');
+    $roomsSelect.on('change', function() {
+        $('#hidden-inputs').empty();
+        $roomsSelect.attr('name', originalRoomsSelectName);
+        if($(this).val() == 'all') {
+            var inputs = '';
+            $roomsSelect.find('option').each(function(){
+                if(this.value != 'all')
+                    inputs += '<input type="hidden" name="' + originalRoomsSelectName + '" value="'+ this.value +'">'
+            });
+            $roomsSelect.attr('name', 'fake');//.attr('disabled', 'disabled');
+            $('#hidden-inputs').append(inputs);
+        }
+    });
 });

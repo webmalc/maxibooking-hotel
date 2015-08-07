@@ -5,6 +5,7 @@ namespace MBH\Bundle\HotelBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -80,7 +81,11 @@ class TaskController extends Controller
         }
         /** @var TaskRepository $repository */
         $repository = $this->dm->getRepository('MBHHotelBundle:Task');
-        $tasks = $repository->getAcceptableTasksByUser($user, $queryCriteria);
+
+        $queryCriteria->onlyOwned = !$this->get('security.authorization_checker')->isGranted('ROLE_TASK_MANAGER');//$this->get('security.context')->isGranted
+        $queryCriteria->performerId = $user->getId();
+        $queryCriteria->roles = $user->getRoles();
+        $tasks = $repository->getAcceptableTasksByUser($queryCriteria);
 
         $recordsTotal = $repository->createQueryBuilder()->getQuery()->count();
 
@@ -97,9 +102,9 @@ class TaskController extends Controller
     /**
      * @Route("/change_status/{id}/{status}", name="task_change_status")
      * @Method({"GET"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER')")
      * @ParamConverter("entity", class="MBHHotelBundle:Task")
-     * @todo checkAccess save performer
+     * @todo checkAccess performer
      */
     public function changeStatusAction(Task $entity, $status)
     {
@@ -111,7 +116,7 @@ class TaskController extends Controller
 
         $this->dm->persist($entity);
         $this->dm->flush();
-        return $this->redirect($this->generateUrl('task'));
+        return $this->redirectToRoute('task');
     }
 
     /**
@@ -119,7 +124,7 @@ class TaskController extends Controller
      *
      * @Route("/new", name="task_new")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_TASK_MANAGER')")
      * @Template()
      */
     public function newAction(Request $request)
@@ -135,13 +140,19 @@ class TaskController extends Controller
 
         if ($request->isMethod(Request::METHOD_POST)) {
             if ($form->submit($request)->isValid()) {
-                $this->dm->persist($entity);
+                /** @var Room[] $rooms */
+                $rooms = $form['rooms']->getData();
+                foreach($rooms as $room) {
+                    $task = clone($entity);
+                    $task->setRoom($room);
+                    $this->dm->persist($task);
+                }
                 $this->dm->flush();
 
                 $request->getSession()->getFlashBag()->set('success',
                     $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
 
-                return $this->afterSaveRedirect('task', $entity->getId());
+                return $this->redirectToRoute('task');
             }
         }
 
@@ -160,7 +171,8 @@ class TaskController extends Controller
             'roles' => $this->container->getParameter('security.role_hierarchy.roles'),
             'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
             'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
-            'optGroupRooms' => $roomRepository->optGroupRooms($roomRepository->getRoomsByType($this->hotel, true))
+            'optGroupRooms' => $roomRepository->optGroupRooms($roomRepository->getRoomsByType($this->hotel, true)),
+            'hotel' => $this->hotel
         ];
     }
 
@@ -169,7 +181,7 @@ class TaskController extends Controller
      *
      * @Route("/edit/{id}", name="task_edit")
      * @Method({"GET","PUT"})
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_TASK_MANAGER')")
      * @Template()
      * @ParamConverter("entity", class="MBHHotelBundle:Task")
      */

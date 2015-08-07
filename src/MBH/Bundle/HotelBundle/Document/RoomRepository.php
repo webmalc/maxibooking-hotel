@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
+use Doctrine\MongoDB\ArrayIterator;
 use MBH\Bundle\BaseBundle\Document\AbstractBaseRepository;
 use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
 
@@ -16,6 +17,21 @@ class RoomRepository extends AbstractBaseRepository
         return;
     }
 
+
+    /**
+     * Return available distinct hotel floors
+     * @param Hotel $hotel
+     * @return string[]
+     */
+    public function getFloorsByHotel(Hotel $hotel)
+    {
+        /** @var ArrayIterator $result */
+        $result = $this->createQueryBuilder()
+            ->field('hotel.id')->equals($hotel->getId())
+            ->distinct('floor')
+            ->getQuery()->execute();
+        return $result->toArray();
+    }
 
     /**
      * @param Room[] $rooms

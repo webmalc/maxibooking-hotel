@@ -88,5 +88,7 @@
             {% endfor %}
         <tbody>
     </table>
-    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'task_new'} %}
+    {% if app.security.granted('ROLE_TASK_MANAGER') %}
+        {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'task_new'} %}
+    {% endif %}
 {% endblock %}
