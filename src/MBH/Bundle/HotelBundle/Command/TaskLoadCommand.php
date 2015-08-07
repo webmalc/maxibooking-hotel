@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mb
- * Date: 06.08.15
- * Time: 11:48
- */
 
 namespace MBH\Bundle\HotelBundle\Command;
 

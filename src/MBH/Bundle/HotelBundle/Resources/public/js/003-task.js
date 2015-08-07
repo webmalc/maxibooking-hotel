@@ -58,4 +58,10 @@ $(document).ready(function () {
         };
     $time.timepicker({showMeridian: false, defaultTime: ''});
     $date.datepicker(datePickerOptions);
+
+    $date.on('change', function () {
+        if ($date.val() && !$time.val()) {
+            $time.val('0:00');
+        }
+    });
 });

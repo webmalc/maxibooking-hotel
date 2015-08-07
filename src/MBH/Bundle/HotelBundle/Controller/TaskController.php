@@ -119,11 +119,14 @@ class TaskController extends Controller
      *
      * @Route("/new", name="task_new")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function newAction(Request $request)
     {
+        if (!$this->get('mbh.hotel.selector')->checkPermissions($this->hotel)) {
+            throw $this->createNotFoundException();
+        }
         $entity = new Task();
         $entity->setStatus('open');
         $entity->setPriority('average');
@@ -157,21 +160,24 @@ class TaskController extends Controller
             'roles' => $this->container->getParameter('security.role_hierarchy.roles'),
             'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
             'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
-            'optGroupRooms' => $roomRepository->optGroupRooms($roomRepository->getRoomsByType($this->hotel, true)),
+            'optGroupRooms' => $roomRepository->optGroupRooms($roomRepository->getRoomsByType($this->hotel, true))
         ];
     }
 
     /**
      * Edits an existing entity.
      *
-     * @Route("/{id}", name="task_edit")
+     * @Route("/edit/{id}", name="task_edit")
      * @Method({"GET","PUT"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      * @ParamConverter("entity", class="MBHHotelBundle:Task")
      */
     public function editAction(Request $request, Task $entity)
     {
+        if (!$this->get('mbh.hotel.selector')->checkPermissions($this->hotel)) {
+            throw $this->createNotFoundException();
+        }
         $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions() + [
             'scenario' => TaskType::SCENARIO_EDIT
         ]);

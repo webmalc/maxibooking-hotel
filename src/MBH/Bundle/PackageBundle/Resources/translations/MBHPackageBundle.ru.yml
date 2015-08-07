@@ -340,6 +340,7 @@ package.corrupted.message.text: Создана поврежденная брон
 
 # Task
 task.status: Статус
+task.priority: Приоритет
 
 #Polls
 poll.question.category.service: 'сервис приема и регистрации'
