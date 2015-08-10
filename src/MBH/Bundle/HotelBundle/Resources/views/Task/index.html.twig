@@ -54,14 +54,14 @@
     <table id="task-table" class="table table-hover table-actions table-striped not-auto-datatable">
         <thead>
         <tr>
-            <th class="td-xss"></th>
-            <th class="td-xss">#</th>
+            <th class="td-xs"></th>
+            <th class="td-xs">#</th>
             <th class="td-md">{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}</th>
             <th class="td-md">{{ 'views.task.index.task'|trans({}, 'MBHHotelBundle') }}</th>
             <th class="td-md">{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}</th>
             <th class="td-md">{{ 'views.task.index.room'|trans({}, 'MBHHotelBundle') }}</th>
-            <th class="td-md">{{ 'views.task.index.assign'|trans({}, 'MBHHotelBundle') }}</th>
-            <th class="td-mm">{{ 'views.task.index.createAt'|trans({}, 'MBHHotelBundle') }}</th>
+            {% if app.security.granted('ROLE_TASK_MANAGER') %}<th class="td-md">{{ 'views.task.index.assign'|trans({}, 'MBHHotelBundle') }}</th>{% endif %}
+            <th class="td-md">{{ 'views.task.index.createAt'|trans({}, 'MBHHotelBundle') }}</th>
             <th class="td-md"></th>
         </tr>
         </thead>
@@ -80,7 +80,7 @@
                     <td class="text-{{ priorityClass[task.priority] }}">{{ priorities[task.priority] }}</td>
                     <td>{{ task.room.roomType.title }}</td>
                     <td>{% if task.performer %}{{ task.performer.fullName }} {% endif %}</td>
-                    <td>{{ task.role }}</td>
+                    {% if app.security.granted('ROLE_TASK_MANAGER') %}<td>{{ task.role }}</td>{% endif %}
                     <td>{{ task.createdAt|date('d.m.Y') }}</td>
                     <td>{{ task.updatedAt|date('d.m.Y') }}</td>
                     <td class="table-actions-td text-right">

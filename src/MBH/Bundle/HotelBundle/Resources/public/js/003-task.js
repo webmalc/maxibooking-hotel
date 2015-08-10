@@ -2,8 +2,38 @@
 $(document).ready(function () {
     'use strict';
     var $taskTable = $('#task-table'),
-        $taskTableFilterForm = $('#task-table-filter');
-    var processing = false;
+        $taskTableFilterForm = $('#task-table-filter'),
+        processing = false,
+        columns = [
+            {"bSortable" : false},
+            {"name" : "number", "class" : 'text-center'},
+            {"name" : "status"},
+            {"name" : "task", "bSortable" : false},
+            {"name" : "priority"},
+            {"name" : "room", "bSortable" : false},
+            {"name" : "createdAt"},
+            //{"name" : "updatedAt"},
+            {"bSortable" : false}
+        ];
+
+    var isAdmin = $taskTable.find('tr:first th').length == 9;
+    if(isAdmin){
+        columns.splice(6, 0, {"bSortable" : false});
+    }
+    var ajax = {
+        "url": Routing.generate('task_json'),
+        "beforeSend" : function () {
+            processing = true;
+        }
+    };
+    if(isAdmin) {
+        ajax.data = function (data) {
+            data.begin = $('#task-filter-begin').val();
+            data.end = $('#task-filter-end').val();
+            data.status = $('#task-filter-status').select2('val');
+            data.priority = $('#task-filter-priority').select2('val');
+        };
+    }
     $taskTable.dataTable({
         "processing": true,
         "serverSide": true,
@@ -12,40 +42,19 @@ $(document).ready(function () {
         //"paging": false,
         //'lengthChange' : false,
         //"pageLength": 10,
-        "ajax": {
-            "url": Routing.generate('task_json'),
-            "beforeSend" : function () {
-                processing = true;
-            },
-            "data": function (data) {
-                data.begin = $('#task-filter-begin').val();
-                data.end = $('#task-filter-end').val();
-                data.status = $('#task-filter-status').select2('val');
-                data.priority = $('#task-filter-priority').select2('val');
-            }
-        },
-        "order": [[ 7, "desc" ]], //createdAt
-        "aoColumns": [
-            {"bSortable" : false},
-            {"name" : "number", "class" : 'text-center'},
-            {"name" : "status"},
-            {"name" : "type", "bSortable" : false},
-            {"name" : "priority"},
-            {"bSortable" : false},
-            {"bSortable" : false},
-            {"name" : "createdAt"},
-            //{"name" : "updatedAt"},
-            {"bSortable" : false}
-        ],
+        "ajax": ajax,
+        "order": [[ (isAdmin ? 7 : 6), "desc" ]], //createdAt
+        "aoColumns": columns,
         "drawCallback": function (settings) {
             processing = false;
         }
     });
 
+
     $taskTableFilterForm.find('input, textarea, select').on('change', function () {
         if (!processing) {
             console.log("task");
-            $('#task-table').dataTable().fnDraw();
+            $taskTable.dataTable().fnDraw();
         }
     });
     var $date = $('#mbh_bundle_hotelbundle_task_date_date'),
