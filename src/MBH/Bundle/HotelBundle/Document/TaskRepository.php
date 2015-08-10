@@ -10,7 +10,6 @@ use MBH\Bundle\UserBundle\Document\User;
 
 /**
  * Class TaskRepository
- * @package MBH\Bundle\HotelBundle\Document
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
 class TaskRepository extends DocumentRepository
@@ -25,15 +24,22 @@ class TaskRepository extends DocumentRepository
     {
         $criteria = [];
         if ($queryCriteria->onlyOwned) {
-            if(!$queryCriteria->performerId) {
+            if(!$queryCriteria->performer) {
                 throw new Exception();
             }
             $criteria['$or'] = [
-                ['performer.id' => $queryCriteria->performerId],
+                ['performer.id' => $queryCriteria->performer],
             ];
 
             if($queryCriteria->roles) {
                 $criteria['$or'][] = ['role' => ['$in' => $queryCriteria->roles]];
+            }
+        }else{
+            if ($queryCriteria->performer) {
+                $criteria['$and'][] = ['performer.id' => $queryCriteria->performer];
+            }
+            if ($queryCriteria->roles) {
+                $criteria['$and'][] = ['role' => ['$in' => $queryCriteria->roles]];
             }
         }
 
@@ -53,7 +59,29 @@ class TaskRepository extends DocumentRepository
             $criteria['$and'][] = ['createdAt' => ['$lte' => $queryCriteria->end]];
         }
 
-        return $this->findBy($criteria, $queryCriteria->sort, $queryCriteria->limit, $queryCriteria->offset);
+        $collection = $this->getDocumentManager()->getFilterCollection();
+        $isDeleteableEnabled = $collection->isEnabled('softdeleteable');
+        if($queryCriteria->deleted && $isDeleteableEnabled) {
+            $collection->disable('softdeleteable');
+        }
+
+        $result = $this->findBy($criteria, $queryCriteria->sort, $queryCriteria->limit, $queryCriteria->offset);
+
+        if($isDeleteableEnabled) {
+            $collection->enable('softdeleteable');
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param User $user
+     * @param Task $task
+     * @return bool
+     */
+    public function isAcceptableTaskForUser(User $user, Task $task)
+    {
+        return in_array($task->getRole(), $user->getRoles()) || ($task->getPerformer() && $task->getPerformer()->getId() == $user->getId());
     }
 
     /**

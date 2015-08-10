@@ -53,15 +53,17 @@
                 <select id="task-filter-performer" placeholder="{{ 'views.task.index.performer'|trans({}, 'MBHHotelBundle') }}">
                     <option></option>
                     {% for key,performer in performers %}
-                        <option value="{{ key }}">{{ performer.fullName }}</option>
+                        <option value="{{ performer.id }}">{{ performer.fullName(true) }}</option>
                     {% endfor %}
                 </select>
+            </div>
+            <div class="form-group">
+                <label><i class="fa fa-trash-o" title="{{ "views.task.index.isDeleted"|trans({}, "MBHHotelBundle") }}" data-toggle="tooltip"></i></label>
+                <input id="task-filter-deleted" name="deleted" type="checkbox">
             </div>
         </form>
     </div>
     {% endif %}
-
-
 
     <table id="task-table" class="table table-hover table-actions table-striped not-auto-datatable">
         <thead>

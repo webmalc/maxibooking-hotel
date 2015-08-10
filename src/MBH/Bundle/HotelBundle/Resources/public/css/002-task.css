@@ -10,6 +10,10 @@
     display: inline-block !important;
 }
 
+#task-filter-begin, #task-filter-end {
+    width: 80px;
+}
+
 #task-filter-status, #task-filter-priority {
     width: 100px;
 }
@@ -18,6 +22,6 @@
     width: 150px;
 }
 
-.form-icon-label label {
+.form-icon-label .form-group label:first-child {
     margin: 0 10px;
 }

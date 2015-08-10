@@ -6,6 +6,8 @@ views.task.index.task: Задачи
 views.task.index.priority: Приоритет
 views.task.index.performer: Исполнитель
 views.task.index.group: Группа
+views.task.index.isDeleted: Удаленные?
+views.task.index.deleted: Удалена
 views.task.index.roomType: Тип комнаты
 views.task.index.room: Комната
 views.task.index.users:   Исполнитель
@@ -17,6 +19,7 @@ views.task.index.groups: Группы
 views.task.index.createAt: Создано
 views.task.index.dates: Даты
 views.task.index.updateAt: Обновлено
+views.task.index.isDeleted: Удаленные?
 
 views.filter.placeholder.status: Статус
 views.filter.placeholder.status: Обновлено

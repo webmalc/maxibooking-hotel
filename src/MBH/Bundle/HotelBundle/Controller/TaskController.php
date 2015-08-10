@@ -74,35 +74,43 @@ class TaskController extends Controller
         }
 
         $queryCriteria->sort = $sort;
-        if ($request->get('status')) {
-            $queryCriteria->status = $request->get('status');
-        }
-        if ($request->get('priority')) {
-            $queryCriteria->priority = $request->get('priority');
-        }
-        if ($request->get('group')) {
-            //todo $queryCriteria->group = $request->get('group');
-        }
-        if ($request->get('performer')) {
-            //todo $queryCriteria->performer = $request->get('performer');
-        }
-        $helper = $this->get('mbh.helper');
-        if ($request->get('begin')) {
-            $queryCriteria->begin = $helper->getDateFromString($request->get('begin'));
-        }
-        if ($request->get('end')) {
-            $queryCriteria->end = $helper->getDateFromString($request->get('end'));
-            $queryCriteria->end->modify('+ 23 hours 59 minutes');
-        }
-        /** @var TaskRepository $repository */
-        $repository = $this->dm->getRepository('MBHHotelBundle:Task');
 
         $queryCriteria->onlyOwned = !$this->get('security.authorization_checker')->isGranted('ROLE_TASK_MANAGER');//$this->get('security.context')->isGranted
-        $queryCriteria->performerId = $user->getId();
-        $queryCriteria->roles = $user->getRoles();
-        $tasks = $repository->getAcceptableTasksByUser($queryCriteria);
 
-        $recordsTotal = $repository->createQueryBuilder()->getQuery()->count();
+        if ($queryCriteria->onlyOwned) {
+            $queryCriteria->roles = $user->getRoles();
+            $queryCriteria->performer = $user->getId();
+        } else{
+            if ($request->get('status')) {
+                $queryCriteria->status = $request->get('status');
+            }
+            if ($request->get('priority')) {
+                $queryCriteria->priority = $request->get('priority');
+            }
+            $helper = $this->get('mbh.helper');
+            if ($request->get('begin')) {
+                $queryCriteria->begin = $helper->getDateFromString($request->get('begin'));
+            }
+            if ($request->get('end')) {
+                $queryCriteria->end = $helper->getDateFromString($request->get('end'));
+                $queryCriteria->end->modify('+ 23 hours 59 minutes');
+            }
+            if($request->get('group')) {
+                $queryCriteria->roles[] = $request->get('group');
+            }
+            if($request->get('performer')) {
+                $queryCriteria->performer = $request->get('performer');
+            }
+            if ($request->get('deleted') == 'true') {
+                $queryCriteria->deleted = true;
+            }
+        }
+
+        /** @var TaskRepository $taskRepository */
+        $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
+
+        $tasks = $taskRepository->getAcceptableTasksByUser($queryCriteria);
+        $recordsTotal = $taskRepository->createQueryBuilder()->getQuery()->count();
 
         return [
             'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
@@ -111,6 +119,7 @@ class TaskController extends Controller
             'recordsTotal' => $recordsTotal,
             'tasks' => $tasks,
             'draw' => $request->get('draw'),
+            'taskRepository' => $taskRepository
         ];
     }
 

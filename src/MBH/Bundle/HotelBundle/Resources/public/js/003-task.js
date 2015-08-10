@@ -34,6 +34,7 @@ $(document).ready(function () {
             data.priority = $('#task-filter-priority').select2('val');
             data.performer = $('#task-filter-performer').select2('val');
             data.group = $('#task-filter-group').select2('val');
+            data.deleted = $('#task-filter-deleted').prop('checked');
         };
     }
     $taskTable.dataTable({
@@ -49,16 +50,24 @@ $(document).ready(function () {
         "aoColumns": columns,
         "drawCallback": function (settings) {
             processing = false;
+            $taskTable.find('tr a[data-row-class]').each(function (){
+                var $this = $(this);
+                var rowClass = $this.data('row-class');
+                console.log(rowClass);
+                $this.closest('tr').addClass(rowClass);
+            });
         }
     });
 
 
-    $taskTableFilterForm.find('input, textarea, select').on('change', function () {
+    var updateTaskTable = function () {
         if (!processing) {
             console.log("task");
             $taskTable.dataTable().fnDraw();
         }
-    });
+    };
+    $taskTableFilterForm.find('input[type!=checkbox], textarea, select').on('change', updateTaskTable);
+    $taskTableFilterForm.find('input[type=checkbox]').on('switchChange.bootstrapSwitch', updateTaskTable);
     var $date = $('#mbh_bundle_hotelbundle_task_date_date'),
         $time = $('#mbh_bundle_hotelbundle_task_date_time'),
         datePickerOptions = {

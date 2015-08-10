@@ -19,6 +19,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class Task extends Base
 {
+    const DAY_DEAL_LINE = 3;
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -299,6 +301,17 @@ class Task extends Base
         if(!$this->role && !$this->performer) {
             $context->buildViolation('validator.task.assignment')->addViolation();
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExpired()
+    {
+        $now = time();
+        return $this->status !== 'open' && ($this->getDate() ?
+            $this->getDate()->getTimestamp() < $now :
+            $this->getCreatedAt()->modify('+ '.self::DAY_DEAL_LINE.' days')->getTimestamp() < $now);
     }
 
     /**
