@@ -5,20 +5,20 @@ $(document).ready(function () {
         $taskTableFilterForm = $('#task-table-filter'),
         processing = false,
         columns = [
-            {"bSortable" : false},
+            //{"bSortable" : false},
             {"name" : "number", "class" : 'text-center'},
-            {"name" : "status"},
+            {"name" : "status", "class" : 'text-center'},
             {"name" : "task", "bSortable" : false},
-            {"name" : "priority"},
+            {"name" : "priority", "class" : 'text-center'},
             {"name" : "room", "bSortable" : false},
             {"name" : "createdAt"},
             //{"name" : "updatedAt"},
             {"bSortable" : false}
         ];
 
-    var isAdmin = $taskTable.find('tr:first th').length == 9;
+    var isAdmin = $taskTable.find('tr:first th').length == 8;
     if(isAdmin){
-        columns.splice(6, 0, {"bSortable" : false});
+        columns.splice(5, 0, {"bSortable" : false});
     }
     var ajax = {
         "url": Routing.generate('task_json'),

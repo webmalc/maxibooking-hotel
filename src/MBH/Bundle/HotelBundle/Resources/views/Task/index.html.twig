@@ -54,11 +54,11 @@
     <table id="task-table" class="table table-hover table-actions table-striped not-auto-datatable">
         <thead>
         <tr>
-            <th class="td-xs"></th>
+            {#<th class="td-xs"></th>#}
             <th class="td-xs">#</th>
-            <th class="td-md">{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}</th>
-            <th class="td-md">{{ 'views.task.index.task'|trans({}, 'MBHHotelBundle') }}</th>
-            <th class="td-md">{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-xs text-center"><i data-toggle="tooltip" title="{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}" class='fa fa-server'></i></th>
+            <th class="td-md text-center">{{ 'views.task.index.task'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-xs"><i data-toggle="tooltip" title="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}" class='fa fa-balance-scale'></i></th>
             <th class="td-md">{{ 'views.task.index.room'|trans({}, 'MBHHotelBundle') }}</th>
             {% if app.security.granted('ROLE_TASK_MANAGER') %}<th class="td-md">{{ 'views.task.index.assign'|trans({}, 'MBHHotelBundle') }}</th>{% endif %}
             <th class="td-md">{{ 'views.task.index.createAt'|trans({}, 'MBHHotelBundle') }}</th>
