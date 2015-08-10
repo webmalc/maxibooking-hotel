@@ -19,6 +19,10 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class Task extends Base
 {
+    const PRIORITY_LOW = 0;
+    const PRIORITY_AVERAGE = 1;
+    const PRIORITY_HIGH = 2;
+
     const DAY_DEAL_LINE = 3;
 
     /**
@@ -94,8 +98,8 @@ class Task extends Base
     protected $performer;
 
     /**
-     * @var string
-     * @ODM\String
+     * @var int
+     * @ODM\Int()
      */
     protected $priority;
 
@@ -242,7 +246,7 @@ class Task extends Base
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getPriority()
     {
@@ -250,7 +254,7 @@ class Task extends Base
     }
 
     /**
-     * @param string $priority
+     * @param int $priority
      */
     public function setPriority($priority)
     {

@@ -180,9 +180,9 @@ parameters:
 
     #Приоритет задач
     mbh.tasktype.priority:
-        low: "Низкий"
-        average: "Средний"
-        high : "Высокий"
+        0: low
+        1: average
+        2: high
 
     #Типы документов
     mbh.order.document.types:

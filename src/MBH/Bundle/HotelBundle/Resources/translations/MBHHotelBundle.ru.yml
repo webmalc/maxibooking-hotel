@@ -21,6 +21,10 @@ views.task.index.dates: Даты
 views.task.index.updateAt: Обновлено
 views.task.index.isDeleted: Удаленные?
 
+views.task.priority.low: Низкий
+views.task.priority.average: Средний
+views.task.priority.high : Высокий
+
 views.filter.placeholder.status: Статус
 views.filter.placeholder.status: Обновлено
 views.filter.placeholder.priority: Приоритет

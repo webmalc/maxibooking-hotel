@@ -46,7 +46,7 @@ $(document).ready(function () {
         //'lengthChange' : false,
         //"pageLength": 10,
         "ajax": ajax,
-        "order": [[ (isAdmin ? 7 : 6), "desc" ]], //createdAt
+        "order": [[ (isAdmin ? 6 : 5), "desc" ]], //createdAt
         "aoColumns": columns,
         "drawCallback": function (settings) {
             processing = false;
