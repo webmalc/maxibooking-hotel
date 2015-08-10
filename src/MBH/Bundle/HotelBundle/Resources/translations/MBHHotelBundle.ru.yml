@@ -15,6 +15,7 @@ views.task.index.role: Роли
 views.task.index.group: Группа
 views.task.index.groups: Группы
 views.task.index.createAt: Создано
+views.task.index.dates: Даты
 views.task.index.updateAt: Обновлено
 
 views.filter.placeholder.status: Статус

@@ -31,11 +31,18 @@ class TaskController extends Controller
      */
     public function indexAction()
     {
+        $performers = $this->dm->getRepository('MBHUserBundle:User')->findAll();
+        $key = array_search($this->getUser(), $performers);
+        if($key !== false){
+            unset($performers[$key]);
+        }
+        array_unshift($performers, $this->getUser());
+
         return [
             'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
             'statuses' => $this->container->getParameter('mbh.task.statuses'),//todo translate
             'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
-            'performers' => $this->dm->getRepository('MBHUserBundle:User')->findAll(),
+            'performers' => $performers,
             'groups' => $this->getRoleList(),
             'tasks' => []
         ];
@@ -60,24 +67,30 @@ class TaskController extends Controller
         $queryCriteria->limit = $tableParams->getLength();
 
         $sort = $tableParams->getFirstSort();
-        if($sort) {
+        if ($sort) {
             $sort = [$sort[0] => $sort[1]];
         } else {
             $sort = ['createdAt' => -1];
         }
 
         $queryCriteria->sort = $sort;
-        if ($request->get('status')){
+        if ($request->get('status')) {
             $queryCriteria->status = $request->get('status');
         }
-        if ($request->get('priority')){
+        if ($request->get('priority')) {
             $queryCriteria->priority = $request->get('priority');
         }
+        if ($request->get('group')) {
+            //todo $queryCriteria->group = $request->get('group');
+        }
+        if ($request->get('performer')) {
+            //todo $queryCriteria->performer = $request->get('performer');
+        }
         $helper = $this->get('mbh.helper');
-        if($request->get('begin')) {
+        if ($request->get('begin')) {
             $queryCriteria->begin = $helper->getDateFromString($request->get('begin'));
         }
-        if($request->get('end')) {
+        if ($request->get('end')) {
             $queryCriteria->end = $helper->getDateFromString($request->get('end'));
             $queryCriteria->end->modify('+ 23 hours 59 minutes');
         }
@@ -113,11 +126,13 @@ class TaskController extends Controller
         $entity->setStatus($status);
         $violations = $this->get('validator')->validate($entity);
 
-        if($violations->count() > 0)
+        if ($violations->count() > 0) {
             throw $this->createNotFoundException($violations->get(0)->getMessage());
+        }
 
         $this->dm->persist($entity);
         $this->dm->flush();
+
         return $this->redirectToRoute('task');
     }
 
@@ -144,7 +159,7 @@ class TaskController extends Controller
             if ($form->submit($request)->isValid()) {
                 /** @var Room[] $rooms */
                 $rooms = $form['rooms']->getData();
-                foreach($rooms as $room) {
+                foreach ($rooms as $room) {
                     $task = clone($entity);
                     $task->setRoom($room);
                     $this->dm->persist($task);
@@ -181,6 +196,7 @@ class TaskController extends Controller
     private function getRoleList()
     {
         $roles = array_keys($this->container->getParameter('security.role_hierarchy.roles'));
+
         return array_combine($roles, $roles);
     }
 
@@ -199,17 +215,18 @@ class TaskController extends Controller
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions() + [
-            'scenario' => TaskType::SCENARIO_EDIT
-        ]);
+                'scenario' => TaskType::SCENARIO_EDIT
+            ]);
 
-        if($request->isMethod(Request::METHOD_PUT)) {
+        if ($request->isMethod(Request::METHOD_PUT)) {
             if ($form->submit($request)->isValid()) {
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
                 $request->getSession()->getFlashBag()
-                    ->set('success', $this->get('translator')->trans('controller.taskTypeController.record_edited_success'))
-                ;
+                    ->set('success',
+                        $this->get('translator')->trans('controller.taskTypeController.record_edited_success'));
+
                 return $this->afterSaveRedirect('task', $entity->getId());
             }
         }

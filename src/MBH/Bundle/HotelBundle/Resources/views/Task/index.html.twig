@@ -4,47 +4,59 @@
 
     {% if app.security.granted('ROLE_TASK_MANAGER') %}
     <div class="well">
-        <form id="task-table-filter" class="form-inline search-form filter-form">
-            <div class="input">
-                    <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp <input type="text" id="task-filter-begin" class="datepicker begin-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
+        <form id="task-table-filter" class="form-inline form-icon-label">
+            <div class="form-group">
+                <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                <input type="text" id="task-filter-begin" class="datepicker begin-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
             </div>
-            <div class="input">
-                - &nbsp <input type="text" id="task-filter-end" class="datepicker end-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
+            <div class="form-group">
+                <label>-</label>
+                <input type="text" id="task-filter-end" class="datepicker end-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
             </div>
 
-            {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
+            <div class="form-group">
+                {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
+            </div>
 
-            &nbsp;<i class="fa fa-server" title='{{ "task.status"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i>&nbsp;
-            <select id="task-filter-status" placeholder="{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}">
-                <option></option>
-                {% for key,status in statuses %}
-                    <option value="{{ key }}">{{ status.title }}</option>
-                {% endfor %}
-            </select>
+            <div class="form-group">
+                <label><i class="fa fa-server" title='{{ "task.status"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i></label>
+                <select id="task-filter-status" placeholder="{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}">
+                    <option></option>
+                    {% for key,status in statuses %}
+                        <option value="{{ key }}">{{ status.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-            &nbsp;<i class="fa fa-balance-scale" title='{{ "task.priority"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i>&nbsp;
-            <select id="task-filter-priority" placeholder="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}">
-                <option></option>
-                {% for key,priority in priorities %}
-                    <option value="{{ key }}">{{ priority }}</option>
-                {% endfor %}
-            </select>
+            <div class="form-group">
+                <label><i class="fa fa-arrow-up" title='{{ "task.priority"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i></label>
+                <select id="task-filter-priority" placeholder="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}">
+                    <option></option>
+                    {% for key,priority in priorities %}
+                        <option value="{{ key }}">{{ priority }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-            &nbsp;<i class="fa fa-user" title='{{ "task.performer"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i>&nbsp;
-            <select id="task-filter-priority" placeholder="{{ 'views.task.index.performer'|trans({}, 'MBHHotelBundle') }}">
-                <option></option>
-                {% for key,performer in performers %}
-                    <option value="{{ key }}">{{ performer.fullName }}</option>
-                {% endfor %}
-            </select>
+            <div class="form-group">
+                <label><i class="fa fa-group" title='{{ "task.group"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i></label>
+                <select id="task-filter-group" placeholder="{{ 'views.task.index.group'|trans({}, 'MBHHotelBundle') }}">
+                    <option></option>
+                    {% for key,group in groups %}
+                        <option value="{{ key }}">{{ group|trans({}, 'MBHUserBundleRoles') }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-            &nbsp;<i class="fa fa-group" title='{{ "task.group"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i>&nbsp;
-            <select id="task-filter-priority" placeholder="{{ 'views.task.index.group'|trans({}, 'MBHHotelBundle') }}">
-                <option></option>
-                {% for key,group in groups %}
-                    <option value="{{ key }}">{{ group|trans({}, 'MBHUserBundleRoles') }}</option>
-                {% endfor %}
-            </select>
+            <div class="form-group">
+                <label><i class="fa fa-user" title='{{ "task.performer"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i></label>
+                <select id="task-filter-performer" placeholder="{{ 'views.task.index.performer'|trans({}, 'MBHHotelBundle') }}">
+                    <option></option>
+                    {% for key,performer in performers %}
+                        <option value="{{ key }}">{{ performer.fullName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </form>
     </div>
     {% endif %}
@@ -58,10 +70,10 @@
             <th class="td-xs">#</th>
             <th class="td-xs text-center"><i data-toggle="tooltip" title="{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}" class='fa fa-server'></i></th>
             <th class="td-md text-center">{{ 'views.task.index.task'|trans({}, 'MBHHotelBundle') }}</th>
-            <th class="td-xs"><i data-toggle="tooltip" title="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}" class='fa fa-balance-scale'></i></th>
+            <th class="td-xs"><i data-toggle="tooltip" title="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}" class='fa fa-arrow-up'></i></th>
             <th class="td-md">{{ 'views.task.index.room'|trans({}, 'MBHHotelBundle') }}</th>
             {% if app.security.granted('ROLE_TASK_MANAGER') %}<th class="td-md">{{ 'views.task.index.assign'|trans({}, 'MBHHotelBundle') }}</th>{% endif %}
-            <th class="td-md">{{ 'views.task.index.createAt'|trans({}, 'MBHHotelBundle') }}</th>
+            <th class="td-md">{{ 'views.task.index.dates'|trans({}, 'MBHHotelBundle') }}</th>
             <th class="td-md"></th>
         </tr>
         </thead>
