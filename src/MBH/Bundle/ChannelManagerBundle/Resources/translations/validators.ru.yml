@@ -7,6 +7,7 @@ validator.document.oktogoConfig.no_login_specified: Не указан логин
 validator.document.oktogoConfig.no_username_specified: Не указано имя пользователя (username)
 validator.document.oktogoConfig.no_password_specified: Не указан пароль
 validator.document.vashotelConfig.no_hotel_selected: Не выбран отель
+validator.document.ostrovokConfig.no_hotel_selected: Не выбран отель
 validator.document.vashotelConfig.no_api_key_specified: Не указан ключ API
 validator.document.vashotelConfig.no_hotel_id_specified: Не указан Id отеля
 roomtype.validation: 'Выбрано более одного типа номера'

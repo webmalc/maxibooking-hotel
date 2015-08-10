@@ -10,3 +10,8 @@ parameters:
           service: 'mbh.channelmanager.booking'
           username: maxibookingXML
           password: bMBhv6tds5i
+        ostrovok:
+          title: 'Ostrovok'
+          service: 'mbh.channelmanager.ostrovok'
+          username: 722ac50470d8af33d509c069ccb83443
+          password: edfdfba3f6902eb63aa254935e9a8a36

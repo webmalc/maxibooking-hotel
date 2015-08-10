@@ -331,21 +331,26 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
     /**
      * @param $url
-     * @param $data
-     * @param null $headers
+     * @param array $data
+     * @param array $headers
      * @param bool $error
+     * @param $post $error
      * @return mixed
      */
-    public function send($url, $data, $headers = null, $error = false)
+    public function send($url, $data = [], $headers = null, $error = false, $post = true)
     {
         $ch = curl_init($url);
 
-        curl_setopt($ch, CURLOPT_POST, 1);
+        if ($post) {
+            curl_setopt($ch, CURLOPT_POST, 1);
+        }
 
         if ($headers) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        if ($post && !empty($data)) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
         curl_setopt($ch, CURLOPT_VERBOSE, 1);
@@ -366,22 +371,43 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
     /**
      * @param $url
-     * @param $data
-     * @param null $headers
+     * @param array $data
+     * @param array $headers
      * @param bool $error
      * @return \SimpleXMLElement
      * @throws \Exception
      */
-    public function sendXml($url, $data, $headers = null, $error = false)
+    public function sendXml($url, $data = [], $headers = null, $error = false)
     {
         $result = $this->send($url, $data, $headers, $error);
         $xml = simplexml_load_string($result);
 
         if (!$xml instanceof \SimpleXMLElement) {
-            throw new \Exception('Invalid xml response');
+            throw new Exception('Invalid xml response. Response: ' . $result);
         }
 
         return $xml;
+    }
+
+    /**
+     * @param $url
+     * @param array $data
+     * @param array $headers
+     * @param bool $error
+     * @param bool $post
+     * @return array
+     * @throws \Exception
+     */
+    public function sendJson($url, $data = [], $headers = null, $error = false, $post = false)
+    {
+        $result = $this->send($url, $data, $headers, $error, $post);
+        $json = json_decode($result, true);
+
+        if (!$json) {
+            throw new Exception('Invalid json response. Response: ' . $result);
+        }
+
+        return $json;
     }
 
     public function notify(Order $order, $service, $type = 'new')

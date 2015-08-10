@@ -30,11 +30,13 @@
 
     <div class="container-fluid main-container">
 
-        {% if selected_hotel() and selected_hotel().logo %}
-            <div id="print-hotel-logo">
-                <img class="grayscale" src="{{ asset(selected_hotel().logoUrl)|imagine_filter('thumb_95x80') }}"/>
-            </div>
-        {% endif %}
+        {% block print_hotel_logo %}
+            {% if selected_hotel() and selected_hotel().logo %}
+                <div id="print-hotel-logo">
+                    <img class="grayscale" src="{{ asset(selected_hotel().logoUrl)|imagine_filter('thumb_95x80') }}"/>
+                </div>
+            {% endif %}
+        {% endblock %}
 
         <ul class="breadcrumb" id="main-breadcrumb">
             <li><a href="{{ path('_welcome') }}"><i class="fa fa-home"></i></a></li>

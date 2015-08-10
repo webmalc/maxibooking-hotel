@@ -8,6 +8,8 @@
     {%- set is_dropdown_header = attributes.dropdown_header|default(false) %}
     {%- set divider_prepend = attributes.divider_prepend|default(false) %}
     {%- set divider_append = attributes.divider_append|default(false) %}
+    {%- set header = attributes.header|default(false) %}
+    {%- set header_icon = attributes.header_icon|default(false) %}
 
 {# unset bootstrap specific attributes #}
     {%- set attributes = attributes|merge({'dropdown': null, 'dropdown_header': null, 'divider_prepend': null, 'divider_append': null }) %}
@@ -15,8 +17,12 @@
     {%- if divider_prepend %}
         {{ block('dividerElement') }}
     {%- endif %}
+
+    {%- if header %}
+        <li class="dropdown-header">{% if header_icon %}<i class="{{ header_icon }}"></i>&nbsp;{% endif %}{{ header|trans }}</li>
+    {%- endif %}
  
-{# building the class of the item #}
+    {# building the class of the item #}
     {%- set classes = item.attribute('class') is not empty ? [item.attribute('class')] : [] %}
     {%- if item.current %}
         {%- set classes = classes|merge([options.currentClass]) %}

@@ -22,11 +22,15 @@ views.vashotel.tariff.get_tariff_ids: "Получить ID тарифов из �
 views.vashotel.tariff.cancel: Отмена
 views.vashotel.service.service: Сервис
 views.vashotel.service.code: Код
+views.ostrovok.service.service: Сервис
+views.ostrovok.service.code: Код
 views.tabs.main_settings: ' Основные настройки'
 views.tabs.room_types: ' Типы номеров'
 views.tabs.tariffs: ' Тарифы'
 views.tabs.services: ' Услуги'
 views.tabs.must_fill_main_settings: "Необходимо заполнить основные настройки!"
+views.ostrovok.layout.ostrovok: "Ostrovok"
+
 
 #channelManager
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'

@@ -15,6 +15,10 @@ services:
                 class: MBH\Bundle\ChannelManagerBundle\Services\Booking
                 arguments: [@service_container]
 
+    mbh.channelmanager.ostrovok:
+                class: MBH\Bundle\ChannelManagerBundle\Services\Ostrovok
+                arguments: [@service_container]
+
     mbh.channelmanager.booking_type:
                     class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
                     arguments: [@mbh.currency]
