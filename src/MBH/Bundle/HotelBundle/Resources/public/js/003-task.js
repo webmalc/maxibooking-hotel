@@ -17,7 +17,7 @@ $(document).ready(function () {
         ];
 
     var isAdmin = $taskTable.find('tr:first th').length == 8;
-    if(isAdmin){
+    if (isAdmin){
         columns.splice(5, 0, {"bSortable" : false});
     }
     var ajax = {
@@ -26,7 +26,7 @@ $(document).ready(function () {
             processing = true;
         }
     };
-    if(isAdmin) {
+    if (isAdmin) {
         ajax.data = function (data) {
             data.begin = $('#task-filter-begin').val();
             data.end = $('#task-filter-end').val();
@@ -37,7 +37,8 @@ $(document).ready(function () {
             data.deleted = $('#task-filter-deleted').prop('checked');
         };
     }
-    $taskTable.dataTable({
+
+    var dataTableOptions = {
         "processing": true,
         "serverSide": true,
         "ordering": true,
@@ -46,18 +47,24 @@ $(document).ready(function () {
         //'lengthChange' : false,
         //"pageLength": 10,
         "ajax": ajax,
-        "order": [[ (isAdmin ? 6 : 5), "desc" ]], //createdAt
         "aoColumns": columns,
         "drawCallback": function (settings) {
             processing = false;
             $taskTable.find('tr a[data-row-class]').each(function (){
-                var $this = $(this);
-                var rowClass = $this.data('row-class');
-                console.log(rowClass);
+                var $this = $(this),
+                    rowClass = $this.data('row-class');
+
                 $this.closest('tr').addClass(rowClass);
             });
         }
-    });
+    };
+
+    if (isAdmin) {
+        dataTableOptions.order = [[ 6, "desc" ]];
+    } else {
+        dataTableOptions.order = [];//[[ 5, "desc" ]];
+    }
+    $taskTable.dataTable(dataTableOptions);
 
 
     var updateTaskTable = function () {

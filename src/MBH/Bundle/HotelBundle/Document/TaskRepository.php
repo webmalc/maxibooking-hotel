@@ -14,13 +14,81 @@ use MBH\Bundle\UserBundle\Document\User;
  */
 class TaskRepository extends DocumentRepository
 {
+    public function getAcceptableTaskForUser(TaskQueryCriteria $queryCriteria)
+    {
+        if(!$queryCriteria->sort) {
+            $criteria = $this->queryCriteriaToCriteria($queryCriteria);
+
+            $collection = $this->getDocumentManager()->getFilterCollection();
+            $isDeleteableEnabled = $collection->isEnabled('softdeleteable');
+            if($queryCriteria->deleted && $isDeleteableEnabled) {
+                $collection->disable('softdeleteable');
+            }
+
+            $sort = ['priority' => -1, 'createdBy' => -1];//['status' => -1, 'priority' => -1, 'createdBy' => -1];
+            $limit = $queryCriteria->limit;
+            $offset = $queryCriteria->offset;
+            $processCriteria = $criteria;
+            $processCriteria['$and'][] = ['status' => 'process'];
+            $result = $this->findBy($processCriteria, $sort, $limit, $offset);
+
+            $criteria['$and'][] = ['status' => ['$ne' => 'process']];
+            $limit = $limit - count($result);
+            if($limit > 0) {
+                $offsetProcessCount = $this->getDocumentManager()
+                    ->getDocumentCollection('MBH\Bundle\HotelBundle\Document\Task')
+                    ->count($processCriteria);
+                $offset = $offset - $offsetProcessCount;
+                if($offset < 0)
+                    $offset = 0;
+
+                $result = array_merge($result, $this->findBy($criteria, $sort, $limit, $offset));
+            }
+
+
+            if($isDeleteableEnabled) {
+                $collection->enable('softdeleteable');
+            }
+
+            return $result;
+        } else {
+            return $this->getAcceptableTasksForManager($queryCriteria);
+        }
+    }
+
     /**
-     * Tasks that user can accept to process
      * @param TaskQueryCriteria $queryCriteria
-     * @return Task[]
+     * @return int
+     * @throws Exception
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getCountByCriteria(TaskQueryCriteria $queryCriteria)
+    {
+        $criteria = $this->queryCriteriaToCriteria($queryCriteria);
+
+        $collection = $this->getDocumentManager()->getFilterCollection();
+        $isDeleteableEnabled = $collection->isEnabled('softdeleteable');
+        if($queryCriteria->deleted && $isDeleteableEnabled) {
+            $collection->disable('softdeleteable');
+        }
+
+        $count = $this->getDocumentManager()
+            ->getDocumentCollection('MBH\Bundle\HotelBundle\Document\Task')
+            ->count($criteria);
+
+        if($isDeleteableEnabled) {
+            $collection->enable('softdeleteable');
+        }
+
+        return $count;
+    }
+
+    /**
+     * @param TaskQueryCriteria $queryCriteria
+     * @return array
      * @throws Exception
      */
-    public function getAcceptableTasksByUser(TaskQueryCriteria $queryCriteria)
+    private function queryCriteriaToCriteria(TaskQueryCriteria $queryCriteria)
     {
         $criteria = [];
         if ($queryCriteria->onlyOwned) {
@@ -58,6 +126,19 @@ class TaskRepository extends DocumentRepository
         if ($queryCriteria->end) {
             $criteria['$and'][] = ['createdAt' => ['$lte' => $queryCriteria->end]];
         }
+
+        return $criteria;
+    }
+
+    /**
+     * Tasks that user can accept to process
+     * @param TaskQueryCriteria $queryCriteria
+     * @return Task[]
+     * @throws Exception
+     */
+    public function getAcceptableTasksForManager(TaskQueryCriteria $queryCriteria)
+    {
+        $criteria = $this->queryCriteriaToCriteria($queryCriteria);
 
         $collection = $this->getDocumentManager()->getFilterCollection();
         $isDeleteableEnabled = $collection->isEnabled('softdeleteable');

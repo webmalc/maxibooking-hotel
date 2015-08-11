@@ -66,28 +66,29 @@ class TaskController extends Controller
         $queryCriteria->offset = $tableParams->getStart();
         $queryCriteria->limit = $tableParams->getLength();
 
-        $sort = $tableParams->getFirstSort();
-        if ($sort) {
-            $sort = [$sort[0] => $sort[1]];
-        } else {
-            $sort = ['createdAt' => -1];
-        }
-
-        $queryCriteria->sort = $sort;
+        $firstSort = $tableParams->getFirstSort();
 
         $queryCriteria->onlyOwned = !$this->get('security.authorization_checker')->isGranted('ROLE_TASK_MANAGER');//$this->get('security.context')->isGranted
 
+        /** @var TaskRepository $taskRepository */
+        $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
+
         if ($queryCriteria->onlyOwned) {
+            $queryCriteria->sort = $firstSort ? [$firstSort[0] => $firstSort[1]] : [];
             $queryCriteria->roles = $user->getRoles();
             $queryCriteria->performer = $user->getId();
+
+            $tasks = $taskRepository->getAcceptableTaskForUser($queryCriteria);
         } else{
+            $queryCriteria->sort = $firstSort ? [$firstSort[0] => $firstSort[1]] : ['createdAt' => -1];
+            $helper = $this->get('mbh.helper');
+
             if ($request->get('status')) {
                 $queryCriteria->status = $request->get('status');
             }
             if ($request->get('priority')) {
                 $queryCriteria->priority = $request->get('priority');
             }
-            $helper = $this->get('mbh.helper');
             if ($request->get('begin')) {
                 $queryCriteria->begin = $helper->getDateFromString($request->get('begin'));
             }
@@ -104,13 +105,11 @@ class TaskController extends Controller
             if ($request->get('deleted') == 'true') {
                 $queryCriteria->deleted = true;
             }
+
+            $tasks = $taskRepository->getAcceptableTasksForManager($queryCriteria);
         }
 
-        /** @var TaskRepository $taskRepository */
-        $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
-
-        $tasks = $taskRepository->getAcceptableTasksByUser($queryCriteria);
-        $recordsTotal = $taskRepository->createQueryBuilder()->getQuery()->count();
+        $recordsTotal = $taskRepository->getCountByCriteria($queryCriteria);
 
         return [
             'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
@@ -160,7 +159,7 @@ class TaskController extends Controller
         }
         $entity = new Task();
         $entity->setStatus('open');
-        $entity->setPriority('average');
+        $entity->setPriority(1);
 
         $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions());
 
@@ -191,12 +190,17 @@ class TaskController extends Controller
     {
         $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
         $statuses = $this->getParameter('mbh.task.statuses');
+        $translator = $this->get('translator');
+        $priorities = $this->container->getParameter('mbh.tasktype.priority');
+        $priorities = array_map(function($name) use ($translator) {
+            return $translator->trans('views.task.priority.' . $name, [], 'MBHHotelBundle');
+        }, $priorities);
 
         return [
             'taskTypes' => $this->dm->getRepository('MBHHotelBundle:TaskType')->getOptCategoryGroupList(),
             'roles' => $this->getRoleList(),
             'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
-            'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
+            'priorities' => $priorities,
             'optGroupRooms' => $roomRepository->optGroupRooms($roomRepository->getRoomsByType($this->hotel, true)),
             'hotel' => $this->hotel
         ];
