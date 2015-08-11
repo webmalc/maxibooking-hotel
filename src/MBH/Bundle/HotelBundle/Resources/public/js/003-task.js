@@ -126,14 +126,66 @@ $(document).ready(function () {
         '<div class="btn btn-xs btn-default clickable" id="select-all-rooms">Выбрать все</div>' +
         '<div class="btn btn-xs btn-default clickable" id="clear-rooms">Очистить</div>' +
         '<div>'
-    )
+    );
     $('#select-all-rooms').on('click', function() {
         console.log('all');
         $roomsSelect.find("option").prop("selected","selected");
         $roomsSelect.trigger("change");
-    })
+    });
     $('#clear-rooms').on('click', function() {
         console.log('clear');
         $roomsSelect.select2('val', null);
+    });
+
+    var $taskInfoModal = $('#task-info-modal'),
+        $table = $taskInfoModal.find('.modal-body table'),
+        $button = $taskInfoModal.find('#task-info-modal-action'),
+        $ownedTaskTable = $('.owned-tasks-table');
+
+    var showTaskModal = function(id) {
+        $.ajax({
+            url: Routing.generate('ajax_task_details', {id: id}),
+            dataType: 'json',
+            data: {id: id},
+            success: function(response) {
+                $.each(response, function(k, v) {
+                    $table.find('tr[data-property=' + k + '] td:nth-child(2)').html(v ? v : ' - ');
+                });
+
+                var status,
+                    buttonClass,
+                    buttonTitle;
+                if (response.status == 'Открыта') {
+                    status = 'process';
+                    buttonClass = 'btn-primary';
+                    buttonTitle = 'Взять в работу';
+                } else {
+                    status = 'closed';
+                    buttonClass = 'btn-success';
+                    buttonTitle = 'Завершить';
+                }
+
+                $button.removeClass('btn-primary btn-success').addClass(buttonClass);
+                $button.attr('href', Routing.generate('task_change_status', {id: id,  status: status}));
+                $button.html(buttonTitle);
+
+                $taskInfoModal.modal('show');
+            }
+        });
+    }
+
+    $ownedTaskTable.find('tr').on('click', function (e) {
+        if(e.target.tagName != 'A' && $(e.target.tagName).closest('a').length == 0){
+            e.preventDefault();
+
+            var id = $(this).data('id');
+            showTaskModal(id);
+        }
+    });
+
+    $ownedTaskTable.find('.show-task-details').on('click', function (e) {
+        e.preventDefault();
+        var id = $(this).closest('tr').data('id');
+        showTaskModal(id);
     })
 });

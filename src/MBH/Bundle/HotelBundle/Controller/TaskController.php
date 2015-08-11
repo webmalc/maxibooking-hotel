@@ -13,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Form\TaskType;
@@ -31,21 +32,43 @@ class TaskController extends Controller
      */
     public function indexAction()
     {
-        $performers = $this->dm->getRepository('MBHUserBundle:User')->findAll();
-        $key = array_search($this->getUser(), $performers);
-        if($key !== false){
-            unset($performers[$key]);
-        }
-        array_unshift($performers, $this->getUser());
+        $onlyOwned = !$this->get('security.authorization_checker')->isGranted('ROLE_TASK_MANAGER');
+        $statuses = $this->container->getParameter('mbh.task.statuses');
+        $priorities = $this->container->getParameter('mbh.tasktype.priority');
 
-        return [
-            'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
-            'statuses' => $this->container->getParameter('mbh.task.statuses'),//todo translate
-            'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
-            'performers' => $performers,
-            'groups' => $this->getRoleList(),
-            'tasks' => []
-        ];
+        if($onlyOwned) {
+            $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
+            /** @var Task[] $processTasks */
+            $criteria = ['performer.id' => $this->getUser()->getId()];
+            $sort = ['priority' => -1, 'createdAt' => -1];
+            $processTasks = $taskRepository->findBy($criteria + ['status' => 'process'], $sort);
+
+            /** @var Task[] $tasks */
+            $tasks = $taskRepository->findBy($criteria + ['status' => 'open'], $sort);
+
+            return $this->render('MBHHotelBundle:Task:indexOnlyOwned.html.twig', [
+                'processTasks' => $processTasks,
+                'tasks' => $tasks,
+                'priorities' => $priorities,
+                'statuses' => $statuses,
+            ]);
+        } else {
+            $performers = $this->dm->getRepository('MBHUserBundle:User')->findAll();
+            $key = array_search($this->getUser(), $performers);
+            if($key !== false){
+                unset($performers[$key]);
+            }
+            array_unshift($performers, $this->getUser());
+
+            return [
+                'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
+                'priorities' => $priorities,
+                'performers' => $performers,
+                'statuses' => $statuses,
+                'groups' => $this->getRoleList(),
+                'tasks' => []
+            ];
+        }
     }
 
     /**
@@ -123,7 +146,7 @@ class TaskController extends Controller
     }
 
     /**
-     * @Route("/change_status/{id}/{status}", name="task_change_status")
+     * @Route("/change_status/{id}/{status}", name="task_change_status", options={"expose":true})
      * @Method({"GET"})
      * @Security("is_granted('ROLE_USER')")
      * @ParamConverter("entity", class="MBHHotelBundle:Task")
@@ -261,5 +284,34 @@ class TaskController extends Controller
     public function deleteAction($id)
     {
         return $this->deleteEntity($id, 'MBHHotelBundle:Task', 'task');
+    }
+
+    /**
+     * @Route("/{id}/ajax", name="ajax_task_details", options={"expose":true})
+     * @Method("GET")
+     * @ParamConverter("entity", class="MBHHotelBundle:Task")
+     * @Security("is_granted('ROLE_USER')")
+     */
+    public function ajaxTaskDerailsAction(Task $entity)
+    {
+        $data = [
+            'role' => $entity->getRole() ?
+                $this->get('translator')->trans($entity->getRole(), [], 'MBHUserBundleRoles') :
+                '',
+            'type' => $entity->getType() ? $entity->getType()->getTitle() : '',
+            'performer' => $entity->getPerformer() ? $entity->getPerformer()->getFullName(true) : [],
+            'date' => $entity->getDate() ? $entity->getDate()->format('d.m.g') : '',
+            'createdAt' => $entity->getCreatedAt() ? $entity->getCreatedAt()->format('d.m.g') : '',
+            'createdBy' => $entity->getCreatedBy(),
+            'description' => $entity->getDescription() ? nl2br($entity->getDescription()) : '',
+            'number' => $entity->getNumber(),
+            'priority' => $entity->getPriority(),
+            'status' => $entity->getStatus() ?
+                $this->container->getParameter('mbh.task.statuses')[$entity->getStatus()]['title'] :
+                '',
+            //'room' => $entity->getRoom() ? $entity->getRoom()->getTitle() : '',
+        ];
+
+        return new JsonResponse($data);
     }
 }

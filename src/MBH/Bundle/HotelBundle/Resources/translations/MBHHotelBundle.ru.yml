@@ -18,8 +18,25 @@ views.task.index.group: Группа
 views.task.index.groups: Группы
 views.task.index.createAt: Создано
 views.task.index.dates: Даты
+views.task.index.date: Дата
+views.task.index.createdAt: Создано
+views.task.index.createdBy: Создал
+views.task.index.description: Комментарий
+views.task.index.number: Номер комнаты
+views.task.index.type: Тип
 views.task.index.updateAt: Обновлено
 views.task.index.isDeleted: Удаленные?
+
+views.task.index.confirm_in_process: Взять задачу на выполнение?
+views.task.index.confirm_closed: Закрыть задачу?
+
+views.task.index.waited: Ждут выполнения
+views.task.index.in_process: Задачи в работе
+views.task.index.info: Информация о задаче
+views.task.index.cancel: Отмена
+
+views.task.index.close: Закрыть
+views.task.index.take_in_process: В работу
 
 views.task.priority.low: Низкий
 views.task.priority.average: Средний
