@@ -22,6 +22,18 @@ var getUrlVars = function () {
     return vars;
 };
 
+var getHashVars = function () {
+    'use strict';
+    var vars = [], hash,
+        hashes = window.location.hash.slice(window.location.hash.indexOf('#') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = decodeURIComponent(hashes[i]).split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+};
+
 var dangerTr = function () {
     'use strict';
     $('span.danger-tr').closest('tr').addClass('danger');

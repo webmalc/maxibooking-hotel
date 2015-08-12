@@ -327,10 +327,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                         'children' => $request->get('children'),
                         'roomType' => $request->get('roomType'),
                         'tariff' => $request->get('tariff'),
+                        'accommodation' => $request->get('accommodation')
                     ]
                 ],
                 'status' => 'offline',
-                'confirmed' => true
+                'confirmed' => true,
+                'tourist' => $request->get('tourist'),
             ], $order, $this->getUser());
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
@@ -343,8 +345,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $request->getSession()->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.packageController.order_created_success'));
 
-        return $this->redirect($this->generateUrl('package_edit', [
-            'id' => $order->getPackages()[0]->getId()
+        $order->getPayer() ? $route = 'package_order_cash' : $route = 'package_order_tourist_edit';
+
+        return $this->redirect($this->generateUrl($route, [
+            'id' => $order->getId(),
+            'packageId' => $order->getPackages()[0]->getId()
         ]));
     }
 

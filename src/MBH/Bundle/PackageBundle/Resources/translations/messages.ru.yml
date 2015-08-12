@@ -82,6 +82,8 @@ form.searchType.all_rooms: Все номера
 form.searchType.room_type: Тип номера
 form.searchType.tariff: Тариф
 form.searchType.order: Номер заказа
+form.searchType.payer: Плательщик
+form.searchType.payer_add: Добавить нового гостя
 form.searchType.check_in: Заезд
 form.searchType.check_in_date_not_filled: Не заполнена дата заезда
 form.searchType.check_out_date_not_filled: Не заполнена дата отъезда

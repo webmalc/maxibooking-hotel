@@ -38,12 +38,12 @@ class SearchType extends AbstractType
             }
         }
 
-        /*$data = [];
-        if ($options['hotel']) {
-            $data = ['allrooms_' . $options['hotel']->getId()];
-        }*/
-
         $builder
+                ->add('tourist', 'text', [
+                    'label' => 'form.searchType.fio',
+                    'required' => false,
+                    'attr' => ['placeholder' => 'form.orderTouristType.placeholder_fio', 'style' => 'min-width: 350px !important; width: 350px !important;', 'class' => 'findGuest']
+                ])
                 ->add('order', 'integer', [
                     'label' => 'form.searchType.order',
                     'required' => false,
@@ -81,7 +81,7 @@ class SearchType extends AbstractType
                     'label' => 'Отъезд',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
-                    'data' => null,
+                    'data' => new \DateTime('+ 1 day'),
                     'required' => true,
                     'error_bubbling' => true,
                     'attr' => array('class' => 'datepicker end-datepiker', 'data-date-format' => 'dd.mm.yyyy'),

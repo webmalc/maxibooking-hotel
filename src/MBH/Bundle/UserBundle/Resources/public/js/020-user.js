@@ -12,11 +12,6 @@ $(document).ready(function () {
         }
     });
 
-    /*$('#mbh_bundle_userbundle_usertype_birthday').datepicker({
-        startDate: new Date("1 January 1987"),
-        autoclose: true
-    });*/
-
     $('#mbh_document_relation_authorityOrgan').select2({
         minimumInputLength: 3,
         placeholder: "Сделайте выбор",
@@ -34,8 +29,6 @@ $(document).ready(function () {
                 $.each(data, function (k, v) {
                     results.push({id: k, text: v});
                 });
-
-                console.log(results);
                 return {results: results};
             }
         },

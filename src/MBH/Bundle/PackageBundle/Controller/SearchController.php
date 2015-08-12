@@ -3,6 +3,10 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Document\BirthPlace;
+use MBH\Bundle\PackageBundle\Document\DocumentRelation;
+use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Form\TouristType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -40,12 +44,26 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             ]
         );
 
-        $beginDate = new \DateTime();
-        $beginDate->setTime(0, 0, 0);
+        $beginDate = new \DateTime('midnight');
         $beginDate->modify($this->container->getParameter('mbh.room.cache.date.modify'));
+
+        $tourist = new Tourist();
+        $tourist->setDocumentRelation(new DocumentRelation());
+        $tourist->setBirthplace(new BirthPlace());
+        $tourist->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
+        $tourist->getDocumentRelation()->setType('vega_russian_passport');
 
         return [
             'form' => $form->createView(),
+            'touristForm' => $this->createForm(
+                new TouristType(), null,
+                ['genders' => $this->container->getParameter('mbh.gender.types')])
+                ->createView(),
+            'documentForm' => $this->createForm('mbh_document_relation', $tourist)
+                ->createView(),
+            'addressForm' => $this->createForm('mbh_address_object_decomposed', $tourist->getAddressObjectDecomposed())
+                ->createView()
+            ,
             'beginDate' => $beginDate,
         ];
     }
@@ -75,6 +93,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         // Validate form
         if ($request->get('s')) {
             $form->bind($request);
+
             if ($form->isValid()) {
                 $data = $form->getData();
 
@@ -85,6 +104,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                 $query->adults = (int)$data['adults'];
                 $query->children = (int)$data['children'];
                 $query->tariff = $data['tariff'];
+                $query->accommodations = true;
 
                 foreach ($data['roomType'] as $id) {
                     if (mb_stripos($id, 'allrooms_') !== false) {

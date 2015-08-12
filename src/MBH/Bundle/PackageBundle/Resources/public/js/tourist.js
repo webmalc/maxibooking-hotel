@@ -21,7 +21,6 @@ var docReadyTourists = function () {
 
     $('.findGuest').change(function () {
         $.getJSON(Routing.generate('json_tourist', {'id': $(this).val()}), function (data) {
-            console.log(data);
             $('.guestLastName').val(data.lastName);
             $('.guestFirstName').val(data.firstName);
             $('.guestPatronymic').val(data.patronymic);
@@ -99,8 +98,6 @@ var docReadyTourists = function () {
                 $.each(data, function (k, v) {
                     results.push({id: k, text: v});
                 });
-
-                console.log(results);
                 return {results: results};
             }
         },

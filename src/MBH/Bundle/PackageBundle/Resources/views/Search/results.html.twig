@@ -29,29 +29,41 @@
             <table class="package-search-table table table-striped table-hover table-condensed table-icons table-actions">
                 <thead>
                 <tr>
-                    <th class="td-xs"></th>
-                    <th class="td-sm">{{ "search.results.check_in"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-sm">{{ "search.results.check_out"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-sm">{{ "search.results.days_and_nights"|trans({}, "MBHPackageBundle") }}</th>
+                    <th class="td-xxs"></th>
+                    <th class="td-md">{{ "search.results.dates"|trans({}, "MBHPackageBundle") }}</th>
                     <th>{{ "search.results.hotel"|trans({}, "MBHPackageBundle") }}</th>
                     <th>{{ "search.results.type"|trans({}, "MBHPackageBundle") }}</th>
-                    <th>{{ "search.results.tariff"|trans({}, "MBHPackageBundle") }}</th>
+                    <th class="td-sm">{{ "search.results.room"|trans({}, "MBHPackageBundle") }}</th>
                     <th class="td-sm">{{ "search.results.guests"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-sm">{{ "search.results.price"|trans({}, "MBHPackageBundle") }}</th>
+                    <th class="td-md">{{ "search.results.price"|trans({}, "MBHPackageBundle") }}</th>
                     <th class="td-md"></th>
                 </tr>
                 </thead>
                 <tbody>
+
                 {% for result in results  %}
-  
+
                     <tr>
                         <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
-                        <td class="text-center">{{ result.begin|date('d.m.Y') }}</td>
-                        <td class="text-center">{{ result.end|date('d.m.Y') }}</td>
-                        <td class="text-center">{{ result.days }}/{{ result.nights }}</td>
+                        <td>{{ result.begin|mbh_format }} - {{ result.end|mbh_format }}<br><small>{{ plural(result.nights, "package.json.noch"|trans({}, "MBHPackageBundle"), "package.json.nochi"|trans({}, "MBHPackageBundle"), "package.json.nochei"|trans({}, "MBHPackageBundle")) }}</small></td>
                         <td>{{ result.roomType.hotel }}</td>
-                        <td>{{ result.roomType }}</td>
-                        <td>{{ result.tariff}} </td>
+                        <td>
+                            {{ result.roomType }}<br>
+                            <small>
+                                {{ "search.results.total"|trans({}, "MBHPackageBundle") }}:
+                                <span class="package-search-book-count">{{ result.roomsCount }}</span>
+                            </small>
+                        </td>
+                        <td>
+                            <select class="form-control input-sm search-room-select">
+                                <option></option>
+                                {% for room in  result.rooms %}
+                                    <option value="{{ room.id }}">
+                                        {{ room }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </td>
                         <td class="text-center">
                             <select class="form-control plain-html input-sm search-tourists-select">
                                 {% for priceTourists, price  in result.prices %}
@@ -63,7 +75,6 @@
                                     </option>
                                 {% endfor %}
                             </select>
-
                         </td>
                         <td class="text-right">
                             {% for priceTourists, price  in result.prices %}
@@ -71,10 +82,12 @@
                                     <li class="{{ priceTourists }}_price">{{ price|number_format(2)}}</li>
                                 </ul>
                             {% endfor %}
+                            <small><i class='fa fa-sliders'> </i> {{ result.tariff.name }}</small>
                         </td>
                         <td class="text-center">
                             <a href="{{ path('package_new', app.request.get('s')|merge({roomType: result.roomType.id })) }}" target="_blank" class="btn btn-success btn-xs package-search-book" title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
-                                <i class="fa fa-pencil-square-o"> </i> {{ "search.results.reservate"|trans({}, "MBHPackageBundle") }}  (<span>{{ result.roomsCount }}</span>)
+                                <span class="package-search-book-reservation-text">{{ "search.results.reservate"|trans({}, "MBHPackageBundle") }}</span>
+                                <span class="package-search-book-accommodation-text" style="display: none;">{{ "search.results.accommodation"|trans({}, "MBHPackageBundle") }}</span>
                             </a>
                         </td>
                     </tr>

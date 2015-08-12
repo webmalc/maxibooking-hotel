@@ -58,6 +58,11 @@ class SearchResult
     protected $roomsCount = 0;
 
     /**
+     * @var array
+     */
+    protected $rooms = [];
+
+    /**
      * @return \DateTime
      */
     public function getBegin()
@@ -296,5 +301,23 @@ class SearchResult
         }
 
         return null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRooms()
+    {
+        return $this->rooms;
+    }
+
+    /**
+     * @param array $rooms
+     * @return SearchResult
+     */
+    public function setRooms($rooms)
+    {
+        $this->rooms = $rooms;
+        return $this;
     }
 }

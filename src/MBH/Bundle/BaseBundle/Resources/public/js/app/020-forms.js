@@ -76,7 +76,7 @@ var docReadyForms = function () {
     $('select').not('.plain-html').select2({
         placeholder: "Сделайте выбор",
         allowClear: true,
-        width: 'element',
+        width: 'resolve',
         formatSelection: function (item, container) {
             var optgroup = $(item.element).parent('optgroup').attr('label');
             if (!optgroup) {
@@ -189,7 +189,6 @@ var docReadyForms = function () {
             }
         },
         initSelection: function (element, callback) {
-            console.log('initSection');
             var id = $(element).val();
             if (id !== "") {
                 $.ajax(Routing.generate('ajax_tourists', {id: id}), {

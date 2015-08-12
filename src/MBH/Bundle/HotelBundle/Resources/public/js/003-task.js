@@ -45,7 +45,6 @@ $(document).ready(function () {
 
     $taskTableFilterForm.find('input, textarea, select').on('change', function () {
         if (!processing) {
-            console.log("task");
             $('#task-table').dataTable().fnDraw();
         }
     });

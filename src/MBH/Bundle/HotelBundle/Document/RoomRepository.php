@@ -76,8 +76,8 @@ class RoomRepository extends AbstractBaseRepository
     public function fetchAccommodationRooms(\DateTime $begin, \DateTime $end, Hotel $hotel, $roomTypes = null, $rooms = null, $excludePackages = null, $grouped = false)
     {
         $dm = $this->getDocumentManager();
-        $roomTypes and !is_array($roomTypes) ? $roomTypes = [$roomTypes] : $roomTypes;
-        $rooms and !is_array($rooms) ? $rooms = [$rooms] : $rooms;
+        $roomTypes && !is_array($roomTypes) ? $roomTypes = [$roomTypes] : $roomTypes;
+        $rooms && !is_array($rooms) ? $rooms = [$rooms] : $rooms;
         $excludePackages and !is_array($excludePackages) ? $excludePackages = [$excludePackages] : $excludePackages;
         $ids = $groupedRooms = [];
         $hotelRoomTypes = [];

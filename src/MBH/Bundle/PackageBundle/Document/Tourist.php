@@ -271,6 +271,10 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     public function setFirstName($firstName)
     {
         $this->firstName = mb_convert_case(mb_strtolower($firstName), MB_CASE_TITLE);
+
+        if (empty($this->firstName)) {
+            $this->firstName = null;
+        }
         return $this;
     }
 
@@ -314,6 +318,11 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     public function setLastName($lastName)
     {
         $this->lastName = mb_convert_case(mb_strtolower($lastName), MB_CASE_TITLE);
+
+        if (empty($this->lastName)) {
+            $this->lastName = null;
+        }
+
         return $this;
     }
 
@@ -340,6 +349,11 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     public function setPatronymic($patronymic)
     {
         $this->patronymic = mb_convert_case(mb_strtolower($patronymic), MB_CASE_TITLE);
+
+        if (empty($this->patronymic)) {
+            $this->patronymic = null;
+        }
+
         return $this;
     }
 
