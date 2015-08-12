@@ -3,9 +3,11 @@
 namespace MBH\Bundle\BaseBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
+use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use Symfony\Component\DependencyInjection\ContainerAware;
 use Knp\Menu\ItemInterface;
 use JMS\SecurityExtraBundle\Metadata\Driver\AnnotationDriver;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class Builder extends ContainerAware
 {
@@ -39,8 +41,29 @@ class Builder extends ContainerAware
         $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Номера и цены'])
             ->setAttributes(['dropdown' => true, 'icon' => $this->container->get('mbh.currency')->info()['icon']]);
 
-        /*$menu->addChild('task', ['route' => 'task', 'label' => 'Задачи'])
-            ->setAttributes(['icon' => 'fa fa-tasks']);*/
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        /** @var UserInterface $user */
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+
+        $queryCriteria = new TaskQueryCriteria();
+        $queryCriteria->roles = $user->getRoles();
+        $queryCriteria->performer = $user->getId();
+        $queryCriteria->onlyOwned = true;
+        $queryCriteria->status = 'open';
+
+        $openTaskCount = $dm->getRepository('MBHHotelBundle:Task')->getCountByCriteria($queryCriteria);
+
+        $taskAttributes = ['icon' => 'fa fa-tasks'];
+        if($openTaskCount > 0) {
+            $taskAttributes += [
+                'badge' => true,
+                'badge_class' => 'label-danger',
+                'badge_id' => 'task-counter',
+                'badge_value' => $openTaskCount
+            ];
+        }
+
+        $menu->addChild('task', ['route' => 'task', 'label' => 'Задачи'])->setAttributes($taskAttributes);
 
         $menu['prices']->addChild('overview', ['route' => 'room_overview', 'label' => 'Обзор'])
             ->setAttributes(['icon' => 'fa fa-info-circle']);
@@ -130,9 +153,9 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-cog'])
         ;
 
-        /*$menu['configs']->addChild('tasktype', ['route' => 'tasktype', 'label' => 'Типы задач'])
+        $menu['configs']->addChild('tasktype', ['route' => 'tasktype', 'label' => 'Типы задач'])
             ->setAttributes(['icon' => 'fa fa-cog'])
-        ;*/
+        ;
 
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])

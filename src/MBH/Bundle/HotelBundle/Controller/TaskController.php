@@ -36,7 +36,7 @@ class TaskController extends Controller
         $statuses = $this->container->getParameter('mbh.task.statuses');
         $priorities = $this->container->getParameter('mbh.tasktype.priority');
 
-        if($onlyOwned) {
+        if ($onlyOwned) {
             $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
             /** @var Task[] $processTasks */
             $criteria = ['performer.id' => $this->getUser()->getId()];
@@ -55,7 +55,7 @@ class TaskController extends Controller
         } else {
             $performers = $this->dm->getRepository('MBHUserBundle:User')->findAll();
             $key = array_search($this->getUser(), $performers);
-            if($key !== false){
+            if ($key !== false) {
                 unset($performers[$key]);
             }
             array_unshift($performers, $this->getUser());
@@ -102,7 +102,7 @@ class TaskController extends Controller
             $queryCriteria->performer = $user->getId();
 
             $tasks = $taskRepository->getAcceptableTaskForUser($queryCriteria);
-        } else{
+        } else {
             $queryCriteria->sort = $firstSort ? [$firstSort[0] => $firstSort[1]] : ['createdAt' => -1];
             $helper = $this->get('mbh.helper');
 
@@ -119,17 +119,17 @@ class TaskController extends Controller
                 $queryCriteria->end = $helper->getDateFromString($request->get('end'));
                 $queryCriteria->end->modify('+ 23 hours 59 minutes');
             }
-            if($request->get('group')) {
+            if ($request->get('group')) {
                 $queryCriteria->roles[] = $request->get('group');
             }
-            if($request->get('performer')) {
+            if ($request->get('performer')) {
                 $queryCriteria->performer = $request->get('performer');
             }
             if ($request->get('deleted') == 'true') {
                 $queryCriteria->deleted = true;
             }
 
-            $tasks = $taskRepository->getAcceptableTasksForManager($queryCriteria);
+            $tasks = $taskRepository->getAcceptableTasks($queryCriteria);
         }
 
         $recordsTotal = $taskRepository->getCountByCriteria($queryCriteria);
@@ -139,7 +139,7 @@ class TaskController extends Controller
             'statuses' => $this->container->getParameter('mbh.task.statuses'),
             'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
             'recordsTotal' => $recordsTotal,
-            'tasks' => $tasks,
+            'tasks' => iterator_to_array($tasks),
             'draw' => $request->get('draw'),
             'taskRepository' => $taskRepository
         ];
@@ -215,7 +215,7 @@ class TaskController extends Controller
         $statuses = $this->getParameter('mbh.task.statuses');
         $translator = $this->get('translator');
         $priorities = $this->container->getParameter('mbh.tasktype.priority');
-        $priorities = array_map(function($name) use ($translator) {
+        $priorities = array_map(function ($name) use ($translator) {
             return $translator->trans('views.task.priority.' . $name, [], 'MBHHotelBundle');
         }, $priorities);
 
@@ -313,5 +313,23 @@ class TaskController extends Controller
         ];
 
         return new JsonResponse($data);
+    }
+
+    /**
+     * @Route("/ajax/my_total", name="task_ajax_total_my_open", options={"expose": true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
+     */
+    public function ajaxMyOpenTaskTotal()
+    {
+        $queryCriteria = new TaskQueryCriteria();
+        $queryCriteria->roles = $this->getUser()->getRoles();
+        $queryCriteria->performer = $this->getUser()->getId();
+        $queryCriteria->onlyOwned = true;
+        $queryCriteria->status = 'open';
+
+        return new JsonResponse([
+            'total' => $this->dm->getRepository('MBHHotelBundle:Task')->getCountByCriteria($queryCriteria)
+        ]);
     }
 }

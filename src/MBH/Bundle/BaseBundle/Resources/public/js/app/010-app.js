@@ -124,3 +124,24 @@ $(document).ready(function () {
     $('[data-toggle="popover"]').popover();
     closePopovers();
 });
+
+var $taskCounter = $('#task-counter');
+var updateTaskCounter = function() {
+    console.log('update task counter');
+    $.ajax({
+        url: Routing.generate('task_ajax_total_my_open'),
+        dataType: 'json',
+        success: function(response) {
+            if(response.total == 0) {
+                $taskCounter.html('');
+            } else {
+                $taskCounter.html(response.total);
+            }
+        }
+    })
+}
+
+var delay = 1000 * 60 * 5;//5 minutes
+setInterval(function(){
+    updateTaskCounter()
+}, delay);

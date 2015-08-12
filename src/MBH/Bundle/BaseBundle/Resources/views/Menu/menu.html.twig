@@ -117,4 +117,10 @@
     </span>
 {% endblock %}
  
-{% block label %}{% if item.label == '&nbsp;' %}&nbsp;{% else %}{{ item.label|trans }}{% endif %}{% endblock %}
+{% block label %}{% if item.label == '&nbsp;' %}&nbsp;{% else %}{{ item.label|trans }}
+    {% if item.attribute('badge') is defined %}
+        <small {% if item.attribute('badge_id') is defined %}id="{{ item.attribute('badge_id') }}"{% endif %} class="label {% if item.attribute('badge_class') is defined %}{{ item.attribute('badge_class') }}{% endif %} label-as-badge">
+            {{ item.attribute('badge_value') }}
+        </small>
+    {% endif %}
+{% endif %}{% endblock %}

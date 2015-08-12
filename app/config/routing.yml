@@ -60,6 +60,10 @@ mbh_hotel:
     type:     annotation
     prefix:   /management/hotel
 
+mbh_task:
+    resource: "@MBHHotelBundle/Controller/TaskController.php"
+    type:     annotation
+
 _liip_imagine:
     resource: "@LiipImagineBundle/Resources/config/routing.xml"
 
