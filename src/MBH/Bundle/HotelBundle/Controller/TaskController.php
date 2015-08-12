@@ -294,18 +294,21 @@ class TaskController extends Controller
      */
     public function ajaxTaskDerailsAction(Task $entity)
     {
+        $priorities = $this->getParameter('mbh.tasktype.priority');
         $data = [
             'role' => $entity->getRole() ?
                 $this->get('translator')->trans($entity->getRole(), [], 'MBHUserBundleRoles') :
                 '',
             'type' => $entity->getType() ? $entity->getType()->getTitle() : '',
             'performer' => $entity->getPerformer() ? $entity->getPerformer()->getFullName(true) : [],
-            'date' => $entity->getDate() ? $entity->getDate()->format('d.m.g') : '',
-            'createdAt' => $entity->getCreatedAt() ? $entity->getCreatedAt()->format('d.m.g') : '',
+            'date' => $entity->getDate() ? $entity->getDate()->format('d.m.Y') : '',
+            'createdAt' => $entity->getCreatedAt() ? $entity->getCreatedAt()->format('d.m.Y') : '',
             'createdBy' => $entity->getCreatedBy(),
             'description' => $entity->getDescription() ? nl2br($entity->getDescription()) : '',
             'number' => $entity->getNumber(),
-            'priority' => $entity->getPriority(),
+            'priority' => is_int($entity->getPriority()) ?
+                $this->get('translator')->trans('views.task.priority.'.$priorities[$entity->getPriority()], [], 'MBHHotelBundle') :
+                '',
             'status' => $entity->getStatus() ?
                 $this->container->getParameter('mbh.task.statuses')[$entity->getStatus()]['title'] :
                 '',

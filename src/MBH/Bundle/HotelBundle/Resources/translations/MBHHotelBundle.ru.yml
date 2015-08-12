@@ -38,6 +38,18 @@ views.task.index.cancel: Отмена
 views.task.index.close: Закрыть
 views.task.index.take_in_process: В работу
 
+
+views.task.index.detail.role: Группа пользователей
+views.task.index.detail.type: Задача
+views.task.index.detail.performer: Исполнитель
+views.task.index.detail.number: Номер комнаты
+views.task.index.detail.priority: Приоритет
+views.task.index.detail.status: Статус
+views.task.index.detail.date: Дата
+views.task.index.detail.createdAt: Создано
+views.task.index.detail.createdBy: Создал
+views.task.index.detail.description: Комментарий
+
 views.task.priority.low: Низкий
 views.task.priority.average: Средний
 views.task.priority.high : Высокий
