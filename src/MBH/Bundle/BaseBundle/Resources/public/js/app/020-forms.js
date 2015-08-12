@@ -137,7 +137,7 @@ $(document).ready(function () {
             return;
         }
         $('.datepiker-period-select').css('width', '130px');
-        select.change(setDates)
+        select.on('change', setDates);
         setDates();
     }());
 

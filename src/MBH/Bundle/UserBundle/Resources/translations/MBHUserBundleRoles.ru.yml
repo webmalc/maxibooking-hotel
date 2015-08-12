@@ -7,4 +7,11 @@ ROLE_MANAGER: Менеджер
 ROLE_SENIOR_MANAGER: Старший менеджер
 ROLE_USER: Пользователь
 ROLE_READ_ONLY: Гость
+
+ROLE_STAFF: Обслуживающий персонал
+ROLE_CLEANING: Уборка
+ROLE_COOKING: Кухня
+ROLE_TRANSFER: Трансфер
+ROLE_TECHNICAL: Технический персонал
+
 form.userType.roles: Роли

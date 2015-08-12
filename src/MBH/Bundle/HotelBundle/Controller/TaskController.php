@@ -27,16 +27,32 @@ class TaskController extends Controller
     /**
      * @Route("/", name="task")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
-     * @Template()
+     * @Security("is_granted('ROLE_STAFF')")
      */
     public function indexAction()
     {
-        $onlyOwned = !$this->get('security.authorization_checker')->isGranted('ROLE_TASK_MANAGER');
+        $authorizationChecker = $this->get('security.authorization_checker');
+
         $statuses = $this->container->getParameter('mbh.task.statuses');
         $priorities = $this->container->getParameter('mbh.tasktype.priority');
 
-        if ($onlyOwned) {
+        if ($authorizationChecker->isGranted('ROLE_TASK_MANAGER')) {
+            $performers = $this->dm->getRepository('MBHUserBundle:User')->findAll();
+            $key = array_search($this->getUser(), $performers);
+            if ($key !== false) {
+                unset($performers[$key]);
+            }
+            array_unshift($performers, $this->getUser());
+
+            return $this->render('MBHHotelBundle:Task:index.html.twig', [
+                'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
+                'priorities' => $priorities,
+                'performers' => $performers,
+                'statuses' => $statuses,
+                'groups' => $this->getRoleList(),
+                'tasks' => []
+            ]);
+        } elseif ($authorizationChecker->isGranted('ROLE_STAFF')) {
             $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
             /** @var Task[] $processTasks */
             $criteria = ['performer.id' => $this->getUser()->getId()];
@@ -53,21 +69,7 @@ class TaskController extends Controller
                 'statuses' => $statuses,
             ]);
         } else {
-            $performers = $this->dm->getRepository('MBHUserBundle:User')->findAll();
-            $key = array_search($this->getUser(), $performers);
-            if ($key !== false) {
-                unset($performers[$key]);
-            }
-            array_unshift($performers, $this->getUser());
-
-            return [
-                'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
-                'priorities' => $priorities,
-                'performers' => $performers,
-                'statuses' => $statuses,
-                'groups' => $this->getRoleList(),
-                'tasks' => []
-            ];
+            throw $this->createAccessDeniedException();
         }
     }
 
@@ -76,62 +78,48 @@ class TaskController extends Controller
      *
      * @Route("/json_list", name="task_json", defaults={"_format"="json"}, options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_TASK_MANAGER')")
      * @Template("MBHHotelBundle:Task:list.json.twig")
      */
     public function jsonListAction(Request $request)
     {
-        /** @var \MBH\Bundle\UserBundle\Document\User $user Current User */
-        $user = $this->getUser();
-
         $queryCriteria = new TaskQueryCriteria();
+        $queryCriteria->onlyOwned = false;
+
         $tableParams = ClientDataTableParams::createFromRequest($request);
         $queryCriteria->offset = $tableParams->getStart();
         $queryCriteria->limit = $tableParams->getLength();
-
         $firstSort = $tableParams->getFirstSort();
-
-        $queryCriteria->onlyOwned = !$this->get('security.authorization_checker')->isGranted('ROLE_TASK_MANAGER');//$this->get('security.context')->isGranted
-
         /** @var TaskRepository $taskRepository */
         $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
 
-        if ($queryCriteria->onlyOwned) {
-            $queryCriteria->sort = $firstSort ? [$firstSort[0] => $firstSort[1]] : [];
-            $queryCriteria->roles = $user->getRoles();
-            $queryCriteria->performer = $user->getId();
+        $queryCriteria->sort = $firstSort ? [$firstSort[0] => $firstSort[1]] : ['createdAt' => -1];
+        $helper = $this->get('mbh.helper');
 
-            $tasks = $taskRepository->getAcceptableTaskForUser($queryCriteria);
-        } else {
-            $queryCriteria->sort = $firstSort ? [$firstSort[0] => $firstSort[1]] : ['createdAt' => -1];
-            $helper = $this->get('mbh.helper');
-
-            if ($request->get('status')) {
-                $queryCriteria->status = $request->get('status');
-            }
-            if ($request->get('priority')) {
-                $queryCriteria->priority = $request->get('priority');
-            }
-            if ($request->get('begin')) {
-                $queryCriteria->begin = $helper->getDateFromString($request->get('begin'));
-            }
-            if ($request->get('end')) {
-                $queryCriteria->end = $helper->getDateFromString($request->get('end'));
-                $queryCriteria->end->modify('+ 23 hours 59 minutes');
-            }
-            if ($request->get('group')) {
-                $queryCriteria->roles[] = $request->get('group');
-            }
-            if ($request->get('performer')) {
-                $queryCriteria->performer = $request->get('performer');
-            }
-            if ($request->get('deleted') == 'true') {
-                $queryCriteria->deleted = true;
-            }
-
-            $tasks = $taskRepository->getAcceptableTasks($queryCriteria);
+        if ($request->get('status')) {
+            $queryCriteria->status = $request->get('status');
+        }
+        if ($request->get('priority')) {
+            $queryCriteria->priority = $request->get('priority');
+        }
+        if ($request->get('begin')) {
+            $queryCriteria->begin = $helper->getDateFromString($request->get('begin'));
+        }
+        if ($request->get('end')) {
+            $queryCriteria->end = $helper->getDateFromString($request->get('end'));
+            $queryCriteria->end->modify('+ 23 hours 59 minutes');
+        }
+        if ($request->get('group')) {
+            $queryCriteria->roles[] = $request->get('group');
+        }
+        if ($request->get('performer')) {
+            $queryCriteria->performer = $request->get('performer');
+        }
+        if ($request->get('deleted') == 'true') {
+            $queryCriteria->deleted = true;
         }
 
+        $tasks = $taskRepository->getAcceptableTasks($queryCriteria);
         $recordsTotal = $taskRepository->getCountByCriteria($queryCriteria);
 
         return [
@@ -148,9 +136,8 @@ class TaskController extends Controller
     /**
      * @Route("/change_status/{id}/{status}", name="task_change_status", options={"expose":true})
      * @Method({"GET"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_STAFF')")
      * @ParamConverter("entity", class="MBHHotelBundle:Task")
-     * @todo checkAccess performer
      */
     public function changeStatusAction(Task $entity, $status)
     {
@@ -279,7 +266,7 @@ class TaskController extends Controller
      *
      * @Route("/{id}/delete", name="task_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_TASK_MANAGER')")
      */
     public function deleteAction($id)
     {
@@ -290,7 +277,7 @@ class TaskController extends Controller
      * @Route("/{id}/ajax", name="ajax_task_details", options={"expose":true})
      * @Method("GET")
      * @ParamConverter("entity", class="MBHHotelBundle:Task")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_STAFF')")
      */
     public function ajaxTaskDerailsAction(Task $entity)
     {
@@ -307,7 +294,8 @@ class TaskController extends Controller
             'description' => $entity->getDescription() ? nl2br($entity->getDescription()) : '',
             'number' => $entity->getNumber(),
             'priority' => is_int($entity->getPriority()) ?
-                $this->get('translator')->trans('views.task.priority.'.$priorities[$entity->getPriority()], [], 'MBHHotelBundle') :
+                $this->get('translator')->trans('views.task.priority.' . $priorities[$entity->getPriority()], [],
+                    'MBHHotelBundle') :
                 '',
             'status' => $entity->getStatus() ?
                 $this->container->getParameter('mbh.task.statuses')[$entity->getStatus()]['title'] :
@@ -321,7 +309,7 @@ class TaskController extends Controller
     /**
      * @Route("/ajax/my_total", name="task_ajax_total_my_open", options={"expose": true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_STAFF')")
      */
     public function ajaxMyOpenTaskTotal()
     {

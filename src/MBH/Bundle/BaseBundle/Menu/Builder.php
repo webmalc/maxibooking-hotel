@@ -210,7 +210,7 @@ class Builder extends ContainerAware
                 $menu['management']->setAttribute('title', 'Назад к главному меню');
             }
         }
-        $menu->addChild('login', ['route' => '_welcome', 'label' => $user->getFullName(true)])
+        $menu->addChild('login', ['route' => 'user_profile', 'label' => $user->getFullName(true)])
                 ->setAttributes([
                         'icon' => 'fa fa-user',
                         'dropdown' => true
@@ -233,10 +233,10 @@ class Builder extends ContainerAware
             'route' => '_welcome',
             'label' => 'Версия ' . $this->container->getParameter('mbh.version')
         ])
-            ->setAttributes(['divider_append' => true, 'icon' => 'fa fa-info-circle'])
+            ->setAttributes(['icon' => 'fa fa-info-circle'])
         ;
         $menu['login']->addChild('logout', ['route' => 'fos_user_security_logout', 'label' => 'Выйти'])
-                ->setAttribute('icon', 'fa fa-sign-out')
+                ->setAttributes(['divider_prepend' => true, 'icon' => 'fa fa-sign-out'])
         ;
 
         return $this->filterMenu($menu);

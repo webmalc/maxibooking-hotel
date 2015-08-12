@@ -25,7 +25,7 @@ mbh_cash:
 
 _welcome:
     pattern:  /
-    defaults: { _controller: MBHPackageBundle:Package:index}
+    defaults: { _controller: MBHBaseBundle:Welcome:index}
 
 mbh_package:
     resource: "@MBHPackageBundle/Controller/"

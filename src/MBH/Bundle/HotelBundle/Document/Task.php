@@ -47,7 +47,7 @@ class Task extends Base
      * @var TaskType|null
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="TaskType")
-     * @ Assert\NotNull(message="validator.document.task.taskType_no_selected")
+     * @Assert\NotNull(message="validator.document.task.taskType_no_selected")
      */
     protected $type;
 
@@ -55,7 +55,7 @@ class Task extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String
-     * @ Assert\NotNull()
+     * @Assert\NotNull()
      * @Assert\Choice(choices = {"open", "closed", "process"})
      */
     protected $status;

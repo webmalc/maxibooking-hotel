@@ -22,6 +22,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  */
 class User extends BaseUser
 {
+    const ROLE_DEFAULT = 'ROLE_BASE_USER';
     /**
      * @var string
      * @ODM\Id

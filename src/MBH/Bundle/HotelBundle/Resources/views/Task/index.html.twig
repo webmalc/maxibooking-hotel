@@ -99,12 +99,12 @@
                     <td class="table-actions-td text-right">
                         {% if task.status == 'open' %}
                             <a href="{{ path('task_change_status', { 'id': task.id, status: 'process' }) }}" class="btn btn-info btn-xs" title="{{ "process"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
-                                <i class="fa fa-briefcase"></i>
+                                <i class="fa fa-clock-o"></i>
                             </a>
                         {% endif %}
                         {% if task.status == 'process' %}
                             <a href="{{ path('task_change_status', { 'id': task.id, status: 'closed' }) }}" class="btn btn-primary btn-xs" title="{{ "closed"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
-                                <i class="fa fa-coffee"></i>
+                                <i class="fa fa-check"></i>
                             </a>
                         {% endif %}
                         <a href="{{ path('task_edit', { 'id': task.id }) }}" class="btn btn-success btn-xs" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">

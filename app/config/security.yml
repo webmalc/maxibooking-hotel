@@ -42,6 +42,12 @@ security:
         ROLE_SENIOR_MANAGER: [ROLE_MANAGER, ROLE_TASK_MANAGER]
         ROLE_MANAGER: ROLE_READ_ONLY
         ROLE_READ_ONLY: ROLE_USER
+        ROLE_USER: [ROLE_STAFF]
+
+        ROLE_CLEANING: ROLE_STAFF
+        ROLE_COOKING: ROLE_STAFF
+        ROLE_TRANSFER: ROLE_STAFF
+        ROLE_TECHNICAL: ROLE_STAFF
 
     access_control:
         - { path: ^/management/channelmanager/package/notifications, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
@@ -50,4 +56,4 @@ security:
         - { path: ^/user/login$, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/_wdt, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' } 
         - { path: ^/_profiler, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-        - { path: ^/, role: ROLE_USER }
+        - { path: ^/, role: ROLE_BASE_USER }

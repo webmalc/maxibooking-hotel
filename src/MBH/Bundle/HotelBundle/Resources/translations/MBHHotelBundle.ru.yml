@@ -35,8 +35,10 @@ views.task.index.in_process: Задачи в работе
 views.task.index.info: Информация о задаче
 views.task.index.cancel: Отмена
 
-views.task.index.close: Закрыть
+views.task.index.view: Просмотр
+views.task.index.close: Завершить
 views.task.index.take_in_process: В работу
+views.task.index.tasks_empaty: Нет задач
 
 
 views.task.index.detail.role: Группа пользователей
