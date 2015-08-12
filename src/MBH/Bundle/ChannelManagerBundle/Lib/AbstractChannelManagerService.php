@@ -167,6 +167,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
         $tariff = new Tariff();
         $tariff->setTitle($info['title'])
+            ->setFullTitle($info['title'])
             ->setIsDefault(false)
             ->setIsOnline(false)
             ->setHotel($config->getHotel())

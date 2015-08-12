@@ -35,15 +35,26 @@ $(document).ready(function () {
         });
     }());
 
+    var searchProcess = false;
+
     //ajax request
     (function () {
 
         var send = function (query) {
             var wrapper = $('#package-search-results-wrapper');
+
+            if (searchProcess) {
+                return;
+            }
+
             $.ajax({
                 url: Routing.generate('package_search_results'),
                 data: query,
+                beforeSend: function () {
+                    searchProcess = true;
+                },
                 success: function (data) {
+                    searchProcess = false;
                     wrapper.html(data);
 
                     // select2
@@ -206,7 +217,7 @@ $(document).ready(function () {
                     return;
                 }
                 var wrapper = $('#package-search-results-wrapper');
-                //window.location.hash = form.serialize();
+                window.location.hash = form.serialize();
                 wrapper.html('<div class="alert alert-info"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
                 send(form.serialize());
             }
@@ -214,7 +225,7 @@ $(document).ready(function () {
         if (window.location.hash) {
             var hashes = getHashVars();
             for (var key in hashes){
-                var name = key.replace('s[', '').replace(']', '').replace('[0]', '');
+                var name = key.replace('s[', '').replace(']', '').replace('[0]', '').replace('[]', '');
                 if ($('#s_' + name).length) {
                     $('#s_' + name).val(hashes[key]).trigger('change');
                 }
