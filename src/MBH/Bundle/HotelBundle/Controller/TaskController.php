@@ -149,24 +149,32 @@ class TaskController extends Controller
     public function changeStatusAction(Task $entity, $status)
     {
         $entity->setStatus($status);
+        $room = $entity->getRoom();
+
         if($status == Task::STATUS_PROCESS) {
             if(!$entity->getPerformer()) {
                 $entity->setPerformer($this->getUser());
             }
             $entity->setStart(new \DateTime());
             if($roomStatus = $entity->getType()->getRoomStatus()) {
-                $entity->getRoom()->setStatus($roomStatus);
+                $room->setStatus($roomStatus);
             }
         } elseif($status == Task::STATUS_CLOSED) {
             $entity->setEnd(new \DateTime());
             if($roomStatus = $entity->getType()->getRoomStatus()) {
-                if($entity->getRoom()->getStatus() == $roomStatus) {
-                    $entity->getRoom()->setStatus(null);
-                };
-                $this->dm->persist($entity->getRoom());
+                $otherProcessRoomTask = $this->dm->getRepository('MBHHotelBundle:Task')->findOneBy([
+                    '_id' => ['$ne' => $entity->getId()],
+                    'room.id' => $room->getId(),
+                    'status' => Task::STATUS_PROCESS
+                ]);
+                if($otherProcessRoomTask) {
+                    $room->setStatus($otherProcessRoomTask->getType()->getRoomStatus());
+                } else {
+                    $room->setStatus(null);
+                }
             }
         }
-        $this->dm->persist($entity->getRoom());
+        $this->dm->persist($room);
 
         $violations = $this->get('validator')->validate($entity);
 

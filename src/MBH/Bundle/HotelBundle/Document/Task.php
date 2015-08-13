@@ -76,6 +76,7 @@ class Task extends Base
     protected $previousStatus;
 
     /**
+     * @var Room|nuul
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
      */
     protected $room;
