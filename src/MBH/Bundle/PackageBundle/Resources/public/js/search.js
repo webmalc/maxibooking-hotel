@@ -28,7 +28,8 @@ $(document).ready(function () {
                         form.find('select').select2('data', null);
                         guestModal.modal('hide');
                         form.find('select').select2('data', null);
-                        form.find('input').select2('data', null); return 1;
+                        form.find('input').select2('data', null);
+                        return 1;
                     }
                 });
             });
@@ -109,12 +110,12 @@ $(document).ready(function () {
                             if (roomId) {
                                 bookText.hide();
                                 accText.show();
-                                link.removeClass('btn-success').addClass('btn-primary');
+                                link.removeClass('btn-success btn-danger').addClass('btn-primary');
                                 link.prop('href', oldHref + '&accommodation=' + roomId);
                             } else {
                                 bookText.show();
                                 accText.hide();
-                                link.removeClass('btn-primary').addClass('btn-success');
+                                link.removeClass('btn-primary btn-danger').addClass('btn-success');
                                 link.prop('href', oldHref);
                             }
                         }
@@ -124,6 +125,38 @@ $(document).ready(function () {
                         $('.search-room-select').each(function () {
                             show($(this).closest('tr'));
                         });
+                    }());
+
+                    //accommodation alert
+                    (function () {
+                        var select = $('.search-room-select'),
+                            warning = $('#accommodation-alert'),
+                            date = new Date(),
+                            show = function () {
+                                var isAlert = false;
+
+                                date.setHours(0,0,0,0);
+                                select.each(function () {
+                                    var link = $(this).closest('tr').find('.package-search-book').addClass('btn-danger'),
+                                        begin = $('#s_begin').datepicker("getDate");
+
+                                    if ($(this).val() && begin > date) {
+                                        link.addClass('btn-danger');
+                                        isAlert = true;
+                                    } else {
+                                        link.removeClass('btn-danger');
+                                    }
+                                });
+
+                                if (isAlert) {
+                                    warning.removeClass('hide');
+                                    warning.show();
+                                } else {
+                                    warning.hide();
+                                }
+                            };
+                        show();
+                        select.change(show);
                     }());
 
                     //search result prices
@@ -224,7 +257,7 @@ $(document).ready(function () {
 
         if (window.location.hash) {
             var hashes = getHashVars();
-            for (var key in hashes){
+            for (var key in hashes) {
                 var name = key.replace('s[', '').replace(']', '').replace('[0]', '').replace('[]', '');
                 if ($('#s_' + name).length) {
                     $('#s_' + name).val(hashes[key]).trigger('change');

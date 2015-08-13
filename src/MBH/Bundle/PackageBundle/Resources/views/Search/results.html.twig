@@ -1,6 +1,10 @@
 
     <div class="spacer-top">
 
+        <div class="alert alert-danger hide" id="accommodation-alert">
+            <i class="fa fa-exclamation-circle"></i> {{ "accommodation.alert"|trans({}, "MBHPackageBundle") }}
+        </div>
+
 
         {% if tariffResults != false and tariffResults is iterable and tariffResults|length != 0 %}
 
