@@ -1,0 +1,52 @@
+{% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
+
+{% block subject %}
+    {% set subject = text %}
+    {{ parent() }}
+{% endblock %}
+
+{% block text %}
+
+    <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+        <thead>
+        <tr>
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:7%;">
+                #
+            </th>
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:25%;">
+                Задача
+            </th>
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:25%;">
+                Номер
+            </th>
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:20%;">
+                Исполнитель
+            </th>
+            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:right;width:20%;">
+                Закрыта
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for task in tasks %}
+            <tr>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ task.id }}</td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                    {{ task.type.title }}
+                </td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                    {{ task.room.name }}
+                </td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                    {{ task.role|trans({}, 'MBHUserBundleRoles') }}
+                    {% if task.performer %}<br><small>{{ task.performer.fullName(true) }}</small>{% endif %}
+                </td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">
+                    {{ task.end|mbh_format }} {{ task.end|date('H:i') }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

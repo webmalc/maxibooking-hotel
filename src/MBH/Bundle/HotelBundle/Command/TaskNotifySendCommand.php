@@ -3,7 +3,6 @@
 namespace MBH\Bundle\HotelBundle\Command;
 
 use Documents\UserRepository;
-use MBH\Bundle\BaseBundle\Service\Messenger\Mailer;
 use MBH\Bundle\BaseBundle\Service\Messenger\NotifierMessage;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
@@ -12,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 /**
  * Class NotificationSenderCommand
@@ -49,7 +49,11 @@ class TaskNotifySendCommand extends ContainerAwareCommand
 
         $message = new NotifierMessage();
         $message->setSubject('Задачи, которые были завершены');
-        $message->setLink($this->getContainer()->get('router')->generate('task'));
+        /** @var Router $router */
+        $router = $this->getContainer()->get('router');
+        $message->setLink($router->generate('task', [], Router::ABSOLUTE_URL));
+        $message->setTemplate('MBHBaseBundle:Mailer:closedTasks.html.twig');
+        $message->setText('Завершенные задачи: ');
 
         $counter = 0;
         foreach($users as $user) {
@@ -60,13 +64,9 @@ class TaskNotifySendCommand extends ContainerAwareCommand
                 'createdBy' => $user->getUsername()
             ]);
             if(count($closedTasks) > 0) {
-                $text = 'Были завершены '.count($closedTasks).' задачи: ';
-                foreach($closedTasks as $task) {
-                    $text .= ' "'.$task->getType()->getTitle().'" ';
-                    $dm->detach($task);
-                }
+                $message->setAdditionalData(['tasks' => $closedTasks]);
+
                 $currentMessage = clone($message);
-                $currentMessage->setText($text);
                 $currentMessage->addRecipient([$user->getEmail() => $user->getFullName(true)]);
                 $output->writeln("Sent to ". $user->getEmail());
                 $mailer->setMessage($currentMessage)->notify();

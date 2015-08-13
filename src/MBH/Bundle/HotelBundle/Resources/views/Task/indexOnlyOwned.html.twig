@@ -94,7 +94,7 @@
                         <td class="text-center">{% if task.status == 'open' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-plus text-danger'></i>{% elseif task.status == 'process' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-clock-o text-info'></i>{% elseif task.status == 'closed' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-check text-success'></i>{% endif %}</td>
                         <td>{{ task.type.title }}{% if task.isDeleted %}<br><small><i class='fa fa-trash-o' title='{{ "views.task.index.deleted"|trans({}, "MBHHotelBundle") }}' data-toggle='tooltip'></i> Запись удалена</small>{% endif %}"</td>
                         <td>{% if task.priority == 2 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i><i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i>{% elseif task.priority == 1 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-warning'></i>{% elseif task.priority == 0 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-down text-success'></i>{% endif %}</td>
-                        <td>{{ task.room.fullTitle }}</td>
+                        <td>{{ task.room.fullName(true) }}</td>
                         <td>{{ task.createdAt|date('d.m.Y') }}{% if task.date %}<br><small>до {{ task.date|date('d.m.Y H:i') }}</small>{% endif %}</td>
                         <td class="table-actions-td text-right">
                             <a href='#' class='btn btn-default btn-xs show-task-details'><i class='fa fa-eye'> {{ 'views.task.index.view'|trans({}, "MBHHotelBundle") }}</i></a>

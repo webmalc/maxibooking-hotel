@@ -19,16 +19,16 @@ $(document).ready(function () {
         "url": Routing.generate('task_json'),
         "beforeSend" : function () {
             processing = true;
+        },
+        "data" : function (data) {
+            data.begin = $('#task-filter-begin').val();
+            data.end = $('#task-filter-end').val();
+            data.status = $('#task-filter-status').select2('val');
+            data.priority = $('#task-filter-priority').select2('val');
+            data.performer = $('#task-filter-performer').select2('val');
+            data.group = $('#task-filter-group').select2('val');
+            data.deleted = $('#task-filter-deleted').prop('checked');
         }
-    };
-    ajax.data = function (data) {
-        data.begin = $('#task-filter-begin').val();
-        data.end = $('#task-filter-end').val();
-        data.status = $('#task-filter-status').select2('val');
-        data.priority = $('#task-filter-priority').select2('val');
-        data.performer = $('#task-filter-performer').select2('val');
-        data.group = $('#task-filter-group').select2('val');
-        data.deleted = $('#task-filter-deleted').prop('checked');
     };
     var dataTableOptions = {
         "processing": true,
@@ -45,9 +45,9 @@ $(document).ready(function () {
 
                 $this.closest('tr').addClass(rowClass);
             });
-        }
+        },
+        "order" : [[7, "desc"]]
     };
-    dataTableOptions.order = [[7, "desc"]];
     $taskTable.dataTable(dataTableOptions);
 
     var updateTaskTable = function () {
