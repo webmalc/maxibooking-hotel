@@ -53,3 +53,6 @@ services2: 'услуг'
 not.stopped: 'не заехали'
 stopped: 'заехали'
 left: 'выехали'
+
+tariff.main: основной тариф
+tariffs: тарифы

@@ -80,7 +80,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $results = $tariffResults = false;
+        $results = $tariffResults = $selectedTariff = false;
 
         $form = $this->createForm(
             new SearchType(), [], [
@@ -123,13 +123,15 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                 }
 
                 $results = $this->get('mbh.package.search')->search($query);
+                $query->grouped = true;
                 $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
             }
         }
 
         return [
             'results' => $results,
-            'tariffResults' => $tariffResults
+            'tariffResults' => $tariffResults,
+            'selectedTariff' => $data['tariff']
         ];
     }
 

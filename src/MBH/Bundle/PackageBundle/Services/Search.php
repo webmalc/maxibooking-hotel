@@ -289,7 +289,11 @@ class Search
                 continue;
             }
 
-            $results[] = $tariff;
+            if ($query->grouped) {
+                $results[$tariff->getHotel()->getId()][] = $tariff;
+            } else {
+                $results[] = $tariff;
+            }
         }
 
         return $results;

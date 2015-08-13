@@ -1,26 +1,42 @@
 
     <div class="spacer-top">
 
-        {% set selectedTariff = app.request.query.get('s').tariff|default(null) %}
 
         {% if tariffResults != false and tariffResults is iterable and tariffResults|length != 0 %}
 
-            <div class="panel panel-default package-search-tariffs">
-                <div class="panel-heading">{{ "search.results.tariff_search"|trans({}, "MBHPackageBundle") }}<div class="text-right pull-right"><small><span class="text-success">{{ "search.results.green"|trans({}, "MBHPackageBundle") }}</span>{{ "search.results.main_tariffs"|trans({}, "MBHPackageBundle") }} </small><small>&nbsp; <span class="text-primary">{{ "search.results.blue"|trans({}, "MBHPackageBundle") }}</span>{{ "search.results.special_tariffs"|trans({}, "MBHPackageBundle") }}</small></div></div>
-                <div class="panel-body">
-
-                    {% for tariffResult in tariffResults  %}
-
-                        <ul id="package-search-tariffs">
-                            <li>
-                                <a href="#" {% if tariffResult.isDefault %}class="text-success"{% else %}data-id="{{ tariffResult.id }}{% endif %}">
-                                    {% if selectedTariff == tariffResult.id or (selectedTariff is empty and tariffResult.isDefault)  %} <small><i class="fa fa-check"></i></small> {% endif %}
-                                    {{ tariffResult }} <small>({{ tariffResult.hotel }})</small>
+            <div class="package-search-tariffs panel-group" id="package-search-tariffs-accordion">
+                {% for key, tariffs in tariffResults %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#package-search-tariffs-accordion" href="#accordion-{{ key }}">
+                                    {{ 'tariffs'|trans|capitalize }} «{{ tariffs[0].hotel }}»
+                                    <small>
+                                    {% if selectedTariff %}
+                                        {{selectedTariff.hotel == tariffs[0].hotel ? '(' ~ selectedTariff ~ ')': '' }}
+                                    {% else %}
+                                       {{ 'tariff.main'|trans }}
+                                    {% endif %}
+                                    </small>
                                 </a>
-                            </li>
-                        </ul>
-                    {% endfor %}
-                </div>
+                            </h4>
+                        </div>
+                        <div id="accordion-{{ key }}" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul id="package-search-tariffs">
+                                {% for tariff in tariffs %}
+                                    <li>
+                                        <a href="#" {% if tariff.isDefault %}class="text-success"{% else %}data-id="{{ tariff.id }}{% endif %}">
+                                            {% if (selectedTariff and selectedTariff.id == tariff.id) or (selectedTariff is empty and tariff.isDefault)  %} <small><i class="fa fa-check"></i></small> {% endif %}
+                                            {{ tariff }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         {% endif %}
 

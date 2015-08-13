@@ -60,6 +60,11 @@ class SearchQuery
      * @var bool
      */
     public $accommodations = false;
+
+    /**
+     * @var bool
+     */
+    public $grouped = false;
     
     /**
      * Tariff id
