@@ -87,6 +87,23 @@ class Ostrovok extends Base
      */
     public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
+        $result = true;
+        $begin = $this->getDefaultBegin($begin);
+        $end = $this->getDefaultEnd($begin, $end);
+
+        // iterate hotels
+        foreach ($this->getConfig() as $config) {
+            $data = [
+                'room_categories' => [
+                    'hotel' => $config->getHotelId(),
+                    'count' => 20,
+                    'plan_date_start_at' => '2015-08-13',
+                    'plan_date_end_at' => '2015-08-20'
+                ]
+            ];
+            dump($this->sendJson($this->postUrl('/echannel/api/v0.1/rna/', $data['room_categories']), $data, null, false, true));
+        }
+        exit();
     }
 
     /**
@@ -130,9 +147,21 @@ class Ostrovok extends Base
         $query['token'] = $this->params['username'];
         $query['sign'] = $this->signature($query);
 
-        $url = $this->url . $url . '?' . http_build_query($query);
+        return $this->url . $url . '?' . http_build_query($query);
 
-        return $url;
+    }
+
+    /**
+     * @param string $url
+     * @param array $data
+     * @return string
+     */
+    public function postUrl($url, array $data = [])
+    {
+        $query = ['token' => $this->params['username']];
+        $query['sign'] = $this->signature(array_merge($query, $data));
+
+        return $this->url . $url . '?' . http_build_query($query);
     }
 
     /**

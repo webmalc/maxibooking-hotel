@@ -31,6 +31,8 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
      */
     public function indexAction()
     {
+        //$this->get('mbh.channelmanager.ostrovok')->updateRooms();
+
         $entity = $this->hotel->getOstrovokConfig();
 
         $form = $this->createForm(

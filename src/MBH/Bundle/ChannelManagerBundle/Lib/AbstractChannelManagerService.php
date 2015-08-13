@@ -401,7 +401,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     public function sendJson($url, $data = [], $headers = null, $error = false, $post = false)
     {
-        $result = $this->send($url, $data, $headers, $error, $post);
+        $result = $this->send($url, json_encode($data), $headers, $error, $post);
         $json = json_decode($result, true);
 
         if (!$json) {
