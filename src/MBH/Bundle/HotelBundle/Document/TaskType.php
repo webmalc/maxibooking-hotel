@@ -68,6 +68,15 @@ class TaskType extends Base
     protected $code;
 
     /**
+     * Status that set to Room when task change own status to process
+     *
+     * @var RoomStatus
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomStatus")
+     */
+    protected $roomStatus;
+
+    /**
      * Set title
      *
      * @param string $title
@@ -139,5 +148,21 @@ class TaskType extends Base
     public function setCode($code)
     {
         $this->code = $code;
+    }
+
+    /**
+     * @return RoomStatus
+     */
+    public function getRoomStatus()
+    {
+        return $this->roomStatus;
+    }
+
+    /**
+     * @param RoomStatus $roomStatus
+     */
+    public function setRoomStatus(RoomStatus $roomStatus = null)
+    {
+        $this->roomStatus = $roomStatus;
     }
 }

@@ -154,9 +154,20 @@ class TaskController extends Controller
                 $entity->setPerformer($this->getUser());
             }
             $entity->setStart(new \DateTime());
+            if($roomStatus = $entity->getType()->getRoomStatus()) {
+                $entity->getRoom()->setStatus($roomStatus);
+            }
         } elseif($status == Task::STATUS_CLOSED) {
             $entity->setEnd(new \DateTime());
+            if($roomStatus = $entity->getType()->getRoomStatus()) {
+                if($entity->getRoom()->getStatus() == $roomStatus) {
+                    $entity->getRoom()->setStatus(null);
+                };
+                $this->dm->persist($entity->getRoom());
+            }
         }
+        $this->dm->persist($entity->getRoom());
+
         $violations = $this->get('validator')->validate($entity);
 
         if ($violations->count() > 0) {

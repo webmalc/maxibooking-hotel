@@ -96,7 +96,9 @@ class TaskTypeController extends Controller
      */
     public function editAction(Request $request, TaskType $entity)
     {
-        $form = $this->createForm(new TaskTypeType($this->dm), $entity, []);
+        $form = $this->createForm(new TaskTypeType($this->dm), $entity, [
+            'scenario' => TaskTypeType::SCENARIO_EDIT
+        ]);
 
         if($request->isMethod(Request::METHOD_PUT)) {
             $form->submit($request);
