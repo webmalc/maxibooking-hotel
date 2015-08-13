@@ -75,7 +75,7 @@ class RoomType extends AbstractType
 
         $builder->add('status', 'document', [
             'label' => 'form.roomType.status',
-            'group' => 'form.roomType.general_info',
+            'group' => 'form.roomType.settings',
             'required' => false,
             'class' => 'MBH\Bundle\HotelBundle\Document\RoomStatus',
             'empty_value' => '',
