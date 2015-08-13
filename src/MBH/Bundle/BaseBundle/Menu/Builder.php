@@ -83,7 +83,7 @@ class Builder extends ContainerAware
 
         // report
         $menu->addChild('reports', ['route' => '_welcome', 'label' => 'Отчеты'])
-             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-tasks']);
+             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bar-chart']);
         
         $menu['reports']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Размещение'])
             ->setAttributes(['icon' => 'fa fa-table']);
@@ -98,7 +98,7 @@ class Builder extends ContainerAware
         $menu['reports']->addChild('report_user', ['route' => 'report_users', 'label' => 'Менеджеры'])
             ->setAttributes(['icon' => 'fa fa-user']);
         $menu['reports']->addChild('analytics', ['route' => 'analytics', 'label' => 'Аналитика'])
-            ->setAttributes(['icon' => 'fa fa-bar-chart']);
+            ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
 

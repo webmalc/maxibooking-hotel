@@ -19,6 +19,7 @@ views.task.index.groups: Группы
 views.task.index.createAt: Создано
 views.task.index.dates: Даты
 views.task.index.date: Дата
+views.task.index.period: Статус
 views.task.index.createdAt: Создано
 views.task.index.createdBy: Создал
 views.task.index.description: Комментарий
@@ -44,7 +45,8 @@ views.task.index.tasks_empaty: Нет задач
 views.task.index.detail.role: Группа пользователей
 views.task.index.detail.type: Задача
 views.task.index.detail.performer: Исполнитель
-views.task.index.detail.number: Номер комнаты
+#views.task.index.detail.number: Номер комнаты
+views.task.index.detail.room: Комната
 views.task.index.detail.priority: Приоритет
 views.task.index.detail.status: Статус
 views.task.index.detail.date: Дата

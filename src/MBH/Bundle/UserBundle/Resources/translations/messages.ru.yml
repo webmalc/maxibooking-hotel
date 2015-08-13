@@ -27,7 +27,8 @@ controller.profileController.record_edited_success: 'Запись успешно
 #Notifications
 form.userType.notifications_fieldset: Уведомления
 
-form.userType.notifications: Уведомления?
+form.userType.notifications: Брони?
+form.userType.taskNotify: Задачи?
 form.userType.notifications_help: Получать ли уведомления на электронную почту?
 
 form.userType.reports: Отчеты?

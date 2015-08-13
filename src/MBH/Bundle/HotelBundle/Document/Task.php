@@ -23,6 +23,10 @@ class Task extends Base
     const PRIORITY_AVERAGE = 1;
     const PRIORITY_HIGH = 2;
 
+    const STATUS_OPEN = 'open';
+    const STATUS_PROCESS = 'process';
+    const STATUS_CLOSED = 'closed';
+
     const DAY_DEAL_LINE = 3;
 
     /**
@@ -42,6 +46,12 @@ class Task extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
+    /**
+     * @var string
+     * @ODM\Id(strategy="INCREMENT")
+     */
+    protected $id;
 
     /**
      * @var TaskType|null
@@ -104,16 +114,23 @@ class Task extends Base
     protected $priority;
 
     /**
-     * @var integer
-     * @ODM\Int
+     * @var \DateTime
+     * @ODM\Date
      */
-    protected $number;
+    protected $date;
 
     /**
      * @var \DateTime
      * @ODM\Date
      */
-    protected $date;
+    protected $start;
+
+    /**
+     * @var \DateTime
+     * @ODM\Date
+     */
+    protected $end;
+
 
     /**
      * Set taskType
@@ -262,22 +279,6 @@ class Task extends Base
     }
 
     /**
-     * @return int
-     */
-    public function getNumber()
-    {
-        return $this->number;
-    }
-
-    /**
-     * @param int $number
-     */
-    public function setNumber($number)
-    {
-        $this->number = $number;
-    }
-
-    /**
      * @return \DateTime
      */
     public function getDate()
@@ -291,6 +292,54 @@ class Task extends Base
     public function setDate($date = null)
     {
         $this->date = $date;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getStart()
+    {
+        return $this->start;
+    }
+
+    /**
+     * @param \DateTime $start
+     * @return $this
+     */
+    public function setStart(\DateTime $start = null)
+    {
+        $this->start = $start;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEnd()
+    {
+        return $this->end;
+    }
+
+    /**
+     * @param \DateTime $end
+     * @return $this
+     */
+    public function setEnd(\DateTime $end = null)
+    {
+        $this->end = $end;
+        return $this;
+    }
+
+    /**
+     * @return \DateInterval|null
+     */
+    public function getProcessInterval()
+    {
+        if($this->getStart() and $this->getEnd()) {
+            return $this->getStart()->diff($this->getEnd());
+        }
+
+        return null;
     }
 
     /**

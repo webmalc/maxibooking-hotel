@@ -4,8 +4,10 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
+use MBH\Bundle\BaseBundle\Service\Messenger\NotifierMessage;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -15,7 +17,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Form\TaskType;
 
 /**
@@ -59,8 +60,14 @@ class TaskController extends Controller
             $sort = ['priority' => -1, 'createdAt' => -1];
             $processTasks = $taskRepository->findBy($criteria + ['status' => 'process'], $sort);
 
+            $taskQueryCriteria = new TaskQueryCriteria();
+            $taskQueryCriteria->roles = $this->getUser()->getRoles();
+            $taskQueryCriteria->performer = $this->getUser()->getId();
+            $taskQueryCriteria->onlyOwned = true;
+            $taskQueryCriteria->status = 'open';
+            $taskQueryCriteria->sort = $sort;
             /** @var Task[] $tasks */
-            $tasks = $taskRepository->findBy($criteria + ['status' => 'open'], $sort);
+            $tasks = $taskRepository->getAcceptableTasks($taskQueryCriteria);
 
             return $this->render('MBHHotelBundle:Task:indexOnlyOwned.html.twig', [
                 'processTasks' => $processTasks,
@@ -142,6 +149,14 @@ class TaskController extends Controller
     public function changeStatusAction(Task $entity, $status)
     {
         $entity->setStatus($status);
+        if($status == Task::STATUS_PROCESS) {
+            if(!$entity->getPerformer()) {
+                $entity->setPerformer($this->getUser());
+            }
+            $entity->setStart(new \DateTime());
+        } elseif($status == Task::STATUS_CLOSED) {
+            $entity->setEnd(new \DateTime());
+        }
         $violations = $this->get('validator')->validate($entity);
 
         if ($violations->count() > 0) {
@@ -183,6 +198,7 @@ class TaskController extends Controller
                     $this->dm->persist($task);
                 }
                 $this->dm->flush();
+                $this->sendNotifications($task);
 
                 $request->getSession()->getFlashBag()->set('success',
                     $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
@@ -194,6 +210,33 @@ class TaskController extends Controller
         return [
             'form' => $form->createView(),
         ];
+    }
+
+    private function sendNotifications(Task $task)
+    {
+        $recipients = [];
+        if($task->getRole()) {
+            $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy([
+                'roles' => $task->getRole(),
+                'taskNotify' => true,
+                'email' => ['$exists' => true],
+                'enabled' => true,
+            ]);
+        }
+
+        if($task->getPerformer() && $task->getPerformer()->getTaskNotify() && !in_array($task->getPerformer(), $recipients)) {
+            $recipients[] = $task->getPerformer();
+        }
+        if($recipients) {
+            $message = new NotifierMessage();
+            $message->setSubject('Вам назначена новая задача');
+            $message->setText('Вам назначили задачу "'.$task->getType()->getTitle().'"');
+            $message->setLink($this->generateUrl('task'));
+            foreach($recipients as $recipient) {
+                $message->addRecipient([$recipient->getEmail() => $recipient->getFullName(true)]);
+            }
+            $this->get('mbh.notifier.mailer')->setMessage($message)->notify();
+        }
     }
 
     private function getFormTaskTypeOptions()
@@ -283,6 +326,7 @@ class TaskController extends Controller
     {
         $priorities = $this->getParameter('mbh.tasktype.priority');
         $data = [
+            'id' => $entity->getId(),
             'role' => $entity->getRole() ?
                 $this->get('translator')->trans($entity->getRole(), [], 'MBHUserBundleRoles') :
                 '',
@@ -292,7 +336,7 @@ class TaskController extends Controller
             'createdAt' => $entity->getCreatedAt() ? $entity->getCreatedAt()->format('d.m.Y') : '',
             'createdBy' => $entity->getCreatedBy(),
             'description' => $entity->getDescription() ? nl2br($entity->getDescription()) : '',
-            'number' => $entity->getNumber(),
+            'room' => $entity->getRoom()->getName(),
             'priority' => is_int($entity->getPriority()) ?
                 $this->get('translator')->trans('views.task.priority.' . $priorities[$entity->getPriority()], [],
                     'MBHHotelBundle') :

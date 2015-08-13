@@ -5,47 +5,36 @@ $(document).ready(function () {
         $taskTableFilterForm = $('#task-table-filter'),
         processing = false,
         columns = [
-            //{"bSortable" : false},
             {"name" : "number", "class" : 'text-center'},
             {"name" : "status", "class" : 'text-center'},
             {"name" : "task", "bSortable" : false},
             {"name" : "priority", "class" : 'text-center'},
             {"name" : "room", "bSortable" : false},
+            {"name" : "assign", "bSortable" : false},
+            {"name" : "period"},
             {"name" : "createdAt"},
-            //{"name" : "updatedAt"},
             {"bSortable" : false}
         ];
-
-    var isAdmin = $taskTable.find('tr:first th').length == 8;
-    if (isAdmin){
-        columns.splice(5, 0, {"bSortable" : false});
-    }
     var ajax = {
         "url": Routing.generate('task_json'),
         "beforeSend" : function () {
             processing = true;
         }
     };
-    if (isAdmin) {
-        ajax.data = function (data) {
-            data.begin = $('#task-filter-begin').val();
-            data.end = $('#task-filter-end').val();
-            data.status = $('#task-filter-status').select2('val');
-            data.priority = $('#task-filter-priority').select2('val');
-            data.performer = $('#task-filter-performer').select2('val');
-            data.group = $('#task-filter-group').select2('val');
-            data.deleted = $('#task-filter-deleted').prop('checked');
-        };
-    }
-
+    ajax.data = function (data) {
+        data.begin = $('#task-filter-begin').val();
+        data.end = $('#task-filter-end').val();
+        data.status = $('#task-filter-status').select2('val');
+        data.priority = $('#task-filter-priority').select2('val');
+        data.performer = $('#task-filter-performer').select2('val');
+        data.group = $('#task-filter-group').select2('val');
+        data.deleted = $('#task-filter-deleted').prop('checked');
+    };
     var dataTableOptions = {
         "processing": true,
         "serverSide": true,
         "ordering": true,
         "searching": false,
-        //"paging": false,
-        //'lengthChange' : false,
-        //"pageLength": 10,
         "ajax": ajax,
         "aoColumns": columns,
         "drawCallback": function (settings) {
@@ -58,14 +47,8 @@ $(document).ready(function () {
             });
         }
     };
-
-    if (isAdmin) {
-        dataTableOptions.order = [[ 6, "desc" ]];
-    } else {
-        dataTableOptions.order = [];//[[ 5, "desc" ]];
-    }
+    dataTableOptions.order = [[7, "desc"]];
     $taskTable.dataTable(dataTableOptions);
-
 
     var updateTaskTable = function () {
         if (!processing) {
@@ -140,7 +123,8 @@ $(document).ready(function () {
     var $taskInfoModal = $('#task-info-modal'),
         $table = $taskInfoModal.find('.modal-body table'),
         $button = $taskInfoModal.find('#task-info-modal-action'),
-        $ownedTaskTable = $('.owned-tasks-table');
+        $ownedTaskTable = $('.owned-tasks-table'),
+        $taskId = $taskInfoModal.find('.modal-title em');
 
     var showTaskModal = function(id) {
         $.ajax({
@@ -148,6 +132,7 @@ $(document).ready(function () {
             dataType: 'json',
             data: {id: id},
             success: function(response) {
+                $taskId.html(response.id);
                 $.each(response, function(k, v) {
                     $table.find('tr[data-property=' + k + '] td:nth-child(2)').html(v ? v : ' - ');
                 });

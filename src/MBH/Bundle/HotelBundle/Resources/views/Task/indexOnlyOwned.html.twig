@@ -26,7 +26,7 @@
                 <tbody>
                     {% for task in processTasks %}
                     <tr data-id="{{ task.id }}" class="clickable {% if task.isDeleted %}danger{% elseif task.isExpired %}danger{% elseif task.priority == 2 %}warning{% endif %}">
-                        <td class="text-center">{{ task.number }}</td>
+                        <td class="text-center">{{ task.id }}</td>
                         <td class="text-center">{% if task.status == 'open' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-plus text-danger'></i>{% elseif task.status == 'process' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-clock-o text-info'></i>{% elseif task.status == 'closed' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-check text-success'></i>{% endif %}</td>
                         <td>{{ task.type.title }}
                             {% if task.isDeleted %}
@@ -90,7 +90,7 @@
                 <tbody>
                 {% for task in tasks %}
                     <tr data-id="{{ task.id }}" class="clickable {% if task.isDeleted %}danger{% elseif task.isExpired %}danger{% elseif task.priority == 2 %}warning{% endif %}">
-                        <td class="text-center">{{ task.number }}</td>
+                        <td class="text-center">{{ task.id }}</td>
                         <td class="text-center">{% if task.status == 'open' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-plus text-danger'></i>{% elseif task.status == 'process' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-clock-o text-info'></i>{% elseif task.status == 'closed' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-check text-success'></i>{% endif %}</td>
                         <td>{{ task.type.title }}{% if task.isDeleted %}<br><small><i class='fa fa-trash-o' title='{{ "views.task.index.deleted"|trans({}, "MBHHotelBundle") }}' data-toggle='tooltip'></i> Запись удалена</small>{% endif %}"</td>
                         <td>{% if task.priority == 2 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i><i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i>{% elseif task.priority == 1 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-warning'></i>{% elseif task.priority == 0 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-down text-success'></i>{% endif %}</td>
@@ -126,7 +126,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">{{ 'views.task.index.info'|trans({}, 'MBHHotelBundle') }}</h4>
+                    <h4 class="modal-title">{{ 'views.task.index.info'|trans({}, 'MBHHotelBundle') }} #<em></em></h4>
                 </div>
                 <div class="modal-body">
                     <table class="table table-hover table-striped not-auto-datatable">
@@ -134,7 +134,7 @@
                             'role',
                             'type',
                             'performer',
-                            'number',
+                            'room',
                             'priority',
                             'status',
                             'date',
