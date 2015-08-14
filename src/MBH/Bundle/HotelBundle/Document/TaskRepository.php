@@ -92,6 +92,33 @@ class TaskRepository extends DocumentRepository
     }
 
     /**
+     * @param Room $room
+     * @return Task|null
+     */
+    private function getProcessTaskByRoom(Room $room)
+    {
+        return $this->createQueryBuilder()
+            ->field('status')->equals(Task::STATUS_PROCESS)
+            ->field('room.id')->equals($room->getId())
+            ->sort(['createdBy' => -1])
+            ->limit(1)
+            ->getQuery()->getSingleResult();
+    }
+
+    /**
+     * @param Room $room
+     * @return RoomStatus|null
+     */
+    public function getActuallyRoomStatus(Room $room)
+    {
+        $task = $this->getProcessTaskByRoom($room);
+        if($task) {
+            return $task->getType()->getRoomStatus();
+        }
+        return null;
+    }
+
+    /**
      * Tasks that user can accept to process
      * @param TaskQueryCriteria $queryCriteria
      * @return Task[]

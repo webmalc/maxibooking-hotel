@@ -159,7 +159,7 @@ class TaskType extends Base
     }
 
     /**
-     * @param RoomStatus $roomStatus
+     * @param RoomStatus|null $roomStatus
      */
     public function setRoomStatus(RoomStatus $roomStatus = null)
     {
