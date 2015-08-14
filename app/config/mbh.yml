@@ -89,11 +89,6 @@ parameters:
       subject: 'Сообщение от MaxiBooking'
       template: 'MBHBaseBundle:Mailer:base.html.twig'
 
-    #генерация кеша
-    mbh.room.cache.message: <i class="fa fa-spinner fa-spin"></i> Внимание! Идет пересчет цен и количества свободных номеров.
-    mbh.room.cache.message.type: danger
-    mbh.room.cache.date.modify: '-1 month'
-
     #параметры онлайн формы
     mbh.online.form:
           sites: %online_form_sites%
@@ -137,8 +132,6 @@ parameters:
           service: 'mbh.channelmanager.ostrovok'
           username: 722ac50470d8af33d509c069ccb83443
           password: edfdfba3f6902eb63aa254935e9a8a36
-
-
 
     #параметры логов
     mbh.logs.max: 100
@@ -217,20 +210,6 @@ parameters:
         out: "Возврат"
         #fine: "Штраф"
         fee: "Комиссия"
-        
-    #Типы рассчета
-    mbh.calculation.types:
-        hotel:
-          perRoom:      "Цена за номер"
-          customPrices: "Цена за человека"
-        hostel:
-          perRoom:      "Цена за номер"
-          customPrices: "Цена за койко-место"
-        
-    #Типы тарифов
-    mbh.tariff.types:
-        rate:      "Процент от цен основного тарифа"
-        price:     "Индивидуальные цены"
 
     #М/Ж
     mbh.gender.types:

@@ -239,8 +239,7 @@ class HotelController extends Controller
     {
         $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),
-            'config' => $this->container->getParameter('mbh.hotel'),
-            'isHostel' => in_array('hostel', $entity->getType()),
+            'config' => $this->container->getParameter('mbh.hotel')
         ]);
 
         $form->submit($request);

@@ -595,7 +595,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $form = $this->createForm(new PackageAccommodationType(), $entity, [
             'optGroupRooms' => $optGroupRooms,
-            'isHostel' => $this->hotel->getIsHostel(),
             'roomType' => $entity->getRoomType(),
             'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
         ]);

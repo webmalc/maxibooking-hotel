@@ -17,9 +17,9 @@
                                     {{ 'tariffs'|trans|capitalize }} «{{ tariffs[0].hotel }}»
                                     <small>
                                     {% if selectedTariff %}
-                                        {{selectedTariff.hotel == tariffs[0].hotel ? '(' ~ selectedTariff ~ ')': '' }}
+                                        {{selectedTariff.hotel == tariffs[0].hotel ? selectedTariff : '' }}
                                     {% else %}
-                                       {{ 'tariff.main'|trans }}
+                                       {{ 'tariff.main'|trans|capitalize }}
                                     {% endif %}
                                     </small>
                                 </a>

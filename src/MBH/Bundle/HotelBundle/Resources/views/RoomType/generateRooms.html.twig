@@ -1,12 +1,6 @@
 {% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
 
-{% if entity.hotel.isHostel and entity.calculationType == 'customPrices' %}
-    {% set hostel = true %}
-    {% set small_title = 'views.roomType.generateRooms.beds_generation_for_room_type'|trans({}, 'MBHHotelBundle') ~ entity.name ~ "> #" ~ entity.id %}
-{% else %}
-    {% set hostel = false %}
-    {% set small_title = 'views.roomType.generateRooms.rooms_generation_for_room_type'|trans({}, 'MBHHotelBundle') ~ entity.name ~ "> #" ~ entity.id %}
-{% endif %}
+{% set small_title = 'views.roomType.generateRooms.rooms_generation_for_room_type'|trans({}, 'MBHHotelBundle') ~ entity.name ~ "> #" ~ entity.id %}
 
 
 {% block content %}
