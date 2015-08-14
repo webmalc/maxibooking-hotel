@@ -243,7 +243,8 @@ class NotifierMessage
     }
 
     /**
-     * @param $recipient
+     * @param array $recipient
+     *  [$email, $fullName]
      * @return $this
      */
     public function addRecipient($recipient)

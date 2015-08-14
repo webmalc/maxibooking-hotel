@@ -43,4 +43,4 @@ validator.document.taskType.min_title: Слишком короткий заго�
 validator.document.taskType.max_title: Слишком длинный заголовок
 
 
-validator.task.assignment: 'Группа и исполнитель не могу быть пустыми' #Assignment can not be empty
+validator.task.assignment: 'Группа или исполнитель должны быть заполнены' #Assignment can not be empty

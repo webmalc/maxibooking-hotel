@@ -59,6 +59,7 @@ class TaskType extends Base
     /**
      * @var TaskTypeCategory|null
      * @ODM\ReferenceOne(targetDocument="TaskTypeCategory", inversedBy="types")
+     * @Assert\NotBlank()
      */
     protected $category;
     /**
@@ -66,6 +67,15 @@ class TaskType extends Base
      * @ODM\String()
      */
     protected $code;
+
+    /**
+     * Status that set to Room when task change own status to process
+     *
+     * @var RoomStatus
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomStatus")
+     */
+    protected $roomStatus;
 
     /**
      * Set title
@@ -139,5 +149,21 @@ class TaskType extends Base
     public function setCode($code)
     {
         $this->code = $code;
+    }
+
+    /**
+     * @return RoomStatus
+     */
+    public function getRoomStatus()
+    {
+        return $this->roomStatus;
+    }
+
+    /**
+     * @param RoomStatus|null $roomStatus
+     */
+    public function setRoomStatus(RoomStatus $roomStatus = null)
+    {
+        $this->roomStatus = $roomStatus;
     }
 }

@@ -3,7 +3,10 @@
 namespace MBH\Bundle\HotelBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\Room;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,9 +23,12 @@ class TaskType extends AbstractType
     const SCENARIO_NEW = 'SCENARIO_NEW';
     const SCENARIO_EDIT = 'SCENARIO_EDIT';
 
+    /**
+     * @var DocumentManager
+     */
     protected $dm;
 
-    public function __construct($dm)
+    public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
     }
@@ -36,12 +42,10 @@ class TaskType extends AbstractType
             $generalGroup = 'form.task.group.general_edit';
         }
 
-        $roles = [];
-        foreach ($options['roles'] as $key => $role) {
-            $roles[$key] = $key;
-        }
-
+        $roles = $options['roles'];
         $statuses = $options['statuses'];
+        /** @var Hotel $hotel */
+        $hotel = $options['hotel'];
 
         $builder
             ->add('type', 'choice', [
@@ -74,14 +78,56 @@ class TaskType extends AbstractType
                 'time_widget' => 'single_text',
                 'date_widget' => 'single_text',
                 //'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),
-            ))
-            ->add('room', 'document', [
+            ));
+        if($options['scenario'] == TaskType::SCENARIO_NEW) {
+            $builder->add('housing', 'document', [
+                'label' => 'form.task.housing',
+                'group' => $generalGroup,
+                'required' => false,
+                'mapped' => false,
+                //'attr' => ['class' => 'sm-input'],
+                'class' => 'MBH\Bundle\HotelBundle\Document\Housing',
+                'query_builder' => function(DocumentRepository $repository) use($hotel) {
+                    $queryBuilder = $repository->createQueryBuilder();
+                    $queryBuilder->field('hotel.id')->equals($hotel->getId());
+                    return $queryBuilder;
+                }
+            ]);
+            $floors = $this->dm->getRepository('MBHHotelBundle:Room')->getFloorsByHotel($hotel);
+            $builder->add('floor', 'choice', [
+                'label' => 'form.task.floor',
+                'group' => $generalGroup,
+                'required' => false,
+                'mapped' => false,
+                'choices' => array_combine($floors, $floors)
+            ]);
+
+            $builder->add('rooms', 'document', [
+                'label' => 'form.task.rooms',
+                'group' => $generalGroup,
+                'choices' => $options['optGroupRooms'],
+                'class' => 'MBH\Bundle\HotelBundle\Document\Room',
+                'required' => true,
+                'multiple' => true,
+                'mapped' => false,
+                'choice_attr' => function ($currentRoom) {
+                    /** @var $currentRoom Room */
+                    return [
+                        'data-floor' => $currentRoom->getFloor(),
+                        'data-housing' => $currentRoom->getHousing() ? $currentRoom->getHousing()->getId() : '',
+                    ];
+                },
+            ]);
+        } elseif($options['scenario'] == TaskType::SCENARIO_EDIT) {
+            $builder->add('room', 'document', [
                 'label' => 'form.task.room',
                 'group' => $generalGroup,
                 'choices' => $options['optGroupRooms'],
                 'class' => 'MBH\Bundle\HotelBundle\Document\Room',
                 'required' => true,
-            ])
+            ]);
+        }
+        $builder
             ->add('role', 'choice', [
                 'label' => 'form.task.roles',
                 'group' => 'form.task.group.assign',
@@ -124,7 +170,8 @@ class TaskType extends AbstractType
             'priorities' => [],
             'optGroupRooms' => [],
             'statuses' => [],
-            'scenario' => self::SCENARIO_NEW
+            'scenario' => self::SCENARIO_NEW,
+            'hotel' => null
         ));
     }
 

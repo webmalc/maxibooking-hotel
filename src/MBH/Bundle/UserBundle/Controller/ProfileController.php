@@ -21,6 +21,7 @@ class ProfileController extends Controller
      *
      * @Route("/profile", name="user_profile")
      * @Method("GET")
+     * @Security("is_granted('ROLE_BASE_USER')")
      * @Template()
      */
     public function profileAction()

@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mb
- * Date: 06.08.15
- * Time: 11:48
- */
 
 namespace MBH\Bundle\HotelBundle\Command;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\HotelBundle\Document\RoomStatus;
 use MBH\Bundle\HotelBundle\Document\TaskType;
 use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -35,6 +30,25 @@ class TaskLoadCommand extends ContainerAwareCommand
         /** @var DocumentManager $dm */
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
 
+        $repairStatus = new RoomStatus();
+        $repairStatus->setTitle('Ремонт')->setCode('repair');
+        $dm->persist($repairStatus);
+
+        $cleaningStatus = new RoomStatus();
+        $cleaningStatus->setTitle('Уборка')->setCode('cleaning');
+        $dm->persist($cleaningStatus);
+
+        $reserveStatus = new RoomStatus();
+        $reserveStatus->setTitle('Резерв')->setCode('reserve');
+        $dm->persist($reserveStatus);
+
+        $otherStatus = new RoomStatus();
+        $otherStatus->setTitle('Другое')->setCode('other');
+        $dm->persist($otherStatus);
+
+        $dm->flush();
+
+
         $category = new TaskTypeCategory();
         $category->setIsSystem(true);
         $category->setCode('clean');
@@ -46,6 +60,7 @@ class TaskLoadCommand extends ContainerAwareCommand
         $taskType->setCode('clean_room');
         $taskType->setTitle('Убрать комнату');
         $taskType->setCategory($category);
+        $taskType->setRoomStatus($cleaningStatus);
 
         $dm->persist($category);
         $dm->persist($taskType);

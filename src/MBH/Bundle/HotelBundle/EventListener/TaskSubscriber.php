@@ -3,43 +3,112 @@
 namespace MBH\Bundle\HotelBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
+use Doctrine\ODM\MongoDB\Events;
+use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\Task;
+use MBH\Bundle\HotelBundle\Document\TaskRepository;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class TaskSubscriber
- * @package MBH\Bundle\HotelBundle\EventListener
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ * @author Aleksandr Arofikin <sasaharo@gmail.com>
  */
 class TaskSubscriber implements EventSubscriber
 {
-    /**
-     * @return array
-     */
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
     public function getSubscribedEvents()
     {
         return [
-            'prePersist'
+            Events::onFlush => 'onFlush',
+            Events::preRemove => 'preRemove',
         ];
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    public function prePersist(LifecycleEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args)
     {
-        $document = $args->getDocument();
-        if (!$document instanceof Task)
-            return;
-
-        $this->generateIncrementNumber($document, $args->getDocumentManager()->getRepository(get_class($document)));
+        $dm = $args->getDocumentManager();
+        $uow = $dm->getUnitOfWork();
+        foreach($uow->getScheduledDocumentInsertions() + $uow->getScheduledDocumentUpdates() as $document)
+        {
+            if ($document instanceof Task) {
+                $this->updateRoomStatus($document, $dm);
+            }
+        }
     }
 
-    private function generateIncrementNumber(Task $document,DocumentRepository $repository)
+    public function preRemove(LifecycleEventArgs $args)
     {
-        $result = $repository->createQueryBuilder()->select('number')->sort('createdAt', -1)->limit(1)->getQuery()->getSingleResult();
-        $number = $result ? $result->getNumber() : 0;
-        $document->setNumber(++$number);
+        $document = $args->getDocument();
+        $dm = $args->getDocumentManager();
+        $uow = $dm->getUnitOfWork();
+
+        $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
+        if ($document instanceof Task) {
+            $room = $document->getRoom();
+            /** @var TaskRepository $taskRepository */
+            $room->setStatus($taskRepository->getActuallyRoomStatus($room, $document));
+            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
+        }
+    }
+    /**
+     * @param Task $task
+     * @param DocumentManager $dm
+     *
+     * @throws Exception
+     */
+    private function updateRoomStatus(Task $task, DocumentManager $dm)
+    {
+        $uow = $dm->getUnitOfWork();
+        $changeSet = $uow->getDocumentChangeSet($task);
+        /** @var TaskRepository $taskRepository */
+        $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
+        if (array_key_exists('room', $changeSet)) {
+            /** @var Room $oldRoom */
+            $oldRoom = $changeSet['room'][0];
+            /** @var Room $newRoom */
+            $newRoom = $changeSet['room'][1];
+
+            $dm->refresh($task->getType());
+            if (!$task->getType()->getRoomStatus()) {
+                throw new Exception();
+            }
+            $newRoom->setStatus($task->getType()->getRoomStatus());
+            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($newRoom)), $newRoom);
+            if ($oldRoom) {
+                $oldRoom->setStatus($taskRepository->getActuallyRoomStatus($oldRoom, $task));
+                $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($oldRoom)), $oldRoom);
+            }
+        }
+        if (array_key_exists('status', $changeSet)) {
+            if ($task->getStatus() == Task::STATUS_PROCESS) {
+                $room = $task->getRoom();
+                $dm->refresh($task->getType());
+                if (!$task->getType()->getRoomStatus()) {
+                    throw new Exception();
+                }
+                $room->setStatus($task->getType()->getRoomStatus());
+                $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
+            } elseif ($task->getStatus() == Task::STATUS_CLOSED) {
+                $room = $task->getRoom();
+                $room->setStatus($taskRepository->getActuallyRoomStatus($room, $task));
+                $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
+            }
+        }
+        if (array_key_exists('type', $changeSet)) {
+            $room = $task->getRoom();
+            $dm->refresh($task->getType());
+            $room->setStatus($task->getType()->getRoomStatus());
+            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
+        }
     }
 }

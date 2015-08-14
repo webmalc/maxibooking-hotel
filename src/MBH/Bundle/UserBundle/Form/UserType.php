@@ -103,6 +103,12 @@ class UserType extends AbstractType
                 'value' => true,
                 'required' => false,
             ])
+            ->add('taskNotify', 'checkbox', [
+                'group' => 'form.userType.notifications_fieldset',
+                'label' => 'form.userType.taskNotify',
+                'value' => true,
+                'required' => false,
+            ])
             ->add('reports', 'checkbox', [
                 'group' => 'form.userType.notifications_fieldset',
                 'label' => 'form.userType.reports',

@@ -13,6 +13,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class TaskTypeType extends AbstractType
 {
+    const SCENARIO_NEW = 'new';
+    const SCENARIO_EDIT = 'edit';
+
     protected $dm;
 
     public function __construct(DocumentManager $dm)
@@ -23,17 +26,28 @@ class TaskTypeType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $group = $options['scenario'] == self::SCENARIO_NEW ?
+            'form.taskType.general_info' :
+            'form.taskType.general_info_edit';
         $builder
             ->add('title', 'text', [
                 'label' => 'form.taskType.title',
-                'group' => 'form.taskType.general_info',
+                'group' => $group,
                 'required' => true,
                 'attr' => ['placeholder' => ''],
-            ])->add('category', 'hidden', [
+            ])
+            ->add('category', 'hidden', [
                 'required' => true
             ])
-        ;
-        $builder->get('category')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBH\Bundle\HotelBundle\Document\TaskTypeCategory'));
+            ->add('roomStatus', 'document', [
+                'label' => 'form.taskType.roomStatus',
+                'group' => $group,
+                'required' => false,
+                'class' => 'MBH\Bundle\HotelBundle\Document\RoomStatus',
+                'empty_value' => '',
+            ]);
+        $builder->get('category')->addViewTransformer(new EntityToIdTransformer($this->dm,
+            'MBH\Bundle\HotelBundle\Document\TaskTypeCategory'));
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -41,6 +55,7 @@ class TaskTypeType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
             'types' => [],
+            'scenario' => self::SCENARIO_NEW
         ));
     }
 

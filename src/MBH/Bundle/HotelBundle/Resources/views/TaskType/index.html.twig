@@ -3,7 +3,7 @@
 
 {% block content %}
 
-    <ul style="margin-bottom: 20px" class="nav nav-tabs" role="tablist">
+    <ul style="margin-bottom: 20px" class="nav nav-tabs" role="tablist" id="task-category-tabs">
         {% for category in taskTypeCategories %}
             <li {% if activeCategory.id == category.id %}class="active"{% endif %}>
                 <a href="#{{ category.id }}" role="tab" data-toggle="tab">

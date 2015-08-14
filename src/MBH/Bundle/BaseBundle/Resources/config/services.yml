@@ -131,3 +131,8 @@ services:
     #          - [ setAnnotationReader, [ @annotation_reader ] ]
     #    tags:
     #          - { name: doctrine.event_subscriber, connection: default }
+
+    mbh.event_listener.check_relation_subscriber:
+        class: MBH\Bundle\BaseBundle\EventListener\CheckDeleteRelationSubscriber
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}

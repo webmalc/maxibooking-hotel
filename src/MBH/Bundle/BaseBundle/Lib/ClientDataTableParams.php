@@ -99,7 +99,7 @@ class ClientDataTableParams
         $sorts = [];
         foreach($this->order as $order){
             $columnNumber = $order['column'];
-            $sortOrder = $order['dir'] == 'asc' ? 1 : -1;
+            $sortOrder = $order['dir'] == 'asc' ? 1 : -1; //value of 1 or -1 to specify an ascending or descending sort respectively
             if(array_key_exists($columnNumber, $this->sortColumnFields) && $fieldName = $this->sortColumnFields[$columnNumber]) {
                 $sorts[] = [$fieldName, $sortOrder];
             }

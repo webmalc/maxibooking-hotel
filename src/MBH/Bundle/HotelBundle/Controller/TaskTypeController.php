@@ -96,7 +96,9 @@ class TaskTypeController extends Controller
      */
     public function editAction(Request $request, TaskType $entity)
     {
-        $form = $this->createForm(new TaskTypeType($this->dm), $entity, []);
+        $form = $this->createForm(new TaskTypeType($this->dm), $entity, [
+            'scenario' => TaskTypeType::SCENARIO_EDIT
+        ]);
 
         if($request->isMethod(Request::METHOD_PUT)) {
             $form->submit($request);
@@ -132,12 +134,12 @@ class TaskTypeController extends Controller
      */
     public function deleteAction(TaskType $entity)
     {
-        if($entity->isSystem())
+        /*if($entity->isSystem())
             throw $this->createNotFoundException('Is system type');
         $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
         if($taskRepository->getCountByType($entity) > 0) {
             throw $this->createNotFoundException('Type have existing tasks');
-        }
+        }*/
 
         return $this->deleteEntity($entity->getId(), 'MBHHotelBundle:TaskType',
             'tasktype', ['category' => $entity->getCategory()->getId()]);

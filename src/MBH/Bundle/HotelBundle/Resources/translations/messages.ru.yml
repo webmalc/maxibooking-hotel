@@ -24,7 +24,8 @@ form.hotelExtendedType.vega_address_id: ID адреса для ПК "Вега"
 form.hotelExtendedType.vega_address_id_help: ID адреса для ПК "Вега"
 form.hotelType.name: Название
 form.hotelType.general_info: Общая информация
-form.taskType.general_info: Добавление задачи
+form.taskType.general_info: Добавление типа
+form.taskType.general_info_edit: Редактирование типа
 form.hotelType.placeholder_my_hotel: Мой отель
 form.hotelType.inner_name: Внутреннее название
 form.hotelType.placeholder_hotel: Отель
@@ -48,6 +49,7 @@ form.roomType.is_included: Включен?
 form.roomType.settings: Настройки
 form.roomType.is_room_included_in_search: Используется ли номер в поиске?
 form.roomType.room_type: Тип номера
+form.roomType.status: Статус
 form.roomType.housing: Корпус
 form.roomType.floor: Этаж
 form.roomTypeGenerateRoomsType.first_bed_number: Номер первого койко-места
@@ -89,12 +91,16 @@ controller.TaskTypeController.record_edited_success: 'Запись успешн�
 
 form.taskType.title: Название
 form.taskType.category: Категория
+form.taskType.roomStatus: Статус комнаты
 form.task.type: Тип задачи
 form.task.status: Статус
 form.task.room: Комната
+form.task.rooms: Комнаты
 form.task.priority: Приоритет
 form.task.tourist: Турист
 form.task.date: Дата и время
+form.task.housing: Корпус
+form.task.floor: Этаж
 form.task.roles: Группа
 form.task.general_room: Тип комнаты
 form.task.placeholder_taskType: Задача

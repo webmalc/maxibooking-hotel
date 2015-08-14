@@ -99,6 +99,13 @@ class Room extends Base
     protected $floor;
 
     /**
+     * @var RoomStatus
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomStatus")
+     */
+    protected $status;
+
+    /**
      * Set hotel
      *
      * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
@@ -248,5 +255,21 @@ class Room extends Base
     public function getFloor()
     {
         return $this->floor;
+    }
+
+    /**
+     * @return RoomStatus|null
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param RoomStatus $status
+     */
+    public function setStatus($status = null)
+    {
+        $this->status = $status;
     }
 }

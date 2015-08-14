@@ -22,6 +22,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  */
 class User extends BaseUser
 {
+    const ROLE_DEFAULT = 'ROLE_BASE_USER';
     /**
      * @var string
      * @ODM\Id
@@ -81,6 +82,15 @@ class User extends BaseUser
      * @Assert\Type(type="boolean")
      */
     protected $notifications = true;
+
+    /**
+    * @var boolean
+    * @Gedmo\Versioned
+    * @ODM\Boolean()
+    * @Assert\NotNull()
+    * @Assert\Type(type="boolean")
+    */
+    protected $taskNotify = true;
 
     /**
      * @var boolean
@@ -253,6 +263,30 @@ class User extends BaseUser
     public function getNotifications()
     {
         return $this->notifications;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getTaskNotify()
+    {
+        return $this->taskNotify;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isTaskNotify()
+    {
+        return $this->taskNotify;
+    }
+
+    /**
+     * @param boolean $taskNotify
+     */
+    public function setTaskNotify($taskNotify)
+    {
+        $this->taskNotify = $taskNotify;
     }
 
     /**

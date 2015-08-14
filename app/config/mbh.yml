@@ -177,6 +177,12 @@ parameters:
         process: { title: "В процессе", class: "info"}
         closed: { title: "Закрыта", class: "danger"}
 
+    #Приоритет задач
+    mbh.tasktype.priority:
+        0: low
+        1: average
+        2: high
+
     #Типы документов
     mbh.order.document.types:
         passport: package.document.type_passport
@@ -220,9 +226,3 @@ parameters:
     mbh.organization.types:
         contragents: 'Контрагенты'
         my: 'Мои организации'
-
-    #Приоритет задач
-    mbh.tasktype.priority:
-        low: "Низкий"
-        average: "Средний"
-        high : "Высокий"

@@ -2,8 +2,16 @@ ROLE_SUPER_ADMIN: Главный администратор
 ROLE_ADMIN: Администратор
 ROLE_ADMIN_HOTEL: Администратор отеля
 ROLE_BOOKKEEPER: Бухгалтер
+ROLE_TASK_MANAGER: Менеджер задач
 ROLE_MANAGER: Менеджер
 ROLE_SENIOR_MANAGER: Старший менеджер
 ROLE_USER: Пользователь
 ROLE_READ_ONLY: Гость
+
+ROLE_STAFF: Обслуживающий персонал
+ROLE_CLEANING: Уборка
+ROLE_COOKING: Кухня
+ROLE_TRANSFER: Трансфер
+ROLE_TECHNICAL: Технический персонал
+
 form.userType.roles: Роли

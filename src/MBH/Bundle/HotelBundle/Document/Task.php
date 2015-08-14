@@ -19,6 +19,16 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class Task extends Base
 {
+    const PRIORITY_LOW = 0;
+    const PRIORITY_AVERAGE = 1;
+    const PRIORITY_HIGH = 2;
+
+    const STATUS_OPEN = 'open';
+    const STATUS_PROCESS = 'process';
+    const STATUS_CLOSED = 'closed';
+
+    const DAY_DEAL_LINE = 3;
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -38,10 +48,16 @@ class Task extends Base
     use BlameableDocument;
 
     /**
+     * @var string
+     * @ODM\Id(strategy="INCREMENT")
+     */
+    protected $id;
+
+    /**
      * @var TaskType|null
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="TaskType")
-     * @ Assert\NotNull(message="validator.document.task.taskType_no_selected")
+     * @Assert\NotNull(message="validator.document.task.taskType_no_selected")
      */
     protected $type;
 
@@ -49,7 +65,7 @@ class Task extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String
-     * @ Assert\NotNull()
+     * @Assert\NotNull()
      * @Assert\Choice(choices = {"open", "closed", "process"})
      */
     protected $status;
@@ -60,6 +76,7 @@ class Task extends Base
     protected $previousStatus;
 
     /**
+     * @var Room|nuul
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
      */
     protected $room;
@@ -92,22 +109,29 @@ class Task extends Base
     protected $performer;
 
     /**
-     * @var string
-     * @ODM\String
+     * @var int
+     * @ODM\Int()
      */
     protected $priority;
-
-    /**
-     * @var integer
-     * @ODM\Int
-     */
-    protected $number;
 
     /**
      * @var \DateTime
      * @ODM\Date
      */
     protected $date;
+
+    /**
+     * @var \DateTime
+     * @ODM\Date
+     */
+    protected $start;
+
+    /**
+     * @var \DateTime
+     * @ODM\Date
+     */
+    protected $end;
+
 
     /**
      * Set taskType
@@ -240,7 +264,7 @@ class Task extends Base
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getPriority()
     {
@@ -248,27 +272,11 @@ class Task extends Base
     }
 
     /**
-     * @param string $priority
+     * @param int $priority
      */
     public function setPriority($priority)
     {
         $this->priority = $priority;
-    }
-
-    /**
-     * @return int
-     */
-    public function getNumber()
-    {
-        return $this->number;
-    }
-
-    /**
-     * @param int $number
-     */
-    public function setNumber($number)
-    {
-        $this->number = $number;
     }
 
     /**
@@ -288,6 +296,54 @@ class Task extends Base
     }
 
     /**
+     * @return \DateTime
+     */
+    public function getStart()
+    {
+        return $this->start;
+    }
+
+    /**
+     * @param \DateTime $start
+     * @return $this
+     */
+    public function setStart(\DateTime $start = null)
+    {
+        $this->start = $start;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEnd()
+    {
+        return $this->end;
+    }
+
+    /**
+     * @param \DateTime $end
+     * @return $this
+     */
+    public function setEnd(\DateTime $end = null)
+    {
+        $this->end = $end;
+        return $this;
+    }
+
+    /**
+     * @return \DateInterval|null
+     */
+    public function getProcessInterval()
+    {
+        if($this->getStart() and $this->getEnd()) {
+            return $this->getStart()->diff($this->getEnd());
+        }
+
+        return null;
+    }
+
+    /**
      * @Assert\Callback
      * @author Aleksandr Arofikin <sashaaro@gmail.com>
      */
@@ -299,6 +355,17 @@ class Task extends Base
         if(!$this->role && !$this->performer) {
             $context->buildViolation('validator.task.assignment')->addViolation();
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExpired()
+    {
+        $now = time();
+        return $this->status !== 'open' && ($this->getDate() ?
+            $this->getDate()->getTimestamp() < $now :
+            $this->getCreatedAt()->modify('+ '.self::DAY_DEAL_LINE.' days')->getTimestamp() < $now);
     }
 
     /**

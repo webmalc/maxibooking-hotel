@@ -16,6 +16,10 @@ eventListener.orderSubscriber.impossible_delete_record_with_existing_reservation
 mailer.to_order: Перейти к заказу
 mailer.to_package: Перейти к брони
 
+
+mailer.base.linkText: 'Перейти в «МаксиБукинг»'
+
+
 mailer.online.user.map: "Схема проезда"
 mailer.online.payment.backend: "По заказу #%order% поступил платеж на сумму %cash%.<br> Плательщик: %payer%"
 mailer.online.payment.user: "Ваш платеж по заказу #%order% прошел успешно."
@@ -53,6 +57,9 @@ services2: 'услуг'
 not.stopped: 'не заехали'
 stopped: 'заехали'
 left: 'выехали'
+
+exception.relation_delete.message: 'Запись имеет связанные данные (%total%).'
+exception.relation_delete.message.task: 'Невозможно удалить. Этот Тип имеет существующие задачи (%total%)'
 
 tariff.main: основной тариф
 tariffs: тарифы

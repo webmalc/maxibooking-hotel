@@ -2,14 +2,66 @@ views.tasktype.index.name: Название
 views.tasktype.index.created: Создан
 views.task.index.status: Cтатус
 views.task.index.tasktype: Тип задачи
+views.task.index.task: Задачи
 views.task.index.priority: Приоритет
+views.task.index.performer: Исполнитель
+views.task.index.group: Группа
+views.task.index.isDeleted: Удаленные?
+views.task.index.deleted: Удалена
 views.task.index.roomType: Тип комнаты
+views.task.index.room: Комната
 views.task.index.users:   Исполнитель
+views.task.index.assign:   Назначена
 views.task.index.guest:    Клиент
 views.task.index.role: Роли
+views.task.index.group: Группа
 views.task.index.groups: Группы
 views.task.index.createAt: Создано
+views.task.index.dates: Даты
+views.task.index.date: Дата
+views.task.index.period: Статус
+views.task.index.createdAt: Создано
+views.task.index.createdBy: Создал
+views.task.index.description: Комментарий
+views.task.index.number: Номер комнаты
+views.task.index.type: Тип
 views.task.index.updateAt: Обновлено
+views.task.index.isDeleted: Удаленные?
+
+views.task.index.confirm_in_process: Взять задачу на выполнение?
+views.task.index.confirm_closed: Закрыть задачу?
+
+views.task.index.waited: Ждут выполнения
+views.task.index.in_process: Задачи в работе
+views.task.index.info: Информация о задаче
+views.task.index.cancel: Отмена
+
+views.task.index.view: Просмотр
+views.task.index.close: Завершить
+views.task.index.take_in_process: В работу
+views.task.index.tasks_empaty: Нет задач
+
+
+views.task.index.detail.role: Группа пользователей
+views.task.index.detail.type: Задача
+views.task.index.detail.performer: Исполнитель
+#views.task.index.detail.number: Номер комнаты
+views.task.index.detail.room: Комната
+views.task.index.detail.priority: Приоритет
+views.task.index.detail.status: Статус
+views.task.index.detail.date: Дата
+views.task.index.detail.createdAt: Создано
+views.task.index.detail.createdBy: Создал
+views.task.index.detail.description: Комментарий
+
+views.task.priority.low: Низкий
+views.task.priority.average: Средний
+views.task.priority.high : Высокий
+
+views.filter.placeholder.status: Статус
+views.filter.placeholder.status: Обновлено
+views.filter.placeholder.priority: Приоритет
+
 views.hotel.edit.editing_number: "редактирование #"
 views.hotel.extended.editing_number: "редактирование #"
 views.hotel.extended.close: Закрыть
@@ -66,6 +118,7 @@ views.roomType.index.beds: Койко-места
 views.roomType.index.name: Название
 views.roomType.index.housing: Корпус
 views.roomType.index.floor: Этаж
+views.roomType.index.status: Статус
 views.roomType.layout.rooms: "Номера"
 views.roomType.layout.create_room_type: "cоздание типа номера"
 views.roomType.newRoom.create_bed_for_room_type: "создание койко-места для типа номера <"

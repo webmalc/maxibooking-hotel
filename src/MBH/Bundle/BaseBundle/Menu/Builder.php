@@ -3,9 +3,11 @@
 namespace MBH\Bundle\BaseBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
+use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use Symfony\Component\DependencyInjection\ContainerAware;
 use Knp\Menu\ItemInterface;
 use JMS\SecurityExtraBundle\Metadata\Driver\AnnotationDriver;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class Builder extends ContainerAware
 {
@@ -39,8 +41,29 @@ class Builder extends ContainerAware
         $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Номера и цены'])
             ->setAttributes(['dropdown' => true, 'icon' => $this->container->get('mbh.currency')->info()['icon']]);
 
-        /*$menu->addChild('task', ['route' => 'task', 'label' => 'Задачи'])
-            ->setAttributes(['icon' => 'fa fa-tasks']);*/
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        /** @var UserInterface $user */
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+
+        $queryCriteria = new TaskQueryCriteria();
+        $queryCriteria->roles = $user->getRoles();
+        $queryCriteria->performer = $user->getId();
+        $queryCriteria->onlyOwned = true;
+        $queryCriteria->status = 'open';
+
+        $openTaskCount = $dm->getRepository('MBHHotelBundle:Task')->getCountByCriteria($queryCriteria);
+
+        $taskAttributes = ['icon' => 'fa fa-tasks'];
+        if($openTaskCount > 0) {
+            $taskAttributes += [
+                'badge' => true,
+                'badge_class' => 'label-danger',
+                'badge_id' => 'task-counter',
+                'badge_value' => $openTaskCount
+            ];
+        }
+
+        $menu->addChild('task', ['route' => 'task', 'label' => 'Задачи'])->setAttributes($taskAttributes);
 
         $menu['prices']->addChild('overview', ['route' => 'room_overview', 'label' => 'Обзор'])
             ->setAttributes(['icon' => 'fa fa-info-circle']);
@@ -60,7 +83,7 @@ class Builder extends ContainerAware
 
         // report
         $menu->addChild('reports', ['route' => '_welcome', 'label' => 'Отчеты'])
-             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-tasks']);
+             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bar-chart']);
         
         $menu['reports']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Размещение'])
             ->setAttributes(['icon' => 'fa fa-table']);
@@ -75,7 +98,7 @@ class Builder extends ContainerAware
         $menu['reports']->addChild('report_user', ['route' => 'report_users', 'label' => 'Менеджеры'])
             ->setAttributes(['icon' => 'fa fa-user']);
         $menu['reports']->addChild('analytics', ['route' => 'analytics', 'label' => 'Аналитика'])
-            ->setAttributes(['icon' => 'fa fa-bar-chart']);
+            ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
 
@@ -130,9 +153,9 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-cog'])
         ;
 
-        /*$menu['configs']->addChild('tasktype', ['route' => 'tasktype', 'label' => 'Типы задач'])
+        $menu['configs']->addChild('tasktype', ['route' => 'tasktype', 'label' => 'Типы задач'])
             ->setAttributes(['icon' => 'fa fa-cog'])
-        ;*/
+        ;
 
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])
@@ -193,7 +216,7 @@ class Builder extends ContainerAware
                 $menu['management']->setAttribute('title', 'Назад к главному меню');
             }
         }
-        $menu->addChild('login', ['route' => '_welcome', 'label' => $user->getFullName(true)])
+        $menu->addChild('login', ['route' => 'user_profile', 'label' => $user->getFullName(true)])
                 ->setAttributes([
                         'icon' => 'fa fa-user',
                         'dropdown' => true
@@ -216,10 +239,10 @@ class Builder extends ContainerAware
             'route' => '_welcome',
             'label' => 'Версия ' . $this->container->getParameter('mbh.version')
         ])
-            ->setAttributes(['divider_append' => true, 'icon' => 'fa fa-info-circle'])
+            ->setAttributes(['icon' => 'fa fa-info-circle'])
         ;
         $menu['login']->addChild('logout', ['route' => 'fos_user_security_logout', 'label' => 'Выйти'])
-                ->setAttribute('icon', 'fa fa-sign-out')
+                ->setAttributes(['divider_prepend' => true, 'icon' => 'fa fa-sign-out'])
         ;
 
         return $this->filterMenu($menu);

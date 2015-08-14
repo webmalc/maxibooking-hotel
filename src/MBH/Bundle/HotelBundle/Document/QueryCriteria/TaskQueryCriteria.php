@@ -33,6 +33,12 @@ class TaskQueryCriteria extends AbstractQueryCriteria
     public $priority;
 
     /**
+     * Performer id
+     * @var string
+     */
+    public $performer;
+
+    /**
      * @todo DateRange Object
      * @var \DateTime|null
      */
@@ -42,4 +48,19 @@ class TaskQueryCriteria extends AbstractQueryCriteria
      * @var \DateTime|null
      */
     public $end;
+
+    /**
+     * @var bool
+     */
+    public $onlyOwned;
+
+    /**
+     * @var string[]
+     */
+    public $roles = [];
+
+    /**
+     * @var bool
+     */
+    public $deleted = false;
 }

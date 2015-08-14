@@ -107,7 +107,25 @@ class Extension extends \Twig_Extension
             'num2enStr' => new \Twig_Filter_Method($this, 'num2enStr'),
             'transToLat' => new \Twig_Filter_Method($this, 'translateToLat'),
             'convertMongoDate' => new \Twig_Filter_Method($this, 'convertMongoDate'),
+            'friendly_interval' => new \Twig_Filter_Method($this, 'friendlyInterval'),
         ];
+    }
+
+    public function friendlyInterval(\DateInterval $interval)
+    {
+        $format = [];
+        if($interval->d > 0) {
+            $format[] = '%d {days}';
+        }
+        if($interval->h > 0) {
+            $format[] .= '%h {hours}';
+        }
+        if($interval->i > 0) {
+            $format[] .= '%i {minutes}';
+        }
+        $format = implode(' ',$format);
+        $format = str_replace(['{days}', '{hours}', '{minutes}'], ['д.', 'ч.', 'мин.'], $format);
+        return $interval->format($format);
     }
 
     /**

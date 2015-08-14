@@ -9,3 +9,19 @@
 #mbh_bundle_hotelbundle_task_date input {
     display: inline-block !important;
 }
+
+#task-filter-begin, #task-filter-end {
+    width: 80px;
+}
+
+#task-filter-status, #task-filter-priority {
+    width: 100px;
+}
+
+#task-filter-performer {
+    width: 150px;
+}
+
+.form-icon-label .form-group label:first-child {
+    margin: 0 10px;
+}
