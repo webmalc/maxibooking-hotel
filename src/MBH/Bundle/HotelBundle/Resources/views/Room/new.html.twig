@@ -1,14 +1,10 @@
 {% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
 
-
-{% set partial %}
 {% set small_title = 'views.roomType.newRoom.create_room_for_room_type'|trans({}, 'MBHHotelBundle') ~ entity.name ~ "> #" ~ entity.id %}
 
 {% block content %}
-
     {{ form_start(form, {'action': path('room_type_room_create', {'id': entity.id}), 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:new.html.twig' %}
     {{ form_end(form) }}
-
 {% endblock %}
