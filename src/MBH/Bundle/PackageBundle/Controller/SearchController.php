@@ -44,9 +44,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             ]
         );
 
-        $beginDate = new \DateTime('midnight');
-        $beginDate->modify($this->container->getParameter('mbh.room.cache.date.modify'));
-
         $tourist = new Tourist();
         $tourist->setDocumentRelation(new DocumentRelation());
         $tourist->setBirthplace(new BirthPlace());
@@ -63,8 +60,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                 ->createView(),
             'addressForm' => $this->createForm('mbh_address_object_decomposed', $tourist->getAddressObjectDecomposed())
                 ->createView()
-            ,
-            'beginDate' => $beginDate,
         ];
     }
 

@@ -8,13 +8,16 @@
     <ul class="nav nav-tabs" role="tablist">
         {% for entity in entities %}
             <li {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}class="active"{% endif %}>
-                <a href="#{{entity.id}}" role="tab" data-toggle="tab">
-                    <i class="fa fa-bed" style="color:#{{entity.color}};"></i>&nbsp;{% if not entity.isEnabled %}<del class="text-danger">{% endif %}{{entity.name}}{% if not entity.isEnabled %}</del>{% endif %}
+                <a href="#{{ entity.id }}" role="tab" data-toggle="tab">
+                    <i class="fa fa-bed" style="color:#{{ entity.color }};"></i>&nbsp;{% if not entity.isEnabled %}
+                    <del class="text-danger">{% endif %}{{ entity.name }}{% if not entity.isEnabled %}</del>{% endif %}
                 </a>
             </li>
         {% endfor %}
         <li>
-            <a href="{{ path('room_type_new') }}"><i class="fa fa-plus"> </i> {{ 'views.roomType.index.new_room_type'|trans({}, 'MBHHotelBundle') }}</a>
+            <a href="{{ path('room_type_new') }}"><i
+                        class="fa fa-plus"> </i> {{ 'views.roomType.index.new_room_type'|trans({}, 'MBHHotelBundle') }}
+            </a>
         </li>
     </ul>
 
@@ -22,32 +25,52 @@
     <div class="tab-content">
         {% for entity in entities %}
 
-            <div class="tab-pane {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}active{% endif %}" id="{{entity.id}}">
+            <div class="tab-pane {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}active{% endif %}"
+                 id="{{ entity.id }}">
 
                 <!-- Tab actions -->
                 <div class="btn-list spacer-bottom text-right">
-                    <a href="{{ path('room_type_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title={{ 'views.roomType.index.edit_room_type'|trans({'%name%': entity.name}, 'MBHHotelBundle') }}><i class="fa fa-edit"> </i> {{ 'views.roomType.index.edit'|trans({}, 'MBHHotelBundle') }}</a>
-                    <a href="{{ path('room_type_room_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title= {{ 'views.roomType.index.create_rooms_for_room_type'|trans({'%name%': entity.name}, 'MBHHotelBundle') }}><i class="fa fa-plus"> </i> {{ 'views.roomType.index.add'|trans({}, 'MBHHotelBundle') }} {{ 'views.roomType.index.room'|trans({}, 'MBHHotelBundle') }}</a>
-                    <a href="{{ path('room_type_generate_rooms', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title={{ 'views.roomType.index.generate_rooms_for_room_type'|trans({'%name%': entity.name}, 'MBHHotelBundle') }}><i class="fa fa-magic"> </i> {{ 'views.roomType.index.generate'|trans({}, 'MBHHotelBundle') }} {{ 'views.roomType.index.room'|trans({}, 'MBHHotelBundle') }}</a>
-                    <a href="{{ path('room_type_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title={{ 'views.roomType.index.delete_room_type'|trans({'%name%': entity.name}, 'MBHHotelBundle')}}><i class="fa fa-trash-o"> </i> {{ 'views.roomType.index.delete'|trans({}, 'MBHHotelBundle')}}</a>
+                    <a href="{{ path('room_type_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success"
+                       data-toggle="tooltip" data-placement="bottom"
+                       title={{ 'views.roomType.index.edit_room_type'|trans({'%name%': entity.name}, 'MBHHotelBundle') }}><i
+                                class="fa fa-edit"> </i> {{ 'views.roomType.index.edit'|trans({}, 'MBHHotelBundle') }}
+                    </a>
+                    <a href="{{ path('room_type_room_new', {'id': entity.id }) }}" class="btn btn-sm btn-default"
+                       data-toggle="tooltip" data-placement="bottom"
+                       title= {{ 'views.roomType.index.create_rooms_for_room_type'|trans({'%name%': entity.name}, 'MBHHotelBundle') }}><i
+                                class="fa fa-plus"> </i> {{ 'views.roomType.index.add'|trans({}, 'MBHHotelBundle') }} {{ entity.isHostel ? 'bed'|trans : 'room'|trans }}
+                    </a>
+                    <a href="{{ path('room_type_generate_rooms', {'id': entity.id }) }}" class="btn btn-sm btn-default"
+                       data-toggle="tooltip" data-placement="bottom"
+                       title={{ 'views.roomType.index.generate_rooms_for_room_type'|trans({'%name%': entity.name}, 'MBHHotelBundle') }}><i
+                                class="fa fa-magic"> </i> {{ 'views.roomType.index.generate'|trans({}, 'MBHHotelBundle') }} {{ entity.isHostel ? 'beds'|trans : 'rooms'|trans }}
+                    </a>
+                    <a href="{{ path('room_type_delete', {'id': entity.id }) }}"
+                       class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom"
+                       title={{ 'views.roomType.index.delete_room_type'|trans({'%name%': entity.name}, 'MBHHotelBundle') }}><i
+                                class="fa fa-trash-o"> </i> {{ 'views.roomType.index.delete'|trans({}, 'MBHHotelBundle') }}
+                    </a>
                 </div>
 
 
                 <!-- Rooms list -->
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{{ 'views.roomType.index.room_fund'|trans({}, 'MBHHotelBundle')}}</h3>
+                        <h3 class="panel-title">
+                            {{ entity.isHostel ? 'views.roomType.index.beds'|trans({}, 'MBHHotelBundle') :'views.roomType.index.room_fund'|trans({}, 'MBHHotelBundle') }}
+                        </h3>
                     </div>
                     <div class="panel-body">
-                        <table data-room-type-id="{{entity.id}}" class="table rooms-table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+                        <table data-room-type-id="{{ entity.id }}"
+                               class="table rooms-table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
                             <thead>
-                                <tr>
-                                    <th class="td-xs"></th>
-                                    <th>{{ 'views.roomType.index.name'|trans({}, 'MBHHotelBundle')}}</th>
-                                    <th>{{ 'views.roomType.index.housing'|trans({}, 'MBHHotelBundle')}}</th>
-                                    <th>{{ 'views.roomType.index.floor'|trans({}, 'MBHHotelBundle')}}</th>
-                                    <th class="td-sm"></th>
-                                </tr>
+                            <tr>
+                                <th class="td-xs"></th>
+                                <th>{{ 'views.roomType.index.name'|trans({}, 'MBHHotelBundle') }}</th>
+                                <th>{{ 'views.roomType.index.housing'|trans({}, 'MBHHotelBundle') }}</th>
+                                <th>{{ 'views.roomType.index.floor'|trans({}, 'MBHHotelBundle') }}</th>
+                                <th class="td-sm"></th>
+                            </tr>
                             </thead>
                             <tbody>
                             </tbody>
@@ -57,7 +80,12 @@
                 <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
                     <div class="container-fluid">
                         <ul class="nav navbar-nav">
-                            <li><button onclick="location.href = '{{ path('room_type_new') }}'" type="submit" class="btn btn-success navbar-btn"><i class="fa {{ icon is defined ? icon : 'fa-plus'}}"></i> {{ text is defined ? text : 'views.actions.list.add'|trans({}, 'MBHBaseBundle')}}</button></li>
+                            <li>
+                                <button onclick="location.href = '{{ path('room_type_new') }}'" type="submit"
+                                        class="btn btn-success navbar-btn"><i
+                                            class="fa {{ icon is defined ? icon : 'fa-plus' }}"></i> {{ text is defined ? text : 'views.actions.list.add'|trans({}, 'MBHBaseBundle') }}
+                                </button>
+                            </li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
 

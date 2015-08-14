@@ -62,6 +62,7 @@ views.roomType.index.generate: Сгенерировать
 views.roomType.index.delete_room_type: "Удалить тип номера <%name%>"
 views.roomType.index.delete: Удалить
 views.roomType.index.room_fund: Номерной фонд
+views.roomType.index.beds: Койко-места
 views.roomType.index.name: Название
 views.roomType.index.housing: Корпус
 views.roomType.index.floor: Этаж

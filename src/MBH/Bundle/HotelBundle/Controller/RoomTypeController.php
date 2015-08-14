@@ -311,6 +311,9 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     public function newAction()
     {
         $entity = new RoomType();
+        $entity->setIsHostel(
+            $this->hotel->getIsHostel()
+        );
         $form = $this->createForm(new RoomTypeType(), $entity, []);
 
         return array(
@@ -401,7 +404,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $form->submit($request);
 
         if ($form->isValid()) {
-//            $entity->uploadImage($form['imageFile']->getData());
             $this->dm->persist($entity);
             $this->dm->flush();
 

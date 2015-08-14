@@ -117,7 +117,7 @@
     {{ parent() }}
     <script>
         $(document).ready(function () {
-            setSearchDatepickers('{{ beginDate|date('Y-m-d') }}');
+            setSearchDatepickers('{{ 'now'|date_modify('-1 year')|date('Y-m-d') }}');
         });
     </script>
 {% endblock %}
