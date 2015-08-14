@@ -223,48 +223,6 @@ class Order
     /**
      * @param array $data
      * @param OrderDoc $order
-     * @return OrderDoc
-     * @throws Exception
-     */
-    public function createServices(array $data, OrderDoc $order)
-    {
-        foreach ($data as $info) {
-            if(empty($info['id']) || empty($info['amount'])) {
-                throw new Exception('Create services error: $data["id"] || $data["amount"] is empty.');
-            }
-
-            $service = $this->dm->getRepository('MBHPriceBundle:Service')->find($info['id']);
-
-            if (!$service) {
-                throw new Exception('Create services error: service not found.');
-            }
-
-            //find package
-            foreach ($order->getPackages() as $package) {
-                if ($package->getTariff()->getHotel()->getId() == $service->getCategory()->getHotel()->getId()) {
-
-                    $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($package->getId());
-
-                    $packageService = new PackageService();
-                    $packageService->setPackage($package)
-                        ->setService($service)
-                        ->setAmount((int) $info['amount'])
-                        ->setPrice($service->getPrice());
-
-                    $this->dm->persist($packageService);
-                    $this->dm->flush();
-
-                    break 1;
-                }
-            }
-        }
-
-        return $order;
-    }
-
-    /**
-     * @param array $data
-     * @param OrderDoc $order
      * @param null $user
      * @return Package
      * @throws Exception
@@ -404,5 +362,47 @@ class Order
         }
 
         return $package;
+    }
+
+    /**
+     * @param array $data
+     * @param OrderDoc $order
+     * @return OrderDoc
+     * @throws Exception
+     */
+    public function createServices(array $data, OrderDoc $order)
+    {
+        foreach ($data as $info) {
+            if (empty($info['id']) || empty($info['amount'])) {
+                throw new Exception('Create services error: $data["id"] || $data["amount"] is empty.');
+            }
+
+            $service = $this->dm->getRepository('MBHPriceBundle:Service')->find($info['id']);
+
+            if (!$service) {
+                throw new Exception('Create services error: service not found.');
+            }
+
+            //find package
+            foreach ($order->getPackages() as $package) {
+                if ($package->getTariff()->getHotel()->getId() == $service->getCategory()->getHotel()->getId()) {
+
+                    $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($package->getId());
+
+                    $packageService = new PackageService();
+                    $packageService->setPackage($package)
+                        ->setService($service)
+                        ->setAmount((int)$info['amount'])
+                        ->setPrice($service->getPrice());
+
+                    $this->dm->persist($packageService);
+                    $this->dm->flush();
+
+                    break 1;
+                }
+            }
+        }
+
+        return $order;
     }
 }

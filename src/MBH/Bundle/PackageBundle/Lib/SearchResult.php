@@ -71,38 +71,6 @@ class SearchResult
     }
 
     /**
-     * @return \DateTime
-     */
-    public function getEnd()
-    {
-        return $this->end;
-    }
-
-    /**
-     * @return RoomType
-     */
-    public function getRoomType()
-    {
-        return $this->roomType;
-    }
-
-    /**
-     * @return Tariff
-     */
-    public function getTariff()
-    {
-        return $this->tariff;
-    }
-
-    /**
-     * @return array
-     */
-    public function getPrices()
-    {
-        return $this->prices;
-    }
-
-    /**
      * @param \DateTime $begin
      * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
      */
@@ -111,6 +79,14 @@ class SearchResult
         $this->begin = $begin;
 
         return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEnd()
+    {
+        return $this->end;
     }
 
     /**
@@ -125,6 +101,14 @@ class SearchResult
     }
 
     /**
+     * @return RoomType
+     */
+    public function getRoomType()
+    {
+        return $this->roomType;
+    }
+
+    /**
      * @param RoomType $roomType
      * @return $this
      */
@@ -136,23 +120,20 @@ class SearchResult
     }
 
     /**
+     * @return Tariff
+     */
+    public function getTariff()
+    {
+        return $this->tariff;
+    }
+
+    /**
      * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
      * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
      */
     public function setTariff(Tariff $tariff)
     {
         $this->tariff = $tariff;
-
-        return $this;
-    }
-
-    /**
-     * @param array $prices
-     * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
-     */
-    public function setPrices(array $prices)
-    {
-        $this->prices = $prices;
 
         return $this;
     }
@@ -215,7 +196,7 @@ class SearchResult
             }
             return $this;
         }
-        
+
         if (!isset($this->prices[$adults . '_' . $children])) {
             $this->prices[$adults . '_' . $children] = 0;
         }
@@ -233,22 +214,22 @@ class SearchResult
     }
 
     /**
-     * @return int
-     */
-    public function getChildren()
-    {
-        return $this->children;
-    }
-
-    /**
      * @param int $adults
      * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
      */
     public function setAdults($adults)
     {
         $this->adults = $adults;
-        
+
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getChildren()
+    {
+        return $this->children;
     }
 
     /**
@@ -258,7 +239,7 @@ class SearchResult
     public function setChildren($children)
     {
         $this->children = $children;
-        
+
         return $this;
     }
 
@@ -272,19 +253,25 @@ class SearchResult
         if(!isset($this->getPrices()[$adults . '_' . $children])) {
             return null;
         }
-        
+
         return (float) $this->getPrices()[$adults . '_' . $children];
     }
 
     /**
-     * @param array $prices
-     * @param int $adults
-     * @param int $children
-     * @return self
+     * @return array
      */
-    public function setPricesByDate(array $prices, $adults, $children)
+    public function getPrices()
     {
-        $this->pricesByDate[$adults . '_' . $children] = $prices;
+        return $this->prices;
+    }
+
+    /**
+     * @param array $prices
+     * @return \MBH\Bundle\PackageBundle\Lib\SearchResult
+     */
+    public function setPrices(array $prices)
+    {
+        $this->prices = $prices;
 
         return $this;
     }
@@ -304,6 +291,19 @@ class SearchResult
     }
 
     /**
+     * @param array $prices
+     * @param int $adults
+     * @param int $children
+     * @return self
+     */
+    public function setPricesByDate(array $prices, $adults, $children)
+    {
+        $this->pricesByDate[$adults . '_' . $children] = $prices;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getRooms()
@@ -318,6 +318,7 @@ class SearchResult
     public function setRooms($rooms)
     {
         $this->rooms = $rooms;
+
         return $this;
     }
 }

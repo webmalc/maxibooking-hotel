@@ -39,11 +39,15 @@ class SearchType extends AbstractType
         }
 
         $builder
-                ->add('tourist', 'text', [
-                    'label' => 'form.searchType.fio',
-                    'required' => false,
-                    'attr' => ['placeholder' => 'form.orderTouristType.placeholder_fio', 'style' => 'min-width: 350px !important; width: 350px !important;', 'class' => 'findGuest']
-                ])
+            ->add('tourist', 'text', [
+                'label' => 'form.searchType.fio',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'form.orderTouristType.placeholder_fio',
+                    'style' => 'min-width: 350px !important; width: 350px !important;',
+                    'class' => 'findGuest'
+                ]
+            ])
                 ->add('order', 'integer', [
                     'label' => 'form.searchType.order',
                     'required' => false,

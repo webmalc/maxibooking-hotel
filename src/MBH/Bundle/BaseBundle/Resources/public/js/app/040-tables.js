@@ -87,8 +87,7 @@ var docReadyTables = function () {
  * @param $table
  * @param $container
  */
-window.universalAddExcelButtons = function($table, $container)
-{
+window.universalAddExcelButtons = function ($table, $container) {
     var tt = new $.fn.dataTable.TableTools($table, {
         "sSwfPath": "/bundles/mbhbase/js/vendor/datatables/swf/copy_csv_xls.swf",
         "aButtons": [
@@ -112,7 +111,7 @@ window.universalAddExcelButtons = function($table, $container)
 }
 
 /*global window */
-$(document).ready(function() {
+$(document).ready(function () {
     'use strict';
     docReadyTables();
 });

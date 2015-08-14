@@ -265,6 +265,23 @@ class Hotel extends Base
      */
     protected $vegaAddressId;
 
+    public function __construct()
+    {
+        $this->roomTypes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get fullTitle
+     *
+     * @return string $fullTitle
+     */
+    public function getFullTitle()
+    {
+        return $this->fullTitle;
+    }
+
     /**
      * Set fullTitle
      *
@@ -279,13 +296,13 @@ class Hotel extends Base
     }
 
     /**
-     * Get fullTitle
+     * Get title
      *
-     * @return string $fullTitle
+     * @return string $title
      */
-    public function getFullTitle()
+    public function getTitle()
     {
-        return $this->fullTitle;
+        return $this->title;
     }
 
     /**
@@ -302,13 +319,13 @@ class Hotel extends Base
     }
 
     /**
-     * Get title
+     * Get prefix
      *
-     * @return string $title
+     * @return string $prefix
      */
-    public function getTitle()
+    public function getPrefix()
     {
-        return $this->title;
+        return $this->prefix;
     }
 
     /**
@@ -325,16 +342,6 @@ class Hotel extends Base
     }
 
     /**
-     * Get prefix
-     *
-     * @return string $prefix
-     */
-    public function getPrefix()
-    {
-        return $this->prefix;
-    }
-
-    /**
      * @return string
      */
     public function getName()
@@ -344,6 +351,16 @@ class Hotel extends Base
         }
 
         return $this->fullTitle;
+    }
+
+    /**
+     * Get isDefault
+     *
+     * @return boolean $isDefault
+     */
+    public function getIsDefault()
+    {
+        return $this->isDefault;
     }
 
     /**
@@ -357,23 +374,6 @@ class Hotel extends Base
         $this->isDefault = $isDefault;
 
         return $this;
-    }
-
-    /**
-     * Get isDefault
-     *
-     * @return boolean $isDefault
-     */
-    public function getIsDefault()
-    {
-        return $this->isDefault;
-    }
-
-    public function __construct()
-    {
-        $this->roomTypes = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -467,6 +467,16 @@ class Hotel extends Base
     }
 
     /**
+     * Get vashotelConfig
+     *
+     * @return \MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig $vashotelConfig
+     */
+    public function getVashotelConfig()
+    {
+        return $this->vashotelConfig;
+    }
+
+    /**
      * Set vashotelConfig
      *
      * @param \MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig $vashotelConfig
@@ -480,13 +490,13 @@ class Hotel extends Base
     }
 
     /**
-     * Get vashotelConfig
+     * Get oktogoConfig
      *
-     * @return \MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig $vashotelConfig
+     * @return \MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig $oktogoConfig
      */
-    public function getVashotelConfig()
+    public function getOktogoConfig()
     {
-        return $this->vashotelConfig;
+        return $this->oktogoConfig;
     }
 
     /**
@@ -500,16 +510,6 @@ class Hotel extends Base
         $this->oktogoConfig = $oktogoConfig;
 
         return $this;
-    }
-
-    /**
-     * Get oktogoConfig
-     *
-     * @return \MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig $oktogoConfig
-     */
-    public function getOktogoConfig()
-    {
-        return $this->oktogoConfig;
     }
 
     /**
@@ -570,6 +570,16 @@ class Hotel extends Base
     }
 
     /**
+     * Get isHostel
+     *
+     * @return boolean $isHostel
+     */
+    public function getIsHostel()
+    {
+        return $this->isHostel;
+    }
+
+    /**
      * Set isHostel
      *
      * @param boolean $isHostel
@@ -583,13 +593,13 @@ class Hotel extends Base
     }
 
     /**
-     * Get isHostel
+     * Get country
      *
-     * @return boolean $isHostel
+     * @return \MBH\Bundle\HotelBundle\Document\Country $country
      */
-    public function getIsHostel()
+    public function getCountry()
     {
-        return $this->isHostel;
+        return $this->country;
     }
 
     /**
@@ -606,13 +616,13 @@ class Hotel extends Base
     }
 
     /**
-     * Get country
+     * Get region
      *
-     * @return \MBH\Bundle\HotelBundle\Document\Country $country
+     * @return \MBH\Bundle\HotelBundle\Document\Region $region
      */
-    public function getCountry()
+    public function getRegion()
     {
-        return $this->country;
+        return $this->region;
     }
 
     /**
@@ -626,39 +636,6 @@ class Hotel extends Base
         $this->region = $region;
 
         return $this;
-    }
-
-    /**
-     * Get region
-     *
-     * @return \MBH\Bundle\HotelBundle\Document\Region $region
-     */
-    public function getRegion()
-    {
-        return $this->region;
-    }
-
-    /**
-     * Set city
-     *
-     * @param \MBH\Bundle\HotelBundle\Document\City $city
-     * @return self
-     */
-    public function setCity(\MBH\Bundle\HotelBundle\Document\City $city)
-    {
-        $this->city = $city;
-
-        return $this;
-    }
-
-    /**
-     * Get city
-     *
-     * @return \MBH\Bundle\HotelBundle\Document\City $city
-     */
-    public function getCity()
-    {
-        return $this->city;
     }
 
     /**
@@ -677,6 +654,15 @@ class Hotel extends Base
         $this->settlement = $settlement;
     }
 
+    /**
+     * Get latitude
+     *
+     * @return float $latitude
+     */
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
 
     /**
      * Set latitude
@@ -692,13 +678,13 @@ class Hotel extends Base
     }
 
     /**
-     * Get latitude
+     * Get longitude
      *
-     * @return float $latitude
+     * @return float $longitude
      */
-    public function getLatitude()
+    public function getLongitude()
     {
-        return $this->latitude;
+        return $this->longitude;
     }
 
     /**
@@ -715,13 +701,13 @@ class Hotel extends Base
     }
 
     /**
-     * Get longitude
+     * Get type
      *
-     * @return float $longitude
+     * @return collection $type
      */
-    public function getLongitude()
+    public function getType()
     {
-        return $this->longitude;
+        return $this->type;
     }
 
     /**
@@ -738,13 +724,13 @@ class Hotel extends Base
     }
 
     /**
-     * Get type
+     * Get theme
      *
-     * @return collection $type
+     * @return collection $theme
      */
-    public function getType()
+    public function getTheme()
     {
-        return $this->type;
+        return $this->theme;
     }
 
     /**
@@ -761,13 +747,13 @@ class Hotel extends Base
     }
 
     /**
-     * Get theme
+     * Get facilities
      *
-     * @return collection $theme
+     * @return collection $facilities
      */
-    public function getTheme()
+    public function getFacilities()
     {
-        return $this->theme;
+        return $this->facilities;
     }
 
     /**
@@ -784,13 +770,13 @@ class Hotel extends Base
     }
 
     /**
-     * Get facilities
+     * Get rating
      *
-     * @return collection $facilities
+     * @return int $rating
      */
-    public function getFacilities()
+    public function getRating()
     {
-        return $this->facilities;
+        return $this->rating;
     }
 
     /**
@@ -807,13 +793,13 @@ class Hotel extends Base
     }
 
     /**
-     * Get rating
+     * Get bookingConfig
      *
-     * @return int $rating
+     * @return \MBH\Bundle\ChannelManagerBundle\Document\BookingConfig $bookingConfig
      */
-    public function getRating()
+    public function getBookingConfig()
     {
-        return $this->rating;
+        return $this->bookingConfig;
     }
 
     /**
@@ -830,13 +816,13 @@ class Hotel extends Base
     }
 
     /**
-     * Get bookingConfig
+     * Get hotelinnConfig
      *
-     * @return \MBH\Bundle\ChannelManagerBundle\Document\BookingConfig $bookingConfig
+     * @return \MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig
      */
-    public function getBookingConfig()
+    public function getHotelinnConfig()
     {
-        return $this->bookingConfig;
+        return $this->hotelinnConfig;
     }
 
     /**
@@ -852,13 +838,13 @@ class Hotel extends Base
     }
 
     /**
-     * Get hotelinnConfig
+     * Get ostrovokConfig
      *
-     * @return \MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig
+     * @return \MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig
      */
-    public function getHotelinnConfig()
+    public function getOstrovokConfig()
     {
-        return $this->hotelinnConfig;
+        return $this->ostrovokConfig;
     }
 
     /**
@@ -870,17 +856,8 @@ class Hotel extends Base
     public function setOstrovokConfig(\MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig $ostrovokConfig)
     {
         $this->ostrovokConfig = $ostrovokConfig;
-        return $this;
-    }
 
-    /**
-     * Get ostrovokConfig
-     *
-     * @return \MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig
-     */
-    public function getOstrovokConfig()
-    {
-        return $this->ostrovokConfig;
+        return $this;
     }
 
     /**
@@ -897,6 +874,29 @@ class Hotel extends Base
             $this->setCountry($this->getCity()->getCountry());
             $this->setRegion($this->getCity()->getRegion());
         }
+    }
+
+    /**
+     * Get city
+     *
+     * @return \MBH\Bundle\HotelBundle\Document\City $city
+     */
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    /**
+     * Set city
+     *
+     * @param \MBH\Bundle\HotelBundle\Document\City $city
+     * @return self
+     */
+    public function setCity(\MBH\Bundle\HotelBundle\Document\City $city)
+    {
+        $this->city = $city;
+
+        return $this;
     }
 
     /**
@@ -971,17 +971,67 @@ class Hotel extends Base
         return $this->housings;
     }
 
-    public function addHousing(Housing $housing)
-    {
-        $this->housings[] = $housing;
-    }
-
     /**
      * @param Housing[] $$housings
      */
     public function setHousings(array $housings)
     {
         $this->housings = $housings;
+    }
+
+    public function addHousing(Housing $housing)
+    {
+        $this->housings[] = $housing;
+    }
+
+    public function getLogoUrl()
+    {
+        if ($this->getFile() instanceof File) {
+            return '/upload/hotelLogos/' . $this->getLogo();
+        }
+
+        return null;
+    }
+
+    /**
+     * @return File|null
+     */
+    public function getFile()
+    {
+        if (!$this->file && $this->logo && is_file($this->getPath())) {
+            $this->file = new File($this->getPath());
+        }
+
+        return $this->file;
+    }
+
+    /**
+     * @param UploadedFile $file
+     */
+    public function setFile(UploadedFile $file = null)
+    {
+        $this->file = $file;
+        if ($this->file) {
+            $this->logo = $file->getClientOriginalName();
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->getUploadRootDir() . DIRECTORY_SEPARATOR . $this->getLogo();
+    }
+
+    /**
+     * The absolute directory path where uploaded
+     * documents should be saved
+     * @return string
+     */
+    public function getUploadRootDir()
+    {
+        return __DIR__.'/../../../../../web/upload/hotelLogos';
     }
 
     /**
@@ -998,56 +1048,6 @@ class Hotel extends Base
     public function setLogo($logo)
     {
         $this->logo = $logo;
-    }
-
-    /**
-     * @param UploadedFile $file
-     */
-    public function setFile(UploadedFile $file = null)
-    {
-        $this->file = $file;
-        if ($this->file) {
-            $this->logo = $file->getClientOriginalName();
-        }
-    }
-
-
-    /**
-     * The absolute directory path where uploaded
-     * documents should be saved
-     * @return string
-     */
-    public function getUploadRootDir()
-    {
-        return __DIR__.'/../../../../../web/upload/hotelLogos';
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->getUploadRootDir().DIRECTORY_SEPARATOR.$this->getLogo();
-    }
-
-    /**
-     * @return File|null
-     */
-    public function getFile()
-    {
-        if (!$this->file && $this->logo && is_file($this->getPath())) {
-            $this->file = new File($this->getPath());
-        }
-
-        return $this->file;
-    }
-
-    public function getLogoUrl()
-    {
-        if($this->getFile() instanceof File) {
-            return '/upload/hotelLogos/'.$this->getLogo();
-        }
-        return null;
     }
 
     public function uploadFile()

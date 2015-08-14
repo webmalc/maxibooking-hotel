@@ -1,6 +1,6 @@
 {% extends 'MBHChannelManagerBundle:Ostrovok:layout.html.twig' %}
 
-{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle')  %}
+{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle') %}
 
 {% block content %}
 
@@ -19,7 +19,9 @@
             <tbody>
             {% for service in doc.services %}
                 <tr>
-                    <td>{{ service.service.name }} <a class="external" target="_blank" href="{{ path('price_service_category_entry_edit', {'id': service.service.id}) }}"><i class="fa fa-external-link"></i></a></td>
+                    <td>{{ service.service.name }} <a class="external" target="_blank"
+                                                      href="{{ path('price_service_category_entry_edit', {'id': service.service.id}) }}"><i
+                                    class="fa fa-external-link"></i></a></td>
                     <td>{{ service.service.code }}</td>
                     <td>{{ service.serviceId }}</td>
                 </tr>
@@ -30,7 +32,7 @@
         <div class="tab-pane active" id="home">
             {% if doc %}
                 {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': doc, 'logs': logs} %}
-            {%  endif %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

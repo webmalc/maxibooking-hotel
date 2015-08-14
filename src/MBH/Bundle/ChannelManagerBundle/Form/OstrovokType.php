@@ -31,8 +31,7 @@ class OstrovokType extends AbstractType
                     'attr' => ['placeholder' => '1567'],
                     'help' => 'form.ostrovokType.ostrovok_ru_settings_hotel_id'
                 ]
-            )
-        ;
+            );
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

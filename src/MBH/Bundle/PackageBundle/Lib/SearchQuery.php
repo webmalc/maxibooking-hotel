@@ -73,13 +73,6 @@ class SearchQuery
      */
     public $tariff;
     
-    public function addRoomType($id)
-    {
-        if (!in_array($id, $this->roomTypes) && !empty($id)) {
-            $this->roomTypes[] = $id;
-        }
-    }
-
     public function addExcludeRoomType($id)
     {
         if (!in_array($id, $this->excludeRoomTypes) && !empty($id)) {
@@ -106,6 +99,13 @@ class SearchQuery
             $this->addRoomType($hotel->getId() . ': empty roomTypes');
         }
         return $this;
+    }
+
+    public function addRoomType($id)
+    {
+        if (!in_array($id, $this->roomTypes) && !empty($id)) {
+            $this->roomTypes[] = $id;
+        }
     }
 
     /**

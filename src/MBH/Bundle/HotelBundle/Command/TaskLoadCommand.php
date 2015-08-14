@@ -29,25 +29,36 @@ class TaskLoadCommand extends ContainerAwareCommand
     {
         /** @var DocumentManager $dm */
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+        $roomStatusRepository = $dm->getRepository('MBHHotelBundle:RoomStatus');
 
         $repairStatus = new RoomStatus();
         $repairStatus->setTitle('Ремонт')->setCode('repair');
-        $dm->persist($repairStatus);
+        if($roomStatusRepository->createQueryBuilder()->field('code')->equals($repairStatus->getCode())->getQuery()->count() == 0) {
+            $dm->persist($repairStatus);
+        }
 
         $cleaningStatus = new RoomStatus();
         $cleaningStatus->setTitle('Уборка')->setCode('cleaning');
-        $dm->persist($cleaningStatus);
+        if($roomStatusRepository->createQueryBuilder()->field('code')->equals($cleaningStatus->getCode())->getQuery()->count() == 0) {
+            $dm->persist($cleaningStatus);
+        }
 
         $reserveStatus = new RoomStatus();
         $reserveStatus->setTitle('Резерв')->setCode('reserve');
-        $dm->persist($reserveStatus);
+        if($roomStatusRepository->createQueryBuilder()->field('code')->equals($reserveStatus->getCode())->getQuery()->count() == 0) {
+            $dm->persist($reserveStatus);
+        }
 
         $otherStatus = new RoomStatus();
         $otherStatus->setTitle('Другое')->setCode('other');
-        $dm->persist($otherStatus);
+        if($roomStatusRepository->createQueryBuilder()->field('code')->equals($otherStatus->getCode())->getQuery()->count() == 0) {
+            $dm->persist($otherStatus);
+        }
 
         $dm->flush();
 
+        $taskTypeCategoryRepository = $dm->getRepository('MBHHotelBundle:TaskTypeCategory');
+        $taskTypeRepository = $dm->getRepository('MBHHotelBundle:TaskType');
 
         $category = new TaskTypeCategory();
         $category->setIsSystem(true);
@@ -62,8 +73,13 @@ class TaskLoadCommand extends ContainerAwareCommand
         $taskType->setCategory($category);
         $taskType->setRoomStatus($cleaningStatus);
 
-        $dm->persist($category);
-        $dm->persist($taskType);
+        if($taskTypeCategoryRepository->createQueryBuilder()->field('code')->equals($category->getCode())->getQuery()->count() == 0){
+            $dm->persist($category);
+        }
+        if($taskTypeRepository->createQueryBuilder()->field('code')->equals($taskType->getCode())->getQuery()->count() == 0){
+            $dm->persist($taskType);
+        }
+
         $dm->flush();
         $output->writeln('Done');
     }

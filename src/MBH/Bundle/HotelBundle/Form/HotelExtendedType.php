@@ -62,7 +62,7 @@ class HotelExtendedType extends AbstractType
                 ]
             ]);
 
-            $builder->add('flat', 'text', [
+        $builder->add('flat', 'text', [
                 'label' => 'form.hotelExtendedType.flat',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false,

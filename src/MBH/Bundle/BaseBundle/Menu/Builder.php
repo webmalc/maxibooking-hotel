@@ -111,6 +111,56 @@ class Builder extends ContainerAware
     }
 
     /**
+     * Filter menu by roles
+     * @param \Knp\Menu\ItemInterface $menu
+     * @return \Knp\Menu\ItemInterface
+     */
+    public function filterMenu(ItemInterface $menu)
+    {
+        $router = $this->container->get('router');
+        $router->getContext()->setMethod('GET');
+        $security = $this->container->get('security.context');
+
+        foreach ($menu->getChildren() as $child) {
+
+            if (empty($child->getUri())) {
+                continue;
+            }
+            $metadata = false;
+
+            try {
+                $url = str_replace('app_dev.php/', '', parse_url($child->getUri()))['path'];
+
+                $controllerInfo = explode('::', $router->match($url)['_controller']);
+
+                $rMethod = new \ReflectionMethod($controllerInfo[0], $controllerInfo[1]);
+
+                $metadata = $rMethod->getDocComment();
+
+            } catch (\Exception $e) {
+
+                $menu->removeChild($child);
+                continue;
+            }
+
+            preg_match('/\@Security\(\"is_granted\(\'(.*)\'\)\"\)/ixu', $metadata, $roles);
+
+            if (empty($metadata) || empty($roles[1])) {
+                continue;
+            }
+
+            if (!$security->isGranted($roles[1])) {
+
+                $menu->removeChild($child);
+            }
+
+            $this->filterMenu($child);
+        }
+
+        return $menu;
+    }
+
+    /**
      * User menu
      * @param \Knp\Menu\FactoryInterface $factory
      * @param array $options
@@ -164,8 +214,7 @@ class Builder extends ContainerAware
 
         if ($this->container->getParameter('mbh.environment') == 'prod') {
             $menu['services']->addChild('booking', ['route' => 'booking', 'label' => 'Booking.com'])
-                ->setAttributes(['header' => 'Channel manager', 'header_icon' => 'fa fa-cloud-download'])
-            ;
+                ->setAttributes(['header' => 'Channel manager', 'header_icon' => 'fa fa-cloud-download']);
             $menu['services']->addChild('ostrovok', ['route' => 'ostrovok', 'label' => 'Ostrovok']);
             $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель']);
             //$menu['services']->addChild('hotelinn', ['route' => 'hotelinn', 'label' => 'Hotel-inn']);
@@ -174,11 +223,9 @@ class Builder extends ContainerAware
         }
 
         $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'Онлайн форма'])
-            ->setAttributes(['divider_prepend' =>true,  'header' => 'Другое', 'icon' => 'fa fa-globe'])
-        ;
+            ->setAttributes(['divider_prepend' => true, 'header' => 'Другое', 'icon' => 'fa fa-globe']);
         $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'Оценки'])
-            ->setAttributes(['icon' => 'fa fa-star'])
-        ;
+            ->setAttributes(['icon' => 'fa fa-star']);
 
         return $this->filterMenu($menu);
     }
@@ -268,55 +315,6 @@ class Builder extends ContainerAware
                 ->setAttribute('icon', 'fa fa-plus')
         ;
 
-        return $menu;
-    }
-
-    /**
-     * Filter menu by roles
-     * @param \Knp\Menu\ItemInterface $menu
-     * @return \Knp\Menu\ItemInterface
-     */
-    public function filterMenu(ItemInterface $menu)
-    {
-        $router = $this->container->get('router');
-        $router->getContext()->setMethod('GET');
-        $security = $this->container->get('security.context');
-
-        foreach ($menu->getChildren() as $child) {
-
-            if (empty($child->getUri())) {
-                continue;
-            }
-            $metadata = false;
-
-            try {
-                $url = str_replace('app_dev.php/', '', parse_url($child->getUri()))['path'];
-
-                $controllerInfo = explode('::', $router->match($url)['_controller']);
-
-                $rMethod = new \ReflectionMethod($controllerInfo[0], $controllerInfo[1]);
-
-                $metadata = $rMethod->getDocComment();
-                
-            } catch (\Exception $e) {
-
-                $menu->removeChild($child);
-                continue;
-            }
-
-            preg_match('/\@Security\(\"is_granted\(\'(.*)\'\)\"\)/ixu', $metadata, $roles);
-
-            if (empty($metadata) || empty($roles[1])) {
-                continue;
-            }
-
-            if (!$security->isGranted($roles[1])) {
-
-                $menu->removeChild($child);
-            }
-
-            $this->filterMenu($child);
-        }
         return $menu;
     }
 

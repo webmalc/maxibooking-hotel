@@ -13,14 +13,15 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#package-search-tariffs-accordion" href="#accordion-{{ key }}">
+                                <a data-toggle="collapse" data-parent="#package-search-tariffs-accordion"
+                                   href="#accordion-{{ key }}">
                                     {{ 'tariffs'|trans|capitalize }} «{{ tariffs[0].hotel }}»
                                     <small>
-                                    {% if selectedTariff %}
-                                        {{selectedTariff.hotel == tariffs[0].hotel ? selectedTariff : '' }}
-                                    {% else %}
-                                       {{ 'tariff.main'|trans|capitalize }}
-                                    {% endif %}
+                                        {% if selectedTariff %}
+                                            {{ selectedTariff.hotel == tariffs[0].hotel ? selectedTariff : '' }}
+                                        {% else %}
+                                            {{ 'tariff.main'|trans|capitalize }}
+                                        {% endif %}
                                     </small>
                                 </a>
                             </h4>
@@ -28,14 +29,16 @@
                         <div id="accordion-{{ key }}" class="panel-collapse collapse">
                             <div class="panel-body">
                                 <ul id="package-search-tariffs">
-                                {% for tariff in tariffs %}
-                                    <li>
-                                        <a href="#" {% if tariff.isDefault %}class="text-success"{% else %}data-id="{{ tariff.id }}{% endif %}">
-                                            {% if (selectedTariff and selectedTariff.id == tariff.id) or (selectedTariff is empty and tariff.isDefault)  %} <small><i class="fa fa-check"></i></small> {% endif %}
-                                            {{ tariff }}
-                                        </a>
-                                    </li>
-                                {% endfor %}
+                                    {% for tariff in tariffs %}
+                                        <li>
+                                            <a href="#" {% if tariff.isDefault %}class="text-success"
+                                               {% else %}data-id="{{ tariff.id }}{% endif %}">
+                                                {% if (selectedTariff and selectedTariff.id == tariff.id) or (selectedTariff is empty and tariff.isDefault) %}
+                                                    <small><i class="fa fa-check"></i></small> {% endif %}
+                                                {{ tariff }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
                                 </ul>
                             </div>
                         </div>
@@ -65,7 +68,9 @@
 
                     <tr>
                         <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
-                        <td>{{ result.begin|mbh_format }} - {{ result.end|mbh_format }}<br><small>{{ plural(result.nights, "package.json.noch"|trans({}, "MBHPackageBundle"), "package.json.nochi"|trans({}, "MBHPackageBundle"), "package.json.nochei"|trans({}, "MBHPackageBundle")) }}</small></td>
+                        <td>{{ result.begin|mbh_format }} - {{ result.end|mbh_format }}<br>
+                            <small>{{ plural(result.nights, "package.json.noch"|trans({}, "MBHPackageBundle"), "package.json.nochi"|trans({}, "MBHPackageBundle"), "package.json.nochei"|trans({}, "MBHPackageBundle")) }}</small>
+                        </td>
                         <td>{{ result.roomType.hotel }}</td>
                         <td>
                             {{ result.roomType }}<br>
@@ -107,7 +112,8 @@
                         <td class="text-center">
                             <a href="{{ path('package_new', app.request.get('s')|merge({roomType: result.roomType.id })) }}" target="_blank" class="btn btn-success btn-xs package-search-book" title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
                                 <span class="package-search-book-reservation-text">{{ "search.results.reservate"|trans({}, "MBHPackageBundle") }}</span>
-                                <span class="package-search-book-accommodation-text" style="display: none;">{{ "search.results.accommodation"|trans({}, "MBHPackageBundle") }}</span>
+                                <span class="package-search-book-accommodation-text"
+                                      style="display: none;">{{ "search.results.accommodation"|trans({}, "MBHPackageBundle") }}</span>
                             </a>
                         </td>
                     </tr>

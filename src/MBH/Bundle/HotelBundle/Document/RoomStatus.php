@@ -29,6 +29,7 @@ class RoomStatus extends Base
     /**
      * @var string
      * @ODM\String
+     * @ODM\UniqueIndex()
      */
     public $code;
 

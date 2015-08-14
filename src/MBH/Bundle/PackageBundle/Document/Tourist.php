@@ -21,9 +21,293 @@ use Zend\Stdlib\JsonSerializable;
  */
 class Tourist extends Base implements JsonSerializable, PayerInterface
 {
+    /**
+     * @ODM\ReferenceMany(targetDocument="Order", nullable="true", mappedBy="mainTourist")
+     */
+    public $orders;
+    /**
+     * @ODM\ReferenceMany(targetDocument="Package", nullable="true", mappedBy="tourists")
+     */
+    public $packages;
+    /**
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="payer")
+     */
+    protected $cashDocuments;
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="firstName")
+     * @Assert\NotNull(message= "validator.document.Tourist.name_required")
+     * @Assert\Length(
+     *      min=2,
+     *      minMessage= "validator.document.Tourist.min_name",
+     *      max=100,
+     *      maxMessage= "validator.document.Tourist.max_name"
+     * )
+     */
+    protected $firstName;
+
+    /**
+     * Hook timestampable behavior
+     * updates createdAt, updatedAt fields
+     */
+    use TimestampableDocument;
+
+    /**
+     * Hook softdeleteable behavior
+     * deletedAt field
+     */
+    use SoftDeleteableDocument;
+
+    /**
+     * Hook blameable behavior
+     * createdBy&updatedBy fields
+     */
+    use BlameableDocument;
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="lastName")
+     * @Assert\NotNull(message= "validator.document.Tourist.surname_required")
+     * @Assert\Length(
+     *      min=2,
+     *      minMessage= "validator.document.Tourist.min_surname",
+     *      max=100,
+     *      maxMessage= "validator.document.Tourist.max_surname"
+     * )
+     */
+    protected $lastName;
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="patronymic")
+     * @Assert\Length(
+     *      min=2,
+     *      minMessage= "validator.document.Tourist.min_second_name",
+     *      max=100,
+     *      maxMessage= "validator.document.Tourist.max_second_name"
+     * )
+     */
+    protected $patronymic;
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="fullName")
+     */
+    protected $fullName;
+    /**
+     * @var \DateTime
+     * @Gedmo\Versioned
+     * @ODM\Date(name="birthday")
+     * @Assert\Date()
+     */
+    protected $birthday;
+    /**
+     * @var \string
+     * @Gedmo\Versioned
+     * @ODM\String(name="sex")
+     * @Assert\Choice(
+     *      choices = {"male", "female", "unknown"},
+     *      message =  "validator.document.Tourist.wrong_gender"
+     * )
+     */
+    protected $sex = 'unknown';
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="phone")
+     * @Assert\Length(
+     *      min=2,
+     *      minMessage= "validator.document.Tourist.min_phone",
+     *      max=100,
+     *      maxMessage= "validator.document.Tourist.max_phone"
+     * )
+     */
+    protected $phone;
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     * @Assert\Length(
+     *      min=2,
+     *      minMessage= "validator.document.Tourist.min_phone",
+     *      max=100,
+     *      maxMessage= "validator.document.Tourist.max_phone"
+     * )
+     */
+    protected $mobilePhone;
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    protected $messenger;
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="email")
+     * @Assert\Email()
+     */
+    protected $email;
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="note")
+     * @Assert\Length(
+     *      min=2,
+     *      minMessage= "validator.document.Tourist.min_note",
+     *      max=100,
+     *      maxMessage= "validator.document.Tourist.max_note"
+     * )
+     */
+    protected $note;
+    /**
+     * @var VegaState|null
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaState")
+     */
+    protected $citizenship;
+    /**
+     * @ODM\EmbedOne(targetDocument="BirthPlace")
+     * @var BirthPlace
+     */
+    protected $birthplace;
+    /**
+     * @var AddressObjectDecomposed
+     * @ODM\EmbedOne(targetDocument="AddressObjectDecomposed")
+     */
+    protected $addressObjectDecomposed;
+    /**
+     * @var string
+     * @ODM\String
+     */
+    protected $addressObjectCombined;
+    /**
+     * @var DocumentRelation
+     * @ODM\EmbedOne(targetDocument="DocumentRelation")
+     */
+    protected $documentRelation;
+    /**
+     * @var Migration|null
+     * @ODM\EmbedOne(targetDocument="Migration")
+     */
+    protected $migration;
+    /**
+     * @var Visa|null
+     * @ODM\EmbedOne(targetDocument="Visa")
+     */
+    protected $visa;
+
+    public function __construct()
+    {
+        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
     public function getShortName()
     {
         return $this->getLastNameWithInitials();
+    }
+
+    public function getLastNameWithInitials()
+    {
+        $result = $this->getLastName();
+
+        if (!empty($this->getFirstName())) {
+            $result .= ' ' . mb_substr($this->getFirstName(), 0, 1) . '.';
+        }
+
+        if (!empty($this->getPatronymic())) {
+            $result .= mb_substr($this->getPatronymic(), 0, 1) . '.';
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get lastName
+     *
+     * @return string $lastName
+     */
+    public function getLastName()
+    {
+        if ($this->lastName == 'н/д') {
+            return '';
+        }
+
+        return mb_convert_case(mb_strtolower($this->lastName), MB_CASE_TITLE);
+    }
+
+    /**
+     * Set lastName
+     *
+     * @param string $lastName
+     * @return self
+     */
+    public function setLastName($lastName)
+    {
+        $this->lastName = mb_convert_case(mb_strtolower($lastName), MB_CASE_TITLE);
+
+        if (empty($this->lastName)) {
+            $this->lastName = null;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get firstName
+     *
+     * @return string $firstName
+     */
+    public function getFirstName()
+    {
+        if ($this->firstName == 'н/д') {
+            return '';
+        }
+
+        return mb_convert_case(mb_strtolower($this->firstName), MB_CASE_TITLE);
+    }
+
+    /**
+     * Set firstName
+     *
+     * @param string $firstName
+     * @return self
+     */
+    public function setFirstName($firstName)
+    {
+        $this->firstName = mb_convert_case(mb_strtolower($firstName), MB_CASE_TITLE);
+
+        if (empty($this->firstName)) {
+            $this->firstName = null;
+        }
+        return $this;
+    }
+
+    /**
+     * Get patronymic
+     *
+     * @return string $patronymic
+     */
+    public function getPatronymic()
+    {
+        return mb_convert_case(mb_strtolower($this->patronymic), MB_CASE_TITLE);
+    }
+
+    /**
+     * Set patronymic
+     *
+     * @param string $patronymic
+     * @return self
+     */
+    public function setPatronymic($patronymic)
+    {
+        $this->patronymic = mb_convert_case(mb_strtolower($patronymic), MB_CASE_TITLE);
+
+        if (empty($this->patronymic)) {
+            $this->patronymic = null;
+        }
+
+        return $this;
     }
 
     public function jsonSerialize()
@@ -36,6 +320,98 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
             'phone' => $this->phone,
             'email' => $this->email,
         ];
+    }
+
+    /**
+     * Get sex
+     *
+     * @return date $sex
+     */
+    public function getSex()
+    {
+        return $this->sex;
+    }
+
+    /**
+     * Set sex
+     *
+     * @param string $sex
+     * @return self
+     */
+    public function setSex($sex)
+    {
+        $this->sex = $sex;
+        return $this;
+    }
+
+    /**
+     * Get address
+     *
+     * @return string $address
+     */
+    public function getAddress()
+    {
+        return $this->getAddressObjectCombined();
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddressObjectCombined()
+    {
+        return $this->addressObjectCombined;
+    }
+
+    /**
+     * @param string $addressObjectCombined
+     */
+    public function setAddressObjectCombined($addressObjectCombined)
+    {
+        $this->addressObjectCombined = $addressObjectCombined;
+    }
+
+    /**
+     * Set document
+     *
+     * @param string $document
+     * @return self
+     */
+    public function setDocument($document)
+    {
+        $this->document = $document;
+        return $this;
+    }
+
+    /**
+     * Get document
+     *
+     * @return string $document
+     */
+    public function getDocument()
+    {
+        return $this->document;
+    }
+
+    /**
+     * Get phone
+     * @param boolean $original
+     * @return string $phone
+     */
+    public function getPhone($original = false)
+    {
+        return self::formatPhone($this->phone, $original);
+    }
+
+    /**
+     * Set phone
+     *
+     * @param string $phone
+     * @return self
+     */
+    public function setPhone($phone)
+    {
+        $this->phone = self::cleanPhone($phone);
+        return $this;
     }
 
     /**
@@ -66,403 +442,6 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
                 substr($phone, -4, 2) . '-' .
                 substr($phone, -2, 2);
         }
-    }
-
-    /**
-     * Hook timestampable behavior
-     * updates createdAt, updatedAt fields
-     */
-    use TimestampableDocument;
-
-    /**
-     * Hook softdeleteable behavior
-     * deletedAt field
-     */
-    use SoftDeleteableDocument;
-
-    /**
-     * Hook blameable behavior
-     * createdBy&updatedBy fields
-     */
-    use BlameableDocument;
-
-    /**
-     * @ODM\ReferenceMany(targetDocument="Order", nullable="true", mappedBy="mainTourist")
-     */
-    public $orders;
-
-    /**
-     * @ODM\ReferenceMany(targetDocument="Package", nullable="true", mappedBy="tourists")
-     */
-    public $packages;
-
-    /**
-     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocument", mappedBy="payer")
-     */
-    protected $cashDocuments;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="firstName")
-     * @Assert\NotNull(message= "validator.document.Tourist.name_required")
-     * @Assert\Length(
-     *      min=2,
-     *      minMessage= "validator.document.Tourist.min_name",
-     *      max=100,
-     *      maxMessage= "validator.document.Tourist.max_name"
-     * )
-     */
-    protected $firstName;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="lastName")
-     * @Assert\NotNull(message= "validator.document.Tourist.surname_required")
-     * @Assert\Length(
-     *      min=2,
-     *      minMessage= "validator.document.Tourist.min_surname",
-     *      max=100,
-     *      maxMessage= "validator.document.Tourist.max_surname"
-     * )
-     */
-    protected $lastName;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="patronymic")
-     * @Assert\Length(
-     *      min=2,
-     *      minMessage= "validator.document.Tourist.min_second_name",
-     *      max=100,
-     *      maxMessage= "validator.document.Tourist.max_second_name"
-     * )
-     */
-    protected $patronymic;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="fullName")
-     */
-    protected $fullName;
-
-    /**
-     * @var \DateTime
-     * @Gedmo\Versioned
-     * @ODM\Date(name="birthday")
-     * @Assert\Date()
-     */
-    protected $birthday;
-
-    /**
-     * @var \string
-     * @Gedmo\Versioned
-     * @ODM\String(name="sex")
-     * @Assert\Choice(
-     *      choices = {"male", "female", "unknown"},
-     *      message =  "validator.document.Tourist.wrong_gender"
-     * )
-     */
-    protected $sex = 'unknown';
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="phone")
-     * @Assert\Length(
-     *      min=2,
-     *      minMessage= "validator.document.Tourist.min_phone",
-     *      max=100,
-     *      maxMessage= "validator.document.Tourist.max_phone"
-     * )
-     */
-    protected $phone;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
-     * @Assert\Length(
-     *      min=2,
-     *      minMessage= "validator.document.Tourist.min_phone",
-     *      max=100,
-     *      maxMessage= "validator.document.Tourist.max_phone"
-     * )
-     */
-    protected $mobilePhone;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
-     */
-    protected $messenger;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="email")
-     * @Assert\Email()
-     */
-    protected $email;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String(name="note")
-     * @Assert\Length(
-     *      min=2,
-     *      minMessage= "validator.document.Tourist.min_note",
-     *      max=100,
-     *      maxMessage= "validator.document.Tourist.max_note"
-     * )
-     */
-    protected $note;
-
-    /**
-     * @var VegaState|null
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\VegaBundle\Document\VegaState")
-     */
-    protected $citizenship;
-
-    /**
-     * @ODM\EmbedOne(targetDocument="BirthPlace")
-     * @var BirthPlace
-     */
-    protected $birthplace;
-
-    /**
-     * @var AddressObjectDecomposed
-     * @ODM\EmbedOne(targetDocument="AddressObjectDecomposed")
-     */
-    protected $addressObjectDecomposed;
-
-    /**
-     * @var string
-     * @ODM\String
-     */
-    protected $addressObjectCombined;
-
-    /**
-     * @var DocumentRelation
-     * @ODM\EmbedOne(targetDocument="DocumentRelation")
-     */
-    protected $documentRelation;
-    /**
-     * @var Migration|null
-     * @ODM\EmbedOne(targetDocument="Migration")
-     */
-    protected $migration;
-    /**
-     * @var Visa|null
-     * @ODM\EmbedOne(targetDocument="Visa")
-     */
-    protected $visa;
-
-    /**
-     * Set firstName
-     *
-     * @param string $firstName
-     * @return self
-     */
-    public function setFirstName($firstName)
-    {
-        $this->firstName = mb_convert_case(mb_strtolower($firstName), MB_CASE_TITLE);
-
-        if (empty($this->firstName)) {
-            $this->firstName = null;
-        }
-        return $this;
-    }
-
-    /**
-     * Get firstName
-     *
-     * @return string $firstName
-     */
-    public function getFirstName()
-    {
-        if ($this->firstName == 'н/д') {
-            return '';
-        }
-        return mb_convert_case(mb_strtolower($this->firstName), MB_CASE_TITLE);
-    }
-
-    /**
-     * @param string $fullName
-     * @return self
-     */
-    public function setFullName($fullName)
-    {
-        $this->fullName = $fullName;
-        return $this;
-    }
-
-    /**
-     * @return string $fullName
-     */
-    public function getFullName()
-    {
-        return $this->fullName;
-    }
-
-    /**
-     * Set lastName
-     *
-     * @param string $lastName
-     * @return self
-     */
-    public function setLastName($lastName)
-    {
-        $this->lastName = mb_convert_case(mb_strtolower($lastName), MB_CASE_TITLE);
-
-        if (empty($this->lastName)) {
-            $this->lastName = null;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get lastName
-     *
-     * @return string $lastName
-     */
-    public function getLastName()
-    {
-        if ($this->lastName == 'н/д') {
-            return '';
-        }
-
-        return mb_convert_case(mb_strtolower($this->lastName), MB_CASE_TITLE);
-    }
-
-    /**
-     * Set patronymic
-     *
-     * @param string $patronymic
-     * @return self
-     */
-    public function setPatronymic($patronymic)
-    {
-        $this->patronymic = mb_convert_case(mb_strtolower($patronymic), MB_CASE_TITLE);
-
-        if (empty($this->patronymic)) {
-            $this->patronymic = null;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get patronymic
-     *
-     * @return string $patronymic
-     */
-    public function getPatronymic()
-    {
-        return mb_convert_case(mb_strtolower($this->patronymic), MB_CASE_TITLE);
-    }
-
-    /**
-     * Set birthday
-     *
-     * @param \DateTime $birthday
-     * @return self
-     */
-    public function setBirthday($birthday)
-    {
-        $this->birthday = $birthday;
-        return $this;
-    }
-
-    /**
-     * Get birthday
-     *
-     * @return \DateTime|null $birthday
-     */
-    public function getBirthday()
-    {
-        return $this->birthday;
-    }
-
-    /**
-     * Set sex
-     *
-     * @param string $sex
-     * @return self
-     */
-    public function setSex($sex)
-    {
-        $this->sex = $sex;
-        return $this;
-    }
-
-    /**
-     * Get sex
-     *
-     * @return date $sex
-     */
-    public function getSex()
-    {
-        return $this->sex;
-    }
-
-    /**
-     * Get address
-     *
-     * @return string $address
-     */
-    public function getAddress()
-    {
-        return $this->getAddressObjectCombined();
-    }
-
-    /**
-     * Set document
-     *
-     * @param string $document
-     * @return self
-     */
-    public function setDocument($document)
-    {
-        $this->document = $document;
-        return $this;
-    }
-
-    /**
-     * Get document
-     *
-     * @return string $document
-     */
-    public function getDocument()
-    {
-        return $this->document;
-    }
-
-    /**
-     * Set phone
-     *
-     * @param string $phone
-     * @return self
-     */
-    public function setPhone($phone)
-    {
-        $this->phone = self::cleanPhone($phone);
-        return $this;
-    }
-
-    /**
-     * Get phone
-     * @param boolean $original
-     * @return string $phone
-     */
-    public function getPhone($original=false)
-    {
-        return self::formatPhone($this->phone, $original);
     }
 
     /**
@@ -499,6 +478,16 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     }
 
     /**
+     * Get email
+     *
+     * @return string $email
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
      * Set email
      *
      * @param string $email
@@ -511,13 +500,13 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     }
 
     /**
-     * Get email
+     * Get note
      *
-     * @return string $email
+     * @return string $note
      */
-    public function getEmail()
+    public function getNote()
     {
-        return $this->email;
+        return $this->note;
     }
 
     /**
@@ -533,13 +522,15 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     }
 
     /**
-     * Get note
-     *
-     * @return string $note
+     * @ODM\PrePersist
      */
-    public function getNote()
+    public function prePersist()
     {
-        return $this->note;
+        if (empty($this->sex) || $this->sex == 'unknown') {
+            $this->sex = $this->guessGender();
+        }
+
+        $this->fullName = $this->generateFullName();
     }
 
     /**
@@ -562,15 +553,13 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     }
 
     /**
-     * @ODM\PrePersist
+     * @return string
      */
-    public function prePersist()
+    public function generateFullName()
     {
-        if (empty($this->sex) || $this->sex == 'unknown') {
-            $this->sex = $this->guessGender();
-        }
+        $name = $this->getLastName() . ' ' . $this->getFirstName();
 
-        $this->fullName = $this->generateFullName();
+        return (empty($this->getPatronymic())) ? $name : $name . ' ' . $this->getPatronymic();
     }
 
     /**
@@ -588,24 +577,48 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     /**
      * @return string
      */
-    public function generateFullName()
-    {
-        $name = $this->getLastName() . ' ' . $this->getFirstName();
-
-        return (empty($this->getPatronymic())) ? $name : $name . ' ' . $this->getPatronymic();
-    }
-
-    /**
-     * @return string
-     */
     public function generateFullNameWithAge()
     {
         return $this->generateFullName() . ($this->getBirthday() ? ' (' . $this->getBirthday()->format('d.m.Y') . '), возраст: ' . $this->getAge() : '');
     }
 
-    public function __construct()
+    /**
+     * Get birthday
+     *
+     * @return \DateTime|null $birthday
+     */
+    public function getBirthday()
     {
-        $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
+        return $this->birthday;
+    }
+
+    /**
+     * Set birthday
+     *
+     * @param \DateTime $birthday
+     * @return self
+     */
+    public function setBirthday($birthday)
+    {
+        $this->birthday = $birthday;
+
+        return $this;
+    }
+
+    /**
+     * Get age
+     * @return int
+     */
+    public function getAge()
+    {
+        if ($this->getBirthday()) {
+            $now = new \DateTime();
+            $diff = $now->diff($this->getBirthday());
+
+            return $diff->y;
+        }
+
+        return null;
     }
 
     /**
@@ -639,27 +652,30 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     }
 
     /**
-     * Get age
-     * @return int
-     */
-    public function getAge()
-    {
-        if ($this->getBirthday()) {
-            $now = new \DateTime();
-            $diff = $now->diff($this->getBirthday());
-
-            return $diff->y;
-        }
-
-        return null;
-    }
-
-    /**
      * @return string
      */
     public function getName()
     {
         return $this->getFullName();
+    }
+
+    /**
+     * @return string $fullName
+     */
+    public function getFullName()
+    {
+        return $this->fullName;
+    }
+
+    /**
+     * @param string $fullName
+     * @return self
+     */
+    public function setFullName($fullName)
+    {
+        $this->fullName = $fullName;
+
+        return $this;
     }
 
     /**
@@ -698,21 +714,6 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     public function getCashDocuments()
     {
         return $this->cashDocuments;
-    }
-
-    public function getLastNameWithInitials()
-    {
-        $result = $this->getLastName();
-
-        if (!empty($this->getFirstName())) {
-            $result .= ' ' . mb_substr($this->getFirstName(), 0, 1) . '.';
-        }
-
-        if (!empty($this->getPatronymic())) {
-            $result .= mb_substr($this->getPatronymic(), 0, 1) . '.';
-        }
-
-        return $result;
     }
 
     /**
@@ -778,6 +779,17 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     }
 
     /**
+     * @ODM\PrePersist
+     * @ODM\PreUpdate
+     */
+    public function preSave()
+    {
+        if ($this->getAddressObjectDecomposed() && $this->getAddressObjectDecomposed()->getCountry() && $this->getAddressObjectDecomposed()->getRegion()) {
+            $this->fillAddressObject();
+        }
+    }
+
+    /**
      * @return AddressObjectDecomposed
      */
     public function getAddressObjectDecomposed()
@@ -791,33 +803,6 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     public function setAddressObjectDecomposed(AddressObjectDecomposed $addressObjectDecomposed = null)
     {
         $this->addressObjectDecomposed = $addressObjectDecomposed;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAddressObjectCombined()
-    {
-        return $this->addressObjectCombined;
-    }
-
-    /**
-     * @param string $addressObjectCombined
-     */
-    public function setAddressObjectCombined($addressObjectCombined)
-    {
-        $this->addressObjectCombined = $addressObjectCombined;
-    }
-
-
-    /**
-     * @ODM\PrePersist
-     * @ODM\PreUpdate
-     */
-    public function preSave()
-    {
-        if ($this->getAddressObjectDecomposed() && $this->getAddressObjectDecomposed()->getCountry() && $this->getAddressObjectDecomposed()->getRegion())
-            $this->fillAddressObject();
     }
 
     private function fillAddressObject()
