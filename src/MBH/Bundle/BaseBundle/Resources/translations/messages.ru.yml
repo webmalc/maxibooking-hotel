@@ -63,3 +63,9 @@ exception.relation_delete.message.task: 'Невозможно удалить. Э
 
 tariff.main: основной тариф
 tariffs: тарифы
+
+room: номер
+rooms: номера
+
+bed: койко-место
+beds: койко-места

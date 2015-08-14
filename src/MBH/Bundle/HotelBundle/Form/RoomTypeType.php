@@ -29,7 +29,6 @@ class RoomTypeType extends AbstractType
                 'label' => 'form.roomTypeType.international_title',
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
-                //'help' => 'Международное название'
             ])
             ->add('description', 'textarea', [
                 'label' => 'form.roomTypeType.description',
@@ -50,18 +49,25 @@ class RoomTypeType extends AbstractType
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
             ])
+            ->add('isHostel', 'checkbox', [
+                'label' => 'form.hotelType.hostel',
+                'group' => 'form.roomTypeType.settings',
+                'value' => true,
+                'required' => false,
+                'help' => 'form.hotelType.hostel_hotel_or_not'
+            ])
             ->add('places', 'text', [
                 'label' => 'form.roomTypeType.main_places',
                 'group' => 'form.roomTypeType.settings',
                 'required' => true,
-                'attr' => ['placeholder' => 'hotel', 'class' => 'spinner'],
+                'attr' => ['placeholder' => 'hotel', 'class' => 'spinner room-type-places'],
                 'help' => 'form.roomTypeType.room_main_places_amount'
             ])
             ->add('additionalPlaces', 'text', [
                 'label' => 'form.roomTypeType.additional_places',
                 'group' => 'form.roomTypeType.settings',
                 'required' => true,
-                'attr' => ['placeholder' => 'hotel', 'class' => 'spinner'],
+                'attr' => ['placeholder' => 'hotel', 'class' => 'spinner room-type-places'],
                 'help' => 'form.roomTypeType.room_additional_places_amount'
             ])
             ->add('isEnabled', 'checkbox', [

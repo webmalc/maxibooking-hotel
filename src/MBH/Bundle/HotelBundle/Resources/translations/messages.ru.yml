@@ -36,7 +36,7 @@ form.hotelType.sale_days_amount: Количество дней продажи
 form.hotelType.settings: Настройки
 form.hotelType.how_long_sale_opened_since_today: На сколько дней открыта продажа от текущего числа
 form.hotelType.hostel: Хостел?
-form.hotelType.hostel_hotel_or_not: Отель хостел или нет?
+form.hotelType.hostel_hotel_or_not: Хостел или нет?
 form.hotelType.is_default: Выбран по умолчанию?
 form.hotelType.logo: Логотип
 form.hotelType.is_default_maxibooking: Выбран по умолчанию при входе в MaxiBooking

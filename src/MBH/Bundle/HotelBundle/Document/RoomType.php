@@ -153,9 +153,31 @@ class RoomType extends Base
      * @ODM\String()
      */
     protected $image;
-
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isHostel = false;
     /** @ODM\EmbedMany(targetDocument="RoomTypeImage") */
     private $images = array();
+
+    public function __construct()
+    {
+        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get hotel
+     *
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     */
+    public function getHotel()
+    {
+        return $this->hotel;
+    }
 
     /**
      * Set hotel
@@ -170,13 +192,13 @@ class RoomType extends Base
     }
 
     /**
-     * Get hotel
+     * Get fullTitle
      *
-     * @return \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     * @return string $fullTitle
      */
-    public function getHotel()
+    public function getFullTitle()
     {
-        return $this->hotel;
+        return $this->fullTitle;
     }
 
     /**
@@ -192,13 +214,13 @@ class RoomType extends Base
     }
 
     /**
-     * Get fullTitle
+     * Get title
      *
-     * @return string $fullTitle
+     * @return string $title
      */
-    public function getFullTitle()
+    public function getTitle()
     {
-        return $this->fullTitle;
+        return $this->title;
     }
 
     /**
@@ -211,16 +233,6 @@ class RoomType extends Base
     {
         $this->title = $title;
         return $this;
-    }
-
-    /**
-     * Get title
-     *
-     * @return string $title
-     */
-    public function getTitle()
-    {
-        return $this->title;
     }
 
     /**
@@ -240,6 +252,16 @@ class RoomType extends Base
     }
 
     /**
+     * Get color
+     *
+     * @return string $color
+     */
+    public function getColor()
+    {
+        return $this->color;
+    }
+
+    /**
      * Set color
      *
      * @param string $color
@@ -252,60 +274,6 @@ class RoomType extends Base
     }
 
     /**
-     * Get color
-     *
-     * @return string $color
-     */
-    public function getColor()
-    {
-        return $this->color;
-    }
-
-    /**
-     * Set places
-     *
-     * @param int $places
-     * @return self
-     */
-    public function setPlaces($places)
-    {
-        $this->places = $places;
-        return $this;
-    }
-
-    /**
-     * Get places
-     *
-     * @return int $places
-     */
-    public function getPlaces()
-    {
-        return $this->places;
-    }
-
-    /**
-     * Set additionalPlaces
-     *
-     * @param int $additionalPlaces
-     * @return self
-     */
-    public function setAdditionalPlaces($additionalPlaces)
-    {
-        $this->additionalPlaces = $additionalPlaces;
-        return $this;
-    }
-
-    /**
-     * Get additionalPlaces
-     *
-     * @return int $additionalPlaces
-     */
-    public function getAdditionalPlaces()
-    {
-        return $this->additionalPlaces;
-    }
-
-    /**
      * @return string
      */
     public function getName()
@@ -314,11 +282,6 @@ class RoomType extends Base
             return $this->title;
         }
         return $this->fullTitle;
-    }
-
-    public function __construct()
-    {
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -350,14 +313,6 @@ class RoomType extends Base
     {
         return $this->rooms;
     }
-    
-    /**
-     * @return int
-     */
-    public function getTotalPlaces()
-    {
-        return $this->places + $this->additionalPlaces;
-    }
 
     /**
      * Convert children to adults
@@ -376,7 +331,7 @@ class RoomType extends Base
                 break;
             }
 
-            if ( $i > $this->getPlaces() && $i > $adults) {
+            if ($i > $this->getPlaces() && $i > $adults) {
                 $result['children']++;
             } else {
                 $result['adults']++;
@@ -387,24 +342,111 @@ class RoomType extends Base
     }
 
     /**
+     * @return int
+     */
+    public function getTotalPlaces()
+    {
+        return $this->getPlaces() + $this->getAdditionalPlaces();
+    }
+
+    /**
+     * Get places
+     *
+     * @return int $places
+     */
+    public function getPlaces()
+    {
+        return $this->getIsHostel() ? 1 : $this->places;
+    }
+
+    /**
+     * Set places
+     *
+     * @param int $places
+     * @return self
+     */
+    public function setPlaces($places)
+    {
+        $this->getIsHostel() ? $this->places = 1 : $this->places = $places;
+
+        return $this;
+    }
+    
+    /**
+     * Get isHostel
+     *
+     * @return boolean $isHostel
+     */
+    public function getIsHostel()
+    {
+        return $this->isHostel;
+    }
+
+    /**
+     * Get additionalPlaces
+     *
+     * @return int $additionalPlaces
+     */
+    public function getAdditionalPlaces()
+    {
+        return $this->getIsHostel() ? 0 : $this->additionalPlaces;
+    }
+
+    /**
+     * Set additionalPlaces
+     *
+     * @param int $additionalPlaces
+     * @return self
+     */
+    public function setAdditionalPlaces($additionalPlaces)
+    {
+        $this->getIsHostel() ? $this->additionalPlaces = 0 : $this->additionalPlaces = $additionalPlaces;
+
+        return $this;
+    }
+
+    /**
+     * Set isHostel
+     *
+     * @param boolean $isHostel
+     * @return self
+     */
+    public function setIsHostel($isHostel)
+    {
+        $this->isHostel = $isHostel;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getAdultsChildrenCombinations()
     {
         $result = [];
 
-        for ($i = 1 ; $i <= $this->getTotalPlaces(); $i++) {
+        for ($i = 1; $i <= $this->getTotalPlaces(); $i++) {
             $result[] = ['adults' => $i, 'children' => 0];
         }
         for ($i = $this->getPlaces(); $i <= $this->getTotalPlaces(); $i++) {
-            for($k = 1; $k <= $this->getAdditionalPlaces(); $k++) {
-                if(($k + $i) && ($k + $i) <= $this->getTotalPlaces()) {
+            for ($k = 1; $k <= $this->getAdditionalPlaces(); $k++) {
+                if (($k + $i) && ($k + $i) <= $this->getTotalPlaces()) {
                     $result[] = ['adults' => $i, 'children' => $k];
                 }
             }
         }
 
         return $result;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string $description
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     /**
@@ -420,16 +462,6 @@ class RoomType extends Base
     }
 
     /**
-     * Get description
-     *
-     * @return string $description
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
      * Set image
      *
      * @param string $image
@@ -438,48 +470,6 @@ class RoomType extends Base
     public function setImage($image)
     {
         $this->image = $image;
-        return $this;
-    }
-
-
-
-
-
-
-//    public function getUploadRootDir()
-//    {
-//        return __DIR__.'/../../../../../web/'.$this->getUploadDir();
-//    }
-//
-//    public function getUploadDir()
-//    {
-//        return 'upload/roomTypes';
-//    }
-//
-//    public function uploadImage(\Symfony\Component\HttpFoundation\File\UploadedFile $image = null)
-//    {
-//        if (empty($image)) {
-//            return;
-//        }
-//
-//        $this->image = null;
-//
-//        $newName = $this->id . '.'. $image->guessExtension();
-//        $image->move($this->getUploadRootDir(), $newName);
-//
-//        $this->image = $newName;
-//    }
-
-
-    /**
-     * Set roomSpace
-     *
-     * @param int $roomSpace
-     * @return self
-     */
-    public function setRoomSpace($roomSpace)
-    {
-        $this->roomSpace = $roomSpace;
         return $this;
     }
 
@@ -494,25 +484,15 @@ class RoomType extends Base
     }
 
     /**
-     * Set editor
+     * Set roomSpace
      *
-     * @param string $editor
+     * @param int $roomSpace
      * @return self
      */
-    public function setEditor($editor)
+    public function setRoomSpace($roomSpace)
     {
-        $this->editor = $editor;
+        $this->roomSpace = $roomSpace;
         return $this;
-    }
-
-    /**
-     * Get editor
-     *
-     * @return string $editor
-     */
-    public function getEditor()
-    {
-        return $this->editor;
     }
 
     /**
@@ -535,6 +515,17 @@ class RoomType extends Base
         $this->images->removeElement($image);
     }
 
+    public function getMainImage()
+    {
+        foreach ($this->getImages() as $image) {
+            if ($image->getIsMain()) {
+                return $image;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Get images
      *
@@ -544,18 +535,6 @@ class RoomType extends Base
     {
         return $this->images;
     }
-
-    public function getMainImage()
-    {
-        foreach($this->getImages() as $image) {
-            if ($image->getIsMain()) {
-                return $image;
-            }
-        }
-
-        return null;
-    }
-
 
     /**
      * @ODM\PreUpdate()
