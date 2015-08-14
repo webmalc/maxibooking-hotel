@@ -91,15 +91,6 @@ class TaskSubscriber implements EventSubscriber
             $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($oldRoom)), $oldRoom);
             $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($newRoom)), $newRoom);
         }
-        /*if (array_key_exists('status', $changeSet)) {
-            $room = $task->getRoom();
-            $dm->refresh($task->getType());
-            if (!$task->getType()->getRoomStatus()) {
-                throw new Exception();
-            }
-            $room->setStatus($task->getType()->getRoomStatus());
-            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
-        }*/
         if (array_key_exists('type', $changeSet)) {
             $room = $task->getRoom();
             $dm->refresh($task->getType());
