@@ -406,6 +406,7 @@ class Vashotel extends Base
             ]
         );
         if (!$order) {
+            $this->notifyError('vashotel', '#' . $id);
             return false;
         }
         $order->setChannelManagerStatus('cancelled');
@@ -463,6 +464,7 @@ class Vashotel extends Base
                 $this->dm->getFilterCollection()->enable('softdeleteable');
 
                 if (!$order) {
+                    $this->notifyError('vashotel', '#' . $id);
                     continue;
                 }
             }

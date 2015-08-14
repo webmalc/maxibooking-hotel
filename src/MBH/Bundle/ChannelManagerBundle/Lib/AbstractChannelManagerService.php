@@ -350,6 +350,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
         if ($post && !empty($data)) {
+            //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -409,6 +410,41 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
 
         return $json;
+    }
+
+    /**
+     * @param $service
+     * @param null $info
+     * @return bool
+     */
+    public function notifyError($service, $info = null )
+    {
+        try {
+            $notifier = $this->container->get('mbh.notifier');
+            $tr = $this->container->get('translator');
+            $message = $notifier::createMessage();
+
+            $text = 'channelManager.'.$service.'.notification.error';
+            $subject = 'channelManager.'.$service.'.notification.error.subject';
+
+            $message
+                ->setText(
+                    $tr->trans($text, ['%info%' => $info], 'MBHChannelManagerBundle') . '<br>' .
+                    $tr->trans('channelManager.booking.notification.bottom', [], 'MBHChannelManagerBundle')
+                )
+                ->setFrom('channelmanager')
+                ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
+                ->setType('danger')
+                ->setCategory('notification')
+                ->setAutohide(false)
+                ->setEnd(new \DateTime('+10 minute'))
+            ;
+
+            return $notifier->setMessage($message)->notify();
+
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     public function notify(Order $order, $service, $type = 'new')

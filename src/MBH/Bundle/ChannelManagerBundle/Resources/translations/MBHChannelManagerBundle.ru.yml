@@ -41,6 +41,8 @@ channelManager.booking.notification.subject.delete: Удален заказ Book
 channelManager.booking.notification.new: Новый заказ %order% из booking.com. Номера броней: %packages%
 channelManager.booking.notification.edit: Изменен заказ %order% из booking.com. Номера броней: %packages%
 channelManager.booking.notification.delete: Удален заказ %order% из booking.com. Номера броней: %packages%
+channelManager.booking.notification.error.subject: Ошибка Booking.com
+channelManager.booking.notification.error: Ошибка при обработке заказа Booking.com. Информация: %info%
 
 channelManager.vashotel.notification.subject.new: Новый заказ Vashotel.ru
 channelManager.vashotel.notification.subject.edit: Изменен заказ Vashotel.ru
@@ -48,6 +50,10 @@ channelManager.vashotel.notification.subject.delete: Удален заказ Vas
 channelManager.vashotel.notification.new: Новый заказ %order% из ВашОтель.RU. Номера броней: %packages%
 channelManager.vashotel.notification.edit: Изменен заказ %order% из ВашОтель.RU. Номера броней: %packages%
 channelManager.vashotel.notification.delete: Удален заказ %order% из ВашОтель.RU. Номера броней: %packages%
+channelManager.vashotel.notification.error.subject: Ошибка Vashotel.ru
+channelManager.booking.notification.error: Ошибка при обработке заказа Vashotel.ru. Информация: %info%
+
+channelManager.booking.notification.bottom: Внимание! Требуется ручная обработка ситуации.
 
 channelmanager.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы типы номеров, тарифы или услуги
 views.channelmanager.actions.sync: Синхронизировать
