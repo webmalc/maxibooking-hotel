@@ -81,17 +81,22 @@ class OrderTouristType extends AbstractType
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'guestBirthday'),
                 'constraints' => [new Date()]
             ))
-            ->add('addToPackage', 'checkbox', array(
+        ;
+
+        if ($options['guest']) {
+            $builder->add('addToPackage', 'checkbox', array(
                 'label' => 'form.orderTouristType.add_to_package',
                 'group' => 'form.orderTouristType.add_guest',
                 'required' => false
-            ))
-        ;
+            ));
+        }
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults([]);
+        $resolver->setDefaults([
+            'guest' => true
+        ]);
     }
 
     public function getName()

@@ -222,6 +222,17 @@ class Search
                 $roomType = $caches[0]->getRoomType();
                 $result = new SearchResult();
                 $tourists = $roomType->getAdultsChildrenCombination($query->adults, $query->children);
+
+                if ($query->accommodations) {
+                    $groupedRooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
+                        $query->begin,
+                        $query->end,
+                        $roomType->getHotel(),
+                        $roomType->getId()
+                    );
+                    $result->setRooms($groupedRooms);
+                }
+
                 $result->setBegin($query->begin)
                     ->setEnd($query->end)
                     ->setRoomType($roomType)
@@ -249,7 +260,7 @@ class Search
                 $results[] = $result;
             }
         }
-
+        sort($results);
         return $results;
     }
 
@@ -278,7 +289,11 @@ class Search
                 continue;
             }
 
-            $results[] = $tariff;
+            if ($query->grouped) {
+                $results[$tariff->getHotel()->getId()][] = $tariff;
+            } else {
+                $results[] = $tariff;
+            }
         }
 
         return $results;

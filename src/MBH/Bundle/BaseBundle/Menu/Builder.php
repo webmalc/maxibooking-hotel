@@ -162,17 +162,23 @@ class Builder extends ContainerAware
              ->setAttributes(['dropdown' => true, 'icon' => 'fa fa fa-arrows-h'])
         ;
 
-        $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'Онлайн форма']);
-        $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'Оценки']);
-
-
         if ($this->container->getParameter('mbh.environment') == 'prod') {
-            $menu['services']->addChild('booking', ['route' => 'booking', 'label' => 'Booking.com']);
-            $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель.RU']);
+            $menu['services']->addChild('booking', ['route' => 'booking', 'label' => 'Booking.com'])
+                ->setAttributes(['header' => 'Channel manager', 'header_icon' => 'fa fa-cloud-download'])
+            ;
+            $menu['services']->addChild('ostrovok', ['route' => 'ostrovok', 'label' => 'Ostrovok']);
+            $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель']);
             //$menu['services']->addChild('hotelinn', ['route' => 'hotelinn', 'label' => 'Hotel-inn']);
             //$menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru']);
 
         }
+
+        $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'Онлайн форма'])
+            ->setAttributes(['divider_prepend' =>true,  'header' => 'Другое', 'icon' => 'fa fa-globe'])
+        ;
+        $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'Оценки'])
+            ->setAttributes(['icon' => 'fa fa-star'])
+        ;
 
         return $this->filterMenu($menu);
     }

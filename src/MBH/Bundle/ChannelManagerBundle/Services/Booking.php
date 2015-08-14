@@ -131,6 +131,14 @@ class Booking extends Base
                     $result = true;
 
                 };
+
+                if (in_array((string)$reservation->status, ['modified', 'cancelled']) && !$order) {
+                    $this->notifyError(
+                        'booking',
+                        '#' . $reservation->id . ' ' .
+                        $reservation->customer->last_name .  ' ' . $reservation->customer->first_name
+                    );
+                }
             };
         }
 

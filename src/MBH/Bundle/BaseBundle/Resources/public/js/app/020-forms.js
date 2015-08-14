@@ -17,7 +17,7 @@ $.fn.serializeObject = function () {
     return o;
 };
 
-$(document).ready(function () {
+var docReadyForms = function () {
     'use strict';
 
     $('form.remember input, form.remember select, form.remember textarea').phoenix();
@@ -76,7 +76,7 @@ $(document).ready(function () {
     $('select').not('.plain-html').select2({
         placeholder: "Сделайте выбор",
         allowClear: true,
-        width: 'element',
+        width: 'resolve',
         formatSelection: function (item, container) {
             var optgroup = $(item.element).parent('optgroup').attr('label');
             if (!optgroup) {
@@ -94,7 +94,8 @@ $(document).ready(function () {
     $('.datepicker').datepicker({
         language: "ru",
         todayHighlight: true,
-        autoclose: true
+        autoclose: true,
+        format: 'dd.mm.yyyy'
     });
 
     $('.datepicker').keyup(function (e) {
@@ -188,7 +189,6 @@ $(document).ready(function () {
             }
         },
         initSelection: function (element, callback) {
-            console.log('initSection');
             var id = $(element).val();
             if (id !== "") {
                 $.ajax(Routing.generate('ajax_tourists', {id: id}), {
@@ -225,4 +225,12 @@ $(document).ready(function () {
         load();
         inputs.change(remember);
     }());
+
+    $('input[type=file]').bootstrapFileInput();
+};
+
+$(document).ready(function () {
+    'use strict';
+
+    docReadyForms();
 });

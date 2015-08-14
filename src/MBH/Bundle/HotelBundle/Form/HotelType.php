@@ -46,13 +46,13 @@ class HotelType extends AbstractType
                     new \Symfony\Component\Validator\Constraints\Image()
                 ]
             ])
-            /*->add('isHostel', 'checkbox', [
+            ->add('isHostel', 'checkbox', [
                 'label' => 'form.hotelType.hostel',
                 'group' => 'form.hotelType.settings',
                 'value' => true,
                 'required' => false,
                 'help' => 'form.hotelType.hostel_hotel_or_not'
-            ])*/
+            ])
             ->add('isDefault', 'checkbox', [
                 'label' => 'form.hotelType.is_default',
                 'group' => 'form.hotelType.settings',

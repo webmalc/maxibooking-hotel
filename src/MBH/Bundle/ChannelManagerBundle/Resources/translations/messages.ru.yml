@@ -31,6 +31,7 @@ form.vashotelType.vashotel_ru_settings_hotel_id: ID отеля в настрой
 form.vashotelType.breakfast: Завтрак?
 form.vashotelType.r0_or_BB: Какой тип питания использовать RO или BB?
 controller.bookingController.settings_saved_success: 'Настройки успешно сохранены.'
+controller.ostrovokController.settings_saved_success: 'Настройки успешно сохранены.'
 controller.channelManagerController.sync_end: 'Синхронизация окончена.'
 controller.oktogoController.settings_saved_success: 'Настройки успешно сохранены.'
 controller.oktogoController.rooms_sync_success: 'Номера успешно синхронизированы.'
@@ -43,3 +44,7 @@ controller.vashotelController.settings_saved_success: 'Настройки усп
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
 roomtype.placeholder: 'тип номера соответствия номеру в канале'
 tarifftype.placeholder: 'тариф соответствия тарифу в канале'
+form.ostrovokType.in_included: Включен?
+form.ostrovokType.hotel_id: ID отеля
+form.ostrovokType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.ostrovokType.ostrovok_ru_settings_hotel_id:  ID отеля в настройках Ostrovok.ru

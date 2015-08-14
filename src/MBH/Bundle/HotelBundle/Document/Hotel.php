@@ -176,6 +176,9 @@ class Hotel extends Base
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\HotelinnConfig", mappedBy="hotel") */
     protected $hotelinnConfig;
 
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig", mappedBy="hotel") */
+    protected $ostrovokConfig;
+
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Country")
@@ -856,6 +859,28 @@ class Hotel extends Base
     public function getHotelinnConfig()
     {
         return $this->hotelinnConfig;
+    }
+
+    /**
+     * Set ostrovokConfig
+     *
+     * @param \MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig $ostrovokConfig
+     * @return self
+     */
+    public function setOstrovokConfig(\MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig $ostrovokConfig)
+    {
+        $this->ostrovokConfig = $ostrovokConfig;
+        return $this;
+    }
+
+    /**
+     * Get ostrovokConfig
+     *
+     * @return \MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig
+     */
+    public function getOstrovokConfig()
+    {
+        return $this->ostrovokConfig;
     }
 
     /**

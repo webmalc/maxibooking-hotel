@@ -26,7 +26,7 @@ class PackageAccommodationType extends AbstractType
 
         $builder
             ->add('accommodation', 'document', [
-                'label' => ($options['isHostel']) ? 'form.packageAccommodationType.room_or_bed' : 'form.packageAccommodationType.room',
+                'label' =>  'form.packageAccommodationType.room',
                 'required' => true,
                 'empty_value' => '',
                 'class' => 'MBHHotelBundle:Room',
@@ -82,7 +82,6 @@ class PackageAccommodationType extends AbstractType
             'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
             'optGroupRooms' => [],
             'arrivals' => [],
-            'isHostel' => false,
             'roomType' => null
         ]);
     }

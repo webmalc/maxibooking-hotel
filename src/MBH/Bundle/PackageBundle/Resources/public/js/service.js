@@ -1,5 +1,6 @@
 /*global window, $, services, document, select2, mbh */
-$(document).ready(function () {
+
+var docReadyServices = function () {
     "use strict";
 
     // package service form
@@ -18,7 +19,6 @@ $(document).ready(function () {
             serviceInput = $('#mbh_bundle_packagebundle_package_service_type_service'),
             serviceHelp = serviceInput.next('span.help-block'),
             amountInput = $('#mbh_bundle_packagebundle_package_service_type_amount'),
-            amountHelp = amountInput.closest('div.input-group').next('span.help-block'),
             timeInput = $('#mbh_bundle_packagebundle_package_service_type_time'),
             timeDiv = timeInput.closest('div.form-group'),
 
@@ -30,17 +30,17 @@ $(document).ready(function () {
                 dateInput.val(dateInput.val() || dateDefault);
                 personsInput.val(personsInput.val() || 1);
                 nightsInput.val(nightsInput.val() || 1);
-                amountHelp.html('');
+                amountInput.closest('div.input-group').next('span.help-block').html('');
                 serviceHelp.html('<small>Услуга для добавления к броне</small>');
             },
             calc = function () {
 
                 var info = services[serviceInput.val()];
-                amountHelp.html('');
+                amountInput.closest('div.input-group').next('span.help-block').html('');
                 if (serviceInput.val() !== null && typeof info !== 'undefined') {
                     var nights = nightsInput.val(),
                         price = priceInput.val() * amountInput.val() * nights * personsInput.val();
-                    amountHelp.html($.number(price, 2) + ' ' + mbh.currency.text + ' за ' + amountInput.val() + ' шт.');
+                    amountInput.closest('div.input-group').next('span.help-block').html($.number(price, 2) + ' ' + mbh.currency.text + ' за ' + amountInput.val() + ' шт.');
                 }
             },
             show = function (info) {
@@ -106,13 +106,6 @@ $(document).ready(function () {
         hideShow();
 
     }());
-});
-
-/**
- * @author Aleksandr Arofikin
- */
-$(document).ready(function () {
-    'use strict';
 
     //Service selector
     (function () {
@@ -191,4 +184,10 @@ $(document).ready(function () {
             $serviceTable.dataTable().fnDraw();
         }
     });
-})
+}
+
+$(document).ready(function () {
+    "use strict";
+
+    docReadyServices();
+});

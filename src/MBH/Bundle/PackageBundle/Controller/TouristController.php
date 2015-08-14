@@ -91,6 +91,52 @@ class TouristController extends Controller
     }
 
     /**
+     * Creates a new entity via ajax.
+     *
+     * @Route("/create", name="tourist_create_ajax")
+     * @Method("POST")
+     * @Security("is_granted('ROLE_USER')")
+     */
+    public function createAjaxAction(Request $request)
+    {
+        $entity = new Tourist();
+        $entity->setDocumentRelation(new DocumentRelation());
+        $entity->setBirthplace(new BirthPlace());
+        $entity->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
+        $entity->getDocumentRelation()->setType('vega_russian_passport');
+
+        $form = $this->createForm(new TouristType(), $entity,
+            ['genders' => $this->container->getParameter('mbh.gender.types')]);
+        $docForm = $this->createForm('mbh_document_relation', $entity);
+        $addressForm = $this->createForm('mbh_address_object_decomposed', $entity->getAddressObjectDecomposed());
+
+        $form->submit($request);
+        $docForm->submit($request);
+        $addressForm->submit($request);
+
+        if ($form->isValid() && $docForm->isValid() && $addressForm->isValid()) {
+
+            $entity->setAddressObjectDecomposed($addressForm->getData());
+            $this->dm->persist($entity);
+            $this->dm->flush();
+
+            return new JsonResponse([
+                'error' => false,
+                'id' => $entity->getId()
+            ]);
+        }
+        $errors = [];
+        foreach ($this->get('validator')->validate($entity) as $error) {
+            $errors[] = $error->getMessage();
+        }
+
+        return new JsonResponse([
+            'error' => true,
+            'text' => implode('<br>', $errors)
+        ]);
+    }
+
+    /**
      * Creates a new entity.
      *
      * @Route("/create", name="tourist_create")
@@ -106,6 +152,7 @@ class TouristController extends Controller
 
         $form->submit($request);
         if ($form->isValid()) {
+
             $this->dm->persist($entity);
             $this->dm->flush();
 

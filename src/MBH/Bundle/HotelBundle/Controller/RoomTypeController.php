@@ -311,7 +311,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     public function newAction()
     {
         $entity = new RoomType();
-        $type = $this->hotel->getIsHostel() ? 'hostel' : 'hotel';
         $form = $this->createForm(new RoomTypeType(), $entity, []);
 
         return array(
@@ -332,7 +331,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $entity = new RoomType();
         $entity->setHotel($this->hotel);
 
-        $type = $this->hotel->getIsHostel() ? 'hostel' : 'hotel';
         $form = $this->createForm(new RoomTypeType(), $entity, []);
 
         $form->submit($request);
@@ -398,11 +396,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
 
-        $type = $this->hotel->getIsHostel() ? 'hostel' : 'hotel';
-        $form = $this->createForm(new RoomTypeType(), $entity /*[
-            'imageUrl' => $entity->getImage(true),
-            'deleteImageUrl' => $this->generateUrl('room_type_image_delete', ['id' => $id])
-        ]*/);
+        $form = $this->createForm(new RoomTypeType(), $entity);
 
         $form->submit($request);
 

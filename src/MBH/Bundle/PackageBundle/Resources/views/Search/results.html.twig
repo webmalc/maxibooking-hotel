@@ -1,26 +1,46 @@
 
     <div class="spacer-top">
 
-        {% set selectedTariff = app.request.query.get('s').tariff|default(null) %}
+        <div class="alert alert-danger hide" id="accommodation-alert">
+            <i class="fa fa-exclamation-circle"></i> {{ "accommodation.alert"|trans({}, "MBHPackageBundle") }}
+        </div>
+
 
         {% if tariffResults != false and tariffResults is iterable and tariffResults|length != 0 %}
 
-            <div class="panel panel-default package-search-tariffs">
-                <div class="panel-heading">{{ "search.results.tariff_search"|trans({}, "MBHPackageBundle") }}<div class="text-right pull-right"><small><span class="text-success">{{ "search.results.green"|trans({}, "MBHPackageBundle") }}</span>{{ "search.results.main_tariffs"|trans({}, "MBHPackageBundle") }} </small><small>&nbsp; <span class="text-primary">{{ "search.results.blue"|trans({}, "MBHPackageBundle") }}</span>{{ "search.results.special_tariffs"|trans({}, "MBHPackageBundle") }}</small></div></div>
-                <div class="panel-body">
-
-                    {% for tariffResult in tariffResults  %}
-
-                        <ul id="package-search-tariffs">
-                            <li>
-                                <a href="#" {% if tariffResult.isDefault %}class="text-success"{% else %}data-id="{{ tariffResult.id }}{% endif %}">
-                                    {% if selectedTariff == tariffResult.id or (selectedTariff is empty and tariffResult.isDefault)  %} <small><i class="fa fa-check"></i></small> {% endif %}
-                                    {{ tariffResult }} <small>({{ tariffResult.hotel }})</small>
+            <div class="package-search-tariffs panel-group" id="package-search-tariffs-accordion">
+                {% for key, tariffs in tariffResults %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#package-search-tariffs-accordion" href="#accordion-{{ key }}">
+                                    {{ 'tariffs'|trans|capitalize }} «{{ tariffs[0].hotel }}»
+                                    <small>
+                                    {% if selectedTariff %}
+                                        {{selectedTariff.hotel == tariffs[0].hotel ? selectedTariff : '' }}
+                                    {% else %}
+                                       {{ 'tariff.main'|trans|capitalize }}
+                                    {% endif %}
+                                    </small>
                                 </a>
-                            </li>
-                        </ul>
-                    {% endfor %}
-                </div>
+                            </h4>
+                        </div>
+                        <div id="accordion-{{ key }}" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul id="package-search-tariffs">
+                                {% for tariff in tariffs %}
+                                    <li>
+                                        <a href="#" {% if tariff.isDefault %}class="text-success"{% else %}data-id="{{ tariff.id }}{% endif %}">
+                                            {% if (selectedTariff and selectedTariff.id == tariff.id) or (selectedTariff is empty and tariff.isDefault)  %} <small><i class="fa fa-check"></i></small> {% endif %}
+                                            {{ tariff }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         {% endif %}
 
@@ -29,29 +49,41 @@
             <table class="package-search-table table table-striped table-hover table-condensed table-icons table-actions">
                 <thead>
                 <tr>
-                    <th class="td-xs"></th>
-                    <th class="td-sm">{{ "search.results.check_in"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-sm">{{ "search.results.check_out"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-sm">{{ "search.results.days_and_nights"|trans({}, "MBHPackageBundle") }}</th>
+                    <th class="td-xxs"></th>
+                    <th class="td-md">{{ "search.results.dates"|trans({}, "MBHPackageBundle") }}</th>
                     <th>{{ "search.results.hotel"|trans({}, "MBHPackageBundle") }}</th>
                     <th>{{ "search.results.type"|trans({}, "MBHPackageBundle") }}</th>
-                    <th>{{ "search.results.tariff"|trans({}, "MBHPackageBundle") }}</th>
+                    <th class="td-sm">{{ "search.results.room"|trans({}, "MBHPackageBundle") }}</th>
                     <th class="td-sm">{{ "search.results.guests"|trans({}, "MBHPackageBundle") }}</th>
-                    <th class="td-sm">{{ "search.results.price"|trans({}, "MBHPackageBundle") }}</th>
+                    <th class="td-md">{{ "search.results.price"|trans({}, "MBHPackageBundle") }}</th>
                     <th class="td-md"></th>
                 </tr>
                 </thead>
                 <tbody>
+
                 {% for result in results  %}
-  
+
                     <tr>
                         <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
-                        <td class="text-center">{{ result.begin|date('d.m.Y') }}</td>
-                        <td class="text-center">{{ result.end|date('d.m.Y') }}</td>
-                        <td class="text-center">{{ result.days }}/{{ result.nights }}</td>
+                        <td>{{ result.begin|mbh_format }} - {{ result.end|mbh_format }}<br><small>{{ plural(result.nights, "package.json.noch"|trans({}, "MBHPackageBundle"), "package.json.nochi"|trans({}, "MBHPackageBundle"), "package.json.nochei"|trans({}, "MBHPackageBundle")) }}</small></td>
                         <td>{{ result.roomType.hotel }}</td>
-                        <td>{{ result.roomType }}</td>
-                        <td>{{ result.tariff}} </td>
+                        <td>
+                            {{ result.roomType }}<br>
+                            <small>
+                                {{ "search.results.total"|trans({}, "MBHPackageBundle") }}:
+                                <span class="package-search-book-count">{{ result.roomsCount }}</span>
+                            </small>
+                        </td>
+                        <td>
+                            <select class="form-control input-sm search-room-select">
+                                <option></option>
+                                {% for room in  result.rooms %}
+                                    <option value="{{ room.id }}">
+                                        {{ room }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </td>
                         <td class="text-center">
                             <select class="form-control plain-html input-sm search-tourists-select">
                                 {% for priceTourists, price  in result.prices %}
@@ -63,7 +95,6 @@
                                     </option>
                                 {% endfor %}
                             </select>
-
                         </td>
                         <td class="text-right">
                             {% for priceTourists, price  in result.prices %}
@@ -71,10 +102,12 @@
                                     <li class="{{ priceTourists }}_price">{{ price|number_format(2)}}</li>
                                 </ul>
                             {% endfor %}
+                            <small><i class='fa fa-sliders'> </i> {{ result.tariff.name }}</small>
                         </td>
                         <td class="text-center">
                             <a href="{{ path('package_new', app.request.get('s')|merge({roomType: result.roomType.id })) }}" target="_blank" class="btn btn-success btn-xs package-search-book" title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
-                                <i class="fa fa-pencil-square-o"> </i> {{ "search.results.reservate"|trans({}, "MBHPackageBundle") }}  (<span>{{ result.roomsCount }}</span>)
+                                <span class="package-search-book-reservation-text">{{ "search.results.reservate"|trans({}, "MBHPackageBundle") }}</span>
+                                <span class="package-search-book-accommodation-text" style="display: none;">{{ "search.results.accommodation"|trans({}, "MBHPackageBundle") }}</span>
                             </a>
                         </td>
                     </tr>

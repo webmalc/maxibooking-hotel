@@ -90,11 +90,11 @@
     }
 ] %}
 
-<ul class="nav nav-tabs" role="tablist">
+<ul class="nav nav-tabs" role="tablist" id="package-tabs">
     {% for item in menu %}
         {% if item.order %}{% set params = {'id': entity.order.id, 'packageId': entity.id} %}{% else %}{% set params = {'id': entity.id} %}{% endif %}
         <li {% if loop.index == active %}class="active"{% endif %}>
-            <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"
+            <a {% if loop.index == active %}href="{{ path(item.route, params) }}" role="tab" data-toggle="tab"
                {% else %}href="{{ path(item.route, params) }}"{% endif %}>
                 {{ item.title|raw }}
 

@@ -300,13 +300,17 @@ search.results.blue: синий
 search.results.special_tariffs: - специальные тарифы
 search.results.check_in: Заезд
 search.results.check_out: Отъезд
+search.results.dates: Даты
 search.results.days_and_nights: Дни/ночи
 search.results.hotel: Отель
 search.results.type: Тип
+search.results.room: Номер
 search.results.tariff: Тариф
 search.results.guests: Гости
 search.results.price: Цена
+search.results.total: Свободно номеров
 search.results.reservate: Бронировать
+search.results.accommodation: Разместить
 search.results.nothing_found_for_your_request:  По вашему запросу ничего не найдено.
 search.results.enter_search_data: Введите данные для подбора проживания.
 source.edit.edit_reservation_source: "редактрирование источники брони #"
@@ -326,6 +330,7 @@ package.index.summary.paid: Оплачено
 package.index.summary.debt: Долг
 package.index.summary.nights: Ночей
 package.index.summary.guests: Гостей
+accommodation.alert: Не рекомендуется размещать гостей до их заезда в отель
 
 
 # Organizations

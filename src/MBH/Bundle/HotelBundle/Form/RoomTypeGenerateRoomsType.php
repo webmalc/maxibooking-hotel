@@ -18,15 +18,10 @@ class RoomTypeGenerateRoomsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $entity = $options['entity'];
-        if ($entity && $entity->getHotel()->getIsHostel() && $entity->getCalculationType() == 'customPrices') {
-            $hostel = true;
-        } else {
-            $hostel = false;
-        }
 
         $builder
             ->add('from', 'text', [
-                'label' => ($hostel) ? 'form.roomTypeGenerateRoomsType.first_bed_number' : 'form.roomTypeGenerateRoomsType.first_room_number',
+                'label' => 'form.roomTypeGenerateRoomsType.first_room_number',
                 'required' => true,
                 'attr' => ['placeholder' => '1', 'class' => 'spinner'],
                 'constraints' => [
@@ -35,7 +30,7 @@ class RoomTypeGenerateRoomsType extends AbstractType
                 ]
             ])
             ->add('to', 'text', [
-                'label' => ($hostel) ? 'form.roomTypeGenerateRoomsType.last_bed_number' : 'form.roomTypeGenerateRoomsType.last_room_number',
+                'label' => 'form.roomTypeGenerateRoomsType.last_room_number',
                 'required' => true,
                 'attr' => ['placeholder' => '100', 'class' => 'spinner'],
                 'constraints' => [
@@ -68,7 +63,7 @@ class RoomTypeGenerateRoomsType extends AbstractType
             ->add('prefix', 'text', [
                 'label' => 'form.roomTypeGenerateRoomsType.prefix',
                 'required' => false,
-                'data' => ($hostel) ? $entity->getName().'/' : '',
+                'data' => '',
                 'attr' => ['placeholder' => 'HTL'],
                 'help' => 'form.roomTypeGenerateRoomsType.prefix_example',
                 'constraints' => new Length(['max' => 20])

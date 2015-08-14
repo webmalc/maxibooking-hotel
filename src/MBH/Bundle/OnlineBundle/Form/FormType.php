@@ -34,7 +34,6 @@ class FormType extends AbstractType
                     'help' => 'form.formType.should_we_use_room_type_field_in_online_form'
                 ]
             );
-        if (!$options['isHostel']) {
             $builder
                 ->add(
                     'tourists',
@@ -48,7 +47,6 @@ class FormType extends AbstractType
                     ]
                 )
             ;
-        }
         $builder
             ->add(
                 'nights',
@@ -80,8 +78,7 @@ class FormType extends AbstractType
         $resolver->setDefaults(
             array(
                 'data_class' => 'MBH\Bundle\OnlineBundle\Document\FormConfig',
-                'paymentTypes' => [],
-                'isHostel' => false,
+                'paymentTypes' => []
             )
         );
     }

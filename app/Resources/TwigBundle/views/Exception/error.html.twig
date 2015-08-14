@@ -1,0 +1,34 @@
+{% extends "MBHBaseBundle::page.html.twig" %}
+{% block print_hotel_logo %}{% endblock %}
+
+{% set title = 'Ошибка' %}
+{% set title_url = path('_welcome') %}
+{% set small_title = status_code %}
+
+{% block top_navbar %}
+
+    <div class="navbar navbar-default navbar-fixed-top" id="navbar-main-wrapper">
+        <div class="container-fluid">
+            <div class="navbar-header dropdown">
+                <a href="{{ path('_welcome')}}" class="navbar-brand"><i class="mb-icon-logo navbar-logo"></i></a>
+                <a href="{{ path('_welcome')}}" class="navbar-brand">{{ project_title }}</a>
+
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse" id="navbar-main">
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <div class="alert alert-danger">
+        <i class="fa fa-exclamation-circle"></i> Произошла ошибка #{{ status_code }}: {{ status_text|trans }}
+    </div>
+{% endblock %}

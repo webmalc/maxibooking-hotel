@@ -1,5 +1,6 @@
-/*global document, window, Routing, $ */
-$(document).ready(function () {
+/*global window, $, services, document, datepicker, deleteLink, Routing, mbh */
+
+var docReadyTourists = function () {
     'use strict';
 
     //roomType rooms datatables
@@ -20,7 +21,6 @@ $(document).ready(function () {
 
     $('.findGuest').change(function () {
         $.getJSON(Routing.generate('json_tourist', {'id': $(this).val()}), function (data) {
-            console.log(data);
             $('.guestLastName').val(data.lastName);
             $('.guestFirstName').val(data.firstName);
             $('.guestPatronymic').val(data.patronymic);
@@ -98,8 +98,6 @@ $(document).ready(function () {
                 $.each(data, function (k, v) {
                     results.push({id: k, text: v});
                 });
-
-                console.log(results);
                 return {results: results};
             }
         },
@@ -115,5 +113,12 @@ $(document).ready(function () {
         },
         dropdownCssClass: "bigdrop"
     })
+}
+
+/*global document, window, Routing, $ */
+$(document).ready(function () {
+    'use strict';
+
+    docReadyTourists();
 });
 

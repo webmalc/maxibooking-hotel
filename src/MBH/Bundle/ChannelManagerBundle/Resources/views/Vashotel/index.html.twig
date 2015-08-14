@@ -12,8 +12,6 @@
             {% include 'MBHChannelManagerBundle::actions.html.twig' %}
             {{ form_end(form) }}
 
-            {% include 'MBHChannelManagerBundle:ChannelManager:pushLink.html.twig' with {'name': 'vashotel'} %}
-
             {%  if entity %}
                 {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tariff_delete' } %}
             {%  endif %}

@@ -1,4 +1,4 @@
-    {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+{% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title =  'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ package.numberWithPrefix %}
 
@@ -6,9 +6,10 @@
 
 {% block content %}
 
-    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
-
-    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 1 , 'entity': package} %}
+    {% if app.request.isxmlhttprequest is empty %}
+        {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
+        {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 1 , 'entity': package} %}
+    {% endif %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">

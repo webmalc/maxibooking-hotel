@@ -52,8 +52,7 @@ $(document).ready(function () {
 
     var updateTaskTable = function () {
         if (!processing) {
-            console.log("task");
-            $taskTable.dataTable().fnDraw();
+            $('#task-table').dataTable().fnDraw();
         }
     };
     $taskTableFilterForm.find('input[type!=checkbox], textarea, select').on('change', updateTaskTable);

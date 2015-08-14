@@ -54,6 +54,17 @@ class SearchQuery
      * @var []
      */
     public $excludeRoomTypes = [];
+
+    /**
+     * With accommodations on/off
+     * @var bool
+     */
+    public $accommodations = false;
+
+    /**
+     * @var bool
+     */
+    public $grouped = false;
     
     /**
      * Tariff id

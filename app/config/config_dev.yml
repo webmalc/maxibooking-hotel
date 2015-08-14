@@ -1,5 +1,7 @@
 imports:
     - { resource: config.yml }
+    - { resource: mbh_dev.yml }
+
 
 framework:
     router:

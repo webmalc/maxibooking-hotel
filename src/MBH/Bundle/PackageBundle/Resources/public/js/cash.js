@@ -1,7 +1,4 @@
-/**
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
- */
-(function($){
+var docReadyCash = function() {
     var $paidDate = $('#mbh_bundle_cashbundle_cashdocumenttype_paid_date');
 
     $('#mbh_bundle_cashbundle_cashdocumenttype_document_date').add($paidDate).datepicker({
@@ -39,11 +36,11 @@
     //$payerSelect.select2("updateResults");
 
     /*
-    var formatResult = function(text){
-        console.log(text)
-        return '<i class="fa fa-male"></i> ' + text
-    }
-    $payerSelect.select2({"templateSelection": formatResult});*/
+     var formatResult = function(text){
+     console.log(text)
+     return '<i class="fa fa-male"></i> ' + text
+     }
+     $payerSelect.select2({"templateSelection": formatResult});*/
 
     $payerSelect.on('change', function(){
         /** @type String */
@@ -57,4 +54,11 @@
                 $touristPayerInput.val(value[1])
         }
     });
+};
+
+/**
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
+(function($){
+    docReadyCash();
 })(window.jQuery)

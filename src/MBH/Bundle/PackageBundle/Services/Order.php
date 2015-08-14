@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -123,35 +124,39 @@ class Order
      * @param bool $user
      * @param array $cash
      * @return OrderDoc
-     * @throws \Exception
-     * @throws \Symfony\Component\Security\Acl\Exception\InvalidDomainObjectException
+     * @throws Exception
+     * @throws \Symfony\Component\Security\AclException\InvalidDomainObjectException
      */
     public function createPackages(array $data, OrderDoc $order = null, $user = null, $cash = null)
     {
         if (empty($data['packages'])) {
-            throw new \Exception('Create packages error: $data["packages"] is empty.');
+            throw new Exception('Create packages error: $data["packages"] is empty.');
         }
 
         // create tourist
         if (!empty($data['tourist'])) {
-            $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
-                $data['tourist']['lastName'],
-                $data['tourist']['firstName'],
-                null,
-                $this->helper->getDateFromString($data['tourist']['birthday']),
-                $data['tourist']['email'],
-                $data['tourist']['phone']
-            );
+            if (is_array($data['tourist'])) {
+                $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                    $data['tourist']['lastName'],
+                    $data['tourist']['firstName'],
+                    null,
+                    $this->helper->getDateFromString($data['tourist']['birthday']),
+                    $data['tourist']['email'],
+                    $data['tourist']['phone']
+                );
+            } else {
+                $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->find($data['tourist']);
+            }
 
             if (empty($tourist)) {
-                throw new \Exception('Tourist error: tourist not found.');
+                throw new Exception('Tourist error: tourist not found.');
             }
         }
 
         // create order
         if (!$order) {
             if  (empty($data['status']) || !isset($data['confirmed'])) {
-                throw new \Exception('Create order error: $data["status"] || $data["confirmed"] is empty.');
+                throw new Exception('Create order error: $data["status"] || $data["confirmed"] is empty.');
             }
             $order = new OrderDoc();
             $order->setConfirmed($data['confirmed'])
@@ -165,7 +170,7 @@ class Order
             }
 
             if (!$this->validator->validate($order)) {
-                throw new \Exception('Create order error: validation errors.');
+                throw new Exception('Create order error: validation errors.');
             }
 
             $this->dm->persist($order);
@@ -193,7 +198,7 @@ class Order
             ;
 
             if (!$this->validator->validate($order)) {
-                throw new \Exception('Create cash document error: validation errors.');
+                throw new Exception('Create cash document error: validation errors.');
             }
 
             $order->addCashDocument($cashDocument);
@@ -219,19 +224,19 @@ class Order
      * @param array $data
      * @param OrderDoc $order
      * @return OrderDoc
-     * @throws \Exception
+     * @throws Exception
      */
     public function createServices(array $data, OrderDoc $order)
     {
         foreach ($data as $info) {
             if(empty($info['id']) || empty($info['amount'])) {
-                throw new \Exception('Create services error: $data["id"] || $data["amount"] is empty.');
+                throw new Exception('Create services error: $data["id"] || $data["amount"] is empty.');
             }
 
             $service = $this->dm->getRepository('MBHPriceBundle:Service')->find($info['id']);
 
             if (!$service) {
-                throw new \Exception('Create services error: service not found.');
+                throw new Exception('Create services error: service not found.');
             }
 
             //find package
@@ -262,8 +267,8 @@ class Order
      * @param OrderDoc $order
      * @param null $user
      * @return Package
-     * @throws \Exception
-     * @throws \Symfony\Component\Security\Acl\Exception\InvalidDomainObjectException
+     * @throws Exception
+     * @throws \Symfony\Component\Security\AclException\InvalidDomainObjectException
      */
     public function createPackage(array $data, OrderDoc $order, $user = null)
     {
@@ -273,7 +278,7 @@ class Order
             !$data['children'] === null ||
             !$data['roomType']
         ) {
-            throw new \Exception('Create package error: $data["begin"] || $data["end"] || $data["adults"] || $data["children"] || $data["roomType"] is empty.');
+            throw new Exception('Create package error: $data["begin"] || $data["end"] || $data["adults"] || $data["children"] || $data["roomType"] is empty.');
         }
 
         //search for packages
@@ -285,15 +290,16 @@ class Order
         $query->tariff = !empty($data['tariff'])  ? $data['tariff'] : null;
         $query->isOnline = !empty($data['isOnline']);
         $query->addRoomType($data['roomType']);
+        $query->accommodations = (boolean)$data['accommodation'];
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
         if (count($results) != 1) {
-            throw new \Exception('Create package error: invalid search results: ' . count($results));
+            throw new Exception('Create package error: invalid search results: ' . count($results));
         }
 
         if ($user && !$this->container->get('mbh.hotel.selector')->checkPermissions($results[0]->getRoomType()->getHotel())) {
-            throw new \Exception('Acl error: permissions denied');
+            throw new Exception('Acl error: permissions denied');
         }
 
         //create package
@@ -315,6 +321,15 @@ class Order
             )
             ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
         ;
+
+        //accommodation
+        if ($query->accommodations) {
+            $room = $this->dm->getRepository('MBHHotelBundle:Room')->find($data['accommodation']);
+            if (!$room || !in_array($room->getId(), $this->helper->toIds($results[0]->getRooms()))) {
+                throw new Exception('Create package error: accommodation not found.');
+            }
+            $package->setAccommodation($room);
+        }
 
         // add MainTourist
         $tourist = $order->getMainTourist();
@@ -342,7 +357,7 @@ class Order
         }
 
         if (!$this->validator->validate($package)) {
-            throw new \Exception('Create package error: validation errors.');
+            throw new Exception('Create package error: validation errors.');
         }
 
         $order->addPackage($package);

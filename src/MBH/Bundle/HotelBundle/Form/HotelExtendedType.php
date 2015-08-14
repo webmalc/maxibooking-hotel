@@ -61,7 +61,7 @@ class HotelExtendedType extends AbstractType
                     'style' => 'min-width: 500px'
                 ]
             ]);
-        //if($options['isHostel']) {
+
             $builder->add('flat', 'text', [
                 'label' => 'form.hotelExtendedType.flat',
                 'group' => 'form.hotelExtendedType.address',
@@ -129,7 +129,6 @@ class HotelExtendedType extends AbstractType
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
             'city' => null,
             'config' => null,
-            'isHostel' => false,
         ));
     }
 

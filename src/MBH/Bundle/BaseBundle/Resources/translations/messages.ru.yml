@@ -54,9 +54,12 @@ service: 'услуга'
 services1: 'услуги'
 services2: 'услуг'
 
-not.stopped: 'не заехал'
+not.stopped: 'не заехали'
 stopped: 'заехали'
 left: 'выехали'
 
 exception.relation_delete.message: 'Запись имеет связанные данные (%total%).'
 exception.relation_delete.message.task: 'Невозможно удалить. Этот Тип имеет существующие задачи (%total%)'
+
+tariff.main: основной тариф
+tariffs: тарифы
