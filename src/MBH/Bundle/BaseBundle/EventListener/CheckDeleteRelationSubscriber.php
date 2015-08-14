@@ -45,8 +45,8 @@ class CheckDeleteRelationSubscriber implements EventSubscriber
                     ->getQuery()->count();
 
                 if($count > 0) {
-                    $message = isset($setting['message']) ? $setting['message'] : 'exception.delete_relation.message'; // have existing relation
-                    throw new DeleteException($message);
+                    $message = isset($setting['message']) ? $setting['message'] : 'exception.relation_delete.message'; // have existing relation
+                    throw new DeleteException($message, $count);
                 }
             }
         }
@@ -59,7 +59,7 @@ class CheckDeleteRelationSubscriber implements EventSubscriber
                 [
                     'document' => Task::class,
                     'field' => 'type',
-                    'message' => 'exception.delete_relation.message'
+                    'message' => 'exception.relation_delete.message.task'
                 ]
             ]
         ];

@@ -128,7 +128,7 @@ class BaseController extends Controller
 
         } catch (DeleteException $e) {
             $this->getRequest()->getSession()->getFlashBag()
-                ->set('danger', $e->getMessage());
+                ->set('danger', $this->get('translator')->trans($e->getMessage(), ['%total%' => $e->total]));
         }
 
         return $this->redirectToRoute($route, $params);
