@@ -134,12 +134,12 @@ class TaskTypeController extends Controller
      */
     public function deleteAction(TaskType $entity)
     {
-        if($entity->isSystem())
+        /*if($entity->isSystem())
             throw $this->createNotFoundException('Is system type');
         $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
         if($taskRepository->getCountByType($entity) > 0) {
             throw $this->createNotFoundException('Type have existing tasks');
-        }
+        }*/
 
         return $this->deleteEntity($entity->getId(), 'MBHHotelBundle:TaskType',
             'tasktype', ['category' => $entity->getCategory()->getId()]);

@@ -59,6 +59,7 @@ class TaskType extends Base
     /**
      * @var TaskTypeCategory|null
      * @ODM\ReferenceOne(targetDocument="TaskTypeCategory", inversedBy="types")
+     * @Assert\NotBlank()
      */
     protected $category;
     /**

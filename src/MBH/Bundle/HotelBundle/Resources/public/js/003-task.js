@@ -174,3 +174,14 @@ $(document).ready(function () {
         showTaskModal(id);
     })
 });
+
+
+var $categoryInput = $('#mbh_bundle_hotelbundle_tasktype_category')
+var href = $('#task-category-tabs li.active a').attr('href');
+if(href) {
+    $categoryInput.val(href.substring(1));
+}
+$('#task-category-tabs a').on('click', function () {
+    var id = this.getAttribute('href').substring(1);
+    $categoryInput.val(id);
+});

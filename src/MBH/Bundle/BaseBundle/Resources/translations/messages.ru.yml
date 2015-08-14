@@ -57,3 +57,6 @@ services2: 'услуг'
 not.stopped: 'не заехал'
 stopped: 'заехали'
 left: 'выехали'
+
+exception.delete_relation.message: 'Запись имеет связанные данные.'
+exception.delete_relation.task_message: 'Этот Тип имеет существующие задачи'
