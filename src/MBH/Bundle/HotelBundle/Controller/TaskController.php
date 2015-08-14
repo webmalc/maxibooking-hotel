@@ -162,7 +162,7 @@ class TaskController extends Controller
         } elseif($status == Task::STATUS_CLOSED) {
             $entity->setEnd(new \DateTime());
             if($roomStatus = $entity->getType()->getRoomStatus()) {
-                $otherProcessRoomTask = $this->dm->getRepository('MBHHotelBundle:Task')->findOneBy([
+                $otherProcessRoomTask = $this->dm->getRepository('MBHHotelBundle:Task')->findOneBy([ //todo $room->setStatus($taskRepository->getActuallyRoomStatus($room, $task))
                     '_id' => ['$ne' => $entity->getId()],
                     'room.id' => $room->getId(),
                     'status' => Task::STATUS_PROCESS

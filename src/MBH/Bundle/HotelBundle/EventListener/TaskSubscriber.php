@@ -2,12 +2,12 @@
 
 namespace MBH\Bundle\HotelBundle\EventListener;
 
-
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
@@ -29,29 +29,12 @@ class TaskSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            Events::postUpdate =>'postUpdate',
-            Events::postRemove => 'postRemove',
             Events::onFlush => 'onFlush',
+            Events::preRemove => 'preRemove',
         ];
     }
 
-    /**
-     * @param LifecycleEventArgs $args
-     */
-    public function postUpdate(LifecycleEventArgs $args)
-    {
-        /** @var Task $document */
-        $document = $args->getDocument();
-
-        if ($document instanceof Task and $document->getStatus() == Task::STATUS_PROCESS) {
-            $dm = $args->getDocumentManager();
-            $this->updateRoomStatus($document, $dm);
-
-            $dm->flush();
-        }
-    }
-
-    /*public function onFlush(OnFlushEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args)
     {
         $dm = $args->getDocumentManager();
         $uow = $dm->getUnitOfWork();
@@ -59,58 +42,73 @@ class TaskSubscriber implements EventSubscriber
         foreach($uow->getScheduledDocumentUpdates() as $document)
         {
             if ($document instanceof Task and $document->getStatus() == Task::STATUS_PROCESS) {
-
+                $this->updateRoomStatus($document, $dm);
             }
         }
-    }*/
+    }
+
+    public function preRemove(LifecycleEventArgs $args)
+    {
+        $document = $args->getDocument();
+        $dm = $args->getDocumentManager();
+        $uow = $dm->getUnitOfWork();
+
+        $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
+        if ($document instanceof Task) {
+            $room = $document->getRoom();
+            /** @var TaskRepository $taskRepository */
+            $room->setStatus($taskRepository->getActuallyRoomStatus($room, $document));
+            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
+        }
+    }
     /**
      * @param Task $task
      * @param DocumentManager $dm
+     *
+     * @throws Exception
      */
     private function updateRoomStatus(Task $task, DocumentManager $dm)
     {
         $uow = $dm->getUnitOfWork();
         $changeSet = $uow->getDocumentChangeSet($task);
+
         if (array_key_exists('room', $changeSet)) {
             /** @var Room $oldRoom */
             $oldRoom = $changeSet['room'][0];
             /** @var Room $newRoom */
             $newRoom = $changeSet['room'][1];
-            var_dump($task->getType());
-            var_dump($task->getType()->getRoomStatus());
-            die();
+
+            $dm->refresh($task->getType());
+            if (!$task->getType()->getRoomStatus()) {
+                throw new Exception();
+            }
             $newRoom->setStatus($task->getType()->getRoomStatus());
 
             /** @var TaskRepository $taskRepository */
             $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
-            $oldRoom->setStatus($taskRepository->getActuallyRoomStatus($oldRoom));
-            $dm->persist($oldRoom);
-            $dm->persist($newRoom);
+            $oldRoom->setStatus($taskRepository->getActuallyRoomStatus($oldRoom, $task));
+
+            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($oldRoom)), $oldRoom);
+            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($newRoom)), $newRoom);
         }
         if (array_key_exists('status', $changeSet)) {
             $room = $task->getRoom();
+            $dm->refresh($task->getType());
+            if (!$task->getType()->getRoomStatus()) {
+                throw new Exception();
+            }
             $room->setStatus($task->getType()->getRoomStatus());
 
             /** @var TaskRepository $taskRepository */
             $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
-            $room->setStatus($taskRepository->getActuallyRoomStatus($room));
-            $dm->persist($room);
+            $room->setStatus($taskRepository->getActuallyRoomStatus($room, $task));
+            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
         }
-    }
-
-    public function postRemove(LifecycleEventArgs $args)
-    {
-        /** @var Task $document */
-        $document = $args->getDocument();
-        if ($document instanceof Task and $document->getStatus()) {
-            $dm = $args->getDocumentManager();
-            $room = $document->getRoom();
-            /** @var TaskRepository $taskRepository */
-            $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
-            $room->setStatus($taskRepository->getActuallyRoomStatus($room));
-            $dm->persist($room);
-
-            $dm->flush();
+        if (array_key_exists('type', $changeSet)) {
+            $room = $task->getRoom();
+            $dm->refresh($task->getType());
+            $room->setStatus($task->getType()->getRoomStatus());
+            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
         }
     }
 }
