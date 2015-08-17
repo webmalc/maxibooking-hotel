@@ -29,14 +29,19 @@ class Builder extends ContainerAware
             $menu->setChildrenAttribute('style', 'display: none');
         }
 
-        // search
-        $menu->addChild('reservations', ['route' => 'package_search', 'label' => 'Подбор'])
-             ->setAttributes(['icon' => 'fa fa-search'])
-        ;
         // packages
-        $menu->addChild('package', ['route' => 'package', 'label' => 'Брони'])
-            ->setAttributes(['icon' => 'fa fa fa-paper-plane-o'])
+        $menu->addChild('packages', ['route' => '_welcome', 'label' => 'Брони'])
+            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-paper-plane-o']);
         ;
+
+        // packages
+        $menu['packages']->addChild('package', ['route' => 'package', 'label' => 'Список'])
+            ->setAttributes(['icon' => 'fa fa-list'])
+        ;
+        // search
+        $menu['packages']->addChild('reservations', ['route' => 'package_search', 'label' => 'Подбор'])
+            ->setAttributes(['icon' => 'fa fa-search']);
+
         //Prices links
         $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Номера и цены'])
             ->setAttributes(['dropdown' => true, 'icon' => $this->container->get('mbh.currency')->info()['icon']]);

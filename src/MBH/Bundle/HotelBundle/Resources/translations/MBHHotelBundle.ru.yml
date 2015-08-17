@@ -96,9 +96,11 @@ views.hotel.tabs.visa: 'Виза'
 views.hotel.tabs.main_info_required: "Необходимо заполнить основную информацию!"
 views.roomType.edit.edit_room_type: "редактирование типа номера #"
 views.roomType.editRoom.edit_room_type: "редактирование номера для типа номера <"
+views.roomType.editRoom.edit_room_for_room_type: "редактирование номера для типа номера"
+views.roomType.editRoom.edit_bed_for_room_type: "редактирование койко-места для типа номера"
 views.roomType.editRoom.delete: Удалить
-views.roomType.generateRooms.beds_generation_for_room_type: "генерация койко-мест для типа номера <"
-views.roomType.generateRooms.rooms_generation_for_room_type: "генерация номеров для типа номера <"
+views.roomType.generateRooms.beds_generation_for_room_type: "генерация койко-мест для типа номера "
+views.roomType.generateRooms.rooms_generation_for_room_type: "генерация номеров для типа номера "
 views.roomType.generateRooms.generate_rooms: Сгенерировать номера
 views.roomType.generateRooms.cancel: Отмена
 views.roomType.generateRooms.delete: Удалить
@@ -121,8 +123,8 @@ views.roomType.index.floor: Этаж
 views.roomType.index.status: Статус
 views.roomType.layout.rooms: "Номера"
 views.roomType.layout.create_room_type: "cоздание типа номера"
-views.roomType.newRoom.create_bed_for_room_type: "создание койко-места для типа номера <"
-views.roomType.newRoom.create_room_for_room_type: "создание номера для типа номера <"
+views.roomType.newRoom.create_bed_for_room_type: "создание койко-места для типа номера "
+views.roomType.newRoom.create_room_for_room_type: "создание номера для типа номера "
 views.roomType.roomListButtons.edit_record: 'Редактирование записи'
 views.roomType.roomListButtons.delete_record: 'Удаление записи'
 views.hotel.index.confirm_delete: 'Вы действительно хотите удалить отель "%hotelname%"?'

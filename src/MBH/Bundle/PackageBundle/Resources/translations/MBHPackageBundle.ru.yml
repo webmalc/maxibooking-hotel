@@ -308,7 +308,8 @@ search.results.room: Номер
 search.results.tariff: Тариф
 search.results.guests: Гости
 search.results.price: Цена
-search.results.total: Свободно номеров
+search.results.total_beds: Свободно койко-мест
+search.results.total_rooms: Свободно номеров
 search.results.reservate: Бронировать
 search.results.accommodation: Разместить
 search.results.nothing_found_for_your_request:  По вашему запросу ничего не найдено.

@@ -1,7 +1,11 @@
 {% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
 
-{% set small_title = 'views.roomType.generateRooms.rooms_generation_for_room_type'|trans({}, 'MBHHotelBundle') ~ entity.name ~ "> #" ~ entity.id %}
+{% set small_title_trans = 'views.roomType.generateRooms.beds_generation_for_room_type'|trans({}, 'MBHHotelBundle') %}
+{% if entity.isHostel %}
+    {% set small_title_trans = 'views.roomType.generateRooms.rooms_generation_for_room_type'|trans({}, 'MBHHotelBundle') %}
+{% endif %}
 
+{% set small_title = small_title_trans ~ "<" ~ entity.name ~ "> #" ~ entity.id %}
 
 {% block content %}
 

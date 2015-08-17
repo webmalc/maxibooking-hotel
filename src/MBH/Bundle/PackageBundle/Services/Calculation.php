@@ -159,7 +159,7 @@ class Calculation
             foreach ($priceCaches[$roomTypeId][$tariffId] as $day => $cache) {
                 $dayPrice = 0;
 
-                if ($cache->getSinglePrice() !== null && $all == 1) {
+                if ($cache->getSinglePrice() !== null && $all == 1 && !$cache->getRoomType()->getIsHostel()) {
                     $dayPrice += $cache->getSinglePrice();
                 } elseif ($cache->getIsPersonPrice()) {
                     $dayPrice += $mains * $cache->getPrice();
