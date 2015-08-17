@@ -62,8 +62,11 @@ class TaskTypeController extends Controller
             $entity->setCategory($category);
         }*/
 
+
+        $roles =array_keys($this->container->getParameter('security.role_hierarchy.roles'));
+        $roles = array_combine($roles, $roles);
         $form = $this->createForm(new TaskTypeType($this->dm), $entity, [
-            'roles' => $this->container->getParameter('security.role_hierarchy.roles')
+            'roles' => $roles
         ]);
 
         if ($request->isMethod(Request::METHOD_POST)) {
@@ -98,9 +101,12 @@ class TaskTypeController extends Controller
      */
     public function editAction(Request $request, TaskType $entity)
     {
+        $roles = array_keys($this->container->getParameter('security.role_hierarchy.roles'));
+        $roles = array_combine($roles, $roles);
+
         $form = $this->createForm(new TaskTypeType($this->dm), $entity, [
             'scenario' => TaskTypeType::SCENARIO_EDIT,
-            'roles' => $this->container->getParameter('security.role_hierarchy.roles')
+            'roles' => $roles
         ]);
 
         if($request->isMethod(Request::METHOD_PUT)) {

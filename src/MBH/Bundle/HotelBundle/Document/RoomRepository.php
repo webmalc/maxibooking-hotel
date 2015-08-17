@@ -57,14 +57,18 @@ class RoomRepository extends AbstractBaseRepository
      */
     public function getRoomsByType(Hotel $hotel, $grouped = true)
     {
+        $hotelRoomTypes = [];
         foreach ($hotel->getRoomTypes() as $roomType) {
             $hotelRoomTypes[] = $roomType->getId();
         }
 
         // rooms
-        $qb = $this->createQueryBuilder('r')->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
-            ->inToArray('roomType.id', $hotelRoomTypes)
+        $qb = $this->createQueryBuilder('r')
+            ->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
         ;
+        if($hotelRoomTypes) {
+            $qb->inToArray('roomType.id', $hotelRoomTypes);
+        }
 
         $roomDocs = $qb->getQuery()->execute();
 

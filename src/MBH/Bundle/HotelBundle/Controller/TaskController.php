@@ -130,7 +130,7 @@ class TaskController extends Controller
         $recordsTotal = $taskRepository->getCountByCriteria($queryCriteria);
 
         return [
-            'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
+            'roomTypes' => $this->hotel->getRoomTypes(),
             'statuses' => $this->container->getParameter('mbh.task.statuses'),
             'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
             'recordsTotal' => $recordsTotal,
@@ -187,8 +187,8 @@ class TaskController extends Controller
             throw $this->createNotFoundException();
         }
         $entity = new Task();
-        $entity->setStatus('open');
-        $entity->setPriority(1);
+        $entity->setStatus(Task::STATUS_OPEN);
+        $entity->setPriority(Task::PRIORITY_AVERAGE);
 
         $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions());
 
