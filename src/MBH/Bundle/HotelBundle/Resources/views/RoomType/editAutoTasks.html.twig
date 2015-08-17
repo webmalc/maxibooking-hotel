@@ -1,0 +1,37 @@
+{% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
+
+{% set small_title = 'views.roomType.edit.edit_room_type'|trans({}, 'MBHHotelBundle') ~ entity.id %}
+
+{% block content %}
+
+    {% include 'MBHHotelBundle:RoomType:editTabs.html.twig' with {'active' : 3, 'entity': entity} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="general_info">
+            {{ form_start(form, {'action': path('room_type_task_edit', {'id': entity.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+
+            <div class="well" id="mbh_hotel_bundle_room_type_tasks">
+                {{ form_row(form.checkIn) }}
+                {{ form_row(form.checkOut) }}
+                <div class="form-group daily">
+                    {{ form_label(form.daily) }}
+                    <div class="col-md-4">
+                        <div id="daily-in-list">
+                            {% for item in form.daily %}
+                                {{ form_row(item) }}
+                            {% endfor %}
+                        </div>
+                        <div class="btn btn-success btn-xs" data-prototype="{{ form_widget(form.daily.vars.prototype.day)|e }} {{ form_widget(form.daily.vars.prototype.task_type)|e }}">
+                            <i class="fa fa-plus"></i> Добавить
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'room_type_delete' } %}
+            {{ form_end(form, {'render_rest' : false}) }}
+
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
+        </div>
+    </div>
+{% endblock %}

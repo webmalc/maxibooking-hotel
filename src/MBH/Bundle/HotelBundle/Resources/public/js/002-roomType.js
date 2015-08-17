@@ -73,5 +73,20 @@ $(document).ready(function () {
     });
 
 
+    var $taskForm = $('#mbh_hotel_bundle_room_type_tasks');
+    var $addDailyBtn = $taskForm.find('.daily .btn');
+    var $dailyList = $('#daily-in-list');
+    var prototype = '<div class="form-inline">' + $addDailyBtn.data('prototype') + '<i class="fa fa-times"></i></div>';
+    var index = $dailyList.find('.form-group').length;
+    $addDailyBtn.on('click', function () {
+        var newPrototype = prototype.replace(/__name__/g, index);
+        $dailyList.append(newPrototype);
+        $dailyList.find('select').select2();
+        ++index;
+
+        $dailyList.find('.fa-times').on('click', function () {
+            $(this).closest('.form-inline').remove();
+        });
+    });
 });
 

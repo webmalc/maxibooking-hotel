@@ -3,9 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
 use MBH\Bundle\HotelBundle\Form\RoomTypeGenerateRoomsType;
-use MBH\Bundle\HotelBundle\Form\RoomTypeImageType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -14,7 +12,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\Room;
-use MBH\Bundle\HotelBundle\Form\RoomTypeType;
 use MBH\Bundle\HotelBundle\Form\RoomType as RoomForm;
 
 
@@ -174,50 +171,6 @@ class RoomController extends BaseController
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
-    }
-
-    /**
-     * Update room.
-     *
-     * @Route("/image/{id}/edit", name="room_type_image_room_update")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
-     * @Template("MBHHotelBundle:RoomType:edit.html.twig")
-     * @ParamConverter(class="MBHHotelBundle:RoomType")
-     */
-    public function updateImageAction(Request $request, RoomType $entity)
-    {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
-            throw $this->createNotFoundException();
-        }
-        $form = $this->createForm(new RoomTypeType(), $entity);
-        $formImage = $this->createForm(new RoomTypeImageType());
-        $formImage->handleRequest($request);
-
-        if ($request->getMethod() === 'POST') {
-
-            if ($formImage->isValid()) {
-                $image = new RoomTypeImage();
-                $image->uploadImage($formImage['imageFile']->getData());
-                $entity->addImage($image);
-                $this->dm->persist($entity);
-                $this->dm->flush();
-
-                $request->getSession()->getFlashBag()->set('success', 'Фотография успешно создана.');
-
-                return $this->redirect($this->generateUrl('room_type_image_room_update', [
-                    'id' => $entity->getId(),
-                    'imageTab' => 'active'
-                ]));
-            }
-        }
-
-        return array(
-            'entity' => $entity,
-            'form' => $form->createView(),
-            'formImage' => $formImage->createView(),
-            'logs' => $this->logs($entity),
-            'images' => $entity->getImages(),
         );
     }
 

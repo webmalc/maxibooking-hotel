@@ -4,62 +4,16 @@
 
 {% block content %}
 
-{% set isActiveImageTab = app.request.query.get("imageTab") %}
+    {% include 'MBHHotelBundle:RoomType:editTabs.html.twig' with {'active' : 1, 'entity': entity} %}
 
-<ul class="nav nav-tabs" role="tablist">
-    <li {% if not isActiveImageTab %}class='active'{% endif %}>
-        <a href="#general_info"  role="tab" data-toggle="tab">
-            Общая информация и настройки
-        </a>
-    </li>
-    <li {% if isActiveImageTab %}class='active'{% endif %}>
-        <a href="#images" role="tab" data-toggle="tab">
-            Фотографии
-        </a>
-    </li>
-</ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="general_info">
+            {{ form_start(form, {'action': path('room_type_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'room_type_delete' } %}
+            {{ form_end(form) }}
 
-<div class="tab-content">
-    <div class="tab-pane {{ isActiveImageTab ? '' : 'active' }}" id="general_info">
-        {{ form_start(form, {'action': path('room_type_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
-        {{ form_widget(form) }}
-        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'room_type_delete' } %}
-        {{ form_end(form) }}
-
-        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
-    </div>
-    <div class="tab-pane {{ isActiveImageTab ? 'active' : '' }}" id="images">
-        {% form_theme formImage 'MBHBaseBundle:Form:fields.html.twig' %}
-        {{ form_start(formImage, {'action': path('room_type_image_room_update', {'id': entity.id, 'imageTab' : 'active'}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
-        {{ form_widget(formImage) }}
-        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'room_type_delete' } %}
-        {{ form_end(formImage) }}
-
-        <div>
-            {% for image in images %}
-                <div>
-                    <a href=" {% if image.getWidth() >= 800 or image.getHeight()>=800 %} {{ asset(image.getPath()) | imagine_filter('scaler') }} {% else %} {{ asset(image.getPath()) }} {% endif %}"
-                       class="fancybox roomTypeImage" rel="gallery" data-fancybox-title="{{ image.name }}">
-                        <img src="{{ asset(image.getPath()) | imagine_filter('thumb_100x100') }}" class="img-thumbnail"/>
-                    </a>
-                    <div>
-                        {% if not image.isMain %}
-                            <a href="{{ path('room_type_image_make_main', {'id': entity.id, 'imageId' : image.getId}) }}"
-                               class="btn btn-success btn-xs make-main-image " data-toggle="tooltip" data-original-title="Cделать главной">
-                                <i class="fa fa-check"></i>
-                            </a>
-                        {% else %}
-                            <i class="fa fa-check make-main-image main-image" alt="Главная фотография"></i>
-                        {% endif %}
-                        <a href="{{ path('room_type_image_delete', {'id': entity.id, 'imageId' : image.getId}) }}"
-                           class="btn btn-danger btn-xs delete-link delete-image" data-toggle="tooltip"
-                           data-original-title="Удалить картинку"><i class="fa fa-trash-o"></i>
-                        </a>
-                    </div>
-                </div>
-            {% endfor %}
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
         </div>
     </div>
-
-</div>
 {% endblock %}

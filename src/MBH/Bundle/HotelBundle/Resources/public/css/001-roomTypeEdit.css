@@ -18,3 +18,16 @@
   padding-right: 6px;
   left: -50px;
 }
+
+#daily-in-list {
+  padding-bottom: 5px;
+}
+
+#daily-in-list .form-inline {
+  padding-bottom: 5px;
+}
+
+#daily-in-list .fa-times {
+  padding-left: 5px;
+  cursor: pointer;
+}

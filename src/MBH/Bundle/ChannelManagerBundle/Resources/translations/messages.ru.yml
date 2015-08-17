@@ -48,3 +48,7 @@ form.ostrovokType.in_included: Включен?
 form.ostrovokType.hotel_id: ID отеля
 form.ostrovokType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
 form.ostrovokType.ostrovok_ru_settings_hotel_id:  ID отеля в настройках Ostrovok.ru
+
+form.roomTypeTasks.checkIn: При заселении
+form.roomTypeTasks.checkOut: При выезде
+form.roomTypeTasks.daily: Каждые n дней проживания
