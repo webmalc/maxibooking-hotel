@@ -23,9 +23,9 @@ class TaskTypeType extends AbstractType
         $this->dm = $dm;
     }
 
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $roles = $options['roles'];
         $group = $options['scenario'] == self::SCENARIO_NEW ?
             'form.taskType.general_info' :
             'form.taskType.general_info_edit';
@@ -38,6 +38,12 @@ class TaskTypeType extends AbstractType
             ])
             ->add('category', 'hidden', [
                 'required' => true
+            ])
+            ->add('default_role', 'choice', [
+                'label' => 'form.taskType.default_role',
+                'choices' => $roles,
+                'required' => false,
+                'choice_translation_domain' => 'MBHUserBundleRoles'
             ])
             ->add('roomStatus', 'document', [
                 'label' => 'form.taskType.roomStatus',
@@ -55,6 +61,7 @@ class TaskTypeType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
             'types' => [],
+            'roles' => [],
             'scenario' => self::SCENARIO_NEW
         ));
     }

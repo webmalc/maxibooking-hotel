@@ -70,7 +70,7 @@ class TaskSettings
     }
 
     /**
-     * @return DailyTaskSetting|null
+     * @return DailyTaskSetting[]|null
      */
     public function getDaily()
     {

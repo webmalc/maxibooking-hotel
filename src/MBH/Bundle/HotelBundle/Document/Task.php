@@ -273,10 +273,12 @@ class Task extends Base
 
     /**
      * @param int $priority
+     * @return $this
      */
     public function setPriority($priority)
     {
         $this->priority = $priority;
+        return $this;
     }
 
     /**

@@ -69,6 +69,12 @@ class TaskType extends Base
     protected $code;
 
     /**
+     * @var string
+     * @ODM\String()
+     */
+    protected $defaultRole;
+
+    /**
      * Status that set to Room when task change own status to process
      *
      * @var RoomStatus
@@ -149,6 +155,22 @@ class TaskType extends Base
     public function setCode($code)
     {
         $this->code = $code;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultRole()
+    {
+        return $this->defaultRole;
+    }
+
+    /**
+     * @param mixed $defaultRole
+     */
+    public function setDefaultRole($defaultRole)
+    {
+        $this->defaultRole = $defaultRole;
     }
 
     /**

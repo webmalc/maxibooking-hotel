@@ -62,7 +62,9 @@ class TaskTypeController extends Controller
             $entity->setCategory($category);
         }*/
 
-        $form = $this->createForm(new TaskTypeType($this->dm), $entity);
+        $form = $this->createForm(new TaskTypeType($this->dm), $entity, [
+            'roles' => $this->container->getParameter('security.role_hierarchy.roles')
+        ]);
 
         if ($request->isMethod(Request::METHOD_POST)) {
             $form->submit($request);
@@ -97,7 +99,8 @@ class TaskTypeController extends Controller
     public function editAction(Request $request, TaskType $entity)
     {
         $form = $this->createForm(new TaskTypeType($this->dm), $entity, [
-            'scenario' => TaskTypeType::SCENARIO_EDIT
+            'scenario' => TaskTypeType::SCENARIO_EDIT,
+            'roles' => $this->container->getParameter('security.role_hierarchy.roles')
         ]);
 
         if($request->isMethod(Request::METHOD_PUT)) {

@@ -91,6 +91,7 @@ controller.TaskTypeController.record_edited_success: 'Запись успешн�
 
 form.taskType.title: Название
 form.taskType.category: Категория
+form.taskType.default_role: Исполнители по умолчанию
 form.taskType.roomStatus: Статус комнаты
 form.task.type: Тип задачи
 form.task.status: Статус
