@@ -139,6 +139,40 @@ class RoomRepository extends AbstractBaseRepository
      * @param mixed $floor
      * @param int $skip
      * @param int $limit
+     * @param boolean $group
+     * @return array
+     */
+    public function fetch(
+        Hotel $hotel = null,
+        $roomTypes = null,
+        $housing = null,
+        $floor = null,
+        $skip = null,
+        $limit = null,
+        $group = false
+    )
+    {
+        $result = $this->fetchQuery($hotel, $roomTypes, $housing, $floor, $skip, $limit)->getQuery()->execute();
+
+        if ($group) {
+            $grouped = [];
+            foreach ($result as $doc) {
+                $grouped[$doc->getRoomType()->getId()][] = $doc;
+            }
+
+            return $grouped;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @param mixed $roomTypes
+     * @param mixed $housing
+     * @param mixed $floor
+     * @param int $skip
+     * @param int $limit
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
     public function fetchQuery(
@@ -189,39 +223,6 @@ class RoomRepository extends AbstractBaseRepository
         $qb->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc']);
 
         return $qb;
-    }
-
-    /**
-     * @param Hotel $hotel
-     * @param mixed $roomTypes
-     * @param mixed $housing
-     * @param mixed $floor
-     * @param int $skip
-     * @param int $limit
-     * @param boolean $group
-     * @return array
-     */
-    public function fetch(
-        Hotel $hotel = null,
-        $roomTypes = null,
-        $housing = null,
-        $floor = null,
-        $skip = null,
-        $limit = null,
-        $group = false
-    ) {
-        $result = $this->fetchQuery($hotel, $roomTypes, $housing, $floor, $skip, $limit)->getQuery()->execute();
-
-        if ($group) {
-            $grouped = [];
-            foreach ($result as $doc) {
-                $grouped[$doc->getRoomType()->getId()][] = $doc;
-            }
-
-            return $grouped;
-        }
-
-        return $result;
     }
 
     /**

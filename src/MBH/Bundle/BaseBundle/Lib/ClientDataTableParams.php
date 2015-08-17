@@ -92,6 +92,15 @@ class ClientDataTableParams
     }
 
     /**
+     * @return array|null
+     */
+    public function getFirstSort()
+    {
+        $sorts = $this->getSorts();
+        return $sorts ? reset($sorts) : null;
+    }
+
+    /**
      * @return array[]
      */
     public function getSorts()
@@ -106,15 +115,6 @@ class ClientDataTableParams
         }
 
         return $sorts;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getFirstSort()
-    {
-        $sorts = $this->getSorts();
-        return $sorts ? reset($sorts) : null;
     }
 
     /**

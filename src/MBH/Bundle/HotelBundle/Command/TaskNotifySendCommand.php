@@ -56,24 +56,24 @@ class TaskNotifySendCommand extends ContainerAwareCommand
         $message->setText('Завершенные задачи: ');
 
         $counter = 0;
-        foreach($users as $user) {
+        foreach ($users as $user) {
             /** @var Task[] $closedTasks */
             $closedTasks = $taskRepository->findBy([
                 'status' => Task::STATUS_CLOSED,
                 'end' => ['$gte' => $end],
                 'createdBy' => $user->getUsername()
             ]);
-            if(count($closedTasks) > 0) {
+            if (count($closedTasks) > 0) {
                 $message->setAdditionalData(['tasks' => $closedTasks]);
 
                 $currentMessage = clone($message);
                 $currentMessage->addRecipient([$user->getEmail() => $user->getFullName(true)]);
-                $output->writeln("Sent to ". $user->getEmail());
+                $output->writeln("Sent to " . $user->getEmail());
                 $mailer->setMessage($currentMessage)->notify();
                 ++$counter;
             }
         }
 
-        $output->writeln('Sent '.$counter.' notifications with end from '.$end->format('d.m.Y H:i'));
+        $output->writeln('Sent ' . $counter . ' notifications with end from ' . $end->format('d.m.Y H:i'));
     }
 }

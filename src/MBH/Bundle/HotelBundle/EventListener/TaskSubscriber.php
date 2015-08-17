@@ -38,28 +38,13 @@ class TaskSubscriber implements EventSubscriber
     {
         $dm = $args->getDocumentManager();
         $uow = $dm->getUnitOfWork();
-        foreach($uow->getScheduledDocumentInsertions() + $uow->getScheduledDocumentUpdates() as $document)
-        {
+        foreach ($uow->getScheduledDocumentInsertions() + $uow->getScheduledDocumentUpdates() as $document) {
             if ($document instanceof Task) {
                 $this->updateRoomStatus($document, $dm);
             }
         }
     }
 
-    public function preRemove(LifecycleEventArgs $args)
-    {
-        $document = $args->getDocument();
-        $dm = $args->getDocumentManager();
-        $uow = $dm->getUnitOfWork();
-
-        $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
-        if ($document instanceof Task) {
-            $room = $document->getRoom();
-            /** @var TaskRepository $taskRepository */
-            $room->setStatus($taskRepository->getActuallyRoomStatus($room, $document));
-            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
-        }
-    }
     /**
      * @param Task $task
      * @param DocumentManager $dm
@@ -108,6 +93,21 @@ class TaskSubscriber implements EventSubscriber
             $room = $task->getRoom();
             $dm->refresh($task->getType());
             $room->setStatus($task->getType()->getRoomStatus());
+            $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
+        }
+    }
+
+    public function preRemove(LifecycleEventArgs $args)
+    {
+        $document = $args->getDocument();
+        $dm = $args->getDocumentManager();
+        $uow = $dm->getUnitOfWork();
+
+        $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
+        if ($document instanceof Task) {
+            $room = $document->getRoom();
+            /** @var TaskRepository $taskRepository */
+            $room->setStatus($taskRepository->getActuallyRoomStatus($room, $document));
             $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
         }
     }

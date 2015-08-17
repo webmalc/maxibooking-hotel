@@ -137,13 +137,13 @@ $(document).ready(function () {
 });
 
 var $taskCounter = $('#task-counter');
-var updateTaskCounter = function() {
+var updateTaskCounter = function () {
     console.log('update task counter');
     $.ajax({
         url: Routing.generate('task_ajax_total_my_open'),
         dataType: 'json',
-        success: function(response) {
-            if(response.total == 0) {
+        success: function (response) {
+            if (response.total == 0) {
                 $taskCounter.html('');
             } else {
                 $taskCounter.html(response.total);
@@ -153,6 +153,6 @@ var updateTaskCounter = function() {
 }
 
 var delay = 1000 * 60 * 5;//5 minutes
-setInterval(function(){
+setInterval(function () {
     updateTaskCounter()
 }, delay);

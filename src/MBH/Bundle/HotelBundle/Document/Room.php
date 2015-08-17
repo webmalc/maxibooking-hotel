@@ -106,47 +106,13 @@ class Room extends Base
     protected $status;
 
     /**
-     * Set hotel
+     * Get fullTitle
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
-     * @return self
+     * @return string $fullTitle
      */
-    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
+    public function getFullTitle()
     {
-        $this->hotel = $hotel;
-        return $this;
-    }
-
-    /**
-     * Get hotel
-     *
-     * @return \MBH\Bundle\HotelBundle\Document\Hotel $hotel
-     */
-    public function getHotel()
-    {
-        return $this->hotel;
-    }
-
-    /**
-     * Set roomType
-     *
-     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
-     * @return self
-     */
-    public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
-    {
-        $this->roomType = $roomType;
-        return $this;
-    }
-
-    /**
-     * Get roomType
-     *
-     * @return \MBH\Bundle\HotelBundle\Document\RoomType $roomType
-     */
-    public function getRoomType()
-    {
-        return $this->roomType;
+        return $this->fullTitle;
     }
 
     /**
@@ -162,13 +128,13 @@ class Room extends Base
     }
 
     /**
-     * Get fullTitle
+     * Get title
      *
-     * @return string $fullTitle
+     * @return string $title
      */
-    public function getFullTitle()
+    public function getTitle()
     {
-        return $this->fullTitle;
+        return $this->title;
     }
 
     /**
@@ -181,16 +147,6 @@ class Room extends Base
     {
         $this->title = $title;
         return $this;
-    }
-
-    /**
-     * Get title
-     *
-     * @return string $title
-     */
-    public function getTitle()
-    {
-        return $this->title;
     }
 
     /**
@@ -214,14 +170,46 @@ class Room extends Base
     }
 
     /**
-     * Set housing
+     * Get roomType
      *
-     * @param Housing $housing
+     * @return \MBH\Bundle\HotelBundle\Document\RoomType $roomType
+     */
+    public function getRoomType()
+    {
+        return $this->roomType;
+    }
+
+    /**
+     * Set roomType
+     *
+     * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
      * @return self
      */
-    public function setHousing(Housing $housing = null)
+    public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
     {
-        $this->housing = $housing;
+        $this->roomType = $roomType;
+        return $this;
+    }
+
+    /**
+     * Get hotel
+     *
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     */
+    public function getHotel()
+    {
+        return $this->hotel;
+    }
+
+    /**
+     * Set hotel
+     *
+     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     * @return self
+     */
+    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
+    {
+        $this->hotel = $hotel;
         return $this;
     }
 
@@ -236,14 +224,14 @@ class Room extends Base
     }
 
     /**
-     * Set floor
+     * Set housing
      *
-     * @param string $floor
+     * @param Housing $housing
      * @return self
      */
-    public function setFloor($floor)
+    public function setHousing(Housing $housing = null)
     {
-        $this->floor = $floor;
+        $this->housing = $housing;
         return $this;
     }
 
@@ -255,6 +243,18 @@ class Room extends Base
     public function getFloor()
     {
         return $this->floor;
+    }
+
+    /**
+     * Set floor
+     *
+     * @param string $floor
+     * @return self
+     */
+    public function setFloor($floor)
+    {
+        $this->floor = $floor;
+        return $this;
     }
 
     /**

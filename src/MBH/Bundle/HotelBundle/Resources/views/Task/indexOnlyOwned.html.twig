@@ -8,57 +8,82 @@
         <div class="panel-body">
             {% if processTasks is empty %}
                 <div class="alert alert-success">
-                    <strong><i class="fa fa-exclamation-circle"></i> {{ 'views.task.index.tasks_empaty'|trans({}, "MBHHotelBundle") }}</strong>
+                    <strong><i class="fa fa-exclamation-circle"></i> {{ 'views.task.index.tasks_empaty'|trans({}, "MBHHotelBundle") }}
+                    </strong>
                 </div>
             {% else %}
-            <table class="table table-hover table-condensed table-striped not-auto-datatable owned-tasks-table">
-                <thead>
-                <tr>
-                    <th class="td-xs text-center">#</th>
-                    <th class="td-xs text-center"><i data-toggle="tooltip" title="{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}" class='fa fa-server'></i></th>
-                    <th class="td-md">{{ 'views.task.index.task'|trans({}, 'MBHHotelBundle') }}</th>
-                    <th class="td-xs"><i data-toggle="tooltip" title="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}" class='fa fa-arrow-up'></i></th>
-                    <th class="td-md">{{ 'views.task.index.room'|trans({}, 'MBHHotelBundle') }}</th>
-                    <th class="td-md">{{ 'views.task.index.dates'|trans({}, 'MBHHotelBundle') }}</th>
-                    <th class="td-md"></th>
-                </tr>
-                </thead>
-                <tbody>
-                    {% for task in processTasks %}
-                    <tr data-id="{{ task.id }}" class="clickable {% if task.isDeleted %}danger{% elseif task.isExpired %}danger{% elseif task.priority == 2 %}warning{% endif %}">
-                        <td class="text-center">{{ task.id }}</td>
-                        <td class="text-center">{% if task.status == 'open' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-plus text-danger'></i>{% elseif task.status == 'process' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-clock-o text-info'></i>{% elseif task.status == 'closed' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-check text-success'></i>{% endif %}</td>
-                        <td>{{ task.type.title }}
-                            {% if task.isDeleted %}
-                                <br>
-                                <small><i class='fa fa-trash-o' title='{{ "views.task.index.deleted"|trans({}, "MBHHotelBundle") }}' data-toggle='tooltip'></i> Запись удалена</small>
-                            {% elseif task.description %}
-                                <br>
-                                <small>{{ task.description|truncate }}</small>
-                            {% endif %}
-                        </td>
-                        <td>{% if task.priority == 2 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i><i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i>{% elseif task.priority == 1 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-warning'></i>{% elseif task.priority == 0 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-down text-success'></i>{% endif %}</td>
-                        <td>{{ task.room.fullTitle }}</td>
-                        <td>{{ task.createdAt|date('d.m.Y') }}{% if task.date %}<br><small>до {{ task.date|date('d.m.Y H:i') }}</small>{% endif %}</td>
-                        <td class="table-actions-td text-right">
-                            <a href='#' class='btn btn-default btn-xs show-task-details'><i class='fa fa-eye'> {{ 'views.task.index.view'|trans({}, "MBHHotelBundle") }}</i></a>
-                             {% if task.status == 'process' %}
-                                 <a href='{{ path('task_change_status', { 'id': task.id, status: 'closed' }) }}' class='btn btn-success btn-xs delete-link'
-                                    data-text="{{ "views.task.index.confirm_closed"|trans({}, "MBHHotelBundle") }}"
-                                    data-button="{{ 'views.task.index.close'|trans({}, "MBHHotelBundle") }}"
-                                    data-button-icon="fa-check"
-                                    data-button-class="success"
-                                    title='{{ 'views.task.index.close'|trans({}, "MBHHotelBundle") }}'
-                                    data-toggle='tooltip'>
-                                     <i class="fa fa-check"></i>
-                                     {{ 'views.task.index.close'|trans({}, "MBHHotelBundle") }}
-                                 </a>
-                              {% endif %}
-                        </td>
+                <table class="table table-hover table-condensed table-striped not-auto-datatable owned-tasks-table">
+                    <thead>
+                    <tr>
+                        <th class="td-xs text-center">#</th>
+                        <th class="td-xs text-center"><i data-toggle="tooltip"
+                                                         title="{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}"
+                                                         class='fa fa-server'></i></th>
+                        <th class="td-md">{{ 'views.task.index.task'|trans({}, 'MBHHotelBundle') }}</th>
+                        <th class="td-xs"><i data-toggle="tooltip"
+                                             title="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}"
+                                             class='fa fa-arrow-up'></i></th>
+                        <th class="td-md">{{ 'views.task.index.room'|trans({}, 'MBHHotelBundle') }}</th>
+                        <th class="td-md">{{ 'views.task.index.dates'|trans({}, 'MBHHotelBundle') }}</th>
+                        <th class="td-md"></th>
                     </tr>
+                    </thead>
+                    <tbody>
+                    {% for task in processTasks %}
+                        <tr data-id="{{ task.id }}"
+                            class="clickable {% if task.isDeleted %}danger{% elseif task.isExpired %}danger{% elseif task.priority == 2 %}warning{% endif %}">
+                            <td class="text-center">{{ task.id }}</td>
+                            <td class="text-center">{% if task.status == 'open' %}<i data-toggle='tooltip'
+                                                                                     title='{{ statuses[task.status].title }}'
+                                                                                     class='fa fa-plus text-danger'></i>{% elseif task.status == 'process' %}
+                                    <i data-toggle='tooltip' title='{{ statuses[task.status].title }}'
+                                       class='fa fa-clock-o text-info'></i>{% elseif task.status == 'closed' %}<i
+                                    data-toggle='tooltip' title='{{ statuses[task.status].title }}'
+                                    class='fa fa-check text-success'></i>{% endif %}</td>
+                            <td>{{ task.type.title }}
+                                {% if task.isDeleted %}
+                                    <br>
+                                    <small><i class='fa fa-trash-o'
+                                              title='{{ "views.task.index.deleted"|trans({}, "MBHHotelBundle") }}'
+                                              data-toggle='tooltip'></i> Запись удалена
+                                    </small>
+                                {% elseif task.description %}
+                                    <br>
+                                    <small>{{ task.description|truncate }}</small>
+                                {% endif %}
+                            </td>
+                            <td>{% if task.priority == 2 %}<i title='{{ priorities[task.priority] }}'
+                                                              class='fa fa-arrow-up text-danger'></i><i
+                                        title='{{ priorities[task.priority] }}'
+                                        class='fa fa-arrow-up text-danger'></i>{% elseif task.priority == 1 %}<i
+                                    title='{{ priorities[task.priority] }}'
+                                    class='fa fa-arrow-up text-warning'></i>{% elseif task.priority == 0 %}<i
+                                    title='{{ priorities[task.priority] }}'
+                                    class='fa fa-arrow-down text-success'></i>{% endif %}</td>
+                            <td>{{ task.room.fullTitle }}</td>
+                            <td>{{ task.createdAt|date('d.m.Y') }}{% if task.date %}<br>
+                                    <small>до {{ task.date|date('d.m.Y H:i') }}</small>{% endif %}</td>
+                            <td class="table-actions-td text-right">
+                                <a href='#' class='btn btn-default btn-xs show-task-details'><i
+                                            class='fa fa-eye'> {{ 'views.task.index.view'|trans({}, "MBHHotelBundle") }}</i></a>
+                                {% if task.status == 'process' %}
+                                    <a href='{{ path('task_change_status', { 'id': task.id, status: 'closed' }) }}'
+                                       class='btn btn-success btn-xs delete-link'
+                                       data-text="{{ "views.task.index.confirm_closed"|trans({}, "MBHHotelBundle") }}"
+                                       data-button="{{ 'views.task.index.close'|trans({}, "MBHHotelBundle") }}"
+                                       data-button-icon="fa-check"
+                                       data-button-class="success"
+                                       title='{{ 'views.task.index.close'|trans({}, "MBHHotelBundle") }}'
+                                       data-toggle='tooltip'>
+                                        <i class="fa fa-check"></i>
+                                        {{ 'views.task.index.close'|trans({}, "MBHHotelBundle") }}
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
                     {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
             {% endif %}
         </div>
     </div>
@@ -72,50 +97,75 @@
         <div class="panel-body">
             {% if tasks is empty %}
                 <div class="alert alert-success">
-                    <strong><i class="fa fa-exclamation-circle"></i> {{ 'views.task.index.tasks_empaty'|trans({}, "MBHHotelBundle") }}</strong>
+                    <strong><i class="fa fa-exclamation-circle"></i> {{ 'views.task.index.tasks_empaty'|trans({}, "MBHHotelBundle") }}
+                    </strong>
                 </div>
             {% else %}
-            <table class="table table-hover table-condensed table-striped not-auto-datatable owned-tasks-table">
-                <thead>
-                <tr>
-                    <th class="td-xs text-center">#</th>
-                    <th class="td-xs text-center"><i data-toggle="tooltip" title="{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}" class='fa fa-server'></i></th>
-                    <th class="td-md">{{ 'views.task.index.task'|trans({}, 'MBHHotelBundle') }}</th>
-                    <th class="td-xs"><i data-toggle="tooltip" title="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}" class='fa fa-arrow-up'></i></th>
-                    <th class="td-md">{{ 'views.task.index.room'|trans({}, 'MBHHotelBundle') }}</th>
-                    <th class="td-md">{{ 'views.task.index.dates'|trans({}, 'MBHHotelBundle') }}</th>
-                    <th class="td-md"></th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for task in tasks %}
-                    <tr data-id="{{ task.id }}" class="clickable {% if task.isDeleted %}danger{% elseif task.isExpired %}danger{% elseif task.priority == 2 %}warning{% endif %}">
-                        <td class="text-center">{{ task.id }}</td>
-                        <td class="text-center">{% if task.status == 'open' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-plus text-danger'></i>{% elseif task.status == 'process' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-clock-o text-info'></i>{% elseif task.status == 'closed' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-check text-success'></i>{% endif %}</td>
-                        <td>{{ task.type.title }}{% if task.isDeleted %}<br><small><i class='fa fa-trash-o' title='{{ "views.task.index.deleted"|trans({}, "MBHHotelBundle") }}' data-toggle='tooltip'></i> Запись удалена</small>{% endif %}"</td>
-                        <td>{% if task.priority == 2 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i><i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i>{% elseif task.priority == 1 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-warning'></i>{% elseif task.priority == 0 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-down text-success'></i>{% endif %}</td>
-                        <td>{{ task.room.fullTitle }}</td>
-                        <td>{{ task.createdAt|date('d.m.Y') }}{% if task.date %}<br><small>до {{ task.date|date('d.m.Y H:i') }}</small>{% endif %}</td>
-                        <td class="table-actions-td text-right">
-                            <a href='#' class='btn btn-default btn-xs show-task-details'><i class='fa fa-eye'> {{ 'views.task.index.view'|trans({}, "MBHHotelBundle") }}</i></a>
-                            {% if task.status == 'open' %}
-                                <a href='{{ path('task_change_status', { 'id': task.id, status: 'process' }) }}'
-                                   class='btn btn-primary btn-xs delete-link'
-                                   data-text="{{ "views.task.index.confirm_in_process"|trans({}, "MBHHotelBundle") }}"
-                                   data-button="{{ 'views.task.index.take_in_process'|trans({}, "MBHHotelBundle") }}"
-                                   data-button-icon="fa-clock-o"
-                                   data-button-class="primary"
-                                   title='{{ 'views.task.index.take_in_process'|trans({}, "MBHHotelBundle") }}'
-                                   data-toggle='tooltip'>
-                                    <i class="fa fa-clock-o"></i>
-                                    {{ 'views.task.index.take_in_process'|trans({}, "MBHHotelBundle") }}
-                                </a>
-                            {% endif %}
-                        </td>
+                <table class="table table-hover table-condensed table-striped not-auto-datatable owned-tasks-table">
+                    <thead>
+                    <tr>
+                        <th class="td-xs text-center">#</th>
+                        <th class="td-xs text-center"><i data-toggle="tooltip"
+                                                         title="{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}"
+                                                         class='fa fa-server'></i></th>
+                        <th class="td-md">{{ 'views.task.index.task'|trans({}, 'MBHHotelBundle') }}</th>
+                        <th class="td-xs"><i data-toggle="tooltip"
+                                             title="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}"
+                                             class='fa fa-arrow-up'></i></th>
+                        <th class="td-md">{{ 'views.task.index.room'|trans({}, 'MBHHotelBundle') }}</th>
+                        <th class="td-md">{{ 'views.task.index.dates'|trans({}, 'MBHHotelBundle') }}</th>
+                        <th class="td-md"></th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for task in tasks %}
+                        <tr data-id="{{ task.id }}"
+                            class="clickable {% if task.isDeleted %}danger{% elseif task.isExpired %}danger{% elseif task.priority == 2 %}warning{% endif %}">
+                            <td class="text-center">{{ task.id }}</td>
+                            <td class="text-center">{% if task.status == 'open' %}<i data-toggle='tooltip'
+                                                                                     title='{{ statuses[task.status].title }}'
+                                                                                     class='fa fa-plus text-danger'></i>{% elseif task.status == 'process' %}
+                                    <i data-toggle='tooltip' title='{{ statuses[task.status].title }}'
+                                       class='fa fa-clock-o text-info'></i>{% elseif task.status == 'closed' %}<i
+                                    data-toggle='tooltip' title='{{ statuses[task.status].title }}'
+                                    class='fa fa-check text-success'></i>{% endif %}</td>
+                            <td>{{ task.type.title }}{% if task.isDeleted %}<br>
+                                <small><i class='fa fa-trash-o'
+                                          title='{{ "views.task.index.deleted"|trans({}, "MBHHotelBundle") }}'
+                                          data-toggle='tooltip'></i> Запись удалена</small>{% endif %}"
+                            </td>
+                            <td>{% if task.priority == 2 %}<i title='{{ priorities[task.priority] }}'
+                                                              class='fa fa-arrow-up text-danger'></i><i
+                                        title='{{ priorities[task.priority] }}'
+                                        class='fa fa-arrow-up text-danger'></i>{% elseif task.priority == 1 %}<i
+                                    title='{{ priorities[task.priority] }}'
+                                    class='fa fa-arrow-up text-warning'></i>{% elseif task.priority == 0 %}<i
+                                    title='{{ priorities[task.priority] }}'
+                                    class='fa fa-arrow-down text-success'></i>{% endif %}</td>
+                            <td>{{ task.room.fullTitle }}</td>
+                            <td>{{ task.createdAt|date('d.m.Y') }}{% if task.date %}<br>
+                                    <small>до {{ task.date|date('d.m.Y H:i') }}</small>{% endif %}</td>
+                            <td class="table-actions-td text-right">
+                                <a href='#' class='btn btn-default btn-xs show-task-details'><i
+                                            class='fa fa-eye'> {{ 'views.task.index.view'|trans({}, "MBHHotelBundle") }}</i></a>
+                                {% if task.status == 'open' %}
+                                    <a href='{{ path('task_change_status', { 'id': task.id, status: 'process' }) }}'
+                                       class='btn btn-primary btn-xs delete-link'
+                                       data-text="{{ "views.task.index.confirm_in_process"|trans({}, "MBHHotelBundle") }}"
+                                       data-button="{{ 'views.task.index.take_in_process'|trans({}, "MBHHotelBundle") }}"
+                                       data-button-icon="fa-clock-o"
+                                       data-button-class="primary"
+                                       title='{{ 'views.task.index.take_in_process'|trans({}, "MBHHotelBundle") }}'
+                                       data-toggle='tooltip'>
+                                        <i class="fa fa-clock-o"></i>
+                                        {{ 'views.task.index.take_in_process'|trans({}, "MBHHotelBundle") }}
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             {% endif %}
         </div>
     </div>
@@ -125,33 +175,35 @@
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">{{ 'views.task.index.info'|trans({}, 'MBHHotelBundle') }} #<em></em></h4>
                 </div>
                 <div class="modal-body">
                     <table class="table table-hover table-striped not-auto-datatable">
                         {% for k,v in [
-                            'role',
-                            'type',
-                            'performer',
-                            'room',
-                            'priority',
-                            'status',
-                            'date',
-                            'createdAt',
-                            'createdBy',
-                            'description'
+                        'role',
+                        'type',
+                        'performer',
+                        'room',
+                        'priority',
+                        'status',
+                        'date',
+                        'createdAt',
+                        'createdBy',
+                        'description'
                         ] %}
-                        <tr data-property="{{ v }}">
-                            <td>{{ ('views.task.index.detail.' ~ v)|trans({}, 'MBHHotelBundle') }}</td>
-                            <td></td>
-                        </tr>
+                            <tr data-property="{{ v }}">
+                                <td>{{ ('views.task.index.detail.' ~ v)|trans({}, 'MBHHotelBundle') }}</td>
+                                <td></td>
+                            </tr>
                         {% endfor %}
                     </table>
                 </div>
                 <div class="modal-footer">
                     <a id="task-info-modal-action" href="#" class="btn pull-left"></a>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'views.task.index.cancel'|trans({}, 'MBHHotelBundle') }}</button>
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">{{ 'views.task.index.cancel'|trans({}, 'MBHHotelBundle') }}</button>
                 </div>
             </div>
         </div>

@@ -80,6 +80,13 @@ class TaskController extends Controller
         }
     }
 
+    private function getRoleList()
+    {
+        $roles = array_keys($this->container->getParameter('security.role_hierarchy.roles'));
+
+        return array_combine($roles, $roles);
+    }
+
     /**
      * List entities
      *
@@ -151,12 +158,12 @@ class TaskController extends Controller
         $entity->setStatus($status);
         $room = $entity->getRoom();
 
-        if($status == Task::STATUS_PROCESS) {
-            if(!$entity->getPerformer()) {
+        if ($status == Task::STATUS_PROCESS) {
+            if (!$entity->getPerformer()) {
                 $entity->setPerformer($this->getUser());
             }
             $entity->setStart(new \DateTime());
-        } elseif($status == Task::STATUS_CLOSED) {
+        } elseif ($status == Task::STATUS_CLOSED) {
             $entity->setEnd(new \DateTime());
         }
         $this->dm->persist($room);
@@ -216,33 +223,6 @@ class TaskController extends Controller
         ];
     }
 
-    private function sendNotifications(Task $task)
-    {
-        $recipients = [];
-        if($task->getRole()) {
-            $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy([
-                'roles' => $task->getRole(),
-                'taskNotify' => true,
-                'email' => ['$exists' => true],
-                'enabled' => true,
-            ]);
-        }
-
-        if($task->getPerformer() && $task->getPerformer()->getTaskNotify() && !in_array($task->getPerformer(), $recipients)) {
-            $recipients[] = $task->getPerformer();
-        }
-        if($recipients) {
-            $message = new NotifierMessage();
-            $message->setSubject('Вам назначена новая задача');
-            $message->setText('Вам назначили задачу "'.$task->getType()->getTitle().'"');
-            $message->setLink($this->generateUrl('task'));
-            foreach($recipients as $recipient) {
-                $message->addRecipient([$recipient->getEmail() => $recipient->getFullName(true)]);
-            }
-            $this->get('mbh.notifier.mailer')->setMessage($message)->notify();
-        }
-    }
-
     private function getFormTaskTypeOptions()
     {
         $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
@@ -263,11 +243,31 @@ class TaskController extends Controller
         ];
     }
 
-    private function getRoleList()
+    private function sendNotifications(Task $task)
     {
-        $roles = array_keys($this->container->getParameter('security.role_hierarchy.roles'));
+        $recipients = [];
+        if ($task->getRole()) {
+            $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy([
+                'roles' => $task->getRole(),
+                'taskNotify' => true,
+                'email' => ['$exists' => true],
+                'enabled' => true,
+            ]);
+        }
 
-        return array_combine($roles, $roles);
+        if ($task->getPerformer() && $task->getPerformer()->getTaskNotify() && !in_array($task->getPerformer(), $recipients)) {
+            $recipients[] = $task->getPerformer();
+        }
+        if ($recipients) {
+            $message = new NotifierMessage();
+            $message->setSubject('Вам назначена новая задача');
+            $message->setText('Вам назначили задачу "' . $task->getType()->getTitle() . '"');
+            $message->setLink($this->generateUrl('task'));
+            foreach ($recipients as $recipient) {
+                $message->addRecipient([$recipient->getEmail() => $recipient->getFullName(true)]);
+            }
+            $this->get('mbh.notifier.mailer')->setMessage($message)->notify();
+        }
     }
 
     /**

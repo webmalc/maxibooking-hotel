@@ -129,77 +129,6 @@ class FixturesCommand extends ContainerAwareCommand
         $output->writeln('Installing complete. Elapsed time: ' . $time->format('%H:%I:%S'));
     }
 
-    private function createPollQuestions()
-    {
-        $oldQuestions = $this->dm->getRepository('MBHPackageBundle:PollQuestion')->findAll();
-        $sort = 0;
-        foreach ($this->pollQuestions as $questionCat => $questions) {
-            foreach ($questions as $question) {
-                foreach ($oldQuestions as $old) {
-                    if ($old->getId() == $question) {
-                        continue 2;
-                    }
-                }
-
-                $new = new PollQuestion();
-                $new->setId($question)
-                    ->setCategory($questionCat)
-                    ->setText('poll.question.' . $question)
-                    ->setSort($sort)
-                ;
-                $sort++;
-                $this->dm->persist($new);
-                $this->dm->flush();
-            }
-        }
-    }
-
-    /**
-     * @param Hotel $hotel
-     * @return Tariff
-     */
-    private function createTariffs(Hotel $hotel)
-    {
-        $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel);
-
-        if ($baseTariff) {
-            return $baseTariff;
-        }
-
-        $tariff = new Tariff();
-        $tariff->setFullTitle($this->tariff)
-            ->setIsDefault(true)
-            ->setIsOnline(true)
-            ->setHotel($hotel)
-        ;
-        $this->dm->persist($tariff);
-        $this->dm->flush();
-
-        return $tariff;
-    }
-
-    /**
-     * @return int
-     */
-    private function createCities()
-    {
-        $process = new Process(
-            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console mbh:city:load --no-debug'
-        );
-        return $process->run();
-    }
-
-    /**
-     * @return int
-     */
-    private function createTaskTypes()
-    {
-        $process = new Process(
-            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console mbh:task:load --no-debug'
-        );
-        return $process->run();
-    }
-
     /**
      * @return array
      */
@@ -243,13 +172,13 @@ class FixturesCommand extends ContainerAwareCommand
 
         return null;
     }
-    
+
     /**
      * Create hotel default services
      * @param Hotel $hotel
      */
     private function createServices(Hotel $hotel)
-    {    
+    {
         foreach ($this->serviceCategories as $catName => $services) {
             $category = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->findOneBy([
                 'system' => true,
@@ -257,7 +186,7 @@ class FixturesCommand extends ContainerAwareCommand
                 'hotel.id' => $hotel->getId()
                     ])
             ;
-            
+
             if (empty($category)) {
                 $category = new ServiceCategory();
                 $category->setSystem(true)
@@ -268,7 +197,7 @@ class FixturesCommand extends ContainerAwareCommand
                 $this->dm->persist($category);
                 $this->dm->flush();
             }
-            
+
             foreach ($services as $code => $info) {
                 $service = $this->dm->getRepository('MBHPriceBundle:Service')->findOneBy([
                 'system' => true,
@@ -276,7 +205,7 @@ class FixturesCommand extends ContainerAwareCommand
                 'category.id' => $category->getId()
                     ])
                 ;
-                
+
                 if (empty($service)) {
                     $service = new Service;
                     $service->setCode($code)
@@ -292,8 +221,77 @@ class FixturesCommand extends ContainerAwareCommand
                     $this->dm->persist($service);
                     $this->dm->flush();
                 }
-                
+
             }
         }
-    }        
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return Tariff
+     */
+    private function createTariffs(Hotel $hotel)
+    {
+        $baseTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel);
+
+        if ($baseTariff) {
+            return $baseTariff;
+        }
+
+        $tariff = new Tariff();
+        $tariff->setFullTitle($this->tariff)
+            ->setIsDefault(true)
+            ->setIsOnline(true)
+            ->setHotel($hotel);
+        $this->dm->persist($tariff);
+        $this->dm->flush();
+
+        return $tariff;
+    }
+
+    /**
+     * @return int
+     */
+    private function createCities()
+    {
+        $process = new Process(
+            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console mbh:city:load --no-debug'
+        );
+        return $process->run();
+    }
+
+    /**
+     * @return int
+     */
+    private function createTaskTypes()
+    {
+        $process = new Process(
+            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console mbh:task:load --no-debug'
+        );
+        return $process->run();
+    }
+
+    private function createPollQuestions()
+    {
+        $oldQuestions = $this->dm->getRepository('MBHPackageBundle:PollQuestion')->findAll();
+        $sort = 0;
+        foreach ($this->pollQuestions as $questionCat => $questions) {
+            foreach ($questions as $question) {
+                foreach ($oldQuestions as $old) {
+                    if ($old->getId() == $question) {
+                        continue 2;
+                    }
+                }
+
+                $new = new PollQuestion();
+                $new->setId($question)
+                    ->setCategory($questionCat)
+                    ->setText('poll.question.' . $question)
+                    ->setSort($sort);
+                $sort++;
+                $this->dm->persist($new);
+                $this->dm->flush();
+            }
+        }
+    }
 }

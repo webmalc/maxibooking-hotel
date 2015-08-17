@@ -36,15 +36,15 @@ class CheckDeleteRelationSubscriber implements EventSubscriber
         if (array_key_exists(get_class($document), $settings)) {
             $settings = $settings[get_class($document)];
 
-            foreach($settings as $setting) {
+            foreach ($settings as $setting) {
                 /** @var DocumentRepository $relationRepository */
                 $relationRepository = $dm->getRepository($setting['document']);
                 $count = $relationRepository->createQueryBuilder()
-                    ->field($setting['field'].'.id')->equals($document->getId())
+                    ->field($setting['field'] . '.id')->equals($document->getId())
                     ->field('deletedAt')->exists(false)
                     ->getQuery()->count();
 
-                if($count > 0) {
+                if ($count > 0) {
                     $message = isset($setting['message']) ? $setting['message'] : 'exception.relation_delete.message'; // have existing relation
                     throw new DeleteException($message, $count);
                 }

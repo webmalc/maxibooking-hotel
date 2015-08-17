@@ -7,11 +7,13 @@
             <form id="task-table-filter" class="form-inline form-icon-label">
                 <div class="form-group">
                     <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
-                    <input type="text" id="task-filter-begin" class="datepicker begin-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
+                    <input type="text" id="task-filter-begin" class="datepicker begin-datepiker form-control input-sm"
+                           data-date-format="dd.mm.yyyy">
                 </div>
                 <div class="form-group">
                     <label>-</label>
-                    <input type="text" id="task-filter-end" class="datepicker end-datepiker form-control input-sm" data-date-format="dd.mm.yyyy">
+                    <input type="text" id="task-filter-end" class="datepicker end-datepiker form-control input-sm"
+                           data-date-format="dd.mm.yyyy">
                 </div>
 
                 <div class="form-group">
@@ -19,8 +21,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fa fa-server" title='{{ "task.status"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i></label>
-                    <select id="task-filter-status" placeholder="{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}">
+                    <label><i class="fa fa-server" title='{{ "task.status"|trans({}, "MBHPackageBundle") }}'
+                              data-toggle='tooltip'></i></label>
+                    <select id="task-filter-status"
+                            placeholder="{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}">
                         <option></option>
                         {% for key,status in statuses %}
                             <option value="{{ key }}">{{ status.title }}</option>
@@ -29,8 +33,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fa fa-arrow-up" title='{{ "task.priority"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i></label>
-                    <select id="task-filter-priority" placeholder="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}">
+                    <label><i class="fa fa-arrow-up" title='{{ "task.priority"|trans({}, "MBHPackageBundle") }}'
+                              data-toggle='tooltip'></i></label>
+                    <select id="task-filter-priority"
+                            placeholder="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}">
                         <option></option>
                         {% for key,priority in priorities %}
                             <option value="{{ key }}">{{ ('views.task.priority.' ~ priority)|trans({}, 'MBHHotelBundle') }}</option>
@@ -39,8 +45,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fa fa-group" title='{{ "task.group"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i></label>
-                    <select id="task-filter-group" placeholder="{{ 'views.task.index.group'|trans({}, 'MBHHotelBundle') }}">
+                    <label><i class="fa fa-group" title='{{ "task.group"|trans({}, "MBHPackageBundle") }}'
+                              data-toggle='tooltip'></i></label>
+                    <select id="task-filter-group"
+                            placeholder="{{ 'views.task.index.group'|trans({}, 'MBHHotelBundle') }}">
                         <option></option>
                         {% for key,group in groups %}
                             <option value="{{ key }}">{{ group|trans({}, 'MBHUserBundleRoles') }}</option>
@@ -49,8 +57,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label><i class="fa fa-user" title='{{ "task.performer"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i></label>
-                    <select id="task-filter-performer" placeholder="{{ 'views.task.index.performer'|trans({}, 'MBHHotelBundle') }}">
+                    <label><i class="fa fa-user" title='{{ "task.performer"|trans({}, "MBHPackageBundle") }}'
+                              data-toggle='tooltip'></i></label>
+                    <select id="task-filter-performer"
+                            placeholder="{{ 'views.task.index.performer'|trans({}, 'MBHHotelBundle') }}">
                         <option></option>
                         {% for key,performer in performers %}
                             <option value="{{ performer.id }}">{{ performer.fullName(true) }}</option>
@@ -58,7 +68,9 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label><i class="fa fa-trash-o" title="{{ "views.task.index.isDeleted"|trans({}, "MBHHotelBundle") }}" data-toggle="tooltip"></i></label>
+                    <label><i class="fa fa-trash-o"
+                              title="{{ "views.task.index.isDeleted"|trans({}, "MBHHotelBundle") }}"
+                              data-toggle="tooltip"></i></label>
                     <input id="task-filter-deleted" name="deleted" type="checkbox">
                 </div>
             </form>
@@ -69,9 +81,13 @@
         <thead>
         <tr>
             <th class="td-xs">#</th>
-            <th class="td-xs text-center"><i data-toggle="tooltip" title="{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}" class='fa fa-server'></i></th>
+            <th class="td-xs text-center"><i data-toggle="tooltip"
+                                             title="{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}"
+                                             class='fa fa-server'></i></th>
             <th class="td-md text-center">{{ 'views.task.index.task'|trans({}, 'MBHHotelBundle') }}</th>
-            <th class="td-xs"><i data-toggle="tooltip" title="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}" class='fa fa-arrow-up'></i></th>
+            <th class="td-xs"><i data-toggle="tooltip"
+                                 title="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}"
+                                 class='fa fa-arrow-up'></i></th>
             <th class="td-md">{{ 'views.task.index.room'|trans({}, 'MBHHotelBundle') }}</th>
             <th class="td-md">{{ 'views.task.index.assign'|trans({}, 'MBHHotelBundle') }}</th>
             <th class="td-md">{{ 'views.task.index.period'|trans({}, 'MBHHotelBundle') }}</th>
@@ -89,29 +105,38 @@
             <tr>
                 <td class="text-center"><i class="fa fa-tasks"></i></td>
                 <td>{{ task.number }}</td>
-                <td>{% if statuses[task.status] is defined %} <span class="text-{{ statuses[task.status].class }}">{{ statuses[task.status].title }}</span> {% endif %}</td>
+                <td>{% if statuses[task.status] is defined %} <span
+                            class="text-{{ statuses[task.status].class }}">{{ statuses[task.status].title }}</span> {% endif %}
+                </td>
                 <td>{{ task.taskType.title }}</td>
                 <td class="text-{{ priorityClass[task.priority] }}">{{ priorities[task.priority] }}</td>
                 <td>{{ task.room.roomType.title }}</td>
                 <td>{% if task.performer %}{{ task.performer.fullName }} {% endif %}</td>
-                {% if app.security.granted('ROLE_TASK_MANAGER') %}<td>{{ task.role }}</td>{% endif %}
+                {% if app.security.granted('ROLE_TASK_MANAGER') %}
+                    <td>{{ task.role }}</td>{% endif %}
                 <td>{{ task.createdAt|date('d.m.Y') }}</td>
                 <td>{{ task.updatedAt|date('d.m.Y') }}</td>
                 <td class="table-actions-td text-right">
                     {% if task.status == 'open' %}
-                        <a href="{{ path('task_change_status', { 'id': task.id, status: 'process' }) }}" class="btn btn-info btn-xs" title="{{ "process"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
+                        <a href="{{ path('task_change_status', { 'id': task.id, status: 'process' }) }}"
+                           class="btn btn-info btn-xs" title="{{ "process"|trans({}, "MBHPackageBundle") }}"
+                           data-toggle="tooltip">
                             <i class="fa fa-clock-o"></i>
                         </a>
                     {% endif %}
                     {% if task.status == 'process' %}
-                        <a href="{{ path('task_change_status', { 'id': task.id, status: 'closed' }) }}" class="btn btn-primary btn-xs" title="{{ "closed"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
+                        <a href="{{ path('task_change_status', { 'id': task.id, status: 'closed' }) }}"
+                           class="btn btn-primary btn-xs" title="{{ "closed"|trans({}, "MBHPackageBundle") }}"
+                           data-toggle="tooltip">
                             <i class="fa fa-check"></i>
                         </a>
                     {% endif %}
-                    <a href="{{ path('task_edit', { 'id': task.id }) }}" class="btn btn-success btn-xs" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
+                    <a href="{{ path('task_edit', { 'id': task.id }) }}" class="btn btn-success btn-xs"
+                       title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
                         <i class="fa fa-pencil-square-o"></i>
                     </a>
-                    <a href="{{ path('task_delete', { 'id': task.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
+                    <a href="{{ path('task_delete', { 'id': task.id }) }}" class="btn btn-danger btn-xs delete-link "
+                       title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
                         <i class="fa fa-trash-o"></i>
                     </a>
                 </td>
