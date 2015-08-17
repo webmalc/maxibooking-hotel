@@ -35,6 +35,7 @@ class AutoTasksCommand extends ContainerAwareCommand
         $dm->getConnection()->getConfiguration()->setLoggerCallable(null);
 
         $now = new \DateTime();
+        $tomorrow = new \DateTime('+1 day');
         /** @var DocumentRepository $hotelRepository */
         $hotelRepository = $dm->getRepository('MBHHotelBundle:Hotel');
         /** @var RoomTypeRepository $roomTypeRepository */
@@ -97,9 +98,11 @@ class AutoTasksCommand extends ContainerAwareCommand
                                     ->field('type.id')->equals($taskType->getId())
                                     ->field('role')->equals($taskType->getDefaultRole())
                                     ->field('room.id')->equals($package->getAccommodation()->getId())
-                                    ->field('status')->equals(Task::STATUS_OPEN)
-                                    ->field('priority')->equals(Task::PRIORITY_AVERAGE)
-                                    ->field('createdBy')->equals(null)->getQuery()->count();
+                                    //->field('status')->equals(Task::STATUS_OPEN)
+                                    //->field('priority')->equals(Task::PRIORITY_AVERAGE)
+                                    ->field('createdBy')->equals(null)
+                                    ->field('createdAt')->gte($now)->lte($tomorrow)
+                                    ->getQuery()->count();
                                 if($count == 0) {
                                     $task = new Task();
                                     $task->setType($taskType)
@@ -120,8 +123,8 @@ class AutoTasksCommand extends ContainerAwareCommand
             $dm->detach($roomType);
         }
 
-        $output->writeln("Created task total:" . $inc);
-        //$dm->flush();
-        $output->writeln("Done");
+        $dm->flush();
+
+        $output->writeln("Created task total: " . $inc. ". Done");
     }
 }
