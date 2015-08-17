@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 
 /**
@@ -18,25 +19,38 @@ class RoomTypeTasksType extends AbstractType
             ->add('checkIn', 'document', [
                 'label' => 'form.roomTypeTasks.checkIn',
                 'required' => false,
-                'mapped' => false,
                 'multiple' => true,
+                'group_by' => 'category',
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
             ])
             ->add('checkOut', 'document', [
                 'label' => 'form.roomTypeTasks.checkOut',
                 'required' => false,
-                'mapped' => false,
                 'multiple' => true,
+                'group_by' => 'category',
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
             ])
             ->add('daily', 'collection', [
                 'label' => 'form.roomTypeTasks.daily',
                 'required' => false,
-                'mapped' => false,
                 'type' => new DailyTaskType(),
                 'allow_add' => true,
+                'allow_delete' => true,
             ]);
     }
+
+    /**
+     * Configures the options for this type.
+     *
+     * @param OptionsResolver $resolver The resolver for the options.
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'cascade_validation' => true,
+        ]);
+    }
+
 
     public function getName()
     {

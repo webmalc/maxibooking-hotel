@@ -77,16 +77,22 @@ $(document).ready(function () {
     var $addDailyBtn = $taskForm.find('.daily .btn');
     var $dailyList = $('#daily-in-list');
     var prototype = '<div class="form-inline">' + $addDailyBtn.data('prototype') + '<i class="fa fa-times"></i></div>';
-    var index = $dailyList.find('.form-group').length;
-    $addDailyBtn.on('click', function () {
-        var newPrototype = prototype.replace(/__name__/g, index);
-        $dailyList.append(newPrototype);
-        $dailyList.find('select').select2();
-        ++index;
-
+    var index = $dailyList.find('.form-inline').length;
+    var updateListenerOnCloseButtons = function () {
         $dailyList.find('.fa-times').on('click', function () {
             $(this).closest('.form-inline').remove();
         });
+    }
+    $addDailyBtn.on('click', function () {
+        var newPrototype = prototype.replace(/__name__/g, index);
+        $dailyList.append(newPrototype);
+        $dailyList.find('select:visible').select2({
+            allowClear: true
+            //width: 'resolve'
+        });
+        ++index;
+        updateListenerOnCloseButtons();
     });
+    updateListenerOnCloseButtons();
 });
 

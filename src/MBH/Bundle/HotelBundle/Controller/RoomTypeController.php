@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
+use MBH\Bundle\HotelBundle\Document\TaskSettings;
 use MBH\Bundle\HotelBundle\Form\RoomTypeImageType;
 use MBH\Bundle\HotelBundle\Form\RoomTypeTasksType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -202,20 +203,30 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      */
     public function editAutoTasksAction(Request $request, RoomType $entity)
     {
-        $form = $this->createForm(new RoomTypeTasksType(), $entity);
+        if(!$entity->getTaskSettings()) {
+            $entity->setTaskSettings(new TaskSettings());
+        }
+        $form = $this->createForm(new RoomTypeTasksType(), $entity->getTaskSettings());
 
         if ($request->isMethod(Request::METHOD_POST)) {
             $form->handleRequest($request);
             if($form->isValid()) {
-                //..
+                //$this->dm->persist($entity);
+                $this->dm->persist($entity->getTaskSettings());
+                $this->dm->flush();
+
+                $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.roomTypeController.record_edited_success'));
+
+                return $this->afterSaveRedirect('room_type', $entity->getId(), [], '_task_edit');
             }
         }
 
-        return array(
+        return [
             'form' => $form->createView(),
             'entity' => $entity,
             'logs' => $this->logs($entity),
-        );
+        ];
     }
 
     /**

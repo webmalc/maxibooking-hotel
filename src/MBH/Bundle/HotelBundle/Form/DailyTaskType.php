@@ -17,6 +17,7 @@ class DailyTaskType extends AbstractType
     {
         $builder
             ->add('day', 'number', [
+                'required' => true,
                 'attr' => [
                     'style' => 'width:50px',
                     'placeholder' => 'Кол. дней',
@@ -26,8 +27,10 @@ class DailyTaskType extends AbstractType
                     new Length(['max' => 3])
                 ]*/
             ])
-            ->add('task_type', 'document', [
+            ->add('taskType', 'document', [
+                'required' => true,
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
+                'group_by' => 'category',
                 'attr' => ['style' => 'width:410px'],
                 'empty_value' => ''
             ]);
@@ -35,9 +38,9 @@ class DailyTaskType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            //'data_class' => 'MBH\Bundle\HotelBundle\Document\Task',
-        ));
+        $resolver->setDefaults([
+            'data_class' => 'MBH\Bundle\HotelBundle\Document\DailyTaskSetting',
+        ]);
     }
 
 

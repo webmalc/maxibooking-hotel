@@ -161,8 +161,15 @@ class RoomType extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isHostel = false;
-    /** @ODM\EmbedMany(targetDocument="RoomTypeImage") */
-    private $images = array();
+    /**
+     * @ODM\EmbedMany(targetDocument="RoomTypeImage")
+     */
+    private $images = [];
+    /**
+     * @var TaskSettings
+     * @ODM\EmbedOne(targetDocument="TaskSettings")
+     */
+    private $taskSettings;
 
     public function __construct()
     {
@@ -576,5 +583,21 @@ class RoomType extends Base
         foreach ($this->getImages() as $element) {
             $element->setIsMain($element->getId() == $imageId);
         }
+    }
+
+    /**
+     * @return TaskSettings|null
+     */
+    public function getTaskSettings()
+    {
+        return $this->taskSettings;
+    }
+
+    /**
+     * @param TaskSettings $taskSettings
+     */
+    public function setTaskSettings(TaskSettings $taskSettings = null)
+    {
+        $this->taskSettings = $taskSettings;
     }
 }
