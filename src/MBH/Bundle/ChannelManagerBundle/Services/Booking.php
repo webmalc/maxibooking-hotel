@@ -490,7 +490,8 @@ class Booking extends Base
         \SimpleXMLElement $reservation,
         ChannelManagerConfigInterface $config,
         Order $order = null
-    ) {
+    )
+    {
         $helper = $this->container->get('mbh.helper');
         $roomTypes = $this->getRoomTypes($config, true);
         $tariffs = $this->getTariffs($config, true);

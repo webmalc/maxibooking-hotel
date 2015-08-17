@@ -33,25 +33,25 @@ class TaskLoadCommand extends ContainerAwareCommand
 
         $repairStatus = new RoomStatus();
         $repairStatus->setTitle('Ремонт')->setCode('repair');
-        if($roomStatusRepository->createQueryBuilder()->field('code')->equals($repairStatus->getCode())->getQuery()->count() == 0) {
+        if ($roomStatusRepository->createQueryBuilder()->field('code')->equals($repairStatus->getCode())->getQuery()->count() == 0) {
             $dm->persist($repairStatus);
         }
 
         $cleaningStatus = new RoomStatus();
         $cleaningStatus->setTitle('Уборка')->setCode('cleaning');
-        if($roomStatusRepository->createQueryBuilder()->field('code')->equals($cleaningStatus->getCode())->getQuery()->count() == 0) {
+        if ($roomStatusRepository->createQueryBuilder()->field('code')->equals($cleaningStatus->getCode())->getQuery()->count() == 0) {
             $dm->persist($cleaningStatus);
         }
 
         $reserveStatus = new RoomStatus();
         $reserveStatus->setTitle('Резерв')->setCode('reserve');
-        if($roomStatusRepository->createQueryBuilder()->field('code')->equals($reserveStatus->getCode())->getQuery()->count() == 0) {
+        if ($roomStatusRepository->createQueryBuilder()->field('code')->equals($reserveStatus->getCode())->getQuery()->count() == 0) {
             $dm->persist($reserveStatus);
         }
 
         $otherStatus = new RoomStatus();
         $otherStatus->setTitle('Другое')->setCode('other');
-        if($roomStatusRepository->createQueryBuilder()->field('code')->equals($otherStatus->getCode())->getQuery()->count() == 0) {
+        if ($roomStatusRepository->createQueryBuilder()->field('code')->equals($otherStatus->getCode())->getQuery()->count() == 0) {
             $dm->persist($otherStatus);
         }
 
@@ -73,10 +73,10 @@ class TaskLoadCommand extends ContainerAwareCommand
         $taskType->setCategory($category);
         $taskType->setRoomStatus($cleaningStatus);
 
-        if($taskTypeCategoryRepository->createQueryBuilder()->field('code')->equals($category->getCode())->getQuery()->count() == 0){
+        if ($taskTypeCategoryRepository->createQueryBuilder()->field('code')->equals($category->getCode())->getQuery()->count() == 0) {
             $dm->persist($category);
         }
-        if($taskTypeRepository->createQueryBuilder()->field('code')->equals($taskType->getCode())->getQuery()->count() == 0){
+        if ($taskTypeRepository->createQueryBuilder()->field('code')->equals($taskType->getCode())->getQuery()->count() == 0) {
             $dm->persist($taskType);
         }
 

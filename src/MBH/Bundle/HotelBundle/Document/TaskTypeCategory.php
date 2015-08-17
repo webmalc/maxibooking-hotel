@@ -64,22 +64,6 @@ class TaskTypeCategory extends Base
     /**
      * @return string
      */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param string $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * @return string
-     */
     public function getFullTitle()
     {
         return $this->fullTitle;
@@ -147,6 +131,22 @@ class TaskTypeCategory extends Base
     public function __toString()
     {
         return (string) $this->getTitle();
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
     }
 
 
