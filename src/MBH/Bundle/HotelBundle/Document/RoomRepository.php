@@ -150,8 +150,7 @@ class RoomRepository extends AbstractBaseRepository
         $skip = null,
         $limit = null,
         $group = false
-    )
-    {
+    ) {
         $result = $this->fetchQuery($hotel, $roomTypes, $housing, $floor, $skip, $limit)->getQuery()->execute();
 
         if ($group) {

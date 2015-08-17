@@ -232,6 +232,7 @@ class RoomType extends Base
     public function setTitle($title)
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -371,7 +372,7 @@ class RoomType extends Base
 
         return $this;
     }
-    
+
     /**
      * Get isHostel
      *
@@ -380,6 +381,19 @@ class RoomType extends Base
     public function getIsHostel()
     {
         return $this->isHostel;
+    }
+
+    /**
+     * Set isHostel
+     *
+     * @param boolean $isHostel
+     * @return self
+     */
+    public function setIsHostel($isHostel)
+    {
+        $this->isHostel = $isHostel;
+
+        return $this;
     }
 
     /**
@@ -401,19 +415,6 @@ class RoomType extends Base
     public function setAdditionalPlaces($additionalPlaces)
     {
         $this->getIsHostel() ? $this->additionalPlaces = 0 : $this->additionalPlaces = $additionalPlaces;
-
-        return $this;
-    }
-
-    /**
-     * Set isHostel
-     *
-     * @param boolean $isHostel
-     * @return self
-     */
-    public function setIsHostel($isHostel)
-    {
-        $this->isHostel = $isHostel;
 
         return $this;
     }

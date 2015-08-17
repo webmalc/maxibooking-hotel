@@ -1,6 +1,6 @@
 {% extends 'MBHChannelManagerBundle:Ostrovok:layout.html.twig' %}
 
-{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle')  %}
+{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle') %}
 
 {% block content %}
     {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': entity, 'base': 'ostrovok'} %}
@@ -12,9 +12,9 @@
             {% include 'MBHChannelManagerBundle::actions.html.twig' %}
             {{ form_end(form) }}
 
-            {%  if entity %}
+            {% if entity %}
                 {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tariff_delete' } %}
-            {%  endif %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

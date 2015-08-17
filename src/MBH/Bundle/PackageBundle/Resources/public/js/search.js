@@ -135,7 +135,7 @@ $(document).ready(function () {
                             show = function () {
                                 var isAlert = false;
 
-                                date.setHours(0,0,0,0);
+                                date.setHours(0, 0, 0, 0);
                                 select.each(function () {
                                     var link = $(this).closest('tr').find('.package-search-book').addClass('btn-danger'),
                                         begin = $('#s_begin').datepicker("getDate");

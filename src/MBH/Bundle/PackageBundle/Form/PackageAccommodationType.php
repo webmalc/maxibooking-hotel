@@ -26,7 +26,7 @@ class PackageAccommodationType extends AbstractType
 
         $builder
             ->add('accommodation', 'document', [
-                'label' =>  'form.packageAccommodationType.room',
+                'label' => 'form.packageAccommodationType.room',
                 'required' => true,
                 'empty_value' => '',
                 'class' => 'MBHHotelBundle:Room',

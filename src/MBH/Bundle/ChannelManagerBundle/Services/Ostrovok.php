@@ -30,12 +30,12 @@ class Ostrovok extends Base
     /**
      * Test url
      */
-    const TEST_URL= 'https://extratest.ostrovok.ru';
+    const TEST_URL = 'https://extratest.ostrovok.ru';
 
     /**
      * Test url
      */
-    const URL= 'https://ostrovok.ru';
+    const URL = 'https://ostrovok.ru';
 
     const SERVICES = [
         1 => 'Buffet breakfast',
@@ -70,14 +70,6 @@ class Ostrovok extends Base
     /**
      * {@inheritDoc}
      */
-    public function pullOrders()
-    {
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
     }
@@ -102,38 +94,10 @@ class Ostrovok extends Base
                 'count' => 21
             ];
 
-            dump($this->sendJson($this->getUrl($config, '/echannel/api/v0.1/room_settings_plan/', $query, $data), $data, null, false, true));
+            dump($this->sendJson($this->getUrl($config, '/echannel/api/v0.1/room_settings_plan/', $query, $data), $data,
+                null, false, true));
         }
         exit();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
-    {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
-    {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function checkResponse($response, array $params = null)
-    {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function createPackages()
-    {
-        return $this->pullOrders();
     }
 
     /**
@@ -170,36 +134,39 @@ class Ostrovok extends Base
     }
 
     /**
-     * @param array $response
-     * @throws Exception
+     * {@inheritDoc}
      */
-    private function checkErrors($response)
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
-        if (!empty($response['error'])) {
-            throw new Exception(
-                is_array($response['error']) ? http_build_query($response['error']) : $response['error']
-            );
-        };
     }
-
 
     /**
      * {@inheritDoc}
      */
-    public function pullRooms(ChannelManagerConfigInterface $config)
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
-        $response = $this->sendJson(
-            $this->getUrl($config, '/echannel/api/v0.1/room_categories/')
-        );
+    }
 
-        $this->checkErrors($response);
+    /**
+     * {@inheritDoc}
+     */
+    public function checkResponse($response, array $params = null)
+    {
+    }
 
-        $rooms = [];
-        foreach($response['room_categories']  as $room) {
-            $rooms[$room['id']] = $room['name'];
-        }
+    /**
+     * {@inheritDoc}
+     */
+    public function createPackages()
+    {
+        return $this->pullOrders();
+    }
 
-        return $rooms;
+    /**
+     * {@inheritDoc}
+     */
+    public function pullOrders()
+    {
     }
 
     /**
@@ -215,7 +182,7 @@ class Ostrovok extends Base
 
         $rooms = $this->pullRooms($config);
         $rates = [];
-        foreach($response['rates_plans']  as $rate) {
+        foreach ($response['rates_plans'] as $rate) {
             $rates[$rate['id']] = [
                 'title' => $rate['name'],
                 'readonly' => false,
@@ -227,6 +194,38 @@ class Ostrovok extends Base
         }
 
         return $rates;
+    }
+
+    /**
+     * @param array $response
+     * @throws Exception
+     */
+    private function checkErrors($response)
+    {
+        if (!empty($response['error'])) {
+            throw new Exception(
+                is_array($response['error']) ? http_build_query($response['error']) : $response['error']
+            );
+        };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function pullRooms(ChannelManagerConfigInterface $config)
+    {
+        $response = $this->sendJson(
+            $this->getUrl($config, '/echannel/api/v0.1/room_categories/')
+        );
+
+        $this->checkErrors($response);
+
+        $rooms = [];
+        foreach ($response['room_categories'] as $room) {
+            $rooms[$room['id']] = $room['name'];
+        }
+
+        return $rooms;
     }
 
     /**

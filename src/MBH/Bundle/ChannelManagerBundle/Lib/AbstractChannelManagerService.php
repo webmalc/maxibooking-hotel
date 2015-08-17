@@ -92,6 +92,25 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     }
 
     /**
+     * @return array
+     */
+    public function getConfig()
+    {
+        $result = [];
+
+        foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
+            $method = 'get' . static::CONFIG;
+            $config = $hotel->$method();
+
+            if ($config && $config instanceof BaseInterface && $config->getIsEnabled()) {
+                $result[] = $config;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function update(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
@@ -223,25 +242,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     }
 
     /**
-     * @return array
-     */
-    public function getConfig()
-    {
-        $result = [];
-
-        foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
-            $method = 'get'.static::CONFIG;
-            $config = $hotel->$method();
-
-            if ($config && $config instanceof BaseInterface && $config->getIsEnabled()) {
-                $result[] = $config;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
      * @param ChannelManagerConfigInterface $config
      * @param bool $byService
      * @return array
@@ -335,6 +335,26 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      * @param array $data
      * @param array $headers
      * @param bool $error
+     * @return \SimpleXMLElement
+     * @throws \Exception
+     */
+    public function sendXml($url, $data = [], $headers = null, $error = false)
+    {
+        $result = $this->send($url, $data, $headers, $error);
+        $xml = simplexml_load_string($result);
+
+        if (!$xml instanceof \SimpleXMLElement) {
+            throw new Exception('Invalid xml response. Response: ' . $result);
+        }
+
+        return $xml;
+    }
+
+    /**
+     * @param $url
+     * @param array $data
+     * @param array $headers
+     * @param bool $error
      * @param $post $error
      * @return mixed
      */
@@ -376,26 +396,6 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      * @param array $data
      * @param array $headers
      * @param bool $error
-     * @return \SimpleXMLElement
-     * @throws \Exception
-     */
-    public function sendXml($url, $data = [], $headers = null, $error = false)
-    {
-        $result = $this->send($url, $data, $headers, $error);
-        $xml = simplexml_load_string($result);
-
-        if (!$xml instanceof \SimpleXMLElement) {
-            throw new Exception('Invalid xml response. Response: ' . $result);
-        }
-
-        return $xml;
-    }
-
-    /**
-     * @param $url
-     * @param array $data
-     * @param array $headers
-     * @param bool $error
      * @param bool $post
      * @return array
      * @throws \Exception
@@ -417,15 +417,15 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      * @param null $info
      * @return bool
      */
-    public function notifyError($service, $info = null )
+    public function notifyError($service, $info = null)
     {
         try {
             $notifier = $this->container->get('mbh.notifier');
             $tr = $this->container->get('translator');
             $message = $notifier::createMessage();
 
-            $text = 'channelManager.'.$service.'.notification.error';
-            $subject = 'channelManager.'.$service.'.notification.error.subject';
+            $text = 'channelManager.' . $service . '.notification.error';
+            $subject = 'channelManager.' . $service . '.notification.error.subject';
 
             $message
                 ->setText(
@@ -437,8 +437,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setType('danger')
                 ->setCategory('notification')
                 ->setAutohide(false)
-                ->setEnd(new \DateTime('+10 minute'))
-            ;
+                ->setEnd(new \DateTime('+10 minute'));
 
             return $notifier->setMessage($message)->notify();
 

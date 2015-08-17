@@ -20,20 +20,8 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  */
 class TaskTypeCategory extends Base
 {
-    /**
-     * Hook timestampable behavior
-     * updates createdAt, updatedAt fields
-     */
     use TimestampableDocument;
-    /**
-     * Hook softdeleteable behavior
-     * deletedAt field
-     */
     use SoftDeleteableDocument;
-    /**
-     * Hook blameable behavior
-     * createdBy&updatedBy fields
-     */
     use BlameableDocument;
 
     /**

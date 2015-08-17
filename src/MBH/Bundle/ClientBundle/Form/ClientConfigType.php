@@ -4,34 +4,29 @@ namespace MBH\Bundle\ClientBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class ClientConfigType
+ */
 class ClientConfigType extends AbstractType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add(
-                'isSendSms',
-                'checkbox',
-                [
-                    'label' => 'form.clientConfigType.sms_notification',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'form.clientConfigType.is_sms_notification_turned_on'
-                ]
-            )
-           ;
+            ->add('isSendSms', 'checkbox', [
+                'label' => 'form.clientConfigType.sms_notification',
+                'value' => true,
+                'required' => false,
+                'help' => 'form.clientConfigType.is_sms_notification_turned_on'
+            ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(
-            array(
-                'data_class' => 'MBH\Bundle\ClientBundle\Document\ClientConfig',
-            )
-        );
+        $resolver->setDefaults([
+            'data_class' => 'MBH\Bundle\ClientBundle\Document\ClientConfig'
+        ]);
     }
 
     public function getName()

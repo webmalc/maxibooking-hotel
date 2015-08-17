@@ -15,6 +15,17 @@ use Symfony\Component\Validator\ExecutionContextInterface;
 class RoomTypeGenerateRoomsType extends AbstractType
 {
 
+    public static function rangeValidation($data, ExecutionContextInterface $context)
+    {
+        if ($data['from'] >= $data['to']) {
+            $context->addViolation('form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number');
+        }
+
+        if ($data['to'] - $data['from'] > 500) {
+            $context->addViolation('form.roomTypeGenerateRoomsType.too_many_generation_numbers');
+        }
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $entity = $options['entity'];
@@ -86,17 +97,6 @@ class RoomTypeGenerateRoomsType extends AbstractType
     public function getName()
     {
         return 'mbh_bundle_hotelbundle_room_type_generate_rooms_type';
-    }
-
-    public static function rangeValidation($data, ExecutionContextInterface $context)
-    {
-        if ($data['from'] >= $data['to']) {
-            $context->addViolation('form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number');
-        }
-
-        if ($data['to'] - $data['from'] > 500) {
-            $context->addViolation('form.roomTypeGenerateRoomsType.too_many_generation_numbers');
-        }
     }
 
 }

@@ -17,7 +17,8 @@
 {% for item in menu %}
     {% if (entity is null or not entity.isEnabled) and loop.index != 1 %}
         <li class="disabled">
-            <a href="#" role="tab" data-toggle="tooltip" title="{{ 'views.tabs.must_fill_main_settings'|trans({}, 'MBHChannelManagerBundle') }}">{{item.title|raw}}</a>
+            <a href="#" role="tab" data-toggle="tooltip"
+               title="{{ 'views.tabs.must_fill_main_settings'|trans({}, 'MBHChannelManagerBundle') }}">{{ item.title|raw }}</a>
         </li>
     {% else  %}
         <li {% if loop.index == active %}class="active"{% endif %}>

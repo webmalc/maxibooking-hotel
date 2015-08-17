@@ -12,6 +12,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+
 /**
  * @ODM\Document(collection="OstrovokConfig")
  * @Gedmo\Loggable
@@ -20,13 +21,15 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 class OstrovokConfig extends Base implements BaseInterface
 {
 
-    public function getName()
-    {
-        return 'ostrovok';
-    }
+    /**
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="ostrovokConfig")
+     * @Assert\NotNull(message="validator.document.ostrovokConfig.no_hotel_selected")
+     */
+    protected $hotel;
 
     use ConfigTrait;
-    
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -38,20 +41,12 @@ class OstrovokConfig extends Base implements BaseInterface
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
-
-    /** 
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="ostrovokConfig")
-     * @Assert\NotNull(message="validator.document.ostrovokConfig.no_hotel_selected")
-     */
-    protected $hotel;
-
     /**
      * @var string
      * @Gedmo\Versioned
@@ -59,35 +54,32 @@ class OstrovokConfig extends Base implements BaseInterface
      * @Assert\NotNull(message="validator.document.ostrovokConfig.no_hotel_id_specified")
      */
     protected $hotelId;
-
     /**
      * @var array
      * @ODM\EmbedMany(targetDocument="Room")
      */
     protected $rooms;
-
     /**
      * @var array
      * @ODM\EmbedMany(targetDocument="Tariff")
      */
     protected $tariffs;
-    
     /**
      * @var array
      * @ODM\EmbedMany(targetDocument="Service")
      */
     protected $services;
 
-    /**
-     * Set hotel
-     *
-     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
-     * @return self
-     */
-    public function setHotel(Hotel $hotel)
+    public function __construct()
     {
-        $this->hotel = $hotel;
-        return $this;
+        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    public function getName()
+    {
+        return 'ostrovok';
     }
 
     /**
@@ -101,14 +93,15 @@ class OstrovokConfig extends Base implements BaseInterface
     }
 
     /**
-     * Set hotelId
+     * Set hotel
      *
-     * @param string $hotelId
+     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
      * @return self
      */
-    public function setHotelId($hotelId)
+    public function setHotel(Hotel $hotel)
     {
-        $this->hotelId = $hotelId;
+        $this->hotel = $hotel;
+
         return $this;
     }
 
@@ -122,13 +115,19 @@ class OstrovokConfig extends Base implements BaseInterface
         return $this->hotelId;
     }
 
-    public function __construct()
+    /**
+     * Set hotelId
+     *
+     * @param string $hotelId
+     * @return self
+     */
+    public function setHotelId($hotelId)
     {
-        $this->rooms = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->tariffs = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->hotelId = $hotelId;
+
+        return $this;
     }
-    
+
     /**
      * Add room
      *
@@ -208,7 +207,7 @@ class OstrovokConfig extends Base implements BaseInterface
 
         return $this;
     }
-    
+
     /**
      * @return $this
      */

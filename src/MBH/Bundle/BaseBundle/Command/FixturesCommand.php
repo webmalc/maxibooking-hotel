@@ -257,6 +257,7 @@ class FixturesCommand extends ContainerAwareCommand
         $process = new Process(
             'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console mbh:city:load --no-debug'
         );
+
         return $process->run();
     }
 
@@ -268,6 +269,7 @@ class FixturesCommand extends ContainerAwareCommand
         $process = new Process(
             'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console mbh:task:load --no-debug'
         );
+
         return $process->run();
     }
 

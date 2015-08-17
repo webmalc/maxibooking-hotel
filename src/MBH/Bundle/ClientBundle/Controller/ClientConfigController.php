@@ -20,7 +20,7 @@ use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 /**
  * @Route("/config")
  */
-class ClientConfigController extends Controller  implements CheckHotelControllerInterface
+class ClientConfigController extends Controller implements CheckHotelControllerInterface
 {
     /**
      * Main configuration page
@@ -31,14 +31,8 @@ class ClientConfigController extends Controller  implements CheckHotelController
      */
     public function indexAction()
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $entity = $dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
-
-        $form = $this->createForm(
-            new ClientConfigType(),
-            $entity
-        );
+        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        $form = $this->createForm(new ClientConfigType(), $entity);
 
         return [
             'entity' => $entity,
@@ -56,29 +50,23 @@ class ClientConfigController extends Controller  implements CheckHotelController
      */
     public function saveAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $entity = $dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
 
         if (!$entity) {
             $entity = new ClientConfig();
         }
 
-        $form = $this->createForm(
-            new ClientConfigType(),
-            $entity
-        );
+        $form = $this->createForm(new ClientConfigType(), $entity);
 
         $form->submit($request);
 
         if ($form->isValid()) {
 
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.clientConfig.params_success_save'))
-            ;
+                ->set('success', $this->get('translator')->trans('controller.clientConfig.params_success_save'));
 
             return $this->redirect($this->generateUrl('client_config'));
         }
@@ -99,20 +87,14 @@ class ClientConfigController extends Controller  implements CheckHotelController
      */
     public function paymentSystemAction()
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $entity = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
-        $form = $this->createForm(
-            new ClientPaymentSystemType(),
-            $entity,
-            [
-                'paymentTypes' => $this->container->getParameter('mbh.payment_systems'),
-                'entity' => $entity,
-                'change' => $this->container->getParameter('mbh.payment_systems.change'),
-                'default' => $this->container->getParameter('mbh.payment_systems.default'),
-            ]
-        );
+        $form = $this->createForm(new ClientPaymentSystemType(), $entity, [
+            'paymentTypes' => $this->container->getParameter('mbh.payment_systems'),
+            'entity' => $entity,
+            'change' => $this->container->getParameter('mbh.payment_systems.change'),
+            'default' => $this->container->getParameter('mbh.payment_systems.default'),
+        ]);
 
         return [
             'entity' => $entity,
@@ -132,20 +114,14 @@ class ClientConfigController extends Controller  implements CheckHotelController
      */
     public function paymentSystemSaveAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $entity = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
-        $form = $this->createForm(
-            new ClientPaymentSystemType(),
-            $entity,
-            [
-                'paymentTypes' => $this->container->getParameter('mbh.payment_systems'),
-                'entity' => $entity,
-                'change' => $this->container->getParameter('mbh.payment_systems.change'),
-                'default' => $this->container->getParameter('mbh.payment_systems.default'),
-            ]
-        );
+        $form = $this->createForm(new ClientPaymentSystemType(), $entity, [
+            'paymentTypes' => $this->container->getParameter('mbh.payment_systems'),
+            'entity' => $entity,
+            'change' => $this->container->getParameter('mbh.payment_systems.change'),
+            'default' => $this->container->getParameter('mbh.payment_systems.default'),
+        ]);
 
         $form->submit($request);
 
@@ -156,41 +132,36 @@ class ClientConfigController extends Controller  implements CheckHotelController
                     $robokassa = new Robokassa();
                     $robokassa->setRobokassaMerchantLogin($form->get('robokassaMerchantLogin')->getData())
                         ->setRobokassaMerchantPass1($form->get('robokassaMerchantPass1')->getData())
-                        ->setRobokassaMerchantPass2($form->get('robokassaMerchantPass2')->getData())
-                        ;
+                        ->setRobokassaMerchantPass2($form->get('robokassaMerchantPass2')->getData());
                     $entity->setRobokassa($robokassa);
                     break;
                 case 'payanyway':
                     $payanyway = new Payanyway();
                     $payanyway->setPayanywayKey($form->get('payanywayKey')->getData())
-                        ->setPayanywayMntId($form->get('payanywayMntId')->getData())
-                    ;
+                        ->setPayanywayMntId($form->get('payanywayMntId')->getData());
                     $entity->setPayanyway($payanyway);
                     break;
                 case 'moneymail':
                     $moneymail = new Moneymail();
                     $moneymail->setMoneymailShopIDP($form->get('moneymailShopIDP')->getData())
-                        ->setMoneymailKey($form->get('moneymailKey')->getData())
-                    ;
+                        ->setMoneymailKey($form->get('moneymailKey')->getData());
                     $entity->setMoneymail($moneymail);
                     break;
                 case 'uniteller':
                     $uniteller = new Uniteller();
                     $uniteller->setUnitellerShopIDP($form->get('unitellerShopIDP')->getData())
-                        ->setUnitellerPassword($form->get('unitellerPassword')->getData())
-                    ;
+                        ->setUnitellerPassword($form->get('unitellerPassword')->getData());
                     $entity->setUniteller($uniteller);
                     break;
                 default:
                     break;
             }
 
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
             $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.clientConfig.params_success_save'))
-            ;
+                ->set('success', $this->get('translator')->trans('controller.clientConfig.params_success_save'));
 
             return $this->redirect($this->generateUrl('client_payment_system'));
         }

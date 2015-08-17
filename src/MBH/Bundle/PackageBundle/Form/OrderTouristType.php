@@ -80,8 +80,7 @@ class OrderTouristType extends AbstractType
                 'required' => false,
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'guestBirthday'),
                 'constraints' => [new Date()]
-            ))
-        ;
+            ));
 
         if ($options['guest']) {
             $builder->add('addToPackage', 'checkbox', array(

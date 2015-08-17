@@ -112,57 +112,59 @@ class Vashotel extends Base
         return $this->pullOrders();
     }
 
-
     /**
-     * @param string $xml
-     * @param string $script
-     * @param string $key
-     * @return bool
+     * {@inheritDoc}
      */
-    private function checkResponseSignature($xml, $script, $key)
+    public function pullOrders()
     {
-        if (!$xml) {
-            return false;
+        $result = true;
+
+        foreach ($this->getConfig() as $config) {
+            $script = 'get_reservations_list.php';
+            $salt = $this->helper->getRandomString(20);
+            $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
+
+            $sig = $this->getSignature(
+                $this->templating->render(static::NOTIFICATIONS_TEMPLATE, $data),
+                $script,
+                $this->params['password']
+            );
+            $data['sig'] = md5($sig);
+
+            $response = $this->sendXML(
+                static::BASE_URL . $script,
+                $this->templating->render(static::NOTIFICATIONS_TEMPLATE, $data)
+            );
+            $this->log($response->asXML());
+
+            if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+                continue;
+            }
+
+            $modifyIds = $newIds = [];
+
+            //getReservations
+            foreach ($response->reservation_list->reservation as $reservation) {
+                if ((string)$reservation['notification_type'] == 'cancel') {
+                    $this->cancelOrder((string)$reservation['id']);
+                }
+                if (in_array((string)$reservation['notification_type'], ['modify'])) {
+                    $modifyIds[] = (int)$reservation['id'];
+                }
+                if (in_array((string)$reservation['notification_type'], ['new', 'new_preliminary'])) {
+                    $newIds[] = (int)$reservation['id'];
+                }
+            }
+
+            if (!empty($newIds)) {
+                $this->orders($newIds, $config, 'new');
+            }
+            if (!empty($modifyIds)) {
+                $this->orders($modifyIds, $config, 'edit');
+            }
         }
-        if (!$xml instanceof \SimpleXMLElement) {
-            $xml = simplexml_load_string($xml);
-        }
 
-        if (isset($xml->xpath('status')[0]) && (string)$xml->xpath('status')[0] == 'error') {
-            return false;
-        };
-
-        $responseSig = (string)$xml->xpath('sig')[0];
-        $sig = $this->getSignature($xml, $script, $key);
-
-        if (md5($sig) !== $responseSig) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * @param mixed $response
-     * @param array $params
-     * @return bool
-     */
-    public function checkResponse($response, array $params = null)
-    {
-        $script = $params['script'];
-        $key = $params['key'];
-        if (!$response) {
-            return false;
-        }
-        if (!$response instanceof \SimpleXMLElement) {
-            $response = simplexml_load_string($response);
-        }
-
-        if (!$this->checkResponseSignature($response, $script, $key)) {
-            return false;
-        }
-
-        return ($response->xpath('/response/status')[0] == 'ok') ? true : false;
+        return $result;
     }
 
     /**
@@ -191,44 +193,6 @@ class Vashotel extends Base
         }
 
         return $string;
-    }
-
-    /**
-     * @param array $fields
-     * @param boolean $dev
-     * @return string
-     */
-    private function getStringFromXmlArray(array $fields, $dev = false)
-    {
-        $string = '';
-
-        foreach ($fields as $key => $field) {
-            if (is_array($field)) {
-                $string .= $this->getStringFromXmlArray($field, $dev);
-            } else {
-                $string .= ($dev) ? $key.'-'.$field.';' : $field.';';
-            }
-        }
-
-        return $string;
-    }
-
-    /**
-     * @param array $fields
-     * @return array
-     */
-    private function sortXmlArray(array $fields)
-    {
-        ksort($fields, SORT_STRING);
-
-        foreach ($fields as $key => $field) {
-
-            if (is_array($field)) {
-                $fields[$key] = $this->sortXmlArray($field);
-            }
-        }
-
-        return $fields;
     }
 
     /**
@@ -262,134 +226,93 @@ class Vashotel extends Base
     }
 
     /**
-     * {@inheritDoc}
+     * @param array $fields
+     * @return array
      */
-    public function pullRooms(ChannelManagerConfigInterface $config)
+    private function sortXmlArray(array $fields)
     {
-        $script = 'get_rooms.php';
-        $salt = $this->helper->getRandomString(20);
-        $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
+        ksort($fields, SORT_STRING);
 
-        $sig = $this->getSignature(
-            $this->templating->render(static::GET_TEMPLATE, $data),
-            $script,
-            $this->params['password']
-        );
-        $data['sig'] = md5($sig);
+        foreach ($fields as $key => $field) {
 
-        $response = $this->sendXml(static::BASE_URL.$script, $this->templating->render(static::GET_TEMPLATE, $data));
-
-        //$this->log($response->asXML());
-
-        if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
-            return [];
-        }
-        $result = [];
-
-        foreach ($response->xpath('room') as $room) {
-            $result[(int)$room->id] = (string)$room->name;
+            if (is_array($field)) {
+                $fields[$key] = $this->sortXmlArray($field);
+            }
         }
 
-        return $result;
+        return $fields;
     }
 
     /**
-     * {@inheritDoc}
+     * @param array $fields
+     * @param boolean $dev
+     * @return string
      */
-    public function pullTariffs(ChannelManagerConfigInterface $config)
+    private function getStringFromXmlArray(array $fields, $dev = false)
     {
-        $script = 'get_rates.php';
-        $salt = $this->helper->getRandomString(20);
-        $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
+        $string = '';
 
-        $sig = $this->getSignature(
-            $this->templating->render(static::GET_TEMPLATE, $data),
-            $script,
-            $this->params['password']
-        );
-        $data['sig'] = md5($sig);
-
-        $response = $this->sendXml(static::BASE_URL.$script, $this->templating->render(static::GET_TEMPLATE, $data));
-
-        //$this->log($response->asXML());
-
-        if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
-            return [];
-        }
-        $result = [
-            0 => [
-                "title" => 'Standard rate',
-                "changePrice" => true,
-                "changeQuan" => true,
-                "isActive" => true,
-            ]
-        ];
-
-        foreach ($response->xpath('rate') as $rate) {
-            $result[(int)$rate->id] = [
-                'title' => (string)$rate->name,
-                'changePrice' => !!(int)$rate->changePrice,
-                'changeQuan' => !!(int)$rate->changeQuan,
-                'isActive' => !!(int)$rate->isActive,
-            ];
+        foreach ($fields as $key => $field) {
+            if (is_array($field)) {
+                $string .= $this->getStringFromXmlArray($field, $dev);
+            } else {
+                $string .= ($dev) ? $key . '-' . $field . ';' : $field . ';';
+            }
         }
 
-        return $result;
+        return $string;
     }
 
     /**
-     * {@inheritDoc}
+     * @param mixed $response
+     * @param array $params
+     * @return bool
      */
-    public function pullOrders()
+    public function checkResponse($response, array $params = null)
     {
-        $result = true;
-
-        foreach ($this->getConfig() as $config) {
-            $script = 'get_reservations_list.php';
-            $salt = $this->helper->getRandomString(20);
-            $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
-
-            $sig = $this->getSignature(
-                $this->templating->render(static::NOTIFICATIONS_TEMPLATE, $data),
-                $script,
-                $this->params['password']
-            );
-            $data['sig'] = md5($sig);
-
-            $response = $this->sendXML(
-                static::BASE_URL.$script,
-                $this->templating->render(static::NOTIFICATIONS_TEMPLATE, $data)
-            );
-            $this->log($response->asXML());
-
-            if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
-                continue;
-            }
-
-            $modifyIds = $newIds = [];
-
-            //getReservations
-            foreach ($response->reservation_list->reservation as $reservation) {
-                if ((string)$reservation['notification_type'] == 'cancel') {
-                    $this->cancelOrder((string)$reservation['id']);
-                }
-                if (in_array((string)$reservation['notification_type'], ['modify'])) {
-                    $modifyIds[] = (int)$reservation['id'];
-                }
-                if (in_array((string)$reservation['notification_type'], ['new', 'new_preliminary'])) {
-                    $newIds[] = (int)$reservation['id'];
-                }
-            }
-
-            if (!empty($newIds)) {
-                $this->orders($newIds, $config, 'new');
-            }
-            if (!empty($modifyIds)) {
-                $this->orders($modifyIds, $config, 'edit');
-            }
+        $script = $params['script'];
+        $key = $params['key'];
+        if (!$response) {
+            return false;
+        }
+        if (!$response instanceof \SimpleXMLElement) {
+            $response = simplexml_load_string($response);
         }
 
-        return $result;
+        if (!$this->checkResponseSignature($response, $script, $key)) {
+            return false;
+        }
+
+        return ($response->xpath('/response/status')[0] == 'ok') ? true : false;
+    }
+
+    /**
+     * @param string $xml
+     * @param string $script
+     * @param string $key
+     * @return bool
+     */
+    private function checkResponseSignature($xml, $script, $key)
+    {
+        if (!$xml) {
+            return false;
+        }
+        if (!$xml instanceof \SimpleXMLElement) {
+            $xml = simplexml_load_string($xml);
+        }
+
+        if (isset($xml->xpath('status')[0]) && (string)$xml->xpath('status')[0] == 'error') {
+            return false;
+        };
+
+        $responseSig = (string)$xml->xpath('sig')[0];
+        $sig = $this->getSignature($xml, $script, $key);
+
+        if (md5($sig) !== $responseSig) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -886,6 +809,82 @@ class Vashotel extends Base
     /**
      * {@inheritDoc}
      */
+    public function pullTariffs(ChannelManagerConfigInterface $config)
+    {
+        $script = 'get_rates.php';
+        $salt = $this->helper->getRandomString(20);
+        $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
+
+        $sig = $this->getSignature(
+            $this->templating->render(static::GET_TEMPLATE, $data),
+            $script,
+            $this->params['password']
+        );
+        $data['sig'] = md5($sig);
+
+        $response = $this->sendXml(static::BASE_URL . $script, $this->templating->render(static::GET_TEMPLATE, $data));
+
+        //$this->log($response->asXML());
+
+        if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+            return [];
+        }
+        $result = [
+            0 => [
+                "title" => 'Standard rate',
+                "changePrice" => true,
+                "changeQuan" => true,
+                "isActive" => true,
+            ]
+        ];
+
+        foreach ($response->xpath('rate') as $rate) {
+            $result[(int)$rate->id] = [
+                'title' => (string)$rate->name,
+                'changePrice' => !!(int)$rate->changePrice,
+                'changeQuan' => !!(int)$rate->changeQuan,
+                'isActive' => !!(int)$rate->isActive,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function pullRooms(ChannelManagerConfigInterface $config)
+    {
+        $script = 'get_rooms.php';
+        $salt = $this->helper->getRandomString(20);
+        $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
+
+        $sig = $this->getSignature(
+            $this->templating->render(static::GET_TEMPLATE, $data),
+            $script,
+            $this->params['password']
+        );
+        $data['sig'] = md5($sig);
+
+        $response = $this->sendXml(static::BASE_URL . $script, $this->templating->render(static::GET_TEMPLATE, $data));
+
+        //$this->log($response->asXML());
+
+        if (!$this->checkResponse($response, ['script' => $script, 'key' => $this->params['password']])) {
+            return [];
+        }
+        $result = [];
+
+        foreach ($response->xpath('room') as $room) {
+            $result[(int)$room->id] = (string)$room->name;
+        }
+
+        return $result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $filterRoomType = null)
     {
         $result = true;
@@ -965,6 +964,40 @@ class Vashotel extends Base
         }
 
         return $result;
+    }
+
+    /**
+     * @param ChannelManagerConfigInterface $config
+     */
+    public function syncServices(ChannelManagerConfigInterface $config)
+    {
+        $config->removeAllServices();
+        foreach (self::SERVICES as $serviceKey => $serviceName) {
+            $serviceDoc = $this->dm->getRepository('MBHPriceBundle:Service')->findOneBy(
+                [
+                    'code' => $serviceName
+                ]
+            );
+
+            if (empty($serviceDoc) || $serviceDoc->getCategory()->getHotel()->getId() != $config->getHotel()->getId()) {
+                continue;
+            }
+
+            $service = new Service();
+            $service->setServiceId($serviceKey)->setService($serviceDoc);
+            $config->addService($service);
+            $this->dm->persist($config);
+        }
+
+        $this->dm->flush();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $filterRoomType = null)
+    {
+        return $this->updateRooms($begin = null, $end = null, $filterRoomType);
     }
 
     /**
@@ -1089,40 +1122,6 @@ class Vashotel extends Base
             }
         }
         return $result;
-    }
-
-    /**
-     * @param ChannelManagerConfigInterface $config
-     */
-    public function syncServices(ChannelManagerConfigInterface $config)
-    {
-        $config->removeAllServices();
-        foreach (self::SERVICES as $serviceKey => $serviceName) {
-            $serviceDoc = $this->dm->getRepository('MBHPriceBundle:Service')->findOneBy(
-                [
-                    'code' => $serviceName
-                ]
-            );
-
-            if (empty($serviceDoc) || $serviceDoc->getCategory()->getHotel()->getId() != $config->getHotel()->getId()) {
-                continue;
-            }
-
-            $service = new Service();
-            $service->setServiceId($serviceKey)->setService($serviceDoc);
-            $config->addService($service);
-            $this->dm->persist($config);
-        }
-
-        $this->dm->flush();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $filterRoomType = null)
-    {
-        return $this->updateRooms($begin = null, $end = null, $filterRoomType);
     }
 
     /**

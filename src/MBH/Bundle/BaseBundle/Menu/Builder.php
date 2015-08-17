@@ -54,7 +54,7 @@ class Builder extends ContainerAware
         $openTaskCount = $dm->getRepository('MBHHotelBundle:Task')->getCountByCriteria($queryCriteria);
 
         $taskAttributes = ['icon' => 'fa fa-tasks'];
-        if ($openTaskCount > 0) {
+        if($openTaskCount > 0) {
             $taskAttributes += [
                 'badge' => true,
                 'badge_class' => 'label-danger',
@@ -83,7 +83,7 @@ class Builder extends ContainerAware
 
         // report
         $menu->addChild('reports', ['route' => '_welcome', 'label' => 'Отчеты'])
-            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bar-chart']);
+             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bar-chart']);
         
         $menu['reports']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Размещение'])
             ->setAttributes(['icon' => 'fa fa-table']);
@@ -156,6 +156,7 @@ class Builder extends ContainerAware
 
             $this->filterMenu($child);
         }
+
         return $menu;
     }
 
@@ -203,7 +204,8 @@ class Builder extends ContainerAware
         ;
 
         $menu['configs']->addChild('tasktype', ['route' => 'tasktype', 'label' => 'Типы задач'])
-            ->setAttributes(['icon' => 'fa fa-cog']);
+            ->setAttributes(['icon' => 'fa fa-cog'])
+        ;
 
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])
@@ -212,8 +214,7 @@ class Builder extends ContainerAware
 
         if ($this->container->getParameter('mbh.environment') == 'prod') {
             $menu['services']->addChild('booking', ['route' => 'booking', 'label' => 'Booking.com'])
-                ->setAttributes(['header' => 'Channel manager', 'header_icon' => 'fa fa-cloud-download'])
-            ;
+                ->setAttributes(['header' => 'Channel manager', 'header_icon' => 'fa fa-cloud-download']);
             $menu['services']->addChild('ostrovok', ['route' => 'ostrovok', 'label' => 'Ostrovok']);
             $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель']);
             //$menu['services']->addChild('hotelinn', ['route' => 'hotelinn', 'label' => 'Hotel-inn']);
@@ -222,11 +223,9 @@ class Builder extends ContainerAware
         }
 
         $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'Онлайн форма'])
-            ->setAttributes(['divider_prepend' =>true,  'header' => 'Другое', 'icon' => 'fa fa-globe'])
-        ;
+            ->setAttributes(['divider_prepend' => true, 'header' => 'Другое', 'icon' => 'fa fa-globe']);
         $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'Оценки'])
-            ->setAttributes(['icon' => 'fa fa-star'])
-        ;
+            ->setAttributes(['icon' => 'fa fa-star']);
 
         return $this->filterMenu($menu);
     }
@@ -290,7 +289,7 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-info-circle'])
         ;
         $menu['login']->addChild('logout', ['route' => 'fos_user_security_logout', 'label' => 'Выйти'])
-            ->setAttributes(['divider_prepend' => true, 'icon' => 'fa fa-sign-out'])
+                ->setAttributes(['divider_prepend' => true, 'icon' => 'fa fa-sign-out'])
         ;
 
         return $this->filterMenu($menu);

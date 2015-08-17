@@ -1,4 +1,4 @@
-var docReadyCash = function() {
+var docReadyCash = function () {
     var $paidDate = $('#mbh_bundle_cashbundle_cashdocumenttype_paid_date');
 
     $('#mbh_bundle_cashbundle_cashdocumenttype_document_date').add($paidDate).datepicker({
@@ -59,6 +59,6 @@ var docReadyCash = function() {
 /**
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-(function($){
+(function ($) {
     docReadyCash();
 })(window.jQuery)
