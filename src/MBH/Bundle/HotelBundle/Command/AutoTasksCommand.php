@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Lib\QueryBuilder;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
+use MBH\Bundle\HotelBundle\Document\TaskRepository;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -40,6 +41,8 @@ class AutoTasksCommand extends ContainerAwareCommand
         $roomTypeRepository = $dm->getRepository('MBHHotelBundle:RoomType');
         /** @var PackageRepository $packageRepository */
         $packageRepository = $dm->getRepository('MBHPackageBundle:Package');
+        /** @var TaskRepository $taskRepository */
+        $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
 
         $hotels = $hotelRepository->createQueryBuilder()
             ->field('isEnabled')->equals(true)
@@ -90,15 +93,24 @@ class AutoTasksCommand extends ContainerAwareCommand
                             $arrival = $package->getArrivalTime()->modify('midnight');
                             $interval = $arrival->diff($now)->d;
                             if ($interval % $dailyTaskSetting->getDay() === 0) { //condition
-                                $task = new Task();
-                                $task->setType($taskType)
-                                    ->setRole($taskType->getDefaultRole())
-                                    ->setRoom($package->getAccommodation())
-                                    ->setStatus(Task::STATUS_OPEN)
-                                    ->setPriority(Task::PRIORITY_AVERAGE);
+                                $count = $taskRepository->createQueryBuilder()
+                                    ->field('type.id')->equals($taskType->getId())
+                                    ->field('role')->equals($taskType->getDefaultRole())
+                                    ->field('room.id')->equals($package->getAccommodation()->getId())
+                                    ->field('status')->equals(Task::STATUS_OPEN)
+                                    ->field('priority')->equals(Task::PRIORITY_AVERAGE)
+                                    ->field('createdBy')->equals(null)->getQuery()->count();
+                                if($count == 0) {
+                                    $task = new Task();
+                                    $task->setType($taskType)
+                                        ->setRole($taskType->getDefaultRole())
+                                        ->setRoom($package->getAccommodation())
+                                        ->setStatus(Task::STATUS_OPEN)
+                                        ->setPriority(Task::PRIORITY_AVERAGE);
 
-                                $dm->persist($task);
-                                ++$inc;
+                                    $dm->persist($task);
+                                    ++$inc;
+                                }
                             };
                         }
                     }
