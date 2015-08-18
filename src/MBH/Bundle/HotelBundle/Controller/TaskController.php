@@ -258,7 +258,6 @@ class TaskController extends Controller
             'roles' => $this->getRoleList(),
             'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
             'priorities' => $priorities,
-            'optGroupRooms' => $roomRepository->optGroupRooms($roomRepository->getRoomsByType($this->hotel, true)),
             'hotel' => $this->hotel
         ];
     }

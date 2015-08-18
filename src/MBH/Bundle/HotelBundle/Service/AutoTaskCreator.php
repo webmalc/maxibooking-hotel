@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Service;
 
+use MBH\Bundle\HotelBundle\Document\TaskType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -27,7 +28,11 @@ class AutoTaskCreator
         $this->container = $container;
     }
 
-    public function create()
+    /**
+     * @return int
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function createDailyTasks()
     {
         /** @var DocumentManager $dm */
         $dm = $this->container->get('doctrine_mongodb')->getManager();
@@ -126,5 +131,41 @@ class AutoTaskCreator
         $dm->flush();
 
         return $inc;
+    }
+
+    public function createCheckInTasks(Package $package)
+    {
+        $this->createCheck('In', $package);
+    }
+
+    public function createCheckOutTasks(Package $package)
+    {
+        $this->createCheck('Out', $package);
+    }
+
+    protected function createCheck($check, Package $package)
+    {
+        $type = $package->getRoomType();
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $settings = $type->getTaskSettings();
+        if(!$settings) {
+            return;
+        }
+        /** @var TaskType[] $taskTypes */
+        $taskTypes = call_user_func([$settings, 'getCheck'.$check]);
+        foreach($taskTypes as $type) {
+            if($type->getDefaultRole()) {
+                $task = new Task();
+                $task
+                    ->setType($type)
+                    ->setRole($type->getDefaultRole())
+                    ->setRoom($package->getAccommodation())
+                    ->setStatus(Task::STATUS_OPEN)
+                    ->setPriority(Task::PRIORITY_AVERAGE);
+
+                $dm->persist($task);
+            }
+        }
+        $dm->flush();
     }
 }

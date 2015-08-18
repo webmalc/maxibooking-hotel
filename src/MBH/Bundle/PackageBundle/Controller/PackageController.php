@@ -22,6 +22,7 @@ use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 /**
  * Class PackageController
@@ -282,16 +283,18 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($form->isValid()) {
             //check by search
             $result = $this->container->get('mbh.order')->updatePackage($oldPackage, $entity);
+            /** @var FlashBagInterface $flashBag */
+            $flashBag = $request->getSession()->getFlashBag();
             if ($result instanceof Package) {
                 $this->dm->persist($entity);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set('success',
+                $flashBag->set('success',
                     $this->get('translator')->trans('controller.packageController.record_edited_success'));
 
                 return $this->afterSaveRedirect('package', $entity->getId());
             } else {
-                $request->getSession()->getFlashBag()->set('danger', $this->get('translator')->trans($result));
+                $flashBag->set('danger', $this->get('translator')->trans($result));
             }
         }
 

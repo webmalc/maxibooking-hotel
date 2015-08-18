@@ -17,14 +17,30 @@ class AutoTasksCommand extends ContainerAwareCommand
     {
         $this
             ->setName('mbh:task:auto')
-            ->setDescription('Create auto tasks');
+            ->setDescription('Create auto tasks')
+            ->addArgument('check', null, 'In or Out')
+            ->addArgument('package')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $creator = $this->getContainer()->get('mbh.hotel.auto_task_creator');
-        $count = $creator->create();
-
-        $output->writeln("Created task total: " . $count. ". Done");
+        $check = $input->getArgument('check');
+        if(!$check) {
+            $count = $creator->createDailyTasks();
+            $output->writeln("Created task total: " . $count. ". Done");
+        } else {
+            $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+            $package = $dm->getRepository('MBHPackageBundle:Package')->find($input->getArgument('package'));
+            if(!$package)
+                throw new \InvalidArgumentException("Package is not exists");
+            switch($check) {
+                case 'In' : $creator->createCheckInTasks($package); break;
+                case 'Out' : $creator->createCheckOutTasks($package); break;
+                default : throw new \InvalidArgumentException("Argument 'check' must have value In or Out"); break;
+            }
+            $output->writeln("Done");
+        }
     }
 }

@@ -39,6 +39,7 @@ class RoomRepository extends AbstractBaseRepository
      */
     public function optGroupRooms(array $rooms)
     {
+        $result = [];
         foreach ($rooms as $roomTypeRooms) {
             $result[$roomTypeRooms[0]->getRoomType()->getName()] = [];
             foreach ($roomTypeRooms as $room) {

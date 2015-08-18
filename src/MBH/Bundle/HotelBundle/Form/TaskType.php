@@ -105,7 +105,7 @@ class TaskType extends AbstractType
             $builder->add('rooms', 'document', [
                 'label' => 'form.task.rooms',
                 'group' => $generalGroup,
-                'choices' => $options['optGroupRooms'],
+                'group_by' => 'roomType',
                 'class' => 'MBH\Bundle\HotelBundle\Document\Room',
                 'required' => true,
                 'multiple' => true,
@@ -122,7 +122,7 @@ class TaskType extends AbstractType
             $builder->add('room', 'document', [
                 'label' => 'form.task.room',
                 'group' => $generalGroup,
-                'choices' => $options['optGroupRooms'],
+                'group_by' => 'roomType',
                 'class' => 'MBH\Bundle\HotelBundle\Document\Room',
                 'required' => true,
             ]);
@@ -168,7 +168,6 @@ class TaskType extends AbstractType
             'roles' => [],
             'taskTypes' => [],
             'priorities' => [],
-            'optGroupRooms' => [],
             'statuses' => [],
             'scenario' => self::SCENARIO_NEW,
             'hotel' => null
