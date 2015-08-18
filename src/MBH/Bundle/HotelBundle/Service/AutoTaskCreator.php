@@ -21,7 +21,7 @@ use MBH\Bundle\HotelBundle\Document\Task;
  */
 class AutoTaskCreator
 {
-    private $container;
+    protected $container;
 
     public function __construct(ContainerInterface $container)
     {
@@ -39,6 +39,7 @@ class AutoTaskCreator
         $dm->getConnection()->getConfiguration()->setLoggerCallable(null);
 
         $now = new \DateTime();
+        $midnight = new \DateTime('midnight');
         /** @var DocumentRepository $hotelRepository */
         $hotelRepository = $dm->getRepository('MBHHotelBundle:Hotel');
         /** @var RoomTypeRepository $roomTypeRepository */
@@ -87,14 +88,14 @@ class AutoTaskCreator
             /** @var Package[] $packages */
             $packages = $queryBuilder->getQuery()->execute();
 
-            $now->modify('midnight');
+
             foreach ($packages as $package) {
                 if ($roomType->getTaskSettings() && $roomType->getTaskSettings()->getDaily()) {
                     foreach ($roomType->getTaskSettings()->getDaily() as $dailyTaskSetting) {
                         $taskType = $dailyTaskSetting->getTaskType();
                         if ($taskType->getDefaultRole()) {
                             $arrival = $package->getArrivalTime()->modify('midnight');
-                            $interval = $arrival->diff($now)->d;
+                            $interval = $arrival->diff($midnight)->d;
                             if ($interval % $dailyTaskSetting->getDay() === 0) { //condition
                                 $task = new Task();
                                 $task
@@ -129,19 +130,22 @@ class AutoTaskCreator
         /** @var TaskRepository $taskRepository */
         $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
 
-        $now = new \DateTime();
+        $midnight = new \DateTime('midnight');
         $tomorrow = new \DateTime('+1 day');
 
-        $taskType = $task->getType();
-        $count = $taskRepository->createQueryBuilder()
-            ->field('type.id')->equals($taskType->getId())
-            ->field('role')->equals($taskType->getDefaultRole())
+        $queryBuilder = $taskRepository->createQueryBuilder();
+        $queryBuilder
+            ->field('type.id')->equals($task->getType()->getId())
+            ->field('role')->equals($task->getRole())
             ->field('room.id')->equals($task->getRoom()->getId())
             //->field('status')->equals(Task::STATUS_OPEN)
             //->field('priority')->equals(Task::PRIORITY_AVERAGE)
             ->field('createdBy')->equals(null)
-            ->field('createdAt')->gte($now)->lte($tomorrow)
-            ->getQuery()->count();
+            ->field('createdAt')->gte($midnight)->lte($tomorrow)
+        ;
+        $query = $queryBuilder->getQuery();
+        $count = $query->count();
+        //var_dump($queryBuilder->getQueryArray());
         return $count;
     }
 

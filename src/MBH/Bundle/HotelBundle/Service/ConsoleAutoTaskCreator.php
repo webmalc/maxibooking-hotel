@@ -3,7 +3,6 @@
 namespace MBH\Bundle\HotelBundle\Service;
 
 use MBH\Bundle\PackageBundle\Document\Package;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 
 /**
@@ -12,13 +11,6 @@ use Symfony\Component\Process\Process;
  */
 class ConsoleAutoTaskCreator extends AutoTaskCreator
 {
-    private $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
-
     protected function getPathConsole()
     {
         $rootDir = $this->container->get('kernel')->getRootDir();
@@ -32,7 +24,6 @@ class ConsoleAutoTaskCreator extends AutoTaskCreator
     public function createDailyTasks()
     {
         $process = new Process('nohup php ' . $this->getPathConsole() .' mbh:task:auto --no-debug');
-
         return $process->run();
     }
 
@@ -40,7 +31,6 @@ class ConsoleAutoTaskCreator extends AutoTaskCreator
     {
         $command = 'nohup php ' . $this->getPathConsole() .' mbh:task:auto '.$check.' '.$package->getId().' --no-debug';
         $process = new Process($command);
-
         return $process->run();
     }
 
