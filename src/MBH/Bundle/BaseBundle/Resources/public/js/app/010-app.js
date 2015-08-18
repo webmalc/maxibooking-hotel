@@ -128,7 +128,7 @@ $(document).ready(function () {
     }, 5000);
 
     //fancybox
-    $('.fancybox').fancybox();
+    $('.fancybox').fancybox({'type': 'image'});
     $('.image-fancybox').fancybox({'type': 'image'});
 
     //popovers

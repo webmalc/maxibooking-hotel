@@ -18,19 +18,6 @@ $(document).ready(function () {
         calcType.change(iconChange);
     }());
 
-    var counter = 1;
     //roomType rooms datatables
-    $('.service-tables').each(function () {
-
-        window.addExcelButtons($(this).dataTable(), counter);
-        ++counter;
-    });
-    $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
-        var counter = 1;
-        $('.service-tables').each(function () {
-            $(this).dataTable().fnDestroy();
-            window.addExcelButtons($(this).dataTable(), counter);
-            ++counter;
-        });
-    });
+    $('.service-tables').dataTable();
 });

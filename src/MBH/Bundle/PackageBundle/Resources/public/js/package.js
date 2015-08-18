@@ -64,6 +64,9 @@ var docReadyPackages = function () {
         "processing": true,
         "serverSide": true,
         "ordering": true,
+        buttons: [
+            'copy', 'excel', 'pdf'
+        ],
         "ajax": {
             "url": Routing.generate('package_json'),
             "data": function (d) {
@@ -107,32 +110,8 @@ var docReadyPackages = function () {
         }
     });
 
-    if ($('#package-table').length) {
-        var ptt = new $.fn.dataTable.TableTools(pTable, {
-            "sSwfPath": "/bundles/mbhbase/js/vendor/datatables/swf/copy_csv_xls.swf",
-            "aButtons": [
-                {
-                    "sExtends": "copy",
-                    "sButtonText": '<i class="fa fa-files-o"></i> Скопировать'
-                },
-                {
-                    "sExtends": "csv",
-                    "sButtonText": '<i class="fa fa-file-text-o"></i> CSV'
-                },
-                {
-                    "sExtends": "xls",
-                    "sButtonText": '<i class="fa fa-table"></i> Excel'
-                }
-            ]
-        });
-
-        $('#list-export').append($(ptt.fnContainer()));
-        $('#list-export').find('a').addClass('navbar-btn');
-    }
-
     // package datatable filter
     (function () {
-        $('#package-table-filter').sayt();
 
         $('#package-table-quick-links li').each(function () {
             if (parseInt($(this).find('.package-table-quick-links-count').text(), 10) === 0) {

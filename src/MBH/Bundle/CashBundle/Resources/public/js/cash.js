@@ -176,7 +176,6 @@ $(document).ready(function () {
     var sw = new tableSwitcher();
 
     $('#cash-filter-form input,select').not('#by_day').on('switchChange.bootstrapSwitch change', function () {
-        //$('#cash-filter-form').sayt({'savenow': true});
         sw.currentTable().dataTable().fnDraw();
     });
 

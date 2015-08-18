@@ -29,3 +29,4 @@ parameters.yml
 /protectedUpload/orderDocuments/*
 /protectedUpload/vegaDocuments/*
 !/protectedUpload/orderDocuments/.gitkeep
+web/assets

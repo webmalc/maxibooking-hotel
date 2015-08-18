@@ -43,32 +43,28 @@ $(document).ready(function () {
 
     //roomType rooms datatables
     (function () {
-        var counter = 1;
         $('.rooms-table').each(function () {
 
-            window.addExcelButtons($(this).dataTable({
+            $(this).dataTable({
                 "processing": true,
                 "serverSide": true,
                 "ordering": false,
                 "bAutoWidth": false,
                 "ajax": Routing.generate('room_type_room_json', {'id': $(this).attr('data-room-type-id')})
-            }), counter);
-            counter += 1;
+            });
         });
     }());
 
     $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function () {
-        var counter = 1;
         $('.rooms-table').each(function () {
             $(this).dataTable().fnDestroy();
-            window.addExcelButtons($(this).dataTable({
+            $(this).dataTable({
                 "processing": true,
                 "serverSide": true,
                 "ordering": false,
                 "bAutoWidth": false,
                 "ajax": Routing.generate('room_type_room_json', {'id': $(this).attr('data-room-type-id')})
-            }), counter);
-            counter += 1;
+            });
         });
     });
 

@@ -87,9 +87,6 @@ var docReadyForms = function () {
         }
     });
 
-    //areYouSure
-    //$('.form-horizontal, .form-inline, .are-you-sure').areYouSure({'message': 'Внесенные изменения не сохранены!'});
-
     //Datepicker configuration
     $('.datepicker').datepicker({
         language: "ru",
@@ -167,11 +164,7 @@ var docReadyForms = function () {
             }
         });
     }());
-    $('.roomTypeTypeEditor').wysihtml5({
-        "html": false,
-        "stylesheets": false,
-        "image": false
-    });
+
     //payer select2
     $('.findGuest').select2({
         minimumInputLength: 3,
@@ -227,6 +220,15 @@ var docReadyForms = function () {
     }());
 
     $('input[type=file]').bootstrapFileInput();
+
+    tinymce.init({
+        selector: ".tinymce",
+        min_width: 600,
+        toolbar_items_size: 'small',
+        skin_url: '/assets/vendor/tinymce/skins/lightgray',
+        toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent"
+
+    });
 };
 
 $(document).ready(function () {

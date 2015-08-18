@@ -1,16 +1,16 @@
-window.addExcelButtons = function (table,index){
-    window.universalAddExcelButtons(table, $('#list-export-add-'+index));
-};
+/*global $, window, document, $,  deleteLink, dangerTr */
 
 var docReadyTables = function () {
+    'use strict';
+
     //Select row
-    $('table.table-striped').on('click', 'tbody tr', function() {
+    $('table.table-striped').on('click', 'tbody tr', function () {
         $(this).siblings().removeClass('warning');
         $(this).toggleClass('warning');
     });
 
     //Dblclick href
-    $('table.table-striped').on('dblclick', 'tbody tr:not(".disable-double-click")', function() {
+    $('table.table-striped').on('dblclick', 'tbody tr:not(".disable-double-click")', function () {
         var link = $(this).find('a[rel="main"]');
         if (link.length) {
             window.location.href = link.attr('href');
@@ -43,74 +43,15 @@ var docReadyTables = function () {
                 "sSortDescending": ": активировать для сортировки столбцов по убыванию"
             }
         },
-        "drawCallback": function(settings, json) {
+        "drawCallback": function () {
             deleteLink();
             dangerTr();
         }
     });
 
-    var table = $('table.table-striped').not('.not-auto-datatable').dataTable();
+    $('table.table-striped').not('.not-auto-datatable').dataTable();
+};
 
-    if (!$('table.table-striped').hasClass("without-fixed-header") && table.length) {
-        /*new $.fn.dataTable.FixedHeader(table, {
-         offsetTop: 50
-         });*/
-    }
-
-    if (!$('table.table-striped').hasClass("without-table-tools") && table.length) {
-
-        var tt = new $.fn.dataTable.TableTools(table, {
-            "sSwfPath": "/bundles/mbhbase/js/vendor/datatables/swf/copy_csv_xls.swf",
-            "aButtons": [
-                {
-                    "sExtends": "copy",
-                    "sButtonText": '<i class="fa fa-files-o"></i> Скопировать'
-                },
-                {
-                    "sExtends": "csv",
-                    "sButtonText": '<i class="fa fa-file-text-o"></i> CSV'
-                },
-                {
-                    "sExtends": "xls",
-                    "sButtonText": '<i class="fa fa-table"></i> Excel'
-                }
-            ]
-        });
-
-        $('#list-export').append($(tt.fnContainer()));
-        $('#list-export').find('a').addClass('navbar-btn');
-    }
-}
-
-/**
- * @author Aleksandr Arofkin <sashaaro@gmail.com>
- * @param $table
- * @param $container
- */
-window.universalAddExcelButtons = function ($table, $container) {
-    var tt = new $.fn.dataTable.TableTools($table, {
-        "sSwfPath": "/bundles/mbhbase/js/vendor/datatables/swf/copy_csv_xls.swf",
-        "aButtons": [
-            {
-                "sExtends": "copy",
-                "sButtonText": '<i class="fa fa-files-o"></i> Скопировать'
-            },
-            {
-                "sExtends": "csv",
-                "sButtonText": '<i class="fa fa-file-text-o"></i> CSV'
-            },
-            {
-                "sExtends": "xls",
-                "sButtonText": '<i class="fa fa-table"></i> Excel'
-            }
-        ]
-    });
-
-    $container.append($(tt.fnContainer()));
-    $container.find('a').addClass('navbar-btn');
-}
-
-/*global window */
 $(document).ready(function () {
     'use strict';
     docReadyTables();
