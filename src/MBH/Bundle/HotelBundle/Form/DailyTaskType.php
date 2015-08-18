@@ -16,12 +16,13 @@ class DailyTaskType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('day', 'number', [
+            ->add('day', 'integer', [
                 'required' => true,
                 'attr' => [
-                    'style' => 'width:50px',
+                    'style' => 'width:55px',
                     'placeholder' => 'Кол. дней',
-                    //'max-length' => 3
+                    'min' => 1,
+                    'max' => 60
                 ],
                 /*'constraints' => [
                     new Length(['max' => 3])
@@ -31,7 +32,7 @@ class DailyTaskType extends AbstractType
                 'required' => true,
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
                 'group_by' => 'category',
-                'attr' => ['style' => 'width:410px'],
+                'attr' => ['style' => 'width:405px'],
                 'empty_value' => ''
             ]);
     }
