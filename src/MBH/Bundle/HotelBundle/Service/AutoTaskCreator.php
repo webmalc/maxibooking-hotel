@@ -95,7 +95,7 @@ class AutoTaskCreator
                         $taskType = $dailyTaskSetting->getTaskType();
                         if ($taskType->getDefaultRole()) {
                             $arrival = $package->getArrivalTime()->modify('midnight');
-                            $interval = $arrival->diff($midnight)->d;
+                            $interval = $arrival->diff($midnight)->d - 1;
                             if ($interval % $dailyTaskSetting->getDay() === 0) { //condition
                                 $task = new Task();
                                 $task
