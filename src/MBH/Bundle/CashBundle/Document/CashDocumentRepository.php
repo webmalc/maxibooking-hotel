@@ -4,6 +4,7 @@ namespace MBH\Bundle\CashBundle\Document;
 
 use Doctrine\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Lib\QueryBuilder;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -160,6 +161,7 @@ class CashDocumentRepository extends DocumentRepository
      */
     private function queryCriteriaToBuilder(CashDocumentQueryCriteria $criteria)
     {
+        /** @var QueryBuilder $qb */
         $qb = $this->createQueryBuilder();
 
         if ($criteria->skip) {
@@ -179,17 +181,17 @@ class CashDocumentRepository extends DocumentRepository
         }
 
         if ($criteria->methods) {
-
             $qb->field('method')->in($criteria->methods);
         }
 
         if ($criteria->createdBy) {
-
             $qb->field('createdBy')->equals($criteria->createdBy);
         }
 
         if ($criteria->isPaid) {
             $qb->field('isPaid')->equals(true);
+        } elseif($criteria->isPaid === false) {
+            $qb->field('isPaid')->equals(false);
         }
 
         if ($criteria->search) {

@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
+use MBH\Bundle\CashBundle\Service\OneCExporter;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\CashBundle\Document\CashDocumentRepository;
 use MBH\Bundle\PackageBundle\Document\Organization;
@@ -42,7 +43,8 @@ class CashController extends Controller
 
         return [
             'methods' => $methods,
-            'users' => $this->dm->getRepository('MBHUserBundle:User')->findBy(['enabled' => true], ['username' => 'asc']),
+            'users' => $this->dm->getRepository('MBHUserBundle:User')->findBy(['enabled' => true],
+                ['username' => 'asc']),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
         ];
     }
@@ -195,78 +197,14 @@ class CashController extends Controller
 
         /** @var CashDocumentRepository $cashDocumentRepository */
         $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
+        $queryCriteria->methods = ['electronic'];
+        $queryCriteria->isPaid = true;
         $cashDocuments = $cashDocumentRepository->findByCriteria($queryCriteria);
+        $result = OneCExporter::export($cashDocuments, $queryCriteria, $this->hotel->getOrganization());
 
-        $text = '';
-        foreach($cashDocuments as $cashDocument) {
-            $organizationPayer = $cashDocument->getOrganizationPayer() ? $cashDocument->getOrganizationPayer() : new Organization();
-            $hotelOrganization = $cashDocument->getHotel()->getOrganization();
-
-            $text .= sprintf('СекцияДокумент=Платежное поручение
-Номер='.$cashDocument->getNumber().'
-Дата='.$cashDocument->getCreatedAt()->format('d.m.Y').'
-Сумма='.$cashDocument->getTotal().'
-ПлательщикСчет='.$organizationPayer->getCheckingAccount().'
-ДатаСписано='.($cashDocument->getIsPaid() ? $cashDocument->getPaidDate()->format('d.m.Y') : '').'
-Плательщик='.$cashDocument->getPayer()->getName(). //ЗАПАДНО-УРАЛЬСКИЙ БАНК ОАО "СБЕРБАНК РОССИИ"//ЗЫРЯНОВА ЕЛЕНА СЕРГЕЕВНА//26859356266//614000 ПЕРМЬ МЕХАНОШИНА д.10 кв.44//
-'
-ПлательщикИНН='.$organizationPayer->getInn().'
-ПлательщикКПП='.$organizationPayer->getKpp().'
-ПлательщикРасчСчет='.$organizationPayer->getCheckingAccount().'
-ПлательщикБанк1='.$organizationPayer->getBank().'
-ПлательщикБИК='.$organizationPayer->getBankBik().'
-ПлательщикКорсчет='.$organizationPayer->getCorrespondentAccount().'
-ПолучательСчет='.$hotelOrganization->getCorrespondentAccount().'
-ДатаПоступило='.$cashDocument->getPaidDate()->format('d.m.Y').'
-Получатель='.$hotelOrganization->getName().'
-ПолучательИНН='.$hotelOrganization->getInn().'
-ПолучательКПП='.$hotelOrganization->getKpp().'
-ПолучательРасчСчет='.$hotelOrganization->getCheckingAccount().'
-ПолучательБанк1='.$hotelOrganization->getBank().'
-ПолучательБИК='.$hotelOrganization->getBankBik().'
-ПолучательКорсчет='.$hotelOrganization->getCorrespondentAccount().'
-ВидПлатежа='.$cashDocument->getMethod().'
-ВидОплаты=01
-Код=
-СтатусСоставителя=
-ПоказательКБК=
-ОКАТО=
-ПоказательОснования=
-ПоказательПериода=
-ПоказательНомера=
-ПоказательДаты=
-ПоказательТипа=
-Очередность=5
-НазначениеПлатежа=ЗА 15/07/2014; ФИО: ЗЫРЯНОВА ЕЛЕНА СЕРГЕЕВНА; АДРЕС: Г ПЕРМЬ УЛ МЕХАНОШИНА Д 10 КВ 44; ДОП_ИНФ: ЗА ТУРИСТИЧЕСКУЮ ПУТЕВКУ ПО ДОГОВОРУ N 2-16696 ОТ 14.07.2014; КОНТАКТ: 89197101886;
-КонецДокумента
-');
-        }
-
-        $responseContent = sprintf(
-            '1CClientBankExchange
-ВерсияФормата=1.02
-Кодировка=Windows
-Отправитель=
-Получатель=
-ДатаСоздания='.date('d.m.Y').'
-ВремяСоздания='.date('H.i.s').'
-ДатаНачала='.$queryCriteria->begin->format('d.m.Y').'
-ДатаКонца='.$queryCriteria->end->format('d.m.Y').'
-РасчСчет=40702810938250018461
-СекцияРасчСчет
-ДатаНачала=16.07.2014
-ДатаКонца=16.07.2014
-НачальныйОстаток=216692.84
-РасчСчет=40702810938250018461
-ВсегоСписано=215711
-ВсегоПоступило=190574
-КонечныйОстаток=191555.84
-КонецРасчСчет
-'.$text.'КонецФайла
-');
-
-        $response = new Response($responseContent);
-        $response->headers->set('Content-Type','text/plain');
+        $response = new Response($result);
+        $response->headers->set('Content-Type', 'text/plain; charset=utf-8');
+        $response->headers->set('Content-Disposition','attachment; filename="1cExport.txt"');
         return $response;
     }
 
@@ -326,6 +264,7 @@ class CashController extends Controller
     public function deleteAction($id)
     {
         $this->dm->getFilterCollection()->disable('softdeleteable');
+
         return $this->deleteEntity($id, 'MBHCashBundle:CashDocument', 'cash');
     }
 
@@ -385,10 +324,9 @@ class CashController extends Controller
             $request = $this->get('guzzle.client')
                 ->post(Uniteller::DO_CHECK_URL)
                 ->addPostFields($uniteller->getCheckPaymentData($entity))
-                ->send()
-            ;
+                ->send();
 
-            dump((string) $request);
+            dump((string)$request);
 
         } catch (Exception $e) {
             throw $this->createNotFoundException();
@@ -417,8 +355,9 @@ class CashController extends Controller
         $this->dm->getFilterCollection()->enable('softdeleteable');
 
         $paidDate = \DateTime::createFromFormat('d.m.Y', $request->get('paidDate'));
-        if (!$paidDate)
+        if (!$paidDate) {
             $paidDate = new \DateTime();
+        }
 
         $entity->setPaidDate($paidDate);
         $entity->setIsPaid(true);
