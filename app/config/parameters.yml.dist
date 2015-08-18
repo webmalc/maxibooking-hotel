@@ -45,3 +45,5 @@ parameters:
   #Online form
   online_form_sites: ['http://example.com', 'http://example.com']
   online_form_result_url: 'http://example.com/results/'
+
+  mbh_modules.tasks: true
