@@ -38,7 +38,7 @@ class ConsoleAutoTaskCreator extends AutoTaskCreator
 
     protected function createCheck($check, Package $package)
     {
-        $command = 'nohup php ' . $this->getPathConsole() .' '.$check.' '.$package->getId().' --no-debug';
+        $command = 'nohup php ' . $this->getPathConsole() .' mbh:task:auto '.$check.' '.$package->getId().' --no-debug';
         $process = new Process($command);
 
         return $process->run();
