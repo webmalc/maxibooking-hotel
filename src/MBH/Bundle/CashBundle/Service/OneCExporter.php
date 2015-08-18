@@ -6,16 +6,27 @@ namespace MBH\Bundle\CashBundle\Service;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Organization;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class OneCExporter
 {
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
     /**
      * @param CashDocument[] $cashDocuments
      * @param CashDocumentQueryCriteria $queryCriteria
      * @param Organization $hotelOrganization
      * @return string
      */
-    public static function export($cashDocuments, CashDocumentQueryCriteria $queryCriteria, Organization $hotelOrganization = null)
+    public function export($cashDocuments, CashDocumentQueryCriteria $queryCriteria, Organization $hotelOrganization = null)
     {
         $text = '';
 
@@ -29,7 +40,7 @@ class OneCExporter
 Сумма=' . $cashDocument->getTotal() . '
 ПлательщикСчет=' . $organizationPayer->getCheckingAccount() . '
 ДатаСписано=' . ($cashDocument->getIsPaid() ? $cashDocument->getPaidDate()->format('d.m.Y') : '') . '
-Плательщик=' . $cashDocument->getPayer()->getName() . //ЗАПАДНО-УРАЛЬСКИЙ БАНК ОАО "СБЕРБАНК РОССИИ"//ЗЫРЯНОВА ЕЛЕНА СЕРГЕЕВНА//26859356266//614000 ПЕРМЬ МЕХАНОШИНА д.10 кв.44//
+Плательщик=' . $organizationPayer->getName() . //ЗАПАДНО-УРАЛЬСКИЙ БАНК ОАО "СБЕРБАНК РОССИИ"//ЗЫРЯНОВА ЕЛЕНА СЕРГЕЕВНА//26859356266//614000 ПЕРМЬ МЕХАНОШИНА д.10 кв.44//
                 '
 ПлательщикИНН=' . $organizationPayer->getInn() . '
 ПлательщикКПП=' . $organizationPayer->getKpp() . '
@@ -46,7 +57,7 @@ class OneCExporter
 ПолучательБанк1=' . $hotelOrganization->getBank() . '
 ПолучательБИК=' . $hotelOrganization->getBankBik() . '
 ПолучательКорсчет=' . $hotelOrganization->getCorrespondentAccount() . '
-ВидПлатежа=' . $cashDocument->getMethod() . '
+ВидПлатежа=' . $this->container->getParameter('mbh.cash.methods')[$cashDocument->getMethod()] . '
 ВидОплаты=01
 Код=
 СтатусСоставителя=

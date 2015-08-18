@@ -200,7 +200,7 @@ class CashController extends Controller
         $queryCriteria->methods = ['electronic'];
         $queryCriteria->isPaid = true;
         $cashDocuments = $cashDocumentRepository->findByCriteria($queryCriteria);
-        $result = OneCExporter::export($cashDocuments, $queryCriteria, $this->hotel->getOrganization());
+        $result = (new OneCExporter($this->container))->export($cashDocuments, $queryCriteria, $this->hotel->getOrganization());
 
         $response = new Response($result);
         $response->headers->set('Content-Type', 'text/plain; charset=utf-8');
