@@ -24,6 +24,13 @@ class RoomTypeTasksType extends AbstractType
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
                 'help' => 'Задачи, создаваемые при заезде гостя'
             ])
+            ->add('daily', 'collection', [
+                'label' => 'form.roomTypeTasks.daily',
+                'required' => false,
+                'type' => new DailyTaskType(),
+                'allow_add' => true,
+                'allow_delete' => true,
+            ])
             ->add('checkOut', 'document', [
                 'label' => 'form.roomTypeTasks.checkOut',
                 'required' => false,
@@ -31,13 +38,6 @@ class RoomTypeTasksType extends AbstractType
                 'group_by' => 'category',
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
                 'help' => 'При выезде гостя'
-            ])
-            ->add('daily', 'collection', [
-                'label' => 'form.roomTypeTasks.daily',
-                'required' => false,
-                'type' => new DailyTaskType(),
-                'allow_add' => true,
-                'allow_delete' => true,
             ]);
     }
 

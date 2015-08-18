@@ -16,7 +16,6 @@
 
             <div class="well" id="mbh_hotel_bundle_room_type_tasks">
                 {{ form_row(form.checkIn) }}
-                {{ form_row(form.checkOut) }}
                 <div class="form-group daily">
                     {{ form_label(form.daily) }}
                     <div class="col-md-4">
@@ -39,6 +38,7 @@
                         {{ form_errors(form.daily) }}
                     </div>
                 </div>
+                {{ form_row(form.checkOut) }}
             </div>
 
             {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'room_type_delete' } %}
