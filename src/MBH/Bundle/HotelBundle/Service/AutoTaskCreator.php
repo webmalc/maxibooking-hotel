@@ -39,15 +39,12 @@ class AutoTaskCreator
         $dm->getConnection()->getConfiguration()->setLoggerCallable(null);
 
         $now = new \DateTime();
-        $tomorrow = new \DateTime('+1 day');
         /** @var DocumentRepository $hotelRepository */
         $hotelRepository = $dm->getRepository('MBHHotelBundle:Hotel');
         /** @var RoomTypeRepository $roomTypeRepository */
         $roomTypeRepository = $dm->getRepository('MBHHotelBundle:RoomType');
         /** @var PackageRepository $packageRepository */
         $packageRepository = $dm->getRepository('MBHPackageBundle:Package');
-        /** @var TaskRepository $taskRepository */
-        $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
 
         $hotels = $hotelRepository->createQueryBuilder()
             ->field('isEnabled')->equals(true)
@@ -99,23 +96,14 @@ class AutoTaskCreator
                             $arrival = $package->getArrivalTime()->modify('midnight');
                             $interval = $arrival->diff($now)->d;
                             if ($interval % $dailyTaskSetting->getDay() === 0) { //condition
-                                $count = $taskRepository->createQueryBuilder()
-                                    ->field('type.id')->equals($taskType->getId())
-                                    ->field('role')->equals($taskType->getDefaultRole())
-                                    ->field('room.id')->equals($package->getAccommodation()->getId())
-                                    //->field('status')->equals(Task::STATUS_OPEN)
-                                    //->field('priority')->equals(Task::PRIORITY_AVERAGE)
-                                    ->field('createdBy')->equals(null)
-                                    ->field('createdAt')->gte($now)->lte($tomorrow)
-                                    ->getQuery()->count();
-                                if($count == 0) {
-                                    $task = new Task();
-                                    $task->setType($taskType)
-                                        ->setRole($taskType->getDefaultRole())
-                                        ->setRoom($package->getAccommodation())
-                                        ->setStatus(Task::STATUS_OPEN)
-                                        ->setPriority(Task::PRIORITY_AVERAGE);
-
+                                $task = new Task();
+                                $task
+                                    ->setType($taskType)
+                                    ->setRole($taskType->getDefaultRole())
+                                    ->setRoom($package->getAccommodation())
+                                    ->setStatus(Task::STATUS_OPEN)
+                                    ->setPriority(Task::PRIORITY_AVERAGE);
+                                if($this->getCountSameTasks($task) == 0) {
                                     $dm->persist($task);
                                     ++$inc;
                                 }
@@ -131,6 +119,30 @@ class AutoTaskCreator
         $dm->flush();
 
         return $inc;
+    }
+
+    private function getCountSameTasks(Task $task)
+    {
+        /** @var DocumentManager $dm */
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+
+        /** @var TaskRepository $taskRepository */
+        $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
+
+        $now = new \DateTime();
+        $tomorrow = new \DateTime('+1 day');
+
+        $taskType = $task->getType();
+        $count = $taskRepository->createQueryBuilder()
+            ->field('type.id')->equals($taskType->getId())
+            ->field('role')->equals($taskType->getDefaultRole())
+            ->field('room.id')->equals($task->getRoom()->getId())
+            //->field('status')->equals(Task::STATUS_OPEN)
+            //->field('priority')->equals(Task::PRIORITY_AVERAGE)
+            ->field('createdBy')->equals(null)
+            ->field('createdAt')->gte($now)->lte($tomorrow)
+            ->getQuery()->count();
+        return $count;
     }
 
     public function createCheckInTasks(Package $package)
@@ -163,7 +175,9 @@ class AutoTaskCreator
                     ->setStatus(Task::STATUS_OPEN)
                     ->setPriority(Task::PRIORITY_AVERAGE);
 
-                $dm->persist($task);
+                if($this->getCountSameTasks($task) == 0) {
+                    $dm->persist($task);
+                }
             }
         }
         $dm->flush();
