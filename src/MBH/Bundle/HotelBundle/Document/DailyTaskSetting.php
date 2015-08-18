@@ -24,6 +24,9 @@ class DailyTaskSetting
     /**
      * @var int
      * @ODM\Integer()
+     * @Assert\GreaterThan(value = 0)
+     * @Assert\LessThan(value = 60)
+     * @Assert\Type(type="numeric")
      * @Assert\NotBlank()
      */
     private $day;
