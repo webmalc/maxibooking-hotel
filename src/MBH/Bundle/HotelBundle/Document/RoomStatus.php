@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -18,7 +19,6 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @ODM\Document()
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields={"code"}, message="Такой код уже существует")
  */
 class RoomStatus extends Base
 {
@@ -26,10 +26,10 @@ class RoomStatus extends Base
     use SoftDeleteableDocument;
     use BlameableDocument;
 
+    use HotelableDocument;
     /**
      * @var string
-     * @ODM\String
-     * @ODM\UniqueIndex()
+     * @ODM\String()
      */
     public $code;
 

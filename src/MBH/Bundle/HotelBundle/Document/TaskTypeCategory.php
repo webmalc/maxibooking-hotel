@@ -73,10 +73,12 @@ class TaskTypeCategory extends Base
 
     /**
      * @param string $title
+     * @return $this
      */
     public function setTitle($title)
     {
         $this->title = $title;
+        return $this;
     }
 
     /**
@@ -89,10 +91,12 @@ class TaskTypeCategory extends Base
 
     /**
      * @param string $fullTitle
+     * @return $this
      */
     public function setFullTitle($fullTitle)
     {
         $this->fullTitle = $fullTitle;
+        return $this;
     }
 
     /**
@@ -105,10 +109,12 @@ class TaskTypeCategory extends Base
 
     /**
      * @param boolean $isSystem
+     * @return $this
      */
     public function setIsSystem($isSystem)
     {
         $this->isSystem = $isSystem;
+        return $this;
     }
 
     /**
@@ -121,10 +127,12 @@ class TaskTypeCategory extends Base
 
     /**
      * @param string $code
+     * @return $this
      */
     public function setCode($code)
     {
         $this->code = $code;
+        return $this;
     }
 
     /**
@@ -137,6 +145,7 @@ class TaskTypeCategory extends Base
 
     /**
      * @param TaskType[] $types
+     * @return $this
      */
     public function setTypes($types)
     {
