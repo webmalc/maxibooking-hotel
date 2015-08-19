@@ -27,5 +27,6 @@ class HotelableFilter extends BsonFilter
                 };
             }
         }
+        return [];
     }
 }

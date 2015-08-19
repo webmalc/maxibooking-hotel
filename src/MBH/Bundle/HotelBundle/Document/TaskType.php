@@ -96,7 +96,7 @@ class TaskType extends Base
 
     public function __toString()
     {
-        return $this->title;
+        return is_string($this->title) ? $this->title : '';
     }
 
     /**
@@ -109,10 +109,12 @@ class TaskType extends Base
 
     /**
      * @param boolean $isSystem
+     * @return self
      */
     public function setIsSystem($isSystem)
     {
         $this->isSystem = $isSystem;
+        return $this;
     }
 
     /**
@@ -125,10 +127,12 @@ class TaskType extends Base
 
     /**
      * @param TaskTypeCategory|null $category
+     * @return self
      */
     public function setCategory(TaskTypeCategory $category = null)
     {
         $this->category = $category;
+        return $this;
     }
 
     /**
@@ -141,10 +145,12 @@ class TaskType extends Base
 
     /**
      * @param string $code
+     * @return self
      */
     public function setCode($code)
     {
         $this->code = $code;
+        return $this;
     }
 
     /**
@@ -157,10 +163,12 @@ class TaskType extends Base
 
     /**
      * @param mixed $defaultRole
+     * @return self
      */
     public function setDefaultRole($defaultRole)
     {
         $this->defaultRole = $defaultRole;
+        return $this;
     }
 
     /**
@@ -173,9 +181,11 @@ class TaskType extends Base
 
     /**
      * @param RoomStatus|null $roomStatus
+     * @return self
      */
     public function setRoomStatus(RoomStatus $roomStatus = null)
     {
         $this->roomStatus = $roomStatus;
+        return $this;
     }
 }

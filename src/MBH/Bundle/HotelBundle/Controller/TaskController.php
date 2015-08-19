@@ -24,7 +24,7 @@ use MBH\Bundle\HotelBundle\Form\TaskType;
  * Class TaskController
  * @Route("/task")
  */
-class TaskController extends Controller implements HotelableControllerInterface
+class TaskController extends Controller// implements HotelableControllerInterface
 {
     /**
      * @Route("/", name="task")
@@ -98,7 +98,7 @@ class TaskController extends Controller implements HotelableControllerInterface
         $tableParams = ClientDataTableParams::createFromRequest($request);
         $queryCriteria->offset = $tableParams->getStart();
         $queryCriteria->limit = $tableParams->getLength();
-        //$queryCriteria->hotel = $this->hotel;
+        $queryCriteria->hotel = $this->hotel;
         $firstSort = $tableParams->getFirstSort();
         /** @var TaskRepository $taskRepository */
         $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
@@ -248,7 +248,6 @@ class TaskController extends Controller implements HotelableControllerInterface
 
     private function getFormTaskTypeOptions()
     {
-        $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
         $statuses = $this->getParameter('mbh.task.statuses');
         $translator = $this->get('translator');
         $priorities = $this->container->getParameter('mbh.tasktype.priority');
@@ -257,7 +256,6 @@ class TaskController extends Controller implements HotelableControllerInterface
         }, $priorities);
 
         return [
-            'taskTypes' => $this->dm->getRepository('MBHHotelBundle:TaskType')->getOptCategoryGroupList(),
             'roles' => $this->getRoleList(),
             'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
             'priorities' => $priorities,
@@ -268,7 +266,6 @@ class TaskController extends Controller implements HotelableControllerInterface
     private function getRoleList()
     {
         $roles = array_keys($this->container->getParameter('security.role_hierarchy.roles'));
-
         return array_combine($roles, $roles);
     }
 
@@ -287,8 +284,8 @@ class TaskController extends Controller implements HotelableControllerInterface
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions() + [
-                'scenario' => TaskType::SCENARIO_EDIT
-            ]);
+            'scenario' => TaskType::SCENARIO_EDIT
+        ]);
 
         if ($request->isMethod(Request::METHOD_PUT)) {
             if ($form->submit($request)->isValid()) {
@@ -350,7 +347,6 @@ class TaskController extends Controller implements HotelableControllerInterface
             'status' => $entity->getStatus() ?
                 $this->container->getParameter('mbh.task.statuses')[$entity->getStatus()]['title'] :
                 '',
-            //'room' => $entity->getRoom() ? $entity->getRoom()->getTitle() : '',
         ];
 
         return new JsonResponse($data);

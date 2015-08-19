@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Behat/Transliterator.git",
-                "reference": "2fd406df003d18fc53eb5fa3e89da52068fad6c6"
+                "reference": "d198b77951fe55523a39528cedbc11bf99db9eca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/Transliterator/zipball/2fd406df003d18fc53eb5fa3e89da52068fad6c6",
-                "reference": "2fd406df003d18fc53eb5fa3e89da52068fad6c6",
+                "url": "https://api.github.com/repos/Behat/Transliterator/zipball/d198b77951fe55523a39528cedbc11bf99db9eca",
+                "reference": "d198b77951fe55523a39528cedbc11bf99db9eca",
                 "shasum": ""
             },
             "require": {
@@ -44,7 +44,7 @@
                 "slug",
                 "transliterator"
             ],
-            "time": "2014-09-04 13:06:40"
+            "time": "2015-08-04 14:55:57"
         },
         {
             "name": "doctrine/annotations",
@@ -186,16 +186,16 @@
         },
         {
             "name": "doctrine/collections",
-            "version": "v1.3.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/collections.git",
-                "reference": "6c1e4eef75f310ea1b3e30945e9f06e652128b8a"
+                "reference": "aacbad222c7daaf94b8e40285b66f1e315065937"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/collections/zipball/6c1e4eef75f310ea1b3e30945e9f06e652128b8a",
-                "reference": "6c1e4eef75f310ea1b3e30945e9f06e652128b8a",
+                "url": "https://api.github.com/repos/doctrine/collections/zipball/aacbad222c7daaf94b8e40285b66f1e315065937",
+                "reference": "aacbad222c7daaf94b8e40285b66f1e315065937",
                 "shasum": ""
             },
             "require": {
@@ -207,7 +207,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.2.x-dev"
+                    "dev-master": "1.3.x-dev"
                 }
             },
             "autoload": {
@@ -248,7 +248,7 @@
                 "collections",
                 "iterator"
             ],
-            "time": "2015-04-14 22:21:58"
+            "time": "2015-08-19 10:02:04"
         },
         {
             "name": "doctrine/common",
@@ -504,21 +504,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/mongodb.git",
-                "reference": "350447749274cdf4fb6500e12985d582cb79d86a"
+                "reference": "556287acc8020c5dd0042c6c150c845fdbf9458b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb/zipball/350447749274cdf4fb6500e12985d582cb79d86a",
-                "reference": "350447749274cdf4fb6500e12985d582cb79d86a",
+                "url": "https://api.github.com/repos/doctrine/mongodb/zipball/556287acc8020c5dd0042c6c150c845fdbf9458b",
+                "reference": "556287acc8020c5dd0042c6c150c845fdbf9458b",
                 "shasum": ""
             },
             "require": {
-                "doctrine/common": "~2.2",
-                "ext-mongo": ">=1.2.12,<1.7-dev",
+                "doctrine/common": "^2.2",
+                "ext-mongo": "^1.2.12",
                 "php": ">=5.3.2"
             },
             "require-dev": {
-                "jmikola/geojson": "~1.0"
+                "jmikola/geojson": "^1.0"
             },
             "suggest": {
                 "jmikola/geojson": "Support GeoJSON geometry objects in 2dsphere queries"
@@ -526,7 +526,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.2.x-dev"
+                    "dev-master": "1.3.x-dev"
                 }
             },
             "autoload": {
@@ -571,7 +571,7 @@
                 "mongodb",
                 "persistence"
             ],
-            "time": "2015-07-03 05:54:11"
+            "time": "2015-08-18 08:33:29"
         },
         {
             "name": "doctrine/mongodb-odm",
@@ -789,12 +789,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "3efbc08a97f218d0a4524dee926fc4381e3d0947"
+                "reference": "336d9cd8ba0c5a462b3e70be144a7bef5377b219"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/3efbc08a97f218d0a4524dee926fc4381e3d0947",
-                "reference": "3efbc08a97f218d0a4524dee926fc4381e3d0947",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/336d9cd8ba0c5a462b3e70be144a7bef5377b219",
+                "reference": "336d9cd8ba0c5a462b3e70be144a7bef5377b219",
                 "shasum": ""
             },
             "require": {
@@ -848,20 +848,20 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2015-06-10 08:27:05"
+            "time": "2015-08-14 09:45:59"
         },
         {
             "name": "gedmo/doctrine-extensions",
-            "version": "v2.3.12",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Atlantic18/DoctrineExtensions.git",
-                "reference": "c3ff3c73c95b01e107af33d4fe3abf80794e2df9"
+                "reference": "367f98f77f8ae9236b576a91eec52e2dadb6f211"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Atlantic18/DoctrineExtensions/zipball/c3ff3c73c95b01e107af33d4fe3abf80794e2df9",
-                "reference": "c3ff3c73c95b01e107af33d4fe3abf80794e2df9",
+                "url": "https://api.github.com/repos/Atlantic18/DoctrineExtensions/zipball/367f98f77f8ae9236b576a91eec52e2dadb6f211",
+                "reference": "367f98f77f8ae9236b576a91eec52e2dadb6f211",
                 "shasum": ""
             },
             "require": {
@@ -870,11 +870,12 @@
                 "php": ">=5.3.2"
             },
             "require-dev": {
-                "doctrine/mongodb-odm": ">=1.0.0-BETA11",
-                "doctrine/orm": "~2.4",
+                "doctrine/common": ">=2.5.0",
+                "doctrine/mongodb-odm": "dev-master",
+                "doctrine/orm": ">=2.5.0",
                 "phpunit/phpunit": "~4.4",
                 "phpunit/phpunit-mock-objects": "~2.3",
-                "symfony/yaml": "~2.3"
+                "symfony/yaml": "~2.6"
             },
             "suggest": {
                 "doctrine/mongodb-odm": "to use the extensions with the MongoDB ODM",
@@ -883,7 +884,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3.x-dev"
+                    "dev-master": "2.4.x-dev"
                 }
             },
             "autoload": {
@@ -926,7 +927,7 @@
                 "tree",
                 "uploadable"
             ],
-            "time": "2015-02-24 21:41:37"
+            "time": "2015-08-19 12:45:05"
         },
         {
             "name": "guzzle/guzzle",
@@ -1686,26 +1687,30 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/KnpLabs/snappy.git",
-                "reference": "417eed717bc61a1837dc8588d16b97e721e1b363"
+                "reference": "cada5a1ddcf6dc7d4c848b257c2bab580f99e542"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/snappy/zipball/417eed717bc61a1837dc8588d16b97e721e1b363",
-                "reference": "417eed717bc61a1837dc8588d16b97e721e1b363",
+                "url": "https://api.github.com/repos/KnpLabs/snappy/zipball/cada5a1ddcf6dc7d4c848b257c2bab580f99e542",
+                "reference": "cada5a1ddcf6dc7d4c848b257c2bab580f99e542",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3",
                 "symfony/process": "~2.1"
             },
+            "require-dev": {
+                "phpunit/phpunit": "4.7.*"
+            },
             "suggest": {
-                "h4cc/wkhtmltopdf-amd64": "Provide wkhtmltopdf-amd64 binary, use version `0.12.0` as dependency",
-                "h4cc/wkhtmltopdf-i386": "Provide wkhtmltopdf-i386 binary, use version `0.12.0` as dependency"
+                "h4cc/wkhtmltopdf-amd64": "Provides wkhtmltopdf-amd64 binary for Linux-compatible machines, use version `~0.12` as dependency",
+                "h4cc/wkhtmltopdf-i386": "Provides wkhtmltopdf-i386 binary for Linux-compatible machines, use version `~0.12` as dependency",
+                "wemersonjanuario/wkhtmltopdf-windows": "Provides wkhtmltopdf executable for Windows, use version `~0.12` as dependency"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.3.x-dev"
+                    "dev-master": "0.5.x-dev"
                 }
             },
             "autoload": {
@@ -1737,7 +1742,7 @@
                 "thumbnail",
                 "wkhtmltopdf"
             ],
-            "time": "2015-07-21 07:22:25"
+            "time": "2015-08-10 10:24:04"
         },
         {
             "name": "knplabs/knp-snappy-bundle",
@@ -1796,12 +1801,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kriswallsmith/assetic.git",
-                "reference": "0023c5e18f4a03c6ba72706dea6514d45c7136d7"
+                "reference": "0f3cb07ec9e30b4f811faa6045de39520955ae50"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/0023c5e18f4a03c6ba72706dea6514d45c7136d7",
-                "reference": "0023c5e18f4a03c6ba72706dea6514d45c7136d7",
+                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/0f3cb07ec9e30b4f811faa6045de39520955ae50",
+                "reference": "0f3cb07ec9e30b4f811faa6045de39520955ae50",
                 "shasum": ""
             },
             "require": {
@@ -1862,7 +1867,7 @@
                 "compression",
                 "minification"
             ],
-            "time": "2015-07-08 20:36:44"
+            "time": "2015-08-19 10:48:38"
         },
         {
             "name": "liip/imagine-bundle",
@@ -2081,12 +2086,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "e4f45be5dcfeb54c45f85b50cdbb3ef8a2bfbd81"
+                "reference": "d58755629d665abe7955e87ecb0a7a17912670ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/e4f45be5dcfeb54c45f85b50cdbb3ef8a2bfbd81",
-                "reference": "e4f45be5dcfeb54c45f85b50cdbb3ef8a2bfbd81",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/d58755629d665abe7955e87ecb0a7a17912670ad",
+                "reference": "d58755629d665abe7955e87ecb0a7a17912670ad",
                 "shasum": ""
             },
             "require": {
@@ -2103,7 +2108,7 @@
                 "php-console/php-console": "^3.1.3",
                 "phpunit/phpunit": "~4.5",
                 "phpunit/phpunit-mock-objects": "2.3.0",
-                "raven/raven": "~0.8",
+                "raven/raven": "~0.11",
                 "ruflin/elastica": ">=0.90 <3.0",
                 "swiftmailer/swiftmailer": "~5.3",
                 "videlalvaro/php-amqplib": "~2.4"
@@ -2123,7 +2128,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.15.x-dev"
+                    "dev-master": "1.16.x-dev"
                 }
             },
             "autoload": {
@@ -2149,7 +2154,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2015-07-20 18:31:46"
+            "time": "2015-08-17 16:40:30"
         },
         {
             "name": "nikic/php-parser",
@@ -2251,12 +2256,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPExcel.git",
-                "reference": "36eef2f16345a73b2e5c68b58bf10077b9e21d37"
+                "reference": "6eae1393015beed089c59b3d571039359868e077"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/36eef2f16345a73b2e5c68b58bf10077b9e21d37",
-                "reference": "36eef2f16345a73b2e5c68b58bf10077b9e21d37",
+                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/6eae1393015beed089c59b3d571039359868e077",
+                "reference": "6eae1393015beed089c59b3d571039359868e077",
                 "shasum": ""
             },
             "require": {
@@ -2303,7 +2308,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2015-07-16 21:29:15"
+            "time": "2015-08-14 18:50:24"
         },
         {
             "name": "phpoption/phpoption",
@@ -2402,22 +2407,22 @@
         },
         {
             "name": "sensio/distribution-bundle",
-            "version": "v4.0.0",
+            "version": "v4.0.1",
             "target-dir": "Sensio/Bundle/DistributionBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioDistributionBundle.git",
-                "reference": "97929c0a642977acead3d911b2c5c1a944739d40"
+                "reference": "62d99ba41144e704300e40f755346553702b27c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/97929c0a642977acead3d911b2c5c1a944739d40",
-                "reference": "97929c0a642977acead3d911b2c5c1a944739d40",
+                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/62d99ba41144e704300e40f755346553702b27c9",
+                "reference": "62d99ba41144e704300e40f755346553702b27c9",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.9",
-                "sensiolabs/security-checker": "~2.0",
+                "sensiolabs/security-checker": "~3.0",
                 "symfony/class-loader": "~2.2",
                 "symfony/framework-bundle": "~2.3",
                 "symfony/process": "~2.2"
@@ -2458,20 +2463,20 @@
                 "configuration",
                 "distribution"
             ],
-            "time": "2015-06-11 20:55:01"
+            "time": "2015-08-03 10:07:56"
         },
         {
             "name": "sensio/framework-extra-bundle",
-            "version": "v3.0.9",
+            "version": "v3.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioFrameworkExtraBundle.git",
-                "reference": "0616fd568da051adc19ca63006cc808531ba2da4"
+                "reference": "18fc2063c4d6569cdca47a39fbac32342eb65f3c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/0616fd568da051adc19ca63006cc808531ba2da4",
-                "reference": "0616fd568da051adc19ca63006cc808531ba2da4",
+                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/18fc2063c4d6569cdca47a39fbac32342eb65f3c",
+                "reference": "18fc2063c4d6569cdca47a39fbac32342eb65f3c",
                 "shasum": ""
             },
             "require": {
@@ -2513,7 +2518,7 @@
                 "annotations",
                 "controllers"
             ],
-            "time": "2015-06-05 13:59:21"
+            "time": "2015-08-03 11:59:27"
         },
         {
             "name": "sensiolabs/security-checker",
@@ -2521,16 +2526,15 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/security-checker.git",
-                "reference": "2a894b9baf1e18eba7e50dd8ad1e5b1097e0cadc"
+                "reference": "7735fd97ff7303d9df776b8dbc970f949399abc9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/security-checker/zipball/2a894b9baf1e18eba7e50dd8ad1e5b1097e0cadc",
-                "reference": "2a894b9baf1e18eba7e50dd8ad1e5b1097e0cadc",
+                "url": "https://api.github.com/repos/sensiolabs/security-checker/zipball/7735fd97ff7303d9df776b8dbc970f949399abc9",
+                "reference": "7735fd97ff7303d9df776b8dbc970f949399abc9",
                 "shasum": ""
             },
             "require": {
-                "ext-curl": "*",
                 "symfony/console": "~2.0"
             },
             "bin": [
@@ -2539,7 +2543,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "3.0-dev"
                 }
             },
             "autoload": {
@@ -2558,7 +2562,7 @@
                 }
             ],
             "description": "A security checker for your composer.lock",
-            "time": "2015-07-16 20:51:54"
+            "time": "2015-08-11 12:11:25"
         },
         {
             "name": "stof/doctrine-extensions-bundle",
@@ -2566,16 +2570,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stof/StofDoctrineExtensionsBundle.git",
-                "reference": "2ff8473e33e224af87dc00d48a552a35a75115af"
+                "reference": "7b3144572617b0555f9a443317dbc2f9cf5b524e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stof/StofDoctrineExtensionsBundle/zipball/2ff8473e33e224af87dc00d48a552a35a75115af",
-                "reference": "2ff8473e33e224af87dc00d48a552a35a75115af",
+                "url": "https://api.github.com/repos/stof/StofDoctrineExtensionsBundle/zipball/7b3144572617b0555f9a443317dbc2f9cf5b524e",
+                "reference": "7b3144572617b0555f9a443317dbc2f9cf5b524e",
                 "shasum": ""
             },
             "require": {
-                "gedmo/doctrine-extensions": "~2.3.1",
+                "gedmo/doctrine-extensions": "^2.3.1",
                 "php": ">=5.3.2",
                 "symfony/framework-bundle": "~2.1"
             },
@@ -2619,7 +2623,7 @@
                 "translatable",
                 "tree"
             ],
-            "time": "2014-09-30 08:24:40"
+            "time": "2015-08-12 16:23:48"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -2857,16 +2861,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.7.2",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "969d709ad428076bf1084e386dc26dd904d9fb84"
+                "reference": "a9af4708b4bb650c4897e9b8dfbfbdb2ea5f0486"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/969d709ad428076bf1084e386dc26dd904d9fb84",
-                "reference": "969d709ad428076bf1084e386dc26dd904d9fb84",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/a9af4708b4bb650c4897e9b8dfbfbdb2ea5f0486",
+                "reference": "a9af4708b4bb650c4897e9b8dfbfbdb2ea5f0486",
                 "shasum": ""
             },
             "require": {
@@ -2975,7 +2979,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2015-07-13 19:27:49"
+            "time": "2015-07-31 13:24:45"
         },
         {
             "name": "twig/extensions",
@@ -3035,21 +3039,25 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "1ded65daeb8da1fb0d22016e53c2e7026557f040"
+                "reference": "d4aa0238c358aea7f40403d3d13d0b171f0ff07a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/1ded65daeb8da1fb0d22016e53c2e7026557f040",
-                "reference": "1ded65daeb8da1fb0d22016e53c2e7026557f040",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/d4aa0238c358aea7f40403d3d13d0b171f0ff07a",
+                "reference": "d4aa0238c358aea7f40403d3d13d0b171f0ff07a",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2.7"
             },
+            "require-dev": {
+                "symfony/debug": "~2.7",
+                "symfony/phpunit-bridge": "~2.7"
+            },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.19-dev"
+                    "dev-master": "1.21-dev"
                 }
             },
             "autoload": {
@@ -3084,7 +3092,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-07-05 08:50:23"
+            "time": "2015-08-18 13:28:19"
         },
         {
             "name": "willdurand/jsonp-callback-validator",

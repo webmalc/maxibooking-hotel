@@ -5,6 +5,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -24,6 +25,7 @@ class TaskTypeCategory extends Base
     use SoftDeleteableDocument;
     use BlameableDocument;
 
+    use HotelableDocument;
     /**
      * @var string
      * @Gedmo\Versioned
@@ -146,8 +148,7 @@ class TaskTypeCategory extends Base
      */
     public function __toString()
     {
-        return (string) $this->getTitle();
+        return is_string($this->title) ? $this->title : parent::__toString();
     }
-
 
 }

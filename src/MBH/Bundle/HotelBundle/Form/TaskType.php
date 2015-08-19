@@ -47,12 +47,20 @@ class TaskType extends AbstractType
         /** @var Hotel $hotel */
         $hotel = $options['hotel'];
 
+
+        $queryBuilderSelectedHotelOnly = function(DocumentRepository $repository) use($hotel) {
+            $queryBuilder = $repository->createQueryBuilder();
+            $queryBuilder->field('hotel.id')->equals($hotel->getId());
+            return $queryBuilder;
+        };
         $builder
-            ->add('type', 'choice', [
+            ->add('type', 'document', [
                 'label' => 'form.task.type',
                 'group' => $generalGroup,
-                'choices' => $options['taskTypes'],
-                'required' => true
+                'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
+                'group_by' => 'category',
+                'required' => true,
+                'query_builder' => $queryBuilderSelectedHotelOnly
             ])
             ->add('priority', 'choice', [
                 'label' => 'form.task.priority',
@@ -61,15 +69,6 @@ class TaskType extends AbstractType
                 'required' => true,
                 'expanded' => true,
             ])
-            /*->add('date', 'date', [
-                'label' => 'form.task.date',
-                'group' => $generalGroup,
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'attr' => ['class' => 'input-small'],
-                //'required' => true,
-                //'data' => new \DateTime()
-            ])*/
             ->add('date', 'datetime', array(
                 'label' => 'form.task.date',
                 'html5' => false,
@@ -87,11 +86,7 @@ class TaskType extends AbstractType
                 'mapped' => false,
                 //'attr' => ['class' => 'sm-input'],
                 'class' => 'MBH\Bundle\HotelBundle\Document\Housing',
-                'query_builder' => function(DocumentRepository $repository) use($hotel) {
-                    $queryBuilder = $repository->createQueryBuilder();
-                    $queryBuilder->field('hotel.id')->equals($hotel->getId());
-                    return $queryBuilder;
-                }
+                'query_builder' => $queryBuilderSelectedHotelOnly
             ]);
             $floors = $this->dm->getRepository('MBHHotelBundle:Room')->getFloorsByHotel($hotel);
             $builder->add('floor', 'choice', [
@@ -157,8 +152,6 @@ class TaskType extends AbstractType
                 'expanded' => true,
             ])
         ;
-
-        $builder->get('type')->addModelTransformer(new EntityToIdTransformer($this->dm, 'MBH\Bundle\HotelBundle\Document\TaskType'));
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -166,7 +159,6 @@ class TaskType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Task',
             'roles' => [],
-            'taskTypes' => [],
             'priorities' => [],
             'statuses' => [],
             'scenario' => self::SCENARIO_NEW,
