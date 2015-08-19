@@ -2,8 +2,10 @@
 
 namespace MBH\Bundle\BaseBundle\EventListener;
 
+use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
+use MBH\Bundle\BaseBundle\Controller\HotelableControllerInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -40,13 +42,18 @@ class OnController
 
             throw new NotFoundHttpException('Page not found');
         }
+        /** @var FilterCollection $collection */
+        $collection = $this->container->get('doctrine_mongodb')->getManager()->getFilterCollection();
         //remove deletable filter
         if ($controller[0] instanceof DeletableControllerInterface) {
-
-            $collection = $this->container->get('doctrine_mongodb')->getManager()->getFilterCollection();
-
             if ($collection->isEnabled('softdeleteable')) {
                 $collection->disable('softdeleteable');
+            }
+        }
+        if ($controller[0] instanceof HotelableControllerInterface) {
+            if (!$collection->isEnabled('hotelable')) {
+                $collection->enable('hotelable');
+                $collection->getFilter('hotelable')->setHotelSelector($this->container->get('mbh.hotel.selector'));
             }
         }
     }

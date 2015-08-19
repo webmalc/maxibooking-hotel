@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Controller\HotelableControllerInterface;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\BaseBundle\Service\Messenger\NotifierMessage;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
@@ -23,7 +24,7 @@ use MBH\Bundle\HotelBundle\Form\TaskType;
  * Class TaskController
  * @Route("/task")
  */
-class TaskController extends Controller
+class TaskController extends Controller implements HotelableControllerInterface
 {
     /**
      * @Route("/", name="task")

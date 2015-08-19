@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Controller\HotelableControllerInterface;
 use MBH\Bundle\HotelBundle\Document\TaskType;
 use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
 use MBH\Bundle\HotelBundle\Form\TaskTypeCategoryType;
@@ -20,7 +21,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
  * @package MBH\Bundle\HotelBundle\Controller
  * @Route("/tasktype")
  */
-class TaskTypeController extends Controller
+class TaskTypeController extends Controller implements HotelableControllerInterface
 {
     /**
      *
