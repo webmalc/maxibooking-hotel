@@ -141,3 +141,8 @@ services:
         arguments: [@mbh.hotel.selector]
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+    mbh.filter.hotelable_filter:
+        class: MBH\Bundle\BaseBundle\Filter\HotelableFilter
+        calls:
+            - [setHotelSelector, ["@mbh.hotel.selector"]]
+        public: false
