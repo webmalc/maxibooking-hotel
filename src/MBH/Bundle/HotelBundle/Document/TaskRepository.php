@@ -88,6 +88,10 @@ class TaskRepository extends DocumentRepository
             $queryBuilder->addAnd($queryBuilder->expr()->field('createdAt')->lte($queryCriteria->end));
         }
 
+        if($queryCriteria->hotel) {
+            $queryBuilder->addAnd($queryBuilder->expr()->field('hotel.id')->equals($queryCriteria->hotel->getId()));
+        }
+
         return $queryBuilder;
     }
 

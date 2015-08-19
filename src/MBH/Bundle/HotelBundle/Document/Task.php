@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -19,6 +20,12 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class Task extends Base
 {
+    use TimestampableDocument;
+    use SoftDeleteableDocument;
+    use BlameableDocument;
+
+    use HotelableDocument;
+
     const PRIORITY_LOW = 0;
     const PRIORITY_AVERAGE = 1;
     const PRIORITY_HIGH = 2;
@@ -28,24 +35,6 @@ class Task extends Base
     const STATUS_CLOSED = 'closed';
 
     const DAY_DEAL_LINE = 3;
-
-    /**
-     * Hook timestampable behavior
-     * updates createdAt, updatedAt fields
-     */
-    use TimestampableDocument;
-
-    /**
-     * Hook softdeleteable behavior
-     * deletedAt field
-     */
-    use SoftDeleteableDocument;
-
-    /**
-     * Hook blameable behavior
-     * createdBy&updatedBy fields
-     */
-    use BlameableDocument;
 
     /**
      * @var string
@@ -76,7 +65,7 @@ class Task extends Base
     protected $previousStatus;
 
     /**
-     * @var Room|nuul
+     * @var Room|null
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Room")
      */
     protected $room;

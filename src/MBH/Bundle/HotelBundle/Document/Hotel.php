@@ -399,7 +399,7 @@ class Hotel extends Base
     /**
      * Get roomTypes
      *
-     * @return \Doctrine\Common\Collections\Collection $roomTypes
+     * @return RoomType[]|\Doctrine\Common\Collections\Collection $roomTypes
      */
     public function getRoomTypes()
     {

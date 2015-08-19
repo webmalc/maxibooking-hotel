@@ -66,6 +66,7 @@ class TaskController extends Controller
             $taskQueryCriteria->onlyOwned = true;
             $taskQueryCriteria->status = 'open';
             $taskQueryCriteria->sort = $sort;
+            $taskQueryCriteria->hotel = $this->hotel;
             /** @var Task[] $tasks */
             $tasks = $taskRepository->getAcceptableTasks($taskQueryCriteria);
 
@@ -96,6 +97,7 @@ class TaskController extends Controller
         $tableParams = ClientDataTableParams::createFromRequest($request);
         $queryCriteria->offset = $tableParams->getStart();
         $queryCriteria->limit = $tableParams->getLength();
+        $queryCriteria->hotel = $this->hotel;
         $firstSort = $tableParams->getFirstSort();
         /** @var TaskRepository $taskRepository */
         $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');

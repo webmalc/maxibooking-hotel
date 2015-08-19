@@ -136,3 +136,8 @@ services:
         class: MBH\Bundle\BaseBundle\EventListener\CheckDeleteRelationSubscriber
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+    mbh.event_listener.hotelable_listener:
+        class: MBH\Bundle\BaseBundle\EventListener\HotelableListener
+        arguments: [@mbh.hotel.selector]
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}

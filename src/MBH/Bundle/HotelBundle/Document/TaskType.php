@@ -5,6 +5,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -20,22 +21,11 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  */
 class TaskType extends Base
 {
-    /**
-     * Hook timestampable behavior
-     * updates createdAt, updatedAt fields
-     */
     use TimestampableDocument;
-    /**
-     * Hook softdeleteable behavior
-     * deletedAt field
-     */
     use SoftDeleteableDocument;
-    /**
-     * Hook blameable behavior
-     * createdBy&updatedBy fields
-     */
     use BlameableDocument;
 
+    use HotelableDocument;
     /**
      * @var string
      * @Gedmo\Versioned
