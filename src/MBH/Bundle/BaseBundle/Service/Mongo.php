@@ -24,6 +24,9 @@ class Mongo
      */
     protected $mongo;
 
+    /**
+     * @var \MongoDB
+     */
     protected $db;
 
     /**
@@ -72,6 +75,15 @@ class Mongo
             return null;
         }
         return $this->db->$collection->batchInsert($data);
+    }
+
+    /**
+     * @param string $collectionName
+     * @return \MongoCollection
+     */
+    public function getCollection($collectionName)
+    {
+        return $this->db->$collectionName;
     }
 
     /**
