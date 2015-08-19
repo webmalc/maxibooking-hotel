@@ -98,7 +98,7 @@ class TaskController extends Controller implements HotelableControllerInterface
         $tableParams = ClientDataTableParams::createFromRequest($request);
         $queryCriteria->offset = $tableParams->getStart();
         $queryCriteria->limit = $tableParams->getLength();
-        $queryCriteria->hotel = $this->hotel;
+        //$queryCriteria->hotel = $this->hotel;
         $firstSort = $tableParams->getFirstSort();
         /** @var TaskRepository $taskRepository */
         $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');

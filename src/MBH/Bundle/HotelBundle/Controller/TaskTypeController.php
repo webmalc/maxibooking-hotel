@@ -50,19 +50,6 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
         }
 
         $entity = new TaskType();
-        $taskTypeRepository = $this->dm->getRepository('MBHHotelBundle:TaskType');
-
-        /** @var TaskType[] $entities */
-        $entities = [];
-        /*if($category) {
-            $entities = $taskTypeRepository->createQueryBuilder('s')
-                ->field('category.id')->equals($category->getId())
-                ->sort('title', 'asc')
-                ->getQuery()->execute();
-
-            $entity->setCategory($category);
-        }*/
-
 
         $roles =array_keys($this->container->getParameter('security.role_hierarchy.roles'));
         $roles = array_combine($roles, $roles);
@@ -85,7 +72,6 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
 
         return [
             'form' => $form->createView(),
-            'entities' => $entities,
             'taskTypeCategories' => $taskTypeCategories,
             'activeCategory' => $category
         ];
@@ -144,13 +130,6 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
      */
     public function deleteAction(TaskType $entity)
     {
-        /*if($entity->isSystem())
-            throw $this->createNotFoundException('Is system type');
-        $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
-        if($taskRepository->getCountByType($entity) > 0) {
-            throw $this->createNotFoundException('Type have existing tasks');
-        }*/
-
         return $this->deleteEntity($entity->getId(), 'MBHHotelBundle:TaskType',
             'tasktype', ['category' => $entity->getCategory()->getId()]);
     }
