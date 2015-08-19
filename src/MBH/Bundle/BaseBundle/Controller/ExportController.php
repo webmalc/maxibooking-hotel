@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Controller;
 
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -11,6 +12,7 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Class ExportController
@@ -25,39 +27,45 @@ class ExportController extends BaseController
      */
     public function csvAction($repositoryName)
     {
-        $repositoryName = $this->getRepositoryNameByShortcut($repositoryName);
+        $className = $this->getClassNameByShortcut($repositoryName);
 
         if(!$repositoryName) {
             throw $this->createNotFoundException();
         }
         /** @var DocumentRepository $repository */
-        $repository = $this->dm->getRepository($repositoryName);
-        /** @var \MongoCollection $collection */
-        $collection = $this->get('mbh.mongo')->getCollection($repository->getClassMetadata()->getCollection());
-        $filterCriteria = $this->dm->getFilterCollection()->getFilterCriteria($repository->getClassMetadata());
-        /** @var \MongoCursor $mongoCursor */
-        $mongoCursor = $collection->find($filterCriteria);
+        $repository = $this->dm->getRepository($className);
+        $fields = $repository->getClassMetadata()->getFieldNames();
+        $methods = array_combine($fields, array_map(function($filed){
+            return 'get'.ucfirst($filed);
+        }, $fields));
 
-        if($mongoCursor->count(true) == 0) {
-            throw $this->createNotFoundException("Data do not exists to generate csv");
-        }
-        $mongoCursor->next();
-        $data[] = array_keys($mongoCursor->current());
-        foreach($mongoCursor as $row) {
-            $data[] = array_values($row);
+        $reflection = new \ReflectionClass($className);
+        $methods = array_filter($methods, function($method) use ($reflection){
+            return $reflection->hasMethod($method) && $reflection->getMethod($method)->isPublic();
+        });
+
+        $documents = $repository->findAll();
+
+        $data[] = $fields;
+        foreach($documents as &$document) {
+            $values = [];
+            foreach($methods as $method) {
+                $values[] = $this->handleValue(call_user_func_array([$document, $method], []));
+            }
+            $data[] = $values;
+            $this->dm->detach($document);
+            unset($document);
         }
 
-        $text = '';
-        foreach($data as $row) {
-            var_dump($row);
-            $text .= implode(';', $row);
-            $text .= "\n";
+        $fp = fopen('php://output', 'w');
+        foreach ($data as $row) {
+            fputcsv($fp, $row);
         }
-        die();
+        fclose($fp);
 
-        $response = new Response($text);
-        $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
+        $response = new Response(ob_get_clean());
+        $response->headers->set('Content-Type', 'application/vnd.ms-excel');
+        $response->headers->set('Content-Disposition', 'attachment; filename="export_'.$repositoryName.'.csv"');
         return $response;
     }
 
@@ -65,7 +73,7 @@ class ExportController extends BaseController
      * @param string $shortcut
      * @return string|null
      */
-    private function getRepositoryNameByShortcut($shortcut)
+    private function getClassNameByShortcut($shortcut)
     {
         $repositories =  [
             'tourists' => Tourist::class,
@@ -75,5 +83,19 @@ class ExportController extends BaseController
         ];
 
         return array_key_exists($shortcut, $repositories) ? $repositories[$shortcut] : null;
+    }
+
+    private function handleValue($value)
+    {
+        if($value instanceof PersistentCollection) {
+            return $value->count();
+        } elseif($value instanceof \DateTime) {
+            return $value->format('d.m.Y');
+        } elseif(is_bool($value)) {
+            return $value ? 'Да' : 'Нет';
+        } elseif(is_object($value)) {
+            return $value->__toString();
+        } else
+            return $value;
     }
 }

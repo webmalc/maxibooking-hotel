@@ -195,4 +195,9 @@ class DocumentRelation
     {
         return !($this->issued && $this->expiry && $this->issued->getTimestamp() > $this->expiry->getTimestamp());
     }
+
+    function __toString()
+    {
+        return $this->getAuthority() . ' ' . ($this->getIssued() ? $this->getIssued()->format('d.m.Y') : '');
+    }
 }
