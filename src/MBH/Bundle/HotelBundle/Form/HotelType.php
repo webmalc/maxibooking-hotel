@@ -59,18 +59,6 @@ class HotelType extends AbstractType
                 'value' => true,
                 'required' => false,
                 'help' => 'form.hotelType.is_default_maxibooking'
-            ])
-            ->add('tags', 'choice', [
-                'attr' => [
-                    'class' => 'tags-select-input-widget',
-                    'placeholder' => 'Выберите теги'
-                ],
-                'mapped' => false,
-                'multiple' => true,
-                'choices' => [
-                    '1' => 'one', '2' => 'two', '3' => 'three'
-                ],
-                'empty_value' => '',
             ]);
     }
 

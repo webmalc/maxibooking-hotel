@@ -247,8 +247,9 @@ var docReadyForms = function () {
                 var inputName = $select.attr('name');
                 var isMultiple = $select.attr('multiple');
                 var isRequired = $select.attr('required');
+                var hasSelect2 = $select.data('select2');
                 if (isMultiple) {
-                    $select.removeAttr('multiple');
+                    //$select.removeAttr('multiple');
                 } else {
                     inputName += '[]';
                 }
@@ -256,6 +257,14 @@ var docReadyForms = function () {
                     $select.removeAttr('required');
                 }
                 $select.attr('name', inputName.replace(/(\[.*\])/g, '') + '_fake');
+                if (!hasSelect2) {
+                    console.log('init select 2');
+                    $select.select2({
+                        placeholder: $select.attr('placeholder'),
+                        width: 'resolve',
+                        closeOnSelect: false
+                    });
+                }
                 $select.on('change', function () {
                     var $this = $(this),
                         value = $this.val();
@@ -265,7 +274,7 @@ var docReadyForms = function () {
                         var item = '<div class="btn btn-xs btn-default">' + text + ' <i class="fa fa-times"></i>' + input + '<div>';
                         $widget.find('.list').append(item);
                         $this.val('');
-                        $select.select2('data', null);//select2('updateResults');
+                        $select.select2('data', null);//clear value
                     }
                 });
                 $widget.on('click', '.list .btn', function () {

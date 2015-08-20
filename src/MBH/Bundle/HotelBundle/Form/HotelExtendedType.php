@@ -110,7 +110,12 @@ class HotelExtendedType extends AbstractType
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
                 'choices' => (isset($options['config']['facilities'])) ? $options['config']['facilities'] : [],
-                'multiple' => true
+                'multiple' => true,
+                'attr' => [
+                    'class' => 'tags-select-input-widget plain-html',
+                    'placeholder' => 'Выберите теги'
+                ],
+                //'empty_value' => '',
             ]);
 
         $builder->add('vega_address_id', 'number', [

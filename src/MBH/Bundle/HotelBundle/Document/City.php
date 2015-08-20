@@ -131,6 +131,6 @@ class City extends Base
 
     public function __toString()
     {
-        return $this->getTitle();
+        return is_string($this->getTitle()) ? $this->getTitle() : parent::__toString();
     }
 }
