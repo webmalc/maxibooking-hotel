@@ -243,18 +243,33 @@ var docReadyForms = function () {
                 if ($widget.is("select")) {
                     $widget = $widget.wrap('<div class="tags-select-widget"></div>').closest('.tags-select-widget').prepend('<div class="list"></div>');
                 }
-
-                $widget.find('select').on('change', function () {
+                var $select = $widget.find('select');
+                var inputName = $select.attr('name');
+                var isMultiple = $select.attr('multiple');
+                var isRequired = $select.attr('required');
+                if (isMultiple) {
+                    $select.removeAttr('multiple');
+                } else {
+                    inputName += '[]';
+                }
+                if (isRequired) {
+                    $select.removeAttr('required');
+                }
+                $select.attr('name', inputName.replace(/(\[.*\])/g, '') + '_fake');
+                $select.on('change', function () {
                     var $this = $(this),
                         value = $this.val();
                     if (value) {
-                        var text = $this.find('option[value=' + $this.val() + ']').text();
-                        $widget.find('.list').append('<div class="btn btn-xs btn-default">' + text + ' <i class="fa fa-times"></i><div>');
+                        var text = $this.find('option[value=' + value + ']').text();
+                        var input = '<input type="hidden" name="' + inputName + '" value="' + value + '">';
+                        var item = '<div class="btn btn-xs btn-default">' + text + ' <i class="fa fa-times"></i>' + input + '<div>';
+                        $widget.find('.list').append(item);
                         $this.val('');
+                        $select.select2('data', null);//select2('updateResults');
                     }
                 });
-                $widget.on('click', '.list .fa-times', function () {
-                    $(this).parent().remove();
+                $widget.on('click', '.list .btn', function () {
+                    $(this).remove();
                 });
             });
         },
@@ -265,6 +280,7 @@ var docReadyForms = function () {
         },
         update : function (content) {}
     };
+
 
     $.fn.tagsSelectWidget = function (method) {
         if (methods[method]) {
