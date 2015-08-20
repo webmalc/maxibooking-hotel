@@ -40,9 +40,9 @@
             <h2>Акт № {{ entity.numberWithPrefix }} от {{ 'now'|date('d.m.Y') }}.</h2>
         </div>
         {% if hotel and hotel.logoUrl %}
-        <div class="logo">
-            <img src="{{ asset(hotel.logoUrl, absolute=true) }}">
-        </div>
+            <div class="logo">
+                <img src="{{ asset(hotel.logoUrl, absolute=true) }}">
+            </div>
         {% endif %}
         <div style="clear: both"></div>
     </div>
@@ -83,20 +83,22 @@
 
             {% set counter = 0 %}
             {% for package in packages %}
-                {% set counter = counter + 1 %}
-                <tr>
-                    <td align="center">{{ counter }}</td>
-                    <td>
-                        {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ package.begin|date('d.m.Y') }} - {{ package.end|date('d.m.Y') }}
-                        {% if package.roomType and package.roomType.fullTitle %}
-                            ({{ package.roomType.fullTitle }})
-                        {% endif %}
-                    </td>
-                    <td align="center">{{ package.nights }}</td>
-                    <td align="center">{{ "package.pdf.noch"|trans({}, "MBHPackageBundle") }}</td>
-                    <td align="right">{{ (package.packagePrice(true)/entity.nights)|round(1)|number_format(2) }}</td>
-                    <td align="right">{{ package.packagePrice(true)|number_format(2) }}</td>
-                </tr>
+                {% for date,data in package.pricesByDateByPrice %}
+                    {% set counter = counter + 1 %}
+                    <tr>
+                        <td align="center">{{ counter }}</td>
+                        <td>
+                            {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace('_', '.') }}
+                            {% if package.roomType and package.roomType.fullTitle %}
+                                ({{ package.roomType.fullTitle }})
+                            {% endif %}
+                        </td>
+                        <td align="center">{{ data.nights }}</td>
+                        <td align="center">{{ "package.pdf.noch"|trans({}, "MBHPackageBundle") }}</td>
+                        <td align="right">{{ data.price|number_format(2) }}</td>
+                        <td align="right">{{ (data.nights * data.price)|number_format(2) }}</td>
+                    </tr>
+                {% endfor %}
             {% endfor %}
 
             {% if formParams.hasFull is defined and formParams.hasFull %}
@@ -133,7 +135,7 @@
             </tr>
         </table>
 
-        <p>Всего оказано услуг {{ entity.services|length + 1 }}, на сумму {{ total|number_format(2) }} {{ currency().text }}<br>
+        <p>Всего оказано услуг {{ counter }}, на сумму {{ total|number_format(2) }} {{ currency().text }}<br>
             <strong>{{ total|num2str|capitalize }}</strong></p>
 
         <p>{{ "package.pdf.conditions"|trans({}, "MBHPackageBundle") }}</p>

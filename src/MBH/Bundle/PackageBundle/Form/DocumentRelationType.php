@@ -111,7 +111,6 @@ class DocumentRelationType extends AbstractType
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.relation',
                 'choices' => array_combine($dictTypes, $dictTypes),
-                'data' => 'owner',
                 'property_path' => 'documentRelation.relation'
             ]);
 

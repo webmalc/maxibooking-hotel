@@ -990,6 +990,50 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
+     * @return array
+     */
+    public function getPricesByDateByPrice()
+    {
+        $data = $this->getPricesByDate();
+        $dates = array_keys($data);
+        $prices = array_values($data);
+        $result = [];
+        $begin = null;
+        $nights = 1;
+        for($i = 0; $i < count($prices); ++$i) {
+            $price = $prices[$i];
+            $nextPrice = @$prices[$i+1];
+            $date = $dates[$i];
+            $nextDate = @$dates[$i+1];
+            if($nextPrice) {
+                if($price == $nextPrice) {
+                    if($begin == null) {
+                        $begin = $date;
+                    }
+                    ++$nights;
+                } else {
+                    $result[$begin == null || $begin == $date ? ($date.' - '.$nextDate) : ($begin.' - '.$nextDate)] = [
+                        'price' => $price,
+                        'nights' => $nights
+                    ];
+                    $begin = null;
+                    $nights = 1;
+                }
+            } else {
+                if(!$nextDate) {
+                    $nextDate = \DateTime::createFromFormat('d_m_Y', $date)->modify('+1 day')->format('d_m_Y');
+                }
+                $result[$date.' - '.$nextDate] = [
+                    'price' => $price,
+                    'nights' => $nights
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Set isSmoking
      *
      * @param boolean $isSmoking
