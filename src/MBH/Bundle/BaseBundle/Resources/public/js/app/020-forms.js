@@ -238,6 +238,14 @@ var docReadyForms = function () {
     var methods = {
         init : function (options) {
             return this.each(function () {
+                function addItem($select, $list, value, text) {
+                    var input = '<input type="hidden" name="' + inputName + '" value="' + value + '">';
+                    var item = '<div class="btn btn-xs btn-default">' + text + ' <i class="fa fa-times"></i>' + input + '<div>';
+                    $list.append(item);
+                    $select.val('');
+                    $select.select2('data', null);//clear value
+                    //$select.select2('val', "All");
+                }
                 var $widget = $(this);
 
                 if ($widget.is("select")) {
@@ -248,8 +256,10 @@ var docReadyForms = function () {
                 var isMultiple = $select.attr('multiple');
                 var isRequired = $select.attr('required');
                 var hasSelect2 = $select.data('select2');
+                var values = [];
                 if (isMultiple) {
-                    //$select.removeAttr('multiple');
+                    values = $select.val();
+                    $select.removeAttr('multiple');
                 } else {
                     inputName += '[]';
                 }
@@ -270,16 +280,22 @@ var docReadyForms = function () {
                         value = $this.val();
                     if (value) {
                         var text = $this.find('option[value=' + value + ']').text();
-                        var input = '<input type="hidden" name="' + inputName + '" value="' + value + '">';
-                        var item = '<div class="btn btn-xs btn-default">' + text + ' <i class="fa fa-times"></i>' + input + '<div>';
-                        $widget.find('.list').append(item);
-                        $this.val('');
-                        $select.select2('data', null);//clear value
+                        addItem($select, $widget.find('.list'), value, text);
                     }
                 });
                 $widget.on('click', '.list .btn', function () {
                     $(this).remove();
                 });
+
+                if(values.length > 0) {
+                    //$widget.tagsSelectWidget('update', values);
+                    values.forEach(function(value){
+                        var $option = $select.find('option[value=' + value + ']');
+                        if ($option.length == 1) {
+                            addItem($select, $widget.find('.list'), value, $option.text());
+                        }
+                    });
+                }
             });
         },
         clear : function () {
@@ -287,7 +303,7 @@ var docReadyForms = function () {
                 $(this).find('.list').empty();
             });
         },
-        update : function (content) {}
+        update : function (values) {}
     };
 
 
