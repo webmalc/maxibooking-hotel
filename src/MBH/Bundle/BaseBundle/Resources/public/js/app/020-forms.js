@@ -239,12 +239,10 @@ var docReadyForms = function () {
         init : function (options) {
             return this.each(function () {
                 function addItem($select, $list, value, text) {
+                    var additionalIconClass = 'fa-4x';
                     var input = '<input type="hidden" name="' + inputName + '" value="' + value + '">';
                     var item = '<div class="btn btn-xs btn-default">' + text + ' <i class="fa fa-times"></i>' + input + '<div>';
                     $list.append(item);
-                    $select.val('');
-                    $select.select2('data', null);//clear value
-                    //$select.select2('val', "All");
                 }
                 var $widget = $(this);
 
@@ -284,16 +282,27 @@ var docReadyForms = function () {
                     $select.select2({
                         placeholder: $select.attr('placeholder'),
                         width: 'resolve',
-                        closeOnSelect: false
+                        closeOnSelect: false,
+                        formatResult: function(data, $option) {
+                            var icon = data.element[0].getAttribute('data-icon');
+                            return icon + ' ' + data.text;//data.id
+                        }//, formatSelection:function(){}
                     });
                 }
-                $select.on('change', function () {
+                /*$select.on('change', function () {
                     var $this = $(this),
                         value = $this.val();
                     if (value) {
                         var text = $this.find('option[value=' + value + ']').text();
                         addItem($select, $widget.find('.list'), value, text);
+                        $select.val('');
+                        $select.select2('data', null);//clear value
+                        //$select.select2('val', "All");
                     }
+                });*/
+                $select.on('select2-selecting', function (event) {
+                    addItem($select, $widget.find('.list'), event.val, event.choice.text);
+                    event.preventDefault();
                 });
                 $widget.on('click', '.list .btn', function () {
                     $(this).remove();

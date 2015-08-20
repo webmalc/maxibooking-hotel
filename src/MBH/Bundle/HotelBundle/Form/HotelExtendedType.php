@@ -111,6 +111,14 @@ class HotelExtendedType extends AbstractType
                 'required' => false,
                 'choices' => (isset($options['config']['facilities'])) ? $options['config']['facilities'] : [],
                 'multiple' => true,
+                'choice_attr' => function($key, $label) {
+                    //$icon = $key;
+                    $key = 'home';
+                    $icon = '<i class="fa fa-' . $key . '"></i>';
+                    return [
+                        'data-icon' => $icon
+                    ];
+                },
                 'attr' => [
                     'class' => 'tags-select-input-widget plain-html',
                     'placeholder' => 'Выберите теги'
