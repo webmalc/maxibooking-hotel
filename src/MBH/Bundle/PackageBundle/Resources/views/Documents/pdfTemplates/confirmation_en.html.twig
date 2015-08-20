@@ -183,20 +183,22 @@
 
             {% set counter = 0 %}
             {% for package in packages %}
-                {% set counter = counter + 1 %}
-                <tr>
-                    <td align="center">{{ counter }}</td>
-                    <td>
-                        {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ package.begin|date('d.m.Y') }} - {{ package.end|date('d.m.Y') }}
-                        {% if package.roomType and package.roomType.internationalTitle %}
-                            ({{ package.roomType.internationalTitle }})
-                        {% endif %}
-                    </td>
-                    <td align="center">{{ package.nights }}</td>
-                    <td align="center">nights</td>
-                    <td align="right">{{ (package.packagePrice(true)/entity.nights)|round(1)|number_format(2) }}</td>
-                    <td align="right">{{ package.packagePrice(true)|number_format(2) }}</td>
-                </tr>
+                {% for date,data in package.pricesByDateByPrice %}
+                    {% set counter = counter + 1 %}
+                    <tr>
+                        <td align="center">{{ counter }}</td>
+                        <td>
+                            {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace('_', '.') }}
+                            {% if package.roomType and package.roomType.internationalTitle %}
+                                ({{ package.roomType.internationalTitle }})
+                            {% endif %}
+                        </td>
+                        <td align="center">{{ data.nights }}</td>
+                        <td align="center">nights</td>
+                        <td align="right">{{ data.price|number_format(2) }}</td>
+                        <td align="right">{{ (data.nights * data.price)|number_format(2) }}</td>
+                    </tr>
+                {% endfor %}
             {% endfor %}
 
             {% if formParams.hasServices is defined and formParams.hasServices %}
