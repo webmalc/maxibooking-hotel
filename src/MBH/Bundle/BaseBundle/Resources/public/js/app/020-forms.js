@@ -266,9 +266,21 @@ var docReadyForms = function () {
                 if (isRequired) {
                     $select.removeAttr('required');
                 }
+
+                if ($widget.find('.list .btn').length == 0 && values.length > 0) {
+                    //$widget.tagsSelectWidget('update', values);
+                    values.forEach(function (value) {
+                        var $option = $select.find('option[value=' + value + ']');
+                        if ($option.length == 1) {
+                            addItem($select, $widget.find('.list'), value, $option.text());
+                        }
+                    });
+                }
+
                 $select.attr('name', inputName.replace(/(\[.*\])/g, '') + '_fake');
                 if (!hasSelect2) {
                     console.log('init select 2');
+                    console.log($select.attr('placeholder'));
                     $select.select2({
                         placeholder: $select.attr('placeholder'),
                         width: 'resolve',
@@ -286,16 +298,6 @@ var docReadyForms = function () {
                 $widget.on('click', '.list .btn', function () {
                     $(this).remove();
                 });
-
-                if(values.length > 0) {
-                    //$widget.tagsSelectWidget('update', values);
-                    values.forEach(function(value){
-                        var $option = $select.find('option[value=' + value + ']');
-                        if ($option.length == 1) {
-                            addItem($select, $widget.find('.list'), value, $option.text());
-                        }
-                    });
-                }
             });
         },
         clear : function () {
