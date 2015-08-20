@@ -113,8 +113,8 @@ class HotelExtendedType extends AbstractType
                 'multiple' => true,
                 'choice_attr' => function($key, $label) {
                     //$icon = $key;
-                    $key = 'home';
-                    $icon = '<i class="fa fa-' . $key . '"></i>';
+                    $icon = 'home';
+                    $iconTag = '<i class="fa fa-' . $key . '"></i>';
                     return [
                         'data-icon' => $icon
                     ];

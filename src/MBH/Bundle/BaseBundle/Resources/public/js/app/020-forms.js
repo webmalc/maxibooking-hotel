@@ -238,12 +238,17 @@ var docReadyForms = function () {
     var methods = {
         init : function (options) {
             return this.each(function () {
-                function addItem($select, $list, value, text) {
-                    var additionalIconClass = 'fa-4x';
+                function addItem($list, value, text) {
                     var input = '<input type="hidden" name="' + inputName + '" value="' + value + '">';
                     var item = '<div class="btn btn-xs btn-default">' + text + ' <i class="fa fa-times"></i>' + input + '<div>';
                     $list.append(item);
                 }
+                function addIconItem($list, value, text, icon)
+                {
+                    text = '<i class="fa fa-4x fa-' + icon + '"></i>';// + text;
+                    addItem($list, value, text);
+                }
+
                 var $widget = $(this);
 
                 if ($widget.is("select")) {
@@ -270,7 +275,7 @@ var docReadyForms = function () {
                     values.forEach(function (value) {
                         var $option = $select.find('option[value=' + value + ']');
                         if ($option.length == 1) {
-                            addItem($select, $widget.find('.list'), value, $option.text());
+                            addIconItem($widget.find('.list'), value, $option.text(), $option.data('icon'));
                         }
                     });
                 }
@@ -285,7 +290,7 @@ var docReadyForms = function () {
                         closeOnSelect: false,
                         formatResult: function(data, $option) {
                             var icon = data.element[0].getAttribute('data-icon');
-                            return icon + ' ' + data.text;//data.id
+                            return '<i class="fa fa-' + icon + '"></i> ' + data.text;//data.id
                         }//, formatSelection:function(){}
                     });
                 }
@@ -301,7 +306,8 @@ var docReadyForms = function () {
                     }
                 });*/
                 $select.on('select2-selecting', function (event) {
-                    addItem($select, $widget.find('.list'), event.val, event.choice.text);
+                    var icon = event.choice.element[0].getAttribute('data-icon');
+                    addIconItem($widget.find('.list'), event.val, event.choice.text, icon);
                     event.preventDefault();
                 });
                 $widget.on('click', '.list .btn', function () {
