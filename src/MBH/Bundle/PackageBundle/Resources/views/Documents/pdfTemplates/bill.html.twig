@@ -1,0 +1,202 @@
+{% extends 'MBHPackageBundle:Documents/pdfTemplates:layout.html.twig' %}
+{% block document %}
+    <style>
+        /* Header */
+        .header .title {
+            float: left;
+            padding-top: 20px;
+            width: 500px;
+        }
+        .header .title h2 {
+            margin: 5px 0
+        }
+        .header .logo {
+            float: right
+        }
+        .header .logo img{
+            height: 80px; max-width: 200px;
+        }
+
+        .main{
+            padding-top: 20px;
+        }
+
+        .main th {
+            text-align: center;
+        }
+        .services {
+            margin-top: 10px;
+        }
+        .services td {
+            padding: 3px;
+        }
+    </style>
+    <!-- Header -->
+    {% set hotel = null %}
+    {% if entity.roomType and entity.roomType.hotel %}
+        {% set hotel = entity.roomType.hotel %}
+    {% endif %}
+
+    <div class="header">
+        <div class="title">
+            <h2>Счёт № {{ entity.numberWithPrefix }} от {{ 'now'|date('d.m.Y H:i') }}.</h2>
+        </div>
+        {% if hotel and hotel.logoUrl %}
+            <div class="logo">
+                <img src="{{ asset(hotel.logoUrl, absolute=true) }}">
+            </div>
+        {% endif %}
+        <div style="clear: both"></div>
+    </div>
+    <hr>
+
+
+    <div class="main">
+        <table border="0" width="100%">
+            <tr>
+                <td width="15%">{{ "package.pdf.executor"|trans({}, "MBHPackageBundle") }}</td>
+                <td width="85%">
+                    Отель {% if hotel and hotel.name %}<strong>"{{ hotel.name }}"</strong>{% else %}____________________{% endif %},
+                    адрес: {% if hotel and hotel.country and hotel.city and hotel.street %}
+                    {{ hotel.country.title }}, {% if hotel.region %}{{ hotel.region.title }},{% endif %} г. {{ hotel.city.title }}{% if hotel.settlement %}, {{ hotel.settlement }}{% endif %}, {{ hotel.street }},
+                    {% if hotel.house %} д. {{ hotel.house }}{% endif %}{% if hotel.corpus %}, кор. {{ hotel.corpus }}{% endif %}{% if hotel.flat %}, кв. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %},
+                    ИНН {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>{{ "package.pdf.customer"|trans({}, "MBHPackageBundle") }} </td>
+                <td><strong>{{ entity.order.mainTourist.fullName|default( "package.pdf.not_specified"|trans({}, "MBHPackageBundle")) }}</strong></td>
+            </tr>
+        </table>
+
+        <!-- Services -->
+        <table border="1" width="100%" cellpadding="0" cellspacing="0" class="services">
+            <thead>
+            <tr>
+                <th style="width: 30px;">№</th>
+                <th style="width: 200px;">{{ "package.pdf.services_name"|trans({}, "MBHPackageBundle") }}</th>
+                <th style="width: 30px;">{{ "package.pdf.amount"|trans({}, "MBHPackageBundle") }}</th>
+                <th style="width: 30px;">{{ "package.pdf.unit"|trans({}, "MBHPackageBundle") }}</th>
+                <th style="width: 100px;">{{ "package.pdf.price"|trans({}, "MBHPackageBundle") }}</th>
+                <th style="width: 100px;">{{ "package.pdf.sum"|trans({}, "MBHPackageBundle") }}</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% set packages = entity.order.packages %}
+
+            {% set counter = 0 %}
+            {% for package in packages %}
+                {% for date,data in package.pricesByDateByPrice %}
+                    {% set counter = counter + 1 %}
+                    <tr>
+                        <td align="center">{{ counter }}</td>
+                        <td>
+                            {{ "package.pdf.hotel_accommodation"|trans({}, "MBHPackageBundle") }} {{ date|replace('_', '.') }}
+                            {% if package.roomType and package.roomType.fullTitle %}
+                                ({{ package.roomType.fullTitle }})
+                            {% endif %}
+                        </td>
+                        <td align="center">{{ data.nights }}</td>
+                        <td align="center">{{ "package.pdf.noch"|trans({}, "MBHPackageBundle") }}</td>
+                        <td align="right">{{ data.price|number_format(2) }}</td>
+                        <td align="right">{{ (data.nights * data.price)|number_format(2) }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+
+            {% for serviceGroup in packageServicesByType %}
+                {% set counter = counter + 1 %}
+                <tr>
+                    <td align="center">{{ counter }}</td>
+                    <td>{{ serviceGroup.byService.name }}</td>
+                    <td align="center">{{ serviceGroup.actuallyAmount }}</td>
+                    <td align="center">шт.</td>
+                    <td align="right">{{ serviceGroup.price|number_format(2) }}</td>
+                    <td align="right">{{ serviceGroup.total|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Total -->
+        <table border="0" width="100%">
+            <tr>
+                <td align="right"><strong>Заказано:</strong></td>
+                <td align="right" style="width: 120px;"><strong>{{ total|number_format(2) }}</strong></td>
+            </tr>
+        </table>
+
+        <p>Всего заказано услуг {{ counter }}, на сумму {{ total|number_format(2) }} {{ currency().text }}<br>
+            <strong>{{ total|num2str|capitalize }}</strong></p>
+
+
+        <table border="1" width="100%" cellpadding="0" cellspacing="0" class="cash" style="margin-top: 30px">
+            <thead>
+            <tr>
+                <th>№</th>
+                <th>{{ "package.pdf.date"|trans({}, "MBHPackageBundle") }}</th>
+                <th>{{ "package.pdf.method"|trans({}, "MBHPackageBundle") }}</th>
+                <th>{{ "package.pdf.total"|trans({}, "MBHPackageBundle") }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set counter = 0 %}
+            {% set paidTotal = 0 %}
+            {% for cashDocument in cashDocuments %}
+                {% set counter = counter + 1 %}
+                <tr>
+                    <td align="center">{{ counter }}</td>
+                    <td align="center">{{ cashDocument.paidDate|date('d.m.Y') }}</td>
+                    <td align="center">{{ ('cashDocument.method.' ~ cashDocument.method)|trans({}, 'MBHCashBundle') }}</td>
+                    <td align="right">{{ cashDocument.operation in ['fee', 'out'] ? '-' : '+' }}{{ cashDocument.total|number_format(2) }}</td>
+                </tr>
+                {% if cashDocument.operation in ['fine', 'in'] %}
+                    {% set paidTotal = paidTotal + cashDocument.total %}
+                {% else %}
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <thead>
+            </thead>
+            <tbody>
+                <tr>
+                    <td align="right"><strong>Оплачено:</strong></td>
+                    <td align="right" style="width: 120px;"><strong>+{{ paidTotal|number_format(2) }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        {% if paidTotal > 0 %}
+            <p>Всего оплечено услуг на сумму {{ paidTotal|number_format(2) }} {{ currency().text }}<br>
+                <strong>{{ paidTotal|num2str|capitalize }}</strong></p>
+        {% endif %}
+
+
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0">
+            <thead>
+            </thead>
+            <tbody>
+            <tr style="font-size: 20px">
+                <td align="right">
+                    <strong>Итог:</strong>
+                </td>
+                <td align="right" style="width: 160px;"><strong>{{ (paidTotal - order.price)|number_format(2) }}</strong></td>
+            </tr>
+            </tbody>
+        </table>
+
+
+        <div style="margin-top: 70px">
+            <div class="ib">Дежурный администратор</div>
+            <div class="ib" style="border-bottom: 1px solid #000; width: 300px;"></div>
+            <div class="ib" style="width: 150px">{% if user is defined and user %}{{ user|initial }}{% endif %}</div>
+        </div>
+    </div>
+{% endblock %}
+
+
+

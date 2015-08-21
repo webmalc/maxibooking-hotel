@@ -26,3 +26,7 @@ views.cash.index.show_no_paid: Показать неоплаченные
 views.cash.index.show_deleted: Показать удаленные
 views.cash.index.byDay: По дням
 views.cash.index.result: Итого
+
+cashDocument.method.cash: "Наличные"
+cashDocument.method.cashless: "Безнал"
+cashDocument.method.electronic: "Электронный"

@@ -29,7 +29,7 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
      * Return generated doc
      *
      * @Route("/{id}/{type}", name="package_pdf", requirements={
-     *      "type" : "confirmation|confirmation_en|registration_card|fms_form_5|evidence|form_1_g|receipt|act|xls_notice"
+     *      "type" : "confirmation|confirmation_en|registration_card|fms_form_5|evidence|form_1_g|receipt|act|xls_notice|bill"
      * })
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_USER')")

@@ -100,6 +100,7 @@ package.actions.fms_form_5: Анкета ФМС (Форма 5)
 package.actions.evidence: Свидетельство о регистрации
 package.actions.form_1_g: Анкета (Форма 1-Г)
 package.actions.receipt: Расписка
+package.actions.bill: Счёт
 package.actions.act: Акт
 package.actions.xls_notice: Уведомление о прибытии ИГ
 
@@ -223,6 +224,9 @@ package.pdf.executor: Исполнитель:
 package.pdf.customer: Заказчик:
 package.pdf.not_specified: 'Не указан'
 package.pdf.services_name: Наименование работ, услуг
+package.pdf.date: Дата
+package.pdf.method: Вид
+package.pdf.total: Сумма
 package.pdf.amount: Кол-во
 package.pdf.unit: Ед.
 package.pdf.price: Цена
