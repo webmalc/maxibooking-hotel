@@ -385,6 +385,7 @@ mbh.package.arrivals.residence: "Временное проживание"
 mbh.package.arrivals.other: "Другое"
 
 report.users.small_title: 'Пользователи'
+report.users.roomtype: 'Номерной фонд'
 report.users.error: 'Брони не найдены'
 
 report.porter.small_title: 'Портье'

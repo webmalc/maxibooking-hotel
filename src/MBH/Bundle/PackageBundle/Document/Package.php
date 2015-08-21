@@ -615,9 +615,9 @@ class Package extends Base implements JsonSerializable
     /**
      * Add tourist
      *
-     * @param \MBH\Bundle\PackageBundle\Document\Tourist $tourist
+     * @param Tourist $tourist
      */
-    public function addTourist(\MBH\Bundle\PackageBundle\Document\Tourist $tourist)
+    public function addTourist(Tourist $tourist)
     {
         if (!$this->tourists->contains($tourist)) {
             $this->tourists[] = $tourist;
@@ -627,9 +627,9 @@ class Package extends Base implements JsonSerializable
     /**
      * Remove tourist
      *
-     * @param \MBH\Bundle\PackageBundle\Document\Tourist $tourist
+     * @param Tourist $tourist
      */
-    public function removeTourist(\MBH\Bundle\PackageBundle\Document\Tourist $tourist)
+    public function removeTourist(Tourist $tourist)
     {
         $this->tourists->removeElement($tourist);
     }
@@ -637,7 +637,7 @@ class Package extends Base implements JsonSerializable
     /**
      * Get tourists
      *
-     * @return \Doctrine\Common\Collections\Collection $tourists
+     * @return Tourist[]|\Doctrine\Common\Collections\Collection $tourists
      */
     public function getTourists()
     {
@@ -923,7 +923,7 @@ class Package extends Base implements JsonSerializable
 
     /**
      * Returns the average price per night.
-     * @param mixed $day \DateTime or string d.m.Y
+     * @param \DateTime|string|null $day Date format d.m.Y
      * @return float
      */
     public function getOneDayPrice($day = null)

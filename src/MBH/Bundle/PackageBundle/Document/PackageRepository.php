@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Form\RoomType;
 use Symfony\Component\Validator\Constraints\DateTime;
 
@@ -51,6 +52,27 @@ class PackageRepository extends DocumentRepository
         $qb->sort('begin', 'asc');
 
         return $qb->getQuery()->execute();
+    }
+
+    /**
+     * @param Room $room
+     * @return Tourist[]
+     */
+    public function getCurrentTouristByRoom(Room $room)
+    {
+        $now = new \DateTime();
+        $queryBuilder = $this->createQueryBuilder()
+            ->field('accommodation.id')->equals($room->getId())
+            ->field('arrivalTime')->lte($now)
+            //->field('departureTime')->gte($now)
+            ->sort('arrivalTime', -1)
+            ->limit(1)
+        ;
+
+        /** @var Package $package */
+        $package = $queryBuilder->getQuery()->getSingleResult();
+
+        return $package ? $package->getTourists() : [];
     }
 
     /**

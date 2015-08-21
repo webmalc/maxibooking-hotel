@@ -3,7 +3,10 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Document\RoomRepository;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -478,4 +481,25 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         ];
     }
 
+    /**
+     * @return array
+     * @Route("/roomtypes", name="report_room_types")
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function roomTypesAction()
+    {
+        /** @var RoomRepository $roomRepository */
+        $roomRepository = $this->dm->getRepository('MBHHotelBundle:RoomType');
+        /** @var PackageRepository $packageRepository */
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+
+        /** @var RoomType[] $roomTypes */
+        $roomTypes = $roomRepository->findBy(['hotel.id' => $this->hotel->getId()]);
+        return [
+            'roomTypes' => $roomTypes,
+            'packageRepository' => $packageRepository
+        ];
+    }
 }
