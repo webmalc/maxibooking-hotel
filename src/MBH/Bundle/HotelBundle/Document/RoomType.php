@@ -170,6 +170,11 @@ class RoomType extends Base
      * @ODM\EmbedOne(targetDocument="TaskSettings")
      */
     private $taskSettings;
+    /**
+     * @var array
+     * @ODM\Collection()
+     */
+    protected $facilities = [];
 
     public function __construct()
     {
@@ -599,5 +604,23 @@ class RoomType extends Base
     public function setTaskSettings(TaskSettings $taskSettings = null)
     {
         $this->taskSettings = $taskSettings;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFacilities()
+    {
+        return $this->facilities;
+    }
+
+    /**
+     * @param array $facilities
+     * @return $this
+     */
+    public function setFacilities($facilities)
+    {
+        $this->facilities = $facilities;
+        return $this;
     }
 }

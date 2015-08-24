@@ -242,7 +242,7 @@ var docReadyForms = function () {
     var methods = {
         init : function (options) {
             options = $.extend({}, defaultOption, options);
-
+            console.log(options.value);
             return this.each(function () {
                 function addItem($list, value, text, title) {
                     var input = '<input type="hidden" name="' + inputName + '" value="' + value + '">';

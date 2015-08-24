@@ -118,11 +118,12 @@ services:
       arguments: [@service_container]
 
 
-    form.type.city:
-        class: MBH\Bundle\BaseBundle\Form\Extension\CityType
-        arguments: [@doctrine_mongodb]
+    form.type.facilities:
+        class: MBH\Bundle\BaseBundle\Form\FacilitiesType
+        calls:
+            - [ setContainer, [ '@service_container' ] ]
         tags:
-            - { name: form.type, alias: mbh_city }
+            - { name: form.type, alias: mbh_facilities }
 
     #mbh.translatable_listener:
     #    class: MBH\Bundle\BaseBundle\EventListener\TranslatableListener

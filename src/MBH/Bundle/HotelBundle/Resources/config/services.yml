@@ -15,3 +15,7 @@ services:
     mbh.hotel.console_auto_task_creator:
             class: MBH\Bundle\HotelBundle\Service\ConsoleAutoTaskCreator
             arguments: [@service_container]
+    mbh.facility_repository:
+        class: MBH\Bundle\HotelBundle\Document\FacilityRepository
+        calls:
+            - [ setContainer, [ '@service_container' ] ]

@@ -80,6 +80,7 @@ form.roomTypeType.room_main_places_amount: Количество основных
 form.roomTypeType.additional_places: Дополнительные места
 form.roomTypeType.room_additional_places_amount: Количество дополнительных мест в номере
 form.roomTypeType.is_included: Включен?
+form.roomTypeType.facilities: Удобства
 form.roomTypeType.is_room_included_in_search: Используется ли тип номера в поиске?
 form.roomTypeType.room_space: Площадь номера (м2)
 controller.hotelController.record_created_success: 'Запись успешно создана.'

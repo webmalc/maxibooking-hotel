@@ -213,8 +213,6 @@ class HotelController extends Controller
      */
     public function extendedAction(Hotel $entity)
     {
-        $entity->setFacilities($this->sortFacilitiesByConfig($entity->getFacilities()));
-
         $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),
             'config' => $this->container->getParameter('mbh.hotel')
@@ -225,19 +223,6 @@ class HotelController extends Controller
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
         ];
-    }
-
-    private function sortFacilitiesByConfig($facilities)
-    {
-        $facilitiesList = [];
-        foreach($this->container->getParameter('mbh.hotel')['facilities'] as $list) {
-            $facilitiesList = array_merge($facilitiesList, array_keys($list));
-        }
-
-        usort($facilities, function($current, $next) use ($facilitiesList) {
-            return array_search($current, $facilitiesList) > array_search($next, $facilitiesList) ? 1 : -1;
-        });
-        return $facilities;
     }
 
     /**
