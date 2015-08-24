@@ -160,6 +160,9 @@ class CashController extends Controller
         ];
 
         if (count($results) > 0) {
+            $queryCriteria->skip = null;
+            $queryCriteria->limit = null;
+
             $params['recordsFiltered'] = count($results);
             $queryCriteria->isConfirmed = null;
             $params['totalIn'] = $repository->total('in', $queryCriteria);
