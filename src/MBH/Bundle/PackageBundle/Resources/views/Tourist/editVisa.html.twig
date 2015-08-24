@@ -6,13 +6,13 @@
 {% block content %}
     {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 4, 'entity': entity} %}
 
-    <div class="tab-content">
+<div class="tab-content">
     {{ form_start(form, {'action': path('tourist_edit_visa', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
-        {{ form_widget(form.migration) }}
-        {{ form_widget(form.visa) }}
+    {{ form_widget(form.migration) }}
+    {{ form_widget(form.visa) }}
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'tourist_delete' } %}
     {{ form_end(form) }}
-    </div>
+</div>
 
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tourist_delete' } %}
 {% endblock %}

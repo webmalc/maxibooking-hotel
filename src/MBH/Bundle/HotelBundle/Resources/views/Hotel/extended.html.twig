@@ -5,16 +5,16 @@
 
 {% block content %}
 
-    {% include 'MBHHotelBundle:Hotel:tabs.html.twig' with {'active': 2, 'entity': entity} %}
+        {% include 'MBHHotelBundle:Hotel:tabs.html.twig' with {'active': 2, 'entity': entity} %}
 
-    <div class="tab-content">
-        {{ form_start(form, {'action': path('hotel_edit_extended_save', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
-        {{ form_widget(form) }}
-        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'hotel_delete' } %}
-        {{ form_end(form) }}
+        <div class="tab-content">
+            {{ form_start(form, {'action': path('hotel_edit_extended_save', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'hotel_delete' } %}
+            {{ form_end(form) }}
 
-        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
-    </div>
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
+        </div>
 
     <div class="modal fade" id="hotel_coordinates_help" tabindex="-1" role="dialog" aria-labelledby="hotel_coordinates_help_label" aria-hidden="true">
         <div class="modal-dialog">

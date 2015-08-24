@@ -5,8 +5,7 @@
 
 {% block content %}
 
-    <div class="bg-gray color-palette alert"><i
-                class="fa fa-lock"> </i> {{ 'views.profile.profile.password_error'|trans({}, 'FOSUserBundle') }}</div>
+    <div class="bg-gray color-palette alert"><i class="fa fa-lock"> </i> {{ 'views.profile.profile.password_error'|trans({}, 'FOSUserBundle') }}</div>
 
     {{ form_start(form, {'action': path('user_profile_update'), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}

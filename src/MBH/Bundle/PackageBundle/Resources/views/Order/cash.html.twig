@@ -79,15 +79,7 @@
                                         </a>
                                     {% endif %}
                                     {% if not cash.isConfirmed and cash.isPaid and is_granted('ROLE_BOOKKEEPER') %}
-                                        <a data-action='cashDocumentConfirmation'
-                                           data-header='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}'
-                                           data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?'
-                                           data-button='{{ 'order.cash.confirm'|trans({}, 'MBHPackageBundle') }}'
-                                           data-button-icon='fa-check'
-                                           href='{{ path('cash_confirm', { 'id': cash.id}) }}'
-                                           class='btn btn-primary btn-xs delete-link'
-                                           title='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}'
-                                           data-toggle='tooltip'>
+                                        <a data-action='cashDocumentConfirmation' data-header='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?' data-button='{{ 'order.cash.confirm'|trans({}, 'MBHPackageBundle') }}' data-button-icon='fa-check' href='{{ path('cash_confirm', { 'id': cash.id}) }}' class='btn btn-primary btn-xs delete-link' title='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
                                             <i class='fa fa-check'></i>
                                         </a>
                                     {% endif %}

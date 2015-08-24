@@ -229,7 +229,8 @@ class OrganizationType extends AbstractType
                         ->createQueryBuilder()
                         ->select('hotels')
                         ->field('type')->equals('my')
-                        ->field('deletedAt')->equals(null);
+                        ->field('deletedAt')->equals(null)
+                    ;
                     if ($id) {
                         $queryBuilder->field('id')->notEqual($id);
                     }

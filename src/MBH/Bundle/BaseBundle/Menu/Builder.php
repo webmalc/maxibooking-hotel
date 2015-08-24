@@ -176,9 +176,9 @@ class Builder extends ContainerAware
 
         //Hotels links
         $menu->addChild('hotels', ['route' => '_welcome', 'label' => 'Отели'])
-            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-home']);
+                ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-home']);
         $menu['hotels']->addChild('hotelsList', ['route' => 'hotel', 'label' => 'Отели'])
-            ->setAttributes(['icon' => 'fa fa-home']);
+                ->setAttributes(['icon' => 'fa fa-home']);
         $menu['hotels']->addChild('corpusList', ['route' => 'housings', 'label' => 'Корпуса'])
             ->setAttributes(['icon' => 'fa fa-building']);
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номерной фонд'])

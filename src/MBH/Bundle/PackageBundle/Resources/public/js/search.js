@@ -23,10 +23,7 @@ $(document).ready(function () {
                     if (data.error) {
                         errors.html(data.text).show();
                     } else {
-                        $('.findGuest').append($("<option/>", {
-                            value: data.id,
-                            text: data.text
-                        })).val(data.id).trigger('change');
+                        $('.findGuest').append($("<option/>", {value: data.id, text: data.text})).val(data.id).trigger('change');
                         form.trigger('reset');
                         form.find('select').select2('data', null);
                         guestModal.modal('hide');

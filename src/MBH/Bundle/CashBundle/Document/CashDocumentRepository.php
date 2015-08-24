@@ -138,7 +138,7 @@ class CashDocumentRepository extends DocumentRepository
             $qb->field('order.id')->in($criteria->orderIds);
         }
 
-        if ($criteria->deleted && $this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+        if($criteria->deleted && $this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->disable('softdeleteable');
         }
 

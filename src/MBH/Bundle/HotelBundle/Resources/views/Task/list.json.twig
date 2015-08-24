@@ -6,47 +6,15 @@
 {% for task in tasks %}
     [
     {#"<div class='text-center'><i class='fa fa-tasks'></i></div>",#}
-    "
-    <a data-row-class='{% if task.isDeleted %}danger{% elseif task.isExpired and not task.status == 'closed' %}danger{% elseif task.priority == 2 %}warning{% elseif taskRepository.isAcceptableTaskForUser(app.security.token.user, task) %}info{% endif %}'
-       {% if not task.isDeleted %}rel='main'{% endif %}
-       href='{{ path('task_edit', { 'id': task.id }) }}'>{{ task.id }}</a>",
-    "{% if task.status == 'open' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}'
-                                      class='fa fa-plus text-danger'></i>{% elseif task.status == 'process' %}<i
-    data-toggle='tooltip' title='{{ statuses[task.status].title }}'
-    class='fa fa-clock-o text-info'></i>{% elseif task.status == 'closed' %}<i data-toggle='tooltip'
-                                                                               title='{{ statuses[task.status].title }}'
-                                                                               class='fa fa-check text-success'></i>{% endif %}{#% if statuses[task.status] is defined %}<span class='text-{{ statuses[task.status].class }}'>{{ statuses[task.status].title }}</span>{% endif %#}",
-    "{{ task.type.title }}{% if task.isDeleted %}<br>
-    <small><i class='fa fa-trash-o' title='{{ "views.task.index.deleted"|trans({}, "MBHHotelBundle") }}'
-              data-toggle='tooltip'></i> Запись удалена</small>{% endif %}",
-    "{% if task.priority == 2 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i><i
-        title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i>{% elseif task.priority == 1 %}<i
-    title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-warning'></i>{% elseif task.priority == 0 %}<i
-    title='{{ priorities[task.priority] }}' class='fa fa-arrow-down text-success'></i>{% endif %}",
+    "<a data-row-class='{% if task.isDeleted %}danger{% elseif task.isExpired and not task.status == 'closed' %}danger{% elseif task.priority == 2 %}warning{% elseif taskRepository.isAcceptableTaskForUser(app.security.token.user, task) %}info{% endif %}' {% if not task.isDeleted %}rel='main'{% endif %} href='{{ path('task_edit', { 'id': task.id }) }}'>{{ task.id }}</a>",
+    "{% if task.status == 'open' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-plus text-danger'></i>{% elseif task.status == 'process' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-clock-o text-info'></i>{% elseif task.status == 'closed' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title }}' class='fa fa-check text-success'></i>{% endif %}{#% if statuses[task.status] is defined %}<span class='text-{{ statuses[task.status].class }}'>{{ statuses[task.status].title }}</span>{% endif %#}",
+    "{{ task.type.title }}{% if task.isDeleted %}<br><small><i class='fa fa-trash-o' title='{{ "views.task.index.deleted"|trans({}, "MBHHotelBundle") }}' data-toggle='tooltip'></i> Запись удалена</small>{% endif %}",
+    "{% if task.priority == 2 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i><i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i>{% elseif task.priority == 1 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-warning'></i>{% elseif task.priority == 0 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-down text-success'></i>{% endif %}",
     "{{ task.room.fullTitle }}",
-    {% if app.security.granted('ROLE_TASK_MANAGER') %}"{{ task.role ? task.role|trans({}, 'MBHUserBundleRoles') : 'Не задано' }}
-        <br>
-        <small>{{ task.performer ? task.performer.fullName : 'Все' }}</small>",{% endif %}
-    "{% if task.start %}{{ task.start|mbh_format }} {{ task.start|date('H:i') }}{% if task.end %} - {% if task.start.format('d') != task.end.format('d') %}{{ task.end|mbh_format }}{% endif %} {{ task.end|date('H:i') }}{% endif %}{% endif %}
-    <br>
-    <small>{% if task.processInterval %}{{ task.processInterval|friendly_interval }}{% elseif task.start and not task.end %}В работе{% endif %}</small>",
-    "{{ task.createdAt|date('d.m.Y') }}{% if task.date %}<br>
-    <small>до {{ task.date|date('d.m.Y H:i') }}</small>{% endif %}",
-    "{% if not task.isDeleted %}
-    <div class='table-actions-td text-right'>{% if task.status == 'open' %}<a
-        href='{{ path('task_change_status', { 'id': task.id, status: 'process' }) }}' class='btn btn-info btn-xs'
-        title='{{ "process"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'><i class='fa fa-clock-o'></i>
-        </a>{% endif %}{% if task.status == 'process' %}<a
-        href='{{ path('task_change_status', { 'id': task.id, status: 'closed' }) }}' class='btn btn-primary btn-xs'
-        title='{{ "closed"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'><i class='fa fa-check'></i>
-        </a>{% endif %}{% if app.security.granted('ROLE_TASK_MANAGER') %}<a
-        href='{{ path('task_edit', { 'id': task.id }) }}' class='btn btn-success btn-xs'
-        title='{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'><i
-                    class='fa fa-pencil-square-o'></i></a><a href='{{ path('task_delete', { 'id': task.id }) }}'
-                                                             class='btn btn-danger btn-xs delete-link'
-                                                             title='{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}'
-                                                             data-toggle='tooltip'><i class='fa fa-trash-o'></i>
-        </a>{% endif %}</div>{% endif %}"
+    {% if app.security.granted('ROLE_TASK_MANAGER') %}"{{ task.role ? task.role|trans({}, 'MBHUserBundleRoles') : 'Не задано' }}<br><small>{{ task.performer ? task.performer.fullName : 'Все' }}</small>",{% endif %}
+    "{% if task.start %}{{ task.start|mbh_format }} {{ task.start|date('H:i') }}{% if task.end %} - {% if task.start.format('d') != task.end.format('d') %}{{ task.end|mbh_format }}{% endif %} {{ task.end|date('H:i') }}{% endif %}{% endif %}<br><small>{% if task.processInterval %}{{ task.processInterval|friendly_interval }}{% elseif task.start and not task.end %}В работе{% endif %}</small>",
+    "{{ task.createdAt|date('d.m.Y') }}{% if task.date %}<br><small>до {{ task.date|date('d.m.Y H:i') }}</small>{% endif %}",
+    "{% if not task.isDeleted %}<div class='table-actions-td text-right'>{% if task.status == 'open' %}<a href='{{ path('task_change_status', { 'id': task.id, status: 'process' }) }}' class='btn btn-info btn-xs' title='{{ "process"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'><i class='fa fa-clock-o'></i></a>{% endif %}{% if task.status == 'process' %}<a href='{{ path('task_change_status', { 'id': task.id, status: 'closed' }) }}' class='btn btn-primary btn-xs' title='{{ "closed"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'><i class='fa fa-check'></i></a>{% endif %}{% if app.security.granted('ROLE_TASK_MANAGER') %}<a href='{{ path('task_edit', { 'id': task.id }) }}' class='btn btn-success btn-xs' title='{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'><i class='fa fa-pencil-square-o'></i></a><a href='{{ path('task_delete', { 'id': task.id }) }}' class='btn btn-danger btn-xs delete-link' title='{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'><i class='fa fa-trash-o'></i></a>{% endif %}</div>{% endif %}"
     ]{% if loop.index < tasks|length %},{% endif %}
 {% endfor %}
 ]

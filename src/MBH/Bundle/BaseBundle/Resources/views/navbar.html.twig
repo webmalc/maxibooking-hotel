@@ -7,7 +7,7 @@
     <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
 
-            {% if selected_hotel() %}
+            {% if selected_hotel()%}
 
                 <li class="dropdown notifications-menu">
                     <!-- Menu toggle button -->
@@ -16,13 +16,13 @@
                         &nbsp;<i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu">
-                        <li class="header">Выберете отель:</li>
+                        <li class="header">Выберете отель: </li>
                         <li>
                             <!-- Inner Menu: contains the notifications -->
                             <ul class="menu">
                                 {% for hotel in hotels() %}
                                     <li>
-                                        {% if title_url is defined %}{% set hotel_url = title_url %}{% else %}{% set hotel_url = null %}{% endif %}
+                                        {% if title_url is defined  %}{% set hotel_url = title_url %}{% else %}{% set hotel_url = null %}{% endif%}
                                         <a href="{{ path('hotel_select', {'id': hotel.id, 'url': hotel_url}) }}">
                                             <i class="fa fa-home"></i>&nbsp;{{ hotel.name }}
                                         </a>
@@ -52,9 +52,7 @@
                 <ul class="dropdown-menu">
                     <!-- The user image in the menu -->
                     <li class="user-header">
-                        <img src="{{ gravatar(app.user.email) }}" class="img-circle"
-                             alt="{{ app.user.fullName(true) }}">
-
+                        <img src="{{ gravatar(app.user.email) }}" class="img-circle" alt="{{ app.user.fullName(true) }}">
                         <p>
                             {{ app.user.username }} - {{ app.user.fullName(true) }}
                             <small>

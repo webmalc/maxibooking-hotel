@@ -1,5 +1,4 @@
-<div class="modal fade modal-danger" id="entity-delete-confirmation" tabindex="-1" role="dialog"
-     aria-labelledby="entity-delete-button" aria-hidden="true">
+<div class="modal fade modal-danger" id="entity-delete-confirmation" tabindex="-1" role="dialog" aria-labelledby="entity-delete-button" aria-hidden="true">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
@@ -10,13 +9,8 @@
           {{ 'views.partials.entityDeleteForm.are_you_sure_delete_record'|trans({}, 'MBHBaseBundle') }}
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal"><i
-                  class="fa fa-ban"> </i> {{ 'views.partials.entityDeleteForm.cancel'|trans({}, 'MBHBaseBundle') }}
-        </button>
-        <button type="button" id="entity-delete-button" data-default="outline" class="btn btn-outline"><i
-                  id="entity-delete-button-icon" data-default="fa-trash-o" class="fa fa-trash-o"></i>&nbsp;<span
-                  data-default="{{ delete_title|default('Удалить') }} "
-                  id="entity-delete-button-text">{{ delete_title|default('Удалить') }}</span></button>
+        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal"><i class="fa fa-ban"> </i> {{ 'views.partials.entityDeleteForm.cancel'|trans({}, 'MBHBaseBundle') }}</button>
+        <button type="button" id="entity-delete-button" data-default="outline" class="btn btn-outline"><i id="entity-delete-button-icon" data-default="fa-trash-o"  class="fa fa-trash-o"></i>&nbsp;<span data-default="{{ delete_title|default('Удалить') }} " id="entity-delete-button-text">{{ delete_title|default('Удалить') }}</span></button>
       </div>
     </div>
   </div>

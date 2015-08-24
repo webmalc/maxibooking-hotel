@@ -142,7 +142,7 @@ class CashController extends Controller
             $queryCriteria->end = new \DateTime('midnight +1 day');
         }
 
-        empty($request->get('filter')) ? $queryCriteria->filterByRange = 'paidDate' : $queryCriteria->filterByRange = $request->get('filter');
+        empty($request->get('filter')) ? $queryCriteria->filterByRange = 'paidDate': $queryCriteria->filterByRange = $request->get('filter');
 
         $queryCriteria->orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
 

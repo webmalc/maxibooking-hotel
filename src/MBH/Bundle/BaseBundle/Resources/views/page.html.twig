@@ -34,7 +34,7 @@
             <h1>
                 {{ title|default(project_title) }}
                 {% if small_title is defined %}
-                    <small>{{ small_title|raw }}</small>
+                <small>{{ small_title|raw }}</small>
                 {% endif %}
             </h1>
             <ol class="breadcrumb" id="main-breadcrumb">
@@ -43,7 +43,7 @@
                 <li><a href="{{ title_url }}">{{ title|default(project_title) }}</a></li>
                 {% endif %}
                 {% if small_title is defined %}
-                    <li class="active">{{ small_title|raw }}</li>
+                <li class="active">{{ small_title|raw }}</li>
                 {% endif %}
             </ol>
         </section>
@@ -59,21 +59,19 @@
             {% endblock %}
 
             {% if layout is defined and layout == 'tabs' %}
-            <div class="nav-tabs-custom">
+                <div class="nav-tabs-custom">
             {% endif %}
-                {% if layout is defined and layout == 'box' %}
-                <div class="box box-default">
-                    <div class="box-body">
+            {% if layout is defined and layout == 'box' %}
+                <div class="box box-default"><div class="box-body">
             {% endif %}
 
-                        {% block content %}{% endblock %}
+            {% block content %}{% endblock %}
 
-                        {% if layout is defined and layout == 'tabs' %}
-                    </div>
-                    {% endif %}
-                    {% if layout is defined and layout == 'box' %}
+            {% if layout is defined and layout == 'tabs' %}
                 </div>
-            </div>
+            {% endif %}
+            {% if layout is defined and layout == 'box' %}
+                </div></div>
             {% endif %}
 
             {% block append_content %}

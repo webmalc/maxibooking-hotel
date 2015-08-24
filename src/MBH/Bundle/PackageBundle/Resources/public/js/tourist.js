@@ -72,15 +72,15 @@ var docReadyTourists = function () {
                 }
             },
             /*initSelection: function (element, callback) {
-             var id = $(element).val();
-             if (id !== "") {
-             $.ajax(Routing.generate('organization_json_list') + '/' + id, {
-             dataType: "json"
-             }).done(function (data) {
-             callback(data);
-             });
-             }
-             },*/
+                var id = $(element).val();
+                if (id !== "") {
+                    $.ajax(Routing.generate('organization_json_list') + '/' + id, {
+                        dataType: "json"
+                    }).done(function (data) {
+                        callback(data);
+                    });
+                }
+            },*/
             dropdownCssClass: "bigdrop"
         }).on('change', function () {
             var value = $(this).val();
@@ -89,7 +89,7 @@ var docReadyTourists = function () {
                 $('#organization_' + key).val(value);
             });
             $('#organization_city').select2("val", detail.city)
-            $('#organization_city').append('<option value="' + detail.city + '">' + detail.city_name + '</option>').val(detail.city).trigger('change');
+            $('#organization_city').append('<option value="'+ detail.city +'">' + detail.city_name+ '</option>').val(detail.city).trigger('change');
         });
     }());
 
