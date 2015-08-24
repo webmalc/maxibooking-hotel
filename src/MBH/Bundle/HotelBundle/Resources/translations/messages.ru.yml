@@ -50,6 +50,7 @@ form.roomType.settings: Настройки
 form.roomType.is_room_included_in_search: Используется ли номер в поиске?
 form.roomType.room_type: Тип номера
 form.roomType.status: Статус
+form.roomType.facilities: Удобства
 form.roomType.housing: Корпус
 form.roomType.floor: Этаж
 form.roomTypeGenerateRoomsType.first_bed_number: Номер первого койко-места

@@ -29,9 +29,9 @@ class FacilitiesType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->addEventListener(FormEvents::POST_SET_DATA, function(FormEvent $event) {
+        /*$builder->addEventListener(FormEvents::POST_SET_DATA, function(FormEvent $event) {
             $event->setData([]);
-        });
+        });*/
     }
 
 
@@ -42,7 +42,7 @@ class FacilitiesType extends AbstractType
     {
         parent::buildView($view, $form, $options);
         $facilityRepository = $this->container->get('mbh.facility_repository');
-        $view->vars['data'] = $facilityRepository->sortByConfig($view->vars['data']);
+        //$view->vars['data'] = $facilityRepository->sortByConfig($view->vars['data']);
     }
 
 

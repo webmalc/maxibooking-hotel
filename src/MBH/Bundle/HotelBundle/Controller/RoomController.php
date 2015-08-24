@@ -111,23 +111,25 @@ class RoomController extends BaseController
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
+     * @ParamConverter(class="MBHHotelBundle:RoomType")
      */
-    public function newAction($id)
+    public function newAction(RoomType $roomType)
     {
-        $entity = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($id);
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($roomType->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new RoomForm(), new Room(), [
+        $room = new Room();
+        $room->setRoomType($roomType);
+        $form = $this->createForm(new RoomForm(), $room , [
             'hotelId' => $this->hotel->getId()
         ]);
 
-        return array(
-            'entity' => $entity,
+        return [
+            'entity' => $roomType,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
-        );
+            'logs' => $this->logs($roomType)
+        ];
     }
 
 

@@ -5,6 +5,8 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -73,17 +75,23 @@ class RoomType extends AbstractType
             ]);
         }
 
-        $builder->add('status', 'document', [
-            'label' => 'form.roomType.status',
-            'group' => 'form.roomType.settings',
-            'required' => false,
-            'query_builder' => function (DocumentRepository $documentRepository) use ($options) {
-                return $documentRepository->createQueryBuilder('q')
-                    ->field('hotel.id')->equals($options['hotelId']);
-            },
-            'class' => 'MBH\Bundle\HotelBundle\Document\RoomStatus',
-            'empty_value' => '',
-        ]);
+        $builder
+            ->add('status', 'document', [
+                'label' => 'form.roomType.status',
+                'group' => 'form.roomType.settings',
+                'required' => false,
+                'query_builder' => function (DocumentRepository $documentRepository) use ($options) {
+                    return $documentRepository->createQueryBuilder('q')
+                        ->field('hotel.id')->equals($options['hotelId']);
+                },
+                'class' => 'MBH\Bundle\HotelBundle\Document\RoomStatus',
+                'empty_value' => '',
+            ])
+            ->add('facilities', 'mbh_facilities', [
+                'label' => 'form.roomType.facilities',
+                'group' => 'form.roomType.settings',
+                'required' => false
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

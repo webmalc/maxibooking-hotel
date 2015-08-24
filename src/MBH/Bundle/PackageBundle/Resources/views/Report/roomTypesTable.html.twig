@@ -32,12 +32,15 @@
                 <td>{{ package and package.mainTourist ? package.mainTourist.fullName(true) : '' }}</td>
                 <td>{{ package and package.mainTourist ? package.mainTourist.citizenship  : '' }}</td>
                 <td class="text-center">{{ package and package.adults + package.children }}</td>
+                <td>{{ room.status ? room.status.title : '' }}</td>
                 <td>
-                    <div>{{ room.status ? room.status.title : '' }}</div>
+                    <div>{{ roomType.name }}</div>
                     <div>
+                        {% for facility in room.allFacilities %}
+                            <i data-toggle="tooltip" data-original-title="{{ facilities[facility] }}" class="fa mbf-{{ facility }}"></i>
+                        {% endfor %}
                     </div>
                 </td>
-                <td>{{ roomType.name }}</td>
                 <td>{{ package and package.arrivalTime ? package.arrivalTime.format('d.m.Y') : '' }}</td>
                 <td>{{ package and package.departureTime ? package.departureTime.format('d.m.Y') : '' }}</td>
                 <td>{{ package ? package.price|number_format(2) : '' }}</td>

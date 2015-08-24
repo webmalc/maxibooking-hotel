@@ -500,7 +500,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         return [
             'roomTypes' => $roomTypes,
             'packageRepository' => $packageRepository,
-            'date' => new \DateTime('midnight')
+            'date' => new \DateTime('midnight'),
+            'facilities' => $this->get('mbh.facility_repository')->getAll()
         ];
     }
 
@@ -533,7 +534,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         return [
             'roomTypes' => $roomTypes,
             'packageRepository' => $packageRepository,
-            'date' => $date
+            'date' => $date,
+            'facilities' => $this->get('mbh.facility_repository')->getAll()
         ];
     }
 }

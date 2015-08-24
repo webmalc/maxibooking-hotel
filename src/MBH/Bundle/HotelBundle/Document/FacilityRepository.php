@@ -19,12 +19,18 @@ class FacilityRepository implements ContainerAwareInterface
         return $this->container->getParameter('mbh.hotel')['facilities'];
     }
 
+    public function getAll()
+    {
+        $all = [];
+        foreach($this->getAllByGroup() as $group => $list) {
+            $all = array_merge($all, $list);
+        }
+        return $all;
+    }
+
     public function sortByConfig($facilities)
     {
-        $facilitiesList = [];
-        foreach($this->getAllByGroup() as $group => $list) {
-            $facilitiesList = array_merge($facilitiesList, array_keys($list));
-        }
+        $facilitiesList = array_keys($this->getAll());
 
         usort($facilities, function($current, $next) use ($facilitiesList) {
             return array_search($current, $facilitiesList) > array_search($next, $facilitiesList) ? 1 : -1;

@@ -26,7 +26,7 @@
     </div>
 
     <div id="room-types-table">
-        {% include 'MBHPackageBundle:Report:roomTypesTable.html.twig' with {roomTypes:roomTypes} %}
+        {% include 'MBHPackageBundle:Report:roomTypesTable.html.twig' with {roomTypes:roomTypes, facilities: facilities} %}
     </div>
 
 {% endblock %}

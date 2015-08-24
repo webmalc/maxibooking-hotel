@@ -20,3 +20,10 @@
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
 
 {% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script>
+        $('#{{ (form.facilities.vars.id) }}').tagsSelectWidget({value: {% autoescape false %}{{ form.facilities.vars.value|json_encode }}{% endautoescape %}});
+    </script>
+{% endblock %}
