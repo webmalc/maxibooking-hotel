@@ -1,4 +1,4 @@
-{% extends "MBHPackageBundle::layout.html.twig" %}
+{% extends "MBHPackageBundle:Report:layout.html.twig" %}
 
 {% set title = 'report.layout.title'|trans({}, 'MBHPackageBundle') %}
 {% set small_title = 'report.users.roomtype'|trans({}, 'MBHPackageBundle') %}
@@ -6,67 +6,27 @@
 
 {% block content %}
 
-    <table id="room-cache-overview-table"
-           class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
-        <thead>
-            <tr>
-                <th class="td-sm">#</th>
-                <th>Переселен из</th>
-                <th>Ф.И.О</th>
-                <th>Гражданство</th>
-                <th>Гостей</th>
-                <th>Статус</th>
-                <th>Тип номера</th>
-                <th>Заезд</th>
-                <th>Выезд</th>
-                <th>Стоймость</th>
-                <th>Оплачено</th>
-                <th>Бронь</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for roomType in roomTypes %}
-            <tr class="info">
-                <td colspan="12">
-                    <strong>{{ roomType.title }}</strong>
-                </td>
-            </tr>
-            {% for room in roomType.rooms %}
-                {% set tourists = packageRepository.getCurrentTouristByRoom(room) %}
-                <tr class="warning">
-                    <td rowspan="{{ tourists|length + 1 }}">
-                        <strong>{{ room.name }}</strong>
-                    </td>
-                   {#<td colspan="8">
-                        <table class="table table-bordered not-auto-datatable table-striped table-hover table-condensed">
-                                <tr>#}
-                                {#</tr>
-                        </table>
-                    </td>#}
-                    {% if tourists|length == 0 %}
-                        <td colspan="11" align="center">-</td>
-                    {% endif %}
-                </tr>
-                {% if tourists|length > 0 %}
-                    {% for tourist in tourists %}
-                        <tr>
-                            <td>{{ tourist.fullName(true) }}</td>
-                            <td>из 23</td>
-                            <td>В уборке</td>
-                            <td>Новый</td>
-                            <td>01.04.2015</td>
-                            <td>14.04.2015</td>
-                            <td>Да</td>
-                            <td># 14</td>
-                            <td># 14</td>
-                            <td># 14</td>
-                            <td># 14</td>
-                        </tr>
+    <div class="well">
+        <form id="room-types-table-filter" class="form-inline form-icon-label">
+            <div class="form-group">
+                <label><i class="fa fa-calendar" title='Дата' data-toggle='tooltip'></i></label>
+                <input type="text" name="date" id="room-types-filter-date" class="datepicker form-control input-sm" data-date-format="dd.mm.yyyy">
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i></label>
+                <select id="room-types-filter-status" name="roomType" data-placeholder="Тип номера" id="accommodation-report-filter-roomType" class="form-control input-sm">
+                    <option></option>
+                    {% for roomType in roomTypes %}
+                        <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
                     {% endfor %}
-                {% endif %}
-            {% endfor %}
-        {% endfor %}
-        </tbody>
-    </table>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <div id="room-types-table">
+        {% include 'MBHPackageBundle:Report:roomTypesTable.html.twig' with {roomTypes:roomTypes} %}
+    </div>
 
 {% endblock %}

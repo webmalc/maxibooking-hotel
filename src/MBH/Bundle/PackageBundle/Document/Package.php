@@ -305,7 +305,7 @@ class Package extends Base implements JsonSerializable
      *
      * @return \MBH\Bundle\PriceBundle\Document\Tariff $tariff
      */
-    public function getTariff()
+        public function getTariff()
     {
         return $this->tariff;
     }

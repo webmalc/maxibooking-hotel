@@ -1,0 +1,48 @@
+<table class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+    <thead>
+    <tr>
+        <th class="td-sm">#</th>
+        <th>Переселен из</th>
+        <th>Ф.И.О</th>
+        <th>Гражданство</th>
+        <th>Гостей</th>
+        <th>Статус</th>
+        <th>Тип номера</th>
+        <th>Заезд</th>
+        <th>Выезд</th>
+        <th>Стоймость</th>
+        <th>Оплачено</th>
+        <th>Бронь</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for roomType in roomTypes %}
+        <tr class="info">
+            <td colspan="12">
+                <strong>{{ roomType.title }}</strong>
+            </td>
+        </tr>
+        {% for room in roomType.rooms %}
+            {% set package = packageRepository.getPackageByAccommodation(room, date) %}
+            <tr>
+                <td class="text-center">
+                    <strong>{{ room.name }}</strong>
+                </td>
+                <td></td>
+                <td>{{ package and package.mainTourist ? package.mainTourist.fullName(true) : '' }}</td>
+                <td>{{ package and package.mainTourist ? package.mainTourist.citizenship  : '' }}</td>
+                <td class="text-center">{{ package and package.adults + package.children }}</td>
+                <td>{{ room.status ? room.status.title : '' }}</td>
+                <td>{{ roomType.name }}</td>
+                <td>{{ package and package.arrivalTime ? package.arrivalTime.format('d.m.Y') : '' }}</td>
+                <td>{{ package and package.departureTime ? package.departureTime.format('d.m.Y') : '' }}</td>
+                <td>{{ package ? package.price|number_format(2) : '' }}</td>
+                <td class="text-center">{{ package ? (package.isPaid ? 'Да' : 'Нет') : '' }}</td>
+                <td class="text-center">
+                    {% if package %}<a href="{{ path('package_edit', {id:package.id}) }}"># {{ package.number }}</a>{% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+    </tbody>
+</table>

@@ -499,7 +499,41 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $roomTypes = $roomRepository->findBy(['hotel.id' => $this->hotel->getId()]);
         return [
             'roomTypes' => $roomTypes,
-            'packageRepository' => $packageRepository
+            'packageRepository' => $packageRepository,
+            'date' => new \DateTime('midnight')
+        ];
+    }
+
+    /**
+     * @return array
+     * @Route("/roomtypes_table", name="report_room_types_table", options={"expose"=true})
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function roomTypesTableAction(Request $request)
+    {
+        $date = $this->get('mbh.helper')->getDateFromString($request->get('date'));
+        if(!$date) {
+            $date = new \DateTime('midnight');
+        }
+
+        $roomTypes = $request->get('roomType');
+        /** @var RoomRepository $roomRepository */
+        $roomRepository = $this->dm->getRepository('MBHHotelBundle:RoomType');
+        /** @var PackageRepository $packageRepository */
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+
+        $criteria = ['hotel.id' => $this->hotel->getId()];
+        if($roomTypes) {
+            $criteria['id'] = $roomTypes;
+        }
+        /** @var RoomType[] $roomTypes */
+        $roomTypes = $roomRepository->findBy($criteria);
+        return [
+            'roomTypes' => $roomTypes,
+            'packageRepository' => $packageRepository,
+            'date' => $date
         ];
     }
 }

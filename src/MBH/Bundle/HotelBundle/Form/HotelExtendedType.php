@@ -112,18 +112,15 @@ class HotelExtendedType extends AbstractType
                 'choices' => (isset($options['config']['facilities'])) ? $options['config']['facilities'] : [],
                 'multiple' => true,
                 'choice_attr' => function($key, $label) {
-                    //$icon = $key;
-                    $icon = 'home';
-                    $iconTag = '<i class="fa fa-' . $key . '"></i>';
                     return [
-                        'data-icon' => $icon
+                        'data-icon' => 'mbf-'.$key
                     ];
                 },
                 'attr' => [
                     'class' => 'tags-select-input-widget plain-html',
                     'placeholder' => 'Выберите теги'
                 ],
-                //'empty_value' => '',
+                'empty_value' => '',
             ]);
 
         $builder->add('vega_address_id', 'number', [

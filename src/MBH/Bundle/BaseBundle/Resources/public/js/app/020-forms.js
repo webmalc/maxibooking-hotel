@@ -245,7 +245,7 @@ var docReadyForms = function () {
                 }
                 function addIconItem($list, value, text, icon)
                 {
-                    text = '<i class="fa fa-4x fa-' + icon + '"></i>';// + text;
+                    text = '<i class="fa fa-2x ' + icon + '"></i>';// + text;
                     addItem($list, value, text);
                 }
 
@@ -261,7 +261,9 @@ var docReadyForms = function () {
                 var hasSelect2 = $select.data('select2');
                 var values = [];
                 if (isMultiple) {
-                    values = $select.val();
+                    if($select.val()) {
+                        values = $select.val();
+                    }
                     $select.removeAttr('multiple');
                 } else {
                     inputName += '[]';
@@ -290,21 +292,10 @@ var docReadyForms = function () {
                         closeOnSelect: false,
                         formatResult: function(data, $option) {
                             var icon = data.element[0].getAttribute('data-icon');
-                            return '<i class="fa fa-' + icon + '"></i> ' + data.text;//data.id
+                            return '<i class="fa ' + icon + '"></i> ' + data.text;//data.id
                         }//, formatSelection:function(){}
                     });
                 }
-                /*$select.on('change', function () {
-                    var $this = $(this),
-                        value = $this.val();
-                    if (value) {
-                        var text = $this.find('option[value=' + value + ']').text();
-                        addItem($select, $widget.find('.list'), value, text);
-                        $select.val('');
-                        $select.select2('data', null);//clear value
-                        //$select.select2('val', "All");
-                    }
-                });*/
                 $select.on('select2-selecting', function (event) {
                     var icon = event.choice.element[0].getAttribute('data-icon');
                     addIconItem($widget.find('.list'), event.val, event.choice.text, icon);

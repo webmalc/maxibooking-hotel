@@ -59,13 +59,13 @@ class TaskController extends Controller// implements HotelableControllerInterfac
             /** @var Task[] $processTasks */
             $criteria = ['performer.id' => $this->getUser()->getId()];
             $sort = ['priority' => -1, 'createdAt' => -1];
-            $processTasks = $taskRepository->findBy($criteria + ['status' => 'process'], $sort);
+            $processTasks = $taskRepository->findBy($criteria + ['status' => Task::STATUS_PROCESS], $sort);
 
             $taskQueryCriteria = new TaskQueryCriteria();
             $taskQueryCriteria->roles = $this->getUser()->getRoles();
             $taskQueryCriteria->performer = $this->getUser()->getId();
             $taskQueryCriteria->onlyOwned = true;
-            $taskQueryCriteria->status = 'open';
+            $taskQueryCriteria->status = Task::STATUS_OPEN;
             $taskQueryCriteria->sort = $sort;
             $taskQueryCriteria->hotel = $this->hotel;
             /** @var Task[] $tasks */

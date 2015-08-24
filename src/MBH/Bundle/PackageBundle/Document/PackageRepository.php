@@ -56,23 +56,26 @@ class PackageRepository extends DocumentRepository
 
     /**
      * @param Room $room
-     * @return Tourist[]
+     * @return Package|null
      */
-    public function getCurrentTouristByRoom(Room $room)
+    public function getPackageByAccommodation(Room $room, \DateTime $date)
     {
-        $now = new \DateTime();
-        $queryBuilder = $this->createQueryBuilder()
+        $arrivalTimeLte = clone($date);
+        $departureTimeGte = clone($date);
+
+        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder
             ->field('accommodation.id')->equals($room->getId())
-            ->field('arrivalTime')->lte($now)
-            //->field('departureTime')->gte($now)
+            ->field('arrivalTime')->lte($arrivalTimeLte->modify('+ 1 day'))
+            ->addOr($queryBuilder->expr()->field('isCheckOut')->equals(false))
+            ->addOr($queryBuilder->expr()
+                ->field('departureTime')->gte($departureTimeGte)
+            )
             ->sort('arrivalTime', -1)
             ->limit(1)
         ;
 
-        /** @var Package $package */
-        $package = $queryBuilder->getQuery()->getSingleResult();
-
-        return $package ? $package->getTourists() : [];
+        return $queryBuilder->getQuery()->getSingleResult();
     }
 
     /**

@@ -1,4 +1,13 @@
 {% extends "MBHPackageBundle::layout.html.twig" %}
 
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='?uglifyjs2'
+        '@MBHPackageBundle/Resources/public/js/report/*'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
 {% set title = 'analytics.layout.report'|trans({}, 'MBHPackageBundle') %}
 {% set title_url = path('report_accommodation') %}
