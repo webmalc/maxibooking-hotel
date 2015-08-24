@@ -142,7 +142,6 @@ class TaskType extends AbstractType
                 'group' => 'form.task.group.assign',
                 'class' => 'MBH\Bundle\UserBundle\Document\User',
                 'required' => false,
-                'property' => 'fullName',
             ])
             ->add('description', 'textarea', [
                 'label' => 'form.task.description',

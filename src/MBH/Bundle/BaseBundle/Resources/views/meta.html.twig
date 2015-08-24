@@ -12,17 +12,22 @@
 
             {% block styles %}
 
+                <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+
                 {% stylesheets filter='cssrewrite, uglifycss'
-                'assets/vendor/bootswatch/cerulean/bootstrap.min.css'
+                'assets/vendor/admin-lte/bootstrap/css/bootstrap.min.css'
                 'assets/vendor/font-awesome/css/font-awesome.min.css'
-                'assets/vendor/select2/select2.css'
-                'assets/vendor/select2-bootstrap-css/select2-bootstrap.min.css'
+                'assets/vendor/select2/dist/css/select2.min.css'
                 'assets/vendor/bootstrap-switch/dist/css/bootstrap2/bootstrap-switch.min.css'
                 'assets/vendor/datatables/media/css/dataTables.bootstrap.min.css'
                 'assets/vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css'
                 'assets/vendor/fancybox/source/jquery.fancybox.css'
                 'assets/vendor/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css'
-                'assets/vendor/pick-a-color/build/1.2.3/css/pick-a-color-1.2.3.min.css'
+                'assets/vendor/ionicons/css/ionicons.min.css'
+                'assets/vendor/admin-lte/dist/css/AdminLTE.min.css'
+                'assets/vendor/admin-lte/dist/css/skins/skin-blue.min.css'
+                'assets/vendor/admin-lte/plugins/colorpicker/bootstrap-colorpicker.min.css'
+                'assets/vendor/bootstrap-timepicker/assets/bootstrap/css/bootstrap-responsive.css'
                 '@MBHBaseBundle/Resources/public/css/app/*'
                 %}
                 <link rel="stylesheet" href="{{ asset_url }}"/>
@@ -30,7 +35,13 @@
             {% endblock %}
         </head>
 
-        <body>
+        <body class="hold-transition {{ loginPage is defined ? 'login-page' : 'skin-blue sidebar-mini fixed' }}">
+        <script type="text/javascript">
+            if (localStorage.getItem('sidebar-collapse')) {
+                document.getElementsByTagName('body')[0].className += ' sidebar-collapse'
+            }
+        </script>
+
         {% block body %}{% endblock %}
 
         {% block scripts %}
@@ -47,8 +58,8 @@
             {% javascripts filter='uglifyjs2'
             'assets/vendor/jquery/dist/jquery.min.js'
             'assets/vendor/bootstrap/dist/js/bootstrap.min.js'
-            'assets/vendor/select2/select2.min.js'
-            'assets/vendor/select2/select2_locale_ru.js'
+            'assets/vendor/select2/dist/js/select2.full.min.js'
+            'assets/vendor/select2/dist/js/i18n/ru.js'
             'assets/vendor/bootstrap-switch/dist/js/bootstrap-switch.min.js'
             'assets/vendor/datatables/media/js/jquery.dataTables.min.js'
             'assets/vendor/datatables/media/js/dataTables.bootstrap.min.js'
@@ -57,10 +68,9 @@
             'assets/vendor/fancybox/source/jquery.fancybox.js'
             'assets/vendor/tinycolor/dist/tinycolor-min.js'
             'assets/vendor/jquery.cookie/jquery.cookie.js'
-            'assets/vendor/bootstrap-timepicker/js/bootstrap-timepicker.js'
+            'assets/vendor/admin-lte/plugins/timepicker/bootstrap-timepicker.min.js'
             'assets/vendor/tinymce/tinymce.min.js'
             'assets/vendor/tinymce/themes/modern/theme.min.js'
-            'assets/vendor/pick-a-color/build/1.2.3/js/pick-a-color-1.2.3.min.js'
             'assets/vendor/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.js'
             'assets/vendor/jquery-mask-plugin/dist/jquery.mask.min.js'
             'assets/vendor/phoenix/jquery.phoenix.min.js'
@@ -68,6 +78,11 @@
             'assets/vendor/bootstrap-file-input/bootstrap.file-input.js'
             'assets/vendor/bootstrap-timepicker/js/bootstrap-timepicker.js'
             'bundles/fosjsrouting/js/router.js'
+            '@MBHBaseBundle/Resources/public/js/lte/options.js'
+            'assets/vendor/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js'
+            'assets/vendor/admin-lte/dist/js/app.min.js'
+            'assets/vendor/admin-lte/plugins/fastclick/fastclick.min.js'
+            'assets/vendor/admin-lte/plugins/colorpicker/bootstrap-colorpicker.min.js'
             '@MBHBaseBundle/Resources/public/js/app/*'
             %}
             <script type="text/javascript" src="{{ asset_url }}"></script>

@@ -20,3 +20,6 @@ validator.document.user.min_name: Слишком короткое имя
 validator.document.user.max_name: Слишком длинное имя
 validator.document.user.min_surname: Слишком короткая фамилия
 validator.document.user.max_surname: Слишком длинная фамилия
+form.profileType.min_password: Пароль не может быть меньше 8 символов
+form.profileType.min_number_password: Пароль должен содержать хотя бы одну цифру
+form.profileType.min_capital_letter_password: Пароль должен содержать хотя бы одну заглавную букву

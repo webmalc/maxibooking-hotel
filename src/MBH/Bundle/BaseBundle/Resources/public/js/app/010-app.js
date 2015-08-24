@@ -134,6 +134,19 @@ $(document).ready(function () {
     //popovers
     $('[data-toggle="popover"]').popover();
     closePopovers();
+
+    //sidebar
+    (function () {
+        'use strict';
+
+        $('.sidebar-toggle').click(function () {
+            if ($('body').hasClass('sidebar-collapse')) {
+                localStorage.setItem('sidebar-collapse', 1);
+            } else {
+                localStorage.removeItem('sidebar-collapse');
+            }
+        });
+    }());
 });
 
 var $taskCounter = $('#task-counter');

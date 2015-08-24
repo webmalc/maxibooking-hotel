@@ -70,6 +70,7 @@ class TaskLoadCommand extends ContainerAwareCommand
         $taskType->setIsSystem(true);
         $taskType->setCode('clean_room');
         $taskType->setTitle('Убрать комнату');
+        $taskType->setFullTitle('Убрать комнату');
         $taskType->setCategory($category);
         $taskType->setRoomStatus($cleaningStatus);
 

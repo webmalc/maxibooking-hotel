@@ -3,10 +3,11 @@
 {% set title = 'report.layout.title'|trans({}, 'MBHPackageBundle') %}
 {% set small_title = 'report.poll.small_title'|trans({}, 'MBHPackageBundle') %}
 {% set title_url = path('report_polls') %}
+{% set layout = 'box' %}
 
 {% block content %}
 
-    <div class="well" id="polls-report-filter-well">
+    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'polls-report-filter-widget'} %}
         <form id="polls-report-filter" action="{{ path('report_polls' ) }}" class="form-inline filter-form remember" role="form">
             <div class="input">
                 <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
@@ -21,7 +22,7 @@
 
             {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false} %}
         </form>
-    </div>
+    </div></div>
 
     {% if  orders.categories is defined and  orders.categories|length > 0 and orders.orders is defined and  orders.orders|length > 0%}
         <table class="table table-striped table-hover table-condensed table-icons table-actions">
@@ -59,7 +60,7 @@
             </tbody>
         </table>
     {% else %}
-        <div class="alert alert-danger">{{ 'views.report.polls.not_found'|trans({}, 'MBHPackageBundle') }}</div>
+        <div class="alert alert-warning">{{ 'views.report.polls.not_found'|trans({}, 'MBHPackageBundle') }}</div>
     {% endif %}
 
 {% endblock %}

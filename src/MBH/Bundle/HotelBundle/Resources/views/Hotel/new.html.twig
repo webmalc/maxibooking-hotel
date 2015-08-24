@@ -1,9 +1,9 @@
 {% extends 'MBHHotelBundle:Hotel:layout.html.twig' %}
 
 {% set small_title = "cоздание" %}
+{% set layout = "tabs" %}
 
 {% block content %}
-
     {% include 'MBHHotelBundle:Hotel:tabs.html.twig' with {'active': 1, 'entity': null} %}
 
     <div class="tab-content">

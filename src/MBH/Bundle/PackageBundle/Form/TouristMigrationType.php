@@ -18,22 +18,27 @@ class TouristMigrationType extends AbstractType
         $builder
             ->add('series', 'text', [
                 'label' => 'tourist.migration.type_series',
+                'group' => 'migration.card',
                 'required' => false,
             ])
             ->add('number', 'text', [
                 'label' => 'tourist.migration.type_number',
+                'group' => 'migration.card',
                 'required' => false,
             ])
             ->add('profession', 'text', [
                 'label' => 'tourist.migration.type_profession',
+                'group' => 'migration.card',
                 'required' => false,
             ])
             ->add('representative', 'textarea', [
                 'label' => 'tourist.migration.type_representative',
+                'group' => 'migration.card',
                 'required' => false,
             ])
             ->add('address', 'textarea', [
                 'label' => 'tourist.migration.type_address',
+                'group' => 'migration.card',
                 'required' => false,
             ]);
     }

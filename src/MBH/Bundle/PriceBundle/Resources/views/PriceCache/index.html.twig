@@ -1,10 +1,11 @@
 {% extends 'MBHPriceBundle:PriceCache:layout.html.twig' %}
 
 {% set small_title = "обзор" %}
+{% set layout = 'box' %}
 
 {% block content %}
 
-    <div class="well" id="price-cache-overview-filter-well">
+    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'price-cache-overview-filter-widget' } %}
         <form id="price-cache-overview-filter" class="form-inline filter-form remember" role="form">
             <div class="input">
                 <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
@@ -33,16 +34,16 @@
                 </select>
             </div>
         </form>
-    </div>
+    </div></div>
 
     <form class="form-inline" action="{{ path('price_cache_overview_save') }}" method="POST" name="price-cache-overview-form" id="price-cache-overview-form">
         <div id="price-cache-overview-table-wrapper" class="scrolling"></div>
 
-        <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+        <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
             <div class="container-fluid">
                 <ul class="nav navbar-nav">
                     <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить</button></li>
-                    <li><button type="button" onclick="location.href = '{{ path('price_cache_generator') }}'" class="btn btn-info navbar-btn"><i class="fa fa-magic"></i> Генератор цен</button></li>
+                    <li><button type="button" onclick="location.href = '{{ path('price_cache_generator') }}'" class="btn btn-primary navbar-btn"><i class="fa fa-magic"></i> Генератор цен</button></li>
                     <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
                 </ul>
             </div>

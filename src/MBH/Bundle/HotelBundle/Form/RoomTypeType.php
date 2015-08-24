@@ -42,6 +42,7 @@ class RoomTypeType extends AbstractType
                 'required' => true,
                 'group' => 'form.roomTypeType.general_info',
                 'attr' => ['placeholder' => '008000'],
+                'addon' => 'fa fa-eyedropper',
                 'help' => 'form.roomTypeType.chess_room_type_color'
             ])
             ->add('roomSpace', 'text', [

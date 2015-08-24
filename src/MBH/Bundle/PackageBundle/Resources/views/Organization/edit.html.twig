@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% set small_title = 'organizations.breadcrumbs.edit'|trans({}, 'MBHPackageBundle') %}
+{% set layout = 'tabs' %}
 
 {% block content %}
     {{ form_start(form, {'action': path('edit_organization', {id: organization.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}

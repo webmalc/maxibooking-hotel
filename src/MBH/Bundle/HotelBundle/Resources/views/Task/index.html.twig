@@ -1,5 +1,8 @@
 {% extends 'MBHHotelBundle:Task:layout.html.twig' %}
 
+{% set small_title = 'list'|trans %}
+{% set layout = 'box' %}
+
 {% block content %}
 
     {% if app.security.granted('ROLE_TASK_MANAGER') %}

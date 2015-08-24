@@ -48,80 +48,6 @@ class CashController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return CashDocumentQueryCriteria
-     */
-    private function requestToCashCriteria(Request $request)
-    {
-        $queryCriteria = new CashDocumentQueryCriteria();
-
-        $queryCriteria->sortBy = 'createdAt';
-        $queryCriteria->sortDirection = -1;//SORT_DESC;
-
-        $method = $request->get('method');
-        $availableMethods = $this->container->getParameter('mbh.cash.methods');
-
-        if ($method) {
-
-            if (array_key_exists($method, $availableMethods)) {
-                $queryCriteria->methods = [$method];
-            } elseif ($method == 'cashless_electronic') {
-                $queryCriteria->methods = ['cashless', 'electronic'];
-            }
-        }
-
-        $queryCriteria->isPaid = !$request->get('show_no_paid');
-        $queryCriteria->begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
-        $queryCriteria->end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
-
-        if (!$queryCriteria->begin) {
-            $queryCriteria->begin = new \DateTime('midnight -7 days');
-        }
-
-        if (!$queryCriteria->end) {
-            $queryCriteria->end = new \DateTime('midnight +1 day');
-        }
-
-        $queryCriteria->filterByRange = $request->get('filter');
-        $queryCriteria->orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
-
-        $queryCriteria->deleted = $request->get('deleted');
-
-        $queryCriteria->createdBy = $request->get('user');
-
-        return $queryCriteria;
-    }
-
-    /**
-     * @param CashDocumentQueryCriteria $queryCriteria
-     * @param Request $request
-     */
-    private function handleClientDataTableParams(CashDocumentQueryCriteria $queryCriteria, Request $request)
-    {
-        $clientDataTableParams = ClientDataTableParams::createFromRequest($request);
-        $clientDataTableParams->setSortColumnFields([
-            1 => 'number',
-            2 => 'total',
-            3 => 'total',
-            4 => 'operation',
-            6 => 'documentDate',
-            7 => 'paidDate',
-            8 => 'createdBy',
-            9 => 'deletedAt'
-        ]);
-
-        $queryCriteria->skip = $clientDataTableParams->getStart();
-        $queryCriteria->limit = $clientDataTableParams->getLength();
-
-        if ($getFirstSort = $clientDataTableParams->getFirstSort()) {
-            $queryCriteria->sortBy = [$getFirstSort[0]];
-            $queryCriteria->sortDirection = [$getFirstSort[1]];
-        }
-
-        $queryCriteria->search = $clientDataTableParams->getSearch();
-    }
-
-    /**
      * Lists all entities as json.
      *
      * @Route("/json", name="cash_json", defaults={"_format"="json"}, options={"expose"=true})
@@ -179,6 +105,81 @@ class CashController extends Controller
                 'operations' => $this->container->getParameter('mbh.cash.operations'),
             ];
         }
+    }
+
+    /**
+     * @param Request $request
+     * @return CashDocumentQueryCriteria
+     */
+    private function requestToCashCriteria(Request $request)
+    {
+        $queryCriteria = new CashDocumentQueryCriteria();
+
+        $queryCriteria->sortBy = 'createdAt';
+        $queryCriteria->sortDirection = -1;//SORT_DESC;
+
+        $method = $request->get('method');
+        $availableMethods = $this->container->getParameter('mbh.cash.methods');
+
+        if ($method) {
+
+            if (array_key_exists($method, $availableMethods)) {
+                $queryCriteria->methods = [$method];
+            } elseif ($method == 'cashless_electronic') {
+                $queryCriteria->methods = ['cashless', 'electronic'];
+            }
+        }
+
+        $queryCriteria->isPaid = !$request->get('show_no_paid');
+        $queryCriteria->begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
+        $queryCriteria->end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
+
+        if (!$queryCriteria->begin) {
+            $queryCriteria->begin = new \DateTime('midnight -7 days');
+        }
+
+        if (!$queryCriteria->end) {
+            $queryCriteria->end = new \DateTime('midnight +1 day');
+        }
+
+        empty($request->get('filter')) ? $queryCriteria->filterByRange = 'paidDate' : $queryCriteria->filterByRange = $request->get('filter');
+
+        $queryCriteria->orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
+
+        $queryCriteria->deleted = $request->get('deleted');
+
+        $queryCriteria->createdBy = $request->get('user');
+
+        return $queryCriteria;
+    }
+
+    /**
+     * @param CashDocumentQueryCriteria $queryCriteria
+     * @param Request $request
+     */
+    private function handleClientDataTableParams(CashDocumentQueryCriteria $queryCriteria, Request $request)
+    {
+        $clientDataTableParams = ClientDataTableParams::createFromRequest($request);
+        $clientDataTableParams->setSortColumnFields([
+            1 => 'number',
+            2 => 'total',
+            3 => 'total',
+            4 => 'operation',
+            6 => 'documentDate',
+            7 => 'paidDate',
+            8 => 'createdBy',
+            9 => 'deletedAt'
+        ]);
+
+        $queryCriteria->skip = $clientDataTableParams->getStart();
+        $queryCriteria->limit = $clientDataTableParams->getLength();
+
+        if ($getFirstSort = $clientDataTableParams->getFirstSort()) {
+            $queryCriteria->sortBy = [$getFirstSort[0]];
+            $queryCriteria->sortDirection = [$getFirstSort[1]];
+        }
+
+        $queryCriteria->search = $clientDataTableParams->getSearch();
     }
 
     /**

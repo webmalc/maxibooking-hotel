@@ -1,5 +1,8 @@
 {% extends "MBHHotelBundle:TaskTypeCategory:layout.html.twig" %}
 
+{% set small_title = 'views.hotel.edit.editing_number'|trans({}, 'MBHHotelBundle') ~ entity.id %}
+{% set layout = 'box' %}
+
 {% block content %}
 
     {{ form_start(form, {'action': path('task_type_category_edit',  {'id': entity.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}

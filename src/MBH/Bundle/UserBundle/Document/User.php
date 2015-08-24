@@ -222,6 +222,16 @@ class User extends BaseUser
         $this->birthday = $birthday;
     }
 
+    public function __toString()
+    {
+        return $this->getName();
+    }
+
+    public function getName()
+    {
+        return $this->getFullName(true);
+    }
+
     /**
      * Return user full name
      * @param boolean $full
@@ -230,16 +240,16 @@ class User extends BaseUser
     public function getFullName($full = false)
     {
         $username = $this->username;
-        
+
         if (!empty($this->firstName)) {
-            
+
             $username = $this->firstName;
-            
+
             if (!empty($this->lastName) && $full) {
                 $username = $this->lastName . ' ' . $this->firstName;
             }
         }
-        
+
         return $username;
     }
 

@@ -53,6 +53,8 @@ class CashDocumentRepository extends DocumentRepository
             throw new \Exception('Invalid type');
         }
 
+        $criteria->skip = null;
+        $criteria->limit = null;
         $qb = $this->queryCriteriaToBuilder($criteria);
 
         if ($type == 'in') {
@@ -75,6 +77,73 @@ class CashDocumentRepository extends DocumentRepository
         return (isset($result[0]['value'])) ? $result[0]['value'] : 0;
     }
 
+    /**
+     * @param CashDocumentQueryCriteria $criteria
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     *
+     * @author Aleksandr Arofikin <sashaaro@gmail.com>
+     */
+    private function queryCriteriaToBuilder(CashDocumentQueryCriteria $criteria)
+    {
+        $qb = $this->createQueryBuilder();
+
+        if ($criteria->skip) {
+            $qb->skip($criteria->skip);
+        }
+
+        if ($criteria->limit) {
+            $qb->limit($criteria->limit);
+        }
+
+        if (isset($criteria->sortBy) && isset($criteria->sortDirection) && is_array($criteria->sortBy) && is_array($criteria->sortDirection)) {
+            foreach ($criteria->sortBy as $k => $v) {
+                $qb->sort($v, isset($criteria->sortDirection[$k]) ? $criteria->sortDirection[$k] : 1);
+            }
+        } else {
+            $qb->sort('createdAt', -1);
+        }
+
+        if ($criteria->methods) {
+
+            $qb->field('method')->in($criteria->methods);
+        }
+
+        if ($criteria->createdBy) {
+
+            $qb->field('createdBy')->equals($criteria->createdBy);
+        }
+
+        if ($criteria->isPaid) {
+            $qb->field('isPaid')->equals(true);
+        }
+
+        if ($criteria->search) {
+            $qb->addOr($qb->expr()->field('total')->equals((int)$criteria->search));
+            $qb->addOr($qb->expr()->field('prefix')->equals(new \MongoRegex('/.*' . $criteria->search . '.*/ui')));
+        }
+
+        if (isset($criteria->isConfirmed)) {
+            $qb->field('isConfirmed')->equals($criteria->isConfirmed);
+        }
+
+        if ($criteria->begin) {
+            $qb->field($criteria->filterByRange)->gte($criteria->begin);
+        }
+
+        if ($criteria->end) {
+            $qb->field($criteria->filterByRange)->lte($criteria->end);
+        }
+
+        if ($criteria->orderIds) {
+            $qb->field('order.id')->in($criteria->orderIds);
+        }
+
+        if ($criteria->deleted && $this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
+        }
+
+        return $qb;
+    }
 
     /**
      * @param CashDocument $document
@@ -150,73 +219,5 @@ class CashDocumentRepository extends DocumentRepository
                     prev.countOut++;
                 }
             }')->getQuery()->execute()->toArray();
-    }
-
-    /**
-     * @param CashDocumentQueryCriteria $criteria
-     * @return \Doctrine\ODM\MongoDB\Query\Builder
-     *
-     * @author Aleksandr Arofikin <sashaaro@gmail.com>
-     */
-    private function queryCriteriaToBuilder(CashDocumentQueryCriteria $criteria)
-    {
-        $qb = $this->createQueryBuilder();
-
-        if ($criteria->skip) {
-            $qb->skip($criteria->skip);
-        }
-
-        if ($criteria->limit) {
-            $qb->limit($criteria->limit);
-        }
-
-        if (isset($criteria->sortBy) && isset($criteria->sortDirection) && is_array($criteria->sortBy) && is_array($criteria->sortDirection)) {
-            foreach ($criteria->sortBy as $k => $v) {
-                $qb->sort($v, isset($criteria->sortDirection[$k]) ? $criteria->sortDirection[$k] : 1);
-            }
-        } else {
-            $qb->sort('createdAt', -1);
-        }
-
-        if ($criteria->methods) {
-
-            $qb->field('method')->in($criteria->methods);
-        }
-
-        if ($criteria->createdBy) {
-
-            $qb->field('createdBy')->equals($criteria->createdBy);
-        }
-
-        if ($criteria->isPaid) {
-            $qb->field('isPaid')->equals(true);
-        }
-
-        if ($criteria->search) {
-            $qb->addOr($qb->expr()->field('total')->equals((int)$criteria->search));
-            $qb->addOr($qb->expr()->field('prefix')->equals(new \MongoRegex('/.*' . $criteria->search . '.*/ui')));
-        }
-
-        if (isset($criteria->isConfirmed)) {
-            $qb->field('isConfirmed')->equals($criteria->isConfirmed);
-        }
-
-        if ($criteria->begin) {
-            $qb->field($criteria->filterByRange)->gte($criteria->begin);
-        }
-
-        if ($criteria->end) {
-            $qb->field($criteria->filterByRange)->lte($criteria->end);
-        }
-
-        if ($criteria->orderIds) {
-            $qb->field('order.id')->in($criteria->orderIds);
-        }
-
-        if($criteria->deleted && $this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
-            $this->dm->getFilterCollection()->disable('softdeleteable');
-        }
-
-        return $qb;
     }
 }

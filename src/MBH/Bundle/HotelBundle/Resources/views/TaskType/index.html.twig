@@ -1,5 +1,7 @@
 {% extends "MBHHotelBundle:TaskType:layout.html.twig" %}
 
+{% set small_title = 'list'|trans %}
+{% set layout = 'tabs' %}
 
 {% block content %}
 
@@ -7,7 +9,7 @@
         {% for category in taskTypeCategories %}
             <li {% if activeCategory.id == category.id %}class="active"{% endif %}>
                 <a href="#{{ category.id }}" role="tab" data-toggle="tab">
-                    <i class="fa fa-plug"></i> {{category.title}}
+                    <i class="fa fa-plug"></i> {{ category }}
                     {% if category.isSystem %}<small class="transparent"><i class="fa fa-lock"></i></small>{% endif %}
                 </a>
             </li>
@@ -23,9 +25,13 @@
 
             {% if not category.isSystem %}
                 <div class="btn-list spacer-bottom text-right">
-                    <a href="{{ path('task_type_category_edit', {id: activeCategory.id}) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Редактировать категорию типов задач <{{ activeCategory.title }}>">
+                    <a href="{{ path('task_type_category_edit', {id: category.id}) }}" class="btn btn-sm btn-success"
+                       data-toggle="tooltip" data-placement="bottom" title=""
+                       data-original-title="Редактировать категорию типов задач <{{ category }}>">
                         <i class="fa fa-edit"></i> Редактировать</a>
-                    <a href="{{ path('task_type_category_delete', {id: activeCategory.id}) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Удалить категорию типов задач <{{ activeCategory.title }}>">
+                    <a href="{{ path('task_type_category_delete', {id: category.id}) }}"
+                       class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title=""
+                       data-original-title="Удалить категорию типов задач <{{ category }}>">
                         <i class="fa fa-trash-o"></i> Удалить
                     </a>
                 </div>
@@ -67,12 +73,12 @@
             </table>
         </div>
         {% endfor %}
-    </div>
 
-    {{ form_start(form, {'action': path('tasktype'), 'attr': {'class': 'hidden-print form-horizontal'}}) }}
-    {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:new_plus_actions.html.twig' with {'save_close': false} %}
-    {{ form_end(form) }}
+        {{ form_start(form, {'action': path('tasktype'), 'attr': {'class': 'hidden-print form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHBaseBundle:Actions:new_plus_actions.html.twig' with {'save_close': false} %}
+        {{ form_end(form) }}
+    </div>
 
 {% endblock %}
 

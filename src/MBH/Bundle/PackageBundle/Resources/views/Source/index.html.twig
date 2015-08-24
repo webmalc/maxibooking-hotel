@@ -1,6 +1,7 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title = "source.index.reservation_source"|trans({}, "MBHPackageBundle")  %}
+{% set layout='box' %}
 
 {% block content %}
 
@@ -9,7 +10,6 @@
         <tr>
             <th class="td-xs"></th>
             <th>{{ "source.index.name"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-md">{{ "source.index.inner_name"|trans({}, "MBHPackageBundle") }}</th>
             <th class="td-md">{{ "source.index.created"|trans({}, "MBHPackageBundle") }}</th>
             <th class="td-sm"></th>
         </tr>
@@ -21,7 +21,6 @@
                 <td>
                     <a href="{{ path('package_source_edit', { 'id': entity.id }) }}" rel="main" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">{{ entity.fullTitle }}</a>
                 </td>
-                <td>{{ entity.title }}</td>
                 <td>{{ entity.createdAt|date('d.m.Y') }}</td>
                 <td class="table-actions-td text-center">
                     <a href="{{ path('package_source_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">

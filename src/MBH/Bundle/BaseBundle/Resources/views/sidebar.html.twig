@@ -1,0 +1,19 @@
+<aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+
+        <!-- Sidebar Menu -->
+        {% if selected_hotel() is empty %}
+            {{ knp_menu_render('MBHBaseBundle:Builder:createHotelMenu') }}
+        {% else %}
+            {{ knp_menu_render('MBHBaseBundle:Builder:mainMenu') }}
+
+            {% if is_granted('ROLE_ADMIN_HOTEL') %}
+                {{ knp_menu_render('MBHBaseBundle:Builder:managementMenu') }}
+            {% endif %}
+        {% endif %}
+
+        <!-- /.sidebar-menu -->
+    </section>
+    <!-- /.sidebar -->
+</aside>

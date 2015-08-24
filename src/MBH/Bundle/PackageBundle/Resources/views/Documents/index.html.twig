@@ -3,11 +3,15 @@
 {% set small_title = 'package.guest.edit_reservation'|trans({}, 'MBHPackageBundle') ~ package.numberWithPrefix %}
 
 {% if package.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~ ' (' ~ package.deletedAt|date('d.m.Y H:i') ~ ') </span>' %}{% endif %}
+{% set layout = 'tabs' %}
+
+{% block prepend_content %}
+    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
+{% endblock %}
 
 {% block content %}
 
     {% if app.request.isxmlhttprequest is empty %}
-        {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
         {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 8 , 'entity': package} %}
     {% endif %}
 

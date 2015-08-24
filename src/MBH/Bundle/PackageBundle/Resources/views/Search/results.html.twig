@@ -125,6 +125,6 @@
         {% elseif results is iterable and results|length == 0 %}
             <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ "search.results.nothing_found_for_your_request"|trans({}, "MBHPackageBundle") }}</div>
         {% else %}
-            <div class="alert alert-info"><i class="fa fa-search"> </i> {{ "search.results.enter_search_data"|trans({}, "MBHPackageBundle") }} </div>
+            <div class="bg-gray color-palette alert"><i class="fa fa-search"> </i> {{ "search.results.enter_search_data"|trans({}, "MBHPackageBundle") }} </div>
         {% endif %}
 </div>

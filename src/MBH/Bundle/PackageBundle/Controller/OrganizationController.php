@@ -259,6 +259,7 @@ class OrganizationController extends Controller
                 'inn' => $organization->getInn(),
                 'kpp' => $organization->getKpp(),
                 'city' => $organization->getCity()->getId(),
+                'city_name' => $organization->getCity(),
                 'street' => $organization->getStreet(),
                 'house' => $organization->getHouse(),
                 'index' => $organization->getIndex(),

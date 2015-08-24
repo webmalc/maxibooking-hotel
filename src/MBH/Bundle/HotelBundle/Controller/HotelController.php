@@ -319,7 +319,7 @@ class HotelController extends Controller
             }
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse(['results' => $data]);
     }
 
     /**

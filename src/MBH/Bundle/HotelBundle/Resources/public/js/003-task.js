@@ -80,6 +80,11 @@ $(document).ready(function () {
 
     var firstCall = true,
         changeHousingAndFloor = function (e) {
+
+            if (!$roomsSelect.length) {
+                return;
+            }
+
             $roomsSelect.val('');
             if (!firstCall) {
                 roomsSelectHtml = roomsSelectHtml.replace('selected="selected"', '');

@@ -1,5 +1,7 @@
 {% extends 'MBHHotelBundle:Housing:layout.html.twig' %}
 
+{% set layout = "box" %}
+
 {% block content %}
     {{ form_start(form, {'action': path('housing_update', {id : entity.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}

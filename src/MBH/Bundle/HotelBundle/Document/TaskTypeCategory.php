@@ -38,12 +38,14 @@ class TaskTypeCategory extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String
+     * @Assert\NotBlank()
      * @Assert\Length(
      *      min=2,
      *      max=100
      * )
      */
     protected $fullTitle;
+
     /**
      * @var bool
      * @ODM\Boolean()
@@ -125,13 +127,6 @@ class TaskTypeCategory extends Base
         $this->types = $types;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return (string) $this->getTitle();
-    }
 
     /**
      * @return string

@@ -1,6 +1,7 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title =  'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ package.numberWithPrefix %}
+{% set layout =  'tabs' %}
 
 {% if package.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~ ' (' ~ package.deletedAt|date('d.m.Y H:i') ~ ') </span>' %}{% endif %}
 
@@ -11,9 +12,11 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block content %}
 
+{% block prepend_content %}
     {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
+{% endblock %}
+{% block content %}
 
     {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 3 , 'entity': package} %}
 
@@ -28,61 +31,63 @@
                     {{ 'order.touristEdit.organization_not_specified'|trans({}, 'MBHPackageBundle') }}
                 </div>
             {% else %}
-                <div class="alert alert-warning package-main-info">
-                    <div class="row spacer-top">
-                        <div class="col-md-2 text-right">
-                            <strong>{{ 'form.organizationType.name'|trans({}) }}</strong>
-                        </div>
-                        <div class="col-md-10">
-                            {{ entity.organization.name|default('-') }}
-                        </div>
-                    </div>
-                    <div class="row spacer-top">
-                        <div class="col-md-2 text-right">
-                            <strong>{{ 'form.organizationType.phone'|trans({}) }}</strong>
-                        </div>
-                        <div class="col-md-10">
-                            {{ entity.organization.phone|default('-') }}
-                        </div>
-                    </div>
-                    <div class="row spacer-top">
-                        <div class="col-md-2 text-right">
-                            <strong>{{ 'form.organizationType.email'|trans({}) }}</strong>
-                        </div>
-                        <div class="col-md-10">
-                            {{ entity.organization.email|default('-') }}
-                        </div>
-                    </div>
-                    <div class="row spacer-top">
-                        <div class="col-md-2 text-right">
-                            <strong>{{ 'form.organizationType.inn'|trans({}) }}</strong>
-                        </div>
-                        <div class="col-md-10">
-                            {{ entity.organization.inn|default('-') }}
-                        </div>
-                    </div>
-                    <div class="row spacer-top">
-                        <div class="col-md-2 text-right">
-                            <strong>{{ 'form.organizationType.kpp'|trans({}) }}</strong>
-                        </div>
-                        <div class="col-md-10">
-                            {{ entity.organization.kpp|default('-') }}
-                        </div>
-                    </div>
-                    <div class="row spacer-top">
-                        <div class="col-md-2 text-right">
-                            <strong>{{ 'form.organizationType.address'|trans({}) }}</strong></div>
-                        <div class="col-md-10">
-                            {{ entity.organization.location|default('-') }}
-                        </div>
-                    </div>
-                    <div class="row spacer-top">
-                        <div class="col-md-2 text-right">
-                            <strong>{{ 'form.organizationType.comment'|trans({}) }}</strong></div>
-                        <div class="col-md-10">
-                            {{ entity.organization.comment|default('-') }}
-                        </div>
-                    </div>
+                {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'package-organization-widget', 'header': 'info' } %}
+                <table class="table not-auto-datatable table-striped">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>{{ 'form.organizationType.name'|trans({}) }}</strong>
+                            </td>
+                            <td>
+                                {{ entity.organization.name|default('-') }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>{{ 'form.organizationType.phone'|trans({}) }}</strong>
+                            </td>
+                            <td>
+                                {{ entity.organization.phone|default('-') }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>{{ 'form.organizationType.email'|trans({}) }}</strong>
+                            </td>
+                            <td>
+                                {{ entity.organization.email|default('-') }}
+                            </td>
+                        </tr><tr>
+                            <td>
+                                <strong>{{ 'form.organizationType.inn'|trans({}) }}</strong>
+                            </td>
+                            <td>
+                                {{ entity.organization.inn|default('-') }}
+                            </td>
+                        </tr><tr>
+                            <td>
+                                <strong>{{ 'form.organizationType.kpp'|trans({}) }}</strong>
+                            </td>
+                            <td>
+                                {{ entity.organization.kpp|default('-') }}
+                            </td>
+                        </tr><tr>
+                            <td>
+                                <strong>{{ 'form.organizationType.address'|trans({}) }}</strong>
+                            </td>
+                            <td>
+                                {{ entity.organization.location|default('-') }}
+                            </td>
+                        </tr><tr>
+                            <td>
+                                <strong>{{ 'form.organizationType.comment'|trans({}) }}</strong>
+                            </td>
+                            <td>
+                                {{ entity.organization.comment|default('-')|nl2br }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
                     {% if entity.deletedAt is empty and checkPackagePermissions(package) %}
                         <div class="row spacer-top">
@@ -97,7 +102,7 @@
                             </div>
                         </div>
                     {% endif %}
-                </div>
+                </div></div>
             {% endif %}
 
             {{ form_start(form, {'action': path('package_order_organization_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'hidden-print form-horizontal'}}) }}

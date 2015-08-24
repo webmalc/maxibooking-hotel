@@ -1,6 +1,7 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ entity.numberWithPrefix %}
+{% set layout = 'box' %}
 
 {% block content %}
     {{ form_start(form, {'action': path('package_service_edit', {'id': entity.id, 'serviceId': service.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}

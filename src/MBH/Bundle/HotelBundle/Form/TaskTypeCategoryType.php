@@ -18,15 +18,16 @@ class TaskTypeCategoryType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('title', 'text', [
+            ->add('fullTitle', 'text', [
                 'label' => 'form.taskTypeCategory.title',
                 'group' => 'form.taskTypeCategory.general_info',
-                'required' => true,
+                'required' => true
             ])
-            ->add('fullTitle', 'text', [
+            ->add('title', 'text', [
                 'label' => 'form.taskTypeCategory.fullTitle',
                 'group' => 'form.taskTypeCategory.general_info',
-                'required' => true
+                'required' => false,
+                'help' => 'form.hotelType.maxibooking_inner_name'
             ])
         ;
     }

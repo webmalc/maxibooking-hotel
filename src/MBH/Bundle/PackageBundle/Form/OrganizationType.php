@@ -139,7 +139,7 @@ class OrganizationType extends AbstractType
         $builder->add('city', 'text', [ //'document', [
             'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'form.organizationType.group_location',
             'label' => 'form.organizationType.city',
-            'attr' => ['placeholder' => 'form.hotelExtendedType.placeholder_location'],
+            'attr' => ['placeholder' => 'form.hotelExtendedType.placeholder_location', 'class' => 'citySelect'],
         ]);
 
         $builder->get('city')->addModelTransformer(new EntityToIdTransformer($this->documentManager,
@@ -225,7 +225,11 @@ class OrganizationType extends AbstractType
                 'required' => false,
                 'query_builder' => function (DocumentRepository $dr) use ($id) {
                     /** @var \Doctrine\ODM\MongoDB\Cursor $organizations */
-                    $queryBuilder = $this->documentManager->getRepository('MBHPackageBundle:Organization')->createQueryBuilder()->select('hotels')->field('type')->equals('my');
+                    $queryBuilder = $this->documentManager->getRepository('MBHPackageBundle:Organization')
+                        ->createQueryBuilder()
+                        ->select('hotels')
+                        ->field('type')->equals('my')
+                        ->field('deletedAt')->equals(null);
                     if ($id) {
                         $queryBuilder->field('id')->notEqual($id);
                     }
@@ -241,7 +245,7 @@ class OrganizationType extends AbstractType
 
                     $queryBuilder = $dr->createQueryBuilder('q');
                     if ($hotelIds) {
-                        $queryBuilder->field('id')->notIn($hotelIds);
+                        //$queryBuilder->field('id')->notIn($hotelIds);
                     }
 
                     return $queryBuilder;

@@ -78,7 +78,7 @@ views.hotel.extended.yandex_copy_coordinates_like_this: Скопировать �
 views.hotel.index.name: Название
 views.hotel.index.prefix: Префикс
 views.hotel.index.sale_dates: Дни продажи
-views.hotel.index.chosen_by_default: Выбран по умолчанию
+views.hotel.index.chosen_by_default: Основной
 views.hotel.index.edit_record: "Редактирование записи"
 views.hotel.index.delete_record: "Удаление записи"
 views.hotel.layout.hotels: "Отели"

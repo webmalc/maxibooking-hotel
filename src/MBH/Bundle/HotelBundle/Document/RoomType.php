@@ -108,7 +108,7 @@ class RoomType extends Base
      * @Assert\Length(
      *      min=6,
      *      minMessage="validator.document.roomType.min_hex_code",
-     *      max=6,
+     *      max=7,
      *      maxMessage="validator.document.roomType.max_hex_code"
      * )
      */
@@ -259,6 +259,10 @@ class RoomType extends Base
      */
     public function getColor()
     {
+        if ($this->color[0] != '#') {
+            $this->color = '#' . $this->color;
+        }
+
         return $this->color;
     }
 
@@ -539,8 +543,9 @@ class RoomType extends Base
 
     /**
      * @ODM\PreUpdate()
+     * @ODM\PrePersist()
      */
-    public function preUpdate()
+    public function generateInternationalTitle()
     {
         if(!$this->internationalTitle && $this->fullTitle) {
             $this->internationalTitle = Helper::translateToLat($this->fullTitle);

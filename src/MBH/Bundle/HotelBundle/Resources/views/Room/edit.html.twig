@@ -5,7 +5,9 @@
     {% set small_title_trans = 'views.roomType.editRoom.edit_bed_for_room_type'|trans({}, 'MBHHotelBundle') %}
 {% endif %}
 
-{% set small_title = small_title_trans ~ "<" ~ entity.name ~ "> #" ~ entity.id %}
+{% set small_title = small_title_trans ~ "«" ~ entity.name ~ "»" %}
+
+{% set layout = "box" %}
 
 {% block content %}
 

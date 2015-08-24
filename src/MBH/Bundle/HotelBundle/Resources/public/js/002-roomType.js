@@ -20,7 +20,7 @@ $(document).ready(function () {
     });
 
     //pick-a-color
-    $("#mbh_bundle_hotelbundle_room_type_type_color").pickAColor();
+    $("#mbh_bundle_hotelbundle_room_type_type_color").colorpicker();
 
     // isHostel switch
     (function () {
@@ -67,7 +67,5 @@ $(document).ready(function () {
             });
         });
     });
-
-
 });
 

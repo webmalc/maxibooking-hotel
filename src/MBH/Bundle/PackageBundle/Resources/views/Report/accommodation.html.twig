@@ -1,10 +1,11 @@
 {% extends 'MBHPackageBundle:Report:layout.html.twig' %}
 
 {% set small_title = 'report.accommodation.placement'|trans({}, 'MBHPackageBundle') %}
+{% set layout = 'box' %}
 
 {% block content %}
 
-            <div class="well" id="accommodation-report-filter-well">
+            {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'accommodation-report-filter-widget'} %}
                 <form id="accommodation-report-filter" class="form-inline filter-form remember" role="form">
                     <div class="input">
                         <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
@@ -46,7 +47,7 @@
                         </div>
                     {% endif %}
                 </form>
-            </div>
+            </div></div>
 
             <div id="accommodation-report-content" class="scrolling"></div>
 

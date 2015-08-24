@@ -1,6 +1,7 @@
 {% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
 
-{% set small_title = "cписок" %}
+{% set small_title = "список" %}
+{% set layout = "tabs" %}
 
 {% block content %}
 
@@ -9,7 +10,7 @@
         {% for entity in entities %}
             <li {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}class="active"{% endif %}>
                 <a href="#{{ entity.id }}" role="tab" data-toggle="tab">
-                    <i class="fa fa-bed" style="color:#{{ entity.color }};"></i>&nbsp;{% if not entity.isEnabled %}
+                    <i class="fa fa-bed" style="color:{{ entity.color }};"></i>&nbsp;{% if not entity.isEnabled %}
                     <del class="text-danger">{% endif %}{{ entity.name }}{% if not entity.isEnabled %}</del>{% endif %}
                 </a>
             </li>
@@ -78,7 +79,7 @@
                         </table>
                     </div>
                 </div>
-                <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+                <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
                     <div class="container-fluid">
                         <ul class="nav navbar-nav">
                             <li>

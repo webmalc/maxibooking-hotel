@@ -36,7 +36,7 @@ class EntityToIdTransformer implements DataTransformerInterface
      */
     public function transform($entity)
     {
-        if (null === $entity) {
+        if (!is_object($entity)) {
             return;
         }
 
@@ -56,7 +56,7 @@ class EntityToIdTransformer implements DataTransformerInterface
 
         $entity = $this->documentManager->getRepository($this->className)->find($id);
 
-        if (null === $entity) {
+        if (!$entity) {
             throw new TransformationFailedException();
         }
 

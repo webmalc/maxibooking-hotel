@@ -25,7 +25,7 @@ class HotelExtendedType extends AbstractType
                 'group' => 'form.hotelExtendedType.address',
                 'required' => true,
                 'attr' => [
-                    'style' => 'min-width: 500px',
+                    'class' => 'citySelect',
                     'placeholder' => 'form.hotelExtendedType.city',
                 ]
             ])
@@ -33,42 +33,27 @@ class HotelExtendedType extends AbstractType
                 'label' => 'form.hotelExtendedType.settlement',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false,
-                'attr' => [
-                    'style' => 'min-width: 500px'
-                ]
             ])
             ->add('street', 'text', [
                 'label' => 'form.hotelExtendedType.street',
                 'group' => 'form.hotelExtendedType.address',
-                'required' => false,
-                'attr' => [
-                    'style' => 'min-width: 500px'
-                ]
+                'required' => false
             ])
             ->add('house', 'text', [
                 'label' => 'form.hotelExtendedType.house',
                 'group' => 'form.hotelExtendedType.address',
-                'required' => false,
-                'attr' => [
-                    'style' => 'min-width: 500px'
-                ]
+                'required' => false
             ])
             ->add('corpus', 'text', [
                 'label' => 'form.hotelExtendedType.corpus',
                 'group' => 'form.hotelExtendedType.address',
-                'required' => false,
-                'attr' => [
-                    'style' => 'min-width: 500px'
-                ]
+                'required' => false
             ]);
 
         $builder->add('flat', 'text', [
                 'label' => 'form.hotelExtendedType.flat',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false,
-                'attr' => [
-                    'style' => 'min-width: 500px'
-                ]
             ]);
         //}
         $builder

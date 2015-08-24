@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% set small_title = 'organizations.breadcrumbs.add'|trans({}, 'MBHPackageBundle') %}
+{% set layout = 'box' %}
 
 {% block content %}
     {{ form_start(form, {'action': path('create_organization'), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}

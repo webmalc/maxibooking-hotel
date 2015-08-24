@@ -121,7 +121,7 @@ var docReadyPackages = function () {
 
         if ($('#package-filter-quick-link').val()) {
             $('#package-table-quick-links a[data-value="' + $('#package-filter-quick-link').val() + '"]')
-                .removeClass('btn-default').addClass('btn-info');
+                .removeClass('btn-default').addClass('btn-primary');
         }
 
         $('.package-filter').change(function () {
@@ -132,7 +132,7 @@ var docReadyPackages = function () {
         });
         $('#package-table-quick-links a').click(function () {
             var input = $('#package-filter-quick-link');
-            $('#package-table-quick-links a').removeClass('btn-info').addClass('btn-default');
+            $('#package-table-quick-links a').removeClass('btn-primary').addClass('btn-default');
             input.val(null);
 
             if ($(this).attr('id') == 'package-table-quick-reset') {
@@ -140,7 +140,7 @@ var docReadyPackages = function () {
                 return;
             }
 
-            $(this).removeClass('label-default').addClass('btn-info');
+            $(this).removeClass('label-default').addClass('btn-primary');
             input.val($(this).attr('data-value'));
             $('#package-table').dataTable().fnDraw();
         });
@@ -159,6 +159,7 @@ var docReadyPackages = function () {
             panel.children('.panel-body').hide();
             link.children('i.fa').removeClass('fa-caret-up').addClass('fa-caret-down');
         }
+        link.unbind("click");
         link.click(function () {
             $(this).closest('.panel-heading').next('.panel-body').toggle(150);
             $(this).children('i.fa').toggleClass('fa-caret-up').toggleClass('fa-caret-down');

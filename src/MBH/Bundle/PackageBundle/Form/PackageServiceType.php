@@ -90,6 +90,7 @@ class PackageServiceType extends AbstractType
             ])
             ->add('note', 'textarea', [
                 'label' => 'form.packageServiceType.comment',
+                'group' => 'form.packageServiceType.add_service',
                 'required' => false,
             ])
             ;

@@ -1,6 +1,7 @@
 {% extends 'MBHPriceBundle:Service:layout.html.twig' %}
 
-{% set small_title = "cоздание категории услуг" %}
+{% set small_title = "создание категории услуг" %}
+{% set layout = 'box' %}
 
 {% block content %}
     {{ form_start(form, {'action': path('price_service_category_create'), 'attr': {'class': 'form-horizontal'}}) }}

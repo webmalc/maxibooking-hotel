@@ -217,3 +217,9 @@ jms_translation:
             output_dir: %kernel.root_dir%/Resources/translations
             excluded_dirs: [%kernel.root_dir%/../var/cache, %kernel.root_dir%/../var/logs]
             excluded_names: ["*TestCase.php", "*Test.php"]
+
+# GravatarBundle
+ornicar_gravatar:
+  rating: g
+  size: 160
+  default: mm

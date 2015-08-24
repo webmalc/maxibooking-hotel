@@ -1,14 +1,16 @@
 {% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
 
 {% set small_title = "редактирование гостя #" ~ entity.id %}
+{% set layout = 'tabs' %}
 
 {% block content %}
     {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 2, 'entity': entity} %}
 
+<div class="tab-content">
     {{ form_start(form, {'action': path('tourist_edit_extended', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'tourist_delete' } %}
     {{ form_end(form) }}
-
+    <div>
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tourist_delete' } %}
 {% endblock %}

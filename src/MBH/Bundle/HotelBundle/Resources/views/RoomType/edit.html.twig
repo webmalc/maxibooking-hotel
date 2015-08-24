@@ -2,6 +2,8 @@
 
 {% set small_title = 'views.roomType.edit.edit_room_type'|trans({}, 'MBHHotelBundle') ~ entity.id %}
 
+{% set layout = 'tabs' %}
+
 {% block content %}
 
 {% set isActiveImageTab = app.request.query.get("imageTab") %}
@@ -42,7 +44,7 @@
                        class="fancybox roomTypeImage" rel="gallery" data-fancybox-title="{{ image.name }}">
                         <img src="{{ asset(image.getPath()) | imagine_filter('thumb_100x100') }}" class="img-thumbnail"/>
                     </a>
-                    <div>
+                    <div style="display: block;">
                         {% if not image.isMain %}
                             <a href="{{ path('room_type_image_make_main', {'id': entity.id, 'imageId' : image.getId}) }}"
                                class="btn btn-success btn-xs make-main-image " data-toggle="tooltip" data-original-title="Cделать главной">

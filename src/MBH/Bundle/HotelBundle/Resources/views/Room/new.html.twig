@@ -1,12 +1,14 @@
 {% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
 
 
-{% set small_title_trans = 'views.roomType.editRoom.edit_room_room_type'|trans({}, 'MBHHotelBundle') %}
+{% set small_title_trans = 'views.roomType.newRoom.create_room_for_room_type'|trans({}, 'MBHHotelBundle') %}
 {% if entity.isHostel %}
-    {% set small_title_trans = 'views.roomType.editRoom.edit_bed_room_type'|trans({}, 'MBHHotelBundle') %}
+    {% set small_title_trans = 'views.roomType.newRoom.create_bed_for_room_type'|trans({}, 'MBHHotelBundle') %}
 {% endif %}
 
-{% set small_title = small_title_trans ~ "<" ~ entity.name ~ "> #" ~ entity.id %}
+{% set small_title = small_title_trans ~ "«" ~ entity.name ~ "»" %}
+
+{% set layout = "box" %}
 
 {% block content %}
     {{ form_start(form, {'action': path('room_type_room_create', {'id': entity.id}), 'attr': {'class': 'form-horizontal'}}) }}

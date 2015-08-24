@@ -120,9 +120,20 @@ class TouristController extends Controller
             $this->dm->persist($entity);
             $this->dm->flush();
 
+            $text = $entity->getFullName();
+
+            if ($entity->getBirthday() || $entity->getPhone() || $entity->getEmail()) {
+                $pieces = [];
+                !$entity->getBirthday() ?: $entity[] = $entity->getBirthday()->format('d.m.Y');
+                !$entity->getPhone() ?: $pieces[] = $entity->getPhone();
+                !$entity->getEmail() ?: $pieces[] = $entity->getEmail();
+                $text .= ' (' . implode(', ', $pieces) . ')';
+            }
+
             return new JsonResponse([
                 'error' => false,
-                'id' => $entity->getId()
+                'id' => $entity->getId(),
+                'text' => $text
             ]);
         }
         $errors = [];
@@ -479,6 +490,6 @@ class TouristController extends Controller
             ];
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse(['results' => $data]);
     }
 }

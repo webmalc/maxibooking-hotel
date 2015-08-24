@@ -1,28 +1,40 @@
 .navbar-logo
 {
-    font-size:26px;
-    vertical-align:middle;
-}
-#management-menu
-{
-    display: none;
+  font-size:26px;
+  vertical-align:middle;
 }
 .navbar {
-    ul {
-        li {
-            button, div {
-                margin-right: 8px;
-            }
-            div {
-              margin-top: 6px;
-              margin-bottom: 6px;
-            }
-        }
+  ul {
+    li {
+      button, div {
+        margin-right: 8px;
+      }
+      div {
+        margin-top: 6px;
+        margin-bottom: 6px;
+      }
     }
+  }
 }
 #actions
 {
-    background-color: #f5f5f5;
-    background-image: none;
-    border: 1px solid #e0e0e0
+  background-color: #f5f5f5;
+  background-image: none;
+  border: 1px solid #e0e0e0;
+  padding: 0px;
+}
+
+@media (max-width: 1024px) {
+  .content-header > .breadcrumb {
+    position: relative;
+    margin-top: 5px;
+    top: 0;
+    right: 0;
+    float: none;
+    background: #d2d6de;
+    padding-left: 10px;
+  }
+  .content-header > .breadcrumb li:before {
+    color: #97a0b3;
+  }
 }
