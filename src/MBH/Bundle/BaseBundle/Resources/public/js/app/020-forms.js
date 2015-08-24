@@ -247,6 +247,7 @@ var docReadyForms = function () {
                 function addItem($list, value, text, title) {
                     var input = '<input type="hidden" name="' + inputName + '" value="' + value + '">';
                     var item = '<div class="btn btn-xs btn-default" data-toggle="tooltip" data-original-title="' + title + '">' + text + ' <i class="fa fa-times"></i>' + input + '<div>';
+                    console.log(input);
                     $list.append(item);
                 }
                 function addIconItem($list, value, title, icon)
@@ -261,6 +262,7 @@ var docReadyForms = function () {
                     $widget = $widget.wrap('<div class="' + mainClass + '"></div>').closest('.' + mainClass).prepend('<div class="list"></div>');
                 }
                 var $select = $widget.find('select');
+                var $list = $widget.find('.list');
                 var inputName = $select.attr('name');
                 var isMultiple = $select.attr('multiple');
                 var isRequired = $select.attr('required');
@@ -277,7 +279,7 @@ var docReadyForms = function () {
                 if (isRequired) {
                     $select.removeAttr('required');
                 }
-                if ($widget.find('.list .btn').length == 0 && value.length > 0) {
+                if ($list.find('.btn').length == 0 && value.length > 0) {
                     //$widget.tagsSelectWidget('update', value);
                     value.forEach(function (value) {
                         var $option = $select.find('option[value=' + value + ']');
@@ -306,7 +308,8 @@ var docReadyForms = function () {
                     addIconItem($widget.find('.list'), event.val, event.choice.text, icon);
                     event.preventDefault();
                 });
-                $widget.on('click', '.list .btn', function () {
+                $list.on('click', '.btn', function () {
+                    $list.find('[data-toggle=tooltip]').tooltip('hide');
                     $(this).remove();
                 });
             });
