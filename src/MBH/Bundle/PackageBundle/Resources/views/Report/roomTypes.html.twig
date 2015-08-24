@@ -10,7 +10,7 @@
         <form id="room-types-table-filter" class="form-inline form-icon-label">
             <div class="form-group">
                 <label><i class="fa fa-calendar" title='Дата' data-toggle='tooltip'></i></label>
-                <input type="text" name="date" id="room-types-filter-date" class="datepicker form-control input-sm" data-date-format="dd.mm.yyyy">
+                <input type="text" name="date" value="{{ date.format('d.m.Y') }}" id="room-types-filter-date" class="datepicker form-control input-sm" data-date-format="dd.mm.yyyy">
             </div>
 
             <div class="form-group">

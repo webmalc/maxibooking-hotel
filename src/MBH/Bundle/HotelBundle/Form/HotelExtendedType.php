@@ -116,8 +116,9 @@ class HotelExtendedType extends AbstractType
                         'data-icon' => 'mbf-'.$key
                     ];
                 },
+                'translation_domain' => 'messages',
                 'attr' => [
-                    'class' => 'tags-select-input-widget plain-html',
+                    'class' => 'plain-html',
                     'placeholder' => 'Выберите теги'
                 ],
                 'empty_value' => '',

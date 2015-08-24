@@ -26,20 +26,24 @@
             {% set package = packageRepository.getPackageByAccommodation(room, date) %}
             <tr>
                 <td class="text-center">
-                    <strong>{{ room.name }}</strong>
+                    <a target="_blank" href="{{ path('room_type_room_edit', {id: room.id}) }}">{{ room.name }}</a>
                 </td>
                 <td></td>
                 <td>{{ package and package.mainTourist ? package.mainTourist.fullName(true) : '' }}</td>
                 <td>{{ package and package.mainTourist ? package.mainTourist.citizenship  : '' }}</td>
                 <td class="text-center">{{ package and package.adults + package.children }}</td>
-                <td>{{ room.status ? room.status.title : '' }}</td>
+                <td>
+                    <div>{{ room.status ? room.status.title : '' }}</div>
+                    <div>
+                    </div>
+                </td>
                 <td>{{ roomType.name }}</td>
                 <td>{{ package and package.arrivalTime ? package.arrivalTime.format('d.m.Y') : '' }}</td>
                 <td>{{ package and package.departureTime ? package.departureTime.format('d.m.Y') : '' }}</td>
                 <td>{{ package ? package.price|number_format(2) : '' }}</td>
                 <td class="text-center">{{ package ? (package.isPaid ? 'Да' : 'Нет') : '' }}</td>
                 <td class="text-center">
-                    {% if package %}<a href="{{ path('package_edit', {id:package.id}) }}"># {{ package.number }}</a>{% endif %}
+                    {% if package %}<a target="_blank" href="{{ path('package_edit', {id:package.id}) }}"># {{ package.number }}</a>{% endif %}
                 </td>
             </tr>
         {% endfor %}

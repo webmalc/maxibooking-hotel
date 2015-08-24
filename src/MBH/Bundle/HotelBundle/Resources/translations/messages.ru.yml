@@ -132,3 +132,14 @@ controller.corpus.created_success: Копрус успешно добавлен
 form.taskTypeCategory.general_info: Добавление категории задач
 form.taskTypeCategory.title: Название
 form.taskTypeCategory.fullTitle: Внутреннее название
+
+
+
+building: Здание
+rules: Правила размещения
+ability: Возможности
+roomtype: Тип комнаты
+furniture: Мебель
+food: Еда
+amenity: Удобства
+technical: Техника

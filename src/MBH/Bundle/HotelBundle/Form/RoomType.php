@@ -64,8 +64,8 @@ class RoomType extends AbstractType
                 'label' => 'form.roomType.room_type',
                 'group' => 'form.roomType.general_info',
                 'class' => 'MBHHotelBundle:RoomType',
-                'query_builder' => function (DocumentRepository $dr) use ($options) {
-                    return $dr->createQueryBuilder('q')
+                'query_builder' => function (DocumentRepository $documentRepository) use ($options) {
+                    return $documentRepository->createQueryBuilder('q')
                         ->field('hotel.id')->equals($options['hotelId'])
                         ->sort(['fullTitle' => 'asc', 'title' => 'asc']);
                 },
@@ -77,6 +77,10 @@ class RoomType extends AbstractType
             'label' => 'form.roomType.status',
             'group' => 'form.roomType.settings',
             'required' => false,
+            'query_builder' => function (DocumentRepository $documentRepository) use ($options) {
+                return $documentRepository->createQueryBuilder('q')
+                    ->field('hotel.id')->equals($options['hotelId']);
+            },
             'class' => 'MBH\Bundle\HotelBundle\Document\RoomStatus',
             'empty_value' => '',
         ]);

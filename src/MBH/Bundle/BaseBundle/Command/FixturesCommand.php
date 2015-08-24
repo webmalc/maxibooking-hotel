@@ -267,7 +267,7 @@ class FixturesCommand extends ContainerAwareCommand
     private function createTaskTypes()
     {
         $process = new Process(
-            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console mbh:task:load --no-debug'
+            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console mbh:task:load --force --no-debug'
         );
 
         return $process->run();

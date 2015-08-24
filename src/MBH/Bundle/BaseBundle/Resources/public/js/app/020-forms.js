@@ -235,34 +235,40 @@ var docReadyForms = function () {
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 (function ($) {
+    var mainClass = 'tags-select-widget';
+    var defaultOption = {
+        value: null
+    };
     var methods = {
         init : function (options) {
+            options = $.extend({}, defaultOption, options);
+
             return this.each(function () {
-                function addItem($list, value, text) {
+                function addItem($list, value, text, title) {
                     var input = '<input type="hidden" name="' + inputName + '" value="' + value + '">';
-                    var item = '<div class="btn btn-xs btn-default">' + text + ' <i class="fa fa-times"></i>' + input + '<div>';
+                    var item = '<div class="btn btn-xs btn-default" data-toggle="tooltip" data-original-title="' + title + '">' + text + ' <i class="fa fa-times"></i>' + input + '<div>';
                     $list.append(item);
                 }
-                function addIconItem($list, value, text, icon)
+                function addIconItem($list, value, title, icon)
                 {
-                    text = '<i class="fa fa-2x ' + icon + '"></i>';// + text;
-                    addItem($list, value, text);
+                    var text = '<i class="fa fa-2x ' + icon + '"></i>';// + text;
+                    addItem($list, value, text, title);
                 }
 
                 var $widget = $(this);
 
                 if ($widget.is("select")) {
-                    $widget = $widget.wrap('<div class="tags-select-widget"></div>').closest('.tags-select-widget').prepend('<div class="list"></div>');
+                    $widget = $widget.wrap('<div class="' + mainClass + '"></div>').closest('.' + mainClass).prepend('<div class="list"></div>');
                 }
                 var $select = $widget.find('select');
                 var inputName = $select.attr('name');
                 var isMultiple = $select.attr('multiple');
                 var isRequired = $select.attr('required');
                 var hasSelect2 = $select.data('select2');
-                var values = [];
+                var value = options.value;
                 if (isMultiple) {
-                    if($select.val()) {
-                        values = $select.val();
+                    if($select.val() && options.value === false) {
+                        value = $select.val();
                     }
                     $select.removeAttr('multiple');
                 } else {
@@ -271,10 +277,9 @@ var docReadyForms = function () {
                 if (isRequired) {
                     $select.removeAttr('required');
                 }
-
-                if ($widget.find('.list .btn').length == 0 && values.length > 0) {
-                    //$widget.tagsSelectWidget('update', values);
-                    values.forEach(function (value) {
+                if ($widget.find('.list .btn').length == 0 && value.length > 0) {
+                    //$widget.tagsSelectWidget('update', value);
+                    value.forEach(function (value) {
                         var $option = $select.find('option[value=' + value + ']');
                         if ($option.length == 1) {
                             addIconItem($widget.find('.list'), value, $option.text(), $option.data('icon'));
@@ -311,7 +316,15 @@ var docReadyForms = function () {
                 $(this).find('.list').empty();
             });
         },
-        update : function (values) {}
+        update : function (values) {
+            this.each(function () {
+                var $widget = $(this);
+                if (!$widget.hasClass(mainClass)) {
+                    throw new Error('TagsSelectWidget has not ' + mainClass + 'class');
+                }
+                //todo..
+            });
+        }
     };
 
 
