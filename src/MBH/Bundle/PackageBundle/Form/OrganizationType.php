@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
@@ -20,10 +21,8 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 class OrganizationType extends AbstractType
 {
-    const SCENARIO_FULL = 'sc_full';
-    const SCENARIO_SHORT = 'sc_short';
-
-    const TYPE_EDIT = 'tp_edit';
+    const SCENARIO_NEW = 'new';
+    const SCENARIO_EDIT = 'edit';
 
     /**
      * @var \Doctrine\ODM\MongoDB\DocumentManager
@@ -38,67 +37,75 @@ class OrganizationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $scenario = $options['scenario'];
-        $type = $options['type'];
+        $isFull = $options['isFull'];
+        $id = $options['id'];
 
-        if ($scenario == self::SCENARIO_SHORT) {
+        if (!$isFull) {
             $builder->add('organization', 'text', [
-                'group' => 'Найти организацию',
+                'group' => 'form.organizationType.group.search',
                 'label' => 'form.organizationType.name',
                 'required' => false,
                 'mapped' => false,
             ]);
         }
 
+        $personalGroup = 'form.organizationType.group.personal';
+        $addGroup = 'form.organizationType.group.add';
+        $registerGroup = 'form.organizationType.group.registration';
+        $additionalGroup = 'form.organizationType.group.additional';
+        $locationGroup = 'form.organizationType.group.location';
+        $checkAccountGroup = 'form.organizationType.group.check_account';
+
+        $group = $isFull ? $personalGroup : $addGroup;
+
         $builder->add('name', 'text', [
-            'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'Личные данные',
+            'group' => $group,
             'label' => 'form.organizationType.name',
         ]);
-
-        if ($scenario == self::SCENARIO_FULL) {
+        if ($isFull) {
             $builder->add('short_name', 'text', [
-                'group' => 'Личные данные',
+                'group' => $personalGroup,
                 'label' => 'form.organizationType.short_name',
                 'required' => false,
             ]);
             $builder->add('director_fio', 'text', [
-                'group' => 'Личные данные',
+                'group' => $personalGroup,
                 'label' => 'form.organizationType.director_fio',
                 'required' => false,
             ]);
             $builder->add('accountant_fio', 'text', [
-                'group' => 'Личные данные',
+                'group' => $personalGroup,
                 'label' => 'form.organizationType.accountant_fio',
                 'required' => false,
             ]);
         }
-
         $builder->add('phone', 'text', [
-            'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'Личные данные',
+            'group' => $group,
             'label' => 'form.organizationType.phone',
             'attr' => ['class' => 'input-small'],
         ]);
 
         $builder->add('email', 'email', [
-            'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'Личные данные',
+            'group' => $group,
             'label' => 'form.organizationType.email',
             'required' => false,
         ]);
 
         $builder->add('inn', 'text', [
-            'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'Регистрационные данные',
+            'group' => $group,
             'label' => 'form.organizationType.inn',
             'attr' => ['class' => 'input-small'],
         ]);
         $builder->add('kpp', 'text', [
-            'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'Регистрационные данные',
+            'group' => $isFull ? $registerGroup : $addGroup,
             'label' => 'form.organizationType.kpp',
             'attr' => ['class' => 'input-small'],
         ]);
 
-        if ($scenario == self::SCENARIO_FULL) {
+        if ($isFull) {
             $builder->add('registration_date', 'date', [
                 'widget' => 'single_text',
-                'group' => 'Регистрационные данные',
+                'group' => $registerGroup,
                 'label' => 'form.organizationType.registration_date',
                 'required' => false,
                 'format' => 'dd.MM.yyyy',
@@ -106,37 +113,39 @@ class OrganizationType extends AbstractType
                 'attr' => ['class' => 'input-small'],
             ]);
             $builder->add('registration_number', 'text', [
-                'group' => 'Регистрационные данные',
+                'group' => $registerGroup,
                 'label' => 'form.organizationType.registration_number',
                 'required' => false,
                 'attr' => ['class' => 'input-small'],
             ]);
             $builder->add('activity_code', 'text', [
-                'group' => 'Регистрационные данные',
+                'group' => $registerGroup,
                 'label' => 'form.organizationType.activity_code',
                 'required' => false,
                 'attr' => ['class' => 'input-small'],
             ]);
             $builder->add('okpo_code', 'text', [
-                'group' => 'Регистрационные данные',
+                'group' => $registerGroup,
                 'label' => 'form.organizationType.okpo_code',
                 'required' => false,
                 'attr' => ['class' => 'input-small'],
             ]);
             $builder->add('writer_fio', 'text', [
-                'group' => 'Регистрационные данные',
+                'group' => $registerGroup,
                 'label' => 'form.organizationType.writer_fio',
                 'required' => false,
             ]);
             $builder->add('reason', 'text', [
-                'group' => 'Регистрационные данные',
+                'group' => $registerGroup,
                 'label' => 'form.organizationType.reason',
                 'required' => false,
             ]);
         }
 
+        $group = $isFull ? $locationGroup : $addGroup;
+
         $builder->add('city', 'text', [ //'document', [
-            'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'form.organizationType.group_location',
+            'group' => $group,
             'label' => 'form.organizationType.city',
             'attr' => ['placeholder' => 'form.hotelExtendedType.placeholder_location', 'class' => 'citySelect'],
         ]);
@@ -145,80 +154,74 @@ class OrganizationType extends AbstractType
             'MBHHotelBundle:City'));
 
         $builder->add('street', 'text', [
-            'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'form.organizationType.group_location',
+            'group' => $group,
             'label' => 'form.organizationType.street',
         ]);
         $builder->add('house', 'text', [
-            'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'form.organizationType.group_location',
+            'group' => $group,
             'label' => 'form.organizationType.house',
             'attr' => ['class' => 'input-xs'],
         ]);
 
-        if ($scenario == self::SCENARIO_FULL) {
+        if ($isFull) {
             $builder->add('corpus', 'text', [
-                'group' => 'form.organizationType.group_location',
+                'group' => $locationGroup,
                 'label' => 'form.organizationType.corpus',
                 'required' => false,
                 'attr' => ['class' => 'input-xs'],
             ]);
             $builder->add('flat', 'text', [
-                'group' => 'form.organizationType.group_location',
+                'group' => $locationGroup,
                 'label' => 'form.organizationType.flat',
                 'required' => false,
                 'attr' => ['class' => 'input-xs'],
             ]);
             $builder->add('index', 'text', [
-                'group' => 'form.organizationType.group_location',
+                'group' => $locationGroup,
                 'label' => 'form.organizationType.index',
                 'required' => false,
                 'attr' => ['class' => 'input-xs'],
             ]);
-
             $builder->add('bank', 'text', [
-                'group' => 'Расчётный счёт',
+                'group' => $checkAccountGroup,
                 'label' => 'form.organizationType.bank',
                 'required' => false,
             ]);
             $builder->add('bank_bik', 'text', [
-                'group' => 'Расчётный счёт',
+                'group' => $checkAccountGroup,
                 'label' => 'form.organizationType.bank_bik',
                 'required' => false,
                 'attr' => ['class' => 'input-small'],
             ]);
             $builder->add('bank_address', 'text', [
-                'group' => 'Расчётный счёт',
+                'group' => $checkAccountGroup,
                 'label' => 'form.organizationType.bank_address',
                 'required' => false,
             ]);
             $builder->add('correspondent_account', 'text', [
-                'group' => 'Расчётный счёт',
+                'group' => $checkAccountGroup,
                 'label' => 'form.organizationType.correspondent_account',
                 'required' => false,
             ]);
             $builder->add('checking_account', 'text', [
-                'group' => 'Расчётный счёт',
+                'group' => $checkAccountGroup,
                 'label' => 'form.organizationType.checking_account',
                 'required' => false,
             ]);
         }
 
-        if ($scenario != self::SCENARIO_SHORT) {
-            if ($type != self::TYPE_EDIT) {
+        if ($isFull) {
+            if ($scenario == self::SCENARIO_NEW) {
                 $builder->add('type', 'choice', [
-                    'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'Дополнительно',
+                    'group' => $isFull ? $additionalGroup : $addGroup,
                     'label' => 'form.organizationType.type',
-                    //'attr' => ['class' => 'input-small', 'disabled' => $type == self::TYPE_EDIT],
                     'choices' => $options['typeList'],
                 ]);
             }
 
-            $id = $options['id'];
-
-            $builder->add('hotels', 'document', [
-                'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'Дополнительно',
+            $hotelsOptions = [
                 'class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
                 'label' => 'form.organizationType.default_hotels',
-                //'attr' => ['disabled' => $type == self::TYPE_EDIT],
                 'help' => 'form.organizationType.default_hotels_help',
                 'multiple' => true,
                 'required' => false,
@@ -226,8 +229,7 @@ class OrganizationType extends AbstractType
                     $queryBuilder = $this->documentManager->getRepository('MBHPackageBundle:Organization')->createQueryBuilder();
                     $queryBuilder
                         ->select('hotels')
-                        ->field('type')->equals('my')
-                    ;
+                        ->field('type')->equals('my');
                     if ($id) {
                         $queryBuilder->field('id')->notEqual($id);
                     }
@@ -247,12 +249,17 @@ class OrganizationType extends AbstractType
 
                     return $queryBuilder;
                 },
-            ]);
+            ];
+
+            $hotelsOptions['group'] = $isFull ? $additionalGroup : $addGroup;
+            if($scenario == self::SCENARIO_NEW || ($scenario == self::SCENARIO_EDIT && $options['type'] == 'my')) {
+                $builder->add('hotels', 'document', $hotelsOptions);
+            }
         }
 
-        if ($scenario == self::SCENARIO_FULL) {
+        if ($isFull) {
             $builder->add('comment', 'textarea', [
-                'group' => 'Дополнительно',
+                'group' => $additionalGroup,
                 'label' => 'form.organizationType.comment',
                 'required' => false,
                 'constraints' => [new Length(['min' => 2, 'max' => 300])]
@@ -260,7 +267,7 @@ class OrganizationType extends AbstractType
         }
 
         $builder->add('stamp', 'file', [
-            'group' => 'Дополнительно',
+            'group' => $additionalGroup,
             'label' => 'form.organizationType.stamp',
             'required' => false,
             'constraints' => [
@@ -280,8 +287,9 @@ class OrganizationType extends AbstractType
         $resolver->setDefaults([
             'typeList' => [],
             'id' => null,
-            'scenario' => self::SCENARIO_FULL,
             'type' => null,
+            'scenario' => self::SCENARIO_NEW,
+            'isFull' => true,
         ]);
     }
 

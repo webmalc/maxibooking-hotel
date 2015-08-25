@@ -30,22 +30,22 @@ class TaskTypeCategoryController extends Controller
     public function newAction(Request $request)
     {
         $entity = new TaskTypeCategory();
-        $form = $this->createForm(new TaskTypeCategoryType(), $entity);
+        $form = $this->createForm(new TaskTypeCategoryType(), $entity, [
+            'method' => Request::METHOD_PUT
+        ]);
 
-        if($request->isMethod(Request::METHOD_PUT)){
-            if($form->submit($request)->isValid()){
-                $entity->setIsSystem(false);
-                $this->dm->persist($entity);
-                $this->dm->flush();
+        if($form->handleRequest($request)->isValid()){
+            $entity->setIsSystem(false);
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set('success',
-                    $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
+            $request->getSession()->getFlashBag()->set('success',
+                $this->get('translator')->trans('controller.taskTypeController.record_created_success'));
 
-                return $this->isSavedRequest() ?
-                    $this->redirectToRoute('task_type_category_edit', ['id' => $entity->getId()]) :
-                    $this->redirectToRoute('tasktype', ['category' => $entity->getId()]);
-            };
-        }
+            return $this->isSavedRequest() ?
+                $this->redirectToRoute('task_type_category_edit', ['id' => $entity->getId()]) :
+                $this->redirectToRoute('tasktype', ['category' => $entity->getId()]);
+        };
 
         return [
             'form' => $form->createView()
@@ -98,11 +98,6 @@ class TaskTypeCategoryController extends Controller
     {
         if($entity->isSystem()) {
             throw $this->createNotFoundException();
-        }
-        /** @var TaskTypeRepository $repository */
-        $repository = $this->dm->getRepository('MBHHotelBundle:TaskType');
-        if($repository->getCountByCategory($entity) > 0) {
-            throw $this->createNotFoundException('Category have task types');
         }
         return $this->deleteEntity($entity->getId(), get_class($entity), 'tasktype');
     }

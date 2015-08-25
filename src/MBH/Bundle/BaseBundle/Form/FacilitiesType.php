@@ -62,7 +62,7 @@ class FacilitiesType extends AbstractType
                 'placeholder' => 'Выберите теги'
             ],
             'empty_value' => '',
-            'label' => 'form.hotelExtendedType.hotel_amenities',
+            'label' => 'form.facilitiesType.label',
             'by_reference' => false,
         ]);
     }

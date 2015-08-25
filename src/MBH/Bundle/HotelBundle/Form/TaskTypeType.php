@@ -41,6 +41,7 @@ class TaskTypeType extends AbstractType
             ])
             ->add('default_role', 'choice', [
                 'label' => 'form.taskType.default_role',
+                'group' => $group,
                 'choices' => $roles,
                 'required' => false,
                 'choice_translation_domain' => 'MBHUserBundleRoles'

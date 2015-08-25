@@ -58,7 +58,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     {
         $entity = new RoomType();
         $entity->setIsHostel($this->hotel->getIsHostel());
-        $entity->setFacilities($this->hotel->getFacilities());
         $form = $this->createForm(new RoomTypeType(), $entity, [
             'facilities' => $this->getParameter('mbh.hotel')['facilities']
         ]);

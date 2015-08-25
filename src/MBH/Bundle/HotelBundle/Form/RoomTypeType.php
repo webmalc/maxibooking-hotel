@@ -80,7 +80,7 @@ class RoomTypeType extends AbstractType
                 'help' => 'form.roomTypeType.is_room_included_in_search'
             ])
             ->add('facilities', 'mbh_facilities', [
-                'label' => 'form.roomTypeType.is_included',
+                //'label' => 'form.roomTypeType.is_included',
                 'group' => 'form.roomTypeType.settings',
                 'required' => false
             ]);

@@ -34,7 +34,7 @@ class DailyTaskType extends AbstractType
                 'group_by' => 'category',
                 'attr' => [
                     'style' => 'width:395px',
-                    'placeholder' => 'Выберите услугу'
+                    'data-placeholder' => 'Выберите услугу'
                 ],
                 'empty_value' => ''
             ]);

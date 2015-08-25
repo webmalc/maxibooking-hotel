@@ -69,7 +69,7 @@
         </form>
         </div></div>
 
-    <div>
+    <div class="cash-table-item">
         <table id="cash-table"
                class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
             <thead>
@@ -91,7 +91,6 @@
             </tbody>
             <tfoot>
             <tr>
-                <td></td>
                 <td></td>
                 <td class="text-center">
                     <strong>{{ 'views.cash.index.result'|trans({}, 'MBHCashBundle') }}:</strong>
@@ -126,13 +125,14 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td></td>
             </tr>
             </tfoot>
         </table>
     </div>
 
 
-    <div style="display: none">
+    <div class="cash-table-item">
         <table id="cash-table-by-day"
                class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
             <thead>
@@ -176,6 +176,12 @@
             </tfoot>
         </table>
     </div>
+
+<style>
+    .cash-table-item {
+        display: none;
+    }
+</style>
 
     {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'cash_1c_export', 'icon': 'fa fa-upload', 'text': 'Экспорт в 1C'} %}
 

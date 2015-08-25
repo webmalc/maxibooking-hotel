@@ -132,8 +132,8 @@ controller.corpus.created_success: Копрус успешно добавлен
 
 
 form.taskTypeCategory.general_info: Добавление категории задач
-form.taskTypeCategory.title: Название
-form.taskTypeCategory.fullTitle: Внутреннее название
+form.taskTypeCategory.title: Внутреннее Название
+form.taskTypeCategory.fullTitle: Название
 
 
 

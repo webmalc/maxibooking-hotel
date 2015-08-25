@@ -198,7 +198,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         }
 
         $form = $this->createForm(new OrganizationType($this->dm), null, [
-            'scenario' => OrganizationType::SCENARIO_SHORT,
+            'isFull' => false,
             'typeList' => $this->container->getParameter('mbh.organization.types'),
         ]);
 
@@ -304,7 +304,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
 
         $form = $this->createForm(new OrganizationType($this->dm),
             $existOrganization, [
-                'scenario' => OrganizationType::SCENARIO_SHORT,
+                'isFull' => false,
                 'typeList' => $this->container->getParameter('mbh.organization.types'),
             ]);
 

@@ -153,14 +153,4 @@ class TaskTypeCategory extends Base
     {
         $this->types = $types;
     }
-
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return (string) $this->getTitle();
-    }
-
 }
