@@ -72,9 +72,18 @@ class UserType extends AbstractType
                 'label' => 'form.userType.roles',
                 'multiple' => true,
                 'choices' => $this->roles,
+                'required' => false,
                 'translation_domain' => 'MBHUserBundleRoles',
-                'attr' => array('class' => "chzn-select roles")
-            ]);
+                'attr' => array('class' => "roles")
+            ])
+            ->add('groups', 'document', [
+                'class' => 'MBHUserBundle:Group',
+                'group' => 'form.userType.settings',
+                'label' => 'form.userType.groups',
+                'required' => false,
+                'multiple' => true
+            ])
+        ;
 
         if (!$options['admin']) {
             $builder->add('hotels', 'document', [

@@ -58,7 +58,9 @@ class Order
         if (
             $old->getBegin() == $new->getBegin() &&
             $old->getEnd() == $new->getEnd() &&
-            $old->getRoomType()->getId() == $new->getRoomType()->getId()
+            $old->getRoomType()->getId() == $new->getRoomType()->getId() &&
+            $old->getAdults() == $new->getAdults() &&
+            $old->getChildren() == $new->getChildren()
         ) {
             return $new;
         }

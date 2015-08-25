@@ -7,6 +7,7 @@ form.userType.confirm_password: Подтвердите пароль
 form.userType.login: Логин
 form.userType.settings: Настройки
 form.userType.roles: Роли
+form.userType.groups: Группы
 form.userType.hotels: Отели
 form.userType.hotels_user_has_access_to: Отели к которым имеет доступ пользователь.
 form.userType.is_included: Включен?

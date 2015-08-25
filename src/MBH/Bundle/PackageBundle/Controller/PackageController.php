@@ -240,8 +240,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $form = $this->createForm(new PackageMainType(), $entity, [
             'price' => $this->get('security.authorization_checker')->isGranted([
-                'ROLE_BOOKKEEPER',
-                'ROLE_SENIOR_MANAGER'
+                'ROLE_ADMIN'
             ]),
             'hotel' => $entity->getRoomType()->getHotel(),
             'corrupted' => $entity->getCorrupted()
@@ -273,7 +272,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $oldPackage = clone $entity;
         $form = $this->createForm(new PackageMainType(), $entity, [
-            'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER']),
+            'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_ADMIN']),
             'hotel' => $entity->getRoomType()->getHotel(),
             'corrupted' => $entity->getCorrupted()
         ]);
