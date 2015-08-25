@@ -68,6 +68,19 @@
     {% endspaceless %}
 {% endblock form_row %}
 
+{%- block datetime_widget -%}
+    {% if widget == 'single_text' %}
+        {{- block('form_widget_simple') -}}
+    {%- else -%}
+        <div {{ block('widget_container_attributes') }}>
+            {{- form_errors(form.date) -}}
+            {{- form_errors(form.time) -}}
+            {{- form_widget(form.date) -}}
+            <div class="bootstrap-timepicker">{{- form_widget(form.time) -}}</div>
+        </div>
+    {%- endif -%}
+{%- endblock datetime_widget -%}
+
 {% block form_label %}
     {% spaceless %}
         {% if label is not sameas(false) %}

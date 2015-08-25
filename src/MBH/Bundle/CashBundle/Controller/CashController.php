@@ -389,8 +389,6 @@ class CashController extends Controller
                 ->send()
             ;
 
-            dump((string) $request);
-
         } catch (Exception $e) {
             throw $this->createNotFoundException();
         }

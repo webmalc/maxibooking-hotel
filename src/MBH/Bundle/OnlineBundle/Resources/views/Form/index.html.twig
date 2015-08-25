@@ -10,7 +10,7 @@
         {% if entity %}
             <li><a href="#online-form-code" data-toggle="tab"><i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
         {% else %}
-            <li class="disabled"><a href="#" data-toggle="tooltip" title= <i class="fa fa-code"> </i> {{ 'views.form.index.settings_required'|trans({}, 'MBHOnlineBundle') }}><i class="fa fa-code"></i><i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
+            <li class="disabled"><a href="#" data-toggle="tooltip" title='{{ 'views.form.index.settings_required'|trans({}, 'MBHOnlineBundle') }}'><i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
         {%  endif %}
 
     </ul>
