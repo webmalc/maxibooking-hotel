@@ -64,6 +64,9 @@ var docReadyPackages = function () {
         "processing": true,
         "serverSide": true,
         "ordering": true,
+        buttons: [
+            'copy', 'excel', 'pdf'
+        ],
         "ajax": {
             "url": Routing.generate('package_json'),
             "data": function (d) {
@@ -107,32 +110,8 @@ var docReadyPackages = function () {
         }
     });
 
-    if ($('#package-table').length) {
-        var ptt = new $.fn.dataTable.TableTools(pTable, {
-            "sSwfPath": "/bundles/mbhbase/js/vendor/datatables/swf/copy_csv_xls.swf",
-            "aButtons": [
-                {
-                    "sExtends": "copy",
-                    "sButtonText": '<i class="fa fa-files-o"></i> Скопировать'
-                },
-                {
-                    "sExtends": "csv",
-                    "sButtonText": '<i class="fa fa-file-text-o"></i> CSV'
-                },
-                {
-                    "sExtends": "xls",
-                    "sButtonText": '<i class="fa fa-table"></i> Excel'
-                }
-            ]
-        });
-
-        $('#list-export').append($(ptt.fnContainer()));
-        $('#list-export').find('a').addClass('navbar-btn');
-    }
-
     // package datatable filter
     (function () {
-        $('#package-table-filter').sayt();
 
         $('#package-table-quick-links li').each(function () {
             if (parseInt($(this).find('.package-table-quick-links-count').text(), 10) === 0) {
@@ -142,7 +121,7 @@ var docReadyPackages = function () {
 
         if ($('#package-filter-quick-link').val()) {
             $('#package-table-quick-links a[data-value="' + $('#package-filter-quick-link').val() + '"]')
-                .removeClass('btn-default').addClass('btn-info');
+                .removeClass('btn-default').addClass('btn-primary');
         }
 
         $('.package-filter').change(function () {
@@ -153,7 +132,7 @@ var docReadyPackages = function () {
         });
         $('#package-table-quick-links a').click(function () {
             var input = $('#package-filter-quick-link');
-            $('#package-table-quick-links a').removeClass('btn-info').addClass('btn-default');
+            $('#package-table-quick-links a').removeClass('btn-primary').addClass('btn-default');
             input.val(null);
 
             if ($(this).attr('id') == 'package-table-quick-reset') {
@@ -161,7 +140,7 @@ var docReadyPackages = function () {
                 return;
             }
 
-            $(this).removeClass('label-default').addClass('btn-info');
+            $(this).removeClass('label-default').addClass('btn-primary');
             input.val($(this).attr('data-value'));
             $('#package-table').dataTable().fnDraw();
         });
@@ -180,6 +159,7 @@ var docReadyPackages = function () {
             panel.children('.panel-body').hide();
             link.children('i.fa').removeClass('fa-caret-up').addClass('fa-caret-down');
         }
+        link.unbind("click");
         link.click(function () {
             $(this).closest('.panel-heading').next('.panel-body').toggle(150);
             $(this).children('i.fa').toggleClass('fa-caret-up').toggleClass('fa-caret-down');

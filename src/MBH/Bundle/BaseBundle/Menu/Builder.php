@@ -22,21 +22,19 @@ class Builder extends ContainerAware
     {
         $menu = $factory->createItem('root');
         $menu->setChildrenAttributes([
-            'class' => 'nav navbar-nav', 'id' => 'main-menu'
+            'class' => 'sidebar-menu', 'id' => 'main-menu'
         ]);
 
-        if (!empty($options['management'])) {
-            $menu->setChildrenAttribute('style', 'display: none');
-        }
+        $menu->addChild('header', [])->setAttributes(['header' => 'Навигация']);
 
-        // search
-        $menu->addChild('reservations', ['route' => 'package_search', 'label' => 'Подбор'])
-             ->setAttributes(['icon' => 'fa fa-search'])
-        ;
         // packages
         $menu->addChild('package', ['route' => 'package', 'label' => 'Брони'])
-            ->setAttributes(['icon' => 'fa fa fa-paper-plane-o'])
+            ->setAttributes(['icon' => 'fa fa-paper-plane-o'])
         ;
+        // search
+        $menu->addChild('reservations', ['route' => 'package_search', 'label' => 'Подбор'])
+            ->setAttributes(['icon' => 'fa fa-search']);
+
         //Prices links
         $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Номера и цены'])
             ->setAttributes(['dropdown' => true, 'icon' => $this->container->get('mbh.currency')->info()['icon']]);
@@ -54,10 +52,10 @@ class Builder extends ContainerAware
         $openTaskCount = $dm->getRepository('MBHHotelBundle:Task')->getCountByCriteria($queryCriteria);
 
         $taskAttributes = ['icon' => 'fa fa-tasks'];
-        if($openTaskCount > 0) {
+        if ($openTaskCount > 0) {
             $taskAttributes += [
                 'badge' => true,
-                'badge_class' => 'label-danger',
+                'badge_class' => 'bg-red',
                 'badge_id' => 'task-counter',
                 'badge_value' => $openTaskCount
             ];
@@ -83,7 +81,7 @@ class Builder extends ContainerAware
 
         // report
         $menu->addChild('reports', ['route' => '_welcome', 'label' => 'Отчеты'])
-             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bar-chart']);
+            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bar-chart']);
         
         $menu['reports']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Размещение'])
             ->setAttributes(['icon' => 'fa fa-table']);
@@ -103,7 +101,6 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-star']);
         $menu['reports']->addChild('report_room_types', ['route' => 'report_room_types', 'label' => 'Номерной фонд'])
             ->setAttributes(['icon' => 'fa fa-bed']);
-
 
 
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
@@ -171,21 +168,21 @@ class Builder extends ContainerAware
     public function managementMenu(FactoryInterface $factory, array $options)
     {
         $menu = $factory->createItem('root');
+
         $menu->setChildrenAttributes([
-            'class' => 'nav navbar-nav', 'id' => 'management-menu'
+            'class' => 'sidebar-menu', 'id' => 'management-menu'
         ]);
 
-        if (!empty($options['management'])) {
-            $menu->setChildrenAttribute('style', 'display: block');
-        }
+        $menu->addChild('header', [])->setAttributes(['header' => 'Настройки']);
+
 
         //Hotels links
         $menu->addChild('hotels', ['route' => '_welcome', 'label' => 'Отели'])
-                ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-building-o']);
+                ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-home']);
         $menu['hotels']->addChild('hotelsList', ['route' => 'hotel', 'label' => 'Отели'])
-                ->setAttributes(['icon' => 'fa fa-building']);
+                ->setAttributes(['icon' => 'fa fa-home']);
         $menu['hotels']->addChild('corpusList', ['route' => 'housings', 'label' => 'Корпуса'])
-            ->setAttributes(['icon' => 'fa fa-home']);
+            ->setAttributes(['icon' => 'fa fa-building']);
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номерной фонд'])
                 ->setAttributes(['icon' => 'fa fa-bed']);
         $menu['hotels']->addChild('tariff', ['route' => 'tariff', 'label' => 'Тарифы'])
@@ -206,8 +203,7 @@ class Builder extends ContainerAware
         ;
 
         $menu['configs']->addChild('tasktype', ['route' => 'tasktype', 'label' => 'Типы задач'])
-            ->setAttributes(['icon' => 'fa fa-cog'])
-        ;
+            ->setAttributes(['icon' => 'fa fa-cog']);
 
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])
@@ -216,83 +212,20 @@ class Builder extends ContainerAware
 
         if ($this->container->getParameter('mbh.environment') == 'prod') {
             $menu['services']->addChild('booking', ['route' => 'booking', 'label' => 'Booking.com'])
-                ->setAttributes(['header' => 'Channel manager', 'header_icon' => 'fa fa-cloud-download']);
-            $menu['services']->addChild('ostrovok', ['route' => 'ostrovok', 'label' => 'Ostrovok']);
-            $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель']);
+                ->setAttributes(['icon' => 'fa fa-cloud-download']);
+            $menu['services']->addChild('ostrovok', ['route' => 'ostrovok', 'label' => 'Ostrovok'])
+                ->setAttributes(['icon' => 'fa fa-cloud-download']);
+            $menu['services']->addChild('vashotel', ['route' => 'vashotel', 'label' => 'ВашОтель'])
+                ->setAttributes(['icon' => 'fa fa-cloud-download']);
             //$menu['services']->addChild('hotelinn', ['route' => 'hotelinn', 'label' => 'Hotel-inn']);
             //$menu['services']->addChild('oktogo', ['route' => 'oktogo', 'label' => 'Oktogo.ru']);
 
         }
 
         $menu['services']->addChild('online_form', ['route' => 'online_form', 'label' => 'Онлайн форма'])
-            ->setAttributes(['divider_prepend' => true, 'header' => 'Другое', 'icon' => 'fa fa-globe']);
+            ->setAttributes(['icon' => 'fa fa-globe']);
         $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
-
-        return $this->filterMenu($menu);
-    }
-
-    /**
-     * User menu
-     * @param \Knp\Menu\FactoryInterface $factory
-     * @param array $options
-     * @return \Knp\Menu\MenuItem
-     */
-    public function userMenu(FactoryInterface $factory, array $options)
-    {
-        $menu = $factory->createItem('root');
-
-        $menu->setChildrenAttributes([
-            'class' => 'nav navbar-nav navbar-right', 'id' => 'user-menu'
-        ]);
-
-        $user = $this->container->get('security.context')
-                ->getToken()
-                ->getUser()
-        ;
-        if ($this->container->get('security.context')->isGranted('ROLE_ADMIN_HOTEL')) {
-            $menu->addChild('management', ['url' => '#', 'label' => '&nbsp;'])
-                    ->setAttributes([
-                        'icon' => 'fa fa-gears fa-lg',
-                        'id' => 'menu-toggle-link',
-                        'data-toggle' => 'tooltip',
-                        'data-placement' => "bottom",
-                        'title' => "Перейти к настройкам",
-                    ])
-            ;
-            if (!empty($options['management'])) {
-                $menu['management']->setAttribute('icon', 'fa fa-home fa-lg');
-                $menu['management']->setAttribute('title', 'Назад к главному меню');
-            }
-        }
-        $menu->addChild('login', ['route' => 'user_profile', 'label' => $user->getFullName(true)])
-                ->setAttributes([
-                        'icon' => 'fa fa-user',
-                        'dropdown' => true
-                    ])
-        ;
-        $menu['login']->addChild('user_edit', [
-            'route' => 'user_edit',
-            'routeParameters' => ['id' => $user->getId()],
-            'label' => 'Профиль'
-        ])
-            ->setAttributes(['icon' => 'fa fa-user'])
-        ;
-        $menu['login']->addChild('profile', [
-                    'route' => 'user_profile',
-                    'label' => 'Смена пароля'
-                ])
-                ->setAttributes(['icon' => 'fa fa-lock'])
-        ;
-        $menu['login']->addChild('version', [
-            'route' => '_welcome',
-            'label' => 'Версия ' . $this->container->getParameter('mbh.version')
-        ])
-            ->setAttributes(['icon' => 'fa fa-info-circle'])
-        ;
-        $menu['login']->addChild('logout', ['route' => 'fos_user_security_logout', 'label' => 'Выйти'])
-                ->setAttributes(['divider_prepend' => true, 'icon' => 'fa fa-sign-out'])
-        ;
 
         return $this->filterMenu($menu);
     }
@@ -308,10 +241,10 @@ class Builder extends ContainerAware
         $menu = $factory->createItem('root');
 
         $menu->setChildrenAttributes([
-            'class' => 'nav navbar-nav',
-            'id' => 'create-hotel-menu',
-            'style' => 'display: block;'
+            'class' => 'sidebar-menu', 'id' => 'create-hotel-menu'
         ]);
+
+        $menu->addChild('header', [])->setAttributes(['header' => 'Навигация']);
 
         $menu->addChild('create_hotel', ['route' => 'hotel_new', 'label' => 'Создать новый отель'])
                 ->setAttribute('icon', 'fa fa-plus')

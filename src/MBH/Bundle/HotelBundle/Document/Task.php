@@ -121,6 +121,13 @@ class Task extends Base
      */
     protected $end;
 
+    /**
+     * @return TaskType|null
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
 
     /**
      * Set taskType
@@ -136,11 +143,13 @@ class Task extends Base
     }
 
     /**
-     * @return TaskType|null
+     * Get status
+     *
+     * @return string $status
      */
-    public function getType()
+    public function getStatus()
     {
-        return $this->type;
+        return $this->status;
     }
 
     /**
@@ -158,13 +167,13 @@ class Task extends Base
     }
 
     /**
-     * Get status
+     * Get room
      *
-     * @return string $status
+     * @return \MBH\Bundle\HotelBundle\Document\Room $room
      */
-    public function getStatus()
+    public function getRoom()
     {
-        return $this->status;
+        return $this->room;
     }
 
     /**
@@ -181,13 +190,13 @@ class Task extends Base
     }
 
     /**
-     * Get room
+     * Get description
      *
-     * @return \MBH\Bundle\HotelBundle\Document\Room $room
+     * @return string $description
      */
-    public function getRoom()
+    public function getDescription()
     {
-        return $this->room;
+        return $this->description;
     }
 
     /**
@@ -204,13 +213,13 @@ class Task extends Base
     }
 
     /**
-     * Get description
+     * Get role
      *
-     * @return string $description
+     * @return string $role
      */
-    public function getDescription()
+    public function getRole()
     {
-        return $this->description;
+        return $this->role;
     }
 
     /**
@@ -224,16 +233,6 @@ class Task extends Base
         $this->role = $role;
 
         return $this;
-    }
-
-    /**
-     * Get role
-     *
-     * @return string $role
-     */
-    public function getRole()
-    {
-        return $this->role;
     }
 
     /**
@@ -271,19 +270,15 @@ class Task extends Base
     }
 
     /**
-     * @return \DateTime
+     * @return \DateInterval|null
      */
-    public function getDate()
+    public function getProcessInterval()
     {
-        return $this->date;
-    }
+        if ($this->getStart() and $this->getEnd()) {
+            return $this->getStart()->diff($this->getEnd());
+        }
 
-    /**
-     * @param \DateTime|null $date
-     */
-    public function setDate($date = null)
-    {
-        $this->date = $date;
+        return null;
     }
 
     /**
@@ -323,18 +318,6 @@ class Task extends Base
     }
 
     /**
-     * @return \DateInterval|null
-     */
-    public function getProcessInterval()
-    {
-        if($this->getStart() and $this->getEnd()) {
-            return $this->getStart()->diff($this->getEnd());
-        }
-
-        return null;
-    }
-
-    /**
      * @Assert\Callback
      * @author Aleksandr Arofikin <sashaaro@gmail.com>
      */
@@ -356,7 +339,23 @@ class Task extends Base
         $now = time();
         return $this->status !== 'open' && ($this->getDate() ?
             $this->getDate()->getTimestamp() < $now :
-            $this->getCreatedAt()->modify('+ '.self::DAY_DEAL_LINE.' days')->getTimestamp() < $now);
+            $this->getCreatedAt()->modify('+ ' . self::DAY_DEAL_LINE . ' days')->getTimestamp() < $now);
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     * @param \DateTime|null $date
+     */
+    public function setDate($date = null)
+    {
+        $this->date = $date;
     }
 
     /**

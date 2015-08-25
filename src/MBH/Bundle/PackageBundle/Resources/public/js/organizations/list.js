@@ -58,7 +58,4 @@
             }
         },
     });
-
-    window.universalAddExcelButtons($organizationTable, $('#list-export'));
-
 })(jQuery);

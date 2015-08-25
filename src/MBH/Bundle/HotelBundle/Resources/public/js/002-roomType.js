@@ -20,7 +20,7 @@ $(document).ready(function () {
     });
 
     //pick-a-color
-    $("#mbh_bundle_hotelbundle_room_type_type_color").pickAColor();
+    $("#mbh_bundle_hotelbundle_room_type_type_color").colorpicker();
 
     // isHostel switch
     (function () {
@@ -43,32 +43,28 @@ $(document).ready(function () {
 
     //roomType rooms datatables
     (function () {
-        var counter = 1;
         $('.rooms-table').each(function () {
 
-            window.addExcelButtons($(this).dataTable({
+            $(this).dataTable({
                 "processing": true,
                 "serverSide": true,
                 "ordering": false,
                 "bAutoWidth": false,
                 "ajax": Routing.generate('room_type_room_json', {'id': $(this).attr('data-room-type-id')})
-            }), counter);
-            counter += 1;
+            });
         });
     }());
 
     $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function () {
-        var counter = 1;
         $('.rooms-table').each(function () {
             $(this).dataTable().fnDestroy();
-            window.addExcelButtons($(this).dataTable({
+            $(this).dataTable({
                 "processing": true,
                 "serverSide": true,
                 "ordering": false,
                 "bAutoWidth": false,
                 "ajax": Routing.generate('room_type_room_json', {'id': $(this).attr('data-room-type-id')})
-            }), counter);
-            counter += 1;
+            });
         });
     });
 

@@ -29,7 +29,11 @@
                     {% endfor %}
                 </tr>
 
-                {% set categories = {'price': 'Цена', 'isPersonPrice': 'Цена за человека?', 'singlePrice': 'Цена 1-местного размещения'} %}
+                {% set categories = {'price': 'Цена'} %}
+
+                {% if roomType.isHostel is empty %}
+                    {% set categories = categories|merge({'price': 'Цена', 'isPersonPrice': 'Цена за человека?', 'singlePrice': 'Цена 1-местного размещения'}) %}
+                {% endif %}
 
                 {% if roomType.additionalPlaces > 0 %}
                     {% set categories = categories|merge({'additionalPrice': 'Цена за взрослое доп. место', 'additionalChildrenPrice': 'Цена за детское доп. место' }) %}

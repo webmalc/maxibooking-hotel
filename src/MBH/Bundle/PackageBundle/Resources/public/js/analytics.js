@@ -57,7 +57,7 @@ $(document).ready(function () {
 
     };
     chartGet();
-    $('.analytics-filter').change(function () {
+    $('.analytics-filter').on('change switchChange.bootstrapSwitch', function () {
         chartGet()
     });
     $('#analytics-filter-cumulative').on('switchChange', function () {

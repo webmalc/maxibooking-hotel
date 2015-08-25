@@ -415,16 +415,6 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     }
 
     /**
-     * Cleans phone numbers
-     * @param $phone
-     * @return string
-     */
-    public static function cleanPhone($phone)
-    {
-        return preg_replace("/[^0-9]/", "", $phone);
-    }
-
-    /**
      * Returns formatted phone number
      * @param string $phone
      * @param boolean $original
@@ -442,6 +432,16 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
                 substr($phone, -4, 2) . '-' .
                 substr($phone, -2, 2);
         }
+    }
+
+    /**
+     * Cleans phone numbers
+     * @param $phone
+     * @return string
+     */
+    public static function cleanPhone($phone)
+    {
+        return preg_replace("/[^0-9]/", "", $phone);
     }
 
     /**

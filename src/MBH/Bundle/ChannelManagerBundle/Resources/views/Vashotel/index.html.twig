@@ -1,6 +1,7 @@
 {% extends 'MBHChannelManagerBundle:Vashotel:layout.html.twig' %}
 
 {% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle')  %}
+{% set layout = 'tabs' %}
 
 {% block content %}
     {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': entity, 'base': 'vashotel'} %}

@@ -10,9 +10,9 @@ views.api.form.find_room: Найти номер
 views.api.form.online_reservation_system: система онлайн бронирования
 views.api.getPaymentType.dates: Даты:
 views.api.getPaymentType.days_and_nights: Дни/ночи:
-views.api.getPaymentType.nomerov: Номеров:
+views.api.getPaymentType.nomerov: Всего:
 views.api.getPaymentType.order_result: Заказ на сумму:
-views.api.getPaymentType.nomera:  Номера:
+views.api.getPaymentType.nomera:  Проживание:
 views.api.getPaymentType.services:  Услуги:
 views.api.getPaymentType.tariff: Тариф:
 views.api.getPaymentType.choose_payment_way: Выберите способ оплаты
@@ -31,7 +31,7 @@ views.api.getResultsTable.nochei: 'ночей'
 views.api.getResultsTable.room_type: Тип номера
 views.api.getResultsTable.guests: Гости
 views.api.getResultsTable.price: Цена
-views.api.getResultsTable.rooms_amount: Кол-во номеров
+views.api.getResultsTable.rooms_amount: Кол-во
 views.api.getResultsTable.room_description: описание номера
 views.api.getResultsTable.room_price: цена за номер
 views.api.getResultsTable.hotel: Отель

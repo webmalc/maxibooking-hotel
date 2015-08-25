@@ -1,24 +1,14 @@
 {% extends 'MBHBaseBundle::meta.html.twig' %}
 
 {% block body %}
-
-    {% if app.environment != 'prod' %}
-        <style>
-            .navbar-fixed-bottom {
-                margin-bottom: 40px !important;
-            }
-
-            .body {
-                padding-bottom: 100px !important;
-            }
-        </style>
-    {% endif %}
-
-
     {{ parent() }}
-    {% block top_navbar %}
+
+    <header class="main-header">
+        <!-- Logo -->
+        {% include 'MBHBaseBundle::logo.html.twig' %}
+        <!-- Header Navbar -->
         {% include 'MBHBaseBundle::navbar.html.twig' %}
-    {% endblock %}
+    </header>
 
     {% if form is defined %}
         {% form_theme form 'MBHBaseBundle:Form:fields.html.twig' %}
@@ -28,7 +18,7 @@
         {% form_theme form 'MBHBaseBundle:Form:fields.html.twig' %}
     {% endif %}
 
-    <div class="container-fluid main-container">
+    <div class="content-wrapper main-container">
 
         {% block print_hotel_logo %}
             {% if selected_hotel() and selected_hotel().logo %}
@@ -38,38 +28,70 @@
             {% endif %}
         {% endblock %}
 
-        <ul class="breadcrumb" id="main-breadcrumb">
-            <li><a href="{{ path('_welcome') }}"><i class="fa fa-home"></i></a></li>
-            {% if title_url is defined and title_url %}
-                <li><a href="{{ title_url }}">{{ title|default(project_title) }}</a></li>
-            {% endif %}
-            {% if small_title is defined %}
-                <li>{{ small_title|raw }}</li>
-            {% endif %}
-        </ul>
-
         <div class="print-clearfix"></div>
 
-        {% block messages %}
-            <div id="messages">{% include 'MBHBaseBundle::messages.html.twig' %}</div>
-        {% endblock %}
+        <section class="content-header">
+            <h1>
+                {{ title|default(project_title) }}
+                {% if small_title is defined %}
+                <small>{{ small_title|raw }}</small>
+                {% endif %}
+            </h1>
+            <ol class="breadcrumb" id="main-breadcrumb">
+                <li><a href="{{ path('_welcome') }}"><i class="fa fa-home"></i></a></li>
+                {% if title_url is defined and title_url %}
+                <li><a href="{{ title_url }}">{{ title|default(project_title) }}</a></li>
+                {% endif %}
+                {% if small_title is defined %}
+                <li class="active">{{ small_title|raw }}</li>
+                {% endif %}
+            </ol>
+        </section>
 
-        {% block content %}{% endblock %}
+        {% include 'MBHBaseBundle::sidebar.html.twig' %}
 
-        {% include 'MBHBaseBundle:Partials:entityDeleteForm.html.twig' %}
+        <section class="content">
+            {% block messages %}
+                <div id="messages">{% include 'MBHBaseBundle::messages.html.twig' %}</div>
+            {% endblock %}
 
-        <div id="print-user-info">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>{{ 'now'|date('d.m.Y H:i') }}</h5>
+            {% block prepend_content %}
+            {% endblock %}
+
+            {% if layout is defined and layout == 'tabs' %}
+                <div class="nav-tabs-custom">
+            {% endif %}
+            {% if layout is defined and layout == 'box' %}
+                <div class="box box-default"><div class="box-body">
+            {% endif %}
+
+            {% block content %}{% endblock %}
+
+            {% if layout is defined and layout == 'tabs' %}
                 </div>
-                <div class="col-md-8 text-right">
-                    {% if app.user %}
-                    <h5>{{ app.user.fullName(true) }}&nbsp_____________________</h5>
-                    {% endif %}
+            {% endif %}
+            {% if layout is defined and layout == 'box' %}
+                </div></div>
+            {% endif %}
+
+            {% block append_content %}
+            {% endblock %}
+
+            {% include 'MBHBaseBundle:Partials:entityDeleteForm.html.twig' %}
+
+            <div id="print-user-info">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5>{{ 'now'|date('d.m.Y H:i') }}</h5>
+                    </div>
+                    <div class="col-md-8 text-right">
+                        {% if app.user %}
+                            <h5>{{ app.user.fullName(true) }}&nbsp_____________________</h5>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
     </div>
 {% endblock %}

@@ -3,10 +3,11 @@
 {% set title = 'report.layout.title'|trans({}, 'MBHPackageBundle') %}
 {% set small_title = 'report.porter.small_title'|trans({}, 'MBHPackageBundle') %}
 {% set title_url = path('report_porter') %}
+{% set layout = 'box' %}
 
 {% block content %}
 
-    <div class="well" id="porter-report-filter-well">
+    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'porter-report-filter-widget'} %}
         <form id="porter-report-filter" class="form-inline filter-form remember" role="form">
             <div class="input">
                 <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
@@ -25,7 +26,7 @@
 
             {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
         </form>
-    </div>
+    </div></div>
 
     <div id="porter-report-table-wrapper"></div>
 

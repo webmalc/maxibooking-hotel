@@ -1,3 +1,4 @@
+{% if app.request.isxmlhttprequest is empty %}
 {% set packages = entity.order.packages %}
 {% if packages|length > 1 %}
 
@@ -72,4 +73,5 @@
             </table>
         </div>
     </div>
+{% endif %}
 {% endif %}

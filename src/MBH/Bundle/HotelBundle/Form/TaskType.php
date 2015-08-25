@@ -78,7 +78,7 @@ class TaskType extends AbstractType
                 'date_widget' => 'single_text',
                 //'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),
             ));
-        if($options['scenario'] == TaskType::SCENARIO_NEW) {
+        if ($options['scenario'] == TaskType::SCENARIO_NEW) {
             $builder->add('housing', 'document', [
                 'label' => 'form.task.housing',
                 'group' => $generalGroup,
@@ -86,7 +86,11 @@ class TaskType extends AbstractType
                 'mapped' => false,
                 //'attr' => ['class' => 'sm-input'],
                 'class' => 'MBH\Bundle\HotelBundle\Document\Housing',
-                'query_builder' => $queryBuilderSelectedHotelOnly
+                'query_builder' => function (DocumentRepository $repository) use ($hotel) {
+                    $queryBuilder = $repository->createQueryBuilder();
+                    $queryBuilder->field('hotel.id')->equals($hotel->getId());
+                    return $queryBuilder;
+                }
             ]);
             $floors = $this->dm->getRepository('MBHHotelBundle:Room')->getFloorsByHotel($hotel);
             $builder->add('floor', 'choice', [
@@ -113,7 +117,7 @@ class TaskType extends AbstractType
                     ];
                 },
             ]);
-        } elseif($options['scenario'] == TaskType::SCENARIO_EDIT) {
+        } elseif ($options['scenario'] == TaskType::SCENARIO_EDIT) {
             $builder->add('room', 'document', [
                 'label' => 'form.task.room',
                 'group' => $generalGroup,
@@ -137,7 +141,6 @@ class TaskType extends AbstractType
                 'group' => 'form.task.group.assign',
                 'class' => 'MBH\Bundle\UserBundle\Document\User',
                 'required' => false,
-                'property' => 'fullName',
             ])
             ->add('description', 'textarea', [
                 'label' => 'form.task.description',

@@ -29,13 +29,13 @@ class Base
     protected $isEnabled = true;
 
     /**
-     * Get id
+     * Get isEnabled
      *
-     * @return string $id
+     * @return boolean $isEnabled
      */
-    public function getId()
+    public function getIsEnabled()
     {
-        return $this->id;
+        return $this->isEnabled;
     }
 
     /**
@@ -51,26 +51,36 @@ class Base
     }
 
     /**
-     * Get isEnabled
-     *
-     * @return boolean $isEnabled
-     */
-    public function getIsEnabled()
-    {
-        return $this->isEnabled;
-    }
-
-    
-    /**
      * @return string
      */
     public function __toString()
     {
-        if (method_exists($this, 'getName')) {
-            return $this->getName();
+        return $this->getName();
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        if (method_exists($this, 'getTitle') && !empty($this->getTitle())) {
+            return $this->getTitle();
+        }
+        if (method_exists($this, 'getFullTitle') && !empty($this->getFullTitle())) {
+            return $this->getFullTitle();
         }
 
         return (string) $this->getId();
+    }
+
+    /**
+     * Get id
+     *
+     * @return string $id
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     public function __clone()

@@ -1,6 +1,7 @@
 {% extends 'MBHClientBundle:ClientConfig:layout.html.twig' %}
 
 {% set small_title = 'views.clientConfig.index.editing'|trans({}, 'MBHClientBundle') %}
+{% set layout='tabs' %}
 
 {% block content %}
 
@@ -9,16 +10,18 @@
     <div class="tab-content">
         <div class="tab-pane active" id="home">
 
-        {{ form_start(form, {'action': path('client_config_save'), 'attr': {'class': 'form-horizontal' }}) }}
-        {{ form_widget(form) }}
-        {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
-        {{ form_end(form) }}
+            {{ form_start(form, {'action': path('client_config_save'), 'attr': {'class': 'form-horizontal' }}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
+            {{ form_end(form) }}
+
+            {% if entity %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
+            {% endif %}
 
         </div>
     </div>
 
-    {% if entity %}
-        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
-    {% endif %}
+
 
 {% endblock %}

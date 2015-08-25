@@ -39,7 +39,8 @@
                 </td>
                 <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
                     {{ task.role|trans({}, 'MBHUserBundleRoles') }}
-                    {% if task.performer %}<br><small>{{ task.performer.fullName(true) }}</small>{% endif %}
+                    {% if task.performer %}<br>
+                        <small>{{ task.performer.fullName(true) }}</small>{% endif %}
                 </td>
                 <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">
                     {{ task.end|mbh_format }} {{ task.end|date('H:i') }}

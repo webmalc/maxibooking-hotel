@@ -5,8 +5,8 @@
     {% set save = true %}
 {% endif %}
 
-<div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+<div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
     <div class="container-fluid">
-        {% include 'MBHBaseBundle:Actions:saveButtons.html.twig' with {'save_close': save_close, 'save': save, 'save_text': save_text|default('views.actions.new.save'|trans({}, 'MBHBaseBundle'))}%}
+        {% include 'MBHBaseBundle:Actions:saveButtons.html.twig' with {'save_close': save_close, 'save': save, 'save_text': save_text|default('views.actions.new.save'|trans({}, 'MBHBaseBundle'))} %}
     </div>
 </div>

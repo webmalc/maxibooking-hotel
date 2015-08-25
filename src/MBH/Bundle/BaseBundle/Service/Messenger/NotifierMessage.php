@@ -255,6 +255,14 @@ class NotifierMessage
     }
 
     /**
+     * @return boolean
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
      * @param boolean $email
      * @return $this
      */
@@ -263,14 +271,6 @@ class NotifierMessage
         $this->email = $email;
 
         return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getEmail()
-    {
-        return $this->email;
     }
 
     /**

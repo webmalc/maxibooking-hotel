@@ -60,6 +60,14 @@ class RoomStatus extends Base
     /**
      * @return string
      */
+    public function __toString()
+    {
+        return (string)$this->getTitle();
+    }
+
+    /**
+     * @return string
+     */
     public function getTitle()
     {
         return $this->title;
@@ -73,13 +81,5 @@ class RoomStatus extends Base
     {
         $this->title = $title;
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return (string) $this->getTitle();
     }
 }

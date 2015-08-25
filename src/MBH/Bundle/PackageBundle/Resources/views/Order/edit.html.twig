@@ -1,80 +1,80 @@
 {% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title =  'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ package.numberWithPrefix %}
+{% set layout =  'tabs' %}
 
 {% if package.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~ ' (' ~ package.deletedAt|date('d.m.Y H:i') ~ ') </span>' %}{% endif %}
+
+{% block prepend_content %}
+    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
+{% endblock %}
 
 {% block content %}
 
     {% if app.request.isxmlhttprequest is empty %}
-        {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
         {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 1 , 'entity': package} %}
     {% endif %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
 
-            <div class="alert alert-warning package-main-info">
-                <div class="row">
-                    <div class="col-md-2 text-right"><strong>{{ 'order.edit.room'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10">
-                        {{ entity.id }}
-                    </div>
-                </div>
-                <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>{{ 'order.edit.paid_price'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10">
-                        {{ entity.paid|number_format(2) }} / {{ entity.price|number_format(2) }}
-                        &nbsp;
-                        {% if entity.isPaid %}
-                            <small class="text-success"><i class="fa fa-check"> </i> {{ 'order.edit.paid'|trans({}, 'MBHPackageBundle') }} </small>
-                        {% else %}
-                            <small class="text-danger"><i class="fa fa-times"> </i> {{ 'order.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>{{ 'order.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10">
-                        <span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }} <small>{{ entity.channelManagerType ? '(' ~ entity.channelManagerType ~ ' #' ~ entity.channelManagerId    ~ ' - ' ~ entity.channelManagerStatus ~')' }}</small></span>
-                        {% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"> </i> {{ 'order.edit.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
-                    </div>
-                </div>
-                <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>{{ 'order.edit.payer'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10">{% if entity.mainTourist %}{{ entity.mainTourist }} <a class="external" target="_blank" href="{{ path('tourist_edit', {'id': entity.mainTourist.id }) }}"><i class="fa fa-external-link"></i></a>{% else %}<small class="text-danger">{{ 'order.edit.not_specified'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}</div>
-                </div>
-                <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>{{ 'order.edit.is_confirmed'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10">
-                        {% if entity.confirmed %}
-                            <small class="text-success"><i class="fa fa-check"> </i> {{ 'order.edit.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }} </small>
-                        {% else %}
-                            <small class="text-danger"><i class="fa fa-times"> </i> {{ 'order.edit.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}</small>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- DEPRECATED -->
-                {% if is_granted('ROLE_ADMIN_HOTEL') and entity.card %}
-                <div class="row spacer-top">
-                    <div class="col-md-2 text-right"><strong>{{ 'order.edit.card'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                    <div class="col-md-10">
-                        {{ entity.card }}
-                    </div>
-                </div>
-                {% endif %}
-
-                {% if is_granted('ROLE_ADMIN_HOTEL') and entity.creditCard %}
-                    <div class="row spacer-top">
-                        <div class="col-md-2 text-right"><strong>{{ 'order.edit.card'|trans({}, 'MBHPackageBundle') }}</strong></div>
-                        <div class="col-md-10">
-                            {{ entity.creditCard|nl2br }}
-                        </div>
-                    </div>
-                {% endif %}
-
-            </div>
+            {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'order-edit-widget', 'header': 'info' } %}
+                <table class="table not-auto-datatable table-striped">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>{{ 'order.edit.room'|trans({}, 'MBHPackageBundle') }}</strong>
+                            </td>
+                            <td>
+                                {{ entity.id }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>{{ 'order.edit.paid_price'|trans({}, 'MBHPackageBundle') }}</strong>
+                            </td>
+                            <td>
+                                {{ entity.paid|number_format(2) }} / {{ entity.price|number_format(2) }}
+                                &nbsp;
+                                {% if entity.isPaid %}
+                                    <small class="text-success"><i class="fa fa-check"> </i> {{ 'order.edit.paid'|trans({}, 'MBHPackageBundle') }} </small>
+                                {% else %}
+                                    <small class="text-danger"><i class="fa fa-times"> </i> {{ 'order.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>{{ 'order.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong>
+                            </td>
+                            <td>
+                                <span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }} <small>{{ entity.channelManagerType ? '(' ~ entity.channelManagerType ~ ' #' ~ entity.channelManagerId    ~ ' - ' ~ entity.channelManagerStatus ~')' }}</small></span>
+                                {% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"> </i> {{ 'order.edit.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>{{ 'order.edit.payer'|trans({}, 'MBHPackageBundle') }}</strong>
+                            </td>
+                            <td>
+                                {% if entity.mainTourist %}{{ entity.mainTourist }} <a class="external" target="_blank" href="{{ path('tourist_edit', {'id': entity.mainTourist.id }) }}"><i class="fa fa-external-link"></i></a>{% else %}<small class="text-danger">{{ 'order.edit.not_specified'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>{{ 'order.edit.is_confirmed'|trans({}, 'MBHPackageBundle') }}</strong>
+                            </td>
+                            <td>
+                                {% if entity.confirmed %}
+                                    <small class="text-success"><i class="fa fa-check"> </i> {{ 'order.edit.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }} </small>
+                                {% else %}
+                                    <small class="text-danger"><i class="fa fa-times"> </i> {{ 'order.edit.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}</small>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div></div>
 
             {{ form_start(form, {'action': path('package_order_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}

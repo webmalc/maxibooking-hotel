@@ -5,22 +5,22 @@ $(document).ready(function () {
         $taskTableFilterForm = $('#task-table-filter'),
         processing = false,
         columns = [
-            {"name" : "number", "class" : 'text-center'},
-            {"name" : "status", "class" : 'text-center'},
-            {"name" : "task", "bSortable" : false},
-            {"name" : "priority", "class" : 'text-center'},
-            {"name" : "room", "bSortable" : false},
-            {"name" : "assign", "bSortable" : false},
-            {"name" : "period"},
-            {"name" : "createdAt"},
-            {"bSortable" : false}
+            {"name": "number", "class": 'text-center'},
+            {"name": "status", "class": 'text-center'},
+            {"name": "task", "bSortable": false},
+            {"name": "priority", "class": 'text-center'},
+            {"name": "room", "bSortable": false},
+            {"name": "assign", "bSortable": false},
+            {"name": "period"},
+            {"name": "createdAt"},
+            {"bSortable": false}
         ];
     var ajax = {
         "url": Routing.generate('task_json'),
-        "beforeSend" : function () {
+        "beforeSend": function () {
             processing = true;
         },
-        "data" : function (data) {
+        "data": function (data) {
             data.begin = $('#task-filter-begin').val();
             data.end = $('#task-filter-end').val();
             data.status = $('#task-filter-status').select2('val');
@@ -39,14 +39,14 @@ $(document).ready(function () {
         "aoColumns": columns,
         "drawCallback": function (settings) {
             processing = false;
-            $taskTable.find('tr a[data-row-class]').each(function (){
+            $taskTable.find('tr a[data-row-class]').each(function () {
                 var $this = $(this),
                     rowClass = $this.data('row-class');
 
                 $this.closest('tr').addClass(rowClass);
             });
         },
-        "order" : [[7, "desc"]]
+        "order": [[7, "desc"]]
     };
     $taskTable.dataTable(dataTableOptions);
 
@@ -80,6 +80,9 @@ $(document).ready(function () {
 
     var firstCall = true;
     var changeHousingAndFloor = function (e) {
+        if (!$roomsSelect.length) {
+            return;
+        }
         $roomsSelect.val('');
         if(!firstCall) {
             roomsSelectHtml = roomsSelectHtml.replace('selected="selected"', '');
@@ -109,12 +112,12 @@ $(document).ready(function () {
         '<div class="btn btn-xs btn-default clickable" id="clear-rooms">Очистить</div>' +
         '<div>'
     );
-    $('#select-all-rooms').on('click', function() {
+    $('#select-all-rooms').on('click', function () {
         console.log('all');
-        $roomsSelect.find("option").prop("selected","selected");
+        $roomsSelect.find("option").prop("selected", "selected");
         $roomsSelect.trigger("change");
     });
-    $('#clear-rooms').on('click', function() {
+    $('#clear-rooms').on('click', function () {
         console.log('clear');
         $roomsSelect.select2('val', null);
     });
@@ -125,14 +128,14 @@ $(document).ready(function () {
         $ownedTaskTable = $('.owned-tasks-table'),
         $taskId = $taskInfoModal.find('.modal-title em');
 
-    var showTaskModal = function(id) {
+    var showTaskModal = function (id) {
         $.ajax({
             url: Routing.generate('ajax_task_details', {id: id}),
             dataType: 'json',
             data: {id: id},
-            success: function(response) {
+            success: function (response) {
                 $taskId.html(response.id);
-                $.each(response, function(k, v) {
+                $.each(response, function (k, v) {
                     $table.find('tr[data-property=' + k + '] td:nth-child(2)').html(v ? v : ' - ');
                 });
 
@@ -150,7 +153,7 @@ $(document).ready(function () {
                 }
 
                 $button.removeClass('btn-primary btn-success').addClass(buttonClass);
-                $button.attr('href', Routing.generate('task_change_status', {id: id,  status: status}));
+                $button.attr('href', Routing.generate('task_change_status', {id: id, status: status}));
                 $button.html(buttonTitle);
 
                 $taskInfoModal.modal('show');
@@ -159,7 +162,7 @@ $(document).ready(function () {
     }
 
     $ownedTaskTable.find('tr').on('click', function (e) {
-        if(e.target.tagName != 'A' && $(e.target.tagName).closest('a').length == 0){
+        if (e.target.tagName != 'A' && $(e.target.tagName).closest('a').length == 0) {
             e.preventDefault();
 
             var id = $(this).data('id');
@@ -177,7 +180,7 @@ $(document).ready(function () {
 
 var $categoryInput = $('#mbh_bundle_hotelbundle_tasktype_category')
 var href = $('#task-category-tabs li.active a').attr('href');
-if(href) {
+if (href) {
     $categoryInput.val(href.substring(1));
 }
 $('#task-category-tabs a').on('click', function () {

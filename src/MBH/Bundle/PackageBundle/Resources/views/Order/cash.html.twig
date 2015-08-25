@@ -1,20 +1,24 @@
 {% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title =  'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ package.numberWithPrefix %}
+{% set layout =  'tabs' %}
 
 {% if package.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~ ' (' ~ package.deletedAt|date('d.m.Y H:i') ~ ') </span>' %}{% endif %}
+
+{% block prepend_content %}
+    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
+{% endblock %}
 
 {% block content %}
 
     {% if app.request.isxmlhttprequest is empty %}
-        {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
         {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 7 , 'entity': package} %}
     {% endif %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
 
-            <div class="alert alert-warning">
+            <div class="bg-gray color-palette alert">
                 <i class="{{ currency().icon }}"></i>
                 {{ 'order.cash.paid_price'|trans({}, 'MBHPackageBundle') }} {{ entity.paid|number_format(2) }} / {{ entity.price|number_format(2) }}
                 &nbsp;
@@ -75,7 +79,7 @@
                                         </a>
                                     {% endif %}
                                     {% if not cash.isConfirmed and cash.isPaid and is_granted('ROLE_BOOKKEEPER') %}
-                                        <a data-action='cashDocumentConfirmation' data-header='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?' data-button='{{ 'order.cash.confirm'|trans({}, 'MBHPackageBundle') }}' data-button-icon='fa-check' data-button-class='primary' href='{{ path('cash_confirm', { 'id': cash.id}) }}' class='btn btn-primary btn-xs delete-link' title='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
+                                        <a data-action='cashDocumentConfirmation' data-header='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?' data-button='{{ 'order.cash.confirm'|trans({}, 'MBHPackageBundle') }}' data-button-icon='fa-check' href='{{ path('cash_confirm', { 'id': cash.id}) }}' class='btn btn-primary btn-xs delete-link' title='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
                                             <i class='fa fa-check'></i>
                                         </a>
                                     {% endif %}

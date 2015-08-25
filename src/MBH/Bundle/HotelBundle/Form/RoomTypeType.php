@@ -36,13 +36,14 @@ class RoomTypeType extends AbstractType
                 'help' => 'form.roomTypeType.online_reservation_room_description',
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
-                'attr' => ['class' => 'big roomTypeTypeEditor']
+                'attr' => ['class' => 'big roomTypeTypeEditor tinymce']
             ])
             ->add('color', 'text', [
                 'label' => 'form.roomTypeType.color',
                 'required' => true,
                 'group' => 'form.roomTypeType.general_info',
                 'attr' => ['placeholder' => '008000'],
+                'addon' => 'fa fa-eyedropper',
                 'help' => 'form.roomTypeType.chess_room_type_color'
             ])
             ->add('roomSpace', 'text', [

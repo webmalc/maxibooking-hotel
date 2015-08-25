@@ -1,4 +1,14 @@
-/*global window, document, Routing, console, str, $, select2 */
+/*global window, document, Routing, console, str, $, select2, localStorage */
+
+var select2Text = function (el) {
+    'use strict';
+
+    el.replaceWith(
+        "<select name='" + el.prop('name') + "' id='" + el.prop('id') + "' class='form-control input-sm " + el.prop('class') + "'>" +
+        "<option selected value='" + el.val() + "'></option></select>"
+    );
+    return $('#' + el.prop('id'));
+};
 
 $.fn.serializeObject = function () {
     'use strict';
@@ -61,7 +71,7 @@ var docReadyForms = function () {
         'size': 'small',
         'onText': 'да',
         'offText': 'нет',
-        'labelText': '<i class="fa fa-arrows-h" style="opacity: 0.6;"></i>',
+        'onColor': 'success'
     };
     $('input[type="checkbox"]')
         .not('.plain-html')
@@ -69,11 +79,10 @@ var docReadyForms = function () {
         .bootstrapSwitch(bootstrapSwitchConfig);
 
     bootstrapSwitchConfig.size = 'mini'
-    bootstrapSwitchConfig.labelText = '&nbsp;'
     $('.checkbox-mini').bootstrapSwitch(bootstrapSwitchConfig);
 
     //Select2 configuration
-    $('select').not('.plain-html').select2({
+    $('select').not('.plain-html').addClass('select2').select2({
         placeholder: "Сделайте выбор",
         allowClear: true,
         width: 'resolve',
@@ -87,15 +96,21 @@ var docReadyForms = function () {
         }
     });
 
-    //areYouSure
-    //$('.form-horizontal, .form-inline, .are-you-sure').areYouSure({'message': 'Внесенные изменения не сохранены!'});
-
     //Datepicker configuration
     $('.datepicker').datepicker({
         language: "ru",
         todayHighlight: true,
         autoclose: true,
         format: 'dd.mm.yyyy'
+    });
+
+    //Datepicker configuration
+    $('.datepicker-year').datepicker({
+        language: "ru",
+        todayHighlight: true,
+        autoclose: true,
+        format: 'dd.mm.yyyy',
+        startView: 'decade'
     });
 
     $('.datepicker').keyup(function (e) {
@@ -126,7 +141,7 @@ var docReadyForms = function () {
             setDates = function () {
                 var period = begin.val() + '-' + end.val();
                 if (!select.val()) {
-                    select.select2("val", period);
+                    select.val(period);//.trigger('change');
                     return;
                 }
                 var dates = select.val().split('-');
@@ -167,39 +182,96 @@ var docReadyForms = function () {
             }
         });
     }());
-    $('.roomTypeTypeEditor').wysihtml5({
-        "html": false,
-        "stylesheets": false,
-        "image": false
-    });
+
+    //form group collapse
+    (function () {
+        var links = $('.form-group-collapse');
+
+        links.each(function () {
+            if (localStorage.getItem($(this).prop('id'))) {
+                var box = $(this).closest('.box'),
+                    boxBody = box.find('.box-body'),
+                    icon = $(this).find('i');
+
+                box.addClass('collapsed-box');
+                boxBody.hide();
+                icon.removeClass('fa-minus').addClass('fa-plus');
+            }
+        });
+        links.click(function () {
+            if ($(this).closest('.box').find('.box-body').is(':visible')) {
+                localStorage.setItem($(this).prop('id'), 1);
+            } else {
+                localStorage.removeItem($(this).prop('id'));
+            }
+        });
+    }());
+
+    //city select
+    (function () {
+        var citySelect = $('.citySelect');
+        if (citySelect.length !== 1) {
+            return;
+        }
+
+        select2Text(citySelect)
+            .select2({
+                minimumInputLength: 3,
+                allowClear: true,
+                placeholder: 'Выберите город',
+                ajax: {
+                    url: Routing.generate('hotel_city'),
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            query: params.term // search term
+                        };
+                    },
+                    results: function (data) {
+                        return {results: data};
+                    }
+                },
+                initSelection: function (element, callback) {
+                    var id = $(element).val();
+                    if (id !== "") {
+                        $.ajax(Routing.generate('hotel_city') + '/' + id, {
+                            dataType: "json"
+                        }).done(function (data) {
+                            callback(data);
+                        });
+                    }
+                },
+
+                dropdownCssClass: "bigdrop"
+            });
+    }());
+
     //payer select2
-    $('.findGuest').select2({
-        minimumInputLength: 3,
-        allowClear: true,
-        ajax: {
-            url: Routing.generate('ajax_tourists'),
-            dataType: 'json',
-            data: function (term) {
-                return {
-                    query: term // search term
-                };
+    (function () {
+        var findGuest = $('.findGuest');
+        if (findGuest.length !== 1) {
+            return;
+        }
+
+        select2Text(findGuest).select2({
+            minimumInputLength: 3,
+            allowClear: true,
+            placeholder: 'Выберите гостя',
+            ajax: {
+                url: Routing.generate('ajax_tourists'),
+                dataType: 'json',
+                data: function (params) {
+                    return {
+                        query: params.term // search term
+                    };
+                },
+                results: function (data) {
+                    return {results: data};
+                }
             },
-            results: function (data) {
-                return {results: data};
-            }
-        },
-        initSelection: function (element, callback) {
-            var id = $(element).val();
-            if (id !== "") {
-                $.ajax(Routing.generate('ajax_tourists', {id: id}), {
-                    dataType: "json"
-                }).done(function (data) {
-                    callback(data);
-                });
-            }
-        },
-        dropdownCssClass: "bigdrop"
-    });
+            dropdownCssClass: "bigdrop"
+        });
+    }());
 
     //remember inputs
     (function () {
@@ -227,6 +299,15 @@ var docReadyForms = function () {
     }());
 
     $('input[type=file]').bootstrapFileInput();
+
+    tinymce.init({
+        selector: ".tinymce",
+        min_width: 600,
+        toolbar_items_size: 'small',
+        skin_url: '/assets/vendor/tinymce/skins/lightgray',
+        toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent"
+
+    });
 };
 
 
@@ -297,15 +378,19 @@ var docReadyForms = function () {
                         placeholder: $select.attr('placeholder'),
                         width: 'resolve',
                         closeOnSelect: false,
-                        formatResult: function(data, $option) {
-                            var icon = data.element[0].getAttribute('data-icon');
-                            return '<i class="fa ' + icon + '"></i> ' + data.text;//data.id
-                        }//, formatSelection:function(){}
+                        templateResult: function(state) {
+                            if (!state.id) {
+                                return state.text;
+                            }
+                            var icon = state.element.getAttribute('data-icon'),
+                                html = '<div><i class="fa ' + icon + '"></i> ' + state.text + '<div>';
+                            return $(html);
+                        }
                     });
                 }
-                $select.on('select2-selecting', function (event) {
-                    var icon = event.choice.element[0].getAttribute('data-icon');
-                    addIconItem($widget.find('.list'), event.val, event.choice.text, icon);
+                $select.on('select2:selecting', function (event) {
+                    var element = event.params.args.data.element;
+                    addIconItem($widget.find('.list'), element.value, element.text, element.getAttribute('data-icon'));
                     event.preventDefault();
                 });
                 $list.on('click', '.btn', function () {

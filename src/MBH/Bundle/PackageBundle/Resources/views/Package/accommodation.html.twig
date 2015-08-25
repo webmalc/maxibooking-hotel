@@ -1,20 +1,24 @@
 {% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ entity.numberWithPrefix %}
+{% set layout =  'tabs' %}
 
 {% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~ ' (' ~ entity.deletedAt|date('d.m.Y H:i') ~ ') </span>' %}{% endif %}
+
+{% block prepend_content %}
+    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': entity} %}
+{% endblock %}
 
 {% block content %}
 
     {% if app.request.isxmlhttprequest is empty %}
-        {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': entity} %}
         {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 6 , 'entity': entity} %}
     {% endif %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
             {% if entity.accommodation %}
-                <div class="alert alert-warning">
+                <div class="bg-gray color-palette alert">
                     <i class="fa fa-bed"> </i> {{ 'package.accommodation.placement'|trans({}, 'MBHPackageBundle') }} {{ entity.accommodation.name(true, true) }}, {{ 'package.accommodation.guests'|trans({}, 'MBHPackageBundle') }} {{ entity.isCheckIn ? '' : 'не ' }} {{ 'package.accommodation.stopped'|trans({}, 'MBHPackageBundle') }}
                     {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                         <div class="pull-right">
@@ -25,7 +29,7 @@
                     {% endif %}
                 </div>
             {% else %}
-                <div class="alert alert-warning">
+                <div class="bg-gray color-palette alert">
                     <i class="fa fa-exclamation-circle"> </i> {{ 'package.accommodation.placement_not_specified'|trans({}, 'MBHPackageBundle') }}
                 </div>
             {% endif %}

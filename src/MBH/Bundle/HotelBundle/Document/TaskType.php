@@ -74,6 +74,16 @@ class TaskType extends Base
     protected $roomStatus;
 
     /**
+     * Get title
+     *
+     * @return string $title
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
      * Set title
      *
      * @param string $title
@@ -83,15 +93,6 @@ class TaskType extends Base
     {
         $this->title = $title;
         return $this;
-    }
-    /**
-     * Get title
-     *
-     * @return string $title
-     */
-    public function getTitle()
-    {
-        return $this->title;
     }
 
     public function __toString()

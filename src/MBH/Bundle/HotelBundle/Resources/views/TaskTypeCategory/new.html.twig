@@ -1,5 +1,8 @@
 {% extends "MBHHotelBundle:TaskTypeCategory:layout.html.twig" %}
 
+{% set small_title = 'form.taskTypeCategory.general_info'|trans|lower %}
+{% set layout = 'box' %}
+
 {% block content %}
 
     {{ form_start(form, {'action': path('task_type_category_new'), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}

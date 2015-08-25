@@ -1,16 +1,19 @@
 {% extends 'MBHUserBundle:User:layout.html.twig' %}
 
 {% set small_title = 'edit.small_title'|trans({}, 'FOSUserBundle')  ~ " #" ~ entity.id %}
+{% set layout = "tabs" %}
 
 {% block content %}
 
     {% include 'MBHUserBundle:User:tabs.html.twig' with {'active': 1, 'entity': entity} %}
 
-    {{ form_start(form, {'action': path('user_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
-    {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'user_delete' } %}
-    {{ form_end(form) }}
-    
-    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'user_delete' } %}
-    
+    <div class="tab-content">
+        {{ form_start(form, {'action': path('user_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'user_delete' } %}
+        {{ form_end(form) }}
+
+        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'user_delete' } %}
+    </div>
+
 {% endblock %}

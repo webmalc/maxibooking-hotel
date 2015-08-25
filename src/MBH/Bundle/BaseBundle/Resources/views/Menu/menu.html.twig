@@ -1,88 +1,92 @@
 {% extends 'knp_menu.html.twig' %}
  
 {% block item %}
-{% import "knp_menu.html.twig" as macros %}
-{% if item.displayed %}
+    {% import "knp_menu.html.twig" as macros %}
+
     {%- set attributes = item.attributes %}
-    {%- set is_dropdown = attributes.dropdown|default(false) %}
-    {%- set is_dropdown_header = attributes.dropdown_header|default(false) %}
-    {%- set divider_prepend = attributes.divider_prepend|default(false) %}
-    {%- set divider_append = attributes.divider_append|default(false) %}
-    {%- set header = attributes.header|default(false) %}
-    {%- set header_icon = attributes.header_icon|default(false) %}
+    {%- set header = item.attributes.header|default(false) %}
 
-{# unset bootstrap specific attributes #}
-    {%- set attributes = attributes|merge({'dropdown': null, 'dropdown_header': null, 'divider_prepend': null, 'divider_append': null }) %}
- 
-    {%- if divider_prepend %}
-        {{ block('dividerElement') }}
-    {%- endif %}
+    {% if header %}
 
-    {%- if header %}
-        <li class="dropdown-header">{% if header_icon %}<i
-                class="{{ header_icon }}"></i>&nbsp;{% endif %}{{ header|trans }}</li>
-    {%- endif %}
-
-    {# building the class of the item #}
-    {%- set classes = item.attribute('class') is not empty ? [item.attribute('class')] : [] %}
-    {%- if item.current %}
-        {%- set classes = classes|merge([options.currentClass]) %}
-    {%- elseif matcher.isAncestor(item, options.depth) %}
-        {%- set classes = classes|merge([options.ancestorClass]) %}
-    {%- endif %}
-    {%- if item.actsLikeFirst %}
-        {%- set classes = classes|merge([options.firstClass]) %}
-    {%- endif %}
-    {%- if item.actsLikeLast %}
-        {%- set classes = classes|merge([options.lastClass]) %}
-    {%- endif %}
- 
-{# building the class of the children #}
-    {%- set childrenClasses = item.childrenAttribute('class') is not empty ? [item.childrenAttribute('class')] : [] %}
-    {%- set childrenClasses = childrenClasses|merge(['menu_level_' ~ item.level]) %}
- 
-{# adding classes for dropdown #}
-    {%- if is_dropdown %}
-        {%- set classes = classes|merge(['dropdown']) %}
-        {%- set childrenClasses = childrenClasses|merge(['dropdown-menu']) %}
-    {%- endif %}
- 
-{# putting classes together #}
-    {%- if classes is not empty %}
-        {%- set attributes = attributes|merge({'class': classes|join(' ')}) %}
-    {%- endif %}
-    {%- set listAttributes = item.childrenAttributes|merge({'class': childrenClasses|join(' ') }) %}
-
-
-    {%- if is_dropdown_header %}
-        {{ block('dropdownHeader') }}
-    {%- else %}
-        {# displaying the item #}
-        <li{{ macros.attributes(attributes) }}>
-            {%- if is_dropdown %}
-                {% if item.hasChildren%} {{ block('dropdownElement') }}{% endif %}
-            {%- elseif item.uri is not empty and (not item.current or options.currentAsLink) %}
-                {{ block('linkElement') }}
-            {%- else %}
-                {{ block('linkElement') }}
-            {%- endif %}
-        {# render the list of children#}
-            {{ block('list') }}
+        {%- set header_icon = attributes.header_icon|default(false) %}
+        <li class="header">
+            {% if header_icon %}<i class="{{ header_icon }}"></i>&nbsp;{% endif %}{{ header|trans }}
         </li>
-    {%- endif %}
+    {% elseif item.displayed and header is empty %}
 
-    {%- if divider_append %}
-        {{ block('dividerElement') }}
-    {%- endif %}
-{% endif %}
+        {%- set is_dropdown = attributes.dropdown|default(false) %}
+        {%- set is_dropdown_header = attributes.dropdown_header|default(false) %}
+        {%- set divider_prepend = attributes.divider_prepend|default(false) %}
+        {%- set divider_append = attributes.divider_append|default(false) %}
+
+
+        {# unset bootstrap specific attributes #}
+        {%- set attributes = attributes|merge({'dropdown': null, 'dropdown_header': null, 'divider_prepend': null, 'divider_append': null }) %}
+
+        {%- if divider_prepend %}
+            {{ block('dividerElement') }}
+        {%- endif %}
+
+        {# building the class of the item #}
+        {%- set classes = item.attribute('class') is not empty ? [item.attribute('class')] : [] %}
+        {%- if item.current %}
+            {%- set classes = classes|merge([options.currentClass]) %}
+        {%- elseif matcher.isAncestor(item, options.depth) %}
+            {%- set classes = classes|merge([options.ancestorClass]) %}
+        {%- endif %}
+        {%- if item.actsLikeFirst %}
+            {%- set classes = classes|merge([options.firstClass]) %}
+        {%- endif %}
+        {%- if item.actsLikeLast %}
+            {%- set classes = classes|merge([options.lastClass]) %}
+        {%- endif %}
+
+        {# building the class of the children #}
+        {%- set childrenClasses = item.childrenAttribute('class') is not empty ? [item.childrenAttribute('class')] : [] %}
+        {%- set childrenClasses = childrenClasses|merge(['menu_level_' ~ item.level]) %}
+
+        {# adding classes for dropdown #}
+        {%- if is_dropdown %}
+            {%- set classes = classes|merge(['dropdown']) %}
+            {%- set childrenClasses = childrenClasses|merge(['treeview-menu']) %}
+        {%- endif %}
+
+        {# putting classes together #}
+        {%- if classes is not empty %}
+            {%- set attributes = attributes|merge({'class': classes|join(' ')}) %}
+        {%- endif %}
+        {%- set listAttributes = item.childrenAttributes|merge({'class': childrenClasses|join(' ') }) %}
+
+
+        {%- if is_dropdown_header %}
+            {{ block('dropdownHeader') }}
+        {%- else %}
+            {# displaying the item #}
+            <li{{ macros.attributes(attributes) }}>
+                {%- if is_dropdown %}
+                    {% if item.hasChildren %} {{ block('dropdownElement') }}{% endif %}
+                {%- elseif item.uri is not empty and (not item.current or options.currentAsLink) %}
+                    {{ block('linkElement') }}
+                {%- else %}
+                    {{ block('linkElement') }}
+                {%- endif %}
+                {# render the list of children#}
+                {{ block('list') }}
+            </li>
+        {%- endif %}
+
+        {%- if divider_append %}
+            {{ block('dividerElement') }}
+        {%- endif %}
+    {% endif %}
 {% endblock %}
  
 {% block dividerElement %}
-{% if item.level == 1 %}
-    <li class="divider-vertical"></li>
-{% else %}
-    <li class="divider"></li>
-{% endif %}
+    {% if item.level == 1 %}
+        <li class="divider-vertical"></li>
+    {% else %}
+        <li class="divider"></li>
+    {% endif %}
 {% endblock %}
 
 {% block dropdownHeader %}
@@ -91,25 +95,23 @@
 
 {% block dropdownElement %}
     {%- set classes = item.linkAttribute('class') is not empty ? [item.linkAttribute('class')] : [] %}
-    {%- set classes = classes|merge(['dropdown-toggle']) %}
     {%- set attributes = item.linkAttributes %}
     {%- set attributes = attributes|merge({'class': classes|join(' ')}) %}
-    {%- set attributes = attributes|merge({'data-toggle': 'dropdown'}) %}
-    
+
     {% spaceless %}
-    <a href="#"{{ macros.attributes(attributes) }}>
-        {% if item.attribute('icon') is not empty  %}
-        <i class="{{ item.attribute('icon') }}"></i> 
-        {% endif %}
-        {{ block('label') }} <b class="caret"></b>
-    </a>
+        <a href="#"{{ macros.attributes(attributes) }}>
+            {% if item.attribute('icon') is not empty %}
+                <i class="{{ item.attribute('icon') }}"></i>
+            {% endif %}
+            {{ block('label') }} <i class="fa fa-angle-left pull-right"></i>
+        </a>
     {% endspaceless %}
 {% endblock %}
 
 {% block linkElement %}
     <a href="{{ item.uri }}"{{ macros.attributes(item.linkAttributes) }}>
-        {% if item.attribute('icon') is not empty  %}
-            <i class="{{ item.attribute('icon') }}"></i> 
+        {% if item.attribute('icon') is not empty %}
+            <i class="{{ item.attribute('icon') }}"></i>
         {% endif %}
         {{ block('label') }}
     </a>
@@ -117,17 +119,16 @@
  
 {% block spanElement %}
     <span>{{ macros.attributes(item.labelAttributes) }}
-        {% if item.attribute('icon') is not empty  %}
-            <i class="{{ item.attribute('icon') }}"></i> 
+        {% if item.attribute('icon') is not empty %}
+            <i class="{{ item.attribute('icon') }}"></i>
         {% endif %}
         {{ block('label') }}
     </span>
 {% endblock %}
  
-{% block label %}{% if item.label == '&nbsp;' %}&nbsp;{% else %}{{ item.label|trans }}
+{% block label %}<span>{% if item.label == '&nbsp;' %}&nbsp;{% else %}{{ item.label|trans }}</span>
     {% if item.attribute('badge') is defined %}
-        <small {% if item.attribute('badge_id') is defined %}id="{{ item.attribute('badge_id') }}"{% endif %} class="label {% if item.attribute('badge_class') is defined %}{{ item.attribute('badge_class') }}{% endif %} label-as-badge">
-            {{ item.attribute('badge_value') }}
-        </small>
+        <small {% if item.attribute('badge_id') is defined %}id="{{ item.attribute('badge_id') }}"{% endif %}
+               class="label pull-right {% if item.attribute('badge_class') is defined %}{{ item.attribute('badge_class') }}{% endif %}">{{ item.attribute('badge_value') }}</small>
     {% endif %}
 {% endif %}{% endblock %}

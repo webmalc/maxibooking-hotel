@@ -1,9 +1,9 @@
 {% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
 
 {% set small_title = "создание гостя" %}
+{% set layout = "box" %}
 
 {% block content %}
-
 
     {{ form_start(form, {'action': path('tourist_create'), 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}

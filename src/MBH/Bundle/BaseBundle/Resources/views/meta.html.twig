@@ -11,42 +11,37 @@
             <title>{% block title %}{{project_title}}{% if title is defined %}: {{ title }}{% endif %}{% endblock %}</title>
 
             {% block styles %}
-                <!-- Bootstrap -->
-                <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/cerulean/bootstrap.min.css">
-                <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.css">
-                <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.min.css">
-                <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2-bootstrap.css">
-                <!-- <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css">-->
-                <!-- bootstrap style for select2 4.0 theme enabled in option <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-css/1.4.6/select2-bootstrap.min.css">-->
+
+                <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+
                 {% stylesheets filter='cssrewrite, uglifycss'
-                '@MBHBaseBundle/Resources/public/css/vendor/bootstrap-timepicker.min.css'
-                %}
-                {% endstylesheets %}
-                <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.0.0rc/css/bootstrap3/bootstrap-switch.min.css">
-                <link rel="stylesheet" href="//cdn.datatables.net/tabletools/2.2.1/css/dataTables.tableTools.css">
-                <link rel="stylesheet" href="//cdn.datatables.net/fixedheader/2.1.1/css/dataTables.fixedHeader.css">
-                <link rel="stylesheet" href="//cdn.datatables.net/plug-ins/be7019ee387/integration/bootstrap/3/dataTables.bootstrap.css">
-                <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css">
-                <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css">
-                <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
-
-                {% stylesheets filter='cssrewrite, uglifycss' 
-                    '@MBHBaseBundle/Resources/public/css/vendor/*'
+                    'assets/vendor/admin-lte/bootstrap/css/bootstrap.min.css'
+                    'assets/vendor/font-awesome/css/font-awesome.min.css'
+                    'assets/vendor/select2/dist/css/select2.min.css'
+                    'assets/vendor/bootstrap-switch/dist/css/bootstrap2/bootstrap-switch.min.css'
+                    'assets/vendor/datatables/media/css/dataTables.bootstrap.min.css'
+                    'assets/vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css'
+                    'assets/vendor/fancybox/source/jquery.fancybox.css'
+                    'assets/vendor/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css'
+                    'assets/vendor/ionicons/css/ionicons.min.css'
+                    'assets/vendor/admin-lte/dist/css/AdminLTE.min.css'
+                    'assets/vendor/admin-lte/dist/css/skins/skin-blue.min.css'
+                    'assets/vendor/admin-lte/plugins/colorpicker/bootstrap-colorpicker.min.css'
+                    'assets/vendor/bootstrap-timepicker/assets/bootstrap/css/bootstrap-responsive.css'
                     '@MBHBaseBundle/Resources/public/css/app/*'
-
                 %}
                 <link rel="stylesheet" href="{{ asset_url }}"/>
                 {% endstylesheets %}
             {% endblock %}
-
-            <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-            <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-            <![endif]-->
         </head>
 
-        <body>
+        <body class="hold-transition {{ loginPage is defined ? 'login-page' : 'skin-blue sidebar-mini fixed' }}">
+        <script type="text/javascript">
+            if (localStorage.getItem('sidebar-collapse')) {
+                document.getElementsByTagName('body')[0].className+=' sidebar-collapse'
+            }
+        </script>
+
         {% block body %}{% endblock %}
 
         {% block scripts %}
@@ -60,53 +55,43 @@
                 }
             </script>
 
-            <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-            <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-
-            <!-- Scripts -->
             {% javascripts filter='uglifyjs2'
-            '@MBHBaseBundle/Resources/public/js/vendor/before/*'
+                'assets/vendor/jquery/dist/jquery.min.js'
+                'assets/vendor/bootstrap/dist/js/bootstrap.min.js'
+                'assets/vendor/select2/dist/js/select2.full.min.js'
+                'assets/vendor/select2/dist/js/i18n/ru.js'
+                'assets/vendor/bootstrap-switch/dist/js/bootstrap-switch.min.js'
+                'assets/vendor/datatables/media/js/jquery.dataTables.min.js'
+                'assets/vendor/datatables/media/js/dataTables.bootstrap.min.js'
+                'assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js'
+                'assets/vendor/bootstrap-datepicker/dist/locales/bootstrap-datepicker.ru.min.js'
+                'assets/vendor/fancybox/source/jquery.fancybox.js'
+                'assets/vendor/tinycolor/dist/tinycolor-min.js'
+                'assets/vendor/jquery.cookie/jquery.cookie.js'
+                'assets/vendor/admin-lte/plugins/timepicker/bootstrap-timepicker.min.js'
+                'assets/vendor/tinymce/tinymce.min.js'
+                'assets/vendor/tinymce/themes/modern/theme.min.js'
+                'assets/vendor/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.js'
+                'assets/vendor/jquery-mask-plugin/dist/jquery.mask.min.js'
+                'assets/vendor/phoenix/jquery.phoenix.min.js'
+                'assets/vendor/jquery-number/jquery.number.min.js'
+                'assets/vendor/bootstrap-file-input/bootstrap.file-input.js'
+                'assets/vendor/bootstrap-timepicker/js/bootstrap-timepicker.js'
+                'bundles/fosjsrouting/js/router.js'
+                '@MBHBaseBundle/Resources/public/js/lte/options.js'
+                'assets/vendor/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js'
+                'assets/vendor/admin-lte/dist/js/app.min.js'
+                'assets/vendor/admin-lte/plugins/fastclick/fastclick.min.js'
+                'assets/vendor/admin-lte/plugins/colorpicker/bootstrap-colorpicker.min.js'
+                '@MBHBaseBundle/Resources/public/js/app/*'
             %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
             {% endjavascripts %}
 
-            <script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.min.js"></script>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2_locale_ru.js"></script>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.0.0rc/js/bootstrap-switch.min.js"></script>
-            <script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.min.js"></script>
-            <script src="//cdn.datatables.net/tabletools/2.2.1/js/dataTables.tableTools.min.js"></script>
-            <script src="//cdn.datatables.net/fixedheader/2.1.1/js/dataTables.fixedHeader.min.js"></script>
-            <script src="//cdn.datatables.net/plug-ins/be7019ee387/integration/bootstrap/3/dataTables.bootstrap.js"></script>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/tinycolor/0.11.1/tinycolor.min.js"></script>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/locales/bootstrap-datepicker.ru.min.js"></script>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-
-
             {% if app.environment == 'dev' %}
-
-                <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
                 <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
-                {% javascripts filter='uglifyjs2'
-                '@MBHBaseBundle/Resources/public/js/vendor/after/*'
-                '@MBHBaseBundle/Resources/public/js/app/*'
-                %}
-                <script type="text/javascript" src="{{ asset_url }}"></script>
-                {% endjavascripts %}
-
             {% else %}
-
-                {% javascripts filter='uglifyjs2'
-                'bundles/fosjsrouting/js/router.js'
-                'js/fos_js_routes.js'
-                '@MBHBaseBundle/Resources/public/js/vendor/after/*'
-                '@MBHBaseBundle/Resources/public/js/app/*'
-                %}
-                <script type="text/javascript" src="{{ asset_url }}"></script>
-                {% endjavascripts %}
-
+            <script src="{{ asset('js/fos_js_routes.js') }}"></script>
             {% endif %}
 
         {% endblock %}

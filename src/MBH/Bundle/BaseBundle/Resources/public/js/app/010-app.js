@@ -128,22 +128,35 @@ $(document).ready(function () {
     }, 5000);
 
     //fancybox
-    $('.fancybox').fancybox();
+    $('.fancybox').fancybox({'type': 'image'});
     $('.image-fancybox').fancybox({'type': 'image'});
 
     //popovers
     $('[data-toggle="popover"]').popover();
     closePopovers();
+
+    //sidebar
+    (function () {
+        'use strict';
+
+        $('.sidebar-toggle').click(function () {
+            if ($('body').hasClass('sidebar-collapse')) {
+                localStorage.setItem('sidebar-collapse', 1);
+            } else {
+                localStorage.removeItem('sidebar-collapse');
+            }
+        });
+    }());
 });
 
 var $taskCounter = $('#task-counter');
-var updateTaskCounter = function() {
+var updateTaskCounter = function () {
     console.log('update task counter');
     $.ajax({
         url: Routing.generate('task_ajax_total_my_open'),
         dataType: 'json',
-        success: function(response) {
-            if(response.total == 0) {
+        success: function (response) {
+            if (response.total == 0) {
                 $taskCounter.html('');
             } else {
                 $taskCounter.html(response.total);
@@ -153,6 +166,6 @@ var updateTaskCounter = function() {
 }
 
 var delay = 1000 * 60 * 5;//5 minutes
-setInterval(function(){
+setInterval(function () {
     updateTaskCounter()
 }, delay);

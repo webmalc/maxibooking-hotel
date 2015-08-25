@@ -18,3 +18,11 @@
         <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
 {% endblock %}
+
+{% block content %}
+    <div class="box box-default">
+        <div class="box-body">
+            {% block content_text %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

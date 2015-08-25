@@ -30,6 +30,7 @@ class AppKernel extends Kernel
             new JMS\AopBundle\JMSAopBundle(),
             new JMS\TranslationBundle\JMSTranslationBundle(),
             new Liuggio\ExcelBundle\LiuggioExcelBundle(),
+            new Ornicar\GravatarBundle\OrnicarGravatarBundle(),
 
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),

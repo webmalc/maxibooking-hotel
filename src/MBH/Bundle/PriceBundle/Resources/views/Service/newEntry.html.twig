@@ -1,6 +1,7 @@
 {% extends 'MBHPriceBundle:Service:layout.html.twig' %}
 
 {% set small_title = "создание услуги в категории <" ~ entity.name ~ ">" %}
+{% set layout = 'box' %}
 
 {% block content %}
     {{ form_start(form, {'action': path('price_service_category_entry_create', {'id': entity.id}), 'attr': {'class': 'form-horizontal'}}) }}

@@ -1,16 +1,16 @@
 {% extends 'MBHHotelBundle:Hotel:layout.html.twig' %}
 
 {% set small_title = "cоздание" %}
+{% set layout = "tabs" %}
 
 {% block content %}
+        {% include 'MBHHotelBundle:Hotel:tabs.html.twig' with {'active': 1, 'entity': null} %}
 
-    {% include 'MBHHotelBundle:Hotel:tabs.html.twig' with {'active': 1, 'entity': null} %}
-
-    <div class="tab-content">
-        {{ form_start(form, {'action': path('hotel_create'), 'attr': {'class': 'form-horizontal'}}) }}
-        {{ form_widget(form) }}
-        {% include 'MBHBaseBundle:Actions:new.html.twig' %}
-        {{ form_end(form) }}
-    </div>
+        <div class="tab-content">
+            {{ form_start(form, {'action': path('hotel_create'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+            {{ form_end(form) }}
+        </div>
 
 {% endblock %}

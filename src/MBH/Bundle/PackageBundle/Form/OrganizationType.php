@@ -15,7 +15,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Class OrganizationType
- * @package MBH\Bundle\PackageBundle\Form
  *
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
@@ -139,7 +138,7 @@ class OrganizationType extends AbstractType
         $builder->add('city', 'text', [ //'document', [
             'group' => $scenario == self::SCENARIO_SHORT ? 'Добавить организацию' : 'form.organizationType.group_location',
             'label' => 'form.organizationType.city',
-            'attr' => ['placeholder' => 'form.hotelExtendedType.placeholder_location'],
+            'attr' => ['placeholder' => 'form.hotelExtendedType.placeholder_location', 'class' => 'citySelect'],
         ]);
 
         $builder->get('city')->addModelTransformer(new EntityToIdTransformer($this->documentManager,
@@ -223,25 +222,27 @@ class OrganizationType extends AbstractType
                 'help' => 'form.organizationType.default_hotels_help',
                 'multiple' => true,
                 'required' => false,
-                'query_builder' => function (DocumentRepository $dr) use ($id) {
-                    /** @var \Doctrine\ODM\MongoDB\Cursor $organizations */
-                    $queryBuilder = $this->documentManager->getRepository('MBHPackageBundle:Organization')->createQueryBuilder()->select('hotels')->field('type')->equals('my');
+                'query_builder' => function (DocumentRepository $hotelRepository) use ($id) {
+                    $queryBuilder = $this->documentManager->getRepository('MBHPackageBundle:Organization')->createQueryBuilder();
+                    $queryBuilder
+                        ->select('hotels')
+                        ->field('type')->equals('my')
+                    ;
                     if ($id) {
                         $queryBuilder->field('id')->notEqual($id);
                     }
+                    
                     $organizations = $queryBuilder->getQuery()->execute();
-                    $hotelIds = [];
+                    $exceptHotelIDs = [];
                     foreach ($organizations->getMongoCursor() as $organization) {
                         if (array_key_exists('hotels', $organization)) {
-                            $hotelIds += array_column($organization['hotels'], '$id');
+                            $exceptHotelIDs += array_column($organization['hotels'], '$id');
                         }
                     }
 
-                    $hotelIds = array_unique($hotelIds);
-
-                    $queryBuilder = $dr->createQueryBuilder('q');
-                    if ($hotelIds) {
-                        $queryBuilder->field('id')->notIn($hotelIds);
+                    $queryBuilder = $hotelRepository->createQueryBuilder();
+                    if ($exceptHotelIDs) {
+                        $queryBuilder->field('id')->notIn(array_unique($exceptHotelIDs));
                     }
 
                     return $queryBuilder;

@@ -1,9 +1,8 @@
 form.profileType.enter_new_password: Введите новый пароль
-form.profileType.min_password: Пароль не может быть меньше 8 символов
-form.profileType.min_number_password: Пароль должен содержать хотя бы одну цифру
-form.profileType.min_capital_letter_password: Пароль должен содержать хотя бы одну заглавную букву
 form.userType.authentication_data: Данные аутентификации
 form.userType.new_password: Новый пароль
+form.password: Пароль
+form.password_confirmation: Подтвердите пароль
 form.userType.confirm_password: Подтвердите пароль
 form.userType.login: Логин
 form.userType.settings: Настройки

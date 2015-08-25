@@ -98,6 +98,20 @@ class TaskRepository extends DocumentRepository
     /**
      * @param Room $room
      * @param Task|null $exceptTask
+     * @return RoomStatus|null
+     */
+    public function getActuallyRoomStatus(Room $room, Task $exceptTask = null)
+    {
+        $task = $this->getProcessTaskByRoom($room, $exceptTask);
+        if ($task) {
+            return $task->getType()->getRoomStatus();
+        }
+        return null;
+    }
+
+    /**
+     * @param Room $room
+     * @param Task|null $exceptTask
      * @return Task|null
      */
     private function getProcessTaskByRoom(Room $room, Task $exceptTask = null)
@@ -105,25 +119,11 @@ class TaskRepository extends DocumentRepository
         $qb = $this->createQueryBuilder()
             ->field('status')->equals(Task::STATUS_PROCESS)
             ->field('room.id')->equals($room->getId());
-        if($exceptTask) {
+        if ($exceptTask) {
             $qb->field('_id')->notEqual($exceptTask->getId());
         }
         return $qb->sort(['createdBy' => -1])->limit(1)
             ->getQuery()->getSingleResult();
-    }
-
-    /**
-     * @param Room $room
-     * @param Task|null $exceptTask
-     * @return RoomStatus|null
-     */
-    public function getActuallyRoomStatus(Room $room, Task $exceptTask = null)
-    {
-        $task = $this->getProcessTaskByRoom($room, $exceptTask);
-        if($task) {
-            return $task->getType()->getRoomStatus();
-        }
-        return null;
     }
 
     /**

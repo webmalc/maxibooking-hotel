@@ -1,10 +1,11 @@
 {% extends 'MBHPackageBundle:Search:layout.html.twig' %}
 
 {% set small_title = "search.index.search"|trans({}, "MBHPackageBundle") %}
+{% set layout = "box" %}
 
 {% block content %}
 
-    <div class="well">
+    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'package-search-filter-widget' } %}
 
         {{ form_start(form, {'action': path('package_search'), 'method': 'GET', 'attr': {'class': 'form-inline search-form filter-form', 'id': 'package-search-form'}}) }}
         {{ form_errors(form) }}
@@ -47,15 +48,14 @@
         <div class="hide">
             {{ form_end(form) }}
         </div>
-    </div>
+    </div></div>
 
-    <div class="row">
-        <div id="package-search-results-wrapper" class="col-md-12">
-            <div class="alert alert-info">
+        <div id="package-search-results-wrapper">
+            <div class="bg-gray color-palette alert">
                 <i class="fa fa-search"> </i> {{ "search.index.enter_search_data"|trans({}, "MBHPackageBundle") }}
             </div>
         </div>
-    </div>
+
 
     <div class="modal fade" id="add-guest-modal">
         <div class="modal-dialog modal-xxl">

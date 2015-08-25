@@ -2,49 +2,67 @@
     {% spaceless %}
         <div {{ block('widget_container_attributes') }} class="btn-group" data-toggle="buttons">
             {% for child in form %}
-            <label class="btn btn-sm btn-default {% if child.vars.checked %} active{% endif %}">
-                <input type="radio" {{ block('widget_attributes') }}{% if child.vars.value is defined %} value="{{ child.vars.value }}"{% endif %}{% if child.vars.checked %} checked="checked"{% endif %} />
-                {{ child.vars.label }}
-            </label>
+                <label class="btn btn-sm btn-default {% if child.vars.checked %} active{% endif %}">
+                    <input type="radio" {{ block('widget_attributes') }}{% if child.vars.value is defined %} value="{{ child.vars.value }}"{% endif %}{% if child.vars.checked %} checked="checked"{% endif %} />
+                    {{ child.vars.label|trans }}
+                </label>
             {% endfor %}
         </div>
     {% endspaceless %}
 {% endblock choice_widget_expanded %}
 
 {% block form_widget_compound %}
-    <div {% if not form.parent %} class="well" {% endif %} {{ block('widget_container_attributes') }}>
+    <div {{ block('widget_container_attributes') }}>
         {% if form.parent is empty %}
-            {% if errors|length > 0 %}<div class="alert alert-danger global-errors">{{ form_errors(form) }}</div>{% endif %}
+            {% if errors|length > 0 %}
+                <div class="alert alert-danger global-errors">{{ form_errors(form) }}</div>{% endif %}
         {% endif %}
+
+        {% set groups = {'form.main.group': form.children|keys} %}
         {% if form.vars.groups is defined %}
-            {% for group,items in form.vars.groups %}
-                <fieldset>
-                    <legend>{{ group|trans }}</legend>
+            {% set groups = form.vars.groups %}
+        {% endif %}
+
+        {% for group, items in groups %}
+
+            <div class="box box-default box-solid">
+
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ group|trans }}</h3>
+
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
+                                id="{{ id }}-group-{{ loop.index }}"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div>
+
+                <div class="box-body">
                     {% for item in items %}
                         {{ form_row(form[item]) }}
                     {% endfor %}
-                </fieldset>
-            {% endfor %}
-        {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+
         {{ form_rest(form) }}
     </div>
 {% endblock form_widget_compound %}
 
 {% block form_row %}
     {% spaceless %}
-        <div class="form-group {% if errors|length > 0 %} has-error{%endif%}">
+        <div class="form-group {% if errors|length > 0 %} has-error{% endif %}">
             {{ form_label(form) }}
 
-            <div class="col-md-4">
+            <div class="col-sm-6">
                 {{ form_widget(form) }}
                 {% if help is not null %}
-                    <span class="help-block"><small>{{help|trans|raw}}</small></span>
-                        {%endif%}
+                    <span class="help-block"><small>{{ help|trans|raw }}</small></span>
+                {% endif %}
             </div>
-            <div class="col-md-6">
+            <div class="col-sm-4">
                 {% if errors|length > 0 %}
                     <span class="text-danger text-left input-errors">{{ form_errors(form) }}</span>
-                {%endif%}
+                {% endif %}
             </div>
         </div>
     {% endspaceless %}
@@ -62,7 +80,7 @@
             {% if label is empty %}
                 {% set label = name|humanize %}
             {% endif %}
-            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' control-label col-md-2')|trim}) %}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' control-label col-sm-2')|trim}) %}
 
             <label {% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain)|raw }}{% if required %}&nbsp;<span class="required-star text-danger">*</span>{% endif %}</label>
         {% endif %}
@@ -70,12 +88,18 @@
 {% endblock form_label %}
 
 {% block form_widget_simple %}
+
     {% spaceless %}
         {% set type = type|default('text') %}
         {% if type != 'file' %}
             {% set attr = attr|merge({'class': (attr.class|default('') ~ ' form-control input-sm')|trim}) %}
         {% endif %}
+        {% if addon %}<div class="input-group">{% endif %}
         <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+        {% if addon %}
+            <span class="input-group-addon"><i class="{{ addon }}"></i></span>
+            </div>{% endif %}
+
     {% endspaceless %}
 {% endblock form_widget_simple %}
 
@@ -106,47 +130,13 @@
     {% endspaceless %}
 {% endblock textarea_widget %}
 
-{% block mbh_city_widget %}
-    {{ form_widget(form) }}
-
-    {% block scripts %}
-        <script>
-            /*$("{{ id }}").select2({
-                minimumInputLength: 3,
-                ajax: {
-                    url: Routing.generate('hotel_city'),
-                    dataType: 'json',
-                    data: function (term) {
-                        return {
-                            query: term // search term
-                        };
-                    },
-                    results: function (data) {
-                        return { results: data };
-                    }
-                },
-                initSelection: function(element, callback) {
-                    var id = $(element).val();
-                    if (id !== "") {
-                        $.ajax(Routing.generate('hotel_city') + '/' + id, {
-                            dataType: "json"
-                        }).done(function(data) { callback(data); });
-                    }
-                },
-                dropdownCssClass: "bigdrop"
-            });*/
-        </script>
-    {% endblock scripts %}
-
-{% endblock mbh_city_widget %}
-
 {% block form_errors %}
     {% spaceless %}
         {% if errors|length > 0 %}
             <ul>
                 {% for error in errors %}
                     <li>{{ error.message|raw }}</li>
-                    {% endfor %}
+                {% endfor %}
             </ul>
         {% endif %}
     {% endspaceless %}

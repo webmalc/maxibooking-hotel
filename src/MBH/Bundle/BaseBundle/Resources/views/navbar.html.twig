@@ -1,62 +1,81 @@
-{% if '/management/' in app.request.uri %}
-    {% set management_menu_switch = true %}
-    {% set nav_class = 'inverse' %}
-{% else %}
-    {% set management_menu_switch = false %}
-    {% set nav_class = 'default' %}
-{% endif %}
+<nav class="navbar navbar-static-top" role="navigation">
+    <!-- Sidebar toggle button-->
+    <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+        <span class="sr-only">Свернуть меню</span>
+    </a>
+    <!-- Navbar Right Menu -->
+    <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
 
-<div class="navbar navbar-{{ nav_class }} navbar-fixed-top" id="navbar-main-wrapper">
-    <div class="container-fluid">
-        <div class="navbar-header dropdown">
-            <a href="{{ path('_welcome')}}" class="navbar-brand"><i class="mb-icon-logo navbar-logo"></i></a>
+            {% if selected_hotel()%}
 
-            {% if selected_hotel() is empty %}
-                <a href="{{ path('_welcome')}}" class="navbar-brand">{{ project_title }}</a>
-            {% else %}
-                {% if hotels()|length > 1 or is_granted('ROLE_ADMIN') %}
-                <a data-toggle="dropdown" href="#" class="navbar-brand" id="hotel-selector">{{ selected_hotel().name }} <i class="fa fa-caret-down"></i></a>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                        {% for hotel in hotels() %}
-                            <li>
-                                {% if title_url is defined  %}{% set hotel_url = title_url %}{% else %}{% set hotel_url = null %}{% endif%}
-                                <a href="{{ path('hotel_select', {'id': hotel.id, 'url': hotel_url}) }}" title="Выбрать отель" data-toggle="tooltip">{{ hotel.name }}</a>
+                <li class="dropdown notifications-menu">
+                    <!-- Menu toggle button -->
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                        <i class="fa fa-home"></i>&nbsp;{{ selected_hotel().name }}
+                        &nbsp;<i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="header">Выберете отель: </li>
+                        <li>
+                            <!-- Inner Menu: contains the notifications -->
+                            <ul class="menu">
+                                {% for hotel in hotels() %}
+                                    <li>
+                                        {% if title_url is defined  %}{% set hotel_url = title_url %}{% else %}{% set hotel_url = null %}{% endif%}
+                                        <a href="{{ path('hotel_select', {'id': hotel.id, 'url': hotel_url}) }}">
+                                            <i class="fa fa-home"></i>&nbsp;{{ hotel.name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li class="footer"><a href="{{ path('hotel_new') }}">
+                                    <i class="fa fa-plus"></i>Добавить отель</a>
                             </li>
-                        {% endfor %}
-                    
-                    {% if is_granted('ROLE_ADMIN') %}
-                    <li class="divider"></li>
-                    <li><a href="{{ path('hotel_new') }}"><i class="fa fa-plus"></i> Добавить отель</a></li>
-                    {% endif %}
+                        {% endif %}
+                    </ul>
+                </li>
+            {% endif %}
+
+            <!-- User Account Menu -->
+            <li class="dropdown user user-menu">
+                <!-- Menu Toggle Button -->
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <!-- The user image in the navbar-->
+                    <img src="{{ gravatar(app.user.email) }}" class="user-image" alt="{{ app.user.fullName(true) }}">
+                    <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                    <span class="hidden-xs">{{ app.user.fullName(true) }}&nbsp;<i class="fa fa-caret-down"></i></span>
+
+                </a>
+                <ul class="dropdown-menu">
+                    <!-- The user image in the menu -->
+                    <li class="user-header">
+                        <img src="{{ gravatar(app.user.email) }}" class="img-circle" alt="{{ app.user.fullName(true) }}">
+                        <p>
+                            {{ app.user.username }} - {{ app.user.fullName(true) }}
+                            <small>
+                                Вошел в {{ app.user.lastLogin|mbh_format }} {{ app.user.lastLogin|date('H:i') }}
+                                <br>v{{ version }}
+                            </small>
+                        </p>
+                    </li>
+                    <!-- Menu Footer-->
+                    <li class="user-footer">
+                        <div class="pull-left">
+                            <a href="{{ path('user_profile') }}" class="btn btn-default btn-flat">
+                                Профиль
+                            </a>
+                        </div>
+                        <div class="pull-right">
+                            <a href="{{ path('fos_user_security_logout') }}" class="btn btn-default btn-flat">
+                                <i class=""></i>&nbsp;Выйти
+                            </a>
+                        </div>
+                    </li>
                 </ul>
-                {% else %}
-                    <a href="{{ path('_welcome') }}" class="navbar-brand">{{ selected_hotel().name }}</a>
-                {% endif %}
-            {% endif %}
-
-            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
-        <div class="navbar-collapse collapse" id="navbar-main">
-
-            {% if selected_hotel() is empty %}
-                {% set create_hotel_menu = knp_menu_get('MBHBaseBundle:Builder:createHotelMenu', [], {'management': management_menu_switch}) %}
-                {{ knp_menu_render(create_hotel_menu) }}
-            {% else %}
-                {% set main_menu = knp_menu_get('MBHBaseBundle:Builder:mainMenu', [], {'management': management_menu_switch}) %}
-                {{ knp_menu_render(main_menu) }}
-
-                {% if is_granted('ROLE_ADMIN_HOTEL') %}
-                    {% set management_menu = knp_menu_get('MBHBaseBundle:Builder:managementMenu', [], {'management': management_menu_switch}) %}
-                    {{ knp_menu_render(management_menu) }}
-                {% endif%}
-            {% endif %}
-
-            {% set user_menu = knp_menu_get('MBHBaseBundle:Builder:userMenu', [], {'management': management_menu_switch}) %}
-            {{ knp_menu_render(user_menu) }}
-        </div>
+            </li>
+        </ul>
     </div>
-</div>
+</nav>

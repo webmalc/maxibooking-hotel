@@ -13,7 +13,7 @@
 
 {% if checkPackagePermissions(entity) %}
 
-    <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+    <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
         <div class="container-fluid">
 
             <ul class="nav navbar-nav">
@@ -23,7 +23,7 @@
                     </button>
                 </li>
                 <li>
-                    <button type="submit" name="save" class="btn btn-info navbar-btn"><i
+                    <button type="submit" name="save" class="btn btn-primary navbar-btn"><i
                                 class="fa fa-check-square-o"> </i> {{ save_text|default('package.actions.save'|trans({}, 'MBHPackageBundle')) }}
                     </button>
                 </li>

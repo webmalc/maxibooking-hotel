@@ -43,7 +43,8 @@ class HousingType extends AbstractType
                 'required' => false,
                 'group' => 'views.form.corpus.group.address',
                 'label' => 'views.corpus.city',
-                'translation_domain' => 'MBHHotelBundle'
+                'translation_domain' => 'MBHHotelBundle',
+                'attr' => ['class' => 'citySelect']
             ])
             ->add('settlement', 'text', [
                 'required' => false,

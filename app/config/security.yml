@@ -35,6 +35,7 @@ security:
                 domain:   ~
 
     role_hierarchy:
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
         ROLE_ADMIN:       [ROLE_SENIOR_MANAGER, ROLE_BOOKKEEPER, ROLE_ADMIN_HOTEL]
         ROLE_ADMIN_HOTEL: [ROLE_SENIOR_MANAGER, ROLE_BOOKKEEPER]
         ROLE_TASK_MANAGER: ROLE_USER

@@ -14,6 +14,7 @@ class TouristVisaType extends AbstractType
         $builder
             ->add('type', 'choice', [
                 'label' => 'tourist.visa.type_type',
+                'group' => 'visa',
                 'choices' => [
                     'visa' => 'Виза',
                     'residence' => 'Вид на жительство',
@@ -21,14 +22,17 @@ class TouristVisaType extends AbstractType
                 ]
             ])
             ->add('series', 'text', [
+                'group' => 'visa',
                 'label' => 'tourist.visa.type_series',
                 'required' => false,
             ])
             ->add('number', 'text', [
+                'group' => 'visa',
                 'label' => 'tourist.visa.type_number',
                 'required' => false,
             ])
             ->add('issued', 'date', [
+                'group' => 'visa',
                 'label' => 'tourist.visa.type_issued',
                 'required' => false,
                 'widget' => 'single_text',
@@ -36,6 +40,7 @@ class TouristVisaType extends AbstractType
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'),
             ])
             ->add('expiry', 'date', [
+                'group' => 'visa',
                 'label' => 'tourist.visa.type_expiry',
                 'required' => false,
                 'widget' => 'single_text',

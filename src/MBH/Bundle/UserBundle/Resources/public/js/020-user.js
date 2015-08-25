@@ -5,7 +5,7 @@ $(document).ready(function () {
     $('.password').pwstrength({
         ui: {
             showVerdictsInsideProgressBar: true,
-            verdicts: ["Плохой", "Обычный", "Хороший", "Отличный", "Супер"],
+            verdicts: ["Плохой", "Обычный", "Хороший", "Отличный", "Супер"]
         },
         common: {
             minChar: 8

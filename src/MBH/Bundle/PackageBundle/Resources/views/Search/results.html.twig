@@ -75,7 +75,8 @@
                         <td>
                             {{ result.roomType }}<br>
                             <small>
-                                {{ "search.results.total"|trans({}, "MBHPackageBundle") }}:
+                                {{ result.roomType.isHostel ? "search.results.total_beds"|trans({}, "MBHPackageBundle") : "search.results.total_rooms"|trans({}, "MBHPackageBundle") }}
+                                :
                                 <span class="package-search-book-count">{{ result.roomsCount }}</span>
                             </small>
                         </td>
@@ -124,6 +125,6 @@
         {% elseif results is iterable and results|length == 0 %}
             <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ "search.results.nothing_found_for_your_request"|trans({}, "MBHPackageBundle") }}</div>
         {% else %}
-            <div class="alert alert-info"><i class="fa fa-search"> </i> {{ "search.results.enter_search_data"|trans({}, "MBHPackageBundle") }} </div>
+            <div class="bg-gray color-palette alert"><i class="fa fa-search"> </i> {{ "search.results.enter_search_data"|trans({}, "MBHPackageBundle") }} </div>
         {% endif %}
 </div>

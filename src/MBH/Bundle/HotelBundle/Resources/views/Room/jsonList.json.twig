@@ -9,7 +9,7 @@
                 "<a href='{{ path('room_type_room_edit', { 'id': entity.id }) }}' rel='main' title='Редактирование записи' data-toggle='tooltip'>{{ entity.name }}</a>",
                 "{{ entity.housing }}",
                 "{{ entity.floor }}",
-                "{% if entity.status %}{{ entity.status.title }}{% endif %}",
+            "{% if entity.status %}{{ entity.status.title }}{% endif %}",
                 "{% include 'MBHHotelBundle:RoomType:roomListButtons.html.twig' with {'entity': entity} %}"
             ]{% if loop.index != entities.count(true) %},{% endif %}
         {% endfor %}

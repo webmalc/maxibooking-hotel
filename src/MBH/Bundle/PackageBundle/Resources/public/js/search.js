@@ -23,7 +23,7 @@ $(document).ready(function () {
                     if (data.error) {
                         errors.html(data.text).show();
                     } else {
-                        $('.findGuest').val(data.id).trigger('change');
+                        $('.findGuest').append($("<option/>", {value: data.id, text: data.text})).val(data.id).trigger('change');
                         form.trigger('reset');
                         form.find('select').select2('data', null);
                         guestModal.modal('hide');
@@ -61,6 +61,10 @@ $(document).ready(function () {
                     // select2
                     (function () {
                         var format = function (icon) {
+                            if (icon.id === undefined) {
+                                return;
+                            }
+
                             var arr = icon.id.split('_'),
                                 text = '';
                             ;
@@ -70,7 +74,7 @@ $(document).ready(function () {
                             for (var i = 1; i <= arr[1]; i++) {
                                 text += '<small><i class="fa fa-child"></i></small>';
                             }
-                            return text;
+                            return $(text);
 
                         };
 
@@ -80,8 +84,8 @@ $(document).ready(function () {
                                 allowClear: false,
                                 width: 'element',
                                 minimumResultsForSearch: -1,
-                                formatResult: format,
-                                formatSelection: format
+                                templateResult: format,
+                                templateSelection: format
                             });
                         });
                         $('.search-room-select').each(function () {
@@ -104,8 +108,8 @@ $(document).ready(function () {
                                 link = tr.find('.package-search-book'),
                                 oldHref = link.prop('href').replace(/&accommodation=.*?(?=(&|$))/, '');
 
-                            if (room.select2('data')) {
-                                roomId = room.select2('data').id;
+                            if (room.val()) {
+                                roomId = room.val();
                             }
                             if (roomId) {
                                 bookText.hide();
@@ -163,7 +167,7 @@ $(document).ready(function () {
                     (function () {
                         var show = function (tr) {
                                 var tourist = tr.find('.search-tourists-select'),
-                                    touristVal = tourist.select2('data').id,
+                                    touristVal = tourist.val(),
                                     touristArr = touristVal.split('_')
                                     ;
                                 tr.find('ul.package-search-prices').hide();
@@ -179,7 +183,7 @@ $(document).ready(function () {
                                 bookLink.prop('href', oldHref + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
                             }
                             ;
-                        $('.search-tourists-select').click(function () {
+                        $('.search-tourists-select').change(function () {
                             show($(this).closest('tr'));
                         });
                         $('.search-tourists-select').each(function () {
@@ -209,8 +213,8 @@ $(document).ready(function () {
                             oldHref = $(this).prop('href').replace(/&tourist=.*?(?=(&|$))/, ''),
                             id = null;
 
-                        if (touristSelect.select2('data')) {
-                            id = touristSelect.select2('data').id;
+                        if (touristSelect.val()) {
+                            id = touristSelect.val();
                         }
 
                         if (id) {
@@ -234,10 +238,15 @@ $(document).ready(function () {
                         (num <= 0) ? num = 0 : num;
                         numWrapper.text(num);
 
-                        if (roomSelect.select2('data')) {
-                            roomId = roomSelect.select2('data').id;
+                        if (roomSelect.val()) {
+                            roomId = roomSelect.val();
                         }
-                        roomSelect.find('option[value="' + roomId + '"]').addClass('hidden');
+                        roomSelect.find('option[value="' + roomId + '"]').attr('disabled', 'disabled');
+                        roomSelect.select2({
+                            placeholder: 'при заезде',
+                            allowClear: true,
+                            width: 'element',
+                        });
                         roomSelect.val(null).trigger('change');
                     });
                 }
@@ -251,7 +260,7 @@ $(document).ready(function () {
                 }
                 var wrapper = $('#package-search-results-wrapper');
                 window.location.hash = form.serialize();
-                wrapper.html('<div class="alert alert-info"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+                wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
                 send(form.serialize());
             }
 

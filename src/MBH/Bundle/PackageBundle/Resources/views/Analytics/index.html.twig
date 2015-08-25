@@ -1,10 +1,11 @@
 {% extends 'MBHPackageBundle:Analytics:layout.html.twig' %}
 
 {% set small_title = 'analytics.layout.analytics'|trans({}, 'MBHPackageBundle') %}
+{% set layout = 'box' %}
 
 {% block content %}
 
-    <div class="well">
+    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'analytics-filter-widget'} %}
         <form id="analytics-filter" class="form-inline remember" role="form">
             <div class="input">
                 <i class="fa fa-calendar" title={{ 'analytics.index.sales_date'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>&nbsp <input
@@ -65,7 +66,7 @@
                                                                                                      value="1"/>
             </div>
         </form>
-    </div>
+    </div></div>
 
     <div id="analytics_filter_content"></div>
 

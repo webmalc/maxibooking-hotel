@@ -3,7 +3,6 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Controller\HotelableControllerInterface;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\BaseBundle\Service\Messenger\NotifierMessage;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
@@ -24,7 +23,7 @@ use MBH\Bundle\HotelBundle\Form\TaskType;
  * Class TaskController
  * @Route("/task")
  */
-class TaskController extends Controller// implements HotelableControllerInterface
+class TaskController extends Controller
 {
     /**
      * @Route("/", name="task")
@@ -80,6 +79,13 @@ class TaskController extends Controller// implements HotelableControllerInterfac
         } else {
             throw $this->createAccessDeniedException();
         }
+    }
+
+    private function getRoleList()
+    {
+        $roles = array_keys($this->container->getParameter('security.role_hierarchy.roles'));
+
+        return array_combine($roles, $roles);
     }
 
     /**
@@ -154,12 +160,12 @@ class TaskController extends Controller// implements HotelableControllerInterfac
         $entity->setStatus($status);
         $room = $entity->getRoom();
 
-        if($status == Task::STATUS_PROCESS) {
-            if(!$entity->getPerformer()) {
+        if ($status == Task::STATUS_PROCESS) {
+            if (!$entity->getPerformer()) {
                 $entity->setPerformer($this->getUser());
             }
             $entity->setStart(new \DateTime());
-        } elseif($status == Task::STATUS_CLOSED) {
+        } elseif ($status == Task::STATUS_CLOSED) {
             $entity->setEnd(new \DateTime());
         }
         $this->dm->persist($room);
@@ -219,33 +225,6 @@ class TaskController extends Controller// implements HotelableControllerInterfac
         ];
     }
 
-    private function sendNotifications(Task $task)
-    {
-        $recipients = [];
-        if($task->getRole()) {
-            $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy([
-                'roles' => $task->getRole(),
-                'taskNotify' => true,
-                'email' => ['$exists' => true],
-                'enabled' => true,
-            ]);
-        }
-
-        if($task->getPerformer() && $task->getPerformer()->getTaskNotify() && !in_array($task->getPerformer(), $recipients)) {
-            $recipients[] = $task->getPerformer();
-        }
-        if($recipients) {
-            $message = new NotifierMessage();
-            $message->setSubject('Вам назначена новая задача');
-            $message->setText('Вам назначили задачу "'.$task->getType()->getTitle().'"');
-            $message->setLink($this->generateUrl('task'));
-            foreach($recipients as $recipient) {
-                $message->addRecipient([$recipient->getEmail() => $recipient->getFullName(true)]);
-            }
-            $this->get('mbh.notifier.mailer')->setMessage($message)->notify();
-        }
-    }
-
     private function getFormTaskTypeOptions()
     {
         $statuses = $this->getParameter('mbh.task.statuses');
@@ -263,10 +242,31 @@ class TaskController extends Controller// implements HotelableControllerInterfac
         ];
     }
 
-    private function getRoleList()
+    private function sendNotifications(Task $task)
     {
-        $roles = array_keys($this->container->getParameter('security.role_hierarchy.roles'));
-        return array_combine($roles, $roles);
+        $recipients = [];
+        if ($task->getRole()) {
+            $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy([
+                'roles' => $task->getRole(),
+                'taskNotify' => true,
+                'email' => ['$exists' => true],
+                'enabled' => true,
+            ]);
+        }
+
+        if ($task->getPerformer() && $task->getPerformer()->getTaskNotify() && !in_array($task->getPerformer(), $recipients)) {
+            $recipients[] = $task->getPerformer();
+        }
+        if ($recipients) {
+            $message = new NotifierMessage();
+            $message->setSubject('Вам назначена новая задача');
+            $message->setText('Вам назначили задачу "' . $task->getType()->getTitle() . '"');
+            $message->setLink($this->generateUrl('task'));
+            foreach ($recipients as $recipient) {
+                $message->addRecipient([$recipient->getEmail() => $recipient->getFullName(true)]);
+            }
+            $this->get('mbh.notifier.mailer')->setMessage($message)->notify();
+        }
     }
 
     /**

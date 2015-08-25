@@ -1,10 +1,12 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title = 'package.index.reservations_list'|trans({}, 'MBHPackageBundle') %}
+{% set layout = 'box' %}
 
 {% block content %}
 
-    <div class="well" id="package-table-filter-well">
+
+    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'package-table-filter-widget'} %}
         <form id="package-table-filter" class="form-inline" role="form">
             <div class="input">
                 <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp <input type="text"
@@ -77,7 +79,7 @@
             <input type="hidden" id="package-filter-quick-link" value="">
         </form>
 
-    </div>
+    </div></div>
 
     <ul id="package-table-quick-links">
         <li><a class="btn btn-xs btn-default" data-value="begin-today"
@@ -131,7 +133,7 @@
         </tbody>
     </table>
 
-    <div class="text-center alert alert-warning" id="package-summary">
+    <div class="text-center bg-gray color-palette alert" id="package-summary">
         <span class="package-summary-row"><b>{{ 'package.index.summary.nights'|trans({}, 'MBHPackageBundle') }}
                 : </b> <span id="package-summary-nights">-</span></span>
         <span class="package-summary-row"><b>{{ 'package.index.summary.guests'|trans({}, 'MBHPackageBundle') }}
@@ -144,7 +146,7 @@
                 : </b> <span id="package-summary-debt">-</span></span>
     </div>
 
-    <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+    <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
         <div class="container-fluid">
             <ul class="nav navbar-nav">
                 <li>

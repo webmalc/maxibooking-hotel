@@ -115,16 +115,16 @@ class Extension extends \Twig_Extension
     public function friendlyInterval(\DateInterval $interval)
     {
         $format = [];
-        if($interval->d > 0) {
+        if ($interval->d > 0) {
             $format[] = '%d {days}';
         }
-        if($interval->h > 0) {
+        if ($interval->h > 0) {
             $format[] .= '%h {hours}';
         }
-        if($interval->i > 0) {
+        if ($interval->i > 0) {
             $format[] .= '%i {minutes}';
         }
-        $format = implode(' ',$format);
+        $format = implode(' ', $format);
         $format = str_replace(['{days}', '{hours}', '{minutes}'], ['д.', 'ч.', 'мин.'], $format);
         return $interval->format($format);
     }

@@ -6,7 +6,7 @@
 
 {% block content %}
 
-    <div class="well">
+    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {id: 'room-type-table-filter-widget'} %}
         <form id="room-types-table-filter" class="form-inline form-icon-label">
             <div class="form-group">
                 <label><i class="fa fa-calendar" title='Дата' data-toggle='tooltip'></i></label>
@@ -23,7 +23,7 @@
                 </select>
             </div>
         </form>
-    </div>
+    </div></div>
 
     <div id="room-types-table">
         {% include 'MBHPackageBundle:Report:roomTypesTable.html.twig' with {roomTypes:roomTypes, facilities: facilities} %}

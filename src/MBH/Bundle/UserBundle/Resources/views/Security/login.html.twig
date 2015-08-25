@@ -3,44 +3,42 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
 {% block content %}
-            <div class="panel panel-primary" id="login-form-panel">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{{ 'views.security.login.enter_in'|trans({}, 'FOSUserBundle') }} {{project_title}}</h3>
-                </div>
-                <div class="panel-body">
-                    {% if error %}
-                    <div class="alert alert-danger alert-dismissable">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        {{ error.messageKey|trans(error.messageData, 'security') }}
-                    </div>
-                    {% endif %}
 
-                    <form name="loginForm" action="{{ path("fos_user_security_check") }}" class="form login-form" role="form" method="post" accept-charset="UTF-8">
+    <form name="loginForm" action="{{ path("fos_user_security_check") }}" class="form login-form" role="form"
+          method="post" accept-charset="UTF-8">
 
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                            <input type="text" name="_username" class="form-control" placeholder="{{ 'security.login.username'|trans({}, 'FOSUserBundle') }}" required>
-                        </div>
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input type="password" name="_password" class="form-control" placeholder="{{ 'security.login.password'|trans({}, 'FOSUserBundle') }}" required>
-                        </div>
-                        <div class="checkbox">
-                            <div class="row">
-                                <div class="col-xs-6">
-                                    <label><input type="checkbox" class="plain-html" name="_remember_me" value="on"> {{ 'security.login.remember_me'|trans({}, 'FOSUserBundle') }}</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <button type="submit" name="_submit" class="btn btn-success btn-block">
-                                <i class="fa fa-sign-in"> </i> {{ 'security.login.submit'|trans({}, 'FOSUserBundle') }}
-                            </button>
-                        </div>
-
-                        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
-                    </form>
-
-                </div>
+        {% if error %}
+            <div class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                {{ error.messageKey|trans(error.messageData, 'security') }}
             </div>
+        {% endif %}
+
+        <div class="form-group has-feedback">
+            <input type="text" name="_username" class="form-control" placeholder="{{ 'security.login.username'|trans({}, 'FOSUserBundle') }}" required>
+            <span class="glyphicon glyphicon-user form-control-feedback"></span>
+        </div>
+        <div class="form-group has-feedback">
+            <input type="password" name="_password" class="form-control"
+                   placeholder="{{ 'security.login.password'|trans({}, 'FOSUserBundle') }}" required>
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+        </div>
+        <div class="row">
+            <div class="col-xs-8">
+                <div class="checkbox icheck">
+
+                        <input type="checkbox" name="_remember_me"
+                               value="on"> {{ 'security.login.remember_me'|trans({}, 'FOSUserBundle') }}
+
+                </div>
+            </div><!-- /.col -->
+            <div class="col-xs-4">
+                <button type="submit" name="_submit" class="btn btn-primary btn-block btn-flat">
+                    <i class="fa fa-sign-in"></i> {{ 'security.login.submit'|trans({}, 'FOSUserBundle') }}
+                </button>
+            </div><!-- /.col -->
+        </div>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
+    </form>
 {% endblock %}

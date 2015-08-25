@@ -84,12 +84,12 @@ class User extends BaseUser
     protected $notifications = true;
 
     /**
-    * @var boolean
-    * @Gedmo\Versioned
-    * @ODM\Boolean()
-    * @Assert\NotNull()
-    * @Assert\Type(type="boolean")
-    */
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
     protected $taskNotify = true;
 
     /**
@@ -147,6 +147,16 @@ class User extends BaseUser
     }
     
     /**
+     * Get firstName
+     *
+     * @return string $firstName
+     */
+    public function getFirstName()
+    {
+        return $this->firstName;
+    }
+
+    /**
      * Set firstName
      *
      * @param string $firstName
@@ -159,13 +169,13 @@ class User extends BaseUser
     }
 
     /**
-     * Get firstName
+     * Get lastName
      *
-     * @return string $firstName
+     * @return string $lastName
      */
-    public function getFirstName()
+    public function getLastName()
     {
-        return $this->firstName;
+        return $this->lastName;
     }
 
     /**
@@ -178,16 +188,6 @@ class User extends BaseUser
     {
         $this->lastName = $lastName;
         return $this;
-    }
-
-    /**
-     * Get lastName
-     *
-     * @return string $lastName
-     */
-    public function getLastName()
-    {
-        return $this->lastName;
     }
 
     /**
@@ -222,6 +222,16 @@ class User extends BaseUser
         $this->birthday = $birthday;
     }
 
+    public function __toString()
+    {
+        return $this->getName();
+    }
+
+    public function getName()
+    {
+        return $this->getFullName(true);
+    }
+
     /**
      * Return user full name
      * @param boolean $full
@@ -230,17 +240,27 @@ class User extends BaseUser
     public function getFullName($full = false)
     {
         $username = $this->username;
-        
+
         if (!empty($this->firstName)) {
-            
+
             $username = $this->firstName;
-            
+
             if (!empty($this->lastName) && $full) {
                 $username = $this->lastName . ' ' . $this->firstName;
             }
         }
-        
+
         return $username;
+    }
+
+    /**
+     * Get emailNotifications
+     *
+     * @return boolean $emailNotifications
+     */
+    public function getNotifications()
+    {
+        return $this->notifications;
     }
 
     /**
@@ -253,16 +273,6 @@ class User extends BaseUser
     {
         $this->notifications = $notifications;
         return $this;
-    }
-
-    /**
-     * Get emailNotifications
-     *
-     * @return boolean $emailNotifications
-     */
-    public function getNotifications()
-    {
-        return $this->notifications;
     }
 
     /**
@@ -290,6 +300,16 @@ class User extends BaseUser
     }
 
     /**
+     * Get emailErrors
+     *
+     * @return boolean $emailErrors
+     */
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+
+    /**
      * Set emailErrors
      *
      * @param boolean $errors
@@ -302,13 +322,13 @@ class User extends BaseUser
     }
 
     /**
-     * Get emailErrors
+     * Get emailReports
      *
-     * @return boolean $emailErrors
+     * @return boolean $emailReports
      */
-    public function getErrors()
+    public function getReports()
     {
-        return $this->errors;
+        return $this->reports;
     }
 
     /**
@@ -321,16 +341,6 @@ class User extends BaseUser
     {
         $this->reports = $reports;
         return $this;
-    }
-
-    /**
-     * Get emailReports
-     *
-     * @return boolean $emailReports
-     */
-    public function getReports()
-    {
-        return $this->reports;
     }
 
     /**

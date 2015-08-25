@@ -1,6 +1,7 @@
 {% extends 'MBHPriceBundle:Service:layout.html.twig' %}
 
 {% set small_title = "список" %}
+{% set layout = "tabs" %}
 
 {% block content %}
 
@@ -42,8 +43,8 @@
                             <tr>
                                 <th class="td-xs"></th>
                                 <th>Название</th>
-                                <th class="td-xl">Цена</th>
-                                <th class="td-md">Тип расчета</th>
+                                <th class="td-md">Цена</th>
+                                <th class="td-sm">Тип расчета</th>
                                 <th class="td-sm">Дата</th>
                                 <th class="td-sm">Влкючена</th>
                                 <th class="td-md"></th>
@@ -83,7 +84,7 @@
                     <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> В этой категории нет ни одной услуги. <a href="{{ path('price_service_category_entry_new', {'id': entity.id }) }}">Добавить услугу?</a></div>
                 {% endif %}
 
-                <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
+                <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
                     <div class="container-fluid">
                         <ul class="nav navbar-nav">
                             <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить изменения</button></li>

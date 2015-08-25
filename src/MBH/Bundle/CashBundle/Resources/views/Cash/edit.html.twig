@@ -1,6 +1,7 @@
 {% extends 'MBHCashBundle:Cash:layout.html.twig' %}
 
 {% set small_title = 'views.cash.edit.edit_document'|trans({}, 'MBHCashBundle') ~ entity.id %}
+{% set layout = 'box' %}
 
 {% block scripts %}
     {{ parent() }}

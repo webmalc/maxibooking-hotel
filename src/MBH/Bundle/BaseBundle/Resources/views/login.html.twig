@@ -1,5 +1,7 @@
 {% extends 'MBHBaseBundle::meta.html.twig' %}
 
+{% set loginPage = true  %}
+
 {% block styles %}
     {{ parent() }}
 
@@ -10,12 +12,20 @@
 
 {% block body %}
     {{ parent() }}
-    
-    <div class="container-fluid main-container">
+
+    <div class="login-box">
+
         {% block messages %}
             {% include 'MBHBaseBundle::messages.html.twig' %}
         {% endblock %}
-        
-        {% block content %}{% endblock %}
+
+        <div class="login-logo">
+            <a href="{{ path('_welcome') }}"><b>Maxi</b>Booking</a>
+        </div>
+
+        <div class="login-box-body">
+            {% block content %}{% endblock %}
+        </div>
     </div>
+
 {% endblock %}

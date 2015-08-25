@@ -1,0 +1,43 @@
+{
+  "name": "mb",
+  "version": "1.0.2",
+  "authors": [
+    "webmalc <webmalc@gmail.com>"
+  ],
+  "description": "MaxiBooking project",
+  "keywords": [
+    "mb"
+  ],
+  "license": "MIT",
+  "homepage": "https://maxi-booking.ru/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "web/assets/vendor/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "bootswatch": "~3.3.5",
+    "font-awesome": "~4.4.0",
+    "jquery": "~2.1.4",
+    "bootstrap-switch": "3.0.0",
+    "datatables": "~1.10.8",
+    "bootstrap-datepicker": "~1.4.0",
+    "fancybox": "~2.1.5",
+    "tinycolor": "~1.2.1",
+    "jquery.cookie": "~1.4.1",
+    "tinymce": "~4.2.4",
+    "bootstrap-touchspin": "~3.0.1",
+    "jquery-mask-plugin": "~1.13.4",
+    "phoenix": "~1.2.3",
+    "jquery-number": "~2.1.6",
+    "bootstrap-timepicker": "~0.5.1",
+    "bootstrap-file-input": "grevory/bootstrap-file-input#~1.0.0",
+    "admin-lte": "~2.3.0",
+    "ionicons": "~2.0.0",
+    "select2": "~4.0.0"
+  }
+}
