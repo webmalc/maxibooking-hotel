@@ -231,7 +231,7 @@ class OrganizationType extends AbstractType
                     if ($id) {
                         $queryBuilder->field('id')->notEqual($id);
                     }
-                    
+
                     $organizations = $queryBuilder->getQuery()->execute();
                     $exceptHotelIDs = [];
                     foreach ($organizations->getMongoCursor() as $organization) {

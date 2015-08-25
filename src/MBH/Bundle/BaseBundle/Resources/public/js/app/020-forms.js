@@ -370,6 +370,7 @@ var docReadyForms = function () {
                     });
                 }
 
+                $select.val(null);
                 $select.attr('name', inputName.replace(/(\[.*\])/g, '') + '_fake');
                 if (!hasSelect2) {
                     console.log('init select 2');
