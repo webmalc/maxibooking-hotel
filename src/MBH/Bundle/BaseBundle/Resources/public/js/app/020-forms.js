@@ -321,132 +321,154 @@ var docReadyForms = function () {
         value: null,
         emptyHelp: null
     };
+
+    function tagsSelectWidget(element, options)
+    {
+        var that = this,
+            $element = $(element);
+        if ($element.is("select")) {
+            $element = $element.wrap('<div class="' + mainClass + '"></div>').closest('.' + mainClass).prepend('<div class="list"></div>');
+        }
+        var $select = $element.find('select'),
+            $list = $element.find('.list'),
+            inputName = $select.attr('name'),
+            isMultiple = $select.attr('multiple'),
+            isRequired = $select.attr('required'),
+            hasSelect2 = $select.data('select2'),
+            value = options.value;
+
+        if (isMultiple) {
+            if($select.val() && options.value === false) {
+                value = $select.val();
+            }
+            $select.removeAttr('multiple');
+        } else {
+            inputName += '[]';
+        }
+        if (isRequired) {
+            $select.removeAttr('required');
+        }
+
+
+        this.items = {
+            add: function (value, text, title) {
+                var input = '<input type="hidden" name="' + inputName + '" value="' + value + '">';
+                var item = '<div class="btn btn-xs btn-default" data-toggle="tooltip" data-original-title="' + title + '">' + text + input + '<div>';
+                $list.append(item);
+            },
+            addIcon: function (value, title, icon)
+            {
+                var text = '<i class="fa fa-2x ' + icon + '"></i>';// + text;
+                this.add(value, text, title);
+            },
+            clear: function()
+            {
+                $list.find('.btn').remove();
+            },
+            isEmpty: function()
+            {
+                return $list.find('.btn').length == 0;
+            }
+        }
+
+
+        if ($list.find('.btn').length == 0 && value.length > 0) {
+            value.forEach(function (value) {
+                var $option = $select.find('option[value=' + value + ']');
+                if ($option.length == 1) {
+                    that.items.addIcon(value, $option.text(), $option.data('icon'));
+                }
+            });
+        }
+
+        $select.val(null);
+        $select.attr('name', inputName.replace(/(\[.*\])/g, '') + '_fake');
+        if (!hasSelect2) {
+            $select.select2({
+                placeholder: $select.attr('placeholder'),
+                width: 'resolve',
+                closeOnSelect: false,
+                templateResult: function(state) {
+                    if (!state.id) {
+                        return state.text;
+                    }
+                    var icon = state.element.getAttribute('data-icon'),
+                        html = '<div><i class="fa ' + icon + '"></i> ' + state.text + '<div>';
+                    return $(html);
+                }
+            });
+        }
+
+        this.help = {
+            inited: false,
+            init:function()
+            {
+                this.text = options.emptyHelp;
+                this.$help = $('<small class="hide">' + this.text + '</small>');
+                $list.append(this.$help);
+                this.inited = true;
+            },
+            show: function()
+            {
+                if(this.inited) {
+                    this.$help.removeClass('hide');
+                }
+            },
+            hide: function()
+            {
+                if(this.inited) {
+                    this.$help.addClass('hide');
+                }
+            },
+            update: function()
+            {
+                if(this.inited) {
+                    that.items.isEmpty() ? this.show() : this.hide();
+                }
+            }
+        }
+        if(options.emptyHelp) {
+            this.help.init();
+        }
+
+        $select.on('select2:selecting', function (event) {
+            var element = event.params.args.data.element;
+            that.items.addIcon(element.value, element.text, element.getAttribute('data-icon'));
+            that.help.hide();
+            event.preventDefault();
+        });
+
+        $list.on('click', '.btn', function () {
+            $list.find('[data-toggle=tooltip]').tooltip('hide');
+            $(this).remove();
+            that.help.update();
+        });
+
+        this.help.update();
+        $element.data('tagsSelectWidget', this);
+    }
+
     var methods = {
         init : function (options) {
             options = $.extend({}, defaultOption, options);
             return this.each(function () {
-                function addItem($list, value, text, title) {
-                    var input = '<input type="hidden" name="' + inputName + '" value="' + value + '">';
-                    var item = '<div class="btn btn-xs btn-default" data-toggle="tooltip" data-original-title="' + title + '">' + text + input + '<div>';
-                    console.log(input);
-                    $list.append(item);
-                }
-                function addIconItem($list, value, title, icon)
-                {
-                    var text = '<i class="fa fa-2x ' + icon + '"></i>';// + text;
-                    addItem($list, value, text, title);
-                }
-                var $widget = $(this);
-
-                if ($widget.is("select")) {
-                    $widget = $widget.wrap('<div class="' + mainClass + '"></div>').closest('.' + mainClass).prepend('<div class="list"></div>');
-                }
-                var $select = $widget.find('select');
-                var $list = $widget.find('.list');
-                var inputName = $select.attr('name');
-                var isMultiple = $select.attr('multiple');
-                var isRequired = $select.attr('required');
-                var hasSelect2 = $select.data('select2');
-                var value = options.value;
-                if (isMultiple) {
-                    if($select.val() && options.value === false) {
-                        value = $select.val();
-                    }
-                    $select.removeAttr('multiple');
-                } else {
-                    inputName += '[]';
-                }
-                if (isRequired) {
-                    $select.removeAttr('required');
-                }
-                if ($list.find('.btn').length == 0 && value.length > 0) {
-                    //$widget.tagsSelectWidget('update', value);
-                    value.forEach(function (value) {
-                        var $option = $select.find('option[value=' + value + ']');
-                        if ($option.length == 1) {
-                            addIconItem($widget.find('.list'), value, $option.text(), $option.data('icon'));
-                        }
-                    });
-                }
-
-                $select.val(null);
-                $select.attr('name', inputName.replace(/(\[.*\])/g, '') + '_fake');
-                if (!hasSelect2) {
-                    $select.select2({
-                        placeholder: $select.attr('placeholder'),
-                        width: 'resolve',
-                        closeOnSelect: false,
-                        templateResult: function(state) {
-                            if (!state.id) {
-                                return state.text;
-                            }
-                            var icon = state.element.getAttribute('data-icon'),
-                                html = '<div><i class="fa ' + icon + '"></i> ' + state.text + '<div>';
-                            return $(html);
-                        }
-                    });
-                }
-
-
-                var $help = $('<small class="hide">' + options.emptyHelp + '</small>');
-                $list.append($help);
-                function showHelp()
-                {
-                    if (options.emptyHelp) {
-                        $help.removeClass('hide');
-                    }
-                }
-
-                function hideHelp()
-                {
-                    if (options.emptyHelp) {
-                        $help.addClass('hide');
-                    }
-                }
-
-                function updateHelp()
-                {
-                    var isEmpty = $list.find('.btn').length == 0;
-                    if(isEmpty && options.emptyHelp) {
-                        showHelp();
-                    } else {
-                        hideHelp();
-                    }
-                }
-
-                $select.on('select2:selecting', function (event) {
-                    var element = event.params.args.data.element;
-                    addIconItem($widget.find('.list'), element.value, element.text, element.getAttribute('data-icon'));
-                    hideHelp();
-                    event.preventDefault();
-                });
-
-                $list.on('click', '.btn', function () {
-                    $list.find('[data-toggle=tooltip]').tooltip('hide');
-                    $(this).remove();
-                    updateHelp();
-                });
-
-                updateHelp();
+                var widget = new tagsSelectWidget(this, options);
             });
         },
         clear : function () {
             return this.each(function () {
-                $(this).find('.list').empty();
-                //updateHelpText();
+                var widget = $(this).data('tagsSelectWidget');
+                widget.items.clear();
             });
         },
         update : function (values) {
-            this.each(function () {
-                var $widget = $(this);
-                if (!$widget.hasClass(mainClass)) {
-                    throw new Error('TagsSelectWidget has not ' + mainClass + 'class');
-                }
-                //todo..
+            return this.each(function () {
+                //todo
+                //var widget = $(this).data('tagsSelectWidget');
+                //widget.items.update(values);
             });
         }
     };
-
 
     $.fn.tagsSelectWidget = function (method) {
         if (methods[method]) {
@@ -458,7 +480,6 @@ var docReadyForms = function () {
         }
     };
 })(window.jQuery);
-
 $('.tags-select-widget').tagsSelectWidget();
 $('.tags-select-input-widget').tagsSelectWidget();
 
