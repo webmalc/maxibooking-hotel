@@ -52,13 +52,13 @@ class RoomController extends BaseController
     /**
      * Delete room.
      *
-     * @Route("/{roomType}/{id}/delete", name="room_type_room_delete")
+     * @Route("/{id}/delete", name="room_type_room_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      */
-    public function deleteAction($roomType, $id)
+    public function deleteAction($id)
     {
-        return $this->deleteEntity($id, 'MBHHotelBundle:Room', 'room_type', ['tab' => $roomType]);
+        return $this->deleteEntity($id, 'MBHHotelBundle:Room', 'room_type');
     }
 
     /**

@@ -336,27 +336,6 @@ var docReadyForms = function () {
                     var text = '<i class="fa fa-2x ' + icon + '"></i>';// + text;
                     addItem($list, value, text, title);
                 }
-
-                function addHelp()
-                {
-                    $list.html('<small>' + options.emptyHelp + '</small>');
-                }
-
-                function removeHelp()
-                {
-                    $list.find('small').remove();
-                }
-
-                function updateHelp()
-                {
-                    var isEmpty = $list.find('.btn').length == 0;
-                    if(isEmpty && options.emptyHelp) {
-                        addHelp();
-                    } else {
-                        removeHelp;
-                    }
-                }
-
                 var $widget = $(this);
 
                 if ($widget.is("select")) {
@@ -407,10 +386,38 @@ var docReadyForms = function () {
                         }
                     });
                 }
+
+
+                var $help = $('<small class="hide">' + options.emptyHelp + '</small>');
+                $list.append($help);
+                function showHelp()
+                {
+                    if (options.emptyHelp) {
+                        $help.removeClass('hide');
+                    }
+                }
+
+                function hideHelp()
+                {
+                    if (options.emptyHelp) {
+                        $help.addClass('hide');
+                    }
+                }
+
+                function updateHelp()
+                {
+                    var isEmpty = $list.find('.btn').length == 0;
+                    if(isEmpty && options.emptyHelp) {
+                        showHelp();
+                    } else {
+                        hideHelp();
+                    }
+                }
+
                 $select.on('select2:selecting', function (event) {
                     var element = event.params.args.data.element;
                     addIconItem($widget.find('.list'), element.value, element.text, element.getAttribute('data-icon'));
-                    removeHelp();
+                    hideHelp();
                     event.preventDefault();
                 });
 

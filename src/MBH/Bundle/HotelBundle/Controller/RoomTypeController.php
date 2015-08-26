@@ -38,12 +38,12 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             ->execute();
 
         if (!$entities->count()) {
-            return $this->redirect($this->generateUrl('room_type_new'));
+            return $this->redirectToRoute('room_type_new');
         }
 
-        return array(
-            'entities' => $entities,
-        );
+        return [
+            'entities' => $entities
+        ];
     }
 
     /**
