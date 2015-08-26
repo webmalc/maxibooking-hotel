@@ -173,7 +173,9 @@ class OrganizationController extends Controller
                     $organization->upload();
                 }
 
-                return $this->redirect($this->generateUrl('organizations'));
+                return $this->isSavedRequest() ?
+                    $this->redirectToRoute('edit_organization', ['id' => $organization->getId()]) :
+                    $this->redirectToRoute('organizations');
             }
         }
 
