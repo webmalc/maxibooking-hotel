@@ -31,6 +31,9 @@
 {% block scripts %}
     {{ parent() }}
     <script>
-        $('#{{ (form.facilities.vars.id) }}').tagsSelectWidget({value: {% autoescape false %}{{ form.facilities.vars.value|json_encode }}{% endautoescape %}});
+        $('#{{ (form.facilities.vars.id) }}').tagsSelectWidget({
+            value: {% autoescape false %}{{ form.facilities.vars.value|json_encode }}{% endautoescape %},
+            emptyHelp: '{{ 'views.roomType.help.empty_facilities'|trans({}, 'MBHHotelBundle') }}'
+        });
     </script>
 {% endblock %}

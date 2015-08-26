@@ -318,7 +318,8 @@ var docReadyForms = function () {
 (function ($) {
     var mainClass = 'tags-select-widget';
     var defaultOption = {
-        value: null
+        value: null,
+        emptyHelp: null
     };
     var methods = {
         init : function (options) {
@@ -326,7 +327,7 @@ var docReadyForms = function () {
             return this.each(function () {
                 function addItem($list, value, text, title) {
                     var input = '<input type="hidden" name="' + inputName + '" value="' + value + '">';
-                    var item = '<div class="btn btn-xs btn-default" data-toggle="tooltip" data-original-title="' + title + '">' + text + ' <i class="fa fa-times"></i>' + input + '<div>';
+                    var item = '<div class="btn btn-xs btn-default" data-toggle="tooltip" data-original-title="' + title + '">' + text + input + '<div>';
                     console.log(input);
                     $list.append(item);
                 }
@@ -334,6 +335,26 @@ var docReadyForms = function () {
                 {
                     var text = '<i class="fa fa-2x ' + icon + '"></i>';// + text;
                     addItem($list, value, text, title);
+                }
+
+                function addHelp()
+                {
+                    $list.html('<small>' + options.emptyHelp + '</small>');
+                }
+
+                function removeHelp()
+                {
+                    $list.find('small').remove();
+                }
+
+                function updateHelp()
+                {
+                    var isEmpty = $list.find('.btn').length == 0;
+                    if(isEmpty && options.emptyHelp) {
+                        addHelp();
+                    } else {
+                        removeHelp;
+                    }
                 }
 
                 var $widget = $(this);
@@ -372,8 +393,6 @@ var docReadyForms = function () {
                 $select.val(null);
                 $select.attr('name', inputName.replace(/(\[.*\])/g, '') + '_fake');
                 if (!hasSelect2) {
-                    console.log('init select 2');
-                    console.log($select.attr('placeholder'));
                     $select.select2({
                         placeholder: $select.attr('placeholder'),
                         width: 'resolve',
@@ -391,17 +410,23 @@ var docReadyForms = function () {
                 $select.on('select2:selecting', function (event) {
                     var element = event.params.args.data.element;
                     addIconItem($widget.find('.list'), element.value, element.text, element.getAttribute('data-icon'));
+                    removeHelp();
                     event.preventDefault();
                 });
+
                 $list.on('click', '.btn', function () {
                     $list.find('[data-toggle=tooltip]').tooltip('hide');
                     $(this).remove();
+                    updateHelp();
                 });
+
+                updateHelp();
             });
         },
         clear : function () {
             return this.each(function () {
                 $(this).find('.list').empty();
+                //updateHelpText();
             });
         },
         update : function (values) {

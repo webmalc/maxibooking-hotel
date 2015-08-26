@@ -80,4 +80,5 @@ migration.card: Миграционная карта
 visa: Виза
 
 
-form.facilitiesType.label: 'Услуги'
+form.facilitiesType.label: 'Удобства'
+form.facilitiesType.placeholder: 'Выберите удобства'

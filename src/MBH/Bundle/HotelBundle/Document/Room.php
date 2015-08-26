@@ -293,9 +293,8 @@ class Room extends Base
      */
     public function getAllFacilities()
     {
-        return $this->getFacilities() ?
-            $this->getFacilities() :
-            ($this->getRoomType() ? $this->getRoomType()->getFacilities() : []);
+        return count($this->getFacilities()) > 0 ? $this->getFacilities() :
+            ($this->getRoomType() ? $this->getRoomType()->getAllFacilities() : []);
     }
 
     /**

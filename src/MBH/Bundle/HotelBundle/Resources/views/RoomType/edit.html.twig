@@ -23,6 +23,9 @@
 {% block scripts %}
     {{ parent() }}
     <script>
-        $('#{{ (form.facilities.vars.id) }}').tagsSelectWidget({value: {% autoescape false %}{{ form.facilities.vars.value|json_encode }}{% endautoescape %}});
+        $('#{{ (form.facilities.vars.id) }}').tagsSelectWidget({
+            value: {% autoescape false %}{{ form.facilities.vars.value|json_encode }}{% endautoescape %},
+            emptyHelp: '{{ 'form.roomTypeType.help.empty_facilities'|trans({}) }}'
+        });
     </script>
 {% endblock %}

@@ -59,7 +59,7 @@ class FacilitiesType extends AbstractType
             'translation_domain' => 'messages',
             'attr' => [
                 'class' => 'plain-html',
-                'placeholder' => 'Выберите теги'
+                'placeholder' => 'form.facilitiesType.placeholder'
             ],
             'empty_value' => '',
             'label' => 'form.facilitiesType.label',

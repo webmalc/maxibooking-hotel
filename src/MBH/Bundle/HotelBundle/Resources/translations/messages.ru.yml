@@ -64,6 +64,8 @@ form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: Неко
 form.roomTypeGenerateRoomsType.too_many_generation_numbers: Слишком большое количество записей для генерации.
 form.roomTypeGenerateRoomsType.housing: Корпус
 form.roomTypeGenerateRoomsType.floor: Этаж
+
+# RoomTypeType
 form.roomTypeType.name: Название
 form.roomTypeType.general_info: Общая информация
 form.roomTypeType.comfort_plus: Комфорт плюс
@@ -84,6 +86,8 @@ form.roomTypeType.is_included: Включен?
 form.roomTypeType.facilities: Удобства
 form.roomTypeType.is_room_included_in_search: Используется ли тип номера в поиске?
 form.roomTypeType.room_space: Площадь номера (м2)
+form.roomTypeType.help.empty_facilities: Используются удобства из отеля
+
 controller.hotelController.record_created_success: 'Запись успешно создана.'
 controller.hotelController.record_edited_success: 'Запись успешно отредактирована.'
 controller.roomTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
