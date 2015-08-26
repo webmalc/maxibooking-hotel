@@ -1,0 +1,15 @@
+{% extends 'MBHUserBundle:Group:layout.html.twig' %}
+
+{% set small_title = 'group.edit'|trans({}, 'FOSUserBundle')   ~ " «" ~ entity ~ "»" %}
+{% set layout = "box" %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('group_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' %}
+    {{ form_end(form) }}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
+
+{% endblock %}

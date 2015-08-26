@@ -380,4 +380,23 @@ class User extends BaseUser
     {
         $this->addressObjectDecomposed = $addressObjectDecomposed;
     }
+
+    /**
+     * @return array
+     */
+    public function getRolesWithoutGroups()
+    {
+        return $this->roles;
+    }
+
+    /**
+     * @param $roles
+     * @return $this
+     */
+    public function setRolesWithoutGroups($roles)
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
 }

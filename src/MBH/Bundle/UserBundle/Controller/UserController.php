@@ -5,10 +5,6 @@ namespace MBH\Bundle\UserBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
-use MyAllocator\phpsdk\src\Api\AssociateUserToPMS;
-use MyAllocator\phpsdk\src\Api\HelloVendor;
-use MyAllocator\phpsdk\src\Api\HelloWorld;
-use MyAllocator\phpsdk\src\Object\Auth;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -64,7 +60,7 @@ class UserController extends Controller
         $entity = new User();
 
         $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $entity->hasRole('ROLE_ADMIN')]
+            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')]
         );
 
         return array(
@@ -84,7 +80,7 @@ class UserController extends Controller
     {
         $entity = new User(array());
         $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $entity->hasRole('ROLE_ADMIN')]
+            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')]
         );
         $form->submit($request);
 
@@ -117,6 +113,8 @@ class UserController extends Controller
      */
     public function editAction(User $entity)
     {
+        dump($entity->getRoles());
+
         $hasHotels = [];
         $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         foreach ($hotels as $hotel) {
@@ -139,7 +137,7 @@ class UserController extends Controller
             }
         }
         $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $entity->hasRole('ROLE_ADMIN'), 'hotels' => $hasHotels]
+            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN'), 'hotels' => $hasHotels]
         );
 
         return array(
@@ -225,7 +223,7 @@ class UserController extends Controller
     public function updateAction(Request $request, User $entity)
     {
         $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $entity->hasRole('ROLE_ADMIN')]
+            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')]
         );
 
         $form->submit($request);

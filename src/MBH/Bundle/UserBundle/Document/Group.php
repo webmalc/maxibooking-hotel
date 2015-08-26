@@ -15,8 +15,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @ODM\Document(collection="Groups")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="email", message="Такой e-mail уже зарегистрирован")
- * @MongoDBUnique(fields="username", message="Такой логин уже зарегистрирован")
+ * @MongoDBUnique(fields="name", message="Такой группа уже существует")
  */
 class Group extends BaseGroup
 {

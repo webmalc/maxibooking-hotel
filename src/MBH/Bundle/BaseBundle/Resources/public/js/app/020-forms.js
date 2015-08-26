@@ -78,6 +78,17 @@ var docReadyForms = function () {
         .not('.checkbox-mini')
         .bootstrapSwitch(bootstrapSwitchConfig);
 
+
+    //Red color scheme for iCheck
+    $('input[type="checkbox"].flat-green, input[type="radio"].flat-green').iCheck({
+        checkboxClass: 'icheckbox_flat-green',
+        radioClass: 'iradio_flat-green'
+    });
+    $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+        checkboxClass: 'icheckbox_minimal-blue',
+        radioClass: 'iradio_minimal-blue'
+    });
+
     bootstrapSwitchConfig.size = 'mini'
     $('.checkbox-mini').bootstrapSwitch(bootstrapSwitchConfig);
 
@@ -308,6 +319,26 @@ var docReadyForms = function () {
         toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent"
 
     });
+
+    //roles widget
+    (function () {
+        var widgets = $('.roles-widget'),
+            topLinks = widgets.find('.box-title input'),
+            disable = function (el) {
+                el.closest('.roles-widget')
+                    .find('.box-body input')
+                    .prop('disabled', el.is(":checked")).iCheck('update');
+            };
+
+        if (!widgets.length) {
+            return;
+        }
+
+        topLinks.each(function () {
+            disable($(this));
+        });
+        topLinks.on('ifToggled', function () {disable($(this))});
+    }());
 };
 
 $(document).ready(function () {

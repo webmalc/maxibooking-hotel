@@ -154,3 +154,36 @@
         {% endif %}
     {% endspaceless %}
 {% endblock form_errors %}
+
+{% block roles_widget %}
+    {% for parent in form.vars.choices %}
+
+        {% set label = parent.label|replace({'__GROUP': ''}) %}
+
+        <div class="box roles-widget">
+            <div class="box-header" style="background-color: #efefef;">
+                <h3 class="box-title">
+                    <label style="cursor: pointer;">
+                        <input type="checkbox" {{ label in form.vars.data ? 'checked="checked"'}} class="flat-green plain-html" name="{{ form.vars.full_name }}" value="{{ label }}">
+                        {{ label|trans({}, form.vars.translation_domain) }}
+                    </label>
+                </h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool form-group-collapse" id="{{ label }}"  data-widget="collapse"><i class="fa fa-minus"></i></button>
+                </div>
+            </div>
+            <div class="box-body">
+                {% if parent.choices is defined%}
+                    {% for child in parent.choices  if label != child.label %}
+                        <div class="form-group" style="padding-left: 50px;">
+                            <label style="cursor: pointer;">
+                                <input type="checkbox"  {{ child.label in form.vars.data ? 'checked="checked"'}} class="flat-green plain-html" name="{{ form.vars.full_name }}" value="{{ child.label }}">
+                                {{ child.label|trans({}, form.vars.translation_domain) }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -10,6 +10,7 @@
             <tr>
                 <th class="td-xs"></th>
                 <th>{{ 'index.login'|trans({}, 'FOSUserBundle') }}</th>
+                <th>{{ 'index.groups'|trans({}, 'FOSUserBundle') }}</th>
                 <th>{{ 'index.permissions'|trans({}, 'FOSUserBundle') }}</th>
                 <th class="td-md">{{ 'index.fio'|trans({}, 'FOSUserBundle') }}</th>
                 <th class="td-md">{{ 'index.status'|trans({}, 'FOSUserBundle') }}</th>
@@ -24,7 +25,10 @@
                         <a href="{{ path('user_edit', { 'id': entity.id }) }}" rel="main" title="{{ 'record.index.edit'|trans({}, 'FOSUserBundle') }}" data-toggle="tooltip">{{ entity.username }}</a>
                     </td>
                     <td>
-                        {% for role in entity.roles %}{% if loop.index0 > 0 %}, {% endif %}{{ role|trans({}, 'MBHUserBundleRoles') }}{% endfor %}
+                        {% for group in entity.groups %}<small>{% if loop.index0 > 0 %}, {% endif %}{{ group|trans({}, 'MBHUserBundleRoles') }}</small>{% endfor %}
+                    </td>
+                    <td>
+                        {% for role in entity.rolesWithoutGroups %}<small>{% if loop.index0 > 0 %}, {% endif %}{{ role|trans({}, 'MBHUserBundleRoles') }}</small>{% endfor %}
                     </td>
                     <td>{{ entity.fullName(true) }}</td>
                     <td>

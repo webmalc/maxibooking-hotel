@@ -67,7 +67,7 @@ class UserType extends AbstractType
         }
 
         $builder
-            ->add('roles', 'choice', [
+            ->add('rolesWithoutGroups', 'choice', [
                 'group' => 'form.userType.settings',
                 'label' => 'form.userType.roles',
                 'multiple' => true,
