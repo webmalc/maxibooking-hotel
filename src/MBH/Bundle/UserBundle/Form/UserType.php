@@ -5,7 +5,6 @@ namespace MBH\Bundle\UserBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Length;
 
@@ -66,25 +65,6 @@ class UserType extends AbstractType
             ]);
         }
 
-        $builder
-            ->add('rolesWithoutGroups', 'choice', [
-                'group' => 'form.userType.settings',
-                'label' => 'form.userType.roles',
-                'multiple' => true,
-                'choices' => $this->roles,
-                'required' => false,
-                'translation_domain' => 'MBHUserBundleRoles',
-                'attr' => array('class' => "roles")
-            ])
-            ->add('groups', 'document', [
-                'class' => 'MBHUserBundle:Group',
-                'group' => 'form.userType.settings',
-                'label' => 'form.userType.groups',
-                'required' => false,
-                'multiple' => true
-            ])
-        ;
-
         if (!$options['admin']) {
             $builder->add('hotels', 'document', [
                 'group' => 'form.userType.settings',
@@ -100,12 +80,6 @@ class UserType extends AbstractType
         }
 
         $builder
-            ->add('enabled', 'checkbox', [
-                'group' => 'form.userType.settings',
-                'label' => 'form.userType.is_included',
-                'value' => true,
-                'required' => false,
-            ])
             ->add('notifications', 'checkbox', [
                 'group' => 'form.userType.notifications_fieldset',
                 'label' => 'form.userType.notifications',

@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Form\UserType;
+use MBH\Bundle\UserBundle\Form\UserSecurityType;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
@@ -113,8 +114,6 @@ class UserController extends Controller
      */
     public function editAction(User $entity)
     {
-        dump($entity->getRoles());
-
         $hasHotels = [];
         $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         foreach ($hotels as $hotel) {
@@ -173,6 +172,32 @@ class UserController extends Controller
 
                 return $this->redirectToRoute('user_document_edit', ['id' => $entity->getId()]);
             }
+        }
+
+        return array(
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        );
+    }
+
+    /**
+     * @Route("/{id}/edit/security", name="user_security_edit")
+     * @Method({"GET","POST"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template()
+     * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     */
+    public function editSecurityAction(User $entity, Request $request)
+    {
+        $form = $this->createForm(new UserSecurityType(), $entity);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $this->get('fos_user.user_manager')->updateUser($entity);
+
+            return $this->redirectToRoute('user_security_edit', ['id' => $entity->getId()]);
         }
 
         return array(

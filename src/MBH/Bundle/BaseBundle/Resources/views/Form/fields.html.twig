@@ -156,6 +156,15 @@
 {% endblock form_errors %}
 
 {% block roles_widget %}
+
+    {% set exists = {} %}
+
+    {% if form.parent.vars.value.groups is defined %}
+        {% for group in form.parent.vars.value.groups %}
+            {% set exists = exists|merge(group.roles) %}
+        {% endfor %}
+    {% endif %}
+
     {% for parent in form.vars.choices %}
 
         {% set label = parent.label|replace({'__GROUP': ''}) %}
@@ -165,7 +174,8 @@
                 <h3 class="box-title">
                     <label style="cursor: pointer;">
                         <input type="checkbox" {{ label in form.vars.data ? 'checked="checked"'}} class="flat-green plain-html" name="{{ form.vars.full_name }}" value="{{ label }}">
-                        {{ label|trans({}, form.vars.translation_domain) }}
+                        &nbsp;
+                        <span class="{{ label in exists or label in form.vars.data ? 'text-info'}}">{{ label|trans({}, form.vars.translation_domain) }}</span>
                     </label>
                 </h3>
                 <div class="box-tools pull-right">
@@ -178,7 +188,8 @@
                         <div class="form-group" style="padding-left: 50px;">
                             <label style="cursor: pointer;">
                                 <input type="checkbox"  {{ child.label in form.vars.data ? 'checked="checked"'}} class="flat-green plain-html" name="{{ form.vars.full_name }}" value="{{ child.label }}">
-                                {{ child.label|trans({}, form.vars.translation_domain) }}
+                                &nbsp;
+                                <span class="{{ child.label in exists or child.label in form.vars.data ? 'text-info'}}">{{ child.label|trans({}, form.vars.translation_domain) }}</span>
                             </label>
                         </div>
                     {% endfor %}

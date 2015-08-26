@@ -1,6 +1,6 @@
 {% extends 'MBHUserBundle:User:layout.html.twig' %}
 
-{% set small_title = 'edit.small_title'|trans({}, 'FOSUserBundle')  ~ " #" ~ entity.id %}
+{% set small_title = 'edit.small_title'|trans({}, 'FOSUserBundle')  ~ " «" ~ entity ~ "»" %}
 {% set layout = "tabs" %}
 
 {% block content %}

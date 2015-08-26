@@ -6,6 +6,7 @@ form.password_confirmation: Подтвердите пароль
 form.userType.confirm_password: Подтвердите пароль
 form.userType.login: Логин
 form.userType.settings: Настройки
+form.userType.security_extended: Расширенные права
 form.userType.roles: Роли
 form.userType.groups: Группы
 form.userType.hotels: Отели
@@ -48,3 +49,4 @@ views.user.tabs.main_info_required: "Необходимо заполнить о�
 views.user.tabs.main_info: "Основная информация"
 views.user.tabs.document_relation: "Удостоверение личности"
 views.user.tabs.address: "Адрес"
+views.user.tabs.security: "Безопасность"

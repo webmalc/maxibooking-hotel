@@ -29,7 +29,8 @@ class RolesType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'choices' => $this->roles
+            'choices' => $this->roles,
+            'exists' => ['ROLE_ADMIN']
         ));
     }
 
