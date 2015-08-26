@@ -9,6 +9,12 @@ services:
         arguments: [@service_container]
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+    mbh.hotel.facility.subscriber:
+        class: MBH\Bundle\HotelBundle\EventListener\FacilitySubscriber
+        calls:
+            - [setContainer, ['@service_container']]
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
     mbh.hotel.auto_task_creator:
             class: MBH\Bundle\HotelBundle\Service\AutoTaskCreator
             arguments: [@service_container]

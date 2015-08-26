@@ -24,28 +24,6 @@ class FacilitiesType extends AbstractType
         return 'choice';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(FormBuilderInterface $builder, array $options)
-    {
-        /*$builder->addEventListener(FormEvents::POST_SET_DATA, function(FormEvent $event) {
-            $event->setData([]);
-        });*/
-    }
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public function buildView(FormView $view, FormInterface $form, array $options)
-    {
-        parent::buildView($view, $form, $options);
-        $facilityRepository = $this->container->get('mbh.facility_repository');
-        //$view->vars['data'] = $facilityRepository->sortByConfig($view->vars['data']);
-    }
-
-
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
