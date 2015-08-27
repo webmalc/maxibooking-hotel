@@ -1,8 +1,10 @@
 <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
     <div class="container-fluid">
+        {% if role is defined and is_granted('ROLE_' ~ role ~ '_NEW') %}
         <ul class="nav navbar-nav">
             <li><button onclick="location.href = '{{ path(route, route_params is defined ? route_params : {}) }}'" type="submit" class="btn btn-success navbar-btn"><i class="fa {{ icon is defined ? icon : 'fa-plus'}}"> </i> {{ text is defined ? text : 'views.actions.list.add'|trans({}, 'MBHBaseBundle')}}</button></li>
         </ul>
+        {% endif %}
         <ul class="nav navbar-nav navbar-right">
             <li id='list-export'></li>
         </ul>

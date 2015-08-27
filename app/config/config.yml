@@ -3,6 +3,7 @@ imports:
     - { resource: security.yml }
     - { resource: version.yml }
     - { resource: mbh.yml }
+    - { resource: roles.yml }
 
 framework:
     #esi:             ~
