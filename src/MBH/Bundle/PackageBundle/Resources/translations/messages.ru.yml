@@ -102,6 +102,7 @@ form.touristType.second_name: Отчество
 form.touristType.placeholder_second_name: Иванович
 form.touristType.birth_date: Дата рождения
 form.touristType.gender: Пол
+form.touristType.communication_language: Язык
 form.touristType.sex_male: Муж.
 form.touristType.sex_female: Жен.
 form.touristType.sex_unknown: -

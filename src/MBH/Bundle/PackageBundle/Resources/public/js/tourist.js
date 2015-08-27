@@ -30,6 +30,7 @@ var docReadyTourists = function () {
             $('.guestBirthday').val(data.birthday);
             $('.guestPhone').val(data.phone);
             $('.guestEmail').val(data.email);
+            $('select.guestCommunicationLanguage').select2('val', data.communicationLanguage);
         });
     });
 

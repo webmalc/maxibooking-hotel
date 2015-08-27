@@ -4,8 +4,11 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class TouristType
+ */
 class TouristType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -45,6 +48,11 @@ class TouristType extends AbstractType
                 'empty_value' => '',
                 'choices' => $options['genders']
             ])
+            ->add('communication_language', 'mbh_language', [
+                'label' => 'form.touristType.communication_language',
+                'group' => 'form.touristType.general_info',
+                'expanded' => true
+            ])
             ->add('phone', 'text', [
                 'label' => 'form.touristType.phone',
                 'group' => 'form.touristType.contact_info',
@@ -77,13 +85,15 @@ class TouristType extends AbstractType
         ;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\PackageBundle\Document\Tourist',
-            'genders' => []
-        ));
+            'genders' => [],
+            'languages' => []
+        ]);
     }
+
 
     public function getName()
     {

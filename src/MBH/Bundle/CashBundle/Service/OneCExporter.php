@@ -100,7 +100,7 @@ class OneCExporter
 ПоказательДаты=
 ПоказательТипа=
 Очередность=5
-НазначениеПлатежа=Заказ #'.$cashDocument->getNumber().' от '.$cashDocument->getCreatedAt()->format('d.m.Y').'; ФИО: "'.($cashDocument->getTouristPayer() ? $cashDocument->getTouristPayer()->getFullName() : $organizationPayer->getAccountantFio()).'"; АДРЕС: '.($cashDocument->getTouristPayer() ? $cashDocument->getTouristPayer()->getAddress() : '').' ; КОНТАКТ: '.($cashDocument->getTouristPayer() ? $cashDocument->getTouristPayer()->getPhone() : '').';
+НазначениеПлатежа=Счёт #'.$cashDocument->getNumber().' от '.$cashDocument->getCreatedAt()->format('d.m.Y').'; ФИО: "'.($cashDocument->getTouristPayer() ? $cashDocument->getTouristPayer()->getFullName() : $organizationPayer->getAccountantFio()).'"; АДРЕС: '.($cashDocument->getTouristPayer() ? $cashDocument->getTouristPayer()->getAddress() : '').' ; КОНТАКТ: '.($cashDocument->getTouristPayer() ? $cashDocument->getTouristPayer()->getPhone() : '').';
 КонецДокумента
 ');
         }

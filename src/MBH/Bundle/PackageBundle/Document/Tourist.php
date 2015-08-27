@@ -197,6 +197,12 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
      */
     protected $visa;
 
+    /**
+     * @var string
+     * @ODM\String()
+     */
+    protected $communicationLanguage;
+
     public function __construct()
     {
         $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
@@ -319,6 +325,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
             'birthday' => $this->birthday ? $this->birthday->format('d.m.Y') : null,
             'phone' => $this->phone,
             'email' => $this->email,
+            'communicationLanguage' => $this->communicationLanguage
         ];
     }
 
@@ -870,5 +877,21 @@ class Tourist extends Base implements JsonSerializable, PayerInterface
     public function setVisa(Visa $visa = null)
     {
         $this->visa = $visa;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommunicationLanguage()
+    {
+        return $this->communicationLanguage;
+    }
+
+    /**
+     * @param string $communicationLanguage
+     */
+    public function setCommunicationLanguage($communicationLanguage)
+    {
+        $this->communicationLanguage = $communicationLanguage;
     }
 }

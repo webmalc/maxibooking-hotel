@@ -41,6 +41,7 @@ mailer.online.user.poll.prepend: "Здравствуйте, %guest%!<br><br>Мы
 mailer.online.user.poll.append: "Будем рады видеть вас снова!"
 mailer.online.user.poll.link: "Оцените качество обслуживания"
 
+
 debt: Долг
 paid: Оплачено
 overpaid: Переплачено
@@ -82,3 +83,8 @@ visa: Виза
 
 form.facilitiesType.label: 'Удобства'
 form.facilitiesType.placeholder: 'Выберите удобства'
+form.languageType.label: 'Язык'
+
+# mbh.languages
+languages.en: 'Английский'
+languages.ru: 'Русский'

@@ -380,7 +380,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 $data = $form->getData();
                 $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
                     $data['lastName'], $data['firstName'], $data['patronymic'], $data['birthday'], $data['email'],
-                    $data['phone']
+                    $data['phone'], $data['communication_language']
                 );
                 $entity->addTourist($tourist);
 
