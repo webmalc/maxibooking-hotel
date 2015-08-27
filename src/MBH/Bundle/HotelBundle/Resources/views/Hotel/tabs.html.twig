@@ -8,7 +8,7 @@
 {% for item in menu %}
     {% if entity is null and loop.index != 1 %}
         <li class="disabled">
-            <a href="#" role="tab" data-toggle="tooltip" title={{ 'views.hotel.tabs.main_info_required'|trans({}, 'MBHHotelBundle') }} >{{item.title|raw}}</a>
+            <a href="#" role="tab" data-toggle="tooltip" title="{{ 'views.hotel.tabs.main_info_required'|trans({}, 'MBHHotelBundle') }}">{{item.title|raw}}</a>
         </li>
     {% else  %}
         <li {% if loop.index == active %}class="active"{% endif %}>

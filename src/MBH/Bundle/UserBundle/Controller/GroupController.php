@@ -23,7 +23,7 @@ class GroupController extends Controller
      *
      * @Route("/", name="group")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_GROUP_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -44,7 +44,7 @@ class GroupController extends Controller
      *
      * @Route("/new", name="group_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_GROUP_NEW')")
      * @Template()
      */
     public function newAction()
@@ -61,7 +61,7 @@ class GroupController extends Controller
      *
      * @Route("/create", name="group_create")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_GROUP_NEW')")
      * @Template("MBHUserBundle:Group:new.html.twig")
      */
     public function createAction(Request $request)
@@ -93,7 +93,7 @@ class GroupController extends Controller
      *
      * @Route("/{id}/edit", name="group_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_GROUP_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:Group")
      */
@@ -114,7 +114,7 @@ class GroupController extends Controller
      *
      * @Route("/{id}", name="group_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_GROUP_EDIT')")
      * @Template("MBHUserBundle:Group:edit.html.twig")
      * @ParamConverter(name="entity", class="MBHUserBundle:Group")
      */
@@ -146,7 +146,7 @@ class GroupController extends Controller
      *
      * @Route("/{id}/delete", name="group_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_GROUP_DELETE')")
      */
     public function deleteAction($id)
     {

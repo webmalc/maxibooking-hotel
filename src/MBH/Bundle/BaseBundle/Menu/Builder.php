@@ -12,6 +12,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class Builder extends ContainerAware
 {
 
+    protected $counter = 0;
+
     /**
      * Main menu
      * @param \Knp\Menu\FactoryInterface $factory
@@ -106,7 +108,21 @@ class Builder extends ContainerAware
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
             ->setAttributes(['icon' => 'fa fa-file-archive-o']);*/
 
-        return $this->filterMenu($menu);
+
+        return $this->filter($menu, $factory);
+    }
+
+    /**
+     * @param ItemInterface $menu
+     * @param FactoryInterface $factory
+     * @return ItemInterface
+     */
+    public function filter(ItemInterface $menu, FactoryInterface $factory)
+    {
+        $this->counter = 0;
+        $menu = $this->filterMenu($menu);
+
+        return empty($this->counter) ? $factory->createItem('root') : $menu;
     }
 
     /**
@@ -151,6 +167,8 @@ class Builder extends ContainerAware
             if (!$security->isGranted($roles[1])) {
 
                 $menu->removeChild($child);
+            } elseif (empty($child->getAttribute('dropdown'))) {
+                $this->counter += 1;
             }
 
             $this->filterMenu($child);
@@ -230,7 +248,7 @@ class Builder extends ContainerAware
         $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
 
-        return $this->filterMenu($menu);
+        return $this->filter($menu, $factory);
     }
 
     /**

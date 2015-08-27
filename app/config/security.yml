@@ -34,22 +34,6 @@ security:
                 path:     /
                 domain:   ~
 
-    role_hierarchy:
-        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
-        ROLE_ADMIN:       [ROLE_SENIOR_MANAGER, ROLE_BOOKKEEPER, ROLE_ADMIN_HOTEL]
-        ROLE_ADMIN_HOTEL: [ROLE_SENIOR_MANAGER, ROLE_BOOKKEEPER]
-        ROLE_TASK_MANAGER: ROLE_USER
-        ROLE_BOOKKEEPER: ROLE_READ_ONLY
-        ROLE_SENIOR_MANAGER: [ROLE_MANAGER, ROLE_TASK_MANAGER]
-        ROLE_MANAGER: ROLE_READ_ONLY
-        ROLE_READ_ONLY: ROLE_USER
-        ROLE_USER: [ROLE_STAFF]
-
-        ROLE_CLEANING: ROLE_STAFF
-        ROLE_COOKING: ROLE_STAFF
-        ROLE_TRANSFER: ROLE_STAFF
-        ROLE_TECHNICAL: ROLE_STAFF
-
     access_control:
         - { path: ^/management/channelmanager/package/notifications, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/online/api, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }

@@ -20,7 +20,7 @@
                     <tr>
                         <td class="text-center table-icon"><i class="fa fa-home"></i></td>
                         <td>
-                            <a href="{{ path('hotel_edit', { 'id': entity.id }) }}" rel="main" title= {{ 'views.hotel.index.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">{{ entity.name }}</a>
+                            {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'hotel'} %}{% endembed %}
                         </td>
                         <td class="text-center">{{ entity.prefix }}</td>
                         <td class="text-center">
@@ -29,18 +29,13 @@
                             {% endif %}
                         </td>
                         <td class="table-actions-td text-center">
-                            <a href="{{ path('hotel_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title={{ 'views.hotel.index.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
-                                <i class="fa fa-pencil-square-o"></i>
-                            </a>
-                            <a href="{{ path('hotel_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " data-text="{{ 'views.hotel.index.confirm_delete'|trans({'%hotelname%': entity.name}, 'MBHHotelBundle') }}" title={{ 'views.hotel.index.delete_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
-                                <i class="fa fa-trash-o"></i>
-                            </a>
+                            {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'hotel'} %}{% endembed %}
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'hotel_new'} %}
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'hotel_new', 'role': 'HOTEL'} %}
 
 {% endblock %} 

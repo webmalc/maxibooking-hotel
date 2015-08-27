@@ -2,11 +2,20 @@
     {% set save_close = true %}
 {% endif %}
 
+{% if delete_role is not defined and route is defined%}
+    {% set delete_role = 'ROLE_' ~route|upper ~ '_DELETE' %}
+{% endif %}
+
+{% if delete_route is not defined and route is defined %}
+    {% set delete_route = route ~ '_delete' %}
+{% endif %}
+
+
 <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
     <div class="container-fluid">
         {% include 'MBHBaseBundle:Actions:saveButtons.html.twig' with {'save_close': save_close, 'save_text': save_text|default('views.actions.update.save'|trans({}, 'MBHBaseBundle'))}%}
         
-        {% if delete_route is defined and delete_route is not empty %}
+        {% if delete_route is defined and delete_route is not empty and delete_role is defined and is_granted(delete_role) %}
         <ul class="nav navbar-nav navbar-right">
             <li><button data-href="{{ path(delete_route, {'id': entity.id}) }}" {% if confirm_text is defined  %} data-text="{{ confirm_text }}" {% endif %} class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"> </i> {{ delete_title|default('views.actions.update.delete'|trans({}, 'MBHBaseBundle')) }}</button></li>
         </ul>

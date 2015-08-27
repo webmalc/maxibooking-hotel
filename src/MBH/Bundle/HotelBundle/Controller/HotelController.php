@@ -22,7 +22,7 @@ class HotelController extends Controller
      *
      * @Route("/notfound", name="hotel_not_found")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_BASE_USER')")
      * @Template()
      */
     public function notFoundAction()
@@ -35,7 +35,7 @@ class HotelController extends Controller
      *
      * @Route("/{id}/select", name="hotel_select")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_HOTEL_VIEW')")
      */
     public function selectHotelAction(Request $request, $id)
     {
@@ -53,7 +53,7 @@ class HotelController extends Controller
      *
      * @Route("/", name="hotel")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTEL_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -73,7 +73,7 @@ class HotelController extends Controller
      *
      * @Route("/new", name="hotel_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTEL_NEW')")
      * @Template()
      */
     public function newAction()
@@ -91,7 +91,7 @@ class HotelController extends Controller
      *
      * @Route("/create", name="hotel_create")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTEL_NEW')")
      * @Template("MBHHotelBundle:Hotel:new.html.twig")
      */
     public function createAction(Request $request)
@@ -129,7 +129,7 @@ class HotelController extends Controller
      *
      * @Route("/{id}", name="hotel_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Template("MBHHotelBundle:Hotel:edit.html.twig")
      * @ParamConverter("entity", class="MBHHotelBundle:Hotel")
      */
@@ -162,7 +162,7 @@ class HotelController extends Controller
      *
      * @Route("/{id}/edit", name="hotel_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Template()
      * @param Hotel $entity
      * @return array
@@ -185,7 +185,7 @@ class HotelController extends Controller
      *
      * @Route("/{id}/delete/logo", name="hotel_delete_logo")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @param Hotel $entity
      * @return Response
      */
@@ -206,7 +206,7 @@ class HotelController extends Controller
      *
      * @Route("/{id}/edit/extended", name="hotel_edit_extended")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Template()
      * @param Hotel $entity
      * @return Response
@@ -230,7 +230,7 @@ class HotelController extends Controller
      *
      * @Route("/{id}/edit/extended", name="hotel_edit_extended_save")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Template("MBHHotelBundle:Hotel:extended.html.twig")
      * @param Hotel $entity
      * @return array
@@ -267,7 +267,7 @@ class HotelController extends Controller
      *
      * @Route("/city/{id}", name="hotel_city", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_CITY_VIEW')")
      * @return JsonResponse
      */
     public function cityAction(Request $request, $id = null)
@@ -327,7 +327,7 @@ class HotelController extends Controller
      *
      * @Route("/{id}/delete", name="hotel_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTEL_DELETE')")
      */
     public function deleteAction($id)
     {

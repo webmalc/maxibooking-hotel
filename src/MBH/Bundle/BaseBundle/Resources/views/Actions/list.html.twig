@@ -1,8 +1,10 @@
-{% embed "MBHBaseBundle:Actions:raw_list.html.twig" %}
+{% embed "MBHBaseBundle:Actions:base_list.html.twig" %}
     {% block right %}
+        {% if role is defined and is_granted('ROLE_' ~ role|upper ~ '_NEW') %}
         <li>
             <button onclick="location.href = '{{ path(route, route_params is defined ? route_params : {}) }}'" type="submit" class="btn btn-success navbar-btn"><i class="fa {{ icon is defined ? icon : 'fa-plus'}}"> </i> {{ text is defined ? text : 'views.actions.list.add'|trans({}, 'MBHBaseBundle')}}</button>
         </li>
+        {% endif %}    
     {% endblock %}
     {% block left %}
         <li id='list-export'></li>
