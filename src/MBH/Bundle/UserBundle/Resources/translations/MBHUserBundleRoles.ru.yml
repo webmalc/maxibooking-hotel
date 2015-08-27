@@ -18,7 +18,6 @@ ROLE_TECHNICAL: Технический персонал
 
 form.userType.roles: Роли
 
-
 # ----------------------------------------------------------------------------------------------
 ROLE_LOGS: История изменений
 
@@ -27,6 +26,12 @@ ROLE_HOTEL_VIEW: Просмотр отелей
 ROLE_HOTEL_NEW: Создание отелей
 ROLE_HOTEL_EDIT: Редактирование отелей
 ROLE_HOTEL_DELETE: Удаление отелей
+
+ROLE_GROUP: Группы
+ROLE_GROUP_VIEW: Просмотр групп
+ROLE_GROUP_NEW: Создание групп
+ROLE_GROUP_EDIT: Редактирование групп
+ROLE_GROUP_DELETE: Удаление групп
 
 ROLE_CITY: Города
 ROLE_CITY_VIEW: Просмотр городов

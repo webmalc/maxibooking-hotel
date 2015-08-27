@@ -24,7 +24,7 @@
 
 {% block delete_entry %}
     {% if is_granted(delete_role) %}
-    <a href="{{ path(delete_route, { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link" data-text="{{ 'entry.actions.delete.confirmation'|trans({'%entity%': entity}) }}" title={{ 'entry.actions.delete'|trans() }} data-toggle="tooltip">
+    <a href="{{ path(delete_route, { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link" data-text="{{ 'entry.actions.delete.confirmation'|trans({'%doc%': entity}) }}" title={{ 'entry.actions.delete'|trans() }} data-toggle="tooltip">
         <i class="fa fa-trash-o"></i>
     </a>
     {% endif %}

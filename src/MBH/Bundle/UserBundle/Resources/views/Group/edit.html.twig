@@ -7,7 +7,7 @@
 
     {{ form_start(form, {'action': path('group_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:update.html.twig' %}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'route': 'group'} %}
     {{ form_end(form) }}
 
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
