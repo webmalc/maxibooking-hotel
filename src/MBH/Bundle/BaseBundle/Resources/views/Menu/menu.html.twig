@@ -19,7 +19,6 @@
         {%- set divider_prepend = attributes.divider_prepend|default(false) %}
         {%- set divider_append = attributes.divider_append|default(false) %}
 
-
         {# unset bootstrap specific attributes #}
         {%- set attributes = attributes|merge({'dropdown': null, 'dropdown_header': null, 'divider_prepend': null, 'divider_append': null }) %}
 

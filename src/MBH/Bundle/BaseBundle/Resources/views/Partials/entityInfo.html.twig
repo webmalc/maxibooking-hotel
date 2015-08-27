@@ -1,3 +1,4 @@
+{% if is_granted('ROLE_LOGS') %}
 <div class="created-info">
 
     <ul class="nav nav-tabs">
@@ -55,5 +56,5 @@
             {% endif %}
         </div>
     </div>
-
 </div>
+{% endif %}

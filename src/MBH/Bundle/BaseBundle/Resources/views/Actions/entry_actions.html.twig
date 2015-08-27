@@ -1,0 +1,31 @@
+{% if edit_route is not defined %}
+    {% set edit_route = route ~ '_edit' %}
+{% endif %}
+{% if delete_route is not defined %}
+    {% set delete_route = route ~ '_delete' %}
+{% endif %}
+
+{% if edit_role is not defined %}
+    {% set edit_role = 'ROLE_' ~route|upper ~ '_EDIT' %}
+{% endif %}
+
+{% if delete_role is not defined %}
+    {% set delete_role = 'ROLE_' ~route|upper ~ '_DELETE' %}
+{% endif %}
+
+
+{% block edit_entry %}
+    {% if is_granted(edit_role) %}
+    <a href="{{ path(edit_route, { 'id': entity.id }) }}" class="btn btn-success btn-xs" title="{{'entry.actions.edit'|trans }}" data-toggle="tooltip">
+        <i class="fa fa-pencil-square-o"></i>
+    </a>
+    {% endif %}
+{% endblock %}
+
+{% block delete_entry %}
+    {% if is_granted(delete_role) %}
+    <a href="{{ path(delete_route, { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link" data-text="{{ 'entry.actions.delete.confirmation'|trans({'%entity%': entity}) }}" title={{ 'entry.actions.delete'|trans() }} data-toggle="tooltip">
+        <i class="fa fa-trash-o"></i>
+    </a>
+    {% endif %}
+{% endblock %}

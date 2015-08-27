@@ -1,4 +1,4 @@
-{% embed "MBHBaseBundle:Actions:raw_list.html.twig" %}
+{% embed "MBHBaseBundle:Actions:base_list.html.twig" %}
     {% block right %}
         {% if role is defined and is_granted('ROLE_' ~ role ~ '_NEW') %}
         <li>
