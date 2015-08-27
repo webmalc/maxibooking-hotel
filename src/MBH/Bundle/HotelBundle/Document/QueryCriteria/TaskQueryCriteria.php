@@ -3,6 +3,8 @@
 namespace MBH\Bundle\HotelBundle\Document\QueryCriteria;
 
 use MBH\Bundle\BaseBundle\Document\AbstractQueryCriteria;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+
 /**
  * Class TaskQueryCriteria
  * @author Aleksandr Arofikin <sasaharo@gmail.com>
@@ -63,4 +65,9 @@ class TaskQueryCriteria extends AbstractQueryCriteria
      * @var bool
      */
     public $deleted = false;
+
+    /**
+     * @var Hotel|null
+     */
+    public $hotel;
 }

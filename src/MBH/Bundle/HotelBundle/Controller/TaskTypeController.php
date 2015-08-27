@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Controller\HotelableControllerInterface;
 use MBH\Bundle\HotelBundle\Document\TaskType;
 use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
 use MBH\Bundle\HotelBundle\Form\TaskTypeCategoryType;
@@ -20,7 +21,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
  * @package MBH\Bundle\HotelBundle\Controller
  * @Route("/tasktype")
  */
-class TaskTypeController extends Controller
+class TaskTypeController extends Controller implements HotelableControllerInterface
 {
     /**
      *
@@ -49,20 +50,12 @@ class TaskTypeController extends Controller
         }
 
         $entity = new TaskType();
-        $taskTypeRepository = $this->dm->getRepository('MBHHotelBundle:TaskType');
 
-        /** @var TaskType[] $entities */
-        $entities = [];
-        /*if($category) {
-            $entities = $taskTypeRepository->createQueryBuilder('s')
-                ->field('category.id')->equals($category->getId())
-                ->sort('title', 'asc')
-                ->getQuery()->execute();
-
-            $entity->setCategory($category);
-        }*/
-
-        $form = $this->createForm(new TaskTypeType($this->dm), $entity);
+        $roles =array_keys($this->container->getParameter('security.role_hierarchy.roles'));
+        $roles = array_combine($roles, $roles);
+        $form = $this->createForm(new TaskTypeType($this->dm), $entity, [
+            'roles' => $roles
+        ]);
 
         if ($request->isMethod(Request::METHOD_POST)) {
             $form->submit($request);
@@ -79,7 +72,6 @@ class TaskTypeController extends Controller
 
         return [
             'form' => $form->createView(),
-            'entities' => $entities,
             'taskTypeCategories' => $taskTypeCategories,
             'activeCategory' => $category
         ];
@@ -96,8 +88,12 @@ class TaskTypeController extends Controller
      */
     public function editAction(Request $request, TaskType $entity)
     {
+        $roles = array_keys($this->container->getParameter('security.role_hierarchy.roles'));
+        $roles = array_combine($roles, $roles);
+
         $form = $this->createForm(new TaskTypeType($this->dm), $entity, [
-            'scenario' => TaskTypeType::SCENARIO_EDIT
+            'scenario' => TaskTypeType::SCENARIO_EDIT,
+            'roles' => $roles
         ]);
 
         if($request->isMethod(Request::METHOD_PUT)) {
@@ -134,13 +130,6 @@ class TaskTypeController extends Controller
      */
     public function deleteAction(TaskType $entity)
     {
-        /*if($entity->isSystem())
-            throw $this->createNotFoundException('Is system type');
-        $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
-        if($taskRepository->getCountByType($entity) > 0) {
-            throw $this->createNotFoundException('Type have existing tasks');
-        }*/
-
         return $this->deleteEntity($entity->getId(), 'MBHHotelBundle:TaskType',
             'tasktype', ['category' => $entity->getCategory()->getId()]);
     }

@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
+use Doctrine\ODM\MongoDB\Events;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -27,11 +28,12 @@ class PackageSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return array(
-            'prePersist',
-            'preRemove',
-            'postPersist',
-            'postSoftDelete',
-            'onFlush',
+            Events::prePersist => 'prePersist',
+            Events::preRemove => 'preRemove',
+            Events::postPersist => 'postPersist',
+            'postSoftDelete' => 'postSoftDelete',
+            Events::onFlush => 'onFlush',
+            Events::postUpdate => 'postUpdate'
         );
     }
 
@@ -255,6 +257,21 @@ class PackageSubscriber implements EventSubscriber
             
             if ($entity->getTariff() && empty($entity->getNumberWithPrefix())) {
                 $entity->setNumberWithPrefix($entity->getTariff()->getHotel()->getPrefix() . $number);
+            }
+        }
+    }
+
+    public function postUpdate(LifecycleEventArgs $args)
+    {
+        $document = $args->getDocument();
+        $dm = $args->getDocumentManager();
+        if($document instanceof Package) {
+            $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($document);
+            $creator = $this->container->get('mbh.hotel.console_auto_task_creator');
+            if (isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {
+                $creator->createCheckOutTasks($document);
+            } elseif (isset($changeSet['isCheckIn']) && $changeSet['isCheckIn'][0] === false && $changeSet['isCheckIn'][1] === true) {
+                $creator->createCheckInTasks($document);
             }
         }
     }

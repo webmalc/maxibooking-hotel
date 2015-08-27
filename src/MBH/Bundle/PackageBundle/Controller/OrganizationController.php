@@ -151,7 +151,8 @@ class OrganizationController extends Controller
         $form = $this->createForm(new OrganizationType($this->dm), $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
             'id' => $organization->getId(),
-            'type' => OrganizationType::TYPE_EDIT
+            'type' => $organization->getType(),
+            'scenario' => OrganizationType::SCENARIO_EDIT
         ]);
 
         if ($request->isMethod('PUT')) {
@@ -172,7 +173,9 @@ class OrganizationController extends Controller
                     $organization->upload();
                 }
 
-                return $this->redirect($this->generateUrl('organizations'));
+                return $this->isSavedRequest() ?
+                    $this->redirectToRoute('edit_organization', ['id' => $organization->getId()]) :
+                    $this->redirectToRoute('organizations');
             }
         }
 

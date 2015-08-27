@@ -93,7 +93,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             ->execute();
 
         //Defaults
-        if (!$request->isMethod("PUT")) {
+        if (!$request->isMethod(Request::METHOD_PUT)) {
             $cash
                 ->setOperation('in')
                 ->setMethod('cash')
@@ -104,17 +104,15 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
                 ->setNumber($cashDocumentRepository->generateNewNumber($cash));
         }
 
-        $form = $this->createForm(new CashDocumentType($this->dm), $cash,
-            [
-                'methods' => $this->container->getParameter('mbh.cash.methods'),
-                'operations' => $this->container->getParameter('mbh.cash.operations'),
-                'groupName' => $this->get('translator')->trans('controller.orderController.add_cash_register_paper'),
-                'payer' => $entity->getMainTourist() ? $entity->getMainTourist()->getId() : null,
-                'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity),
-            ]
-        );
+        $form = $this->createForm(new CashDocumentType($this->dm), $cash, [
+            'methods' => $this->container->getParameter('mbh.cash.methods'),
+            'operations' => $this->container->getParameter('mbh.cash.operations'),
+            'groupName' => $this->get('translator')->trans('controller.orderController.add_cash_register_paper'),
+            'payer' => $entity->getMainTourist() ? $entity->getMainTourist()->getId() : null,
+            'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity),
+        ]);
 
-        if ($request->isMethod("PUT")) {
+        if ($request->isMethod(Request::METHOD_PUT)) {
             $form->submit($request);
             if ($form->isValid()) {
                 $this->dm->persist($cash);
@@ -123,12 +121,9 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
                 $request->getSession()->getFlashBag()->set('success',
                     $this->get('translator')->trans('controller.orderController.cash_register_paper_added_success'));
 
-                if ($request->get('save') !== null) {
-                    return $this->redirect($this->generateUrl('package_order_cash',
-                        ['id' => $entity->getId(), 'packageId' => $package->getId()]));
-                }
-
-                return $this->redirect($this->generateUrl('package'));
+                return $this->isSavedRequest() ?
+                    $this->redirectToRoute('package_order_cash', ['id' => $entity->getId(), 'packageId' => $package->getId()]) :
+                    $this->redirectToRoute('package');
             }
         }
 
@@ -198,7 +193,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         }
 
         $form = $this->createForm(new OrganizationType($this->dm), null, [
-            'scenario' => OrganizationType::SCENARIO_SHORT,
+            'isFull' => false,
             'typeList' => $this->container->getParameter('mbh.organization.types'),
         ]);
 
@@ -304,7 +299,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
 
         $form = $this->createForm(new OrganizationType($this->dm),
             $existOrganization, [
-                'scenario' => OrganizationType::SCENARIO_SHORT,
+                'isFull' => false,
                 'typeList' => $this->container->getParameter('mbh.organization.types'),
             ]);
 

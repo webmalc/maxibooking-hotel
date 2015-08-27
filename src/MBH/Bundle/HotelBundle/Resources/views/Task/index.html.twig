@@ -6,7 +6,8 @@
 {% block content %}
 
     {% if app.security.granted('ROLE_TASK_MANAGER') %}
-        <div class="well">
+
+        {% include 'MBHBaseBundle:Partials:filter.html.twig' with {id: 'task-table-filter-widget'} %}
             <form id="task-table-filter" class="form-inline form-icon-label">
                 <div class="form-group">
                     <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
@@ -77,7 +78,7 @@
                     <input id="task-filter-deleted" name="deleted" type="checkbox">
                 </div>
             </form>
-        </div>
+        </div></div>
     {% endif %}
 
     <table id="task-table" class="table table-hover table-actions table-striped not-auto-datatable">

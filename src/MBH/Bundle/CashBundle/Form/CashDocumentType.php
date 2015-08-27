@@ -7,6 +7,7 @@ use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class CashDocumentType extends AbstractType
@@ -43,12 +44,12 @@ class CashDocumentType extends AbstractType
                 'mapped' => false,
                 'data' => $options['payer'] ? $options['payer'] : null,
                 'group' => $options['groupName'],
-                'choices' => ['' => ''] + $payers,
-                'data' => key($payers),
+                'choices' => $payers,
                 'attr' => [
                     'placeholder' => 'form.cashDocumentType.placeholder_fio',
                     'style' => 'min-width: 500px',
-                ]
+                ],
+                'empty_value' => ''
             ])
             ->add('organizationPayer', 'hidden', [
                 'required' => false,
@@ -113,21 +114,20 @@ class CashDocumentType extends AbstractType
         $builder->get('touristPayer')->addModelTransformer(new EntityToIdTransformer($this->documentManager, 'MBHPackageBundle:Tourist'));
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\CashBundle\Document\CashDocument',
             'methods' => [],
             'operations' => [],
             'groupName' => null,
             'payer' => null,
             'payers' => []
-        ));
+        ]);
     }
 
     public function getName()
     {
-        return 'mbh_bundle_cashbundle_cashdocumenttype';
+        return 'mbh_bundle_cash_cash_document';
     }
-
 }

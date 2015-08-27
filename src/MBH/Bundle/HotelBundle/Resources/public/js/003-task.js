@@ -78,32 +78,30 @@ $(document).ready(function () {
         $roomsSelect = $('#mbh_bundle_hotelbundle_task_rooms'),
         roomsSelectHtml = $roomsSelect.html();
 
-    var firstCall = true,
-        changeHousingAndFloor = function (e) {
+    var firstCall = true;
+    var changeHousingAndFloor = function (e) {
+        if (!$roomsSelect.length) {
+            return;
+        }
+        $roomsSelect.val('');
+        if(!firstCall) {
+            roomsSelectHtml = roomsSelectHtml.replace('selected="selected"', '');
+        }
+        var housing = $housingSelect.val(),
+            floor = $floorSelect.val(),
+            $roomsSelectHtml = $('<select>' + roomsSelectHtml + '</select>');
 
-            if (!$roomsSelect.length) {
-                return;
-            }
+        $roomsSelectHtml.find('option').map(function() {
+            var isChecked = (!housing|| this.getAttribute("data-housing") == housing)
+                && (!floor || this.getAttribute("data-floor") == floor);
+            if(!isChecked)
+                $(this).remove();
+        });
+        var newHtml = $roomsSelectHtml.html();
+        $roomsSelect.select2('destroy').html(newHtml).select2();
 
-            $roomsSelect.val('');
-            if (!firstCall) {
-                roomsSelectHtml = roomsSelectHtml.replace('selected="selected"', '');
-            }
-            var housing = $housingSelect.val(),
-                floor = $floorSelect.val(),
-                $roomsSelectHtml = $('<select>' + roomsSelectHtml + '</select>');
-
-            $roomsSelectHtml.find('option').map(function () {
-                var isChecked = (!housing || this.getAttribute("data-housing") == housing)
-                    && (!floor || this.getAttribute("data-floor") == floor);
-                if (!isChecked)
-                    $(this).remove();
-            });
-            var newHtml = $roomsSelectHtml.html();
-            $roomsSelect.select2('destroy').html(newHtml).select2();
-
-            firstCall = false;
-        };
+        firstCall = false;
+    };
 
     $housingSelect.on('change', changeHousingAndFloor);
     $floorSelect.on('change', changeHousingAndFloor);

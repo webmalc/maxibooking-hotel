@@ -99,6 +99,8 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
+        $menu['reports']->addChild('report_room_types', ['route' => 'report_room_types', 'label' => 'Номерной фонд'])
+            ->setAttributes(['icon' => 'fa fa-bed']);
 
 
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])

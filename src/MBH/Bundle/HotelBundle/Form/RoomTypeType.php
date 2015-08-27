@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints\Image;
 
@@ -77,15 +78,21 @@ class RoomTypeType extends AbstractType
                 'value' => true,
                 'required' => false,
                 'help' => 'form.roomTypeType.is_room_included_in_search'
+            ])
+            ->add('facilities', 'mbh_facilities', [
+                //'label' => 'form.roomTypeType.is_included',
+                'group' => 'form.roomTypeType.settings',
+                'required' => false
             ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'MBH\Bundle\HotelBundle\Document\RoomType',
             'imageUrl' => null,
-            'deleteImageUrl' => null
+            'deleteImageUrl' => null,
+            'facilities' => [],
         ));
     }
 

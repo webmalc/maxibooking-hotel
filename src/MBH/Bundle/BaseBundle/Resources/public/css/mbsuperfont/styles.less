@@ -1,0 +1,369 @@
+@charset "UTF-8";
+
+@font-face {
+  font-family: "mbsuperfont";
+  src: local('MaxiBooking'), url("/bundles/mbhbase/css/mbsuperfont/fonts/mbsuperfont.eot"); //src:url("fonts/mbsuperfont.eot");
+  src: local('MaxiBooking'), url("/bundles/mbhbase/css/mbsuperfont/fonts/mbsuperfont.eot?#iefix") format("embedded-opentype"), //src:url("fonts/mbsuperfont.eot?#iefix") format("embedded-opentype"),
+    url("/bundles/mbhbase/css/mbsuperfont/fonts/mbsuperfont.woff") format("woff"),
+    url("/bundles/mbhbase/css/mbsuperfont/fonts/mbsuperfont.ttf") format("truetype"),
+    url("/bundles/mbhbase/css/mbsuperfont/fonts/mbsuperfont.svg#mbsuperfont") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+[data-icon]:before {
+  font-family: "mbsuperfont" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^="mbf-"]:before,
+[class*=" mbf-"]:before {
+  font-family: "mbsuperfont" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mbf-clock:before {
+  content: "\e001";
+}
+.mbf-flame:before {
+  content: "\e002";
+}
+.mbf-fold:before {
+  content: "\e003";
+}
+.mbf-gift:before {
+  content: "\e004";
+}
+.mbf-globe:before {
+  content: "\e005";
+}
+.mbf-key:before {
+  content: "\e006";
+}
+.mbf-bell-two:before {
+  content: "\e007";
+}
+.mbf-bell:before {
+  content: "\e008";
+}
+.mbf-first-aid:before {
+  content: "\e009";
+}
+.mbf-ambulance:before {
+  content: "\e00a";
+}
+.mbf-briefcase:before {
+  content: "\e00b";
+}
+.mbf-home:before {
+  content: "\e00c";
+}
+.mbf-hospital:before {
+  content: "\e00d";
+}
+.mbf-adjust:before {
+  content: "\e00e";
+}
+.mbf-wifi:before {
+  content: "\e00f";
+}
+.mbf-air:before {
+  content: "\e010";
+}
+.mbf-lock:before {
+  content: "\e011";
+}
+.mbf-internet:before {
+  content: "\e012";
+}
+.mbf-plug:before {
+  content: "\e013";
+}
+.mbf-ruby:before {
+  content: "\e014";
+}
+.mbf-sign-in:before {
+  content: "\e015";
+}
+.mbf-tools:before {
+  content: "\e016";
+}
+.mbf-animals:before {
+  content: "\e017";
+}
+.mbf-no-animals:before {
+  content: "\e018";
+}
+.mbf-metro:before {
+  content: "\e019";
+}
+.mbf-car-side:before {
+  content: "\e01a";
+}
+.mbf-cc-nc:before {
+  content: "\e01b";
+}
+.mbf-monitor:before {
+  content: "\e01c";
+}
+.mbf-thumbs-up:before {
+  content: "\e01d";
+}
+.mbf-toilets:before {
+  content: "\e01e";
+}
+.mbf-telephone:before {
+  content: "\e01f";
+}
+.mbf-swimming:before {
+  content: "\e020";
+}
+.mbf-skiing:before {
+  content: "\e021";
+}
+.mbf-shopping:before {
+  content: "\e022";
+}
+.mbf-chapel:before {
+  content: "\e023";
+}
+.mbf-lodging:before {
+  content: "\e025";
+}
+.mbf-golf:before {
+  content: "\e026";
+}
+.mbf-disability:before {
+  content: "\e027";
+}
+.mbf-parking:before {
+  content: "\e02a";
+}
+.mbf-armchair:before {
+  content: "\e02b";
+}
+.mbf-bar:before {
+  content: "\e02c";
+}
+.mbf-beach-bar:before {
+  content: "\e02d";
+}
+.mbf-bar3:before {
+  content: "\e02e";
+}
+.mbf-credit-card:before {
+  content: "\e02f";
+}
+.mbf-torchere:before {
+  content: "\e030";
+}
+.mbf-platen:before {
+  content: "\e031";
+}
+.mbf-taxi:before {
+  content: "\e032";
+}
+.mbf-bath:before {
+  content: "\e033";
+}
+.mbf-bed:before {
+  content: "\e034";
+}
+.mbf-double-bed:before {
+  content: "\e035";
+}
+.mbf-beer:before {
+  content: "\e036";
+}
+.mbf-reception:before {
+  content: "\e037";
+}
+.mbf-baggage-man:before {
+  content: "\e038";
+}
+.mbf-bookcase:before {
+  content: "\e039";
+}
+.mbf-cafeteria:before {
+  content: "\e03a";
+}
+.mbf-camera:before {
+  content: "\e03b";
+}
+.mbf-breakfast:before {
+  content: "\e03c";
+}
+.mbf-keys:before {
+  content: "\e03d";
+}
+.mbf-homecinema:before {
+  content: "\e03e";
+}
+.mbf-board-games:before {
+  content: "\e03f";
+}
+.mbf-washbasin:before {
+  content: "\e040";
+}
+.mbf-fastfood:before {
+  content: "\e041";
+}
+.mbf-restaurant:before {
+  content: "\e042";
+}
+.mbf-dresstable:before {
+  content: "\e043";
+}
+.mbf-coffee:before {
+  content: "\e044";
+}
+.mbf-baggage-safe:before {
+  content: "\e045";
+}
+.mbf-wardrobe:before {
+  content: "\e046";
+}
+.mbf-chair:before {
+  content: "\e047";
+}
+.mbf-maleroom:before {
+  content: "\e048";
+}
+.mbf-menu:before {
+  content: "\e049";
+}
+.mbf-radio:before {
+  content: "\e04a";
+}
+.mbf-food-delivery:before {
+  content: "\e04b";
+}
+.mbf-kitchen:before {
+  content: "\e04c";
+}
+.mbf-safebox:before {
+  content: "\e04d";
+}
+.mbf-lounge:before {
+  content: "\e04e";
+}
+.mbf-shower:before {
+  content: "\e04f";
+}
+.mbf-sink:before {
+  content: "\e050";
+}
+.mbf-sofa:before {
+  content: "\e051";
+}
+.mbf-stake:before {
+  content: "\e052";
+}
+.mbf-table:before {
+  content: "\e053";
+}
+.mbf-ws:before {
+  content: "\e054";
+}
+.mbf-femaleroom:before {
+  content: "\e055";
+}
+.mbf-washmachine:before {
+  content: "\e056";
+}
+.mbf-modern-tv:before {
+  content: "\e057";
+}
+.mbf-old-tv:before {
+  content: "\e058";
+}
+.mbf-travelling:before {
+  content: "\e059";
+}
+.mbf-teapot:before {
+  content: "\e05a";
+}
+.mbf-female:before {
+  content: "\e028";
+}
+.mbf-male:before {
+  content: "\e024";
+}
+.mbf-mb-logo:before {
+  content: "\e000";
+}
+.mbf-blind:before {
+  content: "\e029";
+}
+.mbf-disc-floppy:before {
+  content: "\e05b";
+}
+.mbf-heart-broken:before {
+  content: "\e05c";
+}
+.mbf-fan:before {
+  content: "\e05d";
+}
+.mbf-fitness:before {
+  content: "\e05e";
+}
+.mbf-conditioner:before {
+  content: "\e05f";
+}
+.mbf-safe:before {
+  content: "\e060";
+}
+.mbf-spa:before {
+  content: "\e061";
+}
+.mbf-sauna:before {
+  content: "\e062";
+}
+.mbf-free-wifi:before {
+  content: "\e063";
+}
+.mbf-iron:before {
+  content: "\e064";
+}
+.mbf-fridge:before {
+  content: "\e065";
+}
+.mbf-airbnb:before {
+  content: "\e066";
+}
+.mbf-booking:before {
+  content: "\e067";
+}
+.mbf-clean:before {
+  content: "\e068";
+}
+.mbf-hotelinn:before {
+  content: "\e069";
+}
+.mbf-myallocator:before {
+  content: "\e06a";
+}
+.mbf-oktogo:before {
+  content: "\e06b";
+}
+.mbf-vashotel:before {
+  content: "\e06c";
+}
+.mbf-ostrovok:before {
+  content: "\e06d";
+}

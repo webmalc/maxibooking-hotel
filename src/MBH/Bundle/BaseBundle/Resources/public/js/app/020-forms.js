@@ -152,7 +152,7 @@ var docReadyForms = function () {
             setDates = function () {
                 var period = begin.val() + '-' + end.val();
                 if (!select.val()) {
-                    select.select2("val", period);
+                    select.val(period);//.trigger('change');
                     return;
                 }
                 var dates = select.val().split('-');
@@ -340,6 +340,183 @@ var docReadyForms = function () {
         topLinks.on('ifToggled', function () {disable($(this))});
     }());
 };
+
+
+/**
+ * tagsSelectWidget
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
+(function ($) {
+    var mainClass = 'tags-select-widget';
+    var defaultOption = {
+        value: null,
+        emptyHelp: null
+    };
+
+    function tagsSelectWidget(element, options)
+    {
+        var that = this,
+            $element = $(element);
+        if ($element.is("select")) {
+            $element = $element.wrap('<div class="' + mainClass + '"></div>').closest('.' + mainClass).prepend('<div class="list"></div>');
+        }
+        var $select = $element.find('select'),
+            $list = $element.find('.list'),
+            inputName = $select.attr('name'),
+            isMultiple = $select.attr('multiple'),
+            isRequired = $select.attr('required'),
+            hasSelect2 = $select.data('select2'),
+            value = options.value;
+
+        if (isMultiple) {
+            if($select.val() && options.value === false) {
+                value = $select.val();
+            }
+            $select.removeAttr('multiple');
+        } else {
+            inputName += '[]';
+        }
+        if (isRequired) {
+            $select.removeAttr('required');
+        }
+
+
+        this.items = {
+            add: function (value, text, title) {
+                var input = '<input type="hidden" name="' + inputName + '" value="' + value + '">';
+                var item = '<div class="btn btn-xs btn-default" data-toggle="tooltip" data-original-title="' + title + '">' + text + input + '<div>';
+                $list.append(item);
+            },
+            addIcon: function (value, title, icon)
+            {
+                var text = '<i class="fa fa-2x ' + icon + '"></i>';// + text;
+                this.add(value, text, title);
+            },
+            clear: function()
+            {
+                $list.find('.btn').remove();
+            },
+            isEmpty: function()
+            {
+                return $list.find('.btn').length == 0;
+            }
+        }
+
+
+        if ($list.find('.btn').length == 0 && value.length > 0) {
+            value.forEach(function (value) {
+                var $option = $select.find('option[value=' + value + ']');
+                if ($option.length == 1) {
+                    that.items.addIcon(value, $option.text(), $option.data('icon'));
+                }
+            });
+        }
+
+        $select.val(null);
+        $select.attr('name', inputName.replace(/(\[.*\])/g, '') + '_fake');
+        if (!hasSelect2) {
+            $select.select2({
+                placeholder: $select.attr('placeholder'),
+                width: 'resolve',
+                closeOnSelect: false,
+                templateResult: function(state) {
+                    if (!state.id) {
+                        return state.text;
+                    }
+                    var icon = state.element.getAttribute('data-icon'),
+                        html = '<div><i class="fa ' + icon + '"></i> ' + state.text + '<div>';
+                    return $(html);
+                }
+            });
+        }
+
+        this.help = {
+            inited: false,
+            init:function()
+            {
+                this.text = options.emptyHelp;
+                this.$help = $('<small class="hide">' + this.text + '</small>');
+                $list.append(this.$help);
+                this.inited = true;
+            },
+            show: function()
+            {
+                if(this.inited) {
+                    this.$help.removeClass('hide');
+                }
+            },
+            hide: function()
+            {
+                if(this.inited) {
+                    this.$help.addClass('hide');
+                }
+            },
+            update: function()
+            {
+                if(this.inited) {
+                    that.items.isEmpty() ? this.show() : this.hide();
+                }
+            }
+        }
+        if(options.emptyHelp) {
+            this.help.init();
+        }
+
+        $select.on('select2:selecting', function (event) {
+            var element = event.params.args.data.element;
+            that.items.addIcon(element.value, element.text, element.getAttribute('data-icon'));
+            that.help.hide();
+            event.preventDefault();
+        });
+
+        $list.on('click', '.btn', function () {
+            $list.find('[data-toggle=tooltip]').tooltip('hide');
+            $(this).remove();
+            that.help.update();
+        });
+
+        this.help.update();
+        $element.data('tagsSelectWidget', this);
+    }
+
+    var methods = {
+        init : function (options) {
+            options = $.extend({}, defaultOption, options);
+            return this.each(function () {
+                var widget = new tagsSelectWidget(this, options);
+            });
+        },
+        clear : function () {
+            return this.each(function () {
+                var widget = $(this).data('tagsSelectWidget');
+                widget.items.clear();
+            });
+        },
+        update : function (values) {
+            return this.each(function () {
+                //todo
+                //var widget = $(this).data('tagsSelectWidget');
+                //widget.items.update(values);
+            });
+        }
+    };
+
+    $.fn.tagsSelectWidget = function (method) {
+        if (methods[method]) {
+            return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+        } else if (typeof method === 'object' || !method) {
+            return methods.init.apply(this, arguments);
+        } else {
+            $.error('Метод с именем ' +  method + ' не существует');
+        }
+    };
+})(window.jQuery);
+$('.tags-select-widget').tagsSelectWidget();
+$('.tags-select-input-widget').tagsSelectWidget();
+
+
+
+
 
 $(document).ready(function () {
     'use strict';

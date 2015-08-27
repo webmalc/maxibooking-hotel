@@ -106,6 +106,13 @@ class Room extends Base
     protected $status;
 
     /**
+     * @var array
+     * @ODM\Collection()
+     */
+    protected $facilities;
+
+    /**
+     * Set hotel
      * Get fullTitle
      *
      * @return string $fullTitle
@@ -271,5 +278,30 @@ class Room extends Base
     public function setStatus($status = null)
     {
         $this->status = $status;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFacilities()
+    {
+        return $this->facilities;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllFacilities()
+    {
+        return count($this->getFacilities()) > 0 ? $this->getFacilities() :
+            ($this->getRoomType() ? $this->getRoomType()->getAllFacilities() : []);
+    }
+
+    /**
+     * @param array $facilities
+     */
+    public function setFacilities($facilities)
+    {
+        $this->facilities = $facilities;
     }
 }

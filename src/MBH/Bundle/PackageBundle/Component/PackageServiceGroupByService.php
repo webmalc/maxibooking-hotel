@@ -16,9 +16,17 @@ class PackageServiceGroupByService extends PackageServiceGroup
      */
     protected $byService;
 
-    function __construct(Service $service)
+    protected $price;
+
+    function __construct(Service $service, $price)
     {
         $this->byService = $service;
+        $this->price = $price;
+    }
+
+    public function getPrice()
+    {
+        return $this->price;
     }
 
     public function add(PackageService $packageService)

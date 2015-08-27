@@ -3,7 +3,10 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Document\RoomRepository;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -478,4 +481,61 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         ];
     }
 
+    /**
+     * @return array
+     * @Route("/roomtypes", name="report_room_types")
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function roomTypesAction()
+    {
+        /** @var RoomRepository $roomRepository */
+        $roomRepository = $this->dm->getRepository('MBHHotelBundle:RoomType');
+        /** @var PackageRepository $packageRepository */
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+
+        /** @var RoomType[] $roomTypes */
+        $roomTypes = $roomRepository->findBy(['hotel.id' => $this->hotel->getId()]);
+        return [
+            'roomTypes' => $roomTypes,
+            'packageRepository' => $packageRepository,
+            'date' => new \DateTime('midnight'),
+            'facilities' => $this->get('mbh.facility_repository')->getAll()
+        ];
+    }
+
+    /**
+     * @return array
+     * @Route("/roomtypes_table", name="report_room_types_table", options={"expose"=true})
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_USER')")
+     * @Template()
+     */
+    public function roomTypesTableAction(Request $request)
+    {
+        $date = $this->get('mbh.helper')->getDateFromString($request->get('date'));
+        if(!$date) {
+            $date = new \DateTime('midnight');
+        }
+
+        $roomTypes = $request->get('roomType');
+        /** @var RoomRepository $roomRepository */
+        $roomRepository = $this->dm->getRepository('MBHHotelBundle:RoomType');
+        /** @var PackageRepository $packageRepository */
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+
+        $criteria = ['hotel.id' => $this->hotel->getId()];
+        if($roomTypes) {
+            $criteria['id'] = $roomTypes;
+        }
+        /** @var RoomType[] $roomTypes */
+        $roomTypes = $roomRepository->findBy($criteria);
+        return [
+            'roomTypes' => $roomTypes,
+            'packageRepository' => $packageRepository,
+            'date' => $date,
+            'facilities' => $this->get('mbh.facility_repository')->getAll()
+        ];
+    }
 }

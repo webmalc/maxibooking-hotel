@@ -103,6 +103,9 @@ doctrine_mongodb:
                     softdeleteable:
                         class: Gedmo\SoftDeleteable\Filter\ODM\SoftDeleteableFilter
                         enabled: true
+                    hotelable:
+                        class: MBH\Bundle\BaseBundle\Filter\HotelableFilter
+                        enabled: false
             mappings:
                 gedmo_loggable:
                     type: annotation

@@ -131,37 +131,40 @@ $(document).ready(function () {
         "drawCallback": drawCallback
     }
 
-    $cashTable.dataTable(dataTableOptions);
-
-
     var tableSwitcher = function () {
-        this.byDay = false;
+        this.byDay = $byDayCheckbox.bootstrapSwitch('state');
+        this.initCashTable = false;
         this.initTableByDay = false;
     }
     tableSwitcher.prototype.currentTable = function () {
         return this.byDay ? $cashTableByDay : $cashTable;
     }
-    tableSwitcher.prototype.switch = function () {
-        this.byDay = !this.byDay
-        $cashTable.parent().css('display', !this.byDay ? 'block' : 'none')
-        $cashTableByDay.parent().css('display', this.byDay ? 'block' : 'none')
+
+    tableSwitcher.prototype.draw = function () {
+        $cashTable.closest('.cash-table-item').css('display', !this.byDay ? 'block' : 'none');
+        $cashTableByDay.closest('.cash-table-item').css('display', this.byDay ? 'block' : 'none');
 
         if (this.byDay) {
             $showNoPaidCheckbox.bootstrapSwitch('toggleDisabled');
             $deletedCheckbox.bootstrapSwitch('toggleDisabled');
             if (!this.initTableByDay) {
-
-                dataTableOptions.aoColumns = [
+                var options = jQuery.extend({}, dataTableOptions);
+                options.aoColumns = [
                     {"bSortable": false},
                     {"bSortable": false},
                     {"bSortable": false},
                     {"bSortable": false},
                     {"bSortable": false}
                 ];
-                $cashTableByDay.dataTable(dataTableOptions);
+                $cashTableByDay.dataTable(options);
                 this.initTableByDay = true;
             }
         } else {
+            if(!this.initCashTable) {
+                console.log(dataTableOptions);
+                $cashTable.dataTable(dataTableOptions);
+                this.initCashTable = true;
+            }
             if ($showNoPaidCheckbox.prop('disabled')) {
                 $showNoPaidCheckbox.bootstrapSwitch('toggleDisabled');
             }
@@ -173,7 +176,13 @@ $(document).ready(function () {
         this.currentTable().dataTable().fnDraw();
     }
 
+    tableSwitcher.prototype.switch = function () {
+        this.byDay = !this.byDay;
+        this.draw();
+    }
+
     var sw = new tableSwitcher();
+    sw.draw();
 
     $('#cash-filter-form input,select').not('#by_day').on('switchChange.bootstrapSwitch change', function () {
         sw.currentTable().dataTable().fnDraw();

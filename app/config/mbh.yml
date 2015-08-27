@@ -53,18 +53,102 @@ parameters:
         beach: 'Пляж/Побережье'
         city: 'Городской'
       facilities:
-        parking: 'Парковка'
-        animals: 'Разрешены животные'
-        hour_front_desk: 'Круглосуточная стойка регистрации'
-        fitness: 'Фитнес-центр'
-        wi_fi: 'Wi-Fi'
-        free_wi_fi: 'Бесплатный Wi-Fi'
-        conditioner: 'Кондиционер'
-        pool: 'Бассейн'
-        bathroom: 'Ванная комната в номерах'
-        breakfast: 'Завтрак включен'
-        sauna: 'Баня/Сауна'
-        car: 'Прокат автомобиля'
+        # Здание
+        building:
+          parking: 'Парковка'
+          fitness: 'Фитнес-центр'
+          swimming: 'Бассейн'
+          sauna: 'Баня/Сауна'
+          internet: 'Интернет-класс'
+          shopping: 'Шопинг'
+          restaurant: 'Ресторан'
+          cafeteria: 'Кафетерий'
+          fastfood: 'Закусочная'
+          beach-bar: 'Бар на пляже'
+          beer: 'Пивной бар'
+          baggage-safe: 'Комната хранения'
+          baggage-man: 'Носильщик'
+          disc-floppy: 'Гостевой офис'
+          spa: 'Спа-салон'
+          lounge: 'Зона отдыха'
+          skiing: 'Лыжная трасса'
+          chapel: 'Часовня'
+
+        # Правила размещения
+        rules:
+          animals: 'Разрешены животные'
+          no-animals: 'Размещение с животными запрещено'
+          credit-card: 'Кредитные карты принимаются'
+          cc-nc: 'Иностранная валюта не принимается'
+          breakfast: 'Завтрак включен'
+
+        # Возможности
+        ability:
+          reception: 'Круглосуточная стойка регистрации'
+          wifi: 'Wi-Fi'
+          free-wifi: 'Бесплатный Wi-Fi'
+          car-side: 'Прокат автомобиля'
+          taxi: 'Заказ такси'
+          menu: 'Заказ еды'
+          travelling: 'Заказ экскурсий'
+          lock: 'Контроль доступа'
+          camera: 'Видеонаблюдение'
+          keys: 'Электронные замки'
+          metro: 'Близость метрополитена'
+          disability: 'Доступ для маломобильных граждан'
+          blind: 'Доступ для слепых граждан'
+
+        # Тип комнаты
+        roomtype:
+          maleroom: 'Мужская комната'
+          femaleroom: 'Женская комната'
+          ruby: 'Люкс'
+
+        # Мебель
+        furniture:
+          bed: 'Односпальная кровать'
+          double-bed: 'Двуспальная кровать'
+          sofa: 'Диван-кровать'
+          armchair: 'Кресло'
+          table: 'Стол'
+          platen: 'Столик'
+          chair: 'Стул'
+          dresstable: 'Трюмо'
+          wardrobe: 'Платяной шкаф'
+          bookcase: 'Книжный шкаф'
+          torchere: 'Торшер'
+          safe: 'Сейф'
+
+        # Еда
+        food:
+          kitchen: 'Кухня'
+          bar: 'Минибар'
+          teapot: 'Чайник'
+          coffee: 'Кофе-машина'
+          fridge: 'Холодильник'
+
+        # Удобства
+        amenity:
+          bath: 'Ванная'
+          sink: 'Умывальник'
+          shower: 'Душ'
+          toilets: 'Туалет'
+          ws: 'Унитаз'
+          sign-in: 'Запасной выход'
+
+        # Техника
+        technical:
+          telephone: 'Телефон'
+          fan: 'Вентилятор'
+          conditioner: 'Кондиционер'
+          modern-tv: 'Современный телевизор'
+          old-tv: 'Телевизор'
+          homecinema: 'Домашний кинотеатр'
+          washmachine: 'Стиральная машина'
+          radio: 'Радио'
+          iron: 'Утюг'
+          plug: 'Электророзетка'
+          board-games: 'Настольные игры'
 
     #mbhs
     mbh.mbhs:
@@ -226,3 +310,13 @@ parameters:
     mbh.organization.types:
         contragents: 'Контрагенты'
         my: 'Мои организации'
+
+    mbh.payer_organization:
+        name: 'ООО "Расчётные средства"'
+        checking_account: '~'
+        inn: '0000000000'
+        kpp: '000000000'
+        bank: '~'
+        bank_bik: '000000000'
+        correspondent_account: '00000000000000000000'
+        accountant_fio: '~'

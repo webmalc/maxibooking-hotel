@@ -17,7 +17,7 @@ form.userType.general_info: Общая информация
 form.userType.placeholder_surname: Иванов
 form.userType.name: Имя
 form.userType.patronymic: Отчество
-form.userType.birth_date: Дата роджения
+form.userType.birth_date: Дата рождения
 form.userType.general_info: Общая информация
 form.userType.placeholder_name: Иван
 form.userType.placeholder_patronymic: Иванович

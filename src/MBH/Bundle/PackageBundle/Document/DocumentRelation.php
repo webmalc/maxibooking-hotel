@@ -51,8 +51,8 @@ class DocumentRelation
      */
     protected $expiry;
     /**
-     * @var integer
-     * @ODM\Int
+     * @var string
+     * @ODM\String()
      */
     protected $relation;
 
@@ -173,7 +173,7 @@ class DocumentRelation
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getRelation()
     {
@@ -181,7 +181,7 @@ class DocumentRelation
     }
 
     /**
-     * @param int $relation
+     * @param string $relation
      */
     public function setRelation($relation)
     {
@@ -189,10 +189,15 @@ class DocumentRelation
     }
 
     /**
-     * @Assert\True(message = "The start date must be before the end date")
+     * @Assert\True(message = "The start date must be beforproe the end date")
      */
     public function isDateRangeValid()
     {
         return !($this->issued && $this->expiry && $this->issued->getTimestamp() > $this->expiry->getTimestamp());
+    }
+
+    function __toString()
+    {
+        return $this->getAuthority() . ' ' . ($this->getIssued() ? $this->getIssued()->format('d.m.Y') : '');
     }
 }

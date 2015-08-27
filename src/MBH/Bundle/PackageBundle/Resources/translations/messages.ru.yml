@@ -195,10 +195,16 @@ form.organizationType.type: 'Тип'
 form.organizationType.comment: 'Комментарий'
 form.organizationType.stamp: 'Печать'
 form.organizationType.created_at: 'Создан'
-form.organizationType.group_location: 'Адресные данные'
 form.organizationType.address: 'Адрес'
 form.organizationType.default_hotels: 'По умолчанию для'
 form.organizationType.default_hotels_help: 'Отели, для которых эта организация будет использоваться по умолчанию'
+form.organizationType.group.search: Найти организацию
+form.organizationType.group.personal: Личные данные
+form.organizationType.group.add: Добавить организацию
+form.organizationType.group.registration: Регистрационные данные
+form.organizationType.group.additional: Дополнительно
+form.organizationType.group.location: 'Адресные данные'
+form.organizationType.group.check_account: 'Расчётный счёт'
 
 # Вид документов
 package.document.type_passport: Паспорт

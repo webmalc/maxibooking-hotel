@@ -58,6 +58,7 @@ abstract class TemplateGenerator implements TemplateGeneratorInterface, Containe
      */
     public function generateResponse(array $formData)
     {
+        //return new Response($this->getTemplate($formData), 200);
         $request = $this->container->get('request_stack')->getCurrentRequest();
         $content = $this->container->get('knp_snappy.pdf')->getOutputFromHtml($this->getTemplate($formData), [
             'cookie' => [$request->getSession()->getName() => $request->getSession()->getId()],

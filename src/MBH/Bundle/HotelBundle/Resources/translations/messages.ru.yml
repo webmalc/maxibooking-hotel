@@ -50,6 +50,7 @@ form.roomType.settings: Настройки
 form.roomType.is_room_included_in_search: Используется ли номер в поиске?
 form.roomType.room_type: Тип номера
 form.roomType.status: Статус
+form.roomType.facilities: Удобства
 form.roomType.housing: Корпус
 form.roomType.floor: Этаж
 form.roomTypeGenerateRoomsType.first_bed_number: Номер первого койко-места
@@ -63,6 +64,8 @@ form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: Неко
 form.roomTypeGenerateRoomsType.too_many_generation_numbers: Слишком большое количество записей для генерации.
 form.roomTypeGenerateRoomsType.housing: Корпус
 form.roomTypeGenerateRoomsType.floor: Этаж
+
+# RoomTypeType
 form.roomTypeType.name: Название
 form.roomTypeType.general_info: Общая информация
 form.roomTypeType.comfort_plus: Комфорт плюс
@@ -80,8 +83,11 @@ form.roomTypeType.room_main_places_amount: Количество основных
 form.roomTypeType.additional_places: Дополнительные места
 form.roomTypeType.room_additional_places_amount: Количество дополнительных мест в номере
 form.roomTypeType.is_included: Включен?
+form.roomTypeType.facilities: Удобства
 form.roomTypeType.is_room_included_in_search: Используется ли тип номера в поиске?
 form.roomTypeType.room_space: Площадь номера (м2)
+form.roomTypeType.help.empty_facilities: Используются удобства из отеля
+
 controller.hotelController.record_created_success: 'Запись успешно создана.'
 controller.hotelController.record_edited_success: 'Запись успешно отредактирована.'
 controller.roomTypeController.rooms_generation_success: 'Номера успешно сгенерированы.'
@@ -91,6 +97,7 @@ controller.TaskTypeController.record_edited_success: 'Запись успешн�
 
 form.taskType.title: Название
 form.taskType.category: Категория
+form.taskType.default_role: Исполнители по умолчанию
 form.taskType.roomStatus: Статус комнаты
 form.task.type: Тип задачи
 form.task.status: Статус
@@ -129,5 +136,16 @@ controller.corpus.created_success: Копрус успешно добавлен
 
 
 form.taskTypeCategory.general_info: Добавление категории задач
-form.taskTypeCategory.title: Название
-form.taskTypeCategory.fullTitle: Внутреннее название
+form.taskTypeCategory.title: Внутреннее Название
+form.taskTypeCategory.fullTitle: Название
+
+
+
+building: Здание
+rules: Правила размещения
+ability: Возможности
+roomtype: Тип комнаты
+furniture: Мебель
+food: Еда
+amenity: Удобства
+technical: Техника

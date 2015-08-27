@@ -108,6 +108,7 @@ class Extension extends \Twig_Extension
             'transToLat' => new \Twig_Filter_Method($this, 'translateToLat'),
             'convertMongoDate' => new \Twig_Filter_Method($this, 'convertMongoDate'),
             'friendly_interval' => new \Twig_Filter_Method($this, 'friendlyInterval'),
+            'initial' => new \Twig_Filter_Method($this, 'initial'),
         ];
     }
 
@@ -136,5 +137,12 @@ class Extension extends \Twig_Extension
         return [
             'currency' => new \Twig_Function_Method($this, 'currency', array('is_safe' => array('html')))
         ];
+    }
+
+    public function initial($user)
+    {
+        return $user->getLastName() . ' ' .
+        mb_substr($user->getFirstName(), 0, 1) . '.' .
+        ($user->getPatronymic() ? mb_substr($user->getPatronymic(), 0, 1) . '.' : '');
     }
 }

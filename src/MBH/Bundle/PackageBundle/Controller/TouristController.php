@@ -20,7 +20,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Form\TouristType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/tourist")
@@ -249,10 +248,12 @@ class TouristController extends Controller
         $entity->getCitizenship() ?: $entity->setCitizenship($this->dm->getRepository('MBHVegaBundle:VegaState')->findOneByOriginalName('РОССИЯ'));
         $entity->getDocumentRelation()->getType() ?: $entity->getDocumentRelation()->setType('vega_russian_passport');
 
-        $form = $this->createForm('mbh_document_relation', $entity);
+        $form = $this->createForm('mbh_document_relation', $entity, [
+            'method' => Request::METHOD_PUT
+        ]);
 
         if ($request->isMethod(Request::METHOD_PUT)) {
-            $form->submit($request);
+            $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($entity);

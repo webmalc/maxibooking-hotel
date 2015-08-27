@@ -1,0 +1,32 @@
+{% extends "MBHPackageBundle:Report:layout.html.twig" %}
+
+{% set title = 'report.layout.title'|trans({}, 'MBHPackageBundle') %}
+{% set small_title = 'report.users.roomtype'|trans({}, 'MBHPackageBundle') %}
+{% set title_url = path('report_room_types') %}
+
+{% block content %}
+
+    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {id: 'room-type-table-filter-widget'} %}
+        <form id="room-types-table-filter" class="form-inline form-icon-label">
+            <div class="form-group">
+                <label><i class="fa fa-calendar" title='Дата' data-toggle='tooltip'></i></label>
+                <input type="text" name="date" value="{{ date.format('d.m.Y') }}" id="room-types-filter-date" class="datepicker form-control input-sm" data-date-format="dd.mm.yyyy">
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i></label>
+                <select id="room-types-filter-status" name="roomType" data-placeholder="Тип номера" id="accommodation-report-filter-roomType" class="form-control input-sm">
+                    <option></option>
+                    {% for roomType in roomTypes %}
+                        <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div></div>
+
+    <div id="room-types-table">
+        {% include 'MBHPackageBundle:Report:roomTypesTable.html.twig' with {roomTypes:roomTypes, facilities: facilities} %}
+    </div>
+
+{% endblock %}

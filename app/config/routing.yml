@@ -43,6 +43,10 @@ mbh_base:
     type:     annotation
     prefix:   /base
 
+mbh_export:
+    resource: "@MBHBaseBundle/Controller/ExportController.php"
+    type:     annotation
+
 mbh_user:
     resource: "@MBHUserBundle/Controller/"
     type:     annotation

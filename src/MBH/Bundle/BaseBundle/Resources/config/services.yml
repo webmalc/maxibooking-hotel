@@ -118,11 +118,12 @@ services:
       arguments: [@service_container]
 
 
-    form.type.city:
-        class: MBH\Bundle\BaseBundle\Form\Extension\CityType
-        arguments: [@doctrine_mongodb]
+    form.type.facilities:
+        class: MBH\Bundle\BaseBundle\Form\FacilitiesType
+        calls:
+            - [ setContainer, [ '@service_container' ] ]
         tags:
-            - { name: form.type, alias: mbh_city }
+            - { name: form.type, alias: mbh_facilities }
 
     #mbh.translatable_listener:
     #    class: MBH\Bundle\BaseBundle\EventListener\TranslatableListener
@@ -134,5 +135,10 @@ services:
 
     mbh.event_listener.check_relation_subscriber:
         class: MBH\Bundle\BaseBundle\EventListener\CheckDeleteRelationSubscriber
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+    mbh.event_listener.hotelable_listener:
+        class: MBH\Bundle\BaseBundle\EventListener\HotelableListener
+        arguments: [@mbh.hotel.selector]
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}

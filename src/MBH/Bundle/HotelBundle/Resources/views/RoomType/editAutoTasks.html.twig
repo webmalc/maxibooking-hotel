@@ -1,0 +1,51 @@
+{% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
+
+{% set small_title = 'views.roomType.edit.edit_room_type'|trans({}, 'MBHHotelBundle') ~ entity.id %}
+{% set layout = "tabs" %}
+
+{% block content %}
+
+    {% include 'MBHHotelBundle:RoomType:editTabs.html.twig' with {'active' : 3, 'entity': entity} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="general_info">
+            {{ form_start(form, {'action': path('room_type_task_edit', {'id': entity.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+
+            {% if form.vars.errors|length > 0 %}
+                <div class="alert alert-danger global-errors">{{ form_errors(form) }}</div>
+            {% endif %}
+
+            <div class="well" id="mbh_hotel_bundle_room_type_tasks">
+                {{ form_row(form.checkIn) }}
+                <div class="form-group daily">
+                    {{ form_label(form.daily) }}
+                    <div class="col-md-4">
+                        <div id="daily-in-list">
+                            {% for item in form.daily %}
+                                <div class="form-inline">
+                                    {{ form_widget(item.day) }}&nbsp{{ form_widget(item.taskType) }}
+                                    <i class="fa fa-times"></i>
+                                    {% if item.day.vars.errors|length > 0 %}
+                                        <div class="alert alert-danger global-errors">{{ form_errors(item.day) }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="btn btn-success btn-xs" data-prototype="{{ form_widget(form.daily.vars.prototype.day)|e }}&nbsp{{ form_widget(form.daily.vars.prototype.taskType)|e }}">
+                            <i class="fa fa-plus"></i> Добавить
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_errors(form.daily) }}
+                    </div>
+                </div>
+                {{ form_row(form.checkOut) }}
+            </div>
+            {{ form_rest(form.daily) }}
+            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'room_type_delete' } %}
+            {{ form_end(form) }}
+
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
+        </div>
+    </div>
+{% endblock %}

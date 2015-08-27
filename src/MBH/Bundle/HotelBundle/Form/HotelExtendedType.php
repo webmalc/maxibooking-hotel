@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class HotelExtendedType extends AbstractType
 {
@@ -90,12 +90,10 @@ class HotelExtendedType extends AbstractType
                 'choices' => (isset($options['config']['themes'])) ? $options['config']['themes'] : [],
                 'multiple' => true
             ])
-            ->add('facilities', 'choice', [
+            ->add('facilities', 'mbh_facilities', [
                 'label' => 'form.hotelExtendedType.hotel_amenities',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
-                'choices' => (isset($options['config']['facilities'])) ? $options['config']['facilities'] : [],
-                'multiple' => true
             ]);
 
         $builder->add('vega_address_id', 'number', [
@@ -108,14 +106,15 @@ class HotelExtendedType extends AbstractType
         $builder->get('city')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHHotelBundle:City'));
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
             'city' => null,
             'config' => null,
-        ));
+        ]);
     }
+
 
     public function getName()
     {

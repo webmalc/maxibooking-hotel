@@ -118,6 +118,7 @@ class Builder extends ContainerAware
             TemplateGeneratorFactory::TYPE_EVIDENCE,
             TemplateGeneratorFactory::TYPE_FORM_1_G,
             TemplateGeneratorFactory::TYPE_RECEIPT,
+            TemplateGeneratorFactory::TYPE_BILL,
             TemplateGeneratorFactory::TYPE_ACT,
         ];
 

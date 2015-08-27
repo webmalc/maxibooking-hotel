@@ -64,10 +64,9 @@ class TaskSubscriber implements EventSubscriber
             $newRoom = $changeSet['room'][1];
 
             $dm->refresh($task->getType());
-            if (!$task->getType()->getRoomStatus()) {
-                throw new Exception();
+            if ($task->getType()->getRoomStatus()) {
+                $newRoom->setStatus($task->getType()->getRoomStatus());
             }
-            $newRoom->setStatus($task->getType()->getRoomStatus());
             $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($newRoom)), $newRoom);
             if ($oldRoom) {
                 $oldRoom->setStatus($taskRepository->getActuallyRoomStatus($oldRoom, $task));
@@ -78,10 +77,9 @@ class TaskSubscriber implements EventSubscriber
             if ($task->getStatus() == Task::STATUS_PROCESS) {
                 $room = $task->getRoom();
                 $dm->refresh($task->getType());
-                if (!$task->getType()->getRoomStatus()) {
-                    throw new Exception();
+                if ($task->getType()->getRoomStatus()) {
+                    $room->setStatus($task->getType()->getRoomStatus());
                 }
-                $room->setStatus($task->getType()->getRoomStatus());
                 $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($room)), $room);
             } elseif ($task->getStatus() == Task::STATUS_CLOSED) {
                 $room = $task->getRoom();

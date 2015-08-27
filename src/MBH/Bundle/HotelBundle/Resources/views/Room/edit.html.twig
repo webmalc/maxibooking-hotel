@@ -13,17 +13,18 @@
 
     {{ form_start(form, {'action': path('room_type_room_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
-    <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
-        <div class="container">
-            {% include 'MBHBaseBundle:Actions:saveButtons.html.twig'%}
-            <ul class="nav navbar-nav navbar-right">
-                <li><button data-href="{{ path('room_type_room_delete', {'id': entity.id, 'roomType': entity.roomType.id}) }}" class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"> </i> {{ 'views.roomType.editRoom.delete'|trans({}, 'MBHHotelBundle') }}</button></li>
-            </ul>
-        </div>
-    </div>
-
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'room_type_room_delete' } %}
     {{ form_end(form) }}
 
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
+{% endblock %}
 
+{% block scripts %}
+    {{ parent() }}
+    <script>
+        $('#{{ (form.facilities.vars.id) }}').tagsSelectWidget({
+            value: {% autoescape false %}{{ form.facilities.vars.value|json_encode }}{% endautoescape %},
+            emptyHelp: '{{ 'views.roomType.help.empty_facilities'|trans({}, 'MBHHotelBundle') }}'
+        });
+    </script>
 {% endblock %}

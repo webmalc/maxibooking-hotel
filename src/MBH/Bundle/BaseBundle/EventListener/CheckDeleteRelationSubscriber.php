@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskType;
+use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 
 /**
@@ -35,7 +36,6 @@ class CheckDeleteRelationSubscriber implements EventSubscriber
         $settings = $this->getSettings();
         if (array_key_exists(get_class($document), $settings)) {
             $settings = $settings[get_class($document)];
-
             foreach ($settings as $setting) {
                 /** @var DocumentRepository $relationRepository */
                 $relationRepository = $dm->getRepository($setting['document']);
@@ -60,6 +60,13 @@ class CheckDeleteRelationSubscriber implements EventSubscriber
                     'document' => Task::class,
                     'field' => 'type',
                     'message' => 'exception.relation_delete.message.task'
+                ]
+            ],
+            TaskTypeCategory::class => [
+                [
+                    'document' => TaskType::class,
+                    'field' => 'category',
+                    'message' => 'exception.relation_delete.message.taskType',
                 ]
             ]
         ];

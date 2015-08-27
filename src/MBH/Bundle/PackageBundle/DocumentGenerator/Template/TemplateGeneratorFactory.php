@@ -23,6 +23,7 @@ class TemplateGeneratorFactory implements GeneratorFactoryInterface
     const TYPE_FORM_1_G = 'form_1_g';
     const TYPE_RECEIPT = 'receipt';
     const TYPE_ACT = 'act';
+    const TYPE_BILL = 'bill';
 
     /**
      * @var ContainerInterface
@@ -40,6 +41,7 @@ class TemplateGeneratorFactory implements GeneratorFactoryInterface
             self::TYPE_FORM_1_G => 'RegistrationCardTemplateGenerator',
             self::TYPE_RECEIPT => 'RegistrationCardTemplateGenerator',
             self::TYPE_ACT => 'ConfirmationTemplateGenerator',
+            self::TYPE_BILL => 'BillTemplateGenerator',
         ];
     }
 
@@ -56,7 +58,8 @@ class TemplateGeneratorFactory implements GeneratorFactoryInterface
             self::TYPE_EVIDENCE,
             self::TYPE_FORM_1_G,
             self::TYPE_RECEIPT,
-            self::TYPE_ACT
+            self::TYPE_ACT,
+            self::TYPE_BILL
         ];
     }
 

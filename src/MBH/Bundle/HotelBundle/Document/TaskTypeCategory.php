@@ -5,6 +5,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -24,6 +25,7 @@ class TaskTypeCategory extends Base
     use SoftDeleteableDocument;
     use BlameableDocument;
 
+    use HotelableDocument;
     /**
      * @var string
      * @Gedmo\Versioned
@@ -66,6 +68,24 @@ class TaskTypeCategory extends Base
     /**
      * @return string
      */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     * @return $this
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getFullTitle()
     {
         return $this->fullTitle;
@@ -73,10 +93,12 @@ class TaskTypeCategory extends Base
 
     /**
      * @param string $fullTitle
+     * @return $this
      */
     public function setFullTitle($fullTitle)
     {
         $this->fullTitle = $fullTitle;
+        return $this;
     }
 
     /**
@@ -89,10 +111,12 @@ class TaskTypeCategory extends Base
 
     /**
      * @param boolean $isSystem
+     * @return $this
      */
     public function setIsSystem($isSystem)
     {
         $this->isSystem = $isSystem;
+        return $this;
     }
 
     /**
@@ -105,10 +129,12 @@ class TaskTypeCategory extends Base
 
     /**
      * @param string $code
+     * @return $this
      */
     public function setCode($code)
     {
         $this->code = $code;
+        return $this;
     }
 
     /**
@@ -121,28 +147,10 @@ class TaskTypeCategory extends Base
 
     /**
      * @param TaskType[] $types
+     * @return $this
      */
     public function setTypes($types)
     {
         $this->types = $types;
     }
-
-
-    /**
-     * @return string
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param string $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-
 }

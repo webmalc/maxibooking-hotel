@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mb
- * Date: 05.08.15
- * Time: 18:06
- */
 
 namespace MBH\Bundle\HotelBundle\Form;
 
@@ -13,18 +7,22 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class TaskTypeCategoryType
+ * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ */
 class TaskTypeCategoryType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('fullTitle', 'text', [
-                'label' => 'form.taskTypeCategory.title',
+                'label' => 'form.taskTypeCategory.fullTitle',
                 'group' => 'form.taskTypeCategory.general_info',
-                'required' => true
+                'required' => true,
             ])
             ->add('title', 'text', [
-                'label' => 'form.taskTypeCategory.fullTitle',
+                'label' => 'form.taskTypeCategory.title',
                 'group' => 'form.taskTypeCategory.general_info',
                 'required' => false,
                 'help' => 'form.hotelType.maxibooking_inner_name'
@@ -47,7 +45,7 @@ class TaskTypeCategoryType extends AbstractType
 
     public function getName()
     {
-        return 'mbh_bundle_hotelbundle_task_type_category';
+        return 'mbh_hotel_bundle_task_type_category';
     }
 
 }

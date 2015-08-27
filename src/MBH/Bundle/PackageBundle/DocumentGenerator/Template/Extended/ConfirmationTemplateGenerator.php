@@ -39,11 +39,12 @@ class ConfirmationTemplateGenerator extends DefaultTemplateGenerator
 
         if($hasServices) {
             foreach($packageServices as $ps) {
-                if(!array_key_exists($ps->getService()->getId(), $packageServicesByType)) {
-                    $group = new PackageServiceGroupByService($ps->getService());
-                    $packageServicesByType[$ps->getService()->getId()] = $group;
+                $service = $ps->getService();
+                $groupBy = $ps->getPrice().$service->getId();
+                if(!array_key_exists($groupBy, $packageServicesByType)) {
+                    $packageServicesByType[$groupBy] = new PackageServiceGroupByService($service, $ps->getPrice());
                 }
-                $packageServicesByType[$ps->getService()->getId()]->add($ps);
+                $packageServicesByType[$groupBy]->add($ps);
                 $total += $ps->getTotal();
             }
         }

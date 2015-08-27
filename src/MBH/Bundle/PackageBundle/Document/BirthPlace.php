@@ -120,4 +120,9 @@ class BirthPlace
     {
         $this->settlement = $settlement;
     }
+
+    public function __toString()
+    {
+        return strval($this->getCountry() . ' ' . $this->getCity());
+    }
 }

@@ -1,0 +1,60 @@
+.select2-container {
+  display: inline-block !important;
+}
+textarea.big {
+  height: 150px;
+  width: 500px;
+}
+.filter-form div.input {
+  margin: 0px;
+  padding: 0px 0px 5px 10px;
+  display: inline-block;
+}
+.filter-form select {
+  width: 250px !important;
+}
+.filter-form input.datepicker {
+  width: 80px;
+}
+.input-xxs {
+  width: 55px !important;
+}
+.input-xs {
+  width: 100px !important;
+}
+.input-small {
+  width: 150px !important;
+}
+.payment-system-form {
+  display: inline-block;
+}
+.findGuest {
+  min-width: 600px !important;
+}
+form.form-horizontal label small {
+  color: #777;
+}
+.select2-selection__clear {
+  position: relative;
+}
+.bootstrap-timepicker {
+  display: inline-block;
+}
+.bootstrap-timepicker-widget {
+  min-width: 120px;
+}
+.bootstrap-timepicker-widget tr:nth-child(2) {
+  display: none;
+}
+.roles-widget ins {
+  background-color: #fff !important;
+}
+.tags-select-widget .list {
+  padding: 5px 0;
+}
+.tags-select-widget .btn {
+  margin: 2px;
+}
+.form-icon-label .form-group label:first-child {
+  margin: 0 10px;
+}

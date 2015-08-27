@@ -4,6 +4,7 @@ namespace MBH\Bundle\CashBundle\Document;
 
 use Doctrine\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Lib\QueryBuilder;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;

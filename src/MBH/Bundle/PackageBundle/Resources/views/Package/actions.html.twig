@@ -28,17 +28,19 @@
                     </button>
                 </li>
 
-                <li>
-                    <div class="dropup">
-                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"
-                                aria-expanded="true">
-                            <i class="fa fa-magic"></i>
-                            {{ 'package.actions'|trans({}, 'MBHPackageBundle') }}
-                            <span class="caret"></span>
-                        </button>
-                        {{ knp_menu_render(knp_menu_get('MBHPackageBundle:Builder:templateDocuments', {}, {'package' : entity, 'searchQuery' : searchQuery}).actions) }}
-                    </div>
-                </li>
+                {% if not entity.isDeleted %}
+                    <li>
+                        <div class="dropup">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"
+                                    aria-expanded="true">
+                                <i class="fa fa-magic"></i>
+                                {{ 'package.actions'|trans({}, 'MBHPackageBundle') }}
+                                <span class="caret"></span>
+                            </button>
+                            {{ knp_menu_render(knp_menu_get('MBHPackageBundle:Builder:templateDocuments', {}, {'package' : entity, 'searchQuery' : searchQuery}).actions) }}
+                        </div>
+                    </li>
+                {% endif %}
 
                 <li>
                     <button type="button" onclick="location.href = '{{ title_url|default(path('_welcome')) }}'"

@@ -1,4 +1,5 @@
 views.tasktype.index.name: Название
+views.tasktype.index.default_role: Исполнители по умолчанию
 views.tasktype.index.created: Создан
 views.task.index.status: Cтатус
 views.task.index.tasktype: Тип задачи
@@ -94,6 +95,8 @@ views.hotel.tabs.document_relation: 'Удостоверение личности
 views.hotel.tabs.address: 'Адрес'
 views.hotel.tabs.visa: 'Виза'
 views.hotel.tabs.main_info_required: "Необходимо заполнить основную информацию!"
+
+# RoomType
 views.roomType.edit.edit_room_type: "редактирование типа номера #"
 views.roomType.editRoom.edit_room_type: "редактирование номера для типа номера <"
 views.roomType.editRoom.edit_room_for_room_type: "редактирование номера для типа номера"
@@ -127,6 +130,8 @@ views.roomType.newRoom.create_bed_for_room_type: "создание койко-м
 views.roomType.newRoom.create_room_for_room_type: "создание номера для типа номера "
 views.roomType.roomListButtons.edit_record: 'Редактирование записи'
 views.roomType.roomListButtons.delete_record: 'Удаление записи'
+views.roomType.help.empty_facilities: 'Используются удобства из типа номера'
+
 views.hotel.index.confirm_delete: 'Вы действительно хотите удалить отель "%hotelname%"?'
 views.task.layout.tasks: "Задачи"
 

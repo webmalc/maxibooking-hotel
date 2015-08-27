@@ -58,14 +58,15 @@ class TaskController extends Controller
             /** @var Task[] $processTasks */
             $criteria = ['performer.id' => $this->getUser()->getId()];
             $sort = ['priority' => -1, 'createdAt' => -1];
-            $processTasks = $taskRepository->findBy($criteria + ['status' => 'process'], $sort);
+            $processTasks = $taskRepository->findBy($criteria + ['status' => Task::STATUS_PROCESS], $sort);
 
             $taskQueryCriteria = new TaskQueryCriteria();
             $taskQueryCriteria->roles = $this->getUser()->getRoles();
             $taskQueryCriteria->performer = $this->getUser()->getId();
             $taskQueryCriteria->onlyOwned = true;
-            $taskQueryCriteria->status = 'open';
+            $taskQueryCriteria->status = Task::STATUS_OPEN;
             $taskQueryCriteria->sort = $sort;
+            $taskQueryCriteria->hotel = $this->hotel;
             /** @var Task[] $tasks */
             $tasks = $taskRepository->getAcceptableTasks($taskQueryCriteria);
 
@@ -103,6 +104,7 @@ class TaskController extends Controller
         $tableParams = ClientDataTableParams::createFromRequest($request);
         $queryCriteria->offset = $tableParams->getStart();
         $queryCriteria->limit = $tableParams->getLength();
+        $queryCriteria->hotel = $this->hotel;
         $firstSort = $tableParams->getFirstSort();
         /** @var TaskRepository $taskRepository */
         $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
@@ -137,7 +139,7 @@ class TaskController extends Controller
         $recordsTotal = $taskRepository->getCountByCriteria($queryCriteria);
 
         return [
-            'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
+            'roomTypes' => $this->hotel->getRoomTypes(),
             'statuses' => $this->container->getParameter('mbh.task.statuses'),
             'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
             'recordsTotal' => $recordsTotal,
@@ -194,8 +196,8 @@ class TaskController extends Controller
             throw $this->createNotFoundException();
         }
         $entity = new Task();
-        $entity->setStatus('open');
-        $entity->setPriority(1);
+        $entity->setStatus(Task::STATUS_OPEN);
+        $entity->setPriority(Task::PRIORITY_AVERAGE);
 
         $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions());
 
@@ -225,7 +227,6 @@ class TaskController extends Controller
 
     private function getFormTaskTypeOptions()
     {
-        $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
         $statuses = $this->getParameter('mbh.task.statuses');
         $translator = $this->get('translator');
         $priorities = $this->container->getParameter('mbh.tasktype.priority');
@@ -234,11 +235,9 @@ class TaskController extends Controller
         }, $priorities);
 
         return [
-            'taskTypes' => $this->dm->getRepository('MBHHotelBundle:TaskType')->getOptCategoryGroupList(),
             'roles' => $this->getRoleList(),
             'statuses' => array_combine(array_keys($statuses), array_column($statuses, 'title')),
             'priorities' => $priorities,
-            'optGroupRooms' => $roomRepository->optGroupRooms($roomRepository->getRoomsByType($this->hotel, true)),
             'hotel' => $this->hotel
         ];
     }
@@ -285,8 +284,8 @@ class TaskController extends Controller
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(new TaskType($this->dm), $entity, $this->getFormTaskTypeOptions() + [
-                'scenario' => TaskType::SCENARIO_EDIT
-            ]);
+            'scenario' => TaskType::SCENARIO_EDIT
+        ]);
 
         if ($request->isMethod(Request::METHOD_PUT)) {
             if ($form->submit($request)->isValid()) {
@@ -348,7 +347,6 @@ class TaskController extends Controller
             'status' => $entity->getStatus() ?
                 $this->container->getParameter('mbh.task.statuses')[$entity->getStatus()]['title'] :
                 '',
-            //'room' => $entity->getRoom() ? $entity->getRoom()->getTitle() : '',
         ];
 
         return new JsonResponse($data);

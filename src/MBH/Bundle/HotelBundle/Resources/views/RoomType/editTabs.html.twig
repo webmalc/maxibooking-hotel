@@ -1,0 +1,17 @@
+<ul class="nav nav-tabs" role="tablist">
+    <li {{ active == 1 ? 'class="active"' : '' }}>
+        <a href="{{ path('room_type_edit', {'id': entity.id}) }}">
+            Общая информация и настройки
+        </a>
+    </li>
+    <li {{ active == 2 ? 'class="active"' : '' }}>
+        <a href="{{ path('room_type_image_edit', {'id': entity.id}) }}">
+            Фотографии
+        </a>
+    </li>
+    <li {{ active == 3 ? 'class="active"' : '' }}>
+        <a href="{{ path('room_type_task_edit', {'id': entity.id}) }}">
+            Задачи
+        </a>
+    </li>
+</ul>

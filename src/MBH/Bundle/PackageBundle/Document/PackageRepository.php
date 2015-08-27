@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Form\RoomType;
 use Symfony\Component\Validator\Constraints\DateTime;
 
@@ -51,6 +52,30 @@ class PackageRepository extends DocumentRepository
         $qb->sort('begin', 'asc');
 
         return $qb->getQuery()->execute();
+    }
+
+    /**
+     * @param Room $room
+     * @return Package|null
+     */
+    public function getPackageByAccommodation(Room $room, \DateTime $date)
+    {
+        $arrivalTimeLte = clone($date);
+        $departureTimeGte = clone($date);
+
+        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder
+            ->field('accommodation.id')->equals($room->getId())
+            ->field('arrivalTime')->lte($arrivalTimeLte->modify('+ 1 day'))
+            ->addOr($queryBuilder->expr()->field('isCheckOut')->equals(false))
+            ->addOr($queryBuilder->expr()
+                ->field('departureTime')->gte($departureTimeGte)
+            )
+            ->sort('arrivalTime', -1)
+            ->limit(1)
+        ;
+
+        return $queryBuilder->getQuery()->getSingleResult();
     }
 
     /**

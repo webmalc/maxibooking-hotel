@@ -42,7 +42,7 @@ class RoomType extends Base
      */
     use BlameableDocument;
 
-    /** 
+    /**
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="roomTypes")
      * @Assert\NotNull(message="Не выбран отель")
      */
@@ -161,8 +161,20 @@ class RoomType extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isHostel = false;
-    /** @ODM\EmbedMany(targetDocument="RoomTypeImage") */
-    private $images = array();
+    /**
+     * @ODM\EmbedMany(targetDocument="RoomTypeImage")
+     */
+    private $images = [];
+    /**
+     * @var TaskSettings
+     * @ODM\EmbedOne(targetDocument="TaskSettings")
+     */
+    private $taskSettings;
+    /**
+     * @var array
+     * @ODM\Collection()
+     */
+    protected $facilities = [];
 
     public function __construct()
     {
@@ -188,6 +200,7 @@ class RoomType extends Base
     public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
     {
         $this->hotel = $hotel;
+
         return $this;
     }
 
@@ -210,6 +223,7 @@ class RoomType extends Base
     public function setFullTitle($fullTitle)
     {
         $this->fullTitle = $fullTitle;
+
         return $this;
     }
 
@@ -275,6 +289,7 @@ class RoomType extends Base
     public function setColor($color)
     {
         $this->color = $color;
+
         return $this;
     }
 
@@ -286,6 +301,7 @@ class RoomType extends Base
         if (!empty($this->title)) {
             return $this->title;
         }
+
         return $this->fullTitle;
     }
 
@@ -463,6 +479,7 @@ class RoomType extends Base
     public function setDescription($description)
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -475,6 +492,7 @@ class RoomType extends Base
     public function setImage($image)
     {
         $this->image = $image;
+
         return $this;
     }
 
@@ -497,6 +515,7 @@ class RoomType extends Base
     public function setRoomSpace($roomSpace)
     {
         $this->roomSpace = $roomSpace;
+
         return $this;
     }
 
@@ -547,15 +566,16 @@ class RoomType extends Base
      */
     public function generateInternationalTitle()
     {
-        if(!$this->internationalTitle && $this->fullTitle) {
+        if (!$this->internationalTitle && $this->fullTitle) {
             $this->internationalTitle = Helper::translateToLat($this->fullTitle);
         }
     }
 
 
-    public function deleteImageById(RoomType $entity,$imageId){
+    public function deleteImageById($imageId)
+    {
         $result = new \Doctrine\Common\Collections\ArrayCollection();
-        foreach($entity->getImages() as $element) {
+        foreach ($this->getImages() as $element) {
             if ($element->getId() == $imageId) {
                 $imagePath = $element->getPath();
                 if (file_exists($imagePath) && is_readable($imagePath)) {
@@ -565,17 +585,52 @@ class RoomType extends Base
                 $result[] = $element;
             }
         }
-        $entity->images = $result;
+        $this->images = $result;
     }
 
-    public function makeMainImageById(RoomType $entity, $imageId){
-        foreach($entity->getImages() as $element) {
-            if ($element->getId() == $imageId) {
-                /* @var $element \MBH\Bundle\HotelBundle\Document\RoomTypeImage */
-                $element->setIsMain(true);
-            } else {
-                $element->setIsMain(false);
-            }
+    public function makeMainImageById($imageId)
+    {
+        foreach ($this->getImages() as $element) {
+            $element->setIsMain($element->getId() == $imageId);
         }
+    }
+
+    /**
+     * @return TaskSettings|null
+     */
+    public function getTaskSettings()
+    {
+        return $this->taskSettings;
+    }
+
+    /**
+     * @param TaskSettings $taskSettings
+     */
+    public function setTaskSettings(TaskSettings $taskSettings = null)
+    {
+        $this->taskSettings = $taskSettings;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFacilities()
+    {
+        return $this->facilities;
+    }
+
+    public function getAllFacilities()
+    {
+        return count($this->getFacilities()) > 0 ? $this->getFacilities() : $this->getHotel()->getFacilities();
+    }
+
+    /**
+     * @param array $facilities
+     * @return $this
+     */
+    public function setFacilities($facilities)
+    {
+        $this->facilities = $facilities;
+        return $this;
     }
 }

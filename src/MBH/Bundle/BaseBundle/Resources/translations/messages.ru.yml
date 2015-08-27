@@ -60,6 +60,7 @@ left: 'выехали'
 
 exception.relation_delete.message: 'Запись имеет связанные данные (%total%).'
 exception.relation_delete.message.task: 'Невозможно удалить. Этот Тип имеет существующие задачи (%total%)'
+exception.relation_delete.message.taskType: 'Невозможно удалить. Категория имеет существующие данные (%total%)'
 
 tariff.main: основной тариф
 tariffs: тарифы
@@ -77,3 +78,7 @@ list: список
 
 migration.card: Миграционная карта
 visa: Виза
+
+
+form.facilitiesType.label: 'Удобства'
+form.facilitiesType.placeholder: 'Выберите удобства'

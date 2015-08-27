@@ -218,11 +218,11 @@ class HotelController extends Controller
             'config' => $this->container->getParameter('mbh.hotel')
         ]);
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -239,11 +239,11 @@ class HotelController extends Controller
     {
         $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
             'city' => $entity->getCity(),
-            'config' => $this->container->getParameter('mbh.hotel')
+            'config' => $this->container->getParameter('mbh.hotel'),
+            'method' => Request::METHOD_PUT
         ]);
 
-        $form->submit($request);
-
+        $form->handleRequest($request);
         if ($form->isValid()) {
             $this->dm->persist($entity);
             $this->dm->flush();
