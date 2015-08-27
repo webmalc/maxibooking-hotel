@@ -16,11 +16,11 @@ class WelcomeController extends BaseController
     public function indexAction()
     {
         if ($this->get('security.authorization_checker')->isGranted('ROLE_USER')) {
-            return $this->redirectToRoute('package');//$this->forward();
+            return $this->redirectToRoute('package');
         }
         if ($this->get('security.authorization_checker')->isGranted('ROLE_STAFF')) {
             return $this->redirectToRoute('task');
         }
-        throw new $this->createAccessDeniedException();
+        throw $this->createAccessDeniedException();
     }
 }

@@ -6,7 +6,9 @@ form.password_confirmation: Подтвердите пароль
 form.userType.confirm_password: Подтвердите пароль
 form.userType.login: Логин
 form.userType.settings: Настройки
+form.userType.security_extended: Расширенные права
 form.userType.roles: Роли
+form.userType.groups: Группы
 form.userType.hotels: Отели
 form.userType.hotels_user_has_access_to: Отели к которым имеет доступ пользователь.
 form.userType.is_included: Включен?
@@ -22,6 +24,13 @@ form.userType.placeholder_patronymic: Иванович
 controller.profileController.new_password_saved_success: 'Новый пароль успешно сохранен.'
 controller.profileController.record_saved_success: 'Запись успешно создана.'
 controller.profileController.record_edited_success: 'Запись успешно отредактирована.'
+controller.group.create_success: 'Группа успешно создана.'
+controller.group.update_success: 'Группа успешно обновлена.'
+
+form.groupType.group.main: Общая информация
+form.groupType.group.roles: Права
+form.groupType.name: Название
+form.groupType.name.placeholder: Старший менеджер
 
 #Notifications
 form.userType.notifications_fieldset: Уведомления
@@ -40,3 +49,4 @@ views.user.tabs.main_info_required: "Необходимо заполнить о�
 views.user.tabs.main_info: "Основная информация"
 views.user.tabs.document_relation: "Удостоверение личности"
 views.user.tabs.address: "Адрес"
+views.user.tabs.security: "Безопасность"

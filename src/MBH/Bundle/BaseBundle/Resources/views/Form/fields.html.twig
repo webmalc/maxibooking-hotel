@@ -68,6 +68,19 @@
     {% endspaceless %}
 {% endblock form_row %}
 
+{%- block datetime_widget -%}
+    {% if widget == 'single_text' %}
+        {{- block('form_widget_simple') -}}
+    {%- else -%}
+        <div {{ block('widget_container_attributes') }}>
+            {{- form_errors(form.date) -}}
+            {{- form_errors(form.time) -}}
+            {{- form_widget(form.date) -}}
+            <div class="bootstrap-timepicker">{{- form_widget(form.time) -}}</div>
+        </div>
+    {%- endif -%}
+{%- endblock datetime_widget -%}
+
 {% block form_label %}
     {% spaceless %}
         {% if label is not sameas(false) %}
@@ -141,3 +154,47 @@
         {% endif %}
     {% endspaceless %}
 {% endblock form_errors %}
+
+{% block roles_widget %}
+
+    {% set exists = {} %}
+
+    {% if form.parent.vars.value.groups is defined %}
+        {% for group in form.parent.vars.value.groups %}
+            {% set exists = exists|merge(group.roles) %}
+        {% endfor %}
+    {% endif %}
+
+    {% for parent in form.vars.choices %}
+
+        {% set label = parent.label|replace({'__GROUP': ''}) %}
+
+        <div class="box roles-widget">
+            <div class="box-header" style="background-color: #efefef;">
+                <h3 class="box-title">
+                    <label style="cursor: pointer;">
+                        <input type="checkbox" {{ label in form.vars.data ? 'checked="checked"'}} class="flat-green plain-html" name="{{ form.vars.full_name }}" value="{{ label }}">
+                        &nbsp;
+                        <span class="{{ label in exists or label in form.vars.data ? 'text-info'}}">{{ label|trans({}, form.vars.translation_domain) }}</span>
+                    </label>
+                </h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool form-group-collapse" id="{{ label }}"  data-widget="collapse"><i class="fa fa-minus"></i></button>
+                </div>
+            </div>
+            <div class="box-body">
+                {% if parent.choices is defined%}
+                    {% for child in parent.choices  if label != child.label %}
+                        <div class="form-group" style="padding-left: 50px;">
+                            <label style="cursor: pointer;">
+                                <input type="checkbox"  {{ child.label in form.vars.data ? 'checked="checked"'}} class="flat-green plain-html" name="{{ form.vars.full_name }}" value="{{ child.label }}">
+                                &nbsp;
+                                <span class="{{ child.label in exists or child.label in form.vars.data ? 'text-info'}}">{{ child.label|trans({}, form.vars.translation_domain) }}</span>
+                            </label>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

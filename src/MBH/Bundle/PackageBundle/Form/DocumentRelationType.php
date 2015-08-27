@@ -115,8 +115,6 @@ class DocumentRelationType extends AbstractType
                 'property_path' => 'documentRelation.relation'
             ]);
 
-        dump(array_combine($dictTypes, $dictTypes));
-
         $builder->get('authorityOrgan')
             ->addModelTransformer(new EntityToIdTransformer($this->managerRegistry->getManager(), 'MBH\Bundle\VegaBundle\Document\VegaFMS'));
 

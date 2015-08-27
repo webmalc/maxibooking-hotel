@@ -36,7 +36,8 @@
     "jms/translation-bundle": "*@stable",
     "jms/di-extra-bundle": "*@stable",
     "liuggio/excelbundle": "^2.0@dev",
-    "ornicar/gravatar-bundle": "^1.1@dev"
+    "ornicar/gravatar-bundle": "^1.1@dev",
+    "doctrine/doctrine-fixtures-bundle": "^2.2@dev"
   },
   "require-dev": {
     "sensio/generator-bundle": "~2.3"

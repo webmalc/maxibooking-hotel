@@ -333,7 +333,7 @@ class CashController extends Controller
                 ->addPostFields($uniteller->getCheckPaymentData($entity))
                 ->send();
 
-            dump((string)$request);
+            dump((string) $request);
 
         } catch (Exception $e) {
             throw $this->createNotFoundException();

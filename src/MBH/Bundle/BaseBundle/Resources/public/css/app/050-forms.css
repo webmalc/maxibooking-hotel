@@ -37,6 +37,18 @@ form.form-horizontal label small {
 .select2-selection__clear {
   position: relative;
 }
+.bootstrap-timepicker {
+  display: inline-block;
+}
+.bootstrap-timepicker-widget {
+  min-width: 120px;
+}
+.bootstrap-timepicker-widget tr:nth-child(2) {
+  display: none;
+}
+.roles-widget ins {
+  background-color: #fff !important;
+}
 .tags-select-widget .list {
   padding: 5px 0;
 }

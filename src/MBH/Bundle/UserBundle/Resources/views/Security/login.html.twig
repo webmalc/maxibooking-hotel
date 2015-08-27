@@ -23,11 +23,11 @@
                    placeholder="{{ 'security.login.password'|trans({}, 'FOSUserBundle') }}" required>
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
         </div>
-        <div class="row">
+        <div class="row margin-left-sm">
             <div class="col-xs-8">
-                <div class="checkbox icheck">
+                <div class="checkbox">
 
-                        <input type="checkbox" name="_remember_me"
+                        <input type="checkbox" class="plain-html" name="_remember_me"
                                value="on"> {{ 'security.login.remember_me'|trans({}, 'FOSUserBundle') }}
 
                 </div>

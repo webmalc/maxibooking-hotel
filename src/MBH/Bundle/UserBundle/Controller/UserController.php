@@ -5,10 +5,6 @@ namespace MBH\Bundle\UserBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
-use MyAllocator\phpsdk\src\Api\AssociateUserToPMS;
-use MyAllocator\phpsdk\src\Api\HelloVendor;
-use MyAllocator\phpsdk\src\Api\HelloWorld;
-use MyAllocator\phpsdk\src\Object\Auth;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -17,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Form\UserType;
+use MBH\Bundle\UserBundle\Form\UserSecurityType;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
@@ -64,7 +61,7 @@ class UserController extends Controller
         $entity = new User();
 
         $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $entity->hasRole('ROLE_ADMIN')]
+            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')]
         );
 
         return array(
@@ -84,7 +81,7 @@ class UserController extends Controller
     {
         $entity = new User(array());
         $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $entity->hasRole('ROLE_ADMIN')]
+            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')]
         );
         $form->submit($request);
 
@@ -139,7 +136,7 @@ class UserController extends Controller
             }
         }
         $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $entity->hasRole('ROLE_ADMIN'), 'hotels' => $hasHotels]
+            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN'), 'hotels' => $hasHotels]
         );
 
         return array(
@@ -175,6 +172,32 @@ class UserController extends Controller
 
                 return $this->redirectToRoute('user_document_edit', ['id' => $entity->getId()]);
             }
+        }
+
+        return array(
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        );
+    }
+
+    /**
+     * @Route("/{id}/edit/security", name="user_security_edit")
+     * @Method({"GET","POST"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template()
+     * @ParamConverter(name="entity", class="MBHUserBundle:User")
+     */
+    public function editSecurityAction(User $entity, Request $request)
+    {
+        $form = $this->createForm(new UserSecurityType(), $entity);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $this->get('fos_user.user_manager')->updateUser($entity);
+
+            return $this->redirectToRoute('user_security_edit', ['id' => $entity->getId()]);
         }
 
         return array(
@@ -225,7 +248,7 @@ class UserController extends Controller
     public function updateAction(Request $request, User $entity)
     {
         $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $entity->hasRole('ROLE_ADMIN')]
+            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')]
         );
 
         $form->submit($request);

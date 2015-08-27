@@ -96,7 +96,7 @@ class PackageMainType extends AbstractType
                 ]
             );
 
-        if ($options['price']) {
+        if ($options['price'] && 0) {
             $builder->add(
                 'price',
                 'text',

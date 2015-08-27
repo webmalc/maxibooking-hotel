@@ -23,6 +23,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
 class User extends BaseUser
 {
     const ROLE_DEFAULT = 'ROLE_BASE_USER';
+
     /**
      * @var string
      * @ODM\Id
@@ -122,6 +123,11 @@ class User extends BaseUser
      * @ODM\EmbedOne(targetDocument="MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed")
      */
     protected $addressObjectDecomposed;
+
+    /**
+     * @ODM\ReferenceMany(targetDocument="Group")
+     */
+    protected $groups;
 
     /**
      * Hook timestampable behavior
@@ -373,5 +379,24 @@ class User extends BaseUser
     public function setAddressObjectDecomposed(AddressObjectDecomposed $addressObjectDecomposed = null)
     {
         $this->addressObjectDecomposed = $addressObjectDecomposed;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRolesWithoutGroups()
+    {
+        return $this->roles;
+    }
+
+    /**
+     * @param $roles
+     * @return $this
+     */
+    public function setRolesWithoutGroups($roles)
+    {
+        $this->roles = $roles;
+
+        return $this;
     }
 }

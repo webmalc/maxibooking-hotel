@@ -153,6 +153,8 @@ fos_user:
     db_driver: mongodb
     firewall_name: main
     user_class: MBH\Bundle\UserBundle\Document\User
+    group:
+            group_class: MBH\Bundle\UserBundle\Document\Group
     
 # KnpMenuBundle Configuration    
 knp_menu:

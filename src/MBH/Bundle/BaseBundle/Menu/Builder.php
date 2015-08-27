@@ -195,6 +195,9 @@ class Builder extends ContainerAware
         $menu['configs']->addChild('users', ['route' => 'user', 'label' => 'Пользователи'])
             ->setAttributes(['icon' => 'fa fa-user'])
         ;
+        $menu['configs']->addChild('groups', ['route' => 'group', 'label' => 'Группы'])
+            ->setAttributes(['icon' => 'fa fa-users'])
+        ;
         $menu['configs']->addChild('sources', ['route' => 'package_source', 'label' => 'Источники'])
              ->setAttributes(['icon' => 'fa fa-compass'])
         ;
