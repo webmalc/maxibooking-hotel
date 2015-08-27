@@ -4,3 +4,6 @@ services:
         arguments: [@service_container]
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+    mbh.cash.1c_exporter:
+        class: MBH\Bundle\CashBundle\Service\OneCExporter
+        arguments: [@service_container]

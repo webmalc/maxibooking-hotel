@@ -185,13 +185,14 @@ class CashController extends Controller
     }
 
     /**
-     * @Route("/export/1c", name="cash_1c_export", options={"expose"=true})
+     * @Route("/export/1c/{method}", name="cash_1c_export", options={"expose"=true}, defaults={"method" = null})
      * @Method("GET")
      * @Security("is_granted('ROLE_BOOKKEEPER')")
      * @param Request $request
+     * @param string|null $method
      * @return Response
      */
-    public function export1cAction(Request $request)
+    public function export1cAction(Request $request, $method = null)
     {
         $queryCriteria = $this->requestToCashCriteria($request);
         $queryCriteria->limit = 1000;
@@ -199,12 +200,17 @@ class CashController extends Controller
         /** @var CashDocumentRepository $cashDocumentRepository */
         $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
         $queryCriteria->methods = ['electronic'];
+        if($method) {
+            $queryCriteria->methods[] = $method;
+        }
         $queryCriteria->isPaid = true;
         $cashDocuments = $cashDocumentRepository->findByCriteria($queryCriteria);
-        $result = (new OneCExporter($this->container))->export($cashDocuments, $queryCriteria, $this->hotel->getOrganization());
+        $result = $this->get('mbh.cash.1c_exporter')->export($cashDocuments, $queryCriteria, $this->hotel->getOrganization());
 
+        $result = str_replace("\n", "\r\n",$result);
+        $result = mb_convert_encoding($result, 'windows-1251', 'utf-8');
         $response = new Response($result);
-        $response->headers->set('Content-Type', 'text/plain; charset=utf-8');
+        $response->headers->set('Content-Type', 'text/plain; charset=windows-1251');
         $response->headers->set('Content-Disposition','attachment; filename="1cExport.txt"');
         return $response;
     }

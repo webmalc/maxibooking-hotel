@@ -8,6 +8,10 @@ use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Class OneCExporter
+ * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ */
 class OneCExporter
 {
     /**
@@ -21,6 +25,25 @@ class OneCExporter
     }
 
     /**
+     * @return Organization
+     */
+    protected function createConfigOrganization()
+    {
+        $data = $this->container->getParameter('mbh.payer_organization');
+        //create Hydrator
+        $organization = new Organization();
+        $organization->setName($data['name']);
+        $organization->setCheckingAccount($data['checking_account']);
+        $organization->setInn($data['inn']);
+        $organization->setKpp($data['kpp']);
+        $organization->setBank($data['bank']);
+        $organization->setBankBik($data['bank_bik']);
+        $organization->setCorrespondentAccount($data['correspondent_account']);
+        $organization->setAccountantFio($data['accountant_fio']);
+        return $organization;
+    }
+
+    /**
      * @param CashDocument[] $cashDocuments
      * @param CashDocumentQueryCriteria $queryCriteria
      * @param Organization $hotelOrganization
@@ -29,15 +52,23 @@ class OneCExporter
     public function export($cashDocuments, CashDocumentQueryCriteria $queryCriteria, Organization $hotelOrganization = null)
     {
         $text = '';
+        $configOrganizationPayer = $this->createConfigOrganization();
 
         foreach ($cashDocuments as $cashDocument) {
-            $organizationPayer = $cashDocument->getOrganizationPayer() ? $cashDocument->getOrganizationPayer() : new Organization();
+            if ($cashDocument->getMethod() == 'cashless') {
+                $organizationPayer = $configOrganizationPayer;
+            }elseif ($cashDocument->getOrganizationPayer()) {
+                $organizationPayer = $cashDocument->getOrganizationPayer();
+            } else {
+                $organizationPayer =  new Organization();
+            }
+
             $hotelOrganization = $cashDocument->getHotel()->getOrganization();
 
             $text .= sprintf('СекцияДокумент=Платежное поручение
 Номер=' . $cashDocument->getNumber() . '
 Дата=' . $cashDocument->getCreatedAt()->format('d.m.Y') . '
-Сумма=' . $cashDocument->getTotal() . '
+Сумма=' . number_format($cashDocument->getTotal(), 2, '.', '') . '
 ПлательщикСчет=' . $organizationPayer->getCheckingAccount() . '
 ДатаСписано=' . ($cashDocument->getIsPaid() ? $cashDocument->getPaidDate()->format('d.m.Y') : '') . '
 Плательщик=' . $organizationPayer->getName() . //ЗАПАДНО-УРАЛЬСКИЙ БАНК ОАО "СБЕРБАНК РОССИИ"//ЗЫРЯНОВА ЕЛЕНА СЕРГЕЕВНА//26859356266//614000 ПЕРМЬ МЕХАНОШИНА д.10 кв.44//
@@ -48,7 +79,7 @@ class OneCExporter
 ПлательщикБанк1=' . $organizationPayer->getBank() . '
 ПлательщикБИК=' . $organizationPayer->getBankBik() . '
 ПлательщикКорсчет=' . $organizationPayer->getCorrespondentAccount() . '
-ПолучательСчет=' . $hotelOrganization->getCorrespondentAccount() . '
+ПолучательСчет=' . $hotelOrganization->getCheckingAccount() . '
 ДатаПоступило=' . $cashDocument->getPaidDate()->format('d.m.Y') . '
 Получатель=' . $hotelOrganization->getName() . '
 ПолучательИНН=' . $hotelOrganization->getInn() . '
@@ -86,7 +117,7 @@ class OneCExporter
 Отправитель=
 Получатель=
 ДатаСоздания=' . date('d.m.Y') . '
-ВремяСоздания=' . date('H.i.s') . '
+ВремяСоздания=' . date('H:i:s') . '
 ДатаНачала=' . $queryCriteria->begin->format('d.m.Y') . '
 ДатаКонца=' . $queryCriteria->end->format('d.m.Y') . '
 РасчСчет=' . ($hotelOrganization ? $hotelOrganization->getCheckingAccount() : '') . '
@@ -96,11 +127,10 @@ class OneCExporter
 НачальныйОстаток=0
 РасчСчет=' . ($hotelOrganization ? $hotelOrganization->getCheckingAccount() : '') . '
 ВсегоСписано=0
-ВсегоПоступило=' . $total . '
+ВсегоПоступило=' . number_format($total, 2, '.', '') . '
 КонечныйОстаток=0
 КонецРасчСчет
-' . $text . 'КонецФайла
-');
+' . $text . 'КонецФайла');
 
         return $result;
     }

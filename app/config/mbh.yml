@@ -310,3 +310,13 @@ parameters:
     mbh.organization.types:
         contragents: 'Контрагенты'
         my: 'Мои организации'
+
+    mbh.payer_organization:
+        name: 'ООО "Расчётные средства"'
+        checking_account: '~'
+        inn: '0000000000'
+        kpp: '000000000'
+        bank: '~'
+        bank_bik: '000000000'
+        correspondent_account: '00000000000000000000'
+        accountant_fio: '~'
