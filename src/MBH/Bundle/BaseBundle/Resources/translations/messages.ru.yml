@@ -142,7 +142,8 @@ form.facilitiesType.placeholder: 'Выберите удобства'
 
 entry.actions.delete: 'Удалить запись'
 entry.actions.delete.confirmation: 'Вы действительно хотите удалить запись «%doc%»?'
-entry.actions.edit: 'Редактировать запись'form.facilitiesType.placeholder: 'Выберите удобства'
+entry.actions.edit: 'Редактировать запись'
+form.facilitiesType.placeholder: 'Выберите удобства'
 form.languageType.label: 'Язык'
 
 # mbh.languages
