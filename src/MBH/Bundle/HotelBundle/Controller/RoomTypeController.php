@@ -26,7 +26,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      *
      * @Route("/", name="room_type")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_TYPE_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -51,7 +51,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      *
      * @Route("/new", name="room_type_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_TYPE_NEW')")
      * @Template()
      */
     public function newAction()
@@ -72,7 +72,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      *
      * @Route("/create", name="room_type_create")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_TYPE_NEW')")
      * @Template("MBHHotelBundle:RoomType:new.html.twig")
      */
     public function createAction(Request $request)
@@ -108,7 +108,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      *
      * @Route("/{id}/image/{imageId}/delete", name="room_type_image_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_TYPE_DELETE')")
      */
     public function imageDelete($id, $imageId)
     {
@@ -133,7 +133,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      *
      * @Route("/{id}/edit", name="room_type_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_TYPE_EDIT')")
      * @Template()
      * @ParamConverter(class="MBHHotelBundle:RoomType")
      */
@@ -159,7 +159,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      *
      * @Route("/{id}", name="room_type_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_TYPE_EDIT')")
      * @ParamConverter(class="MBHHotelBundle:RoomType")
      * @Template("MBHHotelBundle:RoomType:edit.html.twig")
      */
@@ -196,7 +196,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * @param RoomType $entity
      * @Method({"GET", "POST"})
      * @Route("/{id}/edit/tasks", name="room_type_task_edit")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_TYPE_EDIT')")
      * @ParamConverter(class="MBHHotelBundle:RoomType")
      * @Template()
      * @return array
@@ -234,7 +234,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      *
      * @Route("/{id}/delete", name="room_type_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_TYPE_DELETE')")
      */
     public function deleteAction($id)
     {
@@ -245,7 +245,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * Make image main.
      *
      * @Route("/image/{imageId}/main/{id}/edit", name="room_type_image_make_main")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_TYPE_EDIT')")
      * @ParamConverter(class="MBHHotelBundle:RoomType")
      * @Template("MBHHotelBundle:RoomType:editRoom.html.twig")
      */
@@ -272,7 +272,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      *
      * @Route("/images/{id}/edit", name="room_type_image_edit")
      * @Method({"GET","POST"})
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_TYPE_EDIT')")
      * @ParamConverter(class="MBHHotelBundle:RoomType")
      * @Template()
      */

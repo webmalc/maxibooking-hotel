@@ -149,3 +149,5 @@ form.languageType.label: 'Язык'
 # mbh.languages
 languages.en: 'Английский'
 languages.ru: 'Русский'
+
+security.not_access: Нет прав доступа

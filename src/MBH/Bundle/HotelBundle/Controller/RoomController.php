@@ -23,165 +23,11 @@ use MBH\Bundle\HotelBundle\Form\RoomType as RoomForm;
 class RoomController extends BaseController
 {
     /**
-     * Show edit room form.
-     *
-     * @Route("/{id}/edit", name="room_type_room_edit")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
-     * @Template()
-     * @ParamConverter(class="MBHHotelBundle:Room")
-     */
-    public function editAction(Room $entity)
-    {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
-            throw $this->createNotFoundException();
-        }
-
-        $form = $this->createForm(new RoomForm(), $entity, [
-            'isNew' => false,
-            'hotelId' => $entity->getHotel()->getId()
-        ]);
-
-        return array(
-            'entity' => $entity,
-            'form' => $form->createView(),
-            'logs' => $this->logs($entity)
-        );
-    }
-
-    /**
-     * Delete room.
-     *
-     * @Route("/{id}/delete", name="room_type_room_delete")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
-     */
-    public function deleteAction($id)
-    {
-        return $this->deleteEntity($id, 'MBHHotelBundle:Room', 'room_type');
-    }
-
-    /**
-     * Update room.
-     *
-     * @Route("/{id}/edit", name="room_type_room_update")
-     * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
-     * @Template("MBHHotelBundle:RoomType:editRoom.html.twig")
-     * @ParamConverter(class="MBHHotelBundle:Room")
-     */
-    public function updateAction(Request $request, Room $entity)
-    {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
-            throw $this->createNotFoundException();
-        }
-
-        $form = $this->createForm(new RoomForm(), $entity, [
-            'isNew' => false,
-            'hotelId' => $entity->getHotel()->getId()
-        ]);
-
-        $form->submit($request);
-
-        if ($form->isValid()) {
-            $this->dm->persist($entity);
-            $this->dm->flush();
-
-            $request->getSession()->getFlashBag()->set('success',
-                $this->get('translator')->trans('controller.roomTypeController.record_edited_success'));
-
-            if ($request->get('save') !== null) {
-                return $this->redirect($this->generateUrl('room_type_room_edit', ['id' => $entity->getId()]));
-            }
-
-            return $this->redirect($this->generateUrl('room_type', ['tab' => $entity->getRoomType()->getId()]));
-        }
-
-        return array(
-            'entity' => $entity,
-            'form' => $form->createView(),
-            'logs' => $this->logs($entity)
-        );
-    }
-
-    /**
-     * Show new room form.
-     *
-     * @Route("/{id}/new/", name="room_type_room_new")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
-     * @Template()
-     * @ParamConverter(class="MBHHotelBundle:RoomType")
-     */
-    public function newAction(RoomType $roomType)
-    {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($roomType->getHotel())) {
-            throw $this->createNotFoundException();
-        }
-
-        $room = new Room();
-        $room->setRoomType($roomType);
-        $form = $this->createForm(new RoomForm(), $room , [
-            'hotelId' => $this->hotel->getId()
-        ]);
-
-        return [
-            'entity' => $roomType,
-            'form' => $form->createView(),
-            'logs' => $this->logs($roomType)
-        ];
-    }
-
-
-    /**
-     * Create room.
-     *
-     * @Route("/{id}/room/new/", name="room_type_room_create")
-     * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
-     * @Template("MBHHotelBundle:Room:new.html.twig")
-     */
-    public function createRoomAction(Request $request, $id)
-    {
-        $entity = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($id);
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
-            throw $this->createNotFoundException();
-        }
-
-        $room = new Room();
-        $room->setRoomType($entity)->setHotel($this->hotel);
-
-        $form = $this->createForm(new RoomForm(), $room, [
-            'hotelId' => $this->hotel->getId()
-        ]);
-        $form->submit($request);
-
-        if ($form->isValid()) {
-            $this->dm->persist($room);
-            $this->dm->flush();
-
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
-
-            if ($request->get('save') !== null) {
-                return $this->redirect($this->generateUrl('room_type_room_edit', ['id' => $room->getId()]));
-            }
-
-            return $this->redirect($this->generateUrl('room_type', ['tab' => $id]));
-        }
-
-        return array(
-            'entity' => $entity,
-            'form' => $form->createView(),
-            'logs' => $this->logs($entity)
-        );
-    }
-
-    /**
      * rooms json list.
      *
      * @Route("/{id}/room/", name="room_type_room_json", defaults={"_format"="json"}, options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_VIEW')")
      * @Template()
      */
     public function jsonListAction(Request $request, $id)
@@ -208,11 +54,163 @@ class RoomController extends BaseController
     }
 
     /**
+     * Show new room form.
+     *
+     * @Route("/{id}/new/", name="room_new")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ROOM_NEW')")
+     * @Template()
+     * @ParamConverter(class="MBHHotelBundle:RoomType")
+     */
+    public function newAction(RoomType $roomType)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($roomType->getHotel())) {
+            throw $this->createNotFoundException();
+        }
+
+        $room = new Room();
+        $room->setRoomType($roomType);
+        $form = $this->createForm(new RoomForm(), $room , [
+            'hotelId' => $this->hotel->getId()
+        ]);
+
+        return [
+            'entity' => $roomType,
+            'form' => $form->createView(),
+            'logs' => $this->logs($roomType)
+        ];
+    }
+
+
+    /**
+     * Create room.
+     *
+     * @Route("/{id}/room/new/", name="room_create")
+     * @Method("POST")
+     * @Security("is_granted('ROLE_ROOM_NEW')")
+     * @Template("MBHHotelBundle:Room:new.html.twig")
+     */
+    public function createAction(Request $request, $id)
+    {
+        $entity = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($id);
+        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+            throw $this->createNotFoundException();
+        }
+
+        $room = new Room();
+        $room->setRoomType($entity)->setHotel($this->hotel);
+
+        $form = $this->createForm(new RoomForm(), $room, [
+            'hotelId' => $this->hotel->getId()
+        ]);
+        $form->submit($request);
+
+        if ($form->isValid()) {
+            $this->dm->persist($room);
+            $this->dm->flush();
+
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+
+            if ($request->get('save') !== null) {
+                return $this->redirect($this->generateUrl('room_edit', ['id' => $room->getId()]));
+            }
+
+            return $this->redirect($this->generateUrl('room_type', ['tab' => $id]));
+        }
+
+        return array(
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        );
+    }
+
+    /**
+     * Show edit room form.
+     *
+     * @Route("/{id}/edit", name="room_edit")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ROOM_EDIT')")
+     * @Template()
+     * @ParamConverter(class="MBHHotelBundle:Room")
+     */
+    public function editAction(Room $entity)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(new RoomForm(), $entity, [
+            'isNew' => false,
+            'hotelId' => $entity->getHotel()->getId()
+        ]);
+
+        return array(
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        );
+    }
+
+    /**
+     * Update room.
+     *
+     * @Route("/{id}/edit", name="room_update")
+     * @Method("PUT")
+     * @Security("is_granted('ROLE_ROOM_EDIT')")
+     * @Template("MBHHotelBundle:RoomType:editRoom.html.twig")
+     * @ParamConverter(class="MBHHotelBundle:Room")
+     */
+    public function updateAction(Request $request, Room $entity)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(new RoomForm(), $entity, [
+            'isNew' => false,
+            'hotelId' => $entity->getHotel()->getId()
+        ]);
+
+        $form->submit($request);
+
+        if ($form->isValid()) {
+            $this->dm->persist($entity);
+            $this->dm->flush();
+
+            $request->getSession()->getFlashBag()->set('success',
+                $this->get('translator')->trans('controller.roomTypeController.record_edited_success'));
+
+            return $this->isSavedRequest() ?
+                 $this->redirectToRoute('room_edit', ['id' => $entity->getId()]) :
+                 $this->redirectToRoute('room_type', ['tab' => $entity->getRoomType()->getId()]);
+        }
+
+        return array(
+            'entity' => $entity,
+            'form' => $form->createView(),
+            'logs' => $this->logs($entity)
+        );
+    }
+
+    /**
+     * Delete room.
+     *
+     * @Route("/{id}/delete", name="room_delete")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ROOM_DELETE')")
+     */
+    public function deleteAction($id)
+    {
+        return $this->deleteEntity($id, 'MBHHotelBundle:Room', 'room_type');
+    }
+
+    /**
      * Show generate rooms form.
      *
-     * @Route("/{id}/generate/", name="room_type_generate_rooms")
+     * @Route("/{id}/generate/", name="generate_rooms")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_NEW')")
      * @Template()
      * @ParamConverter(class="MBHHotelBundle:RoomType")
      */
@@ -233,9 +231,9 @@ class RoomController extends BaseController
     /**
      * Generate rooms process.
      *
-     * @Route("/{id}/generate/", name="room_type_generate_rooms_process")
+     * @Route("/{id}/generate/", name="generate_rooms_process")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_NEW')")
      * @Template("MBHHotelBundle:Room:generate.html.twig")
      * @ParamConverter(class="MBHHotelBundle:RoomType")
      */
