@@ -20,7 +20,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     /**
      * @Route("/", name="room_cache_overview")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_CACHE_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -35,16 +35,14 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
     /**
      * @param Request $request
-     * @return Response
+     * @return array
      * @Route("/table", name="room_cache_overview_table", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_CACHE_VIEW')")
      * @Template()
      */
     public function tableAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $helper = $this->container->get('mbh.helper');
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
@@ -72,7 +70,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         ];
 
         //get roomTypes
-        $roomTypes = $dm->getRepository('MBHHotelBundle:RoomType')
+        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
             ->fetch($hotel, $request->get('roomTypes'))
         ;
         if (!count($roomTypes)) {
@@ -80,7 +78,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         }
         //get tariffs
         if (!empty($request->get('tariffs'))) {
-            $tariffs = $dm->getRepository('MBHPriceBundle:Tariff')
+            $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')
                 ->fetch($hotel, $request->get('tariffs'))
             ;
         } else {
@@ -88,7 +86,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         }
 
         //get roomCaches
-        $roomCaches = $dm->getRepository('MBHPriceBundle:RoomCache')
+        $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch(
                 $begin, $end, $hotel,
                 $request->get('roomTypes') ? $request->get('roomTypes') : [],
@@ -105,15 +103,13 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     /**
      * @Route("/save", name="room_cache_overview_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_CACHE_EDIT')")
      * @Template("MBHPriceBundle:RoomCache:index.html.twig")
      * @param Request $request
      * @return array
      */
     public function saveAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
         $helper = $this->get('mbh.helper');
         $validator = $this->get('validator');
@@ -124,7 +120,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
 
-            $roomType = $dm->getRepository('MBHHotelBundle:RoomType')->find($roomTypeId);
+            $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($roomTypeId);
             if (!$roomType || $roomType->getHotel() != $hotel) {
                 continue;
             }
@@ -132,7 +128,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             foreach ($roomTypeArray as $tariffId => $tariffArray) {
 
                 if ($tariffId) {
-                    $tariff = $dm->getRepository('MBHPriceBundle:Tariff')->find($tariffId);
+                    $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($tariffId);
                     if (!$tariff || $tariff->getHotel() != $hotel) {
                         continue;
                     }
@@ -155,23 +151,23 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                     }
 
                     if ($validator->validate($newRoomCache)) {
-                        $dm->persist($newRoomCache);
+                        $this->dm->persist($newRoomCache);
                     }
                 }
             }
         }
-        $dm->flush();
+        $this->dm->flush();
 
         //update
         foreach ($updateData as $roomCacheId => $val) {
-            $roomCache = $dm->getRepository('MBHPriceBundle:RoomCache')->find($roomCacheId);
+            $roomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')->find($roomCacheId);
             if (!$roomCache || $roomCache->getHotel() != $hotel) {
                 continue;
             }
 
             //delete
             if (isset($val['rooms']) && (trim($val['rooms']) === '' || $val['rooms'] === null)) {
-                $dm->remove($roomCache);
+                $this->dm->remove($roomCache);
                 continue;
             }
 
@@ -180,36 +176,32 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             }
             $roomCache->setIsClosed(isset($val['closed']) && !empty($val['closed']) ? true : false);
             if ($validator->validate($roomCache)) {
-                $dm->persist($roomCache);
+                $this->dm->persist($roomCache);
             }
         }
-        $dm->flush();
+        $this->dm->flush();
 
-        $request->getSession()->getFlashBag()
-            ->set('success', 'Изменения успешно сохранены.')
-        ;
-
+        $request->getSession()->getFlashBag()->set('success', 'Изменения успешно сохранены.');
         $this->get('mbh.channelmanager')->updateRoomsInBackground();
 
-        return $this->redirect($this->generateUrl('room_cache_overview', [
+        return $this->redirectToRoute('room_cache_overview', [
             'begin' => $request->get('begin'),
             'end' => $request->get('end'),
             'roomTypes' => $request->get('roomTypes'),
-        ]));
+        ]);
     }
 
     /**
      * @Route("/generator", name="room_cache_generator")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_CACHE_EDIT')")
      * @Template()
      */
     public function generatorAction()
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        $form = $this->createForm(
-            new RoomCacheGeneratorType(), [], [
+        $form = $this->createForm(new RoomCacheGeneratorType(), [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
@@ -222,7 +214,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     /**
      * @Route("/generator/save", name="room_cache_generator_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_ROOM_CACHE_EDIT')")
      * @Template("MBHPriceBundle:RoomCache:generator.html.twig")
      * @param Request $request
      * @return array
@@ -231,8 +223,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        $form = $this->createForm(
-            new RoomCacheGeneratorType(), [], [
+        $form = $this->createForm(new RoomCacheGeneratorType(), [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
@@ -240,9 +231,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $form->submit($request);
 
         if ($form->isValid()) {
-            $request->getSession()->getFlashBag()
-                ->set('success', 'Данные успешно сгенерированы.')
-            ;
+            $request->getSession()->getFlashBag()->set('success', 'Данные успешно сгенерированы.');
 
             $data = $form->getData();
 
@@ -252,10 +241,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
             $this->get('mbh.channelmanager')->updateRoomsInBackground();
 
-            if ($request->get('save') !== null) {
-                return $this->redirect($this->generateUrl('room_cache_generator'));
-            }
-            return $this->redirect($this->generateUrl('room_cache_overview'));
+            return $this->isSavedRequest() ?
+                $this->redirectToRoute('room_cache_generator') :
+                $this->redirectToRoute('room_cache_overview');
         }
 
         return [
