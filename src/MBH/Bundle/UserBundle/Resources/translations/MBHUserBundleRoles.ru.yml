@@ -52,6 +52,12 @@ ROLE_DOCUMENT_TEMPLATE_NEW: Создание шаблонов документо
 ROLE_DOCUMENT_TEMPLATE_EDIT: Редактирование шаблонов документов
 ROLE_DOCUMENT_TEMPLATE_DELETE: Удаление шаблонов документов
 
+ROLE_HOUSING: Корпуса
+ROLE_HOUSING_VIEW: Просмотр корпусов
+ROLE_HOUSING_NEW: Создание корпусов
+ROLE_HOUSING_EDIT: Редактирование корпусов
+ROLE_HOUSING_DELETE: Удаление корпусов
+
 ROLE_ROOM: Номера отеля
 ROLE_ROOM_VIEW: Просмотр номеров отеля
 ROLE_ROOM_NEW: Создание номеров отеля
