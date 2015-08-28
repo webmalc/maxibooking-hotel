@@ -92,3 +92,15 @@ ROLE_RESTRICTION_EDIT: Редактирование условий и огран
 ROLE_ROOM_CACHE: Номера в продаже
 ROLE_ROOM_CACHE_VIEW: Просмотр номеров в продаже
 ROLE_ROOM_CACHE_EDIT: Редактирование номеров в продаже
+
+ROLE_SERVICE: Услуги
+ROLE_SERVICE_NEW: Создание услуги
+ROLE_SERVICE_VIEW: Просмотр услуг
+ROLE_SERVICE_EDIT: Редактирование услуг
+ROLE_SERVICE_DELETE: Удаление услуг
+
+ROLE_SERVICE_CATEGORY: Категории услуг
+ROLE_SERVICE_CATEGORY_NEW: Создание категорий услуг
+ROLE_SERVICE_CATEGORY_VIEW: Просмотр категорий услуг
+ROLE_SERVICE_CATEGORY_EDIT: Редактирование категорий услуг
+ROLE_SERVICE_CATEGORY_DELETE: Удаление категорий услуг

@@ -15,9 +15,11 @@
                 </a>
             </li>
         {% endfor %}
-        <li>
-            <a href="{{ path('price_service_category_new') }}"><i class="fa fa-plus"></i> Новая категория услуг</a>
-        </li>
+        {% if is_granted('ROLE_SERVICE_CATEGORY_NEW') %}
+            <li>
+                <a href="{{ path('price_service_category_new') }}"><i class="fa fa-plus"></i> Новая категория услуг</a>
+            </li>
+        {% endif %}
     </ul>
 
     <form method="post" role="form" class="are-you-sure form-inline" action="{{ path('price_service_category_save_prices') }}">
@@ -28,13 +30,15 @@
 
                 <!-- Tab actions -->
                 <div class="btn-list spacer-bottom text-right">
-                    {% if not entity.system %} 
+                    {% if not entity.system and is_granted('ROLE_SERVICE_CATEGORY_EDIT') %}
                         <a href="{{ path('price_service_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="Редактировать категорию услуг <{{entity.name}}>"><i class="fa fa-edit"></i> Редактировать</a>
-                    {%endif %}
-                    <a href="{{ path('price_service_category_entry_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="Создать услугу в категории <{{entity.name}}>"><i class="fa fa-plus"></i> Добавить услугу</a>
-                    {% if not entity.system %} 
+                    {% endif %}
+                    {% if is_granted('ROLE_SERVICE_CATEGORY_NEW') %}
+                        <a href="{{ path('price_service_category_entry_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="Создать услугу в категории <{{entity.name}}>"><i class="fa fa-plus"></i> Добавить услугу</a>
+                    {% endif %}
+                    {% if not entity.system and is_granted('ROLE_SERVICE_CATEGORY_DELETE') %}
                         <a href="{{ path('price_service_category_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="Удалить категорию услуг <{{entity.name}}>"><i class="fa fa-trash-o"></i> Удалить</a>
-                    {%endif %}
+                    {% endif %}
                 </div>
 
                 {% if entity.services.count %}
@@ -66,14 +70,16 @@
                                     </td>
                                     <td class="text-center">
                                         <div class='btn-list'>
-                                            <a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
-                                                <i class='fa fa-pencil-square-o'></i>
-                                            </a>
-                                            {% if not entity.system %} 
-                                            <a href='{{ path('price_service_category_entry_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
-                                                <i class='fa fa-trash-o'></i>
-                                            </a>
-                                            {%endif %}    
+                                            {% if is_granted('ROLE_SERVICE_EDIT') %}
+                                                <a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
+                                                    <i class='fa fa-pencil-square-o'></i>
+                                                </a>
+                                            {% endif %}
+                                            {% if not entity.system and is_granted('ROLE_SERVICE_DELETE') %}
+                                                <a href='{{ path('price_service_category_entry_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
+                                                    <i class='fa fa-trash-o'></i>
+                                                </a>
+                                            {% endif %}
                                         </div>
                                     </td>
                                 </tr>
@@ -87,11 +93,14 @@
                 <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
                     <div class="container-fluid">
                         <ul class="nav navbar-nav">
-                            <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить изменения</button></li>
-                            <li><button onclick="location.href = '{{ path('price_service_category_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> Добавить новую категорию</button></li>
+                            {% if is_granted('ROLE_SERVICE_EDIT') %}
+                                <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить изменения</button></li>
+                            {% endif %}
+                            {% if is_granted('ROLE_SERVICE_CATEGOTY_NEW') %}
+                                <li><button onclick="location.href = '{{ path('price_service_category_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> Добавить новую категорию</button></li>
+                            {% endif %}
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-
                             <li id='list-export-add-{{ loop.index }}'></li>
                         </ul>
                     </div>
