@@ -27,7 +27,7 @@ class DocumentTemplateController extends BaseController
     /**
      * @Route("/", name="document_templates")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATE_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -42,7 +42,7 @@ class DocumentTemplateController extends BaseController
     /**
      * @Route("/new", name="document_templates_new")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATE_NEW')")
      * @Template()
      */
     public function newAction(Request $request)
@@ -70,7 +70,7 @@ class DocumentTemplateController extends BaseController
     /**
      * @Route("/edit/{id}", name="document_templates_edit")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATE_EDIT')")
      * @Template()
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
      */
@@ -98,7 +98,7 @@ class DocumentTemplateController extends BaseController
     /**
      * @Route("/preview/{id}", name="document_templates_preview")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATE_VIEW')")
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
      * @return Response
      */
@@ -115,7 +115,7 @@ class DocumentTemplateController extends BaseController
     /**
      * @Route("/delete/{id}", name="document_templates_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATE_DELETE')")
      * @Template()
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
      */
