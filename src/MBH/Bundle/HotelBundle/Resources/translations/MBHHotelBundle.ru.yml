@@ -148,6 +148,8 @@ views.corpus.corpus: Копрус
 views.corpus: Корпус
 
 
+view.create_task_type_categoty: 'Новая категория'
+
 
 
 

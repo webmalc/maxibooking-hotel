@@ -24,7 +24,7 @@ class TaskTypeCategoryController extends Controller
     /**
      * @Route("/new", name="task_type_category_new")
      * @Method({"GET","PUT"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_TASK_TYPE_CATEGORY_NEW')")
      * @Template()
      */
     public function newAction(Request $request)
@@ -57,7 +57,7 @@ class TaskTypeCategoryController extends Controller
      *
      * @Route("/{id}/edit", name="task_type_category_edit")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_TASK_TYPE_CATEGORY_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHHotelBundle:TaskTypeCategory")
      */
@@ -91,7 +91,7 @@ class TaskTypeCategoryController extends Controller
      *
      * @Route("/{id}/delete", name="task_type_category_delete")
      * @Method({"GET"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_TASK_TYPE_CATEGORY_DELETE')")
      * @ParamConverter("entity", class="MBHHotelBundle:TaskTypeCategory")
      */
     public function deleteAction(TaskTypeCategory $entity)

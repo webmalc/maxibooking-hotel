@@ -28,7 +28,7 @@ class TaskController extends Controller
     /**
      * @Route("/", name="task")
      * @Method("GET")
-     * @Security("is_granted('ROLE_STAFF')")
+     * @Security("is_granted('ROLE_TASK_VIEW')")
      */
     public function indexAction()
     {
@@ -152,7 +152,7 @@ class TaskController extends Controller
     /**
      * @Route("/change_status/{id}/{status}", name="task_change_status", options={"expose":true})
      * @Method({"GET"})
-     * @Security("is_granted('ROLE_STAFF')")
+     * @Security("is_granted('ROLE_STAFF', 'ROLE_TASK_EDIT')")
      * @ParamConverter("entity", class="MBHHotelBundle:Task")
      */
     public function changeStatusAction(Task $entity, $status)
@@ -274,7 +274,7 @@ class TaskController extends Controller
      *
      * @Route("/edit/{id}", name="task_edit")
      * @Method({"GET","PUT"})
-     * @Security("is_granted('ROLE_TASK_MANAGER')")
+     * @Security("is_granted('ROLE_TASK_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHHotelBundle:Task")
      */
@@ -312,7 +312,7 @@ class TaskController extends Controller
      *
      * @Route("/{id}/delete", name="task_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_TASK_MANAGER')")
+     * @Security("is_granted('ROLE_TASK_DELETE')")
      */
     public function deleteAction($id)
     {

@@ -151,3 +151,6 @@ languages.en: 'Английский'
 languages.ru: 'Русский'
 
 security.not_access: Нет прав доступа
+
+crud.edit: Редактировать
+crud.delete: Удалить

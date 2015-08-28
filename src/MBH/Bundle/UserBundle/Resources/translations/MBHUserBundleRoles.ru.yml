@@ -59,3 +59,22 @@ ROLE_ROOM_TYPE_VIEW: Просмотр типов номеров
 ROLE_ROOM_TYPE_NEW: Создание типов номеров
 ROLE_ROOM_TYPE_EDIT: Редактирование типов номеров
 ROLE_ROOM_TYPE_DELETE: Удаление типов номеров
+
+
+ROLE_TASK: Задачи
+ROLE_TASK_VIEW: Просмотр задач
+ROLE_TASK_NEW: Создание задач
+ROLE_TASK_EDIT: Редактирование задач
+ROLE_TASK_DELETE: Удаление задач
+
+ROLE_TASK_TYPE: Типы задач
+ROLE_TASK_TYPE_VIEW: Просмотр типов задач
+ROLE_TASK_TYPE_NEW: Создание типов задач
+ROLE_TASK_TYPE_EDIT: Редактирование типов задач
+ROLE_TASK_TYPE_DELETE: Удаление типов задач
+
+ROLE_TASK_TYPE_CATEGORY: Категории задач
+ROLE_TASK_TYPE_CATEGORY_VIEW: Просмотр категории задач
+ROLE_TASK_TYPE_CATEGORY_NEW: Создание категории задач
+ROLE_TASK_TYPE_CATEGORY_EDIT: Редактирование категории задач
+ROLE_TASK_TYPE_CATEGORY_DELETE: Удаление категории задач
