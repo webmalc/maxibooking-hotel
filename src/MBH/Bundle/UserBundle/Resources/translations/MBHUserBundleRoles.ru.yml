@@ -35,3 +35,9 @@ ROLE_GROUP_DELETE: Удаление групп
 
 ROLE_CITY: Города
 ROLE_CITY_VIEW: Просмотр городов
+
+ROLE_CASH: Касса
+ROLE_CASH_VIEW: Просмотр кассы
+ROLE_CASH_NEW: Создание кассового документа
+ROLE_CASH_EDIT: Редактирование кассового документа
+ROLE_CASH_DELETE: Удаление кассового документа
