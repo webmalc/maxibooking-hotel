@@ -20,7 +20,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
     /**
      * @Route("/", name="room_overview")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_OVERVIEW')")
      * @Template()
      */
     public function indexAction()

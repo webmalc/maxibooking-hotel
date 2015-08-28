@@ -79,3 +79,7 @@ ROLE_TASK_TYPE_CATEGORY_VIEW: Просмотр категории задач
 ROLE_TASK_TYPE_CATEGORY_NEW: Создание категории задач
 ROLE_TASK_TYPE_CATEGORY_EDIT: Редактирование категории задач
 ROLE_TASK_TYPE_CATEGORY_DELETE: Удаление категории задач
+
+ROLE_OVERVIEW: Номера и цены
+ROLE_PRICE_CACHE_VIEW: Просмотр номеров и цен
+ROLE_PRICE_CACHE_EDIT: Редактирование номеров и цен

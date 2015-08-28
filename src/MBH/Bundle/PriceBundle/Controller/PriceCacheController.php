@@ -20,7 +20,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
     /**
      * @Route("/", name="price_cache_overview")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_PRICE_CACHE_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -38,7 +38,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      * @return Response
      * @Route("/table", name="price_cache_overview_table", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_PRICE_CACHE_VIEW')")
      * @Template()
      */
     public function tableAction(Request $request)
@@ -105,7 +105,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
     /**
      * @Route("/save", name="price_cache_overview_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_PRICE_CACHE_EDIT')")
      * @Template("MBHPriceBundle:PriceCache:index.html.twig")
      * @param Request $request
      * @return array
@@ -200,7 +200,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
     /**
      * @Route("/generator", name="price_cache_generator")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_PRICE_CACHE_EDIT')")
      * @Template()
      */
     public function generatorAction()
@@ -221,7 +221,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
     /**
      * @Route("/generator/save", name="price_cache_generator_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_PRICE_CACHE_EDIT')")
      * @Template("MBHPriceBundle:PriceCache:generator.html.twig")
      * @param Request $request
      * @return array
@@ -230,8 +230,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        $form = $this->createForm(
-            new PriceCacheGeneratorType(), [], [
+        $form = $this->createForm(new PriceCacheGeneratorType(), [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
         ]);
@@ -239,10 +238,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         $form->submit($request);
 
         if ($form->isValid()) {
-            $request->getSession()->getFlashBag()
-                ->set('success', 'Данные успешно сгенерированы.')
-            ;
-
+            $request->getSession()->getFlashBag()->set('success', 'Данные успешно сгенерированы.');
             $data = $form->getData();
 
             $this->get('mbh.price.cache')->update(
@@ -253,10 +249,9 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
             $this->get('mbh.channelmanager')->updatePricesInBackground();
 
-            if ($request->get('save') !== null) {
-                return $this->redirect($this->generateUrl('price_cache_generator'));
-            }
-            return $this->redirect($this->generateUrl('price_cache_overview'));
+            return $this->isSavedRequest() ?
+                $this->redirectToRoute('price_cache_generator') :
+                $this->redirectToRoute('price_cache_overview');
         }
 
         return [
