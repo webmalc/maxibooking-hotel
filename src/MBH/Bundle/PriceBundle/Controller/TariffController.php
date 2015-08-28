@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -23,15 +24,12 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/", name="tariff")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_TARIFF_VIEW')")
      * @Template()
      */
     public function indexAction()
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entities = $dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('q')
+        $entities = $this->dm->getRepository('MBHPriceBundle:Tariff')->createQueryBuilder('q')
             ->field('hotel.id')->equals($this->get('mbh.hotel.selector')->getSelected()->getId())
             ->sort('fullTitle', 'asc')
             ->getQuery()
@@ -48,19 +46,17 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/new", name="tariff_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_TARIFF_NEW')")
      * @Template()
      */
     public function newAction()
     {   
         $entity = new Tariff();
-        $form = $this->createForm(
-                new TariffType(), $entity
-        );
+        $form = $this->createForm(new TariffType(), $entity);
 
-        return array(
+        return [
             'form' => $form->createView(),
-        );
+        ];
     }
 
     /**
@@ -68,7 +64,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/create", name="tariff_create")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_TARIFF_NEW')")
      * @Template("MBHPriceBundle:Tariff:new.html.twig")
      */
     public function createAction(Request $request)
@@ -76,16 +72,12 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $entity = new Tariff();
         $entity->setHotel($this->get('mbh.hotel.selector')->getSelected());
         
-        $form = $this->createForm(
-                new TariffType(), $entity
-        );
+        $form = $this->createForm(new TariffType(), $entity);
         $form->submit($request);
 
         if ($form->isValid()) {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
             $request->getSession()->getFlashBag()
                     ->set('success', 'Тариф успешно создан. Теперь необходимо заполнить цены.')
@@ -93,10 +85,10 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
-        );
+        ];
     }
     
     /**
@@ -104,45 +96,33 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/{id}", name="tariff_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_TARIFF_EDIT')")
      * @Template("MBHPriceBundle:Tariff:edit.html.twig")
+     * @ParamConverter(class="MBHPriceBundle:Tariff")
      */
-    public function updateAction(Request $request, $id)
+    public function updateAction(Request $request, Tariff $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(
-                new TariffType(), $entity
-        );
-        
+        $form = $this->createForm(new TariffType(), $entity);
         $form->submit($request);
 
         if ($form->isValid()) {
+            $this->dm->persist($entity);
+            $this->dm->flush();
 
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-            $dm->persist($entity);
-            $dm->flush();
-
-            $request->getSession()->getFlashBag()
-                    ->set('success', 'Запись успешно отредактирована.')
-            ;
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
             
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -150,29 +130,23 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/{id}/edit", name="tariff_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_TARIFF_EDIT')")
      * @Template()
+     * @ParamConverter(class="MBHPriceBundle:Tariff")
      */
-    public function editAction($id)
+    public function editAction(Tariff $entity)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $entity = $dm->getRepository('MBHPriceBundle:Tariff')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(
-                new TariffType(), $entity
-        );
+        $form = $this->createForm(new TariffType(), $entity);
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -180,7 +154,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/{id}/delete", name="tariff_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_TARIFF_DELETE')")
      */
     public function deleteAction($id)
     {
