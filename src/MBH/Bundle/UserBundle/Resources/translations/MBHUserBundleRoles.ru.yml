@@ -42,6 +42,10 @@ ROLE_CASH_NEW: Создание кассового документа
 ROLE_CASH_EDIT: Редактирование кассового документа
 ROLE_CASH_DELETE: Удаление кассового документа
 
+ROLE_CLIENT_CONFIG: Параметры и Платежная система
+ROLE_CLIENT_CONFIG_VIEW: Просмотр параметров и платежной система
+ROLE_CLIENT_CONFIG_EDIT: Редактирование параметров и платежной система
+
 ROLE_DOCUMENT_TEMPLATE: Шаблоны документов
 ROLE_DOCUMENT_TEMPLATE_VIEW: Просмотр шаблонов документов
 ROLE_DOCUMENT_TEMPLATE_NEW: Создание шаблонов документов

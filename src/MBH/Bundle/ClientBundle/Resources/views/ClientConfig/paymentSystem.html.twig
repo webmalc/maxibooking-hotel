@@ -12,7 +12,9 @@
 
             {{ form_start(form, {'action': path('client_payment_system_save'), 'attr': {'class': 'form-horizontal' }}) }}
             {{ form_widget(form) }}
-            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
+            {% if is_granted('ROLE_CLIENT_CONFIG_EDIT') %}
+                {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
+            {% endif %}
             {{ form_end(form) }}
 
             <div class="alert alert-warning">URL для уведомлений: {{ url('online_form_check_order') }}</div>
