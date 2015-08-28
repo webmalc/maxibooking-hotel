@@ -41,3 +41,9 @@ ROLE_CASH_VIEW: Просмотр кассы
 ROLE_CASH_NEW: Создание кассового документа
 ROLE_CASH_EDIT: Редактирование кассового документа
 ROLE_CASH_DELETE: Удаление кассового документа
+
+ROLE_DOCUMENT_TEMPLATE: Шаблоны документов
+ROLE_DOCUMENT_TEMPLATE_VIEW: Просмотр шаблонов документов
+ROLE_DOCUMENT_TEMPLATE_NEW: Создание шаблонов документов
+ROLE_DOCUMENT_TEMPLATE_EDIT: Редактирование шаблонов документов
+ROLE_DOCUMENT_TEMPLATE_DELETE: Удаление шаблонов документов
