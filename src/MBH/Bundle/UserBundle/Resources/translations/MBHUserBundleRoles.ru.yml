@@ -66,6 +66,7 @@ ROLE_TASK_VIEW: Просмотр задач
 ROLE_TASK_NEW: Создание задач
 ROLE_TASK_EDIT: Редактирование задач
 ROLE_TASK_DELETE: Удаление задач
+ROLE_TASK_OWN_VIEW: Просмотр только собственных задач
 
 ROLE_TASK_TYPE: Типы задач
 ROLE_TASK_TYPE_VIEW: Просмотр типов задач
