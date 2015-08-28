@@ -81,5 +81,10 @@ ROLE_TASK_TYPE_CATEGORY_EDIT: Редактирование категории з
 ROLE_TASK_TYPE_CATEGORY_DELETE: Удаление категории задач
 
 ROLE_OVERVIEW: Номера и цены
-ROLE_PRICE_CACHE_VIEW: Просмотр номеров и цен
-ROLE_PRICE_CACHE_EDIT: Редактирование номеров и цен
+ROLE_PRICE_CACHE: Цены
+ROLE_PRICE_CACHE_VIEW: Просмотр цен
+ROLE_PRICE_CACHE_EDIT: Редактирование цен
+
+ROLE_RESTRICTION: Условия и ограничения
+ROLE_RESTRICTION_VIEW: Просмотр условий и ограничений
+ROLE_RESTRICTION_EDIT: Редактирование условий и ограничений
