@@ -128,10 +128,16 @@
                 </div>
             {% endif %}
 
-            {{ form_start(form, {'action': path('package_order_cash', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
-            {{ form_widget(form) }}
-                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package} %}
-            {{ form_end(form) }}
+            {% if is_granted('ROLE_CASH_NEW') %}
+                {{ form_start(form, {'action': path('package_order_cash', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+                {{ form_widget(form) }}
+                    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package} %}
+                {{ form_end(form) }}
+            {% else %}
+                <div class="alert alert-danger">
+                    <strong><i class="glyphicon glyphicon-lock"></i> {{ 'security.not_access_create_cash_document'|trans }}</strong>
+                </div>
+            {% endif %}
 
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
         </div>

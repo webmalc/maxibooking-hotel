@@ -110,12 +110,13 @@ ROLE_SERVICE_EDIT: Редактирование услуг
 ROLE_SERVICE_DELETE: Удаление услуг
 
 ROLE_SERVICE_CATEGORY: Категории услуг
-ROLE_SERVICE_CATEGORY_NEW: Создание категорий услуг
 ROLE_SERVICE_CATEGORY_VIEW: Просмотр категорий услуг
+ROLE_SERVICE_CATEGORY_NEW: Создание категорий услуг
 ROLE_SERVICE_CATEGORY_EDIT: Редактирование категорий услуг
 ROLE_SERVICE_CATEGORY_DELETE: Удаление категорий услуг
 
 ROLE_TARIFF: Тарифы
+ROLE_TARIFF_VIEW: Просмотр тарифов
 ROLE_TARIFF_NEW: Создание тарифов
 ROLE_TARIFF_EDIT: Редактирование тарифов
 ROLE_TARIFF_DELETE: Удаление тарифов

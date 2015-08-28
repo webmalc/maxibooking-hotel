@@ -284,3 +284,6 @@ form.AddressObjectDecomposedType.street: Улица
 form.AddressObjectDecomposedType.house: Дом
 form.AddressObjectDecomposedType.corpus: Корпус
 form.AddressObjectDecomposedType.flat: Квартира
+
+
+security.not_access_create_cash_document: Нет прав доступа для создания кассового документа
