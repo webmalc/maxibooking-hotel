@@ -26,13 +26,11 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
      * Main configuration page
      * @Route("/", name="ostrovok")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_OSTROVOK')")
      * @Template()
      */
     public function indexAction()
     {
-        //$this->get('mbh.channelmanager.ostrovok')->updateRooms();
-
         $entity = $this->hotel->getOstrovokConfig();
 
         $form = $this->createForm(
@@ -51,7 +49,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
      * Main configuration save
      * @Route("/", name="ostrovok_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_OSTROVOK')")
      * @Template("MBHChannelManagerBundle:Ostrovok:index.html.twig")
      * @param Request $request
      * @return Response
@@ -98,7 +96,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
      * Room configuration page
      * @Route("/room", name="ostrovok_room")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_OSTROVOK')")
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -150,7 +148,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
      * Tariff configuration page
      * @Route("/tariff", name="ostrovok_tariff")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_OSTROVOK')")
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -203,7 +201,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
      * Services configuration page
      * @Route("/service", name="ostrovok_service")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_OSTROVOK')")
      * @Template()
      */
     public function serviceAction()

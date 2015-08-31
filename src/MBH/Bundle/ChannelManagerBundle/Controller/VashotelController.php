@@ -27,7 +27,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
      * Main configuration page
      * @Route("/", name="vashotel")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_VASHOTEL')")
      * @Template()
      */
     public function indexAction()
@@ -49,7 +49,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
      * Main configuration page save
      * @Route("/", name="vashotel_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_VASHOTEL')")
      * @Template("MBHChannelManagerBundle:Vashotel:index.html.twig")
      */
     public function saveAction(Request $request)
@@ -91,7 +91,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     /**
      * @Route("/room", name="vashotel_room")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_VASHOTEL')")
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -143,7 +143,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     /**
      * @Route("/tariff", name="vashotel_tariff")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_VASHOTEL')")
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -196,7 +196,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
      * Services configuration page
      * @Route("/service", name="vashotel_service")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_VASHOTEL')")
      * @Template()
      */
     public function serviceAction()

@@ -21,7 +21,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      * Main configuration page
      * @Route("/", name="online_form")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ONLINE_FORM')")
      * @Template()
      */
     public function indexAction()
@@ -50,7 +50,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      * Main configuration page save
      * @Route("/", name="online_form_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_ONLINE_FORM')")
      * @Template("MBHOnlineBundle:Form:index.html.twig")
      */
     public function saveAction(Request $request)

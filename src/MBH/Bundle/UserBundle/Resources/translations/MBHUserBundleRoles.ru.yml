@@ -128,3 +128,13 @@ ROLE_TARIFF_VIEW: Просмотр тарифов
 ROLE_TARIFF_NEW: Создание тарифов
 ROLE_TARIFF_EDIT: Редактирование тарифов
 ROLE_TARIFF_DELETE: Удаление тарифов
+
+ROLE_CHANNEL_MANAGER: Channel manager
+ROLE_BOOKING: Booking.com
+ROLE_VASHOTEL: ВашОтель
+ROLE_OSTROVOK: Ostrovok
+ROLE_OKTOGO: Oktogo
+ROLE_HOTELINN: Hotel-inn
+
+ROLE_ONLINE_FORM: Онлайн форма
+ROLE_POLLS: Голосования

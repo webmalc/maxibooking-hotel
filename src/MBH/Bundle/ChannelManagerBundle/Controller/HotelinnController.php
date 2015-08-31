@@ -26,7 +26,7 @@ class HotelinnController extends Controller implements CheckHotelControllerInter
      * Main configuration page
      * @Route("/", name="hotelinn")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTELINN')")
      * @Template()
      */
     public function indexAction()
@@ -48,7 +48,7 @@ class HotelinnController extends Controller implements CheckHotelControllerInter
      * Main configuration save
      * @Route("/", name="hotelinn_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTELINN')")
      * @Template("MBHChannelManagerBundle:Hotelinn:index.html.twig")
      * @param Request $request
      * @return Response
@@ -95,7 +95,7 @@ class HotelinnController extends Controller implements CheckHotelControllerInter
      * Room configuration page
      * @Route("/room", name="hotelinn_room")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTELINN')")
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -147,7 +147,7 @@ class HotelinnController extends Controller implements CheckHotelControllerInter
      * Tariff configuration page
      * @Route("/tariff", name="hotelinn_tariff")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTELINN')")
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -200,7 +200,7 @@ class HotelinnController extends Controller implements CheckHotelControllerInter
      * Services configuration page
      * @Route("/service", name="hotelinn_service")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_HOTELINN')")
      * @Template()
      */
     public function serviceAction()

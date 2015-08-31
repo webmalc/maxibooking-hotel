@@ -26,7 +26,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
      * Main configuration page
      * @Route("/", name="oktogo")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_OKTOGO')")
      * @Template()
      */
     public function indexAction()
@@ -48,7 +48,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
      * Main configuration page save
      * @Route("/", name="oktogo_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_OKTOGO')")
      * @Template("MBHChannelManagerBundle:Oktogo:index.html.twig")
      */
     public function saveAction(Request $request)
@@ -102,7 +102,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
     /**
      * @Route("/room", name="oktogo_room")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_OKTOGO')")
      * @Template()
      */
     public function roomAction()
@@ -128,7 +128,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
     /**
      * @Route("/room", name="oktogo_room_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_OKTOGO')")
      * @Template("MBHChannelManagerBundle:Oktogo:room.html.twig")
      */
     public function roomSaveAction(Request $request)
@@ -193,7 +193,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
     /**
      * @Route("/room/sync", name="oktogo_room_sync")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_OKTOGO')")
      * @Template()
      */
     public function roomSyncAction(Request $request)
@@ -230,7 +230,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
     /**
      * @Route("/tariff/sync", name="oktogo_tariff_sync")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_OKTOGO')")
      * @Template()
      */
     public function tariffSyncAction(Request $request)
@@ -267,7 +267,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
     /**
      * @Route("/tariff", name="oktogo_tariff")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_OKTOGO')")
      * @Template()
      */
     public function tariffAction()
@@ -293,7 +293,7 @@ class OktogoController extends Controller implements CheckHotelControllerInterfa
     /**
      * @Route("/tariff", name="oktogo_tariff_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_OKTOGO')")
      * @Template("MBHChannelManagerBundle:Oktogo:tariff.html.twig")
      */
     public function tariffSaveAction(Request $request)
