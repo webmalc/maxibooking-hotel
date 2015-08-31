@@ -1,9 +1,9 @@
 {% spaceless %}
     <div class='btn-list text-right'>
-        <a href='{{ path('room_type_room_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title={{ 'views.roomType.roomListButtons.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle='tooltip'>
+        <a href='{{ path('room_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title={{ 'views.roomType.roomListButtons.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle='tooltip'>
             <i class='fa fa-pencil-square-o'></i>
         </a>
-        <a href='{{ path('room_type_room_delete', { 'id': entity.id, 'roomType': entity.roomType.id }) }}' class='btn btn-danger btn-xs delete-link ' title={{ 'views.roomType.roomListButtons.delete_record'|trans({}, 'MBHHotelBundle') }} data-toggle='tooltip'>
+        <a href='{{ path('room_delete', { 'id': entity.id, 'roomType': entity.roomType.id }) }}' class='btn btn-danger btn-xs delete-link ' title={{ 'views.roomType.roomListButtons.delete_record'|trans({}, 'MBHHotelBundle') }} data-toggle='tooltip'>
             <i class='fa fa-trash-o'></i>
         </a>
     </div>

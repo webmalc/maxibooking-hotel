@@ -28,7 +28,7 @@ class TaskController extends Controller
     /**
      * @Route("/", name="task")
      * @Method("GET")
-     * @Security("is_granted('ROLE_STAFF')")
+     * @Security("is_granted('ROLE_TASK_OWN_VIEW')")
      */
     public function indexAction()
     {
@@ -37,7 +37,7 @@ class TaskController extends Controller
         $statuses = $this->container->getParameter('mbh.task.statuses');
         $priorities = $this->container->getParameter('mbh.tasktype.priority');
 
-        if ($authorizationChecker->isGranted('ROLE_TASK_MANAGER')) {
+        if ($authorizationChecker->isGranted('ROLE_TASK_VIEW')) {
             $performers = $this->dm->getRepository('MBHUserBundle:User')->findAll();
             $key = array_search($this->getUser(), $performers);
             if ($key !== false) {
@@ -53,7 +53,7 @@ class TaskController extends Controller
                 'groups' => $this->getRoleList(),
                 'tasks' => []
             ]);
-        } elseif ($authorizationChecker->isGranted('ROLE_STAFF')) {
+        } elseif ($authorizationChecker->isGranted('ROLE_TASK_OWN_VIEW')) {
             $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
             /** @var Task[] $processTasks */
             $criteria = ['performer.id' => $this->getUser()->getId()];
@@ -152,7 +152,7 @@ class TaskController extends Controller
     /**
      * @Route("/change_status/{id}/{status}", name="task_change_status", options={"expose":true})
      * @Method({"GET"})
-     * @Security("is_granted('ROLE_STAFF')")
+     * @Security("is_granted('ROLE_TASK_OWN_VIEW')")
      * @ParamConverter("entity", class="MBHHotelBundle:Task")
      */
     public function changeStatusAction(Task $entity, $status)
@@ -274,7 +274,7 @@ class TaskController extends Controller
      *
      * @Route("/edit/{id}", name="task_edit")
      * @Method({"GET","PUT"})
-     * @Security("is_granted('ROLE_TASK_MANAGER')")
+     * @Security("is_granted('ROLE_TASK_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHHotelBundle:Task")
      */
@@ -312,7 +312,7 @@ class TaskController extends Controller
      *
      * @Route("/{id}/delete", name="task_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_TASK_MANAGER')")
+     * @Security("is_granted('ROLE_TASK_DELETE')")
      */
     public function deleteAction($id)
     {
@@ -355,7 +355,7 @@ class TaskController extends Controller
     /**
      * @Route("/ajax/my_total", name="task_ajax_total_my_open", options={"expose": true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_STAFF')")
+     * @Security("is_granted('ROLE_TASK_OWN_VIEW')")
      */
     public function ajaxMyOpenTaskTotal()
     {

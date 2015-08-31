@@ -124,6 +124,13 @@ services:
             - [ setContainer, [ '@service_container' ] ]
         tags:
             - { name: form.type, alias: mbh_facilities }
+    form.type.language:
+        class: MBH\Bundle\BaseBundle\Form\LanguageType
+        calls:
+            - [ setContainer, [ '@service_container' ] ]
+        tags:
+            - { name: form.type, alias: mbh_language }
+
 
     #mbh.translatable_listener:
     #    class: MBH\Bundle\BaseBundle\EventListener\TranslatableListener

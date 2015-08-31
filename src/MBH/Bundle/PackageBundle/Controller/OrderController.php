@@ -112,7 +112,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity),
         ]);
 
-        if ($request->isMethod(Request::METHOD_PUT)) {
+        if ($request->isMethod(Request::METHOD_PUT) && $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NEW')) {
             $form->submit($request);
             if ($form->isValid()) {
                 $this->dm->persist($cash);

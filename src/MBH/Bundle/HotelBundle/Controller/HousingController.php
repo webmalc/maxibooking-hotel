@@ -24,6 +24,7 @@ class HousingController extends BaseController
 {
     /**
      * @Route("/", name="housings")
+     * @Security("is_granted('ROLE_HOUSING_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -39,6 +40,7 @@ class HousingController extends BaseController
     /**
      * @Route("/new", name="housing_new")
      * @Method("GET")
+     * @Security("is_granted('ROLE_HOUSING_NEW')")
      * @Template()
      */
     public function newAction()
@@ -50,24 +52,9 @@ class HousingController extends BaseController
     }
 
     /**
-     * @Route("/edit/{id}", name="housings_edit")
-     * @Method("GET")
-     * @Template()
-     * @ParamConverter("entity", class="MBHHotelBundle:Housing")
-     */
-    public function editAction(Housing $entity)
-    {
-        $form = $this->createForm(new HousingType($this->dm), $entity);
-        return [
-            'form' => $form->createView(),
-            'entity' => $entity,
-            'logs' => $this->logs($entity)
-        ];
-    }
-
-    /**
      * @Route("/new", name="housing_create")
      * @Method("PUT")
+     * @Security("is_granted('ROLE_HOUSING_NEW')")
      * @Template("MBHHotelBundle:Housing:new.html.twig")
      */
     public function createAction(Request $request)
@@ -95,9 +82,27 @@ class HousingController extends BaseController
     }
 
     /**
+     * @Route("/edit/{id}", name="housings_edit")
+     * @Method("GET")
+     * @Template()
+     * @Security("is_granted('ROLE_HOUSING_EDIT')")
+     * @ParamConverter("entity", class="MBHHotelBundle:Housing")
+     */
+    public function editAction(Housing $entity)
+    {
+        $form = $this->createForm(new HousingType($this->dm), $entity);
+        return [
+            'form' => $form->createView(),
+            'entity' => $entity,
+            'logs' => $this->logs($entity)
+        ];
+    }
+
+    /**
      * @Route("/update/{id}", name="housing_update")
      * @Method("POST")
      * @Template("MBHHotelBundle:Housing:edit.html.twig")
+     * @Security("is_granted('ROLE_HOUSING_EDIT')")
      * @ParamConverter("entity", class="MBHHotelBundle:Housing")
      */
     public function updateAction(Housing $entity, Request $request)
@@ -124,12 +129,13 @@ class HousingController extends BaseController
 
     /**
      * @Route("/delete/{id}", name="housing_delete")
+     * @Security("is_granted('ROLE_HOUSING_DELETE')")
      * @ParamConverter("entity", class="MBHHotelBundle:Housing")
      */
     public function deleteAction(Housing $housing)
     {
         $this->dm->remove($housing);
         $this->dm->flush();
-        return $this->redirect($this->generateUrl('housings'));
+        return $this->redirectToRoute('housings');
     }
 }

@@ -30,7 +30,7 @@ class CashController extends Controller
      *
      * @Route("/", name="cash")
      * @Method("GET")
-     * @Security("is_granted('ROLE_BOOKKEEPER')")
+     * @Security("is_granted('ROLE_CASH_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -54,7 +54,7 @@ class CashController extends Controller
      *
      * @Route("/json", name="cash_json", defaults={"_format"="json"}, options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_BOOKKEEPER')")
+     * @Security("is_granted('ROLE_CASH_VIEW')")
      * @Template()
      *
      * @param Request $request
@@ -187,7 +187,7 @@ class CashController extends Controller
     /**
      * @Route("/export/1c/{method}", name="cash_1c_export", options={"expose"=true}, defaults={"method" = null})
      * @Method("GET")
-     * @Security("is_granted('ROLE_BOOKKEEPER')")
+     * @Security("is_granted('ROLE_CASH_VIEW')")
      * @param Request $request
      * @param string|null $method
      * @return Response
@@ -220,7 +220,7 @@ class CashController extends Controller
      *
      * @Route("/{id}/edit", name="cash_edit")
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_BOOKKEEPER')")
+     * @Security("is_granted('ROLE_CASH_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHCashBundle:CashDocument")
      */
@@ -266,7 +266,7 @@ class CashController extends Controller
      *
      * @Route("/{id}/delete", name="cash_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_BOOKKEEPER')")
+     * @Security("is_granted('ROLE_CASH_DELETE')")
      */
     public function deleteAction($id)
     {
@@ -280,7 +280,7 @@ class CashController extends Controller
      *
      * @Route("/{id}/confirm", name="cash_confirm", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_BOOKKEEPER')")
+     * @Security("is_granted('ROLE_CASH_VIEW')")
      */
     public function confirmAction($id)
     {
@@ -310,7 +310,7 @@ class CashController extends Controller
      *
      * @Route("/{id}/card/money", name="cash_card_money")
      * @Method("GET")
-     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_BOOKKEEPER'])")
+     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_CASH_VIEW'])")
      * @ParamConverter("entity", class="MBHCashBundle:CashDocument")
      */
     public function getMoneyFromCardAction(CashDocument $entity)
@@ -346,7 +346,7 @@ class CashController extends Controller
      *
      * @Route("/{id}/pay", name="cash_pay", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_BOOKKEEPER'])")
+     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_CASH_VIEW'])")
      */
     public function payAction($id, Request $request)
     {

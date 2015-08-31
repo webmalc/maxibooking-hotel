@@ -30,7 +30,14 @@ services:
             arguments: [@service_container]
             tags:
                 - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
-            
+
+    mbh.package.subscriber.tourist:
+            class: MBH\Bundle\PackageBundle\EventListener\TouristSubscriber
+            calls:
+                - [setContainer, [@service_container]]
+            tags:
+                - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
     mbh.package.validator:
             class: MBH\Bundle\PackageBundle\Validator\Constraints\PackageValidator
             arguments: [@service_container]

@@ -26,8 +26,8 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      * Lists all entities.
      *
      * @Route("/", name="price_service_category")
+     * @Security("is_granted('ROLE_SERVICE_VIEW')")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
      * @Template()
      */
     public function indexAction()
@@ -49,7 +49,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/", name="price_service_category_save_prices")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_SERVICE_EDIT')")
      * @Template()
      */
     public function savePricesAction(Request $request)
@@ -70,14 +70,12 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
                 ->setIsEnabled($isEnabled)
             ;
             $this->dm->persist($entity);
+            $this->dm->flush();
         };
-        $this->dm->flush();
 
-        $request->getSession()
-            ->getFlashBag()
-            ->set('success', 'Цены успешно сохранены.');
+        $request->getSession()->getFlashBag()->set('success', 'Цены успешно сохранены.');
 
-        return $this->redirect($this->generateUrl('price_service_category'));
+        return $this->redirectToRoute('price_service_category');
     }
 
     /**
@@ -85,14 +83,13 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/new/entry", name="price_service_category_entry_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_SERVICE_NEW')")
      * @Template()
+     * @ParamConverter(class="MBHPriceBundle:ServiceCategory")
      */
-    public function newEntryAction($id)
+    public function newEntryAction(ServiceCategory $entity)
     {
-        $entity = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -113,14 +110,13 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/create/entry", name="price_service_category_entry_create")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_SERVICE_NEW')")
      * @Template("MBHPriceBundle:Service:newEntry.html.twig")
+     * @ParamConverter(class="MBHPriceBundle:Service")
      */
-    public function createEntryAction(Request $request, $id)
+    public function createEntryAction(Request $request, Service $entity)
     {
-        $entity = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
-
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -143,11 +139,9 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
 
             $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
 
-            if ($request->get('save') !== null) {
-                return $this->redirectToRoute('price_service_category_entry_edit', ['id' => $entry->getId()]);
-            }
-
-            return $this->redirectToRoute('price_service_category', ['tab' => $id]);
+            return $this->isSavedRequest() ?
+                $this->redirectToRoute('price_service_category_entry_edit', ['id' => $entry->getId()]) :
+                $this->redirectToRoute('price_service_category', ['tab' => $entity->getId()]);
         }
 
         return array(
@@ -161,14 +155,13 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/edit/entry", name="price_service_category_entry_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_SERVICE_EDIT')")
      * @Template()
+     * @ParamConverter(class="MBHPriceBundle:Service")
      */
-    public function editEntryAction($id)
+    public function editEntryAction(Service $entry)
     {
-        $entry = $this->dm->getRepository('MBHPriceBundle:Service')->find($id);
-
-        if (!$entry || !$this->container->get('mbh.hotel.selector')->checkPermissions($entry->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entry->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -189,14 +182,13 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/update/entry", name="price_service_category_entry_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_SERVICE_EDIT')")
      * @Template("MBHPriceBundle:Service:editEntry.html.twig")
+     * @ParamConverter(class="MBHPriceBundle:Service")
      */
-    public function updateEntryAction(Request $request, $id)
+    public function updateEntryAction(Request $request, Service $entry)
     {
-        $entry = $this->dm->getRepository('MBHPriceBundle:Service')->find($id);
-
-        if (!$entry || !$this->container->get('mbh.hotel.selector')->checkPermissions($entry->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entry->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -231,7 +223,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/new", name="price_service_category_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_SERVICE_CATEGORY_NEW')")
      * @Template()
      */
     public function newAction()
@@ -250,7 +242,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/create", name="price_service_category_create")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_SERVICE_CATEGORY_NEW')")
      * @Template("MBHPriceBundle:Service:new.html.twig")
      */
     public function createAction(Request $request)
@@ -270,10 +262,10 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             return $this->afterSaveRedirect('price_service_category', $entity->getId(), ['tab' => $entity->getId()]);
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
-        );
+        ];
     }
 
     /**
@@ -281,24 +273,23 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/edit", name="price_service_category_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_SERVICE_CATEGORY_EDIT')")
      * @Template()
+     * @ParamConverter(class="MBHPriceBundle:ServiceCategory")
      */
-    public function editAction($id)
+    public function editAction(ServiceCategory $entity)
     {
-        $entity = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
-
-        if (!$entity || $entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if ($entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
         $form = $this->createForm(new ServiceCategoryType(), $entity);
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -306,14 +297,13 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}", name="price_service_category_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_SERVICE_CATEGORY_EDIT')")
      * @Template("MBHPriceBundle:Service:edit.html.twig")
+     * @ParamConverter(class="MBHPriceBundle:ServiceCategory")
      */
-    public function updateAction(Request $request, $id)
+    public function updateAction(Request $request, ServiceCategory $entity)
     {
-        $entity = $this->dm->getRepository('MBHPriceBundle:ServiceCategory')->find($id);
-
-        if (!$entity || $entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if ($entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
 
@@ -324,17 +314,16 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', 'Запись успешно отредактирована.');
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
 
             return $this->afterSaveRedirect('price_service_category', $entity->getId(), ['tab' => $entity->getId()]);
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
-        );
+        ];
     }
 
     /**
@@ -342,7 +331,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/delete", name="price_service_category_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_SERVICE_CATEGORY_DELETE')")
      */
     public function deleteAction(ServiceCategory $category)
     {
@@ -358,14 +347,13 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/entry/delete", name="price_service_category_entry_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_SERVICE_DELETE')")
+     * @ParamConverter(class="MBHPriceBundle:Service")
      */
-    public function deleteEntryAction(Request $request, $id)
+    public function deleteEntryAction(Request $request, Service $entity)
     {
         try {
-            $entity = $this->dm->getRepository('MBHPriceBundle:Service')->find($id);
-
-            if (!$entity || $entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+            if ($entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
                 throw $this->createNotFoundException();
             }
             $catId = $entity->getCategory()->getId();
@@ -377,6 +365,6 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
             $request->getSession()->getFlashBag()->set('danger', $e->getMessage());
         }
 
-        return $this->redirect($this->generateUrl('price_service_category', ['tab' => $catId]));
+        return $this->redirectToRoute('price_service_category', ['tab' => $catId]);
     }
 }

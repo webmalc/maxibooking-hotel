@@ -81,8 +81,10 @@ class TouristController extends Controller
     public function newAction()
     {
         $entity = new Tourist();
-        $form = $this->createForm(new TouristType(), $entity,
-            ['genders' => $this->container->getParameter('mbh.gender.types')]);
+        $entity->setCommunicationLanguage($this->container->getParameter('locale'));
+        $form = $this->createForm(new TouristType(), $entity, [
+            'genders' => $this->container->getParameter('mbh.gender.types')
+        ]);
 
         return [
             'form' => $form->createView(),
@@ -222,8 +224,9 @@ class TouristController extends Controller
      */
     public function editAction(Tourist $entity)
     {
-        $form = $this->createForm(new TouristType(), $entity,
-            ['genders' => $this->container->getParameter('mbh.gender.types')]);
+        $form = $this->createForm(new TouristType(), $entity, [
+            'genders' => $this->container->getParameter('mbh.gender.types')
+        ]);
 
         return [
             'entity' => $entity,

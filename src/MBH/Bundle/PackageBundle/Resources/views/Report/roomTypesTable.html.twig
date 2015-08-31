@@ -26,7 +26,7 @@
             {% set package = packageRepository.getPackageByAccommodation(room, date) %}
             <tr>
                 <td class="text-center">
-                    <a target="_blank" href="{{ path('room_type_room_edit', {id: room.id}) }}">{{ room.name }}</a>
+                    <a target="_blank" href="{{ path('room_edit', {id: room.id}) }}">{{ room.name }}</a>
                 </td>
                 <td></td>
                 <td>{{ package and package.mainTourist ? package.mainTourist.fullName(true) : '' }}</td>

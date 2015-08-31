@@ -14,9 +14,11 @@
                 </a>
             </li>
         {% endfor %}
-        <li>
-            <a href="{{ path('task_type_category_new') }}"><i class="fa fa-plus"></i> Новая категория типов задач</a>
-        </li>
+        {% if is_granted('ROLE_TASK_TYPE_CATEGORY_NEW') %}
+            <li>
+                <a href="{{ path('task_type_category_new') }}"><i class="fa fa-plus"></i> {{ 'view.create_task_type_categoty'|trans({}, 'MBHHotelBundle') }}</a>
+            </li>
+        {% endif %}
     </ul>
 
     <div class="tab-content">
@@ -25,50 +27,61 @@
 
             {% if not category.isSystem %}
                 <div class="btn-list spacer-bottom text-right">
-                    <a href="{{ path('task_type_category_edit', {id: category.id}) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Редактировать категорию типов задач <{{ category }}>">
-                        <i class="fa fa-edit"></i> Редактировать</a>
-                    <a href="{{ path('task_type_category_delete', {id: category.id}) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Удалить категорию типов задач <{{ category }}>">
-                        <i class="fa fa-trash-o"></i> Удалить
-                    </a>
+                    {% if is_granted('ROLE_TASK_TYPE_CATEGORY_EDIT') %}
+                        <a href="{{ path('task_type_category_edit', {id: category.id}) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Редактировать категорию типов задач <{{ category }}>">
+                            <i class="fa fa-edit"></i> {{ 'crud.edit'|trans }}
+                        </a>
+                    {% endif %}
+                    {% if is_granted('ROLE_TASK_TYPE_CATEGORY_DELETE') %}
+                        <a href="{{ path('task_type_category_delete', {id: category.id}) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Удалить категорию типов задач <{{ category }}>">
+                            <i class="fa fa-trash-o"></i> {{ 'crud.delete'|trans }}
+                        </a>
+                    {% endif %}
                 </div>
             {% endif %}
 
-            <table class="table {#not-auto-datatable#} table-striped table-hover table-condensed table-icons table-actions">
-                <thead>
-                <tr>
-                    <th class="td-xs"></th>
-                    <th>{{ "views.tasktype.index.name"|trans({}, "MBHHotelBundle") }}</th>
-                    <th>{{ "views.tasktype.index.default_role"|trans({}, "MBHHotelBundle") }}</th>
-                    <th class="td-md">{{ "views.tasktype.index.created"|trans({}, "MBHHotelBundle") }}</th>
-
-                    <th class="td-sm"></th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in category.types %}
+            {% if is_granted('ROLE_TASK_TYPE_VIEW') %}
+                <table class="table {#not-auto-datatable#} table-striped table-hover table-condensed table-icons table-actions">
+                    <thead>
                     <tr>
-                        <td class="text-center table-icon"><i class="fa fa-cog"></i></td>
-                        <td>
-                            <a href="{{ path('tasktype_edit', { 'id': entity.id }) }}" rel="main" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">{{ entity.title }}</a>
-                            &nbsp{% if entity.isSystem %}<small class="transparent"><i class="fa fa-lock"></i></small>{% endif %}
-                        </td>
-                        <td class="td-md">{{ entity.defaultRole|trans({}, "MBHUserBundleRoles") }}</td>
-                        <td>{{ entity.createdAt|date('d.m.Y') }}</td>
-
-                        <td class="table-actions-td text-center">
-                            <a href="{{ path('tasktype_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
-                                <i class="fa fa-pencil-square-o"></i>
-                            </a>
-                            {% if not entity.isSystem %}
-                                <a href="{{ path('tasktype_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
-                                    <i class="fa fa-trash-o"></i>
-                                </a>
-                            {% endif %}
-                        </td>
+                        <th class="td-xs"></th>
+                        <th>{{ "views.tasktype.index.name"|trans({}, "MBHHotelBundle") }}</th>
+                        <th>{{ "views.tasktype.index.default_role"|trans({}, "MBHHotelBundle") }}</th>
+                        <th class="td-md">{{ "views.tasktype.index.created"|trans({}, "MBHHotelBundle") }}</th>
+                        <th class="td-sm"></th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for entity in category.types %}
+                        <tr>
+                            <td class="text-center table-icon"><i class="fa fa-cog"></i></td>
+                            <td>
+                                <a href="{{ path('tasktype_edit', { 'id': entity.id }) }}" rel="main" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">{{ entity.title }}</a>
+                                &nbsp{% if entity.isSystem %}<small class="transparent"><i class="fa fa-lock"></i></small>{% endif %}
+                            </td>
+                            <td class="td-md">{{ entity.defaultRole|trans({}, "MBHUserBundleRoles") }}</td>
+                            <td>{{ entity.createdAt|date('d.m.Y') }}</td>
+                            <td class="table-actions-td text-center">
+                                {% if is_granted('ROLE_TASK_TYPE_EDIT') %}
+                                    <a href="{{ path('tasktype_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                    </a>
+                                {% endif %}
+                                {% if not entity.isSystem and is_granted('ROLE_TASK_TYPE_DELETE') %}
+                                    <a href="{{ path('tasktype_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
+                                        <i class="fa fa-trash-o"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="alert alert-danger">
+                    <strong><i class="glyphicon glyphicon-lock"></i> {{ 'security.not_access'|trans }}</strong>
+                </div>
+            {% endif %}
         </div>
         {% endfor %}
 

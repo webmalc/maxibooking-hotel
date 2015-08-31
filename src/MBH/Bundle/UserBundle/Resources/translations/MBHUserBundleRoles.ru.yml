@@ -40,4 +40,89 @@ ROLE_USER: Пользователь
 ROLE_USER_VIEW: Просмотр пользователей
 ROLE_USER_NEW: Создание пользователей
 ROLE_USER_EDIT: Редактирование пользователей
-ROLE_USER_DELETE: Удаление пользователей
+ROLE_USER_DELETE: Удаление пользователейROLE_CITY_VIEW: Просмотр городов
+
+ROLE_CASH: Касса
+ROLE_CASH_VIEW: Просмотр кассы
+ROLE_CASH_NEW: Создание кассового документа
+ROLE_CASH_EDIT: Редактирование кассового документа
+ROLE_CASH_DELETE: Удаление кассового документа
+
+ROLE_CLIENT_CONFIG: Параметры и Платежная система
+ROLE_CLIENT_CONFIG_VIEW: Просмотр параметров и платежной система
+ROLE_CLIENT_CONFIG_EDIT: Редактирование параметров и платежной система
+
+ROLE_DOCUMENT_TEMPLATE: Шаблоны документов
+ROLE_DOCUMENT_TEMPLATE_VIEW: Просмотр шаблонов документов
+ROLE_DOCUMENT_TEMPLATE_NEW: Создание шаблонов документов
+ROLE_DOCUMENT_TEMPLATE_EDIT: Редактирование шаблонов документов
+ROLE_DOCUMENT_TEMPLATE_DELETE: Удаление шаблонов документов
+
+ROLE_HOUSING: Корпуса
+ROLE_HOUSING_VIEW: Просмотр корпусов
+ROLE_HOUSING_NEW: Создание корпусов
+ROLE_HOUSING_EDIT: Редактирование корпусов
+ROLE_HOUSING_DELETE: Удаление корпусов
+
+ROLE_ROOM: Номера отеля
+ROLE_ROOM_VIEW: Просмотр номеров отеля
+ROLE_ROOM_NEW: Создание номеров отеля
+ROLE_ROOM_EDIT: Редактирование номеров отеля
+ROLE_ROOM_DELETE: Удаление номеров отеля
+
+ROLE_ROOM_TYPE: Типы номеров отеля (Номерной фонд)
+ROLE_ROOM_TYPE_VIEW: Просмотр типов номеров
+ROLE_ROOM_TYPE_NEW: Создание типов номеров
+ROLE_ROOM_TYPE_EDIT: Редактирование типов номеров
+ROLE_ROOM_TYPE_DELETE: Удаление типов номеров
+
+
+ROLE_TASK: Задачи
+ROLE_TASK_VIEW: Просмотр задач
+ROLE_TASK_NEW: Создание задач
+ROLE_TASK_EDIT: Редактирование задач
+ROLE_TASK_DELETE: Удаление задач
+ROLE_TASK_OWN_VIEW: Просмотр только собственных задач
+
+ROLE_TASK_TYPE: Типы задач
+ROLE_TASK_TYPE_VIEW: Просмотр типов задач
+ROLE_TASK_TYPE_NEW: Создание типов задач
+ROLE_TASK_TYPE_EDIT: Редактирование типов задач
+ROLE_TASK_TYPE_DELETE: Удаление типов задач
+
+ROLE_TASK_TYPE_CATEGORY: Категории задач
+ROLE_TASK_TYPE_CATEGORY_VIEW: Просмотр категории задач
+ROLE_TASK_TYPE_CATEGORY_NEW: Создание категории задач
+ROLE_TASK_TYPE_CATEGORY_EDIT: Редактирование категории задач
+ROLE_TASK_TYPE_CATEGORY_DELETE: Удаление категории задач
+
+ROLE_OVERVIEW: Номера и цены
+ROLE_PRICE_CACHE: Цены
+ROLE_PRICE_CACHE_VIEW: Просмотр цен
+ROLE_PRICE_CACHE_EDIT: Редактирование цен
+
+ROLE_RESTRICTION: Условия и ограничения
+ROLE_RESTRICTION_VIEW: Просмотр условий и ограничений
+ROLE_RESTRICTION_EDIT: Редактирование условий и ограничений
+
+ROLE_ROOM_CACHE: Номера в продаже
+ROLE_ROOM_CACHE_VIEW: Просмотр номеров в продаже
+ROLE_ROOM_CACHE_EDIT: Редактирование номеров в продаже
+
+ROLE_SERVICE: Услуги
+ROLE_SERVICE_NEW: Создание услуги
+ROLE_SERVICE_VIEW: Просмотр услуг
+ROLE_SERVICE_EDIT: Редактирование услуг
+ROLE_SERVICE_DELETE: Удаление услуг
+
+ROLE_SERVICE_CATEGORY: Категории услуг
+ROLE_SERVICE_CATEGORY_VIEW: Просмотр категорий услуг
+ROLE_SERVICE_CATEGORY_NEW: Создание категорий услуг
+ROLE_SERVICE_CATEGORY_EDIT: Редактирование категорий услуг
+ROLE_SERVICE_CATEGORY_DELETE: Удаление категорий услуг
+
+ROLE_TARIFF: Тарифы
+ROLE_TARIFF_VIEW: Просмотр тарифов
+ROLE_TARIFF_NEW: Создание тарифов
+ROLE_TARIFF_EDIT: Редактирование тарифов
+ROLE_TARIFF_DELETE: Удаление тарифов

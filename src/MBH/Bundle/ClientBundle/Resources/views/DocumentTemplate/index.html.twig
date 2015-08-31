@@ -24,12 +24,16 @@
                     {% endif %}
                 </td>
                 <td class="table-actions-td text-center">
-                    <a href="{{ path('document_templates_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title={{ 'views.hotel.index.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
-                        <i class="fa fa-pencil-square-o"></i>
-                    </a>
-                    <a href="{{ path('document_templates_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " data-text="{{ 'views.hotel.index.confirm_delete'|trans({'%hotelname%': entity.title}, 'MBHHotelBundle') }}" title={{ 'views.hotel.index.delete_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
-                        <i class="fa fa-trash-o"></i>
-                    </a>
+                    {% if is_granted('ROLE_DOCUMENT_TEMPLATE_EDIT') %}
+                        <a href="{{ path('document_templates_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title={{ 'views.hotel.index.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
+                            <i class="fa fa-pencil-square-o"></i>
+                        </a>
+                    {% endif %}
+                    {% if is_granted('ROLE_DOCUMENT_TEMPLATE_DELETE') %}
+                        <a href="{{ path('document_templates_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " data-text="{{ 'views.hotel.index.confirm_delete'|trans({'%hotelname%': entity.title}, 'MBHHotelBundle') }}" title={{ 'views.hotel.index.delete_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
+                            <i class="fa fa-trash-o"></i>
+                        </a>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

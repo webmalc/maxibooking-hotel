@@ -4,7 +4,7 @@ namespace MBH\Bundle\PackageBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Date;
@@ -80,7 +80,13 @@ class OrderTouristType extends AbstractType
                 'required' => false,
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'guestBirthday'),
                 'constraints' => [new Date()]
-            ));
+            ))
+            ->add('communicationLanguage', 'mbh_language', [
+                'group' => 'form.orderTouristType.add_guest',
+                'attr' => ['class' => 'guestCommunicationLanguage'],
+                'required' => false,
+            ])
+        ;
 
         if ($options['guest']) {
             $builder->add('addToPackage', 'checkbox', array(
@@ -91,7 +97,12 @@ class OrderTouristType extends AbstractType
         }
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    /**
+     * Configures the options for this type.
+     *
+     * @param OptionsResolver $resolver The resolver for the options.
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'guest' => true

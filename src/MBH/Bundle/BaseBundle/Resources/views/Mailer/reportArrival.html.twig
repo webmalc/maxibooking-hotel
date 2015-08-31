@@ -10,7 +10,7 @@
         <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #dddddd;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
             <img data-name="fa_hotel" src="{{ fa_hotel|default('bundles/mbhbase/images/fa-hotel.png') }}"
                  align="absmiddle">
-            Ожидаемые гости
+             {{ 'mailer.reportArrival.exceptedGuest'|trans }}
         </div>
         <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
             <thead>
@@ -19,13 +19,13 @@
                     #
                 </th>
                 <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:38%;">
-                    Номер
+                    {{ 'mailer.reportArrival.number'|trans }}
                 </th>
                 <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:25%;">
-                    Заказчик
+                    {{ 'mailer.reportArrival.customer'|trans }}
                 </th>
                 <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:right;width:25%;">
-                    Оплата
+                    {{ 'mailer.reportArrival.payment'|trans }}
                 </th>
             </tr>
             </thead>
@@ -62,26 +62,26 @@
                         {% if package.order.isPaid and  package.order.price < package.order.paid %}
                             {% set price = {
                             'val': package.order.price - package.order.paid,
-                            'text': 'Оплачено',
+                            'text': 'mailer.reportArrival.paid'|trans,
                             'style': 'color:#50a265;'
                             } %}
                         {% elseif package.order.isPaid and  package.order.price == package.order.paid %}
                             {% set price = {
                             'val': 0,
-                            'text': 'Оплачено',
+                            'text': 'mailer.reportArrival.paid'|trans,
                             'style': 'color:#50a265;'
                             } %}
                         {% elseif package.order.isPaid == false and package.order.paid == 0 %}
                             {% set price = {
                             'val': package.order.price,
-                            'text': 'Без оплаты',
+                            'text': 'mailer.reportArrival.not_paid'|trans,
                             'style': 'color:#b5494e;'
                             } %}
                             {% set debt = debt + price.val %}
                         {% elseif package.order.isPaid == false and  package.order.paid < package.order.price %}
                             {% set price = {
                             'val': package.order.price - package.order.paid,
-                            'text': 'Частичная опл.',
+                            'text': 'mailer.reportArrival.pure_payment'|trans,
                             'style': 'color:#c1a33d;'
                             } %}
                             {% set debt = debt + price.val %}
@@ -90,7 +90,7 @@
                         {% if price.val %}
                             <br>
                             <small style="color:#888;">
-                                {{ price.val > 0 ? 'Долг' : 'Перепл.' }}: {{ price.val|number_format(2) }}  {{ currency().text }}
+                                {{ price.val > 0 ? 'mailer.reportArrival.duty'|trans : 'mailer.reportArrival.overpayment'|trans }}: {{ price.val|number_format(2) }}  {{ currency().text }}
                             </small>
                         {% endif %}
                     </td>
@@ -100,13 +100,13 @@
         </table>
         <div style="padding:10px 0;margin:5px 0 20px;">
             <div style="width:33%;float:left;text-align:center;font-family:Tahoma,Arial;color:#333;font-size:14px;">
-                <b>Номеров:</b> {{ packages|length }}
+                <b>{{ 'mailer.reportArrival.numbers'|trans }}:</b> {{ packages|length }}
             </div>
             <div style="width:33%;float:left;text-align:center;font-family:Tahoma,Arial;color:#333;font-size:14px;">
-                <b>Гостей:</b>  {{ guests }}
+                <b>{{ 'mailer.reportArrival.guests'|trans }}:</b>  {{ guests }}
             </div>
             <div style="width:33%;float:left;text-align:center;font-family:Tahoma,Arial;color:#333;font-size:14px;">
-                <b>Долг:</b> {{ debt|number_format(2) }} {{ currency().text }}
+                <b>{{ 'mailer.reportArrival.duty'|trans }}:</b> {{ debt|number_format(2) }} {{ currency().text }}
             </div>
         </div>
         <br>
@@ -115,7 +115,7 @@
     {% if transfers is not empty %}
         <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #dddddd;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
             <img data-name="fa_plug"  src="{{ fa_plug|default('bundles/mbhbase/images/fa-plug.png') }}"
-                 align="absmiddle"> Трансфер
+                 align="absmiddle"> {{ 'mailer.reportArrival.transfer'|trans }}
         </div>
         <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
             <thead>

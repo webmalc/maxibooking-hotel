@@ -56,6 +56,7 @@ class TouristRepository extends DocumentRepository
      * @param string $phone
      * @param string $address
      * @param string $note
+     * @param string $communicationLanguage
      * @return Tourist
      */
     public function fetchOrCreate(
@@ -66,7 +67,8 @@ class TouristRepository extends DocumentRepository
         $email = null,
         $phone = null,
         $address = null,
-        $note = null
+        $note = null,
+        $communicationLanguage = null
     ) {
         $dm = $this->getDocumentManager();
         $tourist  = null;
@@ -131,6 +133,10 @@ class TouristRepository extends DocumentRepository
         }
         if ($note || $address) {
             $tourist->setNote($address ?  'Address: ' . $address . "\n\n" . $note : $note);
+        }
+
+        if ($communicationLanguage) {
+            $tourist->setCommunicationLanguage($communicationLanguage);
         }
 
         $dm->persist($tourist);

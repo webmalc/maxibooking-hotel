@@ -12,7 +12,9 @@
 
             {{ form_start(form, {'action': path('client_config_save'), 'attr': {'class': 'form-horizontal' }}) }}
             {{ form_widget(form) }}
-            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
+            {% if is_granted('ROLE_CLIENT_CONFIG_EDIT') %}
+                {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
+            {% endif %}
             {{ form_end(form) }}
 
             {% if entity %}
@@ -21,7 +23,5 @@
 
         </div>
     </div>
-
-
 
 {% endblock %}

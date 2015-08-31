@@ -41,6 +41,64 @@ mailer.online.user.poll.prepend: "Здравствуйте, %guest%!<br><br>Мы
 mailer.online.user.poll.append: "Будем рады видеть вас снова!"
 mailer.online.user.poll.link: "Оцените качество обслуживания"
 
+
+# Mailer
+mailer.base.address: Система управления отелем
+mailer.base.estimate_our_service: Оцените наш сервис
+mailer.base.generated_mail: Письмо сгенерировано автоматически системой управления отелем «МаксиБукинг»
+
+mailer.reportArrival.exceptedGuest: Ожидаемые гости
+mailer.reportArrival.duty: Долг
+mailer.reportArrival.number: Номер
+mailer.reportArrival.numbers: Номеров
+mailer.reportArrival.customer: Заказчик
+mailer.reportArrival.payment: Оплата
+mailer.reportArrival.overpayment: Перепл.
+mailer.reportArrival.paid: Оплачено
+mailer.reportArrival.not_paid: Без оплаты
+mailer.reportArrival.pure_payment: Частичная опл.
+mailer.reportArrival.transfer: Трансфер
+mailer.reportArrival.guests: Гостей
+
+mailer.order.duty: Долг
+mailer.order.date: Дата
+mailer.order.cost: Стоимость
+mailer.order.booked_numbers: Забронированные номера
+mailer.order.additional_services: Дополнительные услуги
+mailer.order.title: Наименование
+mailer.order.name: Имя
+mailer.order.amount: Итого
+mailer.order.quantity: Количество
+mailer.order.client_info: Сведения о клиенте
+mailer.order.phone: Телефон
+mailer.order.number: Номер
+mailer.order.numbers: Номеров
+mailer.order.customer: Заказчик
+mailer.order.payment: Оплата
+mailer.order.overpayment: Перепл.
+mailer.order.paid: Оплачено
+mailer.order.not_paid: Без оплаты
+mailer.order.pure_payment: Частичная опл.
+mailer.order.transfer: Трансфер
+mailer.order.guests: Гостей
+mailer.order.arrival_time: Время заезда
+mailer.order.departure_time: Время выезда
+mailer.order.comments: Комментарий
+
+mailer.closedTasks.task: Задача
+mailer.closedTasks.number: Номер
+mailer.closedTasks.performer: Исполнитель
+mailer.closedTasks.closed: Закрыта
+
+mailer.userArrival.greet: Здравствуйте, {name}!
+mailer.userArrival.reminder: Спешим напомнить, что для вас зарезервирован номер в нашем отеле на ЗАВТРА {begin} Пожалуйста, свяжитесь с нами в случае изменения времени прибытия или параметров пребывания в нашем отеле.
+mailer.userArrival.reminder2: По комплектации вашего номера, условиям заселения, а также о дополнительных услугах нашего отеля вы можете узнать на нашем сайте.
+mailer.userArrival.about_hotel: Об отеле
+mailer.userArrival.numbers_servies: Номера и услуги
+mailer.userArrival.trip_schema: Схема проезда
+mailer.userArrival.contacts: Контакты
+mailer.userArrival.bye: Будем рады вас видеть!
+
 debt: Долг
 paid: Оплачено
 overpaid: Переплачено
@@ -85,3 +143,14 @@ form.facilitiesType.placeholder: 'Выберите удобства'
 entry.actions.delete: 'Удалить запись'
 entry.actions.delete.confirmation: 'Вы действительно хотите удалить запись «%doc%»?'
 entry.actions.edit: 'Редактировать запись'
+form.facilitiesType.placeholder: 'Выберите удобства'
+form.languageType.label: 'Язык'
+
+# mbh.languages
+languages.en: 'Английский'
+languages.ru: 'Русский'
+
+security.not_access: Нет прав доступа
+
+crud.edit: Редактировать
+crud.delete: Удалить

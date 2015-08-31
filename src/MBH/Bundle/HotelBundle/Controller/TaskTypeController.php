@@ -29,7 +29,7 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
      *    "category": "\w*"
      * })
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_TASK_TYPE_VIEW')")
      * @Template()
      */
     public function indexAction(Request $request, $category = null)
@@ -82,7 +82,7 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
      *
      * @Route("/{id}/edit", name="tasktype_edit")
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_TASK_TYPE_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHHotelBundle:TaskType")
      */
@@ -125,7 +125,7 @@ class TaskTypeController extends Controller implements HotelableControllerInterf
      *
      * @Route("/{id}/delete", name="tasktype_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_TASK_TYPE_DELETE')")
      * @ParamConverter("entity", class="MBHHotelBundle:TaskType")
      */
     public function deleteAction(TaskType $entity)

@@ -26,7 +26,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * Main configuration page
      * @Route("/", name="client_config")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -45,7 +45,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * Main configuration page save
      * @Route("/", name="client_config_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
      * @Template("MBHClientBundle:ClientConfig:index.html.twig")
      */
     public function saveAction(Request $request)
@@ -82,7 +82,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * Payment system configuration page
      * @Route("/payment_system", name="client_payment_system")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_VIEW')")
      * @Template()
      */
     public function paymentSystemAction()
@@ -107,7 +107,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * Payment system configuration save
      * @Route("/payment_system/save", name="client_payment_system_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
      * @Template("MBHClientBundle:ClientConfig:paymentSystem.html.twig")
      * @param $request Request
      * @return array

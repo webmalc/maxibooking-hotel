@@ -11,7 +11,7 @@
 
 {% block content %}
 
-    {{ form_start(form, {'action': path('room_type_generate_rooms_process', {'id': entity.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_start(form, {'action': path('generate_rooms_process', {'id': entity.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
 
     <div id="actions" class="navbar navbar-default navbar-fixed-bottom">
