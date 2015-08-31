@@ -21,7 +21,7 @@ class ProfileController extends Controller
      *
      * @Route("/profile", name="user_profile")
      * @Method("GET")
-     * @Security("is_granted('ROLE_BASE_USER')")
+     * @Security("is_granted('ROLE_USER_PROFILE')")
      * @Template()
      */
     public function profileAction()
@@ -38,6 +38,7 @@ class ProfileController extends Controller
      *
      * @Route("/profile", name="user_profile_update")
      * @Method("PUT")
+     * @Security("is_granted('ROLE_USER_PROFILE')")
      * @Template("MBHUserBundle:Profile:profile.html.twig")
      */
     public function profileUpdateAction(Request $request)

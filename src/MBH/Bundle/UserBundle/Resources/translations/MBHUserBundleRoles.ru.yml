@@ -40,7 +40,8 @@ ROLE_USER: Пользователь
 ROLE_USER_VIEW: Просмотр пользователей
 ROLE_USER_NEW: Создание пользователей
 ROLE_USER_EDIT: Редактирование пользователей
-ROLE_USER_DELETE: Удаление пользователейROLE_CITY_VIEW: Просмотр городов
+ROLE_USER_DELETE: Удаление пользователей
+ROLE_USER_PROFILE: Профиль пользователя
 
 ROLE_CASH: Касса
 ROLE_CASH_VIEW: Просмотр кассы
@@ -48,9 +49,9 @@ ROLE_CASH_NEW: Создание кассового документа
 ROLE_CASH_EDIT: Редактирование кассового документа
 ROLE_CASH_DELETE: Удаление кассового документа
 
-ROLE_CLIENT_CONFIG: Параметры и Платежная система
-ROLE_CLIENT_CONFIG_VIEW: Просмотр параметров и платежной система
-ROLE_CLIENT_CONFIG_EDIT: Редактирование параметров и платежной система
+ROLE_CLIENT_CONFIG: Параметры
+ROLE_CLIENT_CONFIG_VIEW: Просмотр параметров
+ROLE_CLIENT_CONFIG_EDIT: Редактирование параметров
 
 ROLE_DOCUMENT_TEMPLATE: Шаблоны документов
 ROLE_DOCUMENT_TEMPLATE_VIEW: Просмотр шаблонов документов
@@ -64,18 +65,19 @@ ROLE_HOUSING_NEW: Создание корпусов
 ROLE_HOUSING_EDIT: Редактирование корпусов
 ROLE_HOUSING_DELETE: Удаление корпусов
 
-ROLE_ROOM: Номера отеля
+ROLE_ROOM: Номера
 ROLE_ROOM_VIEW: Просмотр номеров отеля
 ROLE_ROOM_NEW: Создание номеров отеля
 ROLE_ROOM_EDIT: Редактирование номеров отеля
 ROLE_ROOM_DELETE: Удаление номеров отеля
 
-ROLE_ROOM_TYPE: Типы номеров отеля (Номерной фонд)
+ROLE_ROOM_FUND: Номерной фонд
+
+ROLE_ROOM_TYPE: Типы номеров
 ROLE_ROOM_TYPE_VIEW: Просмотр типов номеров
 ROLE_ROOM_TYPE_NEW: Создание типов номеров
 ROLE_ROOM_TYPE_EDIT: Редактирование типов номеров
 ROLE_ROOM_TYPE_DELETE: Удаление типов номеров
-
 
 ROLE_TASK: Задачи
 ROLE_TASK_VIEW: Просмотр задач

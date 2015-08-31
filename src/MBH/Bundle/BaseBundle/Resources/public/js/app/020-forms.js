@@ -218,6 +218,30 @@ var docReadyForms = function () {
         });
     }());
 
+    //form group expandable
+    (function () {
+        var links = $('.form-group-expandable');
+
+        links.each(function () {
+            var box = $(this).closest('.box'),
+                boxBody = box.find('.box-body'),
+                icon = $(this).find('i');
+
+            if (localStorage.getItem($(this).prop('id')) || (boxBody.find('input[type="checkbox"]:checked').length && $(this).hasClass('show-checkboxes'))) {
+                box.removeClass('collapsed-box');
+                boxBody.show();
+                icon.removeClass('fa-plus').addClass('fa-minus');
+            }
+        });
+        links.click(function () {
+            if ($(this).closest('.box').find('.box-body').is(':visible')) {
+                localStorage.removeItem($(this).prop('id'));
+            } else {
+                localStorage.setItem($(this).prop('id'), 1);
+            }
+        });
+    }());
+
     //city select
     (function () {
         var citySelect = $('.citySelect');

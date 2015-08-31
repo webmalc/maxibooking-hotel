@@ -6,6 +6,7 @@ use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -395,8 +396,11 @@ class User extends BaseUser
      */
     public function setRolesWithoutGroups($roles)
     {
-        $this->roles = $roles;
+        $this->setRoles($roles);
+    }
 
-        return $this;
+
+    function equals(UserInterface $user){
+        return false;
     }
 }

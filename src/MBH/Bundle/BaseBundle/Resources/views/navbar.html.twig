@@ -63,11 +63,13 @@
                     </li>
                     <!-- Menu Footer-->
                     <li class="user-footer">
+                        {% if is_granted('ROLE_USER_PROFILE') %}
                         <div class="pull-left">
                             <a href="{{ path('user_profile') }}" class="btn btn-default btn-flat">
                                 Профиль
                             </a>
                         </div>
+                        {% endif %}
                         <div class="pull-right">
                             <a href="{{ path('fos_user_security_logout') }}" class="btn btn-default btn-flat">
                                 <i class=""></i>&nbsp;Выйти
