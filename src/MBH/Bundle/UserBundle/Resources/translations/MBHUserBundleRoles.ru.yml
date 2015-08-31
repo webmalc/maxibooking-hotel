@@ -35,3 +35,9 @@ ROLE_GROUP_DELETE: Удаление групп
 
 ROLE_CITY: Города
 ROLE_CITY_VIEW: Просмотр городов
+
+ROLE_USER: Пользователь
+ROLE_USER_VIEW: Просмотр пользователей
+ROLE_USER_NEW: Создание пользователей
+ROLE_USER_EDIT: Редактирование пользователей
+ROLE_USER_DELETE: Удаление пользователей
