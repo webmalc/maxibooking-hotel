@@ -16,12 +16,12 @@
         {% set color = colors['default'] %}
     {% endif %}
 
-    {% set hotelName = 'MaxiBooking' %}
-
     {% set address = '&nbsp;' %}
 
     {% if hotel is defined and hotel %}
-        {% set hotelName = hotel.name %}
+        {% if hotelNmae is not defined %}
+            {% set hotelName = hotel.name %}
+        {% endif %}
 
         {% if logo is not defined and hotel.file %}
             {% set logo = hotel.logoUrl|imagine_filter('thumb_130x110') %}

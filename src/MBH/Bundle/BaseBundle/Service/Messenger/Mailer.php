@@ -93,7 +93,7 @@ class Mailer implements \SplObserver
     }
 
     /**
-     * @param array $recipients
+     * @param RecipientInterface[] $recipients
      * @param array $data
      * @param null $template
      * @return bool
@@ -109,34 +109,44 @@ class Mailer implements \SplObserver
                 throw new \Exception($error);
             }
 
-            $users = $this->dm->getRepository('MBHUserBundle:User')->findBy(
+            $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy(
                 [$data['category'] . 's' => true, 'enabled' => true, 'locked' => false]
             );
 
-            if (!count($users)) {
+            if (!count($recipients)) {
                 throw new \Exception($error);
             }
-
-            $recipients = [];
-            foreach ($users as $user) {
-                $recipients[] = [$user->getEmail() => $user->getFullName()];
-            }
         }
-
         (empty($data['subject'])) ? $data['subject'] = $this->params['subject']: $data['subject'];
         $message = \Swift_Message::newInstance();
         empty($template) ? $template = $this->params['template'] : $template;
         $data = $this->addImages($data, $message, $template);
 
-        $message->setSubject($data['subject'])
-            ->setFrom([
-                $this->params['fromMail'] => empty($data['fromText']) ? $this->params['fromText'] : $data['fromText']
-            ])
-            ->setBody($this->twig->render($template, $data), 'text/html')
-        ;
+        $translator = $this->container->get('translator');
+        $defaultLocale = $this->container->getParameter('locale');
 
+        $data['hotelName'] = 'MaxiBooking';
         foreach ($recipients as $recipient) {
-            $message->setTo($recipient);
+            if($data['hotel']) {
+                  if($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() != $defaultLocale) {
+                      $translator->setLocale($recipient->getCommunicationLanguage());
+                      $data['hotelName'] = $data['hotel']->getInternationalTitle();
+                  } else {
+                      $translator->setLocale($defaultLocale);
+                      $data['hotelName'] = $data['hotel']->getName();
+                  }
+            }
+            $body = $this->twig->render($template, $data);
+
+            $message->setSubject($data['subject'])
+                ->setFrom([
+                    $this->params['fromMail'] => empty($data['fromText']) ?
+                        $this->params['fromText'] :
+                        $data['fromText']
+                ])
+                ->setBody($body, 'text/html')
+            ;
+            $message->setTo([$recipient->getEmail() => $recipient->getName()]);
             $this->mailer->send($message);
         }
 

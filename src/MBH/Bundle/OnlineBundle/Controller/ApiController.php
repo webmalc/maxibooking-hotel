@@ -373,32 +373,26 @@ class ApiController extends Controller
             //user
             $payer = $order->getPayer();
             if ($payer && $payer->getEmail()) {
-                if($payer instanceof Tourist && $payer->getCommunicationLanguage() != $this->container->getParameter('locale')) {
-                    $hotelName = $hotel->getInternationalTitle();
-                } else {
-                    $hotelName = $hotel->getName();
-                }
-
                 $notifier = $this->container->get('mbh.notifier.mailer');
                 $message = $notifier::createMessage();
                 $message
                     ->setFrom('online_form')
-                    ->setSubject($tr->trans('mailer.online.user.subject', ['%hotel%' => $hotelName]))
+                    ->setSubject($tr->trans('mailer.online.user.subject', ['%hotel%' => $hotel->getName()]))
                     ->setType('info')
                     ->setCategory('notification')
                     ->setOrder($order)
                     ->setAdditionalData([
                         'prependText' => $tr->trans('mailer.online.user.prepend', ['%guest%' => $order->getPayer()->getName()]),
                         'appendText' => $tr->trans('mailer.online.user.append'),
-                        'fromText' => $hotelName
+                        'fromText' => $hotel->getName()
                     ])
                     ->setHotel($hotel)
                     ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                     ->setAutohide(false)
                     ->setEnd(new \DateTime('+1 minute'))
-                    ->addRecipient($payer->getEmail())
+                    ->addRecipient($payer)
                     ->setLink('hide')
-                    ->setSignature($tr->trans('mailer.online.user.signature', ['%hotel%' => $hotelName]))
+                    ->setSignature($tr->trans('mailer.online.user.signature', ['%hotel%' => $hotel->getName()]))
                 ;
 
                 $params = $this->container->getParameter('mailer_user_arrival_links');

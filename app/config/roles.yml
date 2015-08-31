@@ -9,9 +9,11 @@ security:
       - ROLE_CASH
       - ROLE_CLIENT_CONFIG
       - ROLE_DOCUMENT_TEMPLATE
+      - ROLE_HOUSING
       - ROLE_ROOM
       - ROLE_ROOM_TYPE
       - ROLE_TASK_MANAGER
+      - ROLE_MANAGER
       - ROLE_OVERVIEW
       - ROLE_PRICE_CACHE
       - ROLE_RESTRICTION

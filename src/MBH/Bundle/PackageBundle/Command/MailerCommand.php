@@ -172,7 +172,7 @@ class MailerCommand extends ContainerAwareCommand
                     ->setTemplate('MBHBaseBundle:Mailer:base.html.twig')
                     ->setAutohide(false)
                     ->setEnd(new \DateTime('+1 minute'))
-                    ->addRecipient($order->getPayer()->getEmail())
+                    ->addRecipient($order->getPayer())
                     ->setLink($link)
                     ->setLinkText($tr->trans('mailer.online.user.poll.link'))
                     ->setSignature($tr->trans('mailer.online.user.signature', ['%hotel%' => $hotel->getName()]))

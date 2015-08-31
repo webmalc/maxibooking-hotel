@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\VegaBundle\Document\VegaState;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -19,7 +20,7 @@ use Zend\Stdlib\JsonSerializable;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  */
-class Tourist extends Base implements JsonSerializable, PayerInterface
+class Tourist extends Base implements JsonSerializable, PayerInterface, RecipientInterface
 {
     /**
      * @ODM\ReferenceMany(targetDocument="Order", nullable="true", mappedBy="mainTourist")

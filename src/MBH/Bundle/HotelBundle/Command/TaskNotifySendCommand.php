@@ -68,7 +68,7 @@ class TaskNotifySendCommand extends ContainerAwareCommand
                 $message->setAdditionalData(['tasks' => $closedTasks]);
 
                 $currentMessage = clone($message);
-                $currentMessage->addRecipient([$user->getEmail() => $user->getFullName(true)]);
+                $currentMessage->addRecipient($user);
                 $output->writeln("Sent to " . $user->getEmail());
                 $mailer->setMessage($currentMessage)->notify();
                 ++$counter;

@@ -4,6 +4,7 @@ namespace MBH\Bundle\UserBundle\Document;
 
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -20,7 +21,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @MongoDBUnique(fields="email", message="Такой e-mail уже зарегистрирован")
  * @MongoDBUnique(fields="username", message="Такой логин уже зарегистрирован")
  */
-class User extends BaseUser
+class User extends BaseUser implements RecipientInterface
 {
     const ROLE_DEFAULT = 'ROLE_BASE_USER';
 
@@ -398,5 +399,13 @@ class User extends BaseUser
         $this->roles = $roles;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCommunicationLanguage()
+    {
+        return null;
     }
 }

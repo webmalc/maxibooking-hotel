@@ -9,6 +9,7 @@ use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
+use MBH\Bundle\UserBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -246,6 +247,7 @@ class TaskController extends Controller
     {
         $recipients = [];
         if ($task->getRole()) {
+            /** @var User[] $recipients */
             $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy([
                 'roles' => $task->getRole(),
                 'taskNotify' => true,
@@ -265,7 +267,7 @@ class TaskController extends Controller
             $message->setText($translator->trans('mailer.new_task.text', ['%title%' => $task->getType()->getTitle()]));
             $message->setLink($this->generateUrl('task'));
             foreach ($recipients as $recipient) {
-                $message->addRecipient([$recipient->getEmail() => $recipient->getFullName(true)]);
+                $message->addRecipient($recipient);
             }
             $this->get('mbh.notifier.mailer')->setMessage($message)->notify();
         }

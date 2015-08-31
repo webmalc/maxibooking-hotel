@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\HotelBundle\Document\City;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
@@ -24,7 +25,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
  * @ODM\HasLifecycleCallbacks
  * @MongoDBUnique(fields="inn", message="Такой ИНН уже существует")
  */
-class Organization implements PayerInterface
+class Organization implements PayerInterface, RecipientInterface
 {
     use TimestampableDocument;
     use BlameableDocument;
@@ -774,5 +775,13 @@ class Organization implements PayerInterface
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCommunicationLanguage()
+    {
+        return null;
     }
 }

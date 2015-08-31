@@ -1,0 +1,94 @@
+mailer.to_order: to_order
+mailer.to_package: to_package
+
+
+mailer.base.linkText: base.linkText
+
+
+mailer.online.user.map: online.user.map
+mailer.online.payment.backend: mailer.online.payment.backend
+mailer.online.payment.user: online.payment.user
+mailer.online.payment.subject: online.payment.subject
+mailer.online.user.subject: online.user.subject
+mailer.online.user.prepend: online.user.prepend
+mailer.online.user.append: online.user.append
+mailer.online.user.signature: online.user.signature
+mailer.online.backend.subject: online.backend.subject
+mailer.online.backend.text: online.backend.text
+mailer.online.backend.prepend: online.backend.prepend
+mailer.online.backend.append: online.backend.append
+mailer.online.backend.signature: online.backend.signature
+
+
+
+mailer.order.confirm.user.subject: order.confirm.user.subject
+mailer.order.confirm.user.prepend: order.confirm.user.prepend
+mailer.order.confirm.user.append: order.confirm.user.append
+
+mailer.report.arrival.subject: report.arrival.subject
+mailer.user.arrival.subject: user.arrival.subject
+
+mailer.report.user.poll.subject: report.user.poll.subject
+mailer.online.user.poll.prepend: online.user.poll.prepend
+mailer.online.user.poll.append: online.user.poll.append
+mailer.online.user.poll.link: online.user.poll.link
+
+
+# Mailer
+mailer.base.address: base.address
+mailer.base.estimate_our_service: base.estimate_our_service
+mailer.base.generated_mail: base.generated_mail
+
+mailer.reportArrival.exceptedGuest: reportArrival.exceptedGuest
+mailer.reportArrival.duty: reportArrival.duty
+mailer.reportArrival.number: reportArrival.number
+mailer.reportArrival.numbers: reportArrival.numbers
+mailer.reportArrival.customer: reportArrival.customer
+mailer.reportArrival.payment: reportArrival.payment
+mailer.reportArrival.overpayment: reportArrival.overpayment
+mailer.reportArrival.paid: reportArrival.paid
+mailer.reportArrival.not_paid: reportArrival.not_paid
+mailer.reportArrival.pure_payment: reportArrival.pure_payment
+mailer.reportArrival.transfer: reportArrival.transfer
+mailer.reportArrival.guests: reportArrival.guests
+
+mailer.order.duty: order.duty
+mailer.order.date: order.date
+mailer.order.cost: order.cost
+mailer.order.booked_numbers: order.booked_numbers
+mailer.order.additional_services: order.additional_services
+mailer.order.title: order.title
+mailer.order.name: order.name
+mailer.order.amount: order.amount
+mailer.order.quantity: order.quantity
+mailer.order.client_info: order.client_info
+mailer.order.phone: order.phone
+mailer.order.number: order.number
+mailer.order.numbers: order.numbers
+mailer.order.customer: order.customer
+mailer.order.payment: order.payment
+mailer.order.overpayment: order.overpayment
+mailer.order.paid: order.paid
+mailer.order.not_paid: order.not_paid
+mailer.order.pure_payment: order.pure_payment
+mailer.order.transfer: order.transfer
+mailer.order.guests: order.guests
+mailer.order.arrival_time: order.arrival_time
+mailer.order.departure_time: order.departure_time
+mailer.order.comments: order.comments
+
+mailer.closedTasks.subject: closedTasks.subject
+mailer.closedTasks.text: mailer.closedTasks.text
+mailer.closedTasks.task: closedTasks.task
+mailer.closedTasks.number: closedTasks.number
+mailer.closedTasks.performer: closedTasks.performer
+mailer.closedTasks.closed: closedTasks.closed
+
+mailer.userArrival.greet: userArrival.greet
+mailer.userArrival.reminder: userArrival.reminder
+mailer.userArrival.reminder2: userArrival.reminder2
+mailer.userArrival.about_hotel: userArrival.about_hotel
+mailer.userArrival.numbers_servies: userArrival.numbers_servies
+mailer.userArrival.trip_schema: userArrival.trip_schema
+mailer.userArrival.contacts: userArrival.contacts
+mailer.userArrival.bye: userArrival.bye

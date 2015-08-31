@@ -84,7 +84,7 @@ class OrderSubscriber implements EventSubscriber
                                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                                 ->setAutohide(false)
                                 ->setEnd(new \DateTime('+1 minute'))
-                                ->addRecipient($entity->getPayer()->getEmail())
+                                ->addRecipient($entity->getPayer())
                                 ->setLink('hide')
                                 ->setSignature($this->translator->trans('mailer.online.user.signature', ['%hotel%' => $hotel->getName()]))
                             ;
