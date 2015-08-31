@@ -32,7 +32,7 @@ validator.document.roomType.min_hex_code: HEX-код цвета должен б�
 validator.document.roomType.max_hex_code: HEX-код цвета должен быть не больше шести символов
 validator.document.roomType.min_places_amount: Количество мест не может быть меньше одного
 validator.document.roomType.places_amount_less_zero: Количество мест не может быть меньше нуля
-validator.document.roomType.internationalTitle.only_english: Международное название должно только на английском
+validator.document.roomType.internationalTitle.only_english: Международное название должно быть только на английском
 
 
 validator.document.task.title_no_selected: Не выбрана задача

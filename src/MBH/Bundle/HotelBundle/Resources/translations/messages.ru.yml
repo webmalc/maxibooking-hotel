@@ -28,6 +28,7 @@ form.taskType.general_info: Добавление типа
 form.taskType.general_info_edit: Редактирование типа
 form.hotelType.placeholder_my_hotel: Мой отель
 form.hotelType.inner_name: Внутреннее название
+form.hotelType.international_title: Международное название
 form.hotelType.placeholder_hotel: Отель
 form.hotelType.maxibooking_inner_name: Название для использования внутри MaxiBooking
 form.hotelType.prefix: Префикс

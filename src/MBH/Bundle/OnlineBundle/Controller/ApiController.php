@@ -374,7 +374,7 @@ class ApiController extends Controller
             $payer = $order->getPayer();
             if ($payer && $payer->getEmail()) {
                 if($payer instanceof Tourist && $payer->getCommunicationLanguage() != $this->container->getParameter('locale')) {
-                    $hotelName = $hotel->getName();//$hotel->getInternalName();
+                    $hotelName = $hotel->getInternationalTitle();
                 } else {
                     $hotelName = $hotel->getName();
                 }
