@@ -63,7 +63,7 @@ class Mailer implements \SplObserver
                 'linkText' => $message->getLinkText(),
                 'order' => $message->getOrder(),
                 'signature' => $message->getSignature()
-            ], $message->getAdditionalData()) , $message->getTemplate());
+            ], $message->getAdditionalData()), $message->getTemplate());
         }
     }
 
@@ -117,7 +117,7 @@ class Mailer implements \SplObserver
                 throw new \Exception($error);
             }
         }
-        (empty($data['subject'])) ? $data['subject'] = $this->params['subject']: $data['subject'];
+        (empty($data['subject'])) ? $data['subject'] = $this->params['subject'] : $data['subject'];
         $message = \Swift_Message::newInstance();
         empty($template) ? $template = $this->params['template'] : $template;
         $data = $this->addImages($data, $message, $template);
@@ -125,16 +125,18 @@ class Mailer implements \SplObserver
         $translator = $this->container->get('translator');
         $defaultLocale = $this->container->getParameter('locale');
 
-        $data['hotelName'] = 'MaxiBooking';
         foreach ($recipients as $recipient) {
-            if($data['hotel']) {
-                  if($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() != $defaultLocale) {
-                      $translator->setLocale($recipient->getCommunicationLanguage());
-                      $data['hotelName'] = $data['hotel']->getInternationalTitle();
-                  } else {
-                      $translator->setLocale($defaultLocale);
-                      $data['hotelName'] = $data['hotel']->getName();
-                  }
+            $data['hotelName'] = 'MaxiBooking';
+            if ($data['hotel']) {
+                $data['hotelName'] = $data['hotel']->getName();
+                if ($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() != $defaultLocale) {
+                    $translator->setLocale($recipient->getCommunicationLanguage());
+                    if ($data['hotel']->getInternationalTitle()) {
+                        $data['hotelName'] = $data['hotel']->getInternationalTitle();
+                    }
+                } else {
+                    $translator->setLocale($defaultLocale);
+                }
             }
             $body = $this->twig->render($template, $data);
 
@@ -144,8 +146,7 @@ class Mailer implements \SplObserver
                         $this->params['fromText'] :
                         $data['fromText']
                 ])
-                ->setBody($body, 'text/html')
-            ;
+                ->setBody($body, 'text/html');
             $message->setTo([$recipient->getEmail() => $recipient->getName()]);
             $this->mailer->send($message);
         }
