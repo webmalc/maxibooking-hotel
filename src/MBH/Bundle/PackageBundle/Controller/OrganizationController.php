@@ -31,7 +31,7 @@ class OrganizationController extends Controller
     /**
      * @Route("/list/{type}", name="organizations", defaults={"type" = "contragents"})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ORGANIZATION_VIEW')")
      * @Template()
      */
     public function indexAction($type = 'contragents')
@@ -45,7 +45,7 @@ class OrganizationController extends Controller
     /**
      * @Route("/json", name="organization_json", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ORGANIZATION_VIEW')")
      */
     public function organizationJsonAction(Request $request)
     {
@@ -106,7 +106,7 @@ class OrganizationController extends Controller
     /**
      * @Route("/create", name="create_organization")
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ORGANIZATION_NEW')")
      * @Template()
      */
     public function createAction(Request $request)
@@ -140,9 +140,9 @@ class OrganizationController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit", name="edit_organization")
+     * @Route("/{id}/edit", name="organization_edit")
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ORGANIZATION_EDIT')")
      * @ParamConverter("organization", class="MBHPackageBundle:Organization")
      * @Template()
      */
@@ -174,7 +174,7 @@ class OrganizationController extends Controller
                 }
 
                 return $this->isSavedRequest() ?
-                    $this->redirectToRoute('edit_organization', ['id' => $organization->getId()]) :
+                    $this->redirectToRoute('organization_edit', ['id' => $organization->getId()]) :
                     $this->redirectToRoute('organizations');
             }
         }
@@ -189,7 +189,7 @@ class OrganizationController extends Controller
     /**
      * @Route("/{id}/delete", name="organization_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ORGANIZATION_DELETE')")
      * @ParamConverter("organization", class="MBHPackageBundle:Organization")
      * @Template()
      */
@@ -207,7 +207,7 @@ class OrganizationController extends Controller
      *
      * @Route("/json/list", name="organization_json_list", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ORGANIZATION_VIEW')")
      * @return JsonResponse
      */
     public function organizationJsonListAction(Request $request, $id = null)

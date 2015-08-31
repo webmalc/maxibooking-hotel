@@ -22,7 +22,9 @@ class Builder extends ContainerAware
      */
     public function mainMenu(FactoryInterface $factory, array $options)
     {
+
         $menu = $factory->createItem('root');
+
         $menu->setChildrenAttributes([
             'class' => 'sidebar-menu', 'id' => 'main-menu'
         ]);
@@ -31,7 +33,7 @@ class Builder extends ContainerAware
 
         // packages
         $menu->addChild('package', ['route' => 'package', 'label' => 'Брони'])
-            ->setAttributes(['icon' => 'fa fa-paper-plane-o'])
+            ->setAttributes(['icon' => 'fa fa-paper-plane-o']);
         ;
         // search
         $menu->addChild('reservations', ['route' => 'package_search', 'label' => 'Подбор'])
@@ -109,32 +111,39 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-file-archive-o']);*/
 
 
-        return $this->filter($menu, $factory);
+        return $this->filter($menu, $factory, $options);
     }
 
     /**
      * @param ItemInterface $menu
      * @param FactoryInterface $factory
+     * @param array $options
      * @return ItemInterface
      */
-    public function filter(ItemInterface $menu, FactoryInterface $factory)
+    public function filter(ItemInterface $menu, FactoryInterface $factory, array $options)
     {
         $this->counter = 0;
-        $menu = $this->filterMenu($menu);
+        $menu = $this->filterMenu($menu, $options);
 
         return empty($this->counter) ? $factory->createItem('root') : $menu;
     }
 
     /**
-     * Filter menu by roles
-     * @param \Knp\Menu\ItemInterface $menu
-     * @return \Knp\Menu\ItemInterface
+     * @param ItemInterface $menu
+     * @param array $options
+     * @return ItemInterface
      */
-    public function filterMenu(ItemInterface $menu)
+    public function filterMenu(ItemInterface $menu, array $options)
     {
         $router = $this->container->get('router');
         $router->getContext()->setMethod('GET');
         $security = $this->container->get('security.context');
+
+        !empty($options['title_url']) ? $title_url = $options['title_url'] : $title_url = null;
+
+        if ($menu->getUri() == $title_url) {
+            $menu->setCurrent(true);
+        }
 
         foreach ($menu->getChildren() as $child) {
 
@@ -142,6 +151,10 @@ class Builder extends ContainerAware
                 continue;
             }
             $metadata = false;
+
+            if ($child->getUri() == $title_url) {
+                $menu->setCurrent(true);
+            }
 
             try {
                 $url = str_replace('app_dev.php/', '', parse_url($child->getUri()))['path'];
@@ -171,7 +184,7 @@ class Builder extends ContainerAware
                 $this->counter += 1;
             }
 
-            $this->filterMenu($child);
+            $this->filterMenu($child, $options);
         }
 
         return $menu;
@@ -248,7 +261,7 @@ class Builder extends ContainerAware
         $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
 
-        return $this->filter($menu, $factory);
+        return $this->filter($menu, $factory, $options);
     }
 
     /**
@@ -271,7 +284,7 @@ class Builder extends ContainerAware
                 ->setAttribute('icon', 'fa fa-plus')
         ;
 
-        return $menu;
+        return $this->filter($menu, $factory, $options);;
     }
 
 }

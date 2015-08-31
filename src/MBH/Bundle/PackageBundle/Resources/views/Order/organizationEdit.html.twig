@@ -92,7 +92,7 @@
                     {% if entity.deletedAt is empty and checkPackagePermissions(package) %}
                         <div class="row spacer-top">
                             <div class="col-md-12 text-right btn-list">
-                                <a href="{{ path('edit_organization', {id: entity.organization.id }) }}"
+                                <a href="{{ path('organization_edit', {id: entity.organization.id }) }}"
                                    class="btn btn-success btn-sm" title="" data-toggle="tooltip"
                                    data-original-title="Редактирование записи"><i class="fa fa-pencil-square-o"></i></a>
                                 <a data-toggle="tooltip"

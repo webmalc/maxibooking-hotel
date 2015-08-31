@@ -1,3 +1,4 @@
+{% spaceless %}
 {% if edit_route is not defined %}
     {% set edit_route = route ~ '_edit' %}
 {% endif %}
@@ -7,11 +8,11 @@
 {% endif %}
 
 {% block edit_link %}
+
     {% if is_granted(role) %}
-    <a href="{{ path(edit_route, {'id': entity.id }) }}" rel="main" title="{{'entry.actions.edit'|trans }}" data-toggle="tooltip">
-        {{ entity }}
-    </a>
+    <a href='{{ path(edit_route, {'id': entity.id }) }}' rel='main' title='{{'entry.actions.edit'|trans }}' data-toggle='tooltip'>{{ entity }}</a>
     {% else %}
-        <span class="entry-span">{{ entity }}</span>
+        <span class='entry-span'>{{ entity }}</span>
     {% endif %}
 {% endblock %}
+{% endspaceless %}

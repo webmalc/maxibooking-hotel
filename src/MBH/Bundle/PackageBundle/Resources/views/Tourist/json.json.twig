@@ -6,13 +6,13 @@
         {% for entity in entities %}
             [
                 "<div class='text-center'><i class='fa fa-male'></i></div>",
-                "<a href='{{ path('tourist_edit', { 'id': entity.id }) }}' rel='main' title='Редактирование записи' data-toggle='tooltip'>{{ entity.fullName }}</a>",
+                "{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'tourist'} %}{% endembed %}",
                 "<div class='text-center'>{{ entity.packages.count + entity.orders.count}}</div>",
                 "<div class='text-center'>{% if entity.birthday %}{{ entity.birthday|date('d.m.Y')}}{% endif %}</div>",
                 "<div class='text-center'>{{ entity.age }}</div>",
                 "{{ entity.phone }}",
                 "{% if entity.email %}<a href='mailto:{{ entity.email }}'>{{ entity.email }}</a>{% endif %}",
-                "{% include 'MBHPackageBundle:Tourist:jsonButtons.html.twig' with {'entity': entity} %}"
+                "<div class='btn-list'>{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'tourist'} %}{% endembed %}</div>"
             ]{% if loop.index != entities.count(true) %},{% endif %}
         {% endfor %}
     ]

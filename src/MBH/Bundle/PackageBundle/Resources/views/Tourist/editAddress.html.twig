@@ -9,7 +9,7 @@
     <div class="tab-content">
         {{ form_start(form, {'action': path('tourist_edit_address', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
         {{ form_widget(form) }}
-        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'tourist_delete' } %}
+        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'route': 'tourist' } %}
         {{ form_end(form) }}
 
         {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tourist_delete' } %}

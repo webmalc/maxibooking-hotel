@@ -35,7 +35,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/", name="package")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -126,7 +126,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/json", name="package_json", defaults={"_format"="json"}, options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW')")
      * @Template()
      */
     public function jsonAction(Request $request)
@@ -229,7 +229,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/edit", name="package_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
@@ -261,7 +261,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}", name="package_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_EDIT')")
      * @Template("MBHPackageBundle:Package:edit.html.twig")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
@@ -310,7 +310,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/new", name="package_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_NEW')")
      * @Template()
      */
     public function newAction(Request $request)
@@ -360,7 +360,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/guest", name="package_guest")
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_GUESTS')")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      * @Template()
      */
@@ -406,7 +406,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/guest/{touristId}/delete", name="package_guest_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_GUESTS')")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      * @ParamConverter("tourist", class="MBHPackageBundle:Tourist", options={"id" = "touristId"})
      */
@@ -435,7 +435,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @throws \Doctrine\ODM\MongoDB\LockException
      * @Route("/{id}/services", name="package_service")
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_SERVICES')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
@@ -484,7 +484,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/service/{serviceId}/edit", name="package_service_edit", options={"expose"=true})
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_SERVICES')")
      * @Template("MBHPackageBundle:Package:editService.html.twig")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      * @ParamConverter("service", class="MBHPackageBundle:PackageService", options={"id" = "serviceId"})
@@ -538,7 +538,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/service/{serviceId}/delete", name="package_service_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_SERVICES')")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      * @ParamConverter("service", class="MBHPackageBundle:PackageService", options={"id" = "serviceId"})
      */
@@ -562,7 +562,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/accommodation", name="package_accommodation")
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_ACCOMMODATION')")
      * @Template()
      * @param Request $request
      * @param Package $entity
@@ -627,7 +627,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/accommodation/delete", name="package_accommodation_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_ACCOMMODATION')")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
     public function accommodationDeleteAction(Request $request, Package $entity)
@@ -651,7 +651,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/delete", name="package_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_DELETE')")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
     public function deleteAction(Request $request, Package $entity)

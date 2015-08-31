@@ -138,3 +138,9 @@ ROLE_HOTELINN: Hotel-inn
 
 ROLE_ONLINE_FORM: Онлайн форма
 ROLE_POLLS: Голосования
+
+ROLE_REPORTS: Отчеты
+ROLE_ANALYTICS: Аналитика
+
+ROLE_PACKAGE: Брони
+ROLE_SEARCH: Подбор
