@@ -257,10 +257,12 @@ class TaskController extends Controller
         if ($task->getPerformer() && $task->getPerformer()->getTaskNotify() && !in_array($task->getPerformer(), $recipients)) {
             $recipients[] = $task->getPerformer();
         }
+
         if ($recipients) {
+            $translator = $this->get('translator');
             $message = new NotifierMessage();
-            $message->setSubject('Вам назначена новая задача');
-            $message->setText('Вам назначили задачу "' . $task->getType()->getTitle() . '"');
+            $message->setSubject($translator->trans('mailer.new_task.subject'));
+            $message->setText($translator->trans('mailer.new_task.text', ['%title%' => $task->getType()->getTitle()]));
             $message->setLink($this->generateUrl('task'));
             foreach ($recipients as $recipient) {
                 $message->addRecipient([$recipient->getEmail() => $recipient->getFullName(true)]);

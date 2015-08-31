@@ -346,12 +346,13 @@ class ApiController extends Controller
 
             //backend
             $notifier = $this->container->get('mbh.notifier');
+            $tr = $this->get('translator');
             $message = $notifier::createMessage();
             $hotel = $order->getPackages()[0]->getRoomType()->getHotel();
             $message
-                ->setText('Поступил новый заказ #' . $order->getId() . ' с вашего сайта.')
+                ->setText($tr->trans('mailer.online.backend.text', ['%orderID%' => $order->getId()]))
                 ->setFrom('online_form')
-                ->setSubject('Поступил новый заказ с вашего сайта.')
+                ->setSubject($tr->trans('mailer.online.backend.subject'))
                 ->setType('info')
                 ->setCategory('notification')
                 ->setOrder($order)
@@ -370,28 +371,34 @@ class ApiController extends Controller
             ;
 
             //user
-            if ($order->getPayer() && $order->getPayer()->getEmail()) {
-                $tr = $this->get('translator');
+            $payer = $order->getPayer();
+            if ($payer && $payer->getEmail()) {
+                if($payer instanceof Tourist && $payer->getCommunicationLanguage() != $this->container->getParameter('locale')) {
+                    $hotelName = $hotel->getName();//$hotel->getInternalName();
+                } else {
+                    $hotelName = $hotel->getName();
+                }
+
                 $notifier = $this->container->get('mbh.notifier.mailer');
                 $message = $notifier::createMessage();
                 $message
                     ->setFrom('online_form')
-                    ->setSubject($tr->trans('mailer.online.user.subject', ['%hotel%' => $hotel->getName()]))
+                    ->setSubject($tr->trans('mailer.online.user.subject', ['%hotel%' => $hotelName]))
                     ->setType('info')
                     ->setCategory('notification')
                     ->setOrder($order)
                     ->setAdditionalData([
                         'prependText' => $tr->trans('mailer.online.user.prepend', ['%guest%' => $order->getPayer()->getName()]),
                         'appendText' => $tr->trans('mailer.online.user.append'),
-                        'fromText' => $hotel->getName()
+                        'fromText' => $hotelName
                     ])
                     ->setHotel($hotel)
                     ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                     ->setAutohide(false)
                     ->setEnd(new \DateTime('+1 minute'))
-                    ->addRecipient($order->getPayer()->getEmail())
+                    ->addRecipient($payer->getEmail())
                     ->setLink('hide')
-                    ->setSignature($tr->trans('mailer.online.user.signature', ['%hotel%' => $hotel->getName()]))
+                    ->setSignature($tr->trans('mailer.online.user.signature', ['%hotel%' => $hotelName]))
                 ;
 
                 $params = $this->container->getParameter('mailer_user_arrival_links');

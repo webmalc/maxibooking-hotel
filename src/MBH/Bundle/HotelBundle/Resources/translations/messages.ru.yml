@@ -149,3 +149,7 @@ furniture: Мебель
 food: Еда
 amenity: Удобства
 technical: Техника
+
+
+mailer.new_task.subject: 'Вам назначена новая задача'
+mailer.new_task.text: 'Вам назначили задачу "%title%"'

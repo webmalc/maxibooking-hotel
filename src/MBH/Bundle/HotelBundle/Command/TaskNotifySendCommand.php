@@ -46,14 +46,15 @@ class TaskNotifySendCommand extends ContainerAwareCommand
         ]);
 
         $mailer = $this->getContainer()->get('mbh.notifier.mailer');
-
-        $message = new NotifierMessage();
-        $message->setSubject('Задачи, которые были завершены');
+        $translator = $this->getContainer()->get('translator');
         /** @var Router $router */
         $router = $this->getContainer()->get('router');
+
+        $message = new NotifierMessage();
+        $message->setSubject($translator->trans('mailer.closedTasks.subject'));
         $message->setLink($router->generate('task', [], Router::ABSOLUTE_URL));
         $message->setTemplate('MBHBaseBundle:Mailer:closedTasks.html.twig');
-        $message->setText('Завершенные задачи: ');
+        $message->setText($translator->trans('mailer.closedTasks.text'));
 
         $counter = 0;
         foreach ($users as $user) {
