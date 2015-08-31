@@ -9,7 +9,7 @@ mailer.online.user.map: online.user.map
 mailer.online.payment.backend: mailer.online.payment.backend
 mailer.online.payment.user: online.payment.user
 mailer.online.payment.subject: online.payment.subject
-mailer.online.user.subject: online.user.subject
+mailer.online.user.subject: Welcome to the «%hotel%»
 mailer.online.user.prepend: online.user.prepend
 mailer.online.user.append: online.user.append
 mailer.online.user.signature: online.user.signature

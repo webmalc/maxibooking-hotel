@@ -158,13 +158,13 @@ class MailerCommand extends ContainerAwareCommand
 
                 $message
                     ->setFrom('system')
-                    ->setSubject($tr->trans('mailer.report.user.poll.subject'))
+                    ->setSubject('mailer.report.user.poll.subject')
                     ->setType('info')
                     ->setCategory('notification')
                     ->setOrder($order)
                     ->setAdditionalData([
-                        'prependText' => $tr->trans('mailer.online.user.poll.prepend', ['%guest%' => $order->getPayer()->getName()]),
-                        'appendText' => $tr->trans('mailer.online.user.poll.append'),
+                        'prependText' => 'mailer.online.user.poll.prepend',
+                        'appendText' => 'mailer.online.user.poll.append',
                         'image' => 'stars_but.png',
                         'fromText' => $order->getFirstHotel()
                     ])

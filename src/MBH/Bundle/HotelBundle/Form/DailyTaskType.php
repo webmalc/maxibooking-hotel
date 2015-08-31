@@ -19,21 +19,18 @@ class DailyTaskType extends AbstractType
             ->add('day', 'integer', [
                 'required' => true,
                 'attr' => [
-                    'style' => 'width:65px',
+                    'style' => 'width:60px',
                     'placeholder' => 'Дней',
                     'min' => 1,
                     'max' => 60
                 ],
-                /*'constraints' => [
-                    new Length(['max' => 3])
-                ]*/
             ])
             ->add('taskType', 'document', [
                 'required' => true,
                 'class' => 'MBH\Bundle\HotelBundle\Document\TaskType',
                 'group_by' => 'category',
                 'attr' => [
-                    'style' => 'width:395px',
+                    'style' => 'width:250px',
                     'data-placeholder' => 'Выберите услугу'
                 ],
                 'empty_value' => ''
