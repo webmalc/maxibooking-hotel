@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class DefaultDocumentTemplateGenerator
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 abstract class TemplateGenerator implements TemplateGeneratorInterface, ContainerAwareInterface
 {

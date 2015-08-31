@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * Class NoticeStayPlaceXlsGenerator
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentResponseGeneratorInterface
 {

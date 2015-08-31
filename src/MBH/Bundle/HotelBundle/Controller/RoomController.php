@@ -17,7 +17,7 @@ use MBH\Bundle\HotelBundle\Form\RoomType as RoomForm;
 
 /**
  * Class RoomController
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  * @Route("/room")
  */
 class RoomController extends BaseController

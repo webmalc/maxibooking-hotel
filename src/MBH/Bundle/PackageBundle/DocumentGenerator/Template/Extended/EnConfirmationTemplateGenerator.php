@@ -6,7 +6,7 @@ use Gedmo\Translatable\TranslatableListener;
 
 /**
  * Class EnConfirmationTemplateGenerator
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class EnConfirmationTemplateGenerator extends ConfirmationTemplateGenerator
 {

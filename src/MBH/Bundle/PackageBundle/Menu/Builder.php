@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 
 /**
  * Class Builder
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class Builder extends ContainerAware
 {

@@ -13,7 +13,7 @@ use MBH\Bundle\PackageBundle\Lib\DeleteException;
 
 /**
  * Class CheckDeleteRelationSubscriber
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class CheckDeleteRelationSubscriber implements EventSubscriber
 {

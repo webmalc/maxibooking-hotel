@@ -8,7 +8,7 @@ use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
 
 /**
  * Class RoomRepository
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class RoomRepository extends AbstractBaseRepository
 {

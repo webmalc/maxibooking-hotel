@@ -7,7 +7,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  * Class TaskQueryCriteria
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class TaskQueryCriteria extends AbstractQueryCriteria
 {

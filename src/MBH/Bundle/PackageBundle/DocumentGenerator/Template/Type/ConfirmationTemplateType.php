@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 /**
  * Class ConfirmationTemplateType
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class ConfirmationTemplateType extends AbstractType
 {

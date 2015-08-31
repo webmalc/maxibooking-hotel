@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Class DocumentTemplateGeneratorFactory
  * Create Template Generator by type
  *
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class TemplateGeneratorFactory implements GeneratorFactoryInterface
 {

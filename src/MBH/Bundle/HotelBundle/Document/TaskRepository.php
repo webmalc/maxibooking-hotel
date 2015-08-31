@@ -10,7 +10,7 @@ use MBH\Bundle\UserBundle\Document\User;
 
 /**
  * Class TaskRepository
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class TaskRepository extends DocumentRepository
 {

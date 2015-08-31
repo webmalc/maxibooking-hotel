@@ -8,7 +8,7 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 
 /**
  * Class RegistrationCardTemplateGenerator
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class RegistrationCardTemplateGenerator extends DefaultTemplateGenerator
 {

@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints\Length;
 
 /**
  * Class DailyTaskType
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class DailyTaskType extends AbstractType
 {

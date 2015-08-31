@@ -14,7 +14,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Class DocumentRelationType
  * @package MBH\Bundle\PackageBundle\Form
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class DocumentRelationType extends AbstractType
 {

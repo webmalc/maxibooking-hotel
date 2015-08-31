@@ -6,7 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class DocumentGeneratorFactoryInterface
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class ChainGeneratorFactory implements GeneratorFactoryInterface
 {
