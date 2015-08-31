@@ -37,13 +37,11 @@
             <i class="fa fa-users" title='{{ 'form.searchType.payer'|trans() }}'
                data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.tourist) }}&nbsp;
             <small>
-                {% if is_granted('ROLE_TOURIST_NEW') %}
                 <a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"
                    title='{{ 'form.searchType.payer_add'|trans() }}'
                    data-toggle='tooltip'>
                     <i class="fa fa-plus"></i>
                 </a>
-                {% endif %}
             </small>
         </div>
 
