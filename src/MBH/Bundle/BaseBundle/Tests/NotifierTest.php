@@ -150,7 +150,7 @@ class NotifierTest extends WebTestCase
         $this->message->setText('mailer.online.user.text');
     }
 
-    /*public function testSend()
+    public function testSend()
     {
         $this->recipient->setCommunicationLanguage('en');
         $this->notifier->setMessage($this->message)->notify();
@@ -250,12 +250,12 @@ class NotifierTest extends WebTestCase
         $messages = $this->logger->getMessages();
         $this->assertTrue(count($messages) > 0);
     }
-*/
+
 
     /**
      * New online booking
      */
-    /*public function testNewBooking()
+    public function testNewBooking()
     {
         $this->mailer->setLocal('en');
 
@@ -373,7 +373,7 @@ class NotifierTest extends WebTestCase
 
         $messages = $this->logger->getMessages();
         $this->assertTrue(count($messages) > 0);
-    }*/
+    }
 
     public function testBookingConfirmation()
     {
