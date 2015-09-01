@@ -260,10 +260,12 @@ class RoomType extends Base
 
     /**
      * @param mixed $internationalTitle
+     * @return self
      */
     public function setInternationalTitle($internationalTitle)
     {
         $this->internationalTitle = $internationalTitle;
+        return $this;
     }
 
     /**

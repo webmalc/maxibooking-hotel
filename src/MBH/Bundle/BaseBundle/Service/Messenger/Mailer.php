@@ -127,26 +127,31 @@ class Mailer implements \SplObserver
         $defaultLocale = $this->container->getParameter('locale');
 
         foreach ($recipients as $recipient) {
+            //@todo move to notifier
             $data['hotelName'] = 'MaxiBooking';
             $transParams = [
                 '%guest%' => $recipient->getName(),
                 '%hotel%' => null
             ];
+
             if ($data['hotel']) {
                 $data['hotelName'] = $data['hotel']->getName();
                 $transParams['%hotel%'] = $data['hotel']->getName();
-                if ($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() != $defaultLocale) {
-                    $translator->setLocale($recipient->getCommunicationLanguage());
-                    if ($data['hotel']->getInternationalTitle()) {
-                        $data['hotelName'] = $data['hotel']->getInternationalTitle();
-                        $transParams['%hotel%'] = $data['hotel']->getInternationalTitle();
-                    }
-                } else {
-                    $translator->setLocale($defaultLocale);
-                }
             }
 
-            $data['transParams'] = $transParams + $data['transParams'];
+            if ($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() != $defaultLocale) {
+                $translator->setLocale($recipient->getCommunicationLanguage());
+                $data['isSomeLanguage'] = false;
+                if ($data['hotel'] && $data['hotel']->getInternationalTitle()) {
+                    $data['hotelName'] = $data['hotel']->getInternationalTitle();
+                    $transParams['%hotel%'] = $data['hotel']->getInternationalTitle();
+                }
+            } else {
+                $translator->setLocale($defaultLocale);
+                $data['isSomeLanguage'] = true;
+            }
+
+            $data['transParams'] = array_merge($transParams, $data['transParams']);
             $body = $this->twig->render($template, $data);
 
             $message->setSubject($translator->trans($data['subject'], $data['transParams']))

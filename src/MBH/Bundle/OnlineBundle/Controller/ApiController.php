@@ -121,7 +121,6 @@ class ApiController extends Controller
             '%order%' => $order->getId(),
             '%payer%' => $order->getPayer() ? $order->getPayer()->getName() : '-'
         ];
-        $tr = $this->get('translator');
 
         $notifier = $this->get('mbh.notifier');
         $message = $notifier::createMessage();
@@ -378,13 +377,13 @@ class ApiController extends Controller
                 $message = $notifier::createMessage();
                 $message
                     ->setFrom('online_form')
-                    ->setSubject($tr->trans('mailer.online.user.subject', ['%hotel%' => $hotel->getName()]))
+                    ->setSubject('mailer.online.user.subject')
                     ->setType('info')
                     ->setCategory('notification')
                     ->setOrder($order)
                     ->setAdditionalData([
-                        'prependText' => $tr->trans('mailer.online.user.prepend', ['%guest%' => $order->getPayer()->getName()]),
-                        'appendText' => $tr->trans('mailer.online.user.append'),
+                        'prependText' => 'mailer.online.user.prepend',
+                        'appendText' => 'mailer.online.user.append',
                         'fromText' => $hotel->getName()
                     ])
                     ->setHotel($hotel)
@@ -393,7 +392,7 @@ class ApiController extends Controller
                     ->setEnd(new \DateTime('+1 minute'))
                     ->addRecipient($payer)
                     ->setLink('hide')
-                    ->setSignature($tr->trans('mailer.online.user.signature', ['%hotel%' => $hotel->getName()]))
+                    ->setSignature('mailer.online.user.signature')
                 ;
 
                 $params = $this->container->getParameter('mailer_user_arrival_links');

@@ -1,6 +1,20 @@
+nights: night|nights
+
+twig.extension.jan: 'jan'
+twig.extension.feb: 'feb'
+twig.extension.march: 'mar'
+twig.extension.april: 'apr'
+twig.extension.may: 'may'
+twig.extension.june: 'june'
+twig.extension.july: 'july'
+twig.extension.august: 'aug'
+twig.extension.september: 'sept'
+twig.extension.october: 'oct'
+twig.extension.november: 'nov'
+twig.extension.december: 'dec'
+
 mailer.to_order: to_order
 mailer.to_package: to_package
-
 
 mailer.base.linkText: base.linkText
 
@@ -9,10 +23,12 @@ mailer.online.user.map: online.user.map
 mailer.online.payment.backend: mailer.online.payment.backend
 mailer.online.payment.user: online.payment.user
 mailer.online.payment.subject: online.payment.subject
-mailer.online.user.subject: Welcome to the «%hotel%»
-mailer.online.user.prepend: online.user.prepend
-mailer.online.user.append: online.user.append
-mailer.online.user.signature: online.user.signature
+
+mailer.online.user.subject: Welcome to «%hotel%»
+mailer.online.user.prepend: Hello, %guest%!<br><br>You’ve successfully booked room in our hotel. We will contact you soon to confirm the booking and elaborate check-in and accommodation details.
+mailer.online.user.append: We hope your visit will be successful and stay in our hotel will be comfortable. <br>Thank you for choosing our hotel!
+mailer.online.user.signature: Sincerely,<br>Booking Department of «%hotel%» hotel.
+
 mailer.online.backend.subject: online.backend.subject
 mailer.online.backend.text: online.backend.text
 mailer.online.backend.prepend: online.backend.prepend
@@ -53,18 +69,18 @@ mailer.reportArrival.transfer: reportArrival.transfer
 mailer.reportArrival.guests: reportArrival.guests
 
 mailer.order.duty: order.duty
-mailer.order.date: order.date
-mailer.order.cost: order.cost
-mailer.order.booked_numbers: order.booked_numbers
-mailer.order.additional_services: order.additional_services
-mailer.order.title: order.title
-mailer.order.name: order.name
-mailer.order.amount: order.amount
-mailer.order.quantity: order.quantity
-mailer.order.client_info: order.client_info
+mailer.order.date: Date
+mailer.order.cost: Price
+mailer.order.booked_numbers: Reserved rooms
+mailer.order.additional_services: Additional options
+mailer.order.title: Item
+mailer.order.name: Name
+mailer.order.amount: Total
+mailer.order.quantity: Quantity
+mailer.order.client_info: Client information
 mailer.order.phone: order.phone
-mailer.order.number: order.number
-mailer.order.numbers: order.numbers
+mailer.order.number: Room
+mailer.order.numbers: Rooms
 mailer.order.customer: order.customer
 mailer.order.payment: order.payment
 mailer.order.overpayment: order.overpayment
