@@ -25,26 +25,6 @@ class Permissions
     }
 
     /**
-     * @param $doc
-     * @return bool
-     */
-    public function check(Base $doc)
-    {
-        if (!$doc->getCreatedBy()) {
-            return true;
-        }
-
-        $securityContext = $this->container->get('security.context');
-        $roles = ['ROLE_ADMIN', 'ROLE_ADMIN_HOTEL', 'ROLE_BOOKKEEPER', 'ROLE_SENIOR_MANAGER'];
-
-        if ($securityContext->isGranted($roles)) {
-            return true;
-        }
-
-        return $securityContext->isGranted('EDIT', $doc);
-    }
-
-    /**
      * @param Base $doc
      * @return boolean
      */

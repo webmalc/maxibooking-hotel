@@ -1,22 +1,21 @@
 {% spaceless %}
     <div class='btn-list text-right'>
-        {% if checkPackagePermissions(entity) %}
-            {% if not entity.confirmed %}
-                <a href='{{ path('package_order_edit', { 'id': entity.order.id, 'packageId': entity.id }) }}' class='btn btn-primary btn-xs' title='{{ "package.jsonButtons.confirm_order"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>
-                    <i class='fa fa-check'></i>
-                </a>
-            {% endif %}
-            <a href='{{ path('package_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='{{ "package.jsonButtons.edit_record"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>
-                <i class='fa fa-pencil-square-o'></i>
+
+        {% if is_granted('ROLE_ORDER_EDIT') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) and not entity.confirmed %}
+            <a href='{{ path('package_order_edit', { 'id': entity.order.id, 'packageId': entity.id }) }}' class='btn btn-primary btn-xs' title='{{ "package.jsonButtons.confirm_order"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>
+                <i class='fa fa-check'></i>
             </a>
-            {% if not entity.deletedAt %}
+        {% endif %}
+
+        {% if is_granted('ROLE_PACKAGE_VIEW') and (is_granted('VIEW', entity) or is_granted('ROLE_PACKAGE_VIEW_ALL')) %}
+            <a href='{{ path('package_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='{{ "package.jsonButtons.edit_record"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>
+                <i class='fa {{ is_granted('ROLE_PACKAGE_EDIT') and is_granted('EDIT', entity) ? 'fa-pencil-square-o' : 'fa-eye'}}'></i>
+            </a>
+        {% endif %}
+
+        {% if is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', entity) or is_granted('ROLE_PACKAGE_DELETE_ALL')) and not entity.deletedAt%}
             <a href='{{ path('package_delete', { 'id': entity.id}) }}' class='btn btn-danger btn-xs delete-link ' title='{{ "package.jsonButtons.delete_record"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>
                 <i class='fa fa-trash-o'></i>
-            </a>
-            {% endif %}
-        {% else %}
-            <a href='{{ path('package_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='{{ "package.jsonButtons.view_record"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>
-                <i class='fa fa-eye'></i>
             </a>
         {% endif %}
     </div>

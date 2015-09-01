@@ -64,9 +64,7 @@ class UserType extends AbstractType
                 'constraints' => new Length(array('min' => 6))
             ]);
         }
-
-        if (!$options['admin']) {
-            $builder->add('hotels', 'document', [
+        $builder->add('hotels', 'document', [
                 'group' => 'form.userType.settings',
                 'label' => 'form.userType.hotels',
                 'multiple' => true,
@@ -76,8 +74,7 @@ class UserType extends AbstractType
                 'property' => 'name',
                 'help' => 'form.userType.hotels_user_has_access_to',
                 'attr' => array('class' => "chzn-select")
-            ]);
-        }
+        ]);
 
         $builder
             ->add('notifications', 'checkbox', [
@@ -141,7 +138,6 @@ class UserType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\UserBundle\Document\User',
-            'admin' => false,
             'hotels' => []
         ]);
     }

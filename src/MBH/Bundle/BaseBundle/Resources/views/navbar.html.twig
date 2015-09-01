@@ -7,7 +7,7 @@
     <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
 
-            {% if selected_hotel()%}
+            {% if selected_hotel() and is_granted('ROLE_HOTEL_VIEW') %}
 
                 <li class="dropdown notifications-menu">
                     <!-- Menu toggle button -->

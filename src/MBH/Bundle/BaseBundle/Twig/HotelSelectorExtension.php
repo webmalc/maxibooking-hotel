@@ -58,10 +58,6 @@ class HotelSelectorExtension extends \Twig_Extension
         return $this->container->get('mbh.hotel.selector')->checkPermissions($doc);
     }
 
-    public function checkPackagePermissions($doc)
-    {
-        return $this->container->get('mbh.package.permissions')->check($doc);
-    }
 
     /**
      * @return array
@@ -72,7 +68,6 @@ class HotelSelectorExtension extends \Twig_Extension
             'selected_hotel' => new \Twig_Function_Method($this, 'getSelectedHotel', array('is_safe' => array('html'))),
             'hotels' => new \Twig_Function_Method($this, 'getHotels', array('is_safe' => array('html'))),
             'checkPermissions' => new \Twig_Function_Method($this, 'checkPermissions', array('is_safe' => array('html'))),
-            'checkPackagePermissions' => new \Twig_Function_Method($this, 'checkPackagePermissions', array('is_safe' => array('html'))),
         );
     }
 

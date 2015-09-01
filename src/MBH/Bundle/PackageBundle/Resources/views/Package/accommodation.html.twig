@@ -20,7 +20,7 @@
             {% if entity.accommodation %}
                 <div class="bg-gray color-palette alert">
                     <i class="fa fa-bed"> </i> {{ 'package.accommodation.placement'|trans({}, 'MBHPackageBundle') }} {{ entity.accommodation.name(true, true) }}, {{ 'package.accommodation.guests'|trans({}, 'MBHPackageBundle') }} {{ entity.isCheckIn ? '' : 'не ' }} {{ 'package.accommodation.stopped'|trans({}, 'MBHPackageBundle') }}
-                    {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
+                    {% if entity.deletedAt is empty and is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                         <div class="pull-right">
                             <a href="{{ path('package_accommodation_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
                                 <i class="fa fa-trash-o"></i>
@@ -34,12 +34,10 @@
                 </div>
             {% endif %}
 
-            {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
                 {{ form_start(form, {'action': path('package_accommodation', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
                 {{ form_widget(form) }}
-                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity} %}
+                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'role': 'ROLE_PACKAGE_ACCOMMODATION'} %}
                 {{ form_end(form) }}
-            {% endif %}
 
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
         </div>

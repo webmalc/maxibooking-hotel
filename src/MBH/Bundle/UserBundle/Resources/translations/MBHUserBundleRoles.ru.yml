@@ -145,13 +145,20 @@ ROLE_ANALYTICS: Аналитика
 ROLE_PACKAGE: Брони
 ROLE_SEARCH: Подбор
 ROLE_PACKAGE_VIEW: Просмотр брони
-ROLE_PACKAGE_NEW: Добавление брони
-ROLE_PACKAGE_EDIT: Редактирование брони
-ROLE_PACKAGE_DELETE: Удаление брони
-ROLE_PACKAGE_ACCOMMODATION: Размещение брони
-ROLE_PACKAGE_SERVICES: Услуги брони
+ROLE_PACKAGE_NEW: Создание брони
+ROLE_ORDER_EDIT: Редактирование информации заказа
+ROLE_PACKAGE_EDIT: Редактирование информации брони
 ROLE_ORDER_PAYER: Плательщик заказа
+ROLE_PACKAGE_GUESTS: Гости брони
+ROLE_PACKAGE_SERVICES: Услуги брони
+ROLE_PACKAGE_ACCOMMODATION: Размещение брони
 ROLE_ORDER_DOCUMENTS: Документы заказа
+ROLE_ORDER_CASH_DOCUMENTS: Рассчеты брони
+ROLE_PACKAGE_DELETE: Удаление брони
+ROLE_PACKAGE_VIEW_ALL: Просмотр любой брони
+ROLE_PACKAGE_EDIT_ALL: Редактирование любой брони
+ROLE_PACKAGE_DELETE_ALL: Удаление любой брони
+ROLE_PACKAGE_DOCS: Документы заказа
 
 ROLE_TOURIST: Клиенты
 ROLE_PORTER_REPORT: Отчет портье

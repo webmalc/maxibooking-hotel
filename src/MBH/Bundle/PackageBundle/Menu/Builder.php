@@ -18,6 +18,8 @@ class Builder extends ContainerAware
     public function templateDocuments(FactoryInterface $factory, array $options)
     {
         $package = $options['package'];
+        $checker = $this->container->get('security.authorization_checker');
+
         $searchQuery = $options['searchQuery'];
         if (!$package instanceof Package) {
             throw new \InvalidArgumentException();
@@ -25,7 +27,6 @@ class Builder extends ContainerAware
 
         $menu = $factory->createItem('Docs Generation');
         $translator = $this->container->get('translator');
-
         $rootItem = $menu->addChild('actions', [
             'label' => $translator->trans('package.actions', [], 'MBHPackageBundle')
         ]);
@@ -37,41 +38,51 @@ class Builder extends ContainerAware
             'data-id' => $package->getId()
         ]);
 
-        $rootItem
-            ->addChild('Docs header', [
-                'label' => $translator->trans('package.actions.docs', [], 'MBHPackageBundle')
-            ])
-            ->setAttribute('dropdown_header', true);
 
-        $this->addDocumentTemplateItems($rootItem, $package);
 
-        $rootItem
-            ->addChild('Search Header', [
-                'label' => $translator->trans('package.actions.search', [], 'MBHPackageBundle')
-            ])
-            ->setAttributes([
-                'divider_prepend' => true,
-                'dropdown_header' => true
-            ]);
+        if ($checker->isGranted('ROLE_PACKAGE_DOCS')) {
 
-        $rootItem
-            ->addChild('Package search', [
-                'uri' => $this->container->get('router')->generate('package_search') . '#' . twig_urlencode_filter(['s' => $searchQuery]),
-                'label' => $translator->trans('package.actions.find_similar', [], 'MBHPackageBundle')
-            ])
-            ->setAttribute('icon', 'fa fa-search');
+            $rootItem
+                ->addChild('Docs header', [
+                    'label' => $translator->trans('package.actions.docs', [], 'MBHPackageBundle')
+                ])
+                ->setAttribute('dropdown_header', true);
+                $this->addDocumentTemplateItems($rootItem, $package);
+        }
 
-        $rootItem
-            ->addChild('Order search ', [
-                'route' => 'package_search',
-                'routeParameters' => ['order' => $package->getOrder()->getId()],
-                'label' => $translator->trans('order.package.add', [], 'MBHPackageBundle')
-            ])
-            ->setAttributes([
-                'icon' => 'fa fa-search',
-                'divider_append' => true,
-                'level' => 2,
-            ]);
+        if ($checker->isGranted('ROLE_SEARCH')) {
+            $rootItem
+                ->addChild('Search Header', [
+                    'label' => $translator->trans('package.actions.search', [], 'MBHPackageBundle')
+                ])
+                ->setAttributes([
+                    'divider_prepend' => true,
+                    'dropdown_header' => true
+                ]);
+
+            $rootItem
+                ->addChild('Package search', [
+                    'uri' => $this->container->get('router')->generate('package_search') . '#' . twig_urlencode_filter(['s' => $searchQuery]),
+                    'label' => $translator->trans('package.actions.find_similar', [], 'MBHPackageBundle')
+                ])
+                ->setAttribute('icon', 'fa fa-search');
+
+            if ($checker->isGranted('ROLE_ORDER_EDIT') && $checker->isGranted('ROLE_PACKAGE_NEW') && ($checker->isGranted('EDIT', $package->getOrder()) || $checker->isGranted('ROLE_PACKAGE_EDIT_ALL'))) {
+                $rootItem
+                    ->addChild('Order search ', [
+                        'route' => 'package_search',
+                        'routeParameters' => ['order' => $package->getOrder()->getId()],
+                        'label' => $translator->trans('order.package.add', [], 'MBHPackageBundle')
+                    ])
+                    ->setAttributes([
+                        'icon' => 'fa fa-search',
+                        'divider_append' => true,
+                        'level' => 2,
+                    ]);
+            }
+        }
+
+
 
         $rootItem
             ->addChild('Delete Header', [
@@ -79,27 +90,35 @@ class Builder extends ContainerAware
             ])
             ->setAttribute('dropdown_header', true);
 
-        $rootItem
-            ->addChild('Delete', [
-                'route' => 'package_delete',
-                'routeParameters' => ['id' => $package->getId()],
-                'label' => $translator->trans('package.actions.delete', [], 'MBHPackageBundle'),
-            ])
-            ->setLinkAttribute('class', 'delete-link')
-            ->setAttributes([
-                'icon' => 'fa fa-trash-o',
-            ]);
-        $rootItem
-            ->addChild('Order delete', [
-                'route' => 'package_order_delete',
-                'routeParameters' => ['id' => $package->getOrder()->getId()],
-                'label' => $translator->trans('order.navbar.delete_order', [], 'MBHPackageBundle'),
-            ])
-            ->setLinkAttribute('class', 'delete-link')
-            ->setAttributes([
-                'icon' => 'fa fa-trash-o'
-            ]);
 
+
+
+        if ($checker->isGranted('ROLE_PACKAGE_DELETE') && ($checker->isGranted('DELETE', $package) || $checker->isGranted('ROLE_PACKAGE_DELETE_ALL'))) {
+            $rootItem
+                ->addChild('Delete', [
+                    'route' => 'package_delete',
+                    'routeParameters' => ['id' => $package->getId()],
+                    'label' => $translator->trans('package.actions.delete', [], 'MBHPackageBundle'),
+                ])
+                ->setLinkAttribute('class', 'delete-link')
+                ->setAttributes([
+                    'icon' => 'fa fa-trash-o',
+                ]);
+        }
+
+        if ($checker->isGranted('ROLE_PACKAGE_DELETE') && ($checker->isGranted('DELETE', $package->getOrder()) || $checker->isGranted('ROLE_PACKAGE_DELETE_ALL'))) {
+            $rootItem
+                ->addChild('Order delete', [
+                    'route' => 'package_order_delete',
+                    'routeParameters' => ['id' => $package->getOrder()->getId()],
+                    'label' => $translator->trans('order.navbar.delete_order', [], 'MBHPackageBundle'),
+                ])
+                ->setLinkAttribute('class', 'delete-link')
+                ->setAttributes([
+                    'icon' => 'fa fa-trash-o'
+                ]);
+
+            }
         return $menu;
     }
 

@@ -20,17 +20,22 @@
 
             <div class="bg-gray color-palette alert">
                 <i class="{{ currency().icon }}"></i>
-                {{ 'order.cash.paid_price'|trans({}, 'MBHPackageBundle') }} {{ entity.paid|number_format(2) }} / {{ entity.price|number_format(2) }}
+                {{ 'order.cash.paid_price'|trans({}, 'MBHPackageBundle') }} {{ entity.paid|number_format(2) }}
+                / {{ entity.price|number_format(2) }}
                 &nbsp;
                 {% if entity.isPaid %}
-                    <small class="text-success"><i class="fa fa-check"> </i> {{ 'order.cash.paid'|trans({}, 'MBHPackageBundle') }}</small>
+                    <small class="text-success"><i
+                                class="fa fa-check"> </i> {{ 'order.cash.paid'|trans({}, 'MBHPackageBundle') }}</small>
                 {% else %}
-                    <small class="text-danger"><i class="fa fa-times"> </i> {{ 'order.cash.not_paid'|trans({}, 'MBHPackageBundle') }}</small>
+                    <small class="text-danger"><i
+                                class="fa fa-times"> </i> {{ 'order.cash.not_paid'|trans({}, 'MBHPackageBundle') }}
+                    </small>
                 {% endif %}
             </div>
 
             {% if docs|length %}
-                <table id="cash-package-table" class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+                <table id="cash-package-table"
+                       class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
                     <thead>
                     <tr>
                         <th class="td-xs"></th>
@@ -50,69 +55,105 @@
                         {% set data = clientConfig.getFormData(cash, null, url('online_form_check_order')) %}
                         <tr class="{{ cash.isConfirmed is empty and cash.isPaid ? 'info' }} {{ cash.deletedAt ? 'danger' }} {{ cash.isPaid is empty ? 'transparent-tr' }} {% if cash.operation == 'in' and cash.deletedAt is empty and cash.method == 'electronic' and not cash.isPaid and not(data.disabled is defined and data.disabled) %} visa-tr {% endif %}">
                             <td class="text-center"><i class='{{ currency().icon }}'></i></td>
-                            <td>{{ cash.number }}</th>
+                            <td>
+                            {{ cash.number }}</th>
                             <td>{{ cash.payer }}</td>
                             <td class="text-right">
                                 {% if cash.operation not in ['fee', 'out'] %}
-                                    <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' {{ is_granted('ROLE_BOOKKEEPER') ? 'rel="main"' }} class='text-success' title='{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
+                                    <a target="_blank"
+                                       href='{{ path('cash_edit', { 'id': cash.id }) }}' {{ is_granted('ROLE_BOOKKEEPER') ? 'rel="main"' }}
+                                       class='text-success'
+                                       title='{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}'
+                                       data-toggle='tooltip'>
                                         {{ cash.total|number_format(2) }}
                                     </a>
                                 {% endif %}
                             </td>
                             <td class="text-right">
                                 {% if cash.operation in ['fee', 'out'] %}
-                                    <a target="_blank" href='{{ path('cash_edit', { 'id': cash.id }) }}' {{ is_granted('ROLE_BOOKKEEPER') ? 'rel="main"' }} class='text-danger' title='{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
+                                    <a target="_blank"
+                                       href='{{ path('cash_edit', { 'id': cash.id }) }}' {{ is_granted('ROLE_BOOKKEEPER') ? 'rel="main"' }}
+                                       class='text-danger'
+                                       title='{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}'
+                                       data-toggle='tooltip'>
                                         {{ cash.total|number_format(2) }}
                                     </a>
                                 {% endif %}
                             </td>
-                            <td>{{ operations[cash.operation] }}<br><small>{{ methods[cash.method] }}</small></td>
+                            <td>{{ operations[cash.operation] }}<br>
+                                <small>{{ methods[cash.method] }}</small>
+                            </td>
                             <td>{{ cash.documentDate|date('d.m.Y') }}</td>
-                            <td class="text-center">{% if cash.isPaid is empty %}<span class="label label-danger">{{ 'order.cash.no'|trans({}, 'MBHPackageBundle') }}</span>{% else %} {{ cash.paidDate|date('d.m.Y') }} {% endif %}</td>
+                            <td class="text-center">{% if cash.isPaid is empty %}<span
+                                        class="label label-danger">{{ 'order.cash.no'|trans({}, 'MBHPackageBundle') }}</span>{% else %} {{ cash.paidDate|date('d.m.Y') }} {% endif %}
+                            </td>
                             <td>{% if cash.deletedAt %}{{ cash.deletedAt|date('d.m.Y') }}{% endif %}</td>
                             <td class="table-actions-td text-right">
 
-                                {% if checkPackagePermissions(entity) and not cash.deletedAt %}
-                                    {% if cash.orderDocument %}
-                                        <a href="{{ path('order_document_view', {name: cash.orderDocument.name, download: 1}) }}" class="btn btn-info btn-xs" title="" data-toggle="tooltip" data-original-title="Скачать">
-                                            <i class="fa fa-download"></i>
-                                        </a>
-                                    {% endif %}
-                                    {% if not cash.isConfirmed and cash.isPaid and is_granted('ROLE_BOOKKEEPER') %}
-                                        <a data-action='cashDocumentConfirmation' data-header='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?' data-button='{{ 'order.cash.confirm'|trans({}, 'MBHPackageBundle') }}' data-button-icon='fa-check' href='{{ path('cash_confirm', { 'id': cash.id}) }}' class='btn btn-primary btn-xs delete-link' title='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>
-                                            <i class='fa fa-check'></i>
-                                        </a>
-                                    {% endif %}
-                                    {% if not cash.isPaid %}
-                                        {% if cash.operation == 'in' and cash.method == 'electronic' %}
-                                            {% if clientConfig and clientConfig.paymentSystem %}
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        <i class="fa fa-cc-visa"></i>&nbsp; <span class="caret"></span>
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-buttons">
-                                                        <li>
-                                                            {% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': data|merge({'buttonClasses': 'btn-xs', 'test': false})} %}
-                                                        </li>
-                                                        <!--{% if clientConfig.paymentSystem == 'uniteller' and entity.creditCard and entity.creditCard.cvc %}
+                                {% if is_granted('ROLE_ORDER_CASH_DOCUMENTS') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+
+                                    {% if not cash.deletedAt %}
+                                        {% if cash.orderDocument %}
+                                            <a href="{{ path('order_document_view', {name: cash.orderDocument.name, download: 1}) }}"
+                                               class="btn btn-info btn-xs" title="" data-toggle="tooltip"
+                                               data-original-title="Скачать">
+                                                <i class="fa fa-download"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if not cash.isConfirmed and cash.isPaid and is_granted('ROLE_CASH_EDIT') %}
+                                            <a data-action='cashDocumentConfirmation'
+                                               data-header='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}'
+                                               data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?'
+                                               data-button='{{ 'order.cash.confirm'|trans({}, 'MBHPackageBundle') }}'
+                                               data-button-icon='fa-check'
+                                               href='{{ path('cash_confirm', { 'id': cash.id}) }}'
+                                               class='btn btn-primary btn-xs delete-link'
+                                               title='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}'
+                                               data-toggle='tooltip'>
+                                                <i class='fa fa-check'></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if not cash.isPaid %}
+                                            {% if cash.operation == 'in' and cash.method == 'electronic' %}
+                                                {% if clientConfig and clientConfig.paymentSystem %}
+                                                    <div class="btn-group">
+                                                        <button type="button"
+                                                                class="btn btn-xs btn-info dropdown-toggle"
+                                                                data-toggle="dropdown" aria-haspopup="true"
+                                                                aria-expanded="false">
+                                                            <i class="fa fa-cc-visa"></i>&nbsp; <span
+                                                                    class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-buttons">
+                                                            <li>
+                                                                {% include 'MBHClientBundle:PaymentSystem:' ~ clientConfig.paymentSystem ~ '.html.twig' with {'data': data|merge({'buttonClasses': 'btn-xs', 'test': false})} %}
+                                                            </li>
+                                                            <!--{% if clientConfig.paymentSystem == 'uniteller' and entity.creditCard and entity.creditCard.cvc %}
                                                         <li>
                                                             <button onclick="location.href = '{{ path('cash_card_money', {'id': cash.id}) }}'" class="btn btn-warning btn-xs"><i class="{{ currency().icon }}"></i>&nbsp;списать</button>
                                                         </li>
                                                         {% endif %}-->
-                                                    </ul>
-                                                </div>
+                                                        </ul>
+                                                    </div>
+                                                {% endif %}
                                             {% endif %}
                                         {% endif %}
-                                    {% endif %}
-                                    {% if is_granted('ROLE_BOOKKEEPER') %}
-                                    <a target="_blank" href="{{ path('cash_edit', { 'id': cash.id }) }}" class="btn btn-success btn-xs" title="{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
-                                        <i class="fa fa-pencil-square-o"></i>
-                                    </a>
-                                    {% endif %}
-                                    {% if not cash.deletedAt %}
-                                    <a href="{{ path('package_order_cash_delete', { 'id': entity.id, 'cash': cash.id, 'packageId': package.id }) }}" class="btn btn-danger btn-xs delete-link " title="{{ 'order.cash.remove_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
-                                        <i class="fa fa-trash-o"></i>
-                                    </a>
+                                        {% if is_granted('ROLE_CASH_EDIT') %}
+                                            <a target="_blank" href="{{ path('cash_edit', { 'id': cash.id }) }}"
+                                               class="btn btn-success btn-xs"
+                                               title="{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}"
+                                               data-toggle="tooltip">
+                                                <i class="fa fa-pencil-square-o"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if not cash.deletedAt %}
+                                            <a href="{{ path('package_order_cash_delete', { 'id': entity.id, 'cash': cash.id, 'packageId': package.id }) }}"
+                                               class="btn btn-danger btn-xs delete-link "
+                                               title="{{ 'order.cash.remove_record'|trans({}, 'MBHPackageBundle') }}"
+                                               data-toggle="tooltip">
+                                                <i class="fa fa-trash-o"></i>
+                                            </a>
+                                        {% endif %}
                                     {% endif %}
                                 {% endif %}
                             </td>
@@ -128,15 +169,15 @@
                 </div>
             {% endif %}
 
-            {% if is_granted('ROLE_CASH_NEW') %}
+
+            {% if is_granted('ROLE_ORDER_CASH_DOCUMENTS') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                 {{ form_start(form, {'action': path('package_order_cash', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
                 {{ form_widget(form) }}
-                    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package} %}
+            {% endif %}
+            {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_ORDER_CASH_DOCUMENTS'} %}
+
+            {% if is_granted('ROLE_ORDER_CASH_DOCUMENTS') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                 {{ form_end(form) }}
-            {% else %}
-                <div class="alert alert-danger">
-                    <strong><i class="glyphicon glyphicon-lock"></i> {{ 'security.not_access_create_cash_document'|trans }}</strong>
-                </div>
             {% endif %}
 
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}

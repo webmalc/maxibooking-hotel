@@ -61,7 +61,7 @@ class UserController extends Controller
         $entity = new User();
 
         $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')]
+            $entity, []
         );
 
         return array(
@@ -81,7 +81,7 @@ class UserController extends Controller
     {
         $entity = new User(array());
         $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')]
+            $entity
         );
         $form->submit($request);
 
@@ -136,7 +136,7 @@ class UserController extends Controller
             }
         }
         $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN'), 'hotels' => $hasHotels]
+            $entity, ['hotels' => $hasHotels]
         );
 
         return array(
@@ -248,7 +248,7 @@ class UserController extends Controller
     public function updateAction(Request $request, User $entity)
     {
         $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')]
+            $entity
         );
 
         $form->submit($request);

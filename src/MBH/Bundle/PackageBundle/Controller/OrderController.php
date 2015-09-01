@@ -32,7 +32,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      *
      * @Route("/{id}/cash/{cash}/delete/{packageId}", name="package_order_cash_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ORDER_CASH_DOCUMENTS') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @param Order $entity
      * @param CashDocument $cash
      * @param Request $request
@@ -46,7 +46,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
-        if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
+        if (!$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -65,7 +65,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      *
      * @Route("/{id}/cash/{packageId}", name="package_order_cash")
      * @Method({"GET","PUT"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', entity) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
      * @param Package $package
@@ -112,7 +112,12 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity),
         ]);
 
-        if ($request->isMethod(Request::METHOD_PUT) && $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NEW')) {
+        if ($request->isMethod(Request::METHOD_PUT)  &&
+            $this->container->get('security.authorization_checker')->isGranted('ROLE_ORDER_CASH_DOCUMENTS') && (
+                $this->container->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_EDIT_ALL') ||
+                $this->container->get('security.authorization_checker')->isGranted('EDIT', $entity)
+            )
+        ) {
             $form->submit($request);
             if ($form->isValid()) {
                 $this->dm->persist($cash);
@@ -144,7 +149,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      *
      * @Route("/{id}/tourist/edit/{packageId}", name="package_order_tourist_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', entity) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
      * @param Package $package
@@ -177,7 +182,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      *
      * @Route("/{id}/organization/edit/{packageId}", name="package_order_organization_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', entity) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
      * @param Package $package
@@ -211,7 +216,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      *
      * @Route("/{id}/tourist/update/{packageId}", name="package_order_tourist_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_USER')")
+     * @@Security("is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @Template("MBHPackageBundle:Order:touristEdit.html.twig")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
@@ -223,7 +228,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
-        if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
+        if (!$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -239,7 +244,11 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             );
             $entity->setMainTourist($tourist);
 
-            if ($data['addToPackage']) {
+            if ($data['addToPackage'] &&
+                $this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_GUESTS')
+                && ($this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_EDIT_ALL') ||
+                    $this->get('security.authorization_checker')->isGranted('EDIT', $package))
+            ) {
                 $package->addTourist($tourist);
                 $this->dm->persist($package);
             }
@@ -272,7 +281,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      *
      * @Route("/{id}/organization/update/{packageId}", name="package_order_organization_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @Template("MBHPackageBundle:Order:organizationEdit.html.twig")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
@@ -283,7 +292,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     public function organizationUpdateAction(Order $entity, Package $package, Request $request)
     {
         $permissions = $this->container->get('mbh.package.permissions');
-        if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
+        if (!$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -315,7 +324,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()->set('success',
-                    $this->get('translator')->trans('controller.orderController.organization_added_success'));
+                $this->get('translator')->trans('controller.orderController.organization_added_success'));
 
             if ($request->get('save') !== null) {
                 return $this->redirectToRoute('package_order_organization_edit',
@@ -340,7 +349,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      *
      * @Route("/{id}/tourist/delete/{packageId}", name="package_order_tourist_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
      * @param Package $package
@@ -351,7 +360,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
-        if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
+        if (!$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -371,7 +380,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      *
      * @Route("/{id}/organization/delete/{packageId}", name="package_order_organization_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
      * @param Package $package
@@ -382,7 +391,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
-        if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
+        if (!$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -402,7 +411,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      *
      * @Route("/{id}/edit/{packageId}", name="package_order_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', entity) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
      * @param Package $package
@@ -433,7 +442,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      *
      * @Route("/{id}/update/{packageId}", name="package_order_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("(is_granted('ROLE_PACKAGE_EDIT_ALL') and is_granted('ROLE_ORDER_EDIT')) or (is_granted('ROLE_ORDER_EDIT') and is_granted('EDIT', entity))")
      * @Template("MBHPackageBundle:Order:edit.html.twig")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @param Order $entity
@@ -445,7 +454,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
-        if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
+        if (!$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -481,7 +490,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      *
      * @Route("/{id}/delete", name="package_order_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', entity) or is_granted('ROLE_PACKAGE_DELETE_ALL'))")
      * @param Order $entity
      * @param Request $request
      * @return Response
@@ -490,7 +499,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
-        if (!$permissions->check($entity) || !$permissions->checkHotel($entity)) {
+        if (!$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
         $this->dm->remove($entity);
