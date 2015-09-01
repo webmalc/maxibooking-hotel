@@ -28,7 +28,7 @@
     </td>
     <td>
         {{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}<br>
-        <small>{{ plural(entity.nights, "package.json.noch"|trans({}, "MBHPackageBundle"), "package.json.nochi"|trans({}, "MBHPackageBundle"), "package.json.nochei"|trans({}, "MBHPackageBundle")) }}</small>
+        <small>{{ entity.nights }} {{ 'nights'|transchoice(entity.nights) }}</small>
     </td>
     <td>
         {{ entity.roomType }}<br>
