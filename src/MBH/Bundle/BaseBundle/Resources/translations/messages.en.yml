@@ -37,17 +37,17 @@ mailer.online.backend.signature: online.backend.signature
 
 
 
-mailer.order.confirm.user.subject: order.confirm.user.subject
-mailer.order.confirm.user.prepend: order.confirm.user.prepend
-mailer.order.confirm.user.append: order.confirm.user.append
+mailer.order.confirm.user.subject: "Booking confirmation #%order% from %date%"
+mailer.order.confirm.user.prepend: Hello, %guest%!<br><br>Your booking has been successfully confirmed by Booking Department.
+mailer.order.confirm.user.append: Thank you for choosing our hotel!
 
 mailer.report.arrival.subject: The list of expected guests for the next arrival
 mailer.user.arrival.subject: We are looking forward to your arrival!
 
-mailer.report.user.poll.subject: report.user.poll.subject
-mailer.online.user.poll.prepend: online.user.poll.prepend
-mailer.online.user.poll.append: online.user.poll.append
-mailer.online.user.poll.link: online.user.poll.link
+mailer.report.user.poll.subject: Thank you for choosing our hotel!
+mailer.online.user.poll.prepend: Hello, %guest%!<br><br>We appreciate your choice and hope that stay at our hotel was comfortable for you.<br> We would like to ask you to rate the quality of hotel provided services.This will help us to develop and improve our service!
+mailer.online.user.poll.append: We will be glad to see you again!
+mailer.online.user.poll.link: Rate the quality of service
 
 
 # Mailer

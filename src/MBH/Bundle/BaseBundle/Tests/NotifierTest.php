@@ -309,7 +309,7 @@ class NotifierTest extends WebTestCase
         $messages = $this->logger->getMessages();
         $this->assertTrue(count($messages) > 0);
     }
-    */
+
 
     public function testUserArrival()
     {
@@ -329,6 +329,74 @@ class NotifierTest extends WebTestCase
                 'fromText' => $this->hotel
             ])
             ->setTemplate('MBHBaseBundle:Mailer:userArrival.html.twig')
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+1 minute'))
+            ->addRecipient($this->recipient)
+            ->setLink('hide')
+            ->setSignature('mailer.online.user.signature')
+        ;
+
+        $this->notifier->setMessage($message)->notify();
+
+        $messages = $this->logger->getMessages();
+        $this->assertTrue(count($messages) > 0);
+    }
+
+    public function testDayAfterOfCheckOut()
+    {
+        $this->recipient->setCommunicationLanguage('en');
+
+        $message = new NotifierMessage();
+        $message
+            ->setFrom('system')
+            ->setSubject('mailer.report.user.poll.subject')
+            ->setType('info')
+            ->setCategory('notification')
+            ->setOrder($this->order)
+            ->setAdditionalData([
+                'prependText' => 'mailer.online.user.poll.prepend',
+                'appendText' => 'mailer.online.user.poll.append',
+                'image' => 'stars_but.png',
+                'fromText' => $this->order->getFirstHotel()
+            ])
+            ->setHotel($this->hotel)
+            ->setTemplate('MBHBaseBundle:Mailer:base.html.twig')
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+1 minute'))
+            ->addRecipient($this->recipient)
+            ->setLink('http://fakelink.ru')
+            ->setLinkText('mailer.online.user.poll.link')
+            ->setSignature('mailer.online.user.signature')
+        ;
+
+        $this->notifier->setMessage($message)->notify();
+
+        $messages = $this->logger->getMessages();
+        $this->assertTrue(count($messages) > 0);
+    }*/
+
+    public function testBookingConfirmation()
+    {
+        $this->recipient->setCommunicationLanguage('en');
+
+        $message = new NotifierMessage();
+        $message
+            ->setFrom('online_form')
+            ->setSubject('mailer.order.confirm.user.subject')
+            ->setTranslateParams([
+                '%order%' => '123',//$this->order->getId(),
+                '%date%' => $this->order->getCreatedAt()->format('d.m.Y')
+            ])
+            ->setType('success')
+            ->setCategory('notification')
+            ->setOrder($this->order)
+            ->setAdditionalData([
+                'prependText' => 'mailer.order.confirm.user.prepend',
+                'appendText' => 'mailer.order.confirm.user.append',
+                'fromText' => $this->order->getFirstHotel()
+            ])
+            ->setHotel($this->hotel)
+            ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
             ->setAutohide(false)
             ->setEnd(new \DateTime('+1 minute'))
             ->addRecipient($this->recipient)
