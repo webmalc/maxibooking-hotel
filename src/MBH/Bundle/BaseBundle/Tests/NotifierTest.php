@@ -15,6 +15,7 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\Service;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Routing\Router;
 
 /**
  * Class NotifierTest
@@ -151,8 +152,8 @@ class NotifierTest extends WebTestCase
         $this->message->addRecipient($this->recipient);
         $this->message->setHotel($this->hotel);
         $this->message->setAdditionalData([
-            'packages' => new Package(),//$this->order->getPackages(),
-            'order' => new Order()//$this->order
+            'packages' => $this->order->getPackages(),
+            'order' => $this->order
         ]);
         $this->message->setTemplate('MBHBaseBundle:Mailer:order.html.twig');
         $this->message->setSubject('mailer.online.user.subject');
@@ -170,7 +171,7 @@ class NotifierTest extends WebTestCase
         $this->assertTrue(strpos($message->getBody(), 'Welcome to «' . $this->hotel->getInternationalTitle() . '»') !== false);
     }
 
-    /*
+
     public function testSendEn()
     {
         $this->recipient->setCommunicationLanguage('ru');
@@ -199,7 +200,7 @@ class NotifierTest extends WebTestCase
         $message = $messages[0];
         $this->assertTrue(strpos($message->getBody(), 'Убрать комнату')  !== false);
     }
-    */
+
 
     public function testOnlineBookingToTourist()
     {
@@ -214,8 +215,7 @@ class NotifierTest extends WebTestCase
             ->setOrder($this->order)
             ->setAdditionalData([
                 'prependText' => 'mailer.online.user.prepend',
-                'appendText' => 'mailer.online.user.append',
-                'fromText' => $this->hotel->getName()
+                'appendText' => 'mailer.online.user.append'
             ])
             ->setHotel($this->hotel)
             ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
@@ -233,7 +233,7 @@ class NotifierTest extends WebTestCase
     }
 
 
-    /*
+
     public function testOnlineBookingToHotel()
     {
         $params = [
@@ -262,7 +262,7 @@ class NotifierTest extends WebTestCase
         $messages = $this->logger->getMessages();
         $this->assertTrue(count($messages) > 0);
     }
-*/
+
 
     /**
      * New online booking
@@ -322,7 +322,6 @@ class NotifierTest extends WebTestCase
         $this->assertTrue(count($messages) > 0);
     }
 
-
     public function testUserArrival()
     {
         $this->recipient->setCommunicationLanguage('en');
@@ -337,8 +336,7 @@ class NotifierTest extends WebTestCase
             ->setOrder($this->order)
             ->setAdditionalData([
                 'package' => $this->package,
-                'links' => $this->container->getParameter('mailer_user_arrival_links'),
-                'fromText' => $this->hotel
+                'links' => $this->container->getParameter('mailer_user_arrival_links')
             ])
             ->setTemplate('MBHBaseBundle:Mailer:userArrival.html.twig')
             ->setAutohide(false)
@@ -358,6 +356,13 @@ class NotifierTest extends WebTestCase
     {
         $this->recipient->setCommunicationLanguage('en');
 
+        /** @var Router $router */
+        $router = $this->container->get('router');
+        $link = $router->generate('online_poll_list', [
+            'id' => '55acdb347d3d6468288b4567',//$this->order->getId(),
+            'payerId' => '55acdb347d3d6468288b4567',//$this->order->getPayer()->getId()
+        ], true);
+
         $message = new NotifierMessage();
         $message
             ->setFrom('system')
@@ -368,17 +373,16 @@ class NotifierTest extends WebTestCase
             ->setAdditionalData([
                 'prependText' => 'mailer.online.user.poll.prepend',
                 'appendText' => 'mailer.online.user.poll.append',
-                'image' => 'stars_but.png',
-                'fromText' => $this->order->getFirstHotel()
+                'image' => 'stars_but.png'
             ])
             ->setHotel($this->hotel)
-            ->setTemplate('MBHBaseBundle:Mailer:base.html.twig')
+            ->setTemplate('MBHBaseBundle:Mailer:dayAfterOfCheckOut.html.twig')
             ->setAutohide(false)
             ->setEnd(new \DateTime('+1 minute'))
             ->addRecipient($this->recipient)
-            ->setLink('http://fakelink.ru')
+            ->setLink($link)
             ->setLinkText('mailer.online.user.poll.link')
-            ->setSignature('mailer.online.user.signature')
+            //->setSignature('mailer.online.user.signature')
         ;
 
         $this->notifier->setMessage($message)->notify();
@@ -404,8 +408,7 @@ class NotifierTest extends WebTestCase
             ->setOrder($this->order)
             ->setAdditionalData([
                 'prependText' => 'mailer.order.confirm.user.prepend',
-                'appendText' => 'mailer.order.confirm.user.append',
-                'fromText' => $this->order->getFirstHotel()
+                'appendText' => 'mailer.order.confirm.user.append'
             ])
             ->setHotel($this->hotel)
             ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')

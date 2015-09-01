@@ -108,3 +108,7 @@ mailer.userArrival.numbers_servies: Rooms and facilities
 mailer.userArrival.trip_schema: Map
 mailer.userArrival.contacts: Contacts
 mailer.userArrival.bye: We will be glad to see you!
+
+mailer.base.rate.bad: Bad
+mailer.base.rate.good: Good
+mailer.base.rate.perfect: Perfect

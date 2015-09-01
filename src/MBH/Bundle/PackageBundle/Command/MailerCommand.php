@@ -159,6 +159,7 @@ class MailerCommand extends ContainerAwareCommand
                 $message
                     ->setFrom('system')
                     ->setSubject('mailer.report.user.poll.subject')
+                    ->setTemplate('MBHBaseBundle:Mailer:dayAfterOfCheckOut.html.twig')
                     ->setType('info')
                     ->setCategory('notification')
                     ->setOrder($order)

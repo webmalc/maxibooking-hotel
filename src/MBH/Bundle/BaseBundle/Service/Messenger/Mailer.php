@@ -144,7 +144,6 @@ class Mailer implements \SplObserver
 
         foreach ($recipients as $recipient) {
             //@todo move to notifier
-            $data['hotelName'] = 'MaxiBooking';
             $transParams = [
                 '%guest%' => $recipient->getName(),
                 '%hotel%' => null
@@ -170,12 +169,15 @@ class Mailer implements \SplObserver
             $data['transParams'] = array_merge($transParams, $data['transParams']);
             $body = $this->twig->render($template, $data);
 
-            $message->setSubject($translator->trans($data['subject'], $data['transParams']))
-                ->setFrom([
-                    $this->params['fromMail'] => empty($data['fromText']) ?
-                        $this->params['fromText'] :
-                        $data['fromText']
-                ])
+            $fromText = empty($data['fromText']) ?
+                (empty($data['hotelName']) ? $this->params['fromText'] : $data['hotelName']) :
+                $data['fromText'];
+
+            $data['hotelName'] = $data['hotelName'] ?: 'MaxiBooking';
+
+            $message
+                ->setSubject($translator->trans($data['subject'], $data['transParams']))
+                ->setFrom([$this->params['fromMail'] => $fromText])
                 ->setBody($body, 'text/html');
             $message->setTo([$recipient->getEmail() => $recipient->getName()]);
             $this->mailer->send($message);

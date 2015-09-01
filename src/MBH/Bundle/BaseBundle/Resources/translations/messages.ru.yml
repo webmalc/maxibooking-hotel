@@ -114,6 +114,10 @@ mailer.userArrival.trip_schema: Схема проезда
 mailer.userArrival.contacts: Контакты
 mailer.userArrival.bye: Будем рады вас видеть!
 
+mailer.base.rate.bad: Плохо
+mailer.base.rate.good: Хорошо
+mailer.base.rate.perfect: Отлично
+
 debt: Долг
 paid: Оплачено
 overpaid: Переплачено

@@ -46,6 +46,9 @@
             {% set address = address ~ ', кор. ' ~ hotel.corpus %}
         {% endif %}
 
+        {% if isSomeLanguage is not defined or not isSomeLanguage %}
+            {% set address = address|transToLat %}
+        {% endif %}
     {% else %}
         {% set address = 'mailer.base.address'|trans(transParams) %}
     {% endif %}
@@ -116,9 +119,11 @@
                     <p style="{{ pStyles }}">{{ text|trans(transParams)|default('')|raw }}</p>
 
                     {% if image is defined and image %}
-                        {% if link and link != 'hide' %}<a href="{{ link }}">{% endif %}
-                        <img data-name="image_link" src="{{ image_link|default('bundles/mbhbase/images/' ~ image) }}" border="0" alt="{{ 'mailer.base.estimate_our_service'|trans(transParams) }}" style="margin:10px 0;">
-                        {% if link and link != 'hide' %}</a>{% endif %}
+                        <div style="margin:10px 0">
+                            {% if link and link != 'hide' %}<a href="{{ link }}">{% endif %}
+                                <img data-name="image_link" src="{{ image_link|default('bundles/mbhbase/images/' ~ image) }}" border="0" alt="{{ 'mailer.base.estimate_our_service'|trans(transParams) }}">
+                            {% if link and link != 'hide' %}</a>{% endif %}
+                        </div>
                     {% endif %}
 
                 {% endblock %}
