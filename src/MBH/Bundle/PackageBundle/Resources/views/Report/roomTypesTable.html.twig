@@ -1,4 +1,4 @@
-<table class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+<table class="table table-bordered not-auto-datatable table-hover table-condensed mbh-grid">
     <thead>
     <tr>
         <th class="td-sm">#</th>
@@ -24,7 +24,31 @@
         </tr>
         {% for room in roomType.rooms %}
             {% set package = packageRepository.getPackageByAccommodation(room, date) %}
-            <tr>
+            {% set paid = '' %}
+            {% set style = '' %}
+
+            {% if package and package.order %}
+                {% if package.isCheckIn %}
+                    {% set style = 'info' %}
+                {% elseif package.order.isPaid and  package.order.price <= package.order.paid %}
+                    {% set style = 'success' %}
+                {% elseif package.order.isPaid == false and package.order.paid == 0 %}
+                    {% set style = 'warning' %}
+                {% elseif package.order.isPaid == false and  package.order.paid < package.order.price %}
+                    {% set style = 'danger' %}
+                {% endif %}
+                
+                {% if package.order.isPaid and  package.order.price <= package.order.paid %}
+                    {% set paid = 'mailer.reportArrival.paid'|trans %}
+                {% elseif package.order.isPaid == false and package.order.paid == 0 %}
+                    {% set paid = 'mailer.reportArrival.not_paid'|trans %}
+                {% elseif package.order.isPaid == false and  package.order.paid < package.order.price %}
+                    {% set paid = 'mailer.reportArrival.pure_payment'|trans %}
+                {% endif %}
+            {% endif %}
+
+
+            <tr class="{{ style }}">
                 <td class="text-center">
                     <a target="_blank" href="{{ path('room_edit', {id: room.id}) }}">{{ room.name }}</a>
                 </td>
@@ -44,7 +68,7 @@
                 <td>{{ package and package.arrivalTime ? package.arrivalTime.format('d.m.Y') : '' }}</td>
                 <td>{{ package and package.departureTime ? package.departureTime.format('d.m.Y') : '' }}</td>
                 <td>{{ package ? package.price|number_format(2) : '' }}</td>
-                <td class="text-center">{{ package ? (package.isPaid ? 'Да' : 'Нет') : '' }}</td>
+                <td class="text-center">{{ paid }}</td>
                 <td class="text-center">
                     {% if package %}<a target="_blank" href="{{ path('package_edit', {id:package.id}) }}"># {{ package.number }}</a>{% endif %}
                 </td>
