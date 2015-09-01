@@ -218,6 +218,7 @@ class Hotel extends Base
     protected $settlement;
 
     /**
+     * @var string
      * @Gedmo\Versioned
      * @ODM\String
      */
@@ -918,7 +919,7 @@ class Hotel extends Base
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getStreet()
     {
@@ -926,11 +927,13 @@ class Hotel extends Base
     }
 
     /**
-     * @param mixed $street
+     * @param string $street
+     * @return self
      */
     public function setStreet($street)
     {
         $this->street = $street;
+        return $this;
     }
 
     /**
@@ -943,10 +946,12 @@ class Hotel extends Base
 
     /**
      * @param mixed $house
+     * @return self
      */
     public function setHouse($house)
     {
         $this->house = $house;
+        return $this;
     }
 
     /**
