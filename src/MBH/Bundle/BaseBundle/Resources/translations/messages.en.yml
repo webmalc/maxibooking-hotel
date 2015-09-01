@@ -16,7 +16,7 @@ twig.extension.december: 'dec'
 mailer.to_order: Read more
 mailer.to_package: to_package
 
-mailer.base.linkText: base.linkText
+mailer.base.linkText: Go to «Maxi-Booking»
 
 
 mailer.online.user.map: online.user.map
@@ -41,7 +41,7 @@ mailer.order.confirm.user.subject: order.confirm.user.subject
 mailer.order.confirm.user.prepend: order.confirm.user.prepend
 mailer.order.confirm.user.append: order.confirm.user.append
 
-mailer.report.arrival.subject: report.arrival.subject
+mailer.report.arrival.subject: The list of expected guests for the next arrival
 mailer.user.arrival.subject: user.arrival.subject
 
 mailer.report.user.poll.subject: report.user.poll.subject
@@ -51,22 +51,22 @@ mailer.online.user.poll.link: online.user.poll.link
 
 
 # Mailer
-mailer.base.address: base.address
+mailer.base.address: Hotel management system
 mailer.base.estimate_our_service: base.estimate_our_service
 mailer.base.generated_mail: Mail is generated automatically by the hotel management system «Maxi-Booking»
 
-mailer.reportArrival.exceptedGuest: reportArrival.exceptedGuest
-mailer.reportArrival.duty: reportArrival.duty
-mailer.reportArrival.number: reportArrival.number
-mailer.reportArrival.numbers: reportArrival.numbers
-mailer.reportArrival.customer: reportArrival.customer
-mailer.reportArrival.payment: reportArrival.payment
-mailer.reportArrival.overpayment: reportArrival.overpayment
-mailer.reportArrival.paid: reportArrival.paid
-mailer.reportArrival.not_paid: reportArrival.not_paid
-mailer.reportArrival.pure_payment: reportArrival.pure_payment
-mailer.reportArrival.transfer: reportArrival.transfer
-mailer.reportArrival.guests: reportArrival.guests
+mailer.reportArrival.expectedGuest: Expected guests
+mailer.reportArrival.duty: Duty
+mailer.reportArrival.number: Room
+mailer.reportArrival.numbers: Rooms
+mailer.reportArrival.customer: Client
+mailer.reportArrival.payment: Payment
+mailer.reportArrival.overpayment: Overpayment
+mailer.reportArrival.paid: Paid
+mailer.reportArrival.not_paid: Not paid
+mailer.reportArrival.pure_payment: Partly paid
+mailer.reportArrival.transfer: Transfer to Airport
+mailer.reportArrival.guests: Guests
 
 mailer.order.duty: order.duty
 mailer.order.date: Date
@@ -91,7 +91,7 @@ mailer.order.transfer: order.transfer
 mailer.order.guests: order.guests
 mailer.order.arrival_time: Check-in time
 mailer.order.departure_time: Check-out time
-mailer.order.comments: order.comments
+mailer.order.comments: Comments
 
 mailer.closedTasks.subject: closedTasks.subject
 mailer.closedTasks.text: mailer.closedTasks.text

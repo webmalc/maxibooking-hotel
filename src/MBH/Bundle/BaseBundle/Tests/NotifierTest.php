@@ -287,6 +287,8 @@ class NotifierTest extends WebTestCase
 
     public function testGuestsListToHotel()
     {
+        $this->mailer->setLocal('en');
+
         $message = new NotifierMessage();
         $message
             ->setText('hide')

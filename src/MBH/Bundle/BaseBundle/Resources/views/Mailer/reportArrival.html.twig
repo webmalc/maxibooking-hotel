@@ -10,7 +10,7 @@
         <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #dddddd;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
             <img data-name="fa_hotel" src="{{ fa_hotel|default('bundles/mbhbase/images/fa-hotel.png') }}"
                  align="absmiddle">
-             {{ 'mailer.reportArrival.exceptedGuest'|trans }}
+             {{ 'mailer.reportArrival.expectedGuest'|trans }}
         </div>
         <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
             <thead>
@@ -123,13 +123,13 @@
                     #
                 </th>
                 <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:30%;">
-                    Дата
+                    {{ 'mailer.order.date'|trans(transParams) }}
                 </th>
                 <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:30%;">
-                    Количество
+                    {{ 'mailer.order.quantity'|trans(transParams) }}
                 </th>
                 <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:right;width:28%;">
-                    Комментарий
+                    {{ 'mailer.order.comments'|trans(transParams) }}
                 </th>
             </tr>
             </thead>

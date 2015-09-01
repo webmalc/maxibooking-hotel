@@ -60,7 +60,7 @@ mailer.base.address: Система управления отелем
 mailer.base.estimate_our_service: Оцените наш сервис
 mailer.base.generated_mail: Письмо сгенерировано автоматически системой управления отелем «МаксиБукинг»
 
-mailer.reportArrival.exceptedGuest: Ожидаемые гости
+mailer.reportArrival.expectedGuest: Ожидаемые гости
 mailer.reportArrival.duty: Долг
 mailer.reportArrival.number: Номер
 mailer.reportArrival.numbers: Номеров
