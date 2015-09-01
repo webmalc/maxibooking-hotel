@@ -283,7 +283,6 @@ class NotifierTest extends WebTestCase
         $messages = $this->logger->getMessages();
         $this->assertTrue(count($messages) > 0);
     }
-    */
 
     public function testGuestsListToHotel()
     {
@@ -303,6 +302,38 @@ class NotifierTest extends WebTestCase
             ->setTemplate('MBHBaseBundle:Mailer:reportArrival.html.twig')
             ->setAutohide(false)
             ->setEnd(new \DateTime('+1 minute'))
+        ;
+
+        $this->notifier->setMessage($message)->notify();
+
+        $messages = $this->logger->getMessages();
+        $this->assertTrue(count($messages) > 0);
+    }
+    */
+
+    public function testUserArrival()
+    {
+        $this->recipient->setCommunicationLanguage('en');
+
+        $message = new NotifierMessage();
+        $message
+            ->setFrom('report')
+            ->setSubject('mailer.user.arrival.subject')
+            ->setType('info')
+            ->setCategory('user')
+            ->setHotel($this->hotel)
+            ->setOrder($this->order)
+            ->setAdditionalData([
+                'package' => $this->package,
+                'links' => $this->container->getParameter('mailer_user_arrival_links'),
+                'fromText' => $this->hotel
+            ])
+            ->setTemplate('MBHBaseBundle:Mailer:userArrival.html.twig')
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+1 minute'))
+            ->addRecipient($this->recipient)
+            ->setLink('hide')
+            ->setSignature('mailer.online.user.signature')
         ;
 
         $this->notifier->setMessage($message)->notify();

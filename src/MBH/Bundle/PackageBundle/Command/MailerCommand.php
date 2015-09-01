@@ -117,9 +117,9 @@ class MailerCommand extends ContainerAwareCommand
                     ->setTemplate('MBHBaseBundle:Mailer:userArrival.html.twig')
                     ->setAutohide(false)
                     ->setEnd(new \DateTime('+1 minute'))
-                    ->addRecipient($payer->getEmail())
+                    ->addRecipient($payer)
                     ->setLink('hide')
-                    ->setSignature($tr->trans('mailer.online.user.signature', ['%hotel%' => $hotel]))
+                    ->setSignature('mailer.online.user.signature')
                 ;
                 $notifier
                     ->setMessage($message)

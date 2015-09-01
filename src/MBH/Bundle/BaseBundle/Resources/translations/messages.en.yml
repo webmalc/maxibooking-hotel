@@ -42,7 +42,7 @@ mailer.order.confirm.user.prepend: order.confirm.user.prepend
 mailer.order.confirm.user.append: order.confirm.user.append
 
 mailer.report.arrival.subject: The list of expected guests for the next arrival
-mailer.user.arrival.subject: user.arrival.subject
+mailer.user.arrival.subject: We are looking forward to your arrival!
 
 mailer.report.user.poll.subject: report.user.poll.subject
 mailer.online.user.poll.prepend: online.user.poll.prepend
@@ -100,11 +100,11 @@ mailer.closedTasks.number: closedTasks.number
 mailer.closedTasks.performer: closedTasks.performer
 mailer.closedTasks.closed: closedTasks.closed
 
-mailer.userArrival.greet: userArrival.greet
-mailer.userArrival.reminder: userArrival.reminder
-mailer.userArrival.reminder2: userArrival.reminder2
-mailer.userArrival.about_hotel: userArrival.about_hotel
-mailer.userArrival.numbers_servies: userArrival.numbers_servies
-mailer.userArrival.trip_schema: userArrival.trip_schema
-mailer.userArrival.contacts: userArrival.contacts
-mailer.userArrival.bye: userArrival.bye
+mailer.userArrival.greet: Hello, {name}!
+mailer.userArrival.reminder: We hasten to remind you about booking in our hotel for TOMORROW {begin} Please, contact us in case of change of arrival time or options of your stay at our hotel.
+mailer.userArrival.reminder2: Information about your room facilities, check-in terms and additional services of our hotel you can find on our website.
+mailer.userArrival.about_hotel: About hotel
+mailer.userArrival.numbers_servies: Rooms and facilities
+mailer.userArrival.trip_schema: Map
+mailer.userArrival.contacts: Contacts
+mailer.userArrival.bye: We will be glad to see you!
