@@ -148,10 +148,11 @@ class ApiController extends Controller
         //send to user
         if ($order && $order->getPayer() && $order->getPayer()->getEmail()) {
             $message
-                ->addRecipient($order->getPayer()->getEmail())
-                ->setText($tr->trans('mailer.online.payment.user', $params))
+                ->addRecipient($order->getPayer())
+                ->setText('mailer.online.payment.user')
                 ->setLink('hide')
                 ->setLinkText(null)
+                ->setTranslateParams($params)
                 ->setAdditionalData([
                     'fromText' => $order->getFirstHotel()
                 ])
