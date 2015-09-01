@@ -261,10 +261,10 @@ class TaskController extends Controller
         }
 
         if ($recipients) {
-            $translator = $this->get('translator');
             $message = new NotifierMessage();
-            $message->setSubject($translator->trans('mailer.new_task.subject'));
-            $message->setText($translator->trans('mailer.new_task.text', ['%title%' => $task->getType()->getTitle()]));
+            $message->setSubject('mailer.new_task.subject');
+            $message->setText('mailer.new_task.text');
+            $message->setTranslateParams(['%taskType%' => $task->getType()->getTitle()]);
             $message->setLink($this->generateUrl('task'));
             foreach ($recipients as $recipient) {
                 $message->addRecipient($recipient);

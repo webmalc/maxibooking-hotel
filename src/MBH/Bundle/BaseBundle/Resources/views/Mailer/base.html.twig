@@ -113,7 +113,7 @@
                     {% if prependText is defined and prependText %}
                         <p style="{{ pStyles }}">{{ prependText|trans(transParams)|raw }}</p><br>
                     {% endif %}
-                    <p style="{{ pStyles }}">{{ text|default('')|raw }}</p>
+                    <p style="{{ pStyles }}">{{ text|trans(transParams)|default('')|raw }}</p>
 
                     {% if image is defined and image %}
                         {% if link and link != 'hide' %}<a href="{{ link }}">{% endif %}
@@ -145,7 +145,7 @@
 
                     {% if signature is defined and signature %}
                     <br><br>
-                    <p style="{{ pStyles }}; text-align: left;">{{ signature|raw }}</p>
+                    <p style="{{ pStyles }}; text-align: left;">{{ signature|trans(transParams)|raw }}</p>
                     {% endif %}
                 {% endblock %}
                 </div>

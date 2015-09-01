@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Tests\Controller;
+namespace MBH\Bundle\BaseBundle\Tests\Controller;
 
 use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\BaseBundle\Service\Messenger\NotifierMessage;
@@ -12,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Class NotifierTest
- * @package MBH\Bundle\PackageBundle\Tests\Controller
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class NotifierTest extends WebTestCase
@@ -92,5 +91,22 @@ class NotifierTest extends WebTestCase
         //$crawler = static::createClient()->getCrawler();
         $this->assertTrue(strpos($message->getBody(), 'Забронированные номера')  !== false);
         $this->assertTrue(strpos($message->getBody(), 'Добро пожаловать в «' . $this->hotel->getName() . '»')  !== false);
+    }
+
+    public function testSendTask()
+    {
+        $this->recipient->setCommunicationLanguage('ru');
+        $message = new NotifierMessage();
+        $message->setSubject('mailer.new_task.subject');
+        $message->setText('mailer.new_task.text');
+        $message->setHotel($this->hotel);
+        $message->setTranslateParams(['%taskType%' => 'Убрать комнату']);
+        $message->setLink('http://tasklink.ru');
+        $this->notifier->setMessage($message)->notify();
+
+        $messages = $this->logger->getMessages();
+        $this->assertTrue(count($messages) > 0);
+        $message = $messages[0];
+        $this->assertTrue(strpos($message->getBody(), 'Убрать комнату')  !== false);
     }
 }

@@ -16,6 +16,11 @@ class NotifierMessage
     private $text;
 
     /**
+     * @var array
+     */
+    private $translateParams = [];
+
+    /**
      * @var string
      */
     private $subject;
@@ -107,6 +112,24 @@ class NotifierMessage
         $this->text = $text;
 
         return $this;
+    }
+
+    /**
+     * @param array $translateParams
+     * @return $this
+     */
+    public function setTranslateParams(array $translateParams)
+    {
+        $this->translateParams = $translateParams;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTranslateParams()
+    {
+        return $this->translateParams;
     }
 
     /**

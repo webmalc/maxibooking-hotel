@@ -153,4 +153,4 @@ technical: Техника
 
 
 mailer.new_task.subject: 'Вам назначена новая задача'
-mailer.new_task.text: 'Вам назначили задачу "%title%"'
+mailer.new_task.text: 'Вам назначили задачу "%taskType%"'

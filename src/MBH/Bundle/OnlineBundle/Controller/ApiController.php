@@ -123,13 +123,13 @@ class ApiController extends Controller
         ];
         $tr = $this->get('translator');
 
-
         $notifier = $this->get('mbh.notifier');
         $message = $notifier::createMessage();
         $message
-            ->setText($tr->trans('mailer.online.payment.backend', $params))
+            ->setText('mailer.online.payment.backend')
             ->setFrom('online')
-            ->setSubject($tr->trans('mailer.online.payment.subject', $params))
+            ->setSubject('mailer.online.payment.subject')
+            ->setTranslateParams($params)
             ->setType('success')
             ->setCategory('notification')
             ->setHotel($cashDocument->getHotel())

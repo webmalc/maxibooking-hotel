@@ -62,7 +62,8 @@ class Mailer implements \SplObserver
                 'link' => $message->getLink(),
                 'linkText' => $message->getLinkText(),
                 'order' => $message->getOrder(),
-                'signature' => $message->getSignature()
+                'signature' => $message->getSignature(),
+                'transParams' => $message->getTranslateParams()
             ], $message->getAdditionalData()), $message->getTemplate());
         }
     }
@@ -120,7 +121,6 @@ class Mailer implements \SplObserver
         (empty($data['subject'])) ? $data['subject'] = $this->params['subject'] : $data['subject'];
         $message = \Swift_Message::newInstance();
         empty($template) ? $template = $this->params['template'] : $template;
-        $data['transParams'] = [];
         $data = $this->addImages($data, $message, $template);
 
         $translator = $this->container->get('translator');
@@ -128,24 +128,25 @@ class Mailer implements \SplObserver
 
         foreach ($recipients as $recipient) {
             $data['hotelName'] = 'MaxiBooking';
-            $data['transParams'] = [
+            $transParams = [
                 '%guest%' => $recipient->getName(),
                 '%hotel%' => null
             ];
             if ($data['hotel']) {
                 $data['hotelName'] = $data['hotel']->getName();
-                $data['transParams']['%hotel%'] = $data['hotel']->getName();
+                $transParams['%hotel%'] = $data['hotel']->getName();
                 if ($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() != $defaultLocale) {
                     $translator->setLocale($recipient->getCommunicationLanguage());
                     if ($data['hotel']->getInternationalTitle()) {
                         $data['hotelName'] = $data['hotel']->getInternationalTitle();
-                        $data['transParams']['%hotel%'] = $data['hotel']->getInternationalTitle();
+                        $transParams['%hotel%'] = $data['hotel']->getInternationalTitle();
                     }
                 } else {
                     $translator->setLocale($defaultLocale);
                 }
             }
 
+            $data['transParams'] = $transParams + $data['transParams'];
             $body = $this->twig->render($template, $data);
 
             $message->setSubject($translator->trans($data['subject'], $data['transParams']))

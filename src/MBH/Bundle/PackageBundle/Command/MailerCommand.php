@@ -74,7 +74,7 @@ class MailerCommand extends ContainerAwareCommand
             $message
                 ->setText('hide')
                 ->setFrom('report')
-                ->setSubject($tr->trans('mailer.report.arrival.subject'))
+                ->setSubject('mailer.report.arrival.subject')
                 ->setType('info')
                 ->setCategory('report')
                 ->setAdditionalData([
@@ -104,7 +104,7 @@ class MailerCommand extends ContainerAwareCommand
 
                 $message
                     ->setFrom('report')
-                    ->setSubject($tr->trans('mailer.user.arrival.subject'))
+                    ->setSubject('mailer.user.arrival.subject')
                     ->setType('info')
                     ->setCategory('user')
                     ->setHotel($hotel)
