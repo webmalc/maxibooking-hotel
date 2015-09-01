@@ -122,8 +122,8 @@ class NotifierTest extends WebTestCase
         $this->message->addRecipient($this->recipient);
         $this->message->setHotel($this->hotel);
         $this->message->setAdditionalData([
-            'packages' => [new Package()],
-            'order' => new Order()
+            'packages' => new Package(),//$this->order->getPackages(),
+            'order' => new Order()//$this->order
         ]);
         $this->message->setTemplate('MBHBaseBundle:Mailer:order.html.twig');
         $this->message->setSubject('mailer.online.user.subject');
