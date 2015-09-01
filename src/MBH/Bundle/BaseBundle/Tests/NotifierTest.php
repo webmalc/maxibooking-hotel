@@ -41,6 +41,26 @@ class NotifierTest extends WebTestCase
      */
     protected $notifier;
     /**
+     * @var Service
+     */
+    protected $service;
+    /**
+     * @var PackageService
+     */
+    protected $packageService;
+    /**
+     * @var RoomType
+     */
+    protected $roomType;
+    /**
+     * @var Package
+     */
+    protected $package;
+    /**
+     * @var Order
+     */
+    protected $order;
+    /**
      * @var \Swift_Plugins_MessageLogger
      */
     protected $logger;
@@ -66,6 +86,38 @@ class NotifierTest extends WebTestCase
         $this->hotel->setTitle('Мой отель');
         $this->hotel->setInternationalTitle('My hotel');
 
+
+        $now = new \DateTime();
+        $this->service = new Service();
+        $this->service
+            ->setCreatedAt($now)
+            ->setTitle('Wi-Fi')
+        ;
+        $this->packageService = new PackageService();
+        $this->packageService
+            ->setCreatedAt($now)
+            ->setService($this->service)
+            ->setAmount(3)
+            ->setPrice(100);
+        $this->roomType = new RoomType();
+        $this->roomType
+            ->setTitle('Комфорт плюс')
+            ->setInternationalTitle('Comfort plus')
+            ->setHotel($this->hotel);
+        $this->package = new Package();
+        $this->package
+            ->setCreatedAt($now)
+            ->setBegin($now)
+            ->setEnd($now)
+            ->setRoomType($this->roomType)
+            ->addService($this->packageService)
+        ;
+        $this->order = new Order();
+        $this->order
+            ->setCreatedAt($now)
+            ->addPackage($this->package)
+        ;
+
         $this->message = new NotifierMessage();
         $this->message->addRecipient($this->recipient);
         $this->message->setHotel($this->hotel);
@@ -78,7 +130,7 @@ class NotifierTest extends WebTestCase
         $this->message->setText('mailer.online.user.text');
     }
 
-    /*
+
     public function testSend()
     {
         $this->recipient->setCommunicationLanguage('en');
@@ -87,7 +139,7 @@ class NotifierTest extends WebTestCase
         $this->assertTrue(count($messages) > 0);
         $message = $messages[0];
         //$crawler = static::createClient()->getCrawler();
-        $this->assertTrue(strpos($message->getBody(), 'Welcome to the «' . $this->hotel->getInternationalTitle() . '»') !== false);
+        $this->assertTrue(strpos($message->getBody(), 'Welcome to «' . $this->hotel->getInternationalTitle() . '»') !== false);
     }
 
     public function testSendEn()
@@ -118,41 +170,10 @@ class NotifierTest extends WebTestCase
         $message = $messages[0];
         $this->assertTrue(strpos($message->getBody(), 'Убрать комнату')  !== false);
     }
-    */
+
     public function testOnlineBookingToTourist()
     {
         $this->recipient->setCommunicationLanguage('en');
-
-        $now = new \DateTime();
-        $service = new Service();
-        $service
-            ->setCreatedAt($now)
-            ->setTitle('Wi-Fi')
-        ;
-        $packageService = new PackageService();
-        $packageService
-            ->setCreatedAt($now)
-            ->setService($service)
-            ->setAmount(3)
-            ->setPrice(100);
-        $roomType = new RoomType();
-        $roomType
-            ->setTitle('Комфорт плюс')
-            ->setInternationalTitle('Comfort plus')
-            ->setHotel($this->hotel);
-        $package = new Package();
-        $package
-            ->setCreatedAt($now)
-            ->setBegin($now)
-            ->setEnd($now)
-            ->setRoomType($roomType)
-            ->addService($packageService)
-        ;
-        $order = new Order();
-        $order
-            ->setCreatedAt($now)
-            ->addPackage($package)
-        ;
 
         $message = new NotifierMessage();
         $message
@@ -160,7 +181,7 @@ class NotifierTest extends WebTestCase
             ->setSubject('mailer.online.user.subject')
             ->setType('info')
             ->setCategory('notification')
-            ->setOrder($order)
+            ->setOrder($this->order)
             ->setAdditionalData([
                 'prependText' => 'mailer.online.user.prepend',
                 'appendText' => 'mailer.online.user.append',
@@ -181,7 +202,7 @@ class NotifierTest extends WebTestCase
         $this->assertTrue(count($messages) > 0);
     }
 
-    /*
+
     public function testOnlineBookingToHotel()
     {
         $params = [
@@ -209,5 +230,5 @@ class NotifierTest extends WebTestCase
 
         $messages = $this->logger->getMessages();
         $this->assertTrue(count($messages) > 0);
-    }*/
+    }
 }
