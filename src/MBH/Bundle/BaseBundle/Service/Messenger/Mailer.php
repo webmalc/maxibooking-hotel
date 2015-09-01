@@ -21,7 +21,7 @@ class Mailer implements \SplObserver
     private $mailer;
 
     /**
-     * @var Twig_Environment
+     * @var \Twig_Environment
      */
     private $twig;
 
@@ -35,6 +35,11 @@ class Mailer implements \SplObserver
      */
     private $dm;
 
+    /**
+     * @var string
+     */
+    private $locale;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -42,6 +47,17 @@ class Mailer implements \SplObserver
         $this->mailer = $container->get('mailer');
         $this->params = $container->getParameter('mbh.mailer');
         $this->dm = $this->container->get('doctrine_mongodb');
+        $this->locale = $this->container->getParameter('locale');
+    }
+
+    /**
+     * @param string $local
+     * @return $this
+     */
+    public function setLocal($local)
+    {
+        $this->locale = $local;
+        return $this;
     }
 
     /**
@@ -121,10 +137,10 @@ class Mailer implements \SplObserver
         (empty($data['subject'])) ? $data['subject'] = $this->params['subject'] : $data['subject'];
         $message = \Swift_Message::newInstance();
         empty($template) ? $template = $this->params['template'] : $template;
-        $data = $this->addImages($data, $message, $template);
 
+        $data['hotelName'] = 'MaxiBooking';
+        $data = $this->addImages($data, $message, $template);
         $translator = $this->container->get('translator');
-        $defaultLocale = $this->container->getParameter('locale');
 
         foreach ($recipients as $recipient) {
             //@todo move to notifier
@@ -139,7 +155,7 @@ class Mailer implements \SplObserver
                 $transParams['%hotel%'] = $data['hotel']->getName();
             }
 
-            if ($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() != $defaultLocale) {
+            if ($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() != $this->locale) {
                 $translator->setLocale($recipient->getCommunicationLanguage());
                 $data['isSomeLanguage'] = false;
                 if ($data['hotel'] && $data['hotel']->getInternationalTitle()) {
@@ -147,7 +163,7 @@ class Mailer implements \SplObserver
                     $transParams['%hotel%'] = $data['hotel']->getInternationalTitle();
                 }
             } else {
-                $translator->setLocale($defaultLocale);
+                $translator->setLocale($this->locale);
                 $data['isSomeLanguage'] = true;
             }
 
@@ -166,8 +182,7 @@ class Mailer implements \SplObserver
         }
 
         if (php_sapi_name() == 'cli') {
-            $mailer = $this->container->get('mailer');
-            $spool = $mailer->getTransport()->getSpool();
+            $spool = $this->mailer->getTransport()->getSpool();
             $transport = $this->container->get('swiftmailer.transport.real');
             $spool->flushQueue($transport);
         }

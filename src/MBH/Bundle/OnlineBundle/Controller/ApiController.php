@@ -350,9 +350,10 @@ class ApiController extends Controller
             $message = $notifier::createMessage();
             $hotel = $order->getPackages()[0]->getRoomType()->getHotel();
             $message
-                ->setText($tr->trans('mailer.online.backend.text', ['%orderID%' => $order->getId()]))
+                ->setText('mailer.online.backend.text')
+                ->setTranslateParams(['%orderID%' => $order->getId()])
                 ->setFrom('online_form')
-                ->setSubject($tr->trans('mailer.online.backend.subject'))
+                ->setSubject('mailer.online.backend.subject')
                 ->setType('info')
                 ->setCategory('notification')
                 ->setOrder($order)

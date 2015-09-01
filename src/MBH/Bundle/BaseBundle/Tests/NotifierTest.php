@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Tests\Controller;
 
+use MBH\Bundle\BaseBundle\Service\Messenger\Mailer;
 use MBH\Bundle\BaseBundle\Service\Messenger\Notifier;
 use MBH\Bundle\BaseBundle\Service\Messenger\NotifierMessage;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -41,6 +42,10 @@ class NotifierTest extends WebTestCase
      */
     protected $notifier;
     /**
+     * @var Mailer
+     */
+    protected $mailer;
+    /**
      * @var Service
      */
     protected $service;
@@ -72,7 +77,8 @@ class NotifierTest extends WebTestCase
         $this->container = $kernel->getContainer();
 
         $this->notifier = $this->container->get('mbh.notifier.mailer');
-        $this->notifier->attach($this->container->get('mbh.mailer'));
+        $this->mailer = $this->container->get('mbh.mailer');
+        $this->notifier->attach($this->mailer);
         $this->logger = $this->container->get('swiftmailer.plugin.messagelogger');
 
         $this->recipient = new Tourist();
@@ -104,19 +110,33 @@ class NotifierTest extends WebTestCase
             ->setTitle('Комфорт плюс')
             ->setInternationalTitle('Comfort plus')
             ->setHotel($this->hotel);
+
+        /*$this->package = $this->getMock(Package::class);
+        $this->package->expects($this->any())->method('getCreatedAt')->willReturn($now);
+        $this->package->expects($this->any())->method('getBegin')->willReturn($now);
+        $this->package->expects($this->any())->method('getEnd')->willReturn($now);
+        $this->package->expects($this->any())->method('getRoomType')->willReturn($this->roomType);
+        $this->package->expects($this->any())->method('getServices')->willReturn([$this->packageService]);
+        $this->package->expects($this->any())->method('getId')->willReturn('55acdb347d3d6468288b4567');*/
         $this->package = new Package();
         $this->package
-            ->setCreatedAt($now)
-            ->setBegin($now)
-            ->setEnd($now)
+            ->setCreatedAt(new \DateTime())
+            ->setBegin(new \DateTime())
+            ->setEnd(new \DateTime())
+            ->setArrivalTime(new \DateTime())
+            ->setDepartureTime(new \DateTime())
             ->setRoomType($this->roomType)
             ->addService($this->packageService)
         ;
+        $this->packageService->setPackage($this->package);
+
         $this->order = new Order();
         $this->order
             ->setCreatedAt($now)
+            ->setMainTourist($this->recipient)
             ->addPackage($this->package)
         ;
+        $this->package->setOrder($this->order);
 
         $this->message = new NotifierMessage();
         $this->message->addRecipient($this->recipient);
@@ -130,8 +150,7 @@ class NotifierTest extends WebTestCase
         $this->message->setText('mailer.online.user.text');
     }
 
-
-    public function testSend()
+    /*public function testSend()
     {
         $this->recipient->setCommunicationLanguage('en');
         $this->notifier->setMessage($this->message)->notify();
@@ -224,6 +243,64 @@ class NotifierTest extends WebTestCase
             ->setEnd(new \DateTime('+10 minute'))
             ->setLink('http://fikelink.com')
             ->setLinkText('mailer.to_order')
+        ;
+
+        $this->notifier->setMessage($message)->notify();
+
+        $messages = $this->logger->getMessages();
+        $this->assertTrue(count($messages) > 0);
+    }
+*/
+
+    /**
+     * New online booking
+     */
+    /*public function testNewBooking()
+    {
+        $this->mailer->setLocal('en');
+
+        $message = new NotifierMessage();
+        $message
+            ->setText('mailer.online.backend.text')
+            ->setTranslateParams(['%orderID%' => $this->order->getId()])
+            ->setFrom('online_form')
+            ->setSubject('mailer.online.backend.subject')
+            ->setType('info')
+            ->setCategory('notification')
+            ->setOrder($this->order)
+            ->setAdditionalData([
+                'arrivalTime' => new \DateTime(),
+                'departureTime' => new \DateTime(),
+            ])
+            ->setHotel($this->hotel)
+            ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+1 minute'))
+        ;
+
+        $this->notifier->setMessage($message)->notify();
+
+        $messages = $this->logger->getMessages();
+        $this->assertTrue(count($messages) > 0);
+    }
+    */
+
+    public function testGuestsListToHotel()
+    {
+        $message = new NotifierMessage();
+        $message
+            ->setText('hide')
+            ->setFrom('report')
+            ->setSubject('mailer.report.arrival.subject')
+            ->setType('info')
+            ->setCategory('report')
+            ->setAdditionalData([
+                'packages' => [$this->package],
+                'transfers' => $this->packageService,
+            ])
+            ->setTemplate('MBHBaseBundle:Mailer:reportArrival.html.twig')
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+1 minute'))
         ;
 
         $this->notifier->setMessage($message)->notify();

@@ -43,9 +43,8 @@
                         {{ package.numberWithPrefix }}
                     </td>
                     <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
-                        {{ package.begin|mbh_format }}-{{ package.end|mbh_format }}
-                        ({{ plural(package.nights, "package.json.noch"|trans({}, "MBHPackageBundle"), "package.json.nochi"|trans({}, "MBHPackageBundle"), "package.json.nochei"|trans({}, "MBHPackageBundle")) }}
-                        )<br>
+                        {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}
+                        ({{ package.nights }} {{ 'nights'|transchoice(package.nights) }})<br>
                         <small style="color:#888;">
                             {{ package.roomType }}, {{ package.roomType.hotel }}
                         </small>

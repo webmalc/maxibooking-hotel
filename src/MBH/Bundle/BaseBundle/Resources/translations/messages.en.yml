@@ -13,7 +13,7 @@ twig.extension.october: 'oct'
 twig.extension.november: 'nov'
 twig.extension.december: 'dec'
 
-mailer.to_order: to_order
+mailer.to_order: Read more
 mailer.to_package: to_package
 
 mailer.base.linkText: base.linkText
@@ -29,7 +29,7 @@ mailer.online.user.prepend: Hello, %guest%!<br><br>You’ve successfully booked 
 mailer.online.user.append: We hope your visit will be successful and stay in our hotel will be comfortable. <br>Thank you for choosing our hotel!
 mailer.online.user.signature: Sincerely,<br>Booking Department of «%hotel%» hotel.
 
-mailer.online.backend.subject: online.backend.subject
+mailer.online.backend.subject: New online booking is submitted
 mailer.online.backend.text: online.backend.text
 mailer.online.backend.prepend: online.backend.prepend
 mailer.online.backend.append: online.backend.append
@@ -53,7 +53,7 @@ mailer.online.user.poll.link: online.user.poll.link
 # Mailer
 mailer.base.address: base.address
 mailer.base.estimate_our_service: base.estimate_our_service
-mailer.base.generated_mail: base.generated_mail
+mailer.base.generated_mail: Mail is generated automatically by the hotel management system «Maxi-Booking»
 
 mailer.reportArrival.exceptedGuest: reportArrival.exceptedGuest
 mailer.reportArrival.duty: reportArrival.duty
@@ -89,8 +89,8 @@ mailer.order.not_paid: order.not_paid
 mailer.order.pure_payment: order.pure_payment
 mailer.order.transfer: order.transfer
 mailer.order.guests: order.guests
-mailer.order.arrival_time: order.arrival_time
-mailer.order.departure_time: order.departure_time
+mailer.order.arrival_time: Check-in time
+mailer.order.departure_time: Check-out time
 mailer.order.comments: order.comments
 
 mailer.closedTasks.subject: closedTasks.subject

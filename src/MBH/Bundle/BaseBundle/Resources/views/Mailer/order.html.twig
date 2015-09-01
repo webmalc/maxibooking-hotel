@@ -156,7 +156,7 @@
                         {{ 'mailer.order.arrival_time'|trans(transParams) }}:
                     </td>
                     <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:58%;">
-                        {{ arrivalTime }}
+                        {{ arrivalTime|date('d.m.Y') }}
                     </td>
                 </tr>
             {% endif %}
@@ -166,7 +166,7 @@
                         {{ 'mailer.order.departure_time'|trans(transParams) }}:
                     </td>
                     <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:58%;">
-                        {{ departureTime }}
+                        {{ departureTime|date('d.m.Y') }}
                     </td>
                 </tr>
             {% endif %}
@@ -195,7 +195,7 @@
 {% block link %}
 
     {% set linkPackage = false %}
-    {% for p in order.packages if p.deletedAt is empty %}
+    {% for p in order.packages if p.deletedAt is empty and p.id %}
         {% set linkPackage = p %}
     {% endfor %}
 
