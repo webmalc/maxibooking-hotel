@@ -7,6 +7,7 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Document\Order as OrderDoc;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
@@ -122,12 +123,11 @@ class Order
 
     /**
      * @param array $data
-     * @param OrderDoc $order
-     * @param bool $user
-     * @param array $cash
+     * @param OrderDoc|null $order
+     * @param null $user
+     * @param null $cash
      * @return OrderDoc
      * @throws Exception
-     * @throws \Symfony\Component\Security\AclException\InvalidDomainObjectException
      */
     public function createPackages(array $data, OrderDoc $order = null, $user = null, $cash = null)
     {
@@ -173,6 +173,12 @@ class Order
 
             if (!$this->validator->validate($order)) {
                 throw new Exception('Create order error: validation errors.');
+            }
+
+            if ($this->container->get('security.authorization_checker')->isGranted('ROLE_ORDER_AUTO_CONFIRMATION') ||
+                ($user instanceof User && in_array('ROLE_ORDER_AUTO_CONFIRMATION', $user->getRoles()))
+            ) {
+                $order->setConfirmed(true);
             }
 
             $this->dm->persist($order);
@@ -228,7 +234,6 @@ class Order
      * @param null $user
      * @return Package
      * @throws Exception
-     * @throws \Symfony\Component\Security\AclException\InvalidDomainObjectException
      */
     public function createPackage(array $data, OrderDoc $order, $user = null)
     {

@@ -338,7 +338,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     ]
                 ],
                 'status' => 'offline',
-                'confirmed' => true,
+                'confirmed' => false,
                 'tourist' => $request->get('tourist'),
             ], $order, $this->getUser());
         } catch (\Exception $e) {

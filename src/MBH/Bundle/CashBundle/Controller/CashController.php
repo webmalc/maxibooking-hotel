@@ -227,8 +227,10 @@ class CashController extends Controller
     public function editAction(CashDocument $entity, Request $request)
     {
         $this->dm->getFilterCollection()->disable('softdeleteable');
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
-            throw $this->createNotFoundException();
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())
+            || ($entity->getIsConfirmed() && !$this->get('security.authorization_checker')->isGranted('ROLE_CASH_CONFIRM'))
+        ) {
+            throw $this->createAccessDeniedException();
         }
         $this->dm->getFilterCollection()->enable('softdeleteable');
 
@@ -267,12 +269,17 @@ class CashController extends Controller
      * @Route("/{id}/delete", name="cash_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_CASH_DELETE')")
+     * @ParamConverter("entity", class="MBHCashBundle:CashDocument")
      */
-    public function deleteAction($id)
+    public function deleteAction(CashDocument $entity)
     {
+        if ($entity->getIsConfirmed() && !$this->get('security.authorization_checker')->isGranted('ROLE_CASH_CONFIRM')) {
+            throw $this->createAccessDeniedException();
+        }
+
         $this->dm->getFilterCollection()->disable('softdeleteable');
 
-        return $this->deleteEntity($id, 'MBHCashBundle:CashDocument', 'cash');
+        return $this->deleteEntity($entity->getId(), 'MBHCashBundle:CashDocument', 'cash');
     }
 
     /**
@@ -280,7 +287,7 @@ class CashController extends Controller
      *
      * @Route("/{id}/confirm", name="cash_confirm", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_CASH_VIEW')")
+     * @Security("is_granted('ROLE_CASH_CONFIRM')")
      */
     public function confirmAction($id)
     {
@@ -310,7 +317,7 @@ class CashController extends Controller
      *
      * @Route("/{id}/card/money", name="cash_card_money")
      * @Method("GET")
-     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_CASH_VIEW'])")
+     * @Security("is_granted('ROLE_CASH_EDIT')")
      * @ParamConverter("entity", class="MBHCashBundle:CashDocument")
      */
     public function getMoneyFromCardAction(CashDocument $entity)
@@ -333,8 +340,6 @@ class CashController extends Controller
                 ->addPostFields($uniteller->getCheckPaymentData($entity))
                 ->send();
 
-            dump((string) $request);
-
         } catch (Exception $e) {
             throw $this->createNotFoundException();
         }
@@ -346,7 +351,7 @@ class CashController extends Controller
      *
      * @Route("/{id}/pay", name="cash_pay", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_CASH_VIEW'])")
+     * @Security("is_granted('ROLE_CASH_EDIT')")
      */
     public function payAction($id, Request $request)
     {

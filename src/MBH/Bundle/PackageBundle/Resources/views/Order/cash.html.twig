@@ -39,7 +39,7 @@
                     <thead>
                     <tr>
                         <th class="td-xs"></th>
-                        <th class="td-xs"></th>
+                        <th class="td-sm"></th>
                         <th class="td-md">{{ 'order.cash.payer'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-md text-center">{{ 'order.cash.income'|trans({}, 'MBHPackageBundle') }}</th>
                         <th class="td-md text-center">{{ 'order.cash.outcome'|trans({}, 'MBHPackageBundle') }}</th>
@@ -100,7 +100,10 @@
                                                 <i class="fa fa-download"></i>
                                             </a>
                                         {% endif %}
-                                        {% if not cash.isConfirmed and cash.isPaid and is_granted('ROLE_CASH_EDIT') %}
+
+
+                                        <!-- Confirmation: begin -->
+                                        {% if not cash.isConfirmed and cash.isPaid and is_granted('ROLE_CASH_CONFIRM') %}
                                             <a data-action='cashDocumentConfirmation'
                                                data-header='{{ 'order.cash.confirm_payment'|trans({}, 'MBHPackageBundle') }}'
                                                data-text='{{ 'order.cash.are_you_sure_to_confirm_payment'|trans({}, 'MBHPackageBundle') }} <b>{{ cash.total|number_format }} RUR</b>?'
@@ -113,7 +116,10 @@
                                                 <i class='fa fa-check'></i>
                                             </a>
                                         {% endif %}
-                                        {% if not cash.isPaid %}
+                                        <!-- Confirmation: end -->
+
+
+                                        {% if not cash.isPaid and is_granted('ROLE_CASH_EDIT') %}
                                             {% if cash.operation == 'in' and cash.method == 'electronic' %}
                                                 {% if clientConfig and clientConfig.paymentSystem %}
                                                     <div class="btn-group">
@@ -138,7 +144,9 @@
                                                 {% endif %}
                                             {% endif %}
                                         {% endif %}
-                                        {% if is_granted('ROLE_CASH_EDIT') %}
+
+                                        <!-- Editing: begin -->
+                                        {% if is_granted('ROLE_CASH_EDIT') and (is_granted('ROLE_CASH_CONFIRM') or cash.isConfirmed is empty) %}
                                             <a target="_blank" href="{{ path('cash_edit', { 'id': cash.id }) }}"
                                                class="btn btn-success btn-xs"
                                                title="{{ 'order.cash.edit_record'|trans({}, 'MBHPackageBundle') }}"
@@ -146,7 +154,10 @@
                                                 <i class="fa fa-pencil-square-o"></i>
                                             </a>
                                         {% endif %}
-                                        {% if not cash.deletedAt %}
+                                        <!-- Editing: end -->
+
+                                        <!-- Deleting: begin -->
+                                        {% if not cash.deletedAt and is_granted('ROLE_CASH_DELETE') and (is_granted('ROLE_CASH_CONFIRM') or not cash.isConfirmed) %}
                                             <a href="{{ path('package_order_cash_delete', { 'id': entity.id, 'cash': cash.id, 'packageId': package.id }) }}"
                                                class="btn btn-danger btn-xs delete-link "
                                                title="{{ 'order.cash.remove_record'|trans({}, 'MBHPackageBundle') }}"
@@ -154,6 +165,9 @@
                                                 <i class="fa fa-trash-o"></i>
                                             </a>
                                         {% endif %}
+                                        <!-- Deleting: end -->
+
+
                                     {% endif %}
                                 {% endif %}
                             </td>

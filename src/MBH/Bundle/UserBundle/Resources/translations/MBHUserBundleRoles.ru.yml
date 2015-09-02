@@ -48,6 +48,7 @@ ROLE_CASH_VIEW: Просмотр кассы
 ROLE_CASH_NEW: Создание кассового документа
 ROLE_CASH_EDIT: Редактирование кассового документа
 ROLE_CASH_DELETE: Удаление кассового документа
+ROLE_CASH_CONFIRM: Подтверждение кассового документа
 
 ROLE_CLIENT_CONFIG: Параметры
 ROLE_CLIENT_CONFIG_VIEW: Просмотр параметров
@@ -159,6 +160,7 @@ ROLE_PACKAGE_VIEW_ALL: Просмотр любой брони
 ROLE_PACKAGE_EDIT_ALL: Редактирование любой брони
 ROLE_PACKAGE_DELETE_ALL: Удаление любой брони
 ROLE_PACKAGE_DOCS: Документы заказа
+ROLE_ORDER_AUTO_CONFIRMATION: Автоподтверждение заказа
 
 ROLE_TOURIST: Клиенты
 ROLE_PORTER_REPORT: Отчет портье
