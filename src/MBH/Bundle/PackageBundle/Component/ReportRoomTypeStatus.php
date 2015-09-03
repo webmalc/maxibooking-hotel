@@ -19,7 +19,7 @@ class ReportRoomTypeStatus
 
     public function getStatusByPackage(Package $package)
     {
-        if(!$package->getOrder() or !$package->getIsCheckIn()) {
+        if (!$package->getOrder() or !$package->getIsCheckIn()) {
             return self::OPEN;
         }
 
@@ -28,11 +28,11 @@ class ReportRoomTypeStatus
             return self::NOT_OUT;
         }
         if ($package->getIsPaid()) {
-                return $now->format('d.m.Y') == $package->getEnd()->format('d.m.Y') ?
-                    self::OUT_NOW :
-                    self::PAID;
+            return $now->format('d.m.Y') == $package->getEnd()->format('d.m.Y') ?
+                self::OUT_NOW :
+                self::PAID;
         } else {
-            return  self::DEPT;
+            return self::DEPT;
         }
     }
 
