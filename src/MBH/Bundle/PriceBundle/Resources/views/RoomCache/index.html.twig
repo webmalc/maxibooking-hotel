@@ -37,6 +37,7 @@
     <form class="form-inline" action="{{ path('room_cache_overview_save') }}" method="POST" name="room-cache-overview-form" id="room-cache-overview-form">
         <div id="room-cache-overview-table-wrapper" class="scrolling"></div>
 
+        {% if is_granted('ROLE_ROOM_CACHE_EDIT') %}
         <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
             <div class="container-fluid">
                 <ul class="nav navbar-nav">
@@ -46,6 +47,7 @@
                 </ul>
             </div>
         </div>
+        {% endif %}
     </form>
 
 {% endblock %} 

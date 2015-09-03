@@ -38,7 +38,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
      * @return Response
      * @Route("/table", name="room_overview_table", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_HOTEL')")
+     * @Security("is_granted('ROLE_OVERVIEW')")
      * @Template()
      */
     public function tableAction(Request $request)

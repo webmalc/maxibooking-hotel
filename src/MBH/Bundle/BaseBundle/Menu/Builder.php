@@ -87,9 +87,9 @@ class Builder extends ContainerAware
         $menu->addChild('reports', ['route' => '_welcome', 'label' => 'Отчеты'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bar-chart']);
         
-        $menu['reports']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Размещение'])
+        $menu['reports']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
             ->setAttributes(['icon' => 'fa fa-table']);
-        $menu['reports']->addChild('report_porter', ['route' => 'report_porter', 'label' => 'Портье'])
+        $menu['reports']->addChild('report_porter', ['route' => 'report_porter', 'label' => 'Заезд/Выезд'])
             ->setAttributes(['icon' => 'fa fa-bell']);
         $menu['reports']->addChild('service_list', ['route' => 'service_list', 'label' => 'Услуги'])
             ->setAttributes(['icon' => 'fa fa-plug']);

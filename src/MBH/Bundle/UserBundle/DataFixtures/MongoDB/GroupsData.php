@@ -4,15 +4,116 @@ namespace MBH\Bundle\UserBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\UserBundle\Document\Group;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class GroupsData implements FixtureInterface
+class GroupsData implements FixtureInterface, ContainerAwareInterface
 {
+    const GROUPS = [
+        'admin' => [
+            'title' => 'Администратор системы',
+            'roles' => ['ROLE_ADMIN']
+        ],
+        'analytics' => [
+            'title' => 'Аналитик',
+            'roles' => [
+                'ROLE_TARIFF_VIEW', 'ROLE_SERVICE_VIEW', 'ROLE_ROOM_CACHE_VIEW', 'ROLE_RESTRICTION_VIEW',
+                'ROLE_PRICE_CACHE_VIEW', 'ROLE_TASK_TYPE_CATEGORY_VIEW',
+                'ROLE_TASK_VIEW', 'ROLE_TASK_OWN_VIEW', 'ROLE_SOURCE_VIEW', 'ROLE_ORGANIZATION_VIEW',
+                'ROLE_TOURIST_VIEW', 'ROLE_PACKAGE_VIEW', 'ROLE_LOGS',
+                'ROLE_HOTEL_VIEW', 'ROLE_CITY_VIEW', 'ROLE_CASH_VIEW',
+                'ROLE_DOCUMENT_TEMPLATE_VIEW', 'ROLE_ROOM_TYPE_VIEW', 'ROLE_ROOM_VIEW',
+                'ROLE_ANALYTICS', 'ROLE_PORTER_REPORT', 'ROLE_ACCOMMODATION_REPORT', 'ROLE_SERVICES_REPORT', 'ROLE_MANAGERS_REPORT',
+                'ROLE_POLLS_REPORT', 'ROLE_ROOMS_REPORT', 'ROLE_ORGANIZATION_VIEW', 'ROLE_ORGANIZATION_VIEW'
+            ]
+        ],
+        'bookkeeper' => [
+            'title' => 'Бухгалтер',
+            'roles' => [
+                'ROLE_CASH', 'ROLE_PACKAGE_VIEW', 'ROLE_PACKAGE_VIEW_ALL',
+                'ROLE_ORDER_CASH_DOCUMENTS', 'ROLE_PACKAGE_EDIT_ALL'
+            ]
+        ],
+        'junior_manager' => [
+            'title' => 'Младший менеджер',
+            'roles' => [
+                'ROLE_TOURIST', 'ROLE_ORGANIZATION', 'ROLE_CITY',
+                'ROLE_SEARCH', 'ROLE_PACKAGE_VIEW', 'ROLE_PACKAGE_VIEW_ALL', 'ROLE_PACKAGE_NEW',
+                'ROLE_ORDER_EDIT', 'ROLE_PACKAGE_EDIT', 'ROLE_ORDER_PAYER', 'ROLE_PACKAGE_GUESTS',
+                'ROLE_PACKAGE_SERVICES', 'ROLE_PACKAGE_ACCOMMODATION', 'ROLE_ORDER_DOCUMENTS',
+                'ROLE_ORDER_CASH_DOCUMENTS', 'ROLE_PACKAGE_DOCS', 'ROLE_ORDER_AUTO_CONFIRMATION',
+                'ROLE_PRICE_CACHE_VIEW', 'ROLE_RESTRICTION_VIEW', 'ROLE_ROOM_CACHE_VIEW', 'ROLE_SERVICE_VIEW'
+                
+            ]
+        ],
+        'medium_manager' => [
+            'title' => 'Менеджер',
+            'roles' => [
+                'ROLE_TOURIST', 'ROLE_ORGANIZATION', 'ROLE_CITY', 'ROLE_PACKAGE_DELETE',
+                'ROLE_SEARCH', 'ROLE_PACKAGE_VIEW', 'ROLE_PACKAGE_VIEW_ALL', 'ROLE_PACKAGE_NEW',
+                'ROLE_ORDER_EDIT', 'ROLE_PACKAGE_EDIT', 'ROLE_ORDER_PAYER', 'ROLE_PACKAGE_GUESTS',
+                'ROLE_PACKAGE_SERVICES', 'ROLE_PACKAGE_ACCOMMODATION', 'ROLE_ORDER_DOCUMENTS',
+                'ROLE_ORDER_CASH_DOCUMENTS', 'ROLE_PACKAGE_DOCS', 'ROLE_ORDER_AUTO_CONFIRMATION',
+                'ROLE_PRICE_CACHE_VIEW', 'ROLE_RESTRICTION_VIEW', 'ROLE_ROOM_CACHE_VIEW', 'ROLE_SERVICE_VIEW'
+
+            ]
+        ],
+        'senior_manager' => [
+            'title' => 'Старший менеджер',
+            'roles' => [
+                'ROLE_TOURIST', 'ROLE_ORGANIZATION', 'ROLE_CITY', 'ROLE_PACKAGE_DELETE_ALL',
+                'ROLE_SEARCH', 'ROLE_PACKAGE_VIEW', 'ROLE_PACKAGE_VIEW_ALL', 'ROLE_PACKAGE_NEW',
+                'ROLE_ORDER_EDIT', 'ROLE_PACKAGE_EDIT', 'ROLE_ORDER_PAYER', 'ROLE_PACKAGE_GUESTS',
+                'ROLE_PACKAGE_SERVICES', 'ROLE_PACKAGE_ACCOMMODATION', 'ROLE_ORDER_DOCUMENTS',
+                'ROLE_ORDER_CASH_DOCUMENTS', 'ROLE_PACKAGE_DOCS', 'ROLE_ORDER_AUTO_CONFIRMATION',
+                'ROLE_CASH_VIEW', 'ROLE_CASH_NEW', 'ROLE_CASH_EDIT', 'ROLE_CASH_DELETE',
+                'ROLE_SERVICE', 'ROLE_SERVICE_CATEGORY', 'ROLE_PRICE_CACHE', 'ROLE_RESTRICTION',
+                'ROLE_ROOM_CACHE', 'ROLE_PACKAGE_EDIT_ALL', 'ROLE_SERVICES_REPORT'
+            ]
+        ],
+        'porter' => [
+            'title' => 'Портье',
+            'roles' => [
+                'ROLE_TOURIST', 'ROLE_ORGANIZATION', 'ROLE_CITY', 'ROLE_PACKAGE_DELETE_ALL',
+                'ROLE_SEARCH', 'ROLE_PACKAGE_VIEW', 'ROLE_PACKAGE_VIEW_ALL', 'ROLE_PACKAGE_NEW',
+                'ROLE_ORDER_EDIT', 'ROLE_PACKAGE_EDIT', 'ROLE_ORDER_PAYER', 'ROLE_PACKAGE_GUESTS',
+                'ROLE_PACKAGE_SERVICES', 'ROLE_PACKAGE_ACCOMMODATION', 'ROLE_ORDER_DOCUMENTS',
+                'ROLE_ORDER_CASH_DOCUMENTS', 'ROLE_PACKAGE_DOCS', 'ROLE_ORDER_AUTO_CONFIRMATION',
+                'ROLE_PRICE_CACHE_VIEW', 'ROLE_RESTRICTION_VIEW', 'ROLE_ROOM_CACHE_VIEW', 'ROLE_SERVICE_VIEW',
+                'ROLE_CASH_VIEW', 'ROLE_CASH_NEW', 'ROLE_CASH_EDIT', 'ROLE_CASH_DELETE',
+                'ROLE_SERVICE_VIEW', 'ROLE_PACKAGE_EDIT_ALL', 'ROLE_SERVICES_REPORT',
+                'ROLE_PORTER_REPORT', 'ROLE_ACCOMMODATION_REPORT', 'ROLE_ROOMS_REPORT',
+            ]
+        ],
+
+    ];
+
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
     /**
      * {@inheritDoc}
      */
     public function load(ObjectManager $manager)
     {
-        $manager->persist(new Group('Тестовая группа 1', ['ROLE_ADMIN']));
+        $docs = $manager->getRepository('MBHUserBundle:Group')->findBy(['code' => ['$ne' => null]]);
+        $codes = $this->container->get('mbh.helper')->toIds($docs, 'getCode');
+
+        foreach(self::GROUPS as $code => $info) {
+            if (!in_array($code, $codes)) {
+                $manager->persist(new Group($info['title'], $code, $info['roles']));
+            }
+        }
         $manager->flush();
     }
 }

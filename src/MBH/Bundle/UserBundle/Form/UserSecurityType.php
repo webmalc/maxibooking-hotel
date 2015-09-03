@@ -11,6 +11,12 @@ class UserSecurityType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('enabled', 'checkbox', [
+                'group' => 'form.userType.settings',
+                'label' => 'form.userType.is_included',
+                'value' => true,
+                'required' => false,
+            ])
             ->add('groups', 'document', [
                 'class' => 'MBHUserBundle:Group',
                 'group' => 'form.groupType.group.roles',
@@ -25,12 +31,6 @@ class UserSecurityType extends AbstractType
                 'required' => false,
                 'translation_domain' => 'MBHUserBundleRoles',
                 'attr' => array('class' => "roles")
-            ])
-            ->add('enabled', 'checkbox', [
-                'group' => 'form.userType.settings',
-                'label' => 'form.userType.is_included',
-                'value' => true,
-                'required' => false,
             ])
         ;
     }

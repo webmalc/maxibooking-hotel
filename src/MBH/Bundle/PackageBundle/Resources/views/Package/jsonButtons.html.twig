@@ -9,7 +9,7 @@
 
         {% if is_granted('ROLE_PACKAGE_VIEW') and (is_granted('VIEW', entity) or is_granted('ROLE_PACKAGE_VIEW_ALL')) %}
             <a href='{{ path('package_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='{{ "package.jsonButtons.edit_record"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>
-                <i class='fa {{ is_granted('ROLE_PACKAGE_EDIT') and is_granted('EDIT', entity) ? 'fa-pencil-square-o' : 'fa-eye'}}'></i>
+                <i class='fa {{ is_granted('ROLE_PACKAGE_EDIT') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) ? 'fa-pencil-square-o' : 'fa-eye'}}'></i>
             </a>
         {% endif %}
 
