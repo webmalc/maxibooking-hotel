@@ -32,17 +32,12 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
      */
     public function indexAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $form = $this->createForm(
-            new SearchType(), [], [
-                'security' => $this->container->get('mbh.hotel.selector'),
-                'dm' => $dm,
-                'hotel' => $this->hotel,
-                'orderId' => $request->get('order')
-            ]
-        );
+        $form = $this->createForm(new SearchType(), [], [
+            'security' => $this->container->get('mbh.hotel.selector'),
+            'dm' => $this->dm,
+            'hotel' => $this->hotel,
+            'orderId' => $request->get('order')
+        ]);
 
         $tourist = new Tourist();
         $tourist->setDocumentRelation(new DocumentRelation());
@@ -52,8 +47,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
 
         return [
             'form' => $form->createView(),
-            'touristForm' => $this->createForm(
-                new TouristType(), null,
+            'touristForm' => $this->createForm(new TouristType(), null,
                 ['genders' => $this->container->getParameter('mbh.gender.types')])
                 ->createView(),
             'documentForm' => $this->createForm('mbh_document_relation', $tourist)
@@ -73,21 +67,17 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
      */
     public function resultsAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $results = $tariffResults = $selectedTariff = false;
 
-        $form = $this->createForm(
-            new SearchType(), [], [
-                'security' => $this->container->get('mbh.hotel.selector'),
-                'dm' => $dm,
-                'hotel' => $this->get('mbh.hotel.selector')->getSelected()
-            ]
-        );
+        $form = $this->createForm(new SearchType(), [], [
+            'security' => $this->container->get('mbh.hotel.selector'),
+            'dm' => $this->dm,
+            'hotel' => $this->get('mbh.hotel.selector')->getSelected()
+        ]);
 
         // Validate form
         if ($request->get('s')) {
-            $form->bind($request);
+            $form->submit($request);
 
             if ($form->isValid()) {
                 $data = $form->getData();
@@ -103,7 +93,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
 
                 foreach ($data['roomType'] as $id) {
                     if (mb_stripos($id, 'allrooms_') !== false) {
-                        $hotel = $dm->getRepository('MBHHotelBundle:Hotel')->find(str_replace('allrooms_', '', $id));
+                        $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find(str_replace('allrooms_', '', $id));
 
                         if (!$hotel) {
                             continue;

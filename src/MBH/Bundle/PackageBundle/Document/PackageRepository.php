@@ -60,17 +60,14 @@ class PackageRepository extends DocumentRepository
      */
     public function getPackageByAccommodation(Room $room, \DateTime $date)
     {
-        $arrivalTimeLte = clone($date);
-        $departureTimeGte = clone($date);
+        $data = clone($date);
+        $data->modify('+ 1 day');
 
         $queryBuilder = $this->createQueryBuilder();
         $queryBuilder
             ->field('accommodation.id')->equals($room->getId())
-            ->field('arrivalTime')->lte($arrivalTimeLte->modify('+ 1 day'))
-            ->addOr($queryBuilder->expr()->field('isCheckOut')->equals(false))
-            ->addOr($queryBuilder->expr()
-                ->field('departureTime')->gte($departureTimeGte)
-            )
+            ->field('arrivalTime')->lte($data)
+            ->field('isCheckOut')->equals(false)
             ->sort('arrivalTime', -1)
             ->limit(1)
         ;
