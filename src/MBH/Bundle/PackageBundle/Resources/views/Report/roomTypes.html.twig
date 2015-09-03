@@ -29,7 +29,7 @@
             </div>
             <div class="form-group">
                 <label><i class="fa fa-building" title='Этаж' data-toggle='tooltip'></i></label>
-                <select name="floor" data-placeholder="Этаж" id="accommodation-report-filter-floor" class="form-control input-sm">
+                <select name="floor" data-placeholder="Этаж" id="accommodation-report-filter-floor" class="form-control input-sm" style="width: 75px">
                     <option></option>
                     {% for floor in floors %}
                         <option value="{{ floor }}" {% if floor in app.request.get('floor') and floor|length != app.request.get('floor')|length %}selected{% endif %}>{{ floor }}</option>

@@ -7,26 +7,35 @@
 <table class="table table-bordered not-auto-datatable table-hover table-condensed mbh-grid">
     <thead>
     <tr>
-        <th class="td-sm">#</th>
-        <th>Корпус</th>
+        <th class="td-md">#</th>
+        <th class="td-md">Корпус</th>
         <th class="td-xs">Этаж</th>
         <th class="td-xs text-center">
             <i class="fa fa-bed"></i>
         </th>
-        <th>Плательщик</th>
+        <th>Гости</th>
+        <th class="td-md">Даты</th>
+        <th class="td-md">Оплата</th>
         <th class="td-xs text-center">
             <i class="fa fa-tasks" title="Статус комнаты" data-toggle="tooltip"></i>
         </th>
-        <th>
+        <th class="td-xs">
             Статус
         </th>
     </tr>
     </thead>
     <tbody>
+    {% if dataTable is empty %}
+        <tr class="danger text-cente">
+            <td colspan="9">
+                Ничего не найдено
+            </td>
+        </tr>
+    {% endif %}
     {% for data in dataTable %}
         {% set roomType = data.roomType %}
         <tr class="info">
-            <td colspan="7">
+            <td colspan="9">
                 <strong>{{ roomType.title }}</strong>&nbsp;
                 <small>места: {{ roomType.places }} + доп. места: {{ roomType.additionalPlaces }}</small>&nbsp;
                 <small>
@@ -41,14 +50,14 @@
             {% set style = '' %}
 
             {% if package and package.order %}
-                {% if package.isCheckIn %}
+                {% if not package.isCheckIn %}
                     {% set style = 'info' %}
                 {% elseif package.order.isPaid and  package.order.price <= package.order.paid %}
                     {% set style = 'success' %}
                 {% elseif package.order.isPaid == false and package.order.paid == 0 %}
-                    {% set style = 'warning' %}
-                {% elseif package.order.isPaid == false and  package.order.paid < package.order.price %}
                     {% set style = 'danger' %}
+                {% elseif package.order.isPaid == false and  package.order.paid < package.order.price %}
+                    {% set style = 'warning' %}
                 {% endif %}
             {% endif %}
 
@@ -75,8 +84,61 @@
                     </span>
                 </td>
                 <td>
-                    <div>{{ package and package.mainTourist ? package.mainTourist|initial : '' }}</div>
-                    <small>{{ package and package.mainTourist ? package.mainTourist.citizenship  : '' }}</small>
+                    {% if package %}
+                        <a data-toggle='tooltip'
+                           href='{{ path('package_order_tourist_edit', {'id': package.order.id, 'packageId': package.id}) }}'
+                           title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}'
+                           class='{{ package.order.mainTourist ? '' : 'no-payer' }}'>
+                            {% if package.order.mainTourist %}
+                                {{ package.order.mainTourist.lastNameWithInitials }}
+                            {% else %}
+                                &lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;
+                            {% endif %}
+                        </a>
+                        <small>
+                            <br>
+                            {% if package.mainTourist and package.mainTourist.citizenship %}
+                                {{ package.mainTourist.citizenship }} /
+                            {% endif %}
+                            {% if package.adults > 0 %}
+                                {{ package.adults }} вз.
+                            {% endif %}
+                            {% if package.adults > 0 and package.children > 0 %}
+                                +
+                            {% endif %}
+                            {% if package.children > 0 %}
+                                {{ package.children }} рб.
+                            {% endif %}
+                        </small>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if package %}
+                        {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}<br>
+                        <small>{{ package.nights }} {{ 'nights'|transchoice(package.nights) }}</small>
+                    {% endif %}
+                </td>
+                <td class="text-right">
+                    {% if package %}
+                        <a data-toggle='tooltip' title='{{ "package.json.go_to_calculations"|trans({}, "MBHPackageBundle") }}'
+                           href='{{ path('package_order_cash', {'id': package.order.id, 'packageId': package.id}) }}' class='text {% if package.order.isPaid %}text-success'
+                           {% elseif package.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}
+                        >
+                            {% if package.paidStatus == 'success' %}
+                                {% if package.order.paid > package.order.price %}
+                                    {{ 'overpaid'|trans }}
+                                {% else %}
+                                    {{ 'paid'|trans }}
+                                {% endif %}
+                            {% elseif package.paidStatus == 'warning' or package.paidStatus == 'danger' %}
+                                {{ 'debt'|trans }}
+                            {% endif %}
+                        </a>
+                        <br>
+                        <small>
+                            {{ (package.debt * -1)|number_format(2) }}
+                        </small>
+                    {% endif %}
                 </td>
                 <td class="text-center">
                     {% if room.status %}
@@ -91,9 +153,9 @@
                         {% if package.order.isPaid and  package.order.price <= package.order.paid %}
                             {% set style = 'success' %}
                         {% elseif package.order.isPaid == false and package.order.paid == 0 %}
-                            {% set style = 'warning' %}
-                        {% elseif package.order.isPaid == false and  package.order.paid < package.order.price %}
                             {% set style = 'danger' %}
+                        {% elseif package.order.isPaid == false and  package.order.paid < package.order.price %}
+                            {% set style = 'warning' %}
                         {% endif %}
 
                         {% set status = statusesResolver.getStatusByPackage(package) %}
