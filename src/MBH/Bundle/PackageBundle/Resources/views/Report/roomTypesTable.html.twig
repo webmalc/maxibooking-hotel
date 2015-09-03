@@ -1,26 +1,37 @@
+{% set roomStatusIcons = {
+    'repair' : 'tools',
+    'cleaning' : 'clean',
+    'reserve' : 'lock',
+    'other' : 'clock',
+} %}
 <table class="table table-bordered not-auto-datatable table-hover table-condensed mbh-grid">
     <thead>
     <tr>
         <th class="td-sm">#</th>
         <th>Корпус</th>
         <th class="td-xs">Этаж</th>
-        <th class="td-xs">
+        <th class="td-xs text-center">
             <i class="fa fa-bed"></i>
         </th>
         <th>Плательщик</th>
-        <th>Статус</th>
+        <th class="td-xs text-center">
+            <i class="fa fa-tasks" title="Статус комнаты" data-toggle="tooltip"></i>
+        </th>
+        <th>
+            Статус
+        </th>
     </tr>
     </thead>
     <tbody>
     {% for data in dataTable %}
         {% set roomType = data.roomType %}
         <tr class="info">
-            <td colspan="6">
+            <td colspan="7">
                 <strong>{{ roomType.title }}</strong>&nbsp;
                 <small>места: {{ roomType.places }} + доп. места: {{ roomType.additionalPlaces }}</small>&nbsp;
                 <small>
                     {% for facility in roomType.facilities %}
-                        <i style="margin-left: 3px" data-toggle="tooltip" data-original-title="{{ facilities[facility] }}" class="fa fa-lg mbf-{{ facility }}"></i>
+                        <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility] }}" class="fa fa-lg mbf-{{ facility }}"></i>
                     {% endfor %}
                 </small>
             </td>
@@ -44,12 +55,11 @@
             <tr class="{{ style }}">
                 <td class="text-center">
                     <a target="_blank" href="{{ path('room_edit', {id: room.id}) }}">{{ room.name }}</a>
-                    {{ room.status ? room.status.code : '' }}
                 </td>
                 <td>
                     {{ room.housing }}
                 </td>
-                <td>
+                <td class="text-center">
                     {{ room.floor }}
                 </td>
                 <td>
@@ -60,13 +70,18 @@
                            data-container="body"
                            data-toggle="popover"
                            data-placement="top"
-                           data-content="{% for facility in (room.facilities is not empty ? room.facilities : room.allFacilities) %}<i style='margin-left: 3px' data-toggle='tooltip' data-original-title='{{ facilities[facility] }}' class='fa fa-lg mbf-{{ facility }}'></i>{% endfor %}"
+                           data-content="{% for facility in (room.facilities is not empty ? room.facilities : room.allFacilities) %}<i style='margin-left: 3px' data-toggle='tooltip' data-title='{{ facilities[facility] }}' class='fa fa-lg mbf-{{ facility }}'></i>{% endfor %}"
                         ></i>
                     </span>
                 </td>
                 <td>
                     <div>{{ package and package.mainTourist ? package.mainTourist|initial : '' }}</div>
                     <small>{{ package and package.mainTourist ? package.mainTourist.citizenship  : '' }}</small>
+                </td>
+                <td class="text-center">
+                    {% if room.status %}
+                        <i class="fa mbf-{{ roomStatusIcons[room.status.code] }}" data-toggle='tooltip' data-title='{{ room.status.title }}'></i>
+                    {% endif %}
                 </td>
                 <td>
                     {% set style = 'default' %}

@@ -288,7 +288,7 @@ form.AddressObjectDecomposedType.flat: Квартира
 
 security.not_access_create_cash_document: Нет прав доступа для создания кассового документа
 
-report.roomType.statuses.open: Свободен
+report.roomType.statuses.open: Поселить
 report.roomType.statuses.dept: Долг
 report.roomType.statuses.paid: Оплачен
 report.roomType.statuses.not_out: Не выехал
