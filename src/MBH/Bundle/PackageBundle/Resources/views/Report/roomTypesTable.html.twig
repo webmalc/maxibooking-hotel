@@ -15,7 +15,7 @@
         </th>
         <th>Гости</th>
         <th class="td-md">Даты</th>
-        <th class="td-md">Оплата</th>
+        <th class="td-md hidden-xs hidden-sm">Оплата</th>
         <th class="td-xs text-center">
             <i class="fa fa-tasks" title="Статус комнаты" data-toggle="tooltip"></i>
         </th>
@@ -36,10 +36,10 @@
         {% set roomType = data.roomType %}
         <tr class="info">
             <td colspan="9">
-                <strong>{{ roomType.title }}</strong>&nbsp;
+                <strong>{{ roomType }}</strong>&nbsp;
                 <small>места: {{ roomType.places }} + доп. места: {{ roomType.additionalPlaces }}</small>&nbsp;
                 <small>
-                    {% for facility in roomType.facilities %}
+                    {% for facility in roomType.allFacilities %}
                         <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility] }}" class="fa fa-lg mbf-{{ facility }}"></i>
                     {% endfor %}
                 </small>
@@ -118,7 +118,7 @@
                         <small>{{ package.nights }} {{ 'nights'|transchoice(package.nights) }}</small>
                     {% endif %}
                 </td>
-                <td class="text-right">
+                <td class="text-right td-md hidden-xs hidden-sm">
                     {% if package %}
                         <a data-toggle='tooltip' title='{{ "package.json.go_to_calculations"|trans({}, "MBHPackageBundle") }}'
                            href='{{ path('package_order_cash', {'id': package.order.id, 'packageId': package.id}) }}' class='text {% if package.order.isPaid %}text-success'
@@ -171,7 +171,8 @@
                                {
                                    'begin' : 'today'|date('d.m.Y'),
                                    'end' : 'tomorrow'|date('d.m.Y'),
-                                   'roomType': (room.roomType ? [room.roomType.id] : null)
+                                   'roomType': (room.roomType ? [room.roomType.id] : null),
+                                   'room': room.id
                                }
                            }|url_encode }}
                         {% else %}
@@ -202,7 +203,7 @@
                            "
                        {% endif %}
                             >
-                        {{ ('report.roomType.statuses.' ~ status)|trans }}
+                        {{ status == 'open' ? 'report.roomType.settle'|trans : ('report.roomType.statuses.' ~ status)|trans }}
                     </a>
                 </td>
             </tr>

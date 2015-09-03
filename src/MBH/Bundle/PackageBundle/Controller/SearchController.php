@@ -89,6 +89,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                 $query->adults = (int)$data['adults'];
                 $query->children = (int)$data['children'];
                 $query->tariff = $data['tariff'];
+                $query->room = $data['room'];
                 $query->accommodations = true;
 
                 foreach ($data['roomType'] as $id) {
@@ -115,6 +116,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
 
         return [
             'results' => $results,
+            'query' => $query,
             'tariffResults' => $tariffResults,
             'selectedTariff' => $data['tariff']
         ];

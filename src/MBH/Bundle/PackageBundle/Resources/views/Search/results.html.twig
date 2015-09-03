@@ -73,7 +73,7 @@
                         </td>
                         <td>{{ result.roomType.hotel }}</td>
                         <td>
-                            {{ result.roomType }}<br>
+                            {{ result.roomType.fullTitle }}<br>
                             <small>
                                 {{ result.roomType.isHostel ? "search.results.total_beds"|trans({}, "MBHPackageBundle") : "search.results.total_rooms"|trans({}, "MBHPackageBundle") }}
                                 :
@@ -84,7 +84,7 @@
                             <select class="form-control input-sm search-room-select">
                                 <option></option>
                                 {% for room in  result.rooms %}
-                                    <option value="{{ room.id }}">
+                                    <option {% if query.room == room.id %}selected{% endif %} value="{{ room.id }}">
                                         {{ room }}
                                     </option>
                                 {% endfor %}

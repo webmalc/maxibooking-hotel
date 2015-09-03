@@ -65,6 +65,11 @@ class SearchQuery
      * @var bool
      */
     public $grouped = false;
+
+    /**
+     * @var string
+     */
+    public $room;
     
     /**
      * Tariff id

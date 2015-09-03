@@ -124,7 +124,11 @@ class SearchType extends AbstractType
                     new Range(['min' => 0, 'minMessage' => 'form.searchType.children_amount_less_zero']),
                     new NotBlank(['message' => 'form.searchType.children_amount_not_filled'])
                 ]
-            ]);
+            ])
+            ->add('room', 'hidden', [
+                'required' => false
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
