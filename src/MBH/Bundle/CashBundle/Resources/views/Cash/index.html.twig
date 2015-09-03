@@ -44,10 +44,10 @@
                 <i class="fa fa-user" title='{{ 'views.cash.index.user'|trans({}, 'MBHCashBundle') }}'
                    data-toggle='tooltip'></i>
                 &nbsp
-                <select name="user" id="user" placeholder="{{ 'views.cash.index.user'|trans({}, 'MBHCashBundle') }}">
+                <select class="not-remember" name="user" id="user" placeholder="{{ 'views.cash.index.user'|trans({}, 'MBHCashBundle') }}">
                     <option></option>
                     {% for user in users %}
-                        <option value="{{ user.username }}">{{ user.fullName(true) }}</option>
+                        <option value="{{ user.username }}" {{ app.request.get('user') == user.username ? 'selected' }}>{{ user.fullName(true) }}</option>
                     {% endfor %}
                 </select>
             </div>

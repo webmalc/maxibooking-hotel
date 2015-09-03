@@ -7,10 +7,46 @@
     <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
 
+            {% set cash = user_cash() %}
+
+            {% if cash['count'] %}
+            <!-- Cash docs notifications: begin -->
+            <li class="dropdown messages-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="{{ currency()['icon'] }}"></i> Касса
+                    <span class="label label-danger">{{ cash['total']|number_format(2) }}</span>
+                    &nbsp;<i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <ul class="menu">
+                            {% for doc in cash['docs']  %}
+                                <li>
+                                    <a href="{{ is_granted('ROLE_CASH_EDIT') ? path('cash_edit', {'id': doc.id}) : '#' }}">
+                                    <small>
+                                        Документ #{{ doc.number }}, сумма: {{ doc.total|number_format }} {{ currency()['text'] }}<br>
+                                        {{ doc.payer.shortName }} не подтвержден
+                                    </small>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% if is_granted('ROLE_CASH_VIEW') %}
+                    <li class="footer">
+                        <a href="{{ path('cash') }}?user={{ app.user.username }}">Перейти в кассу</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </li>
+            <!-- Cash docs notifications: end -->
+            {% endif %}
+
+
+            <!-- Menu selected hotel: begin -->
             {% if selected_hotel() and is_granted('ROLE_HOTEL_VIEW') %}
 
                 <li class="dropdown notifications-menu">
-                    <!-- Menu toggle button -->
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
                         <i class="fa fa-home"></i>&nbsp;{{ selected_hotel().name }}
                         &nbsp;<i class="fa fa-caret-down"></i>
@@ -18,7 +54,6 @@
                     <ul class="dropdown-menu">
                         <li class="header">Выберите отель: </li>
                         <li>
-                            <!-- Inner Menu: contains the notifications -->
                             <ul class="menu">
                                 {% for hotel in hotels() %}
                                     <li>
@@ -38,6 +73,7 @@
                     </ul>
                 </li>
             {% endif %}
+            <!-- Menu selected hotel: end -->
 
             <!-- User Account Menu -->
             <li class="dropdown user user-menu">

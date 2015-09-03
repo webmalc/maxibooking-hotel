@@ -30,7 +30,7 @@ $.fn.serializeObject = function () {
 var docReadyForms = function () {
     'use strict';
 
-    $('form.remember input, form.remember select, form.remember textarea').phoenix();
+    $('form.remember input:not(.not-remember), form.remember select:not(.not-remember), form.remember textarea:not(.not-remember)').phoenix();
 
     $(".timepicker").timepicker({
         showMeridian: false

@@ -87,6 +87,17 @@ class Extension extends \Twig_Extension
         return new \DateTime('@' . $mongoDate->sec);
     }
 
+    public function cashDocuments()
+    {
+        /*foreach ($this->container->get('mbh.cash')->notConfirmedCashDocuments() as $cashdoc) {
+            dump($cashdoc);
+        }
+
+        exit();*/
+
+        return $this->container->get('mbh.cash')->notConfirmedCashDocuments();
+    }
+
     /**
      * @return array
      */
@@ -135,7 +146,8 @@ class Extension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            'currency' => new \Twig_Function_Method($this, 'currency', array('is_safe' => array('html')))
+            'currency' => new \Twig_Function_Method($this, 'currency', array('is_safe' => array('html'))),
+            'user_cash' => new \Twig_Function_Method($this, 'cashDocuments', array('is_safe' => array('html')))
         ];
     }
 
