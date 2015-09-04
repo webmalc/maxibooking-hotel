@@ -28,7 +28,7 @@
                         {% endfor %}
                     </select>
                 </div>
-            {% endfor %}
+            {% endif %}
             {% if floors %}
                 <div class="form-group">
                     <label><i class="fa fa-building" title='Этаж' data-toggle='tooltip'></i></label>
@@ -39,7 +39,7 @@
                         {% endfor %}
                     </select>
                 </div>
-            {% endfor %}
+            {% endif %}
             <div class="form-group">
                 <label><i class="{{ currency().icon }}" title='Статус оплаты' data-toggle='tooltip'></i></label>
                 <select name="status" data-placeholder="Статус оплаты" id="accommodation-report-filter-status" class="form-control input-sm">
