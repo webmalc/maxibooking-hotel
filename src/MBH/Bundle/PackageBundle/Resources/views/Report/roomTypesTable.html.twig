@@ -39,7 +39,7 @@
                 <strong>{{ roomType }}</strong>&nbsp;
                 <small>места: {{ roomType.places }} + доп. места: {{ roomType.additionalPlaces }}</small>&nbsp;
                 <small>
-                    {% for facility in roomType.allFacilities %}
+                    {% for facility in roomType.facilities %}
                         <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility] }}" class="fa fa-lg mbf-{{ facility }}"></i>
                     {% endfor %}
                 </small>

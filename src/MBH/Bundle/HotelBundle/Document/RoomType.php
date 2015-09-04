@@ -621,11 +621,6 @@ class RoomType extends Base
         return $this->facilities;
     }
 
-    public function getAllFacilities()
-    {
-        return count($this->getFacilities()) > 0 ? $this->getFacilities() : $this->getHotel()->getFacilities();
-    }
-
     /**
      * @param array $facilities
      * @return $this
