@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
  * Class TaskTypeCategoryRepository
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  *
  * @method null|TaskTypeCategory findOneByCode(string $code)
  */

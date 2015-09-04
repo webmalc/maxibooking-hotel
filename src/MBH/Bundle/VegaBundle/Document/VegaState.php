@@ -12,7 +12,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *
  * @ODM\Document(collection="vega_states")
  * @Gedmo\Loggable
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class VegaState extends Base
 {

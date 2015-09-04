@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 /**
  * Class NotificationSenderCommand
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class TaskNotifySendCommand extends ContainerAwareCommand
 {
@@ -46,14 +46,14 @@ class TaskNotifySendCommand extends ContainerAwareCommand
         ]);
 
         $mailer = $this->getContainer()->get('mbh.notifier.mailer');
-
-        $message = new NotifierMessage();
-        $message->setSubject('Задачи, которые были завершены');
         /** @var Router $router */
         $router = $this->getContainer()->get('router');
+
+        $message = new NotifierMessage();
+        $message->setSubject('mailer.closedTasks.subject');
         $message->setLink($router->generate('task', [], Router::ABSOLUTE_URL));
         $message->setTemplate('MBHBaseBundle:Mailer:closedTasks.html.twig');
-        $message->setText('Завершенные задачи: ');
+        $message->setText('mailer.closedTasks.text');
 
         $counter = 0;
         foreach ($users as $user) {
@@ -67,7 +67,7 @@ class TaskNotifySendCommand extends ContainerAwareCommand
                 $message->setAdditionalData(['tasks' => $closedTasks]);
 
                 $currentMessage = clone($message);
-                $currentMessage->addRecipient([$user->getEmail() => $user->getFullName(true)]);
+                $currentMessage->addRecipient($user);
                 $output->writeln("Sent to " . $user->getEmail());
                 $mailer->setMessage($currentMessage)->notify();
                 ++$counter;

@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Class DocumentRelation
  * @ODM\EmbeddedDocument
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class DocumentRelation
 {

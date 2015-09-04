@@ -8,7 +8,7 @@ use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 /**
  * Class TemplateFormatter
  *
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class TemplateFormatter
 {

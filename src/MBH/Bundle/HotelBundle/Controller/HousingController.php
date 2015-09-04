@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class HousingController
  * @package MBH\Bundle\HotelBundle\Controller
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  * @see Corpus
  * @Route("/housing")
  */

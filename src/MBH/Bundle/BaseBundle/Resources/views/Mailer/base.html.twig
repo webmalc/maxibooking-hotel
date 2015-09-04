@@ -16,12 +16,12 @@
         {% set color = colors['default'] %}
     {% endif %}
 
-    {% set hotelName = 'MaxiBooking' %}
-
     {% set address = '&nbsp;' %}
 
     {% if hotel is defined and hotel %}
-        {% set hotelName = hotel.name %}
+        {% if hotelName is not defined %}
+            {% set hotelName = hotel.name %}
+        {% endif %}
 
         {% if logo is not defined and hotel.file %}
             {% set logo = hotel.logoUrl|imagine_filter('thumb_130x110') %}
@@ -46,8 +46,11 @@
             {% set address = address ~ ', кор. ' ~ hotel.corpus %}
         {% endif %}
 
+        {% if isSomeLanguage is not defined or not isSomeLanguage %}
+            {% set address = address|transToLat %}
+        {% endif %}
     {% else %}
-        {% set address = 'mailer.base.address'|trans %}
+        {% set address = 'mailer.base.address'|trans(transParams) %}
     {% endif %}
 
     {% set emptyLink = false %}
@@ -105,20 +108,22 @@
                 <div style="text-align: center;">
                 {% block subject %}
                     <h2 style="text-align: center; margin:55px 0 30px;font-family:Tahoma,Arial;font-size:26px;line-height:30px;color:#000;font-weight:normal;">
-                        {{ subject|default('') }}
+                        {{ subject|trans(transParams)|default('') }}
                     </h2>
                 {% endblock %}
 
                 {% block text %}
                     {% if prependText is defined and prependText %}
-                        <p style="{{ pStyles }}">{{ prependText|trans|raw }}</p><br>
+                        <p style="{{ pStyles }}">{{ prependText|trans(transParams)|raw }}</p><br>
                     {% endif %}
-                    <p style="{{ pStyles }}">{{ text|default('')|raw }}</p>
+                    <p style="{{ pStyles }}">{{ text|trans(transParams)|default('')|raw }}</p>
 
                     {% if image is defined and image %}
-                        {% if link and link != 'hide' %}<a href="{{ link }}">{% endif %}
-                        <img data-name="image_link" src="{{ image_link|default('bundles/mbhbase/images/' ~ image) }}" border="0" alt="{{ 'mailer.base.estimate_our_service'|trans }}" style="margin:10px 0;">
-                        {% if link and link != 'hide' %}</a>{% endif %}
+                        <div style="margin:10px 0">
+                            {% if link and link != 'hide' %}<a href="{{ link }}">{% endif %}
+                                <img data-name="image_link" src="{{ image_link|default('bundles/mbhbase/images/' ~ image) }}" border="0" alt="{{ 'mailer.base.estimate_our_service'|trans(transParams) }}">
+                            {% if link and link != 'hide' %}</a>{% endif %}
+                        </div>
                     {% endif %}
 
                 {% endblock %}
@@ -127,7 +132,7 @@
                     {% block link %}
                         <br><br>
                         <a href="{{ link }}" style="{{ linkStyles }}">
-                            {{ linkText|trans }}
+                            {{ linkText|trans(transParams) }}
                         </a>
                     {% endblock %}
 
@@ -138,14 +143,14 @@
                     {% block signatureAppendText %}
 
                         {% if appendText is defined and appendText %}
-                            <br><br><p style="{{ pStyles }}">{{ appendText|trans|raw }}</p>
+                            <br><br><p style="{{ pStyles }}">{{ appendText|trans(transParams)|raw }}</p>
                         {% endif %}
 
                     {% endblock %}
 
                     {% if signature is defined and signature %}
                     <br><br>
-                    <p style="{{ pStyles }}; text-align: left;">{{ signature|raw }}</p>
+                    <p style="{{ pStyles }}; text-align: left;">{{ signature|trans(transParams)|raw }}</p>
                     {% endif %}
                 {% endblock %}
                 </div>
@@ -158,7 +163,7 @@
 
 
         <div style="margin:25px 0 0;font-family:Tahoma,Arial;font-size:11px;line-height:14px;color:#ccc;text-align:center;">
-            {{ 'mailer.base.generated_mail'|trans }} <a
+            {{ 'mailer.base.generated_mail'|trans(transParams) }} <a
                     href="http://maxi-booking.ru/" target="_blank">
                 <img data-name="mb_logo" src="{{ mb_logo|default('bundles/mbhbase/images/maxibooking.png') }}"
                      border="0"

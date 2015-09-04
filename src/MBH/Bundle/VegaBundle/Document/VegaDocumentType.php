@@ -10,7 +10,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * Class VegaDocumentType
  * @ODM\Document(collection="vega_document_type", repositoryClass="\MBH\Bundle\VegaBundle\Document\VegaDocumentTypeRepository")
  * @Gedmo\Loggable
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class VegaDocumentType extends Base
 {

@@ -200,9 +200,6 @@ package.json.deleted: удалена
 package.json.corrupted: ошибка
 package.json.edit_order: Редактирование заказа
 package.json.deleted_order: удален
-package.json.noch: 'ночь'
-package.json.nochi: 'ночи'
-package.json.nochei: 'ночей'
 package.json.go_to_placement: Перейти к размещению
 package.json.not_placed: не размещено
 package.json.go_to_payer: Перейти к плательщику

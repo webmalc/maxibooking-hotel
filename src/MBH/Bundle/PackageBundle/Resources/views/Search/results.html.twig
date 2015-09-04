@@ -73,11 +73,11 @@
                     <tr>
                         <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
                         <td>{{ result.begin|mbh_format }} - {{ result.end|mbh_format }}<br>
-                            <small>{{ plural(result.nights, "package.json.noch"|trans({}, "MBHPackageBundle"), "package.json.nochi"|trans({}, "MBHPackageBundle"), "package.json.nochei"|trans({}, "MBHPackageBundle")) }}</small>
+                            <small>{{ result.nights }} {{ 'nights'|transchoice(result.nights) }}</small>
                         </td>
                         <td>{{ result.roomType.hotel }}</td>
                         <td>
-                            {{ result.roomType }}<br>
+                            {{ result.roomType.fullTitle }}<br>
                             <small>
                                 {{ result.roomType.isHostel ? "search.results.total_beds"|trans({}, "MBHPackageBundle") : "search.results.total_rooms"|trans({}, "MBHPackageBundle") }}
                                 :
@@ -90,7 +90,7 @@
                             <select class="form-control input-sm search-room-select">
                                 <option></option>
                                 {% for room in  result.rooms %}
-                                    <option value="{{ room.id }}">
+                                    <option {% if query.room == room.id %}selected{% endif %} value="{{ room.id }}">
                                         {{ room }}
                                     </option>
                                 {% endfor %}

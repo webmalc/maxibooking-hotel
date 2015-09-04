@@ -16,6 +16,11 @@ class NotifierMessage
     private $text;
 
     /**
+     * @var array
+     */
+    private $translateParams = [];
+
+    /**
      * @var string
      */
     private $subject;
@@ -26,7 +31,7 @@ class NotifierMessage
     private $from;
 
     /**
-     * @var array
+     * @var RecipientInterface
      */
     private $recipients = [];
 
@@ -107,6 +112,24 @@ class NotifierMessage
         $this->text = $text;
 
         return $this;
+    }
+
+    /**
+     * @param array $translateParams
+     * @return $this
+     */
+    public function setTranslateParams(array $translateParams)
+    {
+        $this->translateParams = $translateParams;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTranslateParams()
+    {
+        return $this->translateParams;
     }
 
     /**
@@ -224,7 +247,7 @@ class NotifierMessage
     }
 
     /**
-     * @return array
+     * @return RecipientInterface[]
      */
     public function getRecipients()
     {
@@ -232,10 +255,10 @@ class NotifierMessage
     }
 
     /**
-     * @param array $recipients
+     * @param RecipientInterface[] $recipients
      * @return $this
      */
-    public function setRecipients(array $recipients = null)
+    public function setRecipients(array $recipients = [])
     {
         $this->recipients = $recipients;
 
@@ -243,11 +266,11 @@ class NotifierMessage
     }
 
     /**
-     * @param array $recipient
+     * @param RecipientInterface $recipient
      *  [$email, $fullName]
      * @return $this
      */
-    public function addRecipient($recipient)
+    public function addRecipient(RecipientInterface $recipient)
     {
         $this->recipients[] = $recipient;
 

@@ -20,6 +20,7 @@ $(document).ready(function ($) {
             data: data,
             success: function (response) {
                 $roomTypes.html(response);
+                $roomTypes.find('[data-toggle=popover]').popover();
                 inProcess = false;
             }
         });

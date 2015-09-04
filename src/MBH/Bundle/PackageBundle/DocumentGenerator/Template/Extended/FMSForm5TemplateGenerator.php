@@ -5,7 +5,7 @@ namespace MBH\Bundle\PackageBundle\DocumentGenerator\Template\Extended;
 
 /**
  * Class FMSForm5TemplateGenerator
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class FMSForm5TemplateGenerator extends RegistrationCardTemplateGenerator
 {

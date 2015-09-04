@@ -21,7 +21,7 @@ class Mailer implements \SplObserver
     private $mailer;
 
     /**
-     * @var Twig_Environment
+     * @var \Twig_Environment
      */
     private $twig;
 
@@ -35,6 +35,11 @@ class Mailer implements \SplObserver
      */
     private $dm;
 
+    /**
+     * @var string
+     */
+    private $locale;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -42,6 +47,17 @@ class Mailer implements \SplObserver
         $this->mailer = $container->get('mailer');
         $this->params = $container->getParameter('mbh.mailer');
         $this->dm = $this->container->get('doctrine_mongodb');
+        $this->locale = $this->container->getParameter('locale');
+    }
+
+    /**
+     * @param string $local
+     * @return $this
+     */
+    public function setLocal($local)
+    {
+        $this->locale = $local;
+        return $this;
     }
 
     /**
@@ -62,8 +78,9 @@ class Mailer implements \SplObserver
                 'link' => $message->getLink(),
                 'linkText' => $message->getLinkText(),
                 'order' => $message->getOrder(),
-                'signature' => $message->getSignature()
-            ], $message->getAdditionalData()) , $message->getTemplate());
+                'signature' => $message->getSignature(),
+                'transParams' => $message->getTranslateParams()
+            ], $message->getAdditionalData()), $message->getTemplate());
         }
     }
 
@@ -93,7 +110,7 @@ class Mailer implements \SplObserver
     }
 
     /**
-     * @param array $recipients
+     * @param RecipientInterface[] $recipients
      * @param array $data
      * @param null $template
      * @return bool
@@ -109,40 +126,65 @@ class Mailer implements \SplObserver
                 throw new \Exception($error);
             }
 
-            $users = $this->dm->getRepository('MBHUserBundle:User')->findBy(
+            $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy(
                 [$data['category'] . 's' => true, 'enabled' => true, 'locked' => false]
             );
 
-            if (!count($users)) {
+            if (!count($recipients)) {
                 throw new \Exception($error);
             }
-
-            $recipients = [];
-            foreach ($users as $user) {
-                $recipients[] = [$user->getEmail() => $user->getFullName()];
-            }
         }
-
-        (empty($data['subject'])) ? $data['subject'] = $this->params['subject']: $data['subject'];
+        (empty($data['subject'])) ? $data['subject'] = $this->params['subject'] : $data['subject'];
         $message = \Swift_Message::newInstance();
         empty($template) ? $template = $this->params['template'] : $template;
-        $data = $this->addImages($data, $message, $template);
 
-        $message->setSubject($data['subject'])
-            ->setFrom([
-                $this->params['fromMail'] => empty($data['fromText']) ? $this->params['fromText'] : $data['fromText']
-            ])
-            ->setBody($this->twig->render($template, $data), 'text/html')
-        ;
+        $data['hotelName'] = 'MaxiBooking';
+        $data = $this->addImages($data, $message, $template);
+        $translator = $this->container->get('translator');
 
         foreach ($recipients as $recipient) {
-            $message->setTo($recipient);
+            //@todo move to notifier
+            $transParams = [
+                '%guest%' => $recipient->getName(),
+                '%hotel%' => null
+            ];
+
+            if ($data['hotel']) {
+                $data['hotelName'] = $data['hotel']->getName();
+                $transParams['%hotel%'] = $data['hotel']->getName();
+            }
+
+            if ($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() != $this->locale) {
+                $translator->setLocale($recipient->getCommunicationLanguage());
+                $data['isSomeLanguage'] = false;
+                if ($data['hotel'] && $data['hotel']->getInternationalTitle()) {
+                    $data['hotelName'] = $data['hotel']->getInternationalTitle();
+                    $transParams['%hotel%'] = $data['hotel']->getInternationalTitle();
+                }
+            } else {
+                $translator->setLocale($this->locale);
+                $data['isSomeLanguage'] = true;
+            }
+
+            $data['transParams'] = array_merge($transParams, $data['transParams']);
+            $body = $this->twig->render($template, $data);
+
+            $fromText = empty($data['fromText']) ?
+                (empty($data['hotelName']) ? $this->params['fromText'] : $data['hotelName']) :
+                $data['fromText'];
+
+            $data['hotelName'] = $data['hotelName'] ?: 'MaxiBooking';
+
+            $message
+                ->setSubject($translator->trans($data['subject'], $data['transParams']))
+                ->setFrom([$this->params['fromMail'] => $fromText])
+                ->setBody($body, 'text/html');
+            $message->setTo([$recipient->getEmail() => $recipient->getName()]);
             $this->mailer->send($message);
         }
 
         if (php_sapi_name() == 'cli') {
-            $mailer = $this->container->get('mailer');
-            $spool = $mailer->getTransport()->getSpool();
+            $spool = $this->mailer->getTransport()->getSpool();
             $transport = $this->container->get('swiftmailer.transport.real');
             $spool->flushQueue($transport);
         }

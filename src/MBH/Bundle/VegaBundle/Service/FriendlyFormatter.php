@@ -5,7 +5,7 @@ namespace MBH\Bundle\VegaBundle\Service;
 /**
  * Class FriendlyFormatter
  *
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class FriendlyFormatter
 {

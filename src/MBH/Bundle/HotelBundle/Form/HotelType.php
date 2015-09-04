@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class HotelType extends AbstractType
@@ -29,6 +30,11 @@ class HotelType extends AbstractType
                 'required' => false,
                 'attr' => ['placeholder' => 'form.hotelType.placeholder_hotel'],
                 'help' => 'form.hotelType.maxibooking_inner_name'
+            ])
+            ->add('internationalTitle', 'text', [
+                'label' => 'form.hotelType.international_title',
+                'group' => 'form.hotelType.general_info',
+                'required' => false
             ])
             ->add('prefix', 'text', [
                 'label' => 'form.hotelType.prefix',
@@ -62,14 +68,14 @@ class HotelType extends AbstractType
             ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
             'types' => [],
             'imageUrl' => null,
-            'removeImageUrl' => null,
-        ));
+            'removeImageUrl' => null
+        ]);
     }
 
     public function getName()

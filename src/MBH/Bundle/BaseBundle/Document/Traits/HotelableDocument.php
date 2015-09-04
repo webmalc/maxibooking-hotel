@@ -7,7 +7,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  * Class HotalableDocument
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 trait HotelableDocument
 {

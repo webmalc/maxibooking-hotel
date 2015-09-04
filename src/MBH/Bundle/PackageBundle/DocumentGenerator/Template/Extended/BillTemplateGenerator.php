@@ -11,7 +11,7 @@ use MBH\Bundle\PackageBundle\DocumentGenerator\Template\DefaultTemplateGenerator
 
 /**
  * Class BillTemplateGenerator
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class BillTemplateGenerator extends DefaultTemplateGenerator
 {

@@ -1,0 +1,114 @@
+nights: night|nights
+
+twig.extension.jan: 'jan'
+twig.extension.feb: 'feb'
+twig.extension.march: 'mar'
+twig.extension.april: 'apr'
+twig.extension.may: 'may'
+twig.extension.june: 'june'
+twig.extension.july: 'july'
+twig.extension.august: 'aug'
+twig.extension.september: 'sept'
+twig.extension.october: 'oct'
+twig.extension.november: 'nov'
+twig.extension.december: 'dec'
+
+mailer.to_order: Read more
+mailer.to_package: to_package
+
+mailer.base.linkText: Go to «Maxi-Booking»
+
+
+mailer.online.user.map: online.user.map
+mailer.online.payment.backend: mailer.online.payment.backend
+mailer.online.payment.user: online.payment.user
+mailer.online.payment.subject: online.payment.subject
+
+mailer.online.user.subject: Welcome to «%hotel%»
+mailer.online.user.prepend: Hello, %guest%!<br><br>You’ve successfully booked room in our hotel. We will contact you soon to confirm the booking and elaborate check-in and accommodation details.
+mailer.online.user.append: We hope your visit will be successful and stay in our hotel will be comfortable. <br>Thank you for choosing our hotel!
+mailer.online.user.signature: Sincerely,<br>Booking Department of «%hotel%» hotel.
+
+mailer.online.backend.subject: New online booking is submitted
+mailer.online.backend.text: online.backend.text
+mailer.online.backend.prepend: online.backend.prepend
+mailer.online.backend.append: online.backend.append
+mailer.online.backend.signature: online.backend.signature
+
+
+
+mailer.order.confirm.user.subject: "Booking confirmation #%order% from %date%"
+mailer.order.confirm.user.prepend: Hello, %guest%!<br><br>Your booking has been successfully confirmed by Booking Department.
+mailer.order.confirm.user.append: Thank you for choosing our hotel!
+
+mailer.report.arrival.subject: The list of expected guests for the next arrival
+mailer.user.arrival.subject: We are looking forward to your arrival!
+
+mailer.report.user.poll.subject: Thank you for choosing our hotel!
+mailer.online.user.poll.prepend: Hello, %guest%!<br><br>We appreciate your choice and hope that stay at our hotel was comfortable for you.<br> We would like to ask you to rate the quality of hotel provided services.This will help us to develop and improve our service!
+mailer.online.user.poll.append: We will be glad to see you again!
+mailer.online.user.poll.link: Rate the quality of service
+
+
+# Mailer
+mailer.base.address: Hotel management system
+mailer.base.estimate_our_service: base.estimate_our_service
+mailer.base.generated_mail: Mail is generated automatically by the hotel management system «Maxi-Booking»
+
+mailer.reportArrival.expectedGuest: Expected guests
+mailer.reportArrival.duty: Duty
+mailer.reportArrival.number: Room
+mailer.reportArrival.numbers: Rooms
+mailer.reportArrival.customer: Client
+mailer.reportArrival.payment: Payment
+mailer.reportArrival.overpayment: Overpayment
+mailer.reportArrival.paid: Paid
+mailer.reportArrival.not_paid: Not paid
+mailer.reportArrival.pure_payment: Partly paid
+mailer.reportArrival.transfer: Transfer to Airport
+mailer.reportArrival.guests: Guests
+
+mailer.order.duty: order.duty
+mailer.order.date: Date
+mailer.order.cost: Price
+mailer.order.booked_numbers: Reserved rooms
+mailer.order.additional_services: Additional options
+mailer.order.title: Item
+mailer.order.name: Name
+mailer.order.amount: Total
+mailer.order.quantity: Quantity
+mailer.order.client_info: Client information
+mailer.order.phone: order.phone
+mailer.order.number: Room
+mailer.order.numbers: Rooms
+mailer.order.customer: order.customer
+mailer.order.payment: order.payment
+mailer.order.overpayment: order.overpayment
+mailer.order.paid: order.paid
+mailer.order.not_paid: order.not_paid
+mailer.order.pure_payment: order.pure_payment
+mailer.order.transfer: order.transfer
+mailer.order.guests: order.guests
+mailer.order.arrival_time: Check-in time
+mailer.order.departure_time: Check-out time
+mailer.order.comments: Comments
+
+mailer.closedTasks.subject: closedTasks.subject
+mailer.closedTasks.text: mailer.closedTasks.text
+mailer.closedTasks.task: closedTasks.task
+mailer.closedTasks.number: closedTasks.number
+mailer.closedTasks.performer: closedTasks.performer
+mailer.closedTasks.closed: closedTasks.closed
+
+mailer.userArrival.greet: Hello, {name}!
+mailer.userArrival.reminder: We hasten to remind you about booking in our hotel for TOMORROW {begin} Please, contact us in case of change of arrival time or options of your stay at our hotel.
+mailer.userArrival.reminder2: Information about your room facilities, check-in terms and additional services of our hotel you can find on our website.
+mailer.userArrival.about_hotel: About hotel
+mailer.userArrival.numbers_servies: Rooms and facilities
+mailer.userArrival.trip_schema: Map
+mailer.userArrival.contacts: Contacts
+mailer.userArrival.bye: We will be glad to see you!
+
+mailer.base.rate.bad: Bad
+mailer.base.rate.good: Good
+mailer.base.rate.perfect: Perfect

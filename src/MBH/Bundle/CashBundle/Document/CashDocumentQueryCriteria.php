@@ -14,7 +14,7 @@ use MBH\Bundle\BaseBundle\Document\AbstractQueryCriteria;
 /**
  * Class CashDocumentQueryCriteria
  * @package MBH\Bundle\CashBundle\Document
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class CashDocumentQueryCriteria extends AbstractQueryCriteria
 {

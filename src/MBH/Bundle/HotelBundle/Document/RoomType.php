@@ -260,10 +260,12 @@ class RoomType extends Base
 
     /**
      * @param mixed $internationalTitle
+     * @return self
      */
     public function setInternationalTitle($internationalTitle)
     {
         $this->internationalTitle = $internationalTitle;
+        return $this;
     }
 
     /**
@@ -617,11 +619,6 @@ class RoomType extends Base
     public function getFacilities()
     {
         return $this->facilities;
-    }
-
-    public function getAllFacilities()
-    {
-        return count($this->getFacilities()) > 0 ? $this->getFacilities() : $this->getHotel()->getFacilities();
     }
 
     /**

@@ -100,9 +100,12 @@ class Notifier implements \SplSubject
                     try {
                         $observer->update($this);
                     } catch (\Exception $e) {
-                        if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+                        $env = $this->container->get('kernel')->getEnvironment();
+                        if ($env == 'dev') {
                             dump($e->getMessage());
-                        };
+                        }elseif($env == 'test' && php_sapi_name() == 'cli') {
+                            echo $e;
+                        }
                     }
                 }
             }

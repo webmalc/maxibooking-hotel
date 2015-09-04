@@ -74,7 +74,7 @@ class MailerCommand extends ContainerAwareCommand
             $message
                 ->setText('hide')
                 ->setFrom('report')
-                ->setSubject($tr->trans('mailer.report.arrival.subject'))
+                ->setSubject('mailer.report.arrival.subject')
                 ->setType('info')
                 ->setCategory('report')
                 ->setAdditionalData([
@@ -104,7 +104,7 @@ class MailerCommand extends ContainerAwareCommand
 
                 $message
                     ->setFrom('report')
-                    ->setSubject($tr->trans('mailer.user.arrival.subject'))
+                    ->setSubject('mailer.user.arrival.subject')
                     ->setType('info')
                     ->setCategory('user')
                     ->setHotel($hotel)
@@ -117,9 +117,9 @@ class MailerCommand extends ContainerAwareCommand
                     ->setTemplate('MBHBaseBundle:Mailer:userArrival.html.twig')
                     ->setAutohide(false)
                     ->setEnd(new \DateTime('+1 minute'))
-                    ->addRecipient($payer->getEmail())
+                    ->addRecipient($payer)
                     ->setLink('hide')
-                    ->setSignature($tr->trans('mailer.online.user.signature', ['%hotel%' => $hotel]))
+                    ->setSignature('mailer.online.user.signature')
                 ;
                 $notifier
                     ->setMessage($message)
@@ -158,13 +158,14 @@ class MailerCommand extends ContainerAwareCommand
 
                 $message
                     ->setFrom('system')
-                    ->setSubject($tr->trans('mailer.report.user.poll.subject'))
+                    ->setSubject('mailer.report.user.poll.subject')
+                    ->setTemplate('MBHBaseBundle:Mailer:dayAfterOfCheckOut.html.twig')
                     ->setType('info')
                     ->setCategory('notification')
                     ->setOrder($order)
                     ->setAdditionalData([
-                        'prependText' => $tr->trans('mailer.online.user.poll.prepend', ['%guest%' => $order->getPayer()->getName()]),
-                        'appendText' => $tr->trans('mailer.online.user.poll.append'),
+                        'prependText' => 'mailer.online.user.poll.prepend',
+                        'appendText' => 'mailer.online.user.poll.append',
                         'image' => 'stars_but.png',
                         'fromText' => $order->getFirstHotel()
                     ])
@@ -172,10 +173,10 @@ class MailerCommand extends ContainerAwareCommand
                     ->setTemplate('MBHBaseBundle:Mailer:base.html.twig')
                     ->setAutohide(false)
                     ->setEnd(new \DateTime('+1 minute'))
-                    ->addRecipient($order->getPayer()->getEmail())
+                    ->addRecipient($order->getPayer())
                     ->setLink($link)
-                    ->setLinkText($tr->trans('mailer.online.user.poll.link'))
-                    ->setSignature($tr->trans('mailer.online.user.signature', ['%hotel%' => $hotel->getName()]))
+                    ->setLinkText('mailer.online.user.poll.link')
+                    ->setSignature('mailer.online.user.signature')
                 ;
                 $notifier
                     ->setMessage($message)

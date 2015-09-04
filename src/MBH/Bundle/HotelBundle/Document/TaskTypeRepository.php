@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 
 /**
  * Class TaskTypeRepository
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class TaskTypeRepository extends DocumentRepository
 {

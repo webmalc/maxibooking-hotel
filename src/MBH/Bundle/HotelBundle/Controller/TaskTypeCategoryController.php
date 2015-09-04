@@ -16,7 +16,7 @@ use MBH\Bundle\HotelBundle\Form\TaskTypeCategoryType;
 
 /**
  * Class TaskTypeCategoryController
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  * @Route("/tasktype/category")
  */
 class TaskTypeCategoryController extends Controller

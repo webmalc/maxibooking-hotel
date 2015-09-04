@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Interface DocumentResponseGeneratorInterface
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 interface DocumentResponseGeneratorInterface
 {

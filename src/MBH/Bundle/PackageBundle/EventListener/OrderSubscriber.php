@@ -69,24 +69,26 @@ class OrderSubscriber implements EventSubscriber
                             $message = $notifier::createMessage();
                             $message
                                 ->setFrom('online_form')
-                                ->setSubject($this->translator->trans('mailer.order.confirm.user.subject', [
-                                    '%order%' => $entity->getId(), '%date%' => $entity->getCreatedAt()->format('d.m.Y')
-                                ]))
+                                ->setSubject('mailer.order.confirm.user.subject')
+                                ->setTranslateParams([
+                                    '%order%' => $entity->getId(),
+                                    '%date%' => $entity->getCreatedAt()->format('d.m.Y')
+                                ])
                                 ->setType('success')
                                 ->setCategory('notification')
                                 ->setOrder($entity)
                                 ->setAdditionalData([
-                                    'prependText' => $this->translator->trans('mailer.order.confirm.user.prepend', ['%guest%' => $entity->getPayer()->getName()]),
-                                    'appendText' => $this->translator->trans('mailer.order.confirm.user.append'),
+                                    'prependText' => 'mailer.order.confirm.user.prepend',
+                                    'appendText' => 'mailer.order.confirm.user.append',
                                     'fromText' => $entity->getFirstHotel()
                                 ])
                                 ->setHotel($hotel)
                                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                                 ->setAutohide(false)
                                 ->setEnd(new \DateTime('+1 minute'))
-                                ->addRecipient($entity->getPayer()->getEmail())
+                                ->addRecipient($entity->getPayer())
                                 ->setLink('hide')
-                                ->setSignature($this->translator->trans('mailer.online.user.signature', ['%hotel%' => $hotel->getName()]))
+                                ->setSignature('mailer.online.user.signature')
                             ;
                             $notifier
                                 ->setMessage($message)

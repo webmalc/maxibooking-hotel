@@ -9,7 +9,7 @@ use MBH\Bundle\PackageBundle\DocumentGenerator\Template\DefaultTemplateGenerator
 
 /**
  * Class ConfirmationTemplateGenerator
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class ConfirmationTemplateGenerator extends DefaultTemplateGenerator
 {

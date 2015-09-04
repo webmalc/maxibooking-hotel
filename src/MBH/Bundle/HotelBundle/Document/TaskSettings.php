@@ -14,7 +14,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * Class TaskSettings
  * @ODM\EmbeddedDocument()
  * @Gedmo\Loggable
- * @author Aleksandr Arofikin <sasaharo@gmail.com>
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class TaskSettings
 {

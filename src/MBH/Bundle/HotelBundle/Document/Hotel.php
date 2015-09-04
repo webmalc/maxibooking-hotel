@@ -73,6 +73,20 @@ class Hotel extends Base
     /**
      * @var string
      * @Gedmo\Versioned
+     * @ODM\String()
+     * @Assert\Length(
+     *      min=2,
+     *      minMessage="validator.document.hotel.min_name",
+     *      max=100,
+     *      maxMessage="validator.document.hotel.min_name"
+     * )
+     * @Assert\Regex(pattern="/^[^А-Яа-я]+$/iu", message="validator.document.roomType.internationalTitle.only_english")
+     */
+    protected $internationalTitle;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
      * @ODM\String(name="prefix")
      * @Assert\Length(
      *      min=2,
@@ -204,6 +218,7 @@ class Hotel extends Base
     protected $settlement;
 
     /**
+     * @var string
      * @Gedmo\Versioned
      * @ODM\String
      */
@@ -316,6 +331,22 @@ class Hotel extends Base
         $this->title = $title;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInternationalTitle()
+    {
+        return $this->internationalTitle;
+    }
+
+    /**
+     * @param string $internationalTitle
+     */
+    public function setInternationalTitle($internationalTitle)
+    {
+        $this->internationalTitle = $internationalTitle;
     }
 
     /**
@@ -888,7 +919,7 @@ class Hotel extends Base
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getStreet()
     {
@@ -896,11 +927,13 @@ class Hotel extends Base
     }
 
     /**
-     * @param mixed $street
+     * @param string $street
+     * @return self
      */
     public function setStreet($street)
     {
         $this->street = $street;
+        return $this;
     }
 
     /**
@@ -913,10 +946,12 @@ class Hotel extends Base
 
     /**
      * @param mixed $house
+     * @return self
      */
     public function setHouse($house)
     {
         $this->house = $house;
+        return $this;
     }
 
     /**
