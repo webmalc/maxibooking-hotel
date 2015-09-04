@@ -332,7 +332,7 @@ class PackageRepository extends DocumentRepository
         $order = 'createdAt';
         $dir = 'desc';
         $cols = [
-            1 => 'number', //['order.id', 'number']
+            1 => ['order.id', 'number'],
             2 => 'begin',
             3 => 'roomType',
             4 => 'mainTourist',
@@ -346,7 +346,13 @@ class PackageRepository extends DocumentRepository
         if (isset($data['dir']) && in_array($data['dir'], ['asc', 'desc'])) {
             $dir = $data['dir'];
         }
-        $qb->sort($order, $dir);
+        if(is_array($order)) {
+            foreach($order as $ord) {
+                $qb->sort($ord, $dir);
+            }
+        } else {
+            $qb->sort($order, $dir);
+        }
 
         // paging
         if (isset($data['skip'])) {
