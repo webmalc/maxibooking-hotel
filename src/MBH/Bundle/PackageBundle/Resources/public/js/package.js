@@ -124,10 +124,7 @@ var docReadyPackages = function () {
                 .removeClass('btn-default').addClass('btn-primary');
         }
 
-        $('.package-filter').change(function () {
-            $('#package-table').dataTable().fnDraw();
-        });
-        $('#package-filter-deleted').on('switchChange', function () {
+        $('.package-filter').on('change switchChange.bootstrapSwitch', function () {
             $('#package-table').dataTable().fnDraw();
         });
         $('#package-table-quick-links a').click(function () {
@@ -135,7 +132,7 @@ var docReadyPackages = function () {
             $('#package-table-quick-links a').removeClass('btn-primary').addClass('btn-default');
             input.val(null);
 
-            if ($(this).attr('id') == 'package-table-quick-reset') {
+            if ($(this).attr('id') === 'package-table-quick-reset') {
                 $('#package-table').dataTable().fnDraw();
                 return;
             }

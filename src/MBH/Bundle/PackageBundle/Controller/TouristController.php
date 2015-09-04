@@ -31,7 +31,7 @@ class TouristController extends Controller
      *
      * @Route("/", name="tourist")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_TOURIST_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -44,7 +44,7 @@ class TouristController extends Controller
      *
      * @Route("/json", name="tourist_json", defaults={"_format"="json"}, options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_TOURIST_VIEW')")
      * @Template()
      */
     public function jsonAction(Request $request)
@@ -75,7 +75,7 @@ class TouristController extends Controller
      *
      * @Route("/new", name="tourist_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_TOURIST_NEW')")
      * @Template()
      */
     public function newAction()
@@ -94,9 +94,9 @@ class TouristController extends Controller
     /**
      * Creates a new entity via ajax.
      *
-     * @Route("/create", name="tourist_create_ajax")
+     * @Route("/create/ajax", name="tourist_create_ajax")
      * @Method("POST")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_TOURIST_NEW')")
      */
     public function createAjaxAction(Request $request)
     {
@@ -153,7 +153,7 @@ class TouristController extends Controller
      *
      * @Route("/create", name="tourist_create")
      * @Method("POST")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_TOURIST_NEW')")
      * @Template("MBHPackageBundle:Tourist:new.html.twig")
      */
     public function createAction(Request $request)
@@ -185,7 +185,7 @@ class TouristController extends Controller
      *
      * @Route("/{id}/edit", name="tourist_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template("MBHPackageBundle:Tourist:edit.html.twig")
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
@@ -218,7 +218,7 @@ class TouristController extends Controller
      *
      * @Route("/{id}/edit", name="tourist_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
@@ -238,7 +238,7 @@ class TouristController extends Controller
     /**
      * @Route("/{id}/edit/document", name="tourist_edit_document")
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
@@ -282,7 +282,7 @@ class TouristController extends Controller
      *
      * @Route("/{id}/edit/visa", name="tourist_edit_visa")
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
@@ -360,7 +360,7 @@ class TouristController extends Controller
     /**
      * @Route("/authority_organ/{id}", name="ajax_authority_organ", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @ParamConverter("entity", class="MBHVegaBundle:VegaFMS")
      */
     public function authorityOrganAction(VegaFMS $entity)
@@ -374,7 +374,7 @@ class TouristController extends Controller
     /**
      * @Route("/{id}/edit/address", name="tourist_edit_address")
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
@@ -411,7 +411,7 @@ class TouristController extends Controller
      *
      * @Route("/{id}/delete", name="tourist_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_TOURIST_DELETE')")
      */
     public function deleteAction($id)
     {
@@ -423,7 +423,7 @@ class TouristController extends Controller
      *
      * @Route("/get/{id}/json", name="json_tourist", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_BOOKKEEPER'])")
+     * @Security("is_granted('ROLE_TOURIST_VIEW')")
      * @ParamConverter("tourist", class="MBHPackageBundle:Tourist")
      * @return JsonResponse
      */
@@ -437,7 +437,7 @@ class TouristController extends Controller
      *
      * @Route("/get/{id}", name="ajax_tourists", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted(['ROLE_MANAGER', 'ROLE_BOOKKEEPER'])")
+     * @Security("is_granted('ROLE_TOURIST_VIEW')")
      * @return JsonResponse
      */
     public function ajaxListAction(Request $request, $id = null)

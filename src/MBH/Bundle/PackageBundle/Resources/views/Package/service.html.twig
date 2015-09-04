@@ -71,17 +71,17 @@
 
                             <td class="table-actions-td text-center">
 
-                                {% if entity.deletedAt is empty and checkPackagePermissions(entity) and service.deletedAt is empty %}
-                                    <a href="{{ path('package_service_edit', { 'id': entity.id, "serviceId": service.id }) }}"
-                                       class="btn btn-success btn-xs " title="{{ 'package.service.edit_record'|trans({}, 'MBHPackageBundle')}}"
-                                       data-toggle="tooltip">
-                                        <i class="fa fa-pencil-square-o"></i>
-                                    </a>
-                                    <a href="{{ path('package_service_delete', { 'id': entity.id, "serviceId": service.id }) }}"
-                                       class="btn btn-danger btn-xs delete-link " title="{{ 'package.service.delete_record'|trans({}, 'MBHPackageBundle')}}"
-                                       data-toggle="tooltip">
-                                        <i class="fa fa-trash-o"></i>
-                                    </a>
+                                {% if entity.deletedAt is empty and service.deletedAt is empty and is_granted('ROLE_PACKAGE_SERVICES') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                                <a href="{{ path('package_service_edit', { 'id': entity.id, "serviceId": service.id }) }}"
+                                   class="btn btn-success btn-xs " title="{{ 'package.service.edit_record'|trans({}, 'MBHPackageBundle')}}"
+                                   data-toggle="tooltip">
+                                    <i class="fa fa-pencil-square-o"></i>
+                                </a>
+                                <a href="{{ path('package_service_delete', { 'id': entity.id, "serviceId": service.id }) }}"
+                                   class="btn btn-danger btn-xs delete-link " title="{{ 'package.service.delete_record'|trans({}, 'MBHPackageBundle')}}"
+                                   data-toggle="tooltip">
+                                    <i class="fa fa-trash-o"></i>
+                                </a>
                                 {% endif %}
                             </td>
                         </tr>
@@ -90,20 +90,18 @@
                 </table>
             {% endif %}
 
-            {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
-
-                {% if entity.tariff.hotel.servicesCategories|length > 0 %}
-
+                 {% if is_granted('ROLE_PACKAGE_SERVICES') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                     {{ form_start(form, {'action': path('package_service', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
                     {{ form_widget(form) }}
-                    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity} %}
-                    {{ form_end(form) }}
-
-                {% else %}
-                    <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> У отеля <{{ entity.tariff.hotel }}> нет ни одной услуги. <a href="{{ path('price_service_category') }}">{{ 'package.service.add_services'|trans({}, 'MBHPackageBundle') }}</a></div>
                 {% endif %}
-            {% endif %}
-            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
+
+                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, role: 'ROLE_PACKAGE_SERVICES'} %}
+
+                {% if is_granted('ROLE_PACKAGE_SERVICES') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                    {{ form_end(form) }}
+                {% endif %}
+
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs } %}
         </div>
     </div>
 

@@ -116,9 +116,7 @@
 
             {{ form_start(form, {'action': path('package_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% if entity.deletedAt is empty %}
-                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity} %}
-            {% endif %}
+            {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'role': 'ROLE_PACKAGE_EDIT'} %}
             {{ form_end(form) }}
 
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}

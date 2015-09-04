@@ -70,16 +70,21 @@
                                 {% endif %}
                             </td>
                             <td class="table-actions-td text-center">
-                                {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
-                                <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}"
-                                   class="btn btn-success btn-xs" title="{{ 'package.guest.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
-                                    <i class="fa fa-pencil-square-o"></i>
-                                </a>
-                                <a href="{{ path('package_guest_delete', { 'id': entity.id, "touristId": tourist.id }) }}"
-                                   class="btn btn-danger btn-xs delete-link " title="{{ 'package.guest.delete_record'|trans({}, 'MBHPackageBundle') }}"
-                                   data-toggle="tooltip">
-                                    <i class="fa fa-trash-o"></i>
-                                </a>
+                                {% if entity.deletedAt is empty %}
+                                    {% if is_granted('ROLE_TOURIST_EDIT') %}
+                                    <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}"
+                                       class="btn btn-success btn-xs" title="{{ 'package.guest.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                    </a>
+                                    {% endif %}
+
+                                    {% if is_granted('ROLE_PACKAGE_GUESTS') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                                        <a href="{{ path('package_guest_delete', { 'id': entity.id, "touristId": tourist.id }) }}"
+                                           class="btn btn-danger btn-xs delete-link " title="{{ 'package.guest.delete_record'|trans({}, 'MBHPackageBundle') }}"
+                                           data-toggle="tooltip">
+                                            <i class="fa fa-trash-o"></i>
+                                        </a>
+                                    {% endif %}
                                 {% endif %}
                             </td>
                         </tr>
@@ -88,12 +93,16 @@
                 </table>
             {% endif %}
 
-            {% if entity.deletedAt is empty and checkPackagePermissions(entity) %}
+
+                {% if is_granted('ROLE_PACKAGE_GUESTS') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                     {{ form_start(form, {'action': path('package_guest', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
                     {{ form_widget(form) }}
-                    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity} %}
+                {% endif %}
+                    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'role': 'ROLE_PACKAGE_GUESTS'} %}
+                {% if is_granted('ROLE_PACKAGE_GUESTS') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                     {{ form_end(form) }}
-            {% endif %}
+                {% endif %}
+
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
 
         </div>

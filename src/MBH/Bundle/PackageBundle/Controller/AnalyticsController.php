@@ -25,7 +25,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
      * Index template
      * @Route("/", name="analytics")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_1')")
+     * @Security("is_granted('ROLE_ANALYTICS')")
      * @Template()
      */
     public function indexAction()
@@ -50,7 +50,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
      * Index template
      * @Route("/choose", name="analytics_choose", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_1')")
+     * @Security("is_granted('ROLE_ANALYTICS')")
      */
     public function chooseAction(Request $request)
     {
@@ -70,7 +70,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     /**
      * @Route("/sales_services", name="analytics_sales_services")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_1')")
+     * @Security("is_granted('ROLE_ANALYTICS')")
      * @Template("MBHPackageBundle:Analytics:response.html.twig")
      */
     public function salesServicesAction()
@@ -105,7 +105,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     /**
      * @Route("/sales_cash_documents", name="analytics_sales_cash_documents")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_1')")
+     * @Security("is_granted('ROLE_ANALYTICS')")
      * @Template("MBHPackageBundle:Analytics:response.html.twig")
      */
     public function salesCashDocumentsAction()
@@ -151,7 +151,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     /**
      * @Route("/hotel_occupancy", name="analytics_hotel_occupancy")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_1')")
+     * @Security("is_granted('ROLE_ANALYTICS')")
      * @Template("MBHPackageBundle:Analytics:response.html.twig")
      */
     public function hotelOccupancyAction()
@@ -196,7 +196,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     /**
      * @Route("/sales_managers", name="analytics_sales_managers")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_1')")
+     * @Security("is_granted('ROLE_ANALYTICS')")
      * @Template("MBHPackageBundle:Analytics:response.html.twig")
      */
     public function salesManagersAction()
@@ -243,7 +243,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     /**
      * @Route("/sales_sources", name="analytics_sales_sources")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_1')")
+     * @Security("is_granted('ROLE_ANALYTICS')")
      * @Template("MBHPackageBundle:Analytics:response.html.twig")
      */
     public function salesSourcesAction()
@@ -280,7 +280,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     /**
      * @Route("/sales_packages", name="analytics_sales_packages")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_1')")
+     * @Security("is_granted('ROLE_ANALYTICS')")
      * @Template("MBHPackageBundle:Analytics:response.html.twig")
      */
     public function salesPackagesAction()
@@ -311,7 +311,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     /**
      * @Route("/sales_cash", name="analytics_sales_cash", defaults={"_format"="json"})
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN_1')")
+     * @Security("is_granted('ROLE_ANALYTICS')")
      * @Template()
      */
     public function salesCashAction()

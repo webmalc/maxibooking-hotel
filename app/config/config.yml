@@ -229,3 +229,8 @@ ornicar_gravatar:
   rating: g
   size: 160
   default: mm
+
+# KNPMenu
+parameters:
+    knp_menu.renderer.twig.options:
+        currentClass: active

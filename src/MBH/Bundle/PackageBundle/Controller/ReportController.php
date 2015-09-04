@@ -31,7 +31,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/porter", name="report_porter")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PORTER_REPORT')")
      * @Template()
      */
     public function porterAction()
@@ -44,7 +44,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/porter/table", name="report_porter_table", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PORTER_REPORT')")
      * @Template()
      */
     public function  porterTableAction(Request $request)
@@ -99,7 +99,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/users/index", name="report_users")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_MANAGERS_REPORT')")
      * @Template()
      */
     public function  userAction()
@@ -125,7 +125,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/users/table", name="report_users_table", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_MANAGERS_REPORT')")
      * @Template()
      */
     public function  userTableAction(Request $request)
@@ -237,7 +237,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/accommodation/index", name="report_accommodation")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ACCOMMODATION_REPORT')")
      * @Template()
      */
     public function accommodationAction()
@@ -256,7 +256,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/accommodation/table", name="report_accommodation_table", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ACCOMMODATION_REPORT')")
      * @Template()
      */
     public function accommodationTableAction(Request $request)
@@ -449,7 +449,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @return array
      * @Route("/polls", name="report_polls")
      * @Method({"GET"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_POLLS_REPORT')")
      * @Template()
      */
     public function pollsAction(Request $request)
@@ -471,7 +471,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @return array
      * @Route("/polls/{id}/view", name="report_polls_view")
      * @Method({"GET"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_POLLS_REPORT')")
      * @Template()
      * @ParamConverter("order", class="MBHPackageBundle:Order")
      */
@@ -489,7 +489,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @return array
      * @Route("/roomtypes", name="report_room_types")
      * @Method({"GET"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ROOMS_REPORT')")
      * @Template()
      */
     public function roomTypesAction()
@@ -525,7 +525,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @return array
      * @Route("/roomtypes_table", name="report_room_types_table", options={"expose"=true})
      * @Method({"GET"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ROOMS_REPORT')")
      * @Template()
      */
     public function roomTypesTableAction(Request $request)

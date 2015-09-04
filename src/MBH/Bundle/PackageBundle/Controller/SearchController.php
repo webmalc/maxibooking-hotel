@@ -27,7 +27,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/", name="package_search", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_SEARCH')")
      * @Template()
      */
     public function indexAction(Request $request)
@@ -62,7 +62,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
      *
      * @Route("/results", name="package_search_results", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_SEARCH')")
      * @Template()
      */
     public function resultsAction(Request $request)

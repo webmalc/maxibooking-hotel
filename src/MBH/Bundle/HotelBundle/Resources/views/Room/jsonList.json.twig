@@ -6,11 +6,11 @@
         {% for entity in entities %}
             [
                 "{% if entity.isEnabled is empty %}<span class='danger-tr'></span>{% endif %}<div class='text-center'><i class='fa fa-bed'></i></div>",
-                "<a href='{{ path('room_edit', { 'id': entity.id }) }}' rel='main' title='Редактирование записи' data-toggle='tooltip'>{{ entity.name }}</a>",
+                "{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'room'} %}{% endembed %}",
                 "{{ entity.housing }}",
                 "{{ entity.floor }}",
-            "{% if entity.status %}{{ entity.status.title }}{% endif %}",
-                "{% include 'MBHHotelBundle:RoomType:roomListButtons.html.twig' with {'entity': entity} %}"
+                "{% if entity.status %}{{ entity.status.title }}{% endif %}",
+                "<div class='btn-list'>{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'room'} %}{% endembed %}</div>"
             ]{% if loop.index != entities.count(true) %},{% endif %}
         {% endfor %}
     ]

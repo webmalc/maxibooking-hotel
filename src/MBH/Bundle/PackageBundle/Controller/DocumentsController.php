@@ -34,7 +34,7 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
      * @return array|RedirectResponse
      * @Route("/{id}/documents/{packageId}", name="order_documents")
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', entity) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @ParamConverter("order", class="MBHPackageBundle:Order")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @Template()
@@ -67,7 +67,7 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
             'touristIds' => $touristIds
         ]);
 
-        if ($request->isMethod("PUT") && $permissions->check($entity)) {
+        if ($request->isMethod("PUT")) {
             $form->submit($request);
 
             if ($form->isValid()) {
@@ -98,7 +98,7 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
      *
      * @Route("/document/{id}/{packageId}/{name}/remove", name="order_remove_document", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ORDER_DOCUMENTS') and (is_granted('EDIT', order) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @ParamConverter("order", class="MBHPackageBundle:Order")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      */
@@ -106,7 +106,7 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
-        if (!$permissions->checkHotel($entity) || !$permissions->check($entity)) {
+        if (!$permissions->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
 
@@ -123,7 +123,6 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
      *
      * @Route("/document/{name}/view/{download}", name="order_document_view", options={"expose"=true}, defaults={"download" = 0})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
      * @param $name
      * @param $download
      * @return Response
@@ -137,6 +136,12 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
 
         if (!$order) {
             throw $this->createNotFoundException();
+        }
+
+        if (!$this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW_ALL')
+            && !($this->get('security.authorization_checker')->isGranted('VIEW', $order)
+                && $this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW'))) {
+            throw $this->createAccessDeniedException();
         }
 
         $document = null;
@@ -176,7 +181,7 @@ class DocumentsController extends Controller implements CheckHotelControllerInte
      * @param Request $request
      * @Route("/document/{id}/edit/{packageId}/{name}", name="order_document_edit", options={"expose"=true}, defaults={"download" = 0})
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_ORDER_DOCUMENTS') and (is_granted('EDIT', order) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @ParamConverter("order", class="MBHPackageBundle:Order")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
      * @Template()

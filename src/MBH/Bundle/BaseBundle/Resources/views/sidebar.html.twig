@@ -4,10 +4,13 @@
 
         <!-- Sidebar Menu -->
         {% if selected_hotel() is empty %}
-            {{ knp_menu_render('MBHBaseBundle:Builder:createHotelMenu') }}
+            {% set menu = knp_menu_get('MBHBaseBundle:Builder:createHotelMenu', [], {'title_url': title_url is defined ? title_url : null}) %}
+            {{ knp_menu_render(menu) }}
         {% else %}
-            {{ knp_menu_render('MBHBaseBundle:Builder:mainMenu') }}
-            {{ knp_menu_render('MBHBaseBundle:Builder:managementMenu') }}
+            {% set menu = knp_menu_get('MBHBaseBundle:Builder:mainMenu', [], {'title_url': title_url is defined ? title_url : null}) %}
+            {{ knp_menu_render(menu) }}
+            {% set menu = knp_menu_get('MBHBaseBundle:Builder:managementMenu', [], {'title_url': title_url is defined ? title_url : null}) %}
+            {{ knp_menu_render(menu) }}
         {% endif %}
         <!-- /.sidebar-menu -->
     </section>

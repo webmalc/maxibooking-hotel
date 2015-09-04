@@ -56,10 +56,14 @@
                     <th class="td-md">{{ "search.results.dates"|trans({}, "MBHPackageBundle") }}</th>
                     <th>{{ "search.results.hotel"|trans({}, "MBHPackageBundle") }}</th>
                     <th>{{ "search.results.type"|trans({}, "MBHPackageBundle") }}</th>
+                    {% if is_granted('ROLE_PACKAGE_ACCOMMODATION') %}
                     <th class="td-sm">{{ "search.results.room"|trans({}, "MBHPackageBundle") }}</th>
+                    {% endif %}
                     <th class="td-sm">{{ "search.results.guests"|trans({}, "MBHPackageBundle") }}</th>
                     <th class="td-md">{{ "search.results.price"|trans({}, "MBHPackageBundle") }}</th>
+                    {% if is_granted('ROLE_PACKAGE_NEW') %}
                     <th class="td-md"></th>
+                    {% endif %}
                 </tr>
                 </thead>
                 <tbody>
@@ -80,6 +84,8 @@
                                 <span class="package-search-book-count">{{ result.roomsCount }}</span>
                             </small>
                         </td>
+
+                        {% if is_granted('ROLE_PACKAGE_ACCOMMODATION') %}
                         <td>
                             <select class="form-control input-sm search-room-select">
                                 <option></option>
@@ -90,6 +96,7 @@
                                 {% endfor %}
                             </select>
                         </td>
+                        {% endif %}
                         <td class="text-center">
                             <select class="form-control plain-html input-sm search-tourists-select">
                                 {% for priceTourists, price  in result.prices %}
@@ -111,7 +118,7 @@
                             <small><i class='fa fa-sliders'> </i> {{ result.tariff.name }}</small>
                         </td>
                         <td class="text-center">
-                            <a href="{{ path('package_new', app.request.get('s')|merge({roomType: result.roomType.id })) }}" target="_blank" class="btn btn-success btn-xs package-search-book" title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
+                            <a href="{{ path('package_new', app.request.get('s')|merge({roomType: result.roomType.id })) }}" target="_blank" class="btn btn-success btn-xs package-search-book {{ is_granted('ROLE_PACKAGE_NEW') is empty ? 'hidden'}}" title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
                                 <span class="package-search-book-reservation-text">{{ "search.results.reservate"|trans({}, "MBHPackageBundle") }}</span>
                                 <span class="package-search-book-accommodation-text"
                                       style="display: none;">{{ "search.results.accommodation"|trans({}, "MBHPackageBundle") }}</span>

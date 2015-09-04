@@ -40,7 +40,7 @@ class ChannelManagerController extends Controller
      * @Method({"GET", "POST"})
      * @return Response
      * @Template()
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_LOGS')")
      */
     public function logsAction(Request $request)
     {

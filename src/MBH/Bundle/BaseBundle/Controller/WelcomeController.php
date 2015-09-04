@@ -15,7 +15,7 @@ class WelcomeController extends BaseController
      */
     public function indexAction()
     {
-        if ($this->get('security.authorization_checker')->isGranted('ROLE_USER')) {
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW')) {
             return $this->redirectToRoute('package');
         }
         if ($this->get('security.authorization_checker')->isGranted('ROLE_STAFF')) {

@@ -26,6 +26,12 @@ class Group extends BaseGroup
     protected $id;
 
     /**
+     * @var string
+     * @ODM\String
+     */
+    protected $code;
+
+    /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
      */
@@ -47,4 +53,31 @@ class Group extends BaseGroup
     {
         return $this->getName();
     }
+
+    public function __construct($name, $code = null, $roles = [])
+    {
+        parent::__construct($name, $roles);
+
+        $this->setCode($code);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param string $code
+     * @return Group
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
+        return $this;
+    }
+
+
 }

@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -396,9 +397,12 @@ class User extends BaseUser implements RecipientInterface
      */
     public function setRolesWithoutGroups($roles)
     {
-        $this->roles = $roles;
+        $this->setRoles($roles);
+    }
 
-        return $this;
+
+    function equals(UserInterface $user){
+        return false;
     }
 
     /**

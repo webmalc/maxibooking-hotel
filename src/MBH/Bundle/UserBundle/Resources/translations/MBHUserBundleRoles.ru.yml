@@ -36,15 +36,23 @@ ROLE_GROUP_DELETE: Удаление групп
 ROLE_CITY: Города
 ROLE_CITY_VIEW: Просмотр городов
 
+ROLE_USER: Пользователь
+ROLE_USER_VIEW: Просмотр пользователей
+ROLE_USER_NEW: Создание пользователей
+ROLE_USER_EDIT: Редактирование пользователей
+ROLE_USER_DELETE: Удаление пользователей
+ROLE_USER_PROFILE: Профиль пользователя
+
 ROLE_CASH: Касса
 ROLE_CASH_VIEW: Просмотр кассы
 ROLE_CASH_NEW: Создание кассового документа
 ROLE_CASH_EDIT: Редактирование кассового документа
 ROLE_CASH_DELETE: Удаление кассового документа
+ROLE_CASH_CONFIRM: Подтверждение кассового документа
 
-ROLE_CLIENT_CONFIG: Параметры и Платежная система
-ROLE_CLIENT_CONFIG_VIEW: Просмотр параметров и платежной система
-ROLE_CLIENT_CONFIG_EDIT: Редактирование параметров и платежной система
+ROLE_CLIENT_CONFIG: Параметры
+ROLE_CLIENT_CONFIG_VIEW: Просмотр параметров
+ROLE_CLIENT_CONFIG_EDIT: Редактирование параметров
 
 ROLE_DOCUMENT_TEMPLATE: Шаблоны документов
 ROLE_DOCUMENT_TEMPLATE_VIEW: Просмотр шаблонов документов
@@ -58,18 +66,19 @@ ROLE_HOUSING_NEW: Создание корпусов
 ROLE_HOUSING_EDIT: Редактирование корпусов
 ROLE_HOUSING_DELETE: Удаление корпусов
 
-ROLE_ROOM: Номера отеля
+ROLE_ROOM: Номера
 ROLE_ROOM_VIEW: Просмотр номеров отеля
 ROLE_ROOM_NEW: Создание номеров отеля
 ROLE_ROOM_EDIT: Редактирование номеров отеля
 ROLE_ROOM_DELETE: Удаление номеров отеля
 
-ROLE_ROOM_TYPE: Типы номеров отеля (Номерной фонд)
+ROLE_ROOM_FUND: Номерной фонд
+
+ROLE_ROOM_TYPE: Типы номеров
 ROLE_ROOM_TYPE_VIEW: Просмотр типов номеров
 ROLE_ROOM_TYPE_NEW: Создание типов номеров
 ROLE_ROOM_TYPE_EDIT: Редактирование типов номеров
 ROLE_ROOM_TYPE_DELETE: Удаление типов номеров
-
 
 ROLE_TASK: Задачи
 ROLE_TASK_VIEW: Просмотр задач
@@ -120,3 +129,60 @@ ROLE_TARIFF_VIEW: Просмотр тарифов
 ROLE_TARIFF_NEW: Создание тарифов
 ROLE_TARIFF_EDIT: Редактирование тарифов
 ROLE_TARIFF_DELETE: Удаление тарифов
+
+ROLE_CHANNEL_MANAGER: Channel manager
+ROLE_BOOKING: Booking.com
+ROLE_VASHOTEL: ВашОтель
+ROLE_OSTROVOK: Ostrovok
+ROLE_OKTOGO: Oktogo
+ROLE_HOTELINN: Hotel-inn
+
+ROLE_ONLINE_FORM: Онлайн форма
+ROLE_POLLS: Голосования
+
+ROLE_REPORTS: Отчеты
+ROLE_ANALYTICS: Аналитика
+
+ROLE_PACKAGE: Брони
+ROLE_SEARCH: Подбор
+ROLE_PACKAGE_VIEW: Просмотр брони
+ROLE_PACKAGE_NEW: Создание брони
+ROLE_ORDER_EDIT: Редактирование информации заказа
+ROLE_PACKAGE_EDIT: Редактирование информации брони
+ROLE_ORDER_PAYER: Плательщик заказа
+ROLE_PACKAGE_GUESTS: Гости брони
+ROLE_PACKAGE_SERVICES: Услуги брони
+ROLE_PACKAGE_ACCOMMODATION: Размещение брони
+ROLE_ORDER_DOCUMENTS: Документы заказа
+ROLE_ORDER_CASH_DOCUMENTS: Рассчеты брони
+ROLE_PACKAGE_DELETE: Удаление брони
+ROLE_PACKAGE_VIEW_ALL: Просмотр любой брони
+ROLE_PACKAGE_EDIT_ALL: Редактирование любой брони
+ROLE_PACKAGE_DELETE_ALL: Удаление любой брони
+ROLE_PACKAGE_DOCS: Документы заказа
+ROLE_ORDER_AUTO_CONFIRMATION: Автоподтверждение заказа
+
+ROLE_TOURIST: Клиенты
+ROLE_PORTER_REPORT: Отчет портье
+ROLE_ACCOMMODATION_REPORT: Отчет по размещению
+ROLE_SERVICES_REPORT: Отчет по услугам
+ROLE_ORGANIZATION: Организации
+ROLE_MANAGERS_REPORT: Отчет по менеджерам
+ROLE_POLLS_REPORT: Отчет по оценкам
+ROLE_ROOMS_REPORT: Отчет по номерному фонду
+
+ROLE_TOURIST_VIEW: Просмотр гостей
+ROLE_TOURIST_NEW: Создание гостя
+ROLE_TOURIST_EDIT: Редактирование гостя
+ROLE_TOURIST_DELETE: Удаление гостя
+
+ROLE_ORGANIZATION_VIEW: Просмотр организаций
+ROLE_ORGANIZATION_NEW:  Создание организаций
+ROLE_ORGANIZATION_EDIT:  Редактирование организаций
+ROLE_ORGANIZATION_DELETE:  Удаление организаций
+
+ROLE_SOURCE: Источники
+ROLE_SOURCE_VIEW:  Просмотр источников
+ROLE_SOURCE_NEW:  Создание источников
+ROLE_SOURCE_EDIT:  Редактирование источников
+ROLE_SOURCE_DELETE:  Удаление источников

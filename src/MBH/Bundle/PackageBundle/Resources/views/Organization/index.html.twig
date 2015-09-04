@@ -40,5 +40,5 @@
         <tbody>
     </table>
 
-    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'create_organization', 'route_params' : {'type' : type}} %}
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'create_organization', 'route_params' : {'type' : type}, 'role': 'organization'} %}
 {% endblock %}

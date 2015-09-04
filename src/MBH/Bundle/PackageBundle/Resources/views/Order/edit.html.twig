@@ -78,7 +78,7 @@
 
             {{ form_start(form, {'action': path('package_order_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package} %}
+                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_ORDER_EDIT'} %}
             {{ form_end(form) }}
 
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}

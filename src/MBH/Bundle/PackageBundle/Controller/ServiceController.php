@@ -25,7 +25,7 @@ class ServiceController extends BaseController
     /**
      * @Route("/service/index", name="service_list")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_SERVICES_REPORT')")
      * @Template()
      */
     public function indexAction()
@@ -60,7 +60,7 @@ class ServiceController extends BaseController
     /**
      * @Route("/service/ajax", name="ajax_service_list", defaults={"_format"="json"}, options={"expose"=true})
      * @Method("POST")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_SERVICES_REPORT')")
      * @Template()
      */
     public function ajaxListAction(Request $request)

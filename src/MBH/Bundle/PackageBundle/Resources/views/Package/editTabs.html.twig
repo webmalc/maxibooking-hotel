@@ -56,7 +56,7 @@
         'route': 'package_order_tourist_edit',
         'order': true,
         'title': '<i class="fa fa-users"></i> ' ~ 'order.tabs.payer'|trans({}, 'MBHPackageBundle'),
-        'append': entity.order.payer ? entity.order.payer.shortName : 'dash'
+        'append': entity.order.payer ? entity.order.payer.shortName|default(entity.order.payer.name) : 'dash'
     },
     {
         'route': 'package_guest',

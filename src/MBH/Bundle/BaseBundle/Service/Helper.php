@@ -321,15 +321,16 @@ class Helper
     }
 
     /**
-     * @param mixed $collection
+     * @param $collection
+     * @param string $method
      * @return array
      */
-    public function toIds($collection)
+    public function toIds($collection, $method = 'getId')
     {
         $result = [];
 
         foreach ($collection as $object) {
-            $result[] = (is_object($object) && method_exists($object, 'getId')) ? $object->getId() : (string)$object;
+            $result[] = (is_object($object) && method_exists($object, $method)) ? $object->$method() : (string)$object;
         }
 
         return $result;

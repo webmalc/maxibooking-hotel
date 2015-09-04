@@ -89,26 +89,37 @@
                     </tbody>
                 </table>
 
-                    {% if entity.deletedAt is empty and checkPackagePermissions(package) %}
+                    {% if entity.deletedAt is empty %}
                         <div class="row spacer-top">
                             <div class="col-md-12 text-right btn-list">
-                                <a href="{{ path('edit_organization', {id: entity.organization.id }) }}"
+
+                                {% if is_granted('ROLE_ORGANIZATION_PAYER') %}
+                                <a href="{{ path('organization_edit', {id: entity.organization.id }) }}"
                                    class="btn btn-success btn-sm" title="" data-toggle="tooltip"
                                    data-original-title="Редактирование записи"><i class="fa fa-pencil-square-o"></i></a>
+                                {% endif %}
+
+                                {% if is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                                 <a data-toggle="tooltip"
                                    title="{{ 'order.touristEdit.delete_organization'|trans({}, 'MBHPackageBundle') }}"
                                    href="{{ path('package_order_organization_delete', {'id': entity.id, 'packageId': package.id}) }}"
                                    class="delete-link btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></a>
+                                {% endif %}
                             </div>
                         </div>
                     {% endif %}
                 </div></div>
             {% endif %}
 
-            {{ form_start(form, {'action': path('package_order_organization_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'hidden-print form-horizontal'}}) }}
-            {{ form_widget(form) }}
-                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package} %}
-            {{ form_end(form) }}
+            {% if is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                {{ form_start(form, {'action': path('package_order_organization_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'hidden-print form-horizontal'}}) }}
+                {{ form_widget(form) }}
+            {% endif %}
+                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_ORDER_PAYER'} %}
+
+            {% if is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                {{ form_end(form) }}
+            {% endif %}
 
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
         </div>

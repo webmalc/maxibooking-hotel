@@ -11,12 +11,15 @@
     {% set searchQuery = searchQuery|merge({'tariff': entity.tariff.id}) %}
 {% endif %}
 
-{% if checkPackagePermissions(entity) %}
-
+{% set save_buttons = false %}
+{% if role is defined and is_granted(role) and entity.deletedAt is empty and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+    {% set save_buttons = true %}
+{% endif %}
     <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
         <div class="container-fluid">
 
             <ul class="nav navbar-nav">
+                {% if save_buttons %}
                 <li>
                     <button type="submit" name="save_close" class="btn btn-success navbar-btn"><i
                                 class="fa fa-check-square-o"> </i> {{ 'package.actions.save_and_close'|trans({}, 'MBHPackageBundle') }}
@@ -27,6 +30,7 @@
                                 class="fa fa-check-square-o"> </i> {{ save_text|default('package.actions.save'|trans({}, 'MBHPackageBundle')) }}
                     </button>
                 </li>
+                {% endif %}
 
                 {% if not entity.isDeleted %}
                     <li>
@@ -51,4 +55,3 @@
             </ul>
         </div>
     </div>
-{% endif %}

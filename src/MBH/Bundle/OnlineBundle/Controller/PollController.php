@@ -82,7 +82,7 @@ class PollController extends Controller
     /**
      * @Route("/api/poll/config", name="online_poll_config")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_POLLS')")
      * @Template("")
      */
     public function configAction()

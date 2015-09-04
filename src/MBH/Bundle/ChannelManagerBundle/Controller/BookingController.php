@@ -26,7 +26,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      * Main configuration page
      * @Route("/", name="booking")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_BOOKING')")
      * @Template()
      */
     public function indexAction()
@@ -50,7 +50,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      * Main configuration save
      * @Route("/", name="booking_save")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_BOOKING')")
      * @Template("MBHChannelManagerBundle:Booking:index.html.twig")
      * @param Request $request
      * @return Response
@@ -97,7 +97,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      * Room configuration page
      * @Route("/room", name="booking_room")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_BOOKING')")
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -149,7 +149,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      * Tariff configuration page
      * @Route("/tariff", name="booking_tariff")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_BOOKING')")
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -202,7 +202,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
      * Services configuration page
      * @Route("/service", name="booking_service")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_BOOKING')")
      * @Template()
      */
     public function serviceAction()

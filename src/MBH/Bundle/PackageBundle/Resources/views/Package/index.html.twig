@@ -81,6 +81,7 @@
 
     </div></div>
 
+    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'package-table-links-widget', 'header': 'form.quick_links', 'class': 'no'} %}
     <ul id="package-table-quick-links">
         <li><a class="btn btn-xs btn-default" data-value="begin-today"
                href="#">{{ 'package.index.check_in_today'|trans({}, 'MBHPackageBundle') }} (<span
@@ -91,7 +92,7 @@
         <li><a class="btn btn-xs btn-default" data-value="live-now"
                href="#">{{ 'package.index.checked_in_now'|trans({}, 'MBHPackageBundle') }} (<span
                         class="package-table-quick-links-count">{{ count.live_now|default('-') }}</span>)</a></li>
-        <li class="package-table-quick-links-margin"><a class="btn btn-xs btn-default" data-value="without-approval"
+        <li><a class="btn btn-xs btn-default" data-value="without-approval"
                                                         href="#">{{ 'package.index.not_confirmed'|trans({}, 'MBHPackageBundle') }}
                 (<span class="package-table-quick-links-count">{{ count.without_approval|default('-') }}</span>)</a>
         </li>
@@ -108,11 +109,18 @@
         <li><a class="btn btn-xs btn-default" data-value="not-check-in"
                href="#">{{ 'package.index.not_checked_in'|trans({}, 'MBHPackageBundle') }} (<span
                         class="package-table-quick-links-count">{{ count.not_check_in|default('-') }}</span>)</a></li>
-        <li class="package-table-quick-links-margin"><a class="btn btn-xs btn-default" data-value="created-by"
+
+        {% if is_granted('ROLE_PACKAGE_VIEW_ALL') %}
+        <li><a class="btn btn-xs btn-default" data-value="created-by"
                                                         href="#">{{ 'package.index.my_reservations'|trans({}, 'MBHPackageBundle') }}
                 (<span class="package-table-quick-links-count">{{ count.created_by|default('-') }}</span>)</a></li>
+        {% endif %}
+
+
         <li><a class="btn btn-xs btn-default" id="package-table-quick-reset" href="#"><i class="fa fa-ban"></i></a></li>
     </ul>
+
+    </div></div>
 
     <table id="package-table"
            class="package-table table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
@@ -125,7 +133,7 @@
             <th>{{ 'package.index.placement'|trans({}, 'MBHPackageBundle') }}</th>
             <th class="td-md">{{ 'package.index.guests'|trans({}, 'MBHPackageBundle') }}</th>
             <th class="td-md">{{ 'package.index.price'|trans({}, 'MBHPackageBundle') }}</th>
-            <th class="td-sm">{{ 'package.index.created'|trans({}, 'MBHPackageBundle') }}</th>
+            <th class="td-md">{{ 'package.index.created'|trans({}, 'MBHPackageBundle') }}</th>
             <th class="td-sm"></th>
         </tr>
         </thead>
@@ -149,14 +157,18 @@
     <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
         <div class="container-fluid">
             <ul class="nav navbar-nav">
+                {% if is_granted('ROLE_SEARCH') %}
                 <li>
                     <button onclick="location.href = '{{ path('package_search') }}'" type="submit" class="btn btn-success navbar-btn">
                         <i class="fa fa-search"> </i> {{ 'package.index.selection'|trans({}, 'MBHPackageBundle')}}</button>
                 </li>
+                {% endif %}
+                {% if is_granted('ROLE_PORTER_REPORT') %}
                 <li>
                     <button onclick="location.href = '{{ path('report_porter') }}'" type="submit" class="btn btn-default navbar-btn">
                         <i class="fa fa-bell"> </i> {{ 'package.index.porter_link'|trans({}, 'MBHPackageBundle')}}</button>
                 </li>
+                {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li id='list-export'></li>

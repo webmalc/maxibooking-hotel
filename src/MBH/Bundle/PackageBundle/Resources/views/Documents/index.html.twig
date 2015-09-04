@@ -83,7 +83,7 @@
                                        data-toggle="tooltip">
                                         <i class="fa fa-download"></i>
                                     </a>
-                                    {% if package.deletedAt is empty %}
+                                    {% if entity.deletedAt is empty and is_granted('ROLE_ORDER_DOCUMENTS') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                                     <a rel="main" href="{{ path('order_document_edit',  {'id': entity.id, 'packageId': package.id, 'name': document.name}) }}"
                                        class="btn btn-success btn-xs">
                                         <i class="fa fa-pencil-square-o"></i>
@@ -110,10 +110,12 @@
                 </div>
             {% endif %}
 
-            {% if package.deletedAt is empty and checkPackagePermissions(entity) %}
+            {% if is_granted('ROLE_ORDER_DOCUMENTS') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                 {{ form_start(form, {'action': path('order_documents', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'hidden-print form-horizontal' }}) }}
                 {{ form_widget(form) }}
-                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package} %}
+            {% endif %}
+            {% if is_granted('ROLE_ORDER_DOCUMENTS') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_ORDER_DOCUMENTS'} %}
                 {{ form_end(form) }}
             {% endif %}
 

@@ -39,6 +39,7 @@
     <form class="form-inline" action="{{ path('restriction_overview_save') }}" method="POST" name="restriction-overview-form" id="restriction-overview-form">
         <div id="restriction-overview-table-wrapper" class="scrolling"></div>
 
+        {% if is_granted('ROLE_PRICE_CACHE_EDIT') %}
         <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
             <div class="container-fluid">
                 <ul class="nav navbar-nav">
@@ -48,6 +49,7 @@
                 </ul>
             </div>
         </div>
+        {% endif %}
     </form>
 
 {% endblock %} 

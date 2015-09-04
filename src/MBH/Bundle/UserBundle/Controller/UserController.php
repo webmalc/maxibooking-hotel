@@ -32,7 +32,7 @@ class UserController extends Controller
      *
      * @Route("/", name="user")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -53,7 +53,7 @@ class UserController extends Controller
      *
      * @Route("/new", name="user_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER_NEW')")
      * @Template()
      */
     public function newAction()
@@ -61,7 +61,7 @@ class UserController extends Controller
         $entity = new User();
 
         $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')]
+            $entity, []
         );
 
         return array(
@@ -74,14 +74,14 @@ class UserController extends Controller
      *
      * @Route("/create", name="user_create")
      * @Method("POST")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER_NEW')")
      * @Template("MBHUserBundle:User:new.html.twig")
      */
     public function createAction(Request $request)
     {
         $entity = new User(array());
         $form = $this->createForm(new UserType(true, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')]
+            $entity
         );
         $form->submit($request);
 
@@ -108,7 +108,7 @@ class UserController extends Controller
      *
      * @Route("/{id}/edit", name="user_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
      */
@@ -136,7 +136,7 @@ class UserController extends Controller
             }
         }
         $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN'), 'hotels' => $hasHotels]
+            $entity, ['hotels' => $hasHotels]
         );
 
         return array(
@@ -151,7 +151,7 @@ class UserController extends Controller
     /**
      * @Route("/{id}/edit/document", name="user_document_edit")
      * @Method({"GET","PUT"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
      */
@@ -184,7 +184,7 @@ class UserController extends Controller
     /**
      * @Route("/{id}/edit/security", name="user_security_edit")
      * @Method({"GET","POST"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
      */
@@ -210,7 +210,7 @@ class UserController extends Controller
     /**
      * @Route("/{id}/edit/address", name="user_address_edit")
      * @Method({"GET","PUT"})
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template()
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
      */
@@ -241,14 +241,14 @@ class UserController extends Controller
      *
      * @Route("/{id}", name="user_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER_EDIT')")
      * @Template("MBHUserBundle:User:edit.html.twig")
      * @ParamConverter(name="entity", class="MBHUserBundle:User")
      */
     public function updateAction(Request $request, User $entity)
     {
         $form = $this->createForm(new UserType(false, $this->container->getParameter('security.role_hierarchy.roles')),
-            $entity, ['admin' => $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')]
+            $entity
         );
 
         $form->submit($request);
@@ -317,7 +317,7 @@ class UserController extends Controller
      *
      * @Route("/{id}/delete", name="user_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_USER_DELETE')")
      */
     public function deleteAction($id)
     {

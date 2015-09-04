@@ -14,6 +14,7 @@ security.login.submit: Войти
 profile.show.username: 'Имя пользователя'
 profile.show.email: 'Электронная почта'
 profile.edit.submit: Обновить
+views.profile.layout.profile: Профиль
 profile.flash.updated: 'Профиль пользователя обновлен'
 change_password.submit: 'Изменить пароль'
 change_password.flash.success: 'Пароль изменен'
