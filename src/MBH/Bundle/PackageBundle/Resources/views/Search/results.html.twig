@@ -90,7 +90,7 @@
                             <select class="form-control input-sm search-room-select">
                                 <option></option>
                                 {% for room in  result.rooms %}
-                                    <option {% if query.room == room.id %}selected{% endif %} value="{{ room.id }}">
+                                    <option {% if room.status %}data-icon="mbf-{{ roomStatusIcons[room.status.code] }}"{% endif %} {% if query.room == room.id %}selected{% endif %} value="{{ room.id }}">
                                         {{ room }}
                                     </option>
                                 {% endfor %}

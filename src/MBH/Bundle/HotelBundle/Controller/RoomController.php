@@ -49,7 +49,8 @@ class RoomController extends BaseController
         return [
             'entities' => $entities,
             'total' => $entities->count(),
-            'draw' => $request->get('draw')
+            'draw' => $request->get('draw'),
+            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
     }
 

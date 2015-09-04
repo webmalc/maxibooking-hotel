@@ -53,7 +53,11 @@
     </div></div>
 
     <div id="room-types-table">
-        {% include 'MBHPackageBundle:Report:roomTypesTable.html.twig' with {roomTypes:roomTypes, facilities: facilities, roomTypeReport: roomTypeReport} %}
+        {% include 'MBHPackageBundle:Report:roomTypesTable.html.twig' with {
+            roomTypes: roomTypes,
+            facilities: facilities,
+            roomTypeReport: roomTypeReport
+        } %}
     </div>
 
     <div class="modal fade fade bs-example-modal-sm" tabindex="-1" role="dialog" id="package-info-modal">

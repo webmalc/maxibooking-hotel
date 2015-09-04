@@ -366,6 +366,32 @@ var docReadyForms = function () {
 };
 
 
+var select2TemplateResult = {
+    _iconHtml: function(state) {
+        if (!state.id) {
+            return state.text;
+        }
+        var icon = state.element.getAttribute('data-icon');
+        return icon ? '<i class="fa ' + icon + '"></i>' : null;
+    },
+    appendIcon: function(state) {
+        var iconHtml = select2TemplateResult._iconHtml(state);
+        var html = iconHtml ?
+            state.text + ' ' + iconHtml :
+            state.text;
+
+        return $('<div>' + html + '</div>');
+    },
+    prependIcon: function(state) {
+        var iconHtml = select2TemplateResult._iconHtml(state);
+        var html = iconHtml ?
+            iconHtml + ' ' + state.text :
+            state.text;
+
+        return $('<div>' + html + '</div>');
+    }
+};
+
 /**
  * tagsSelectWidget
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
@@ -376,7 +402,6 @@ var docReadyForms = function () {
         value: null,
         emptyHelp: null
     };
-
     function tagsSelectWidget(element, options)
     {
         var that = this,
@@ -443,14 +468,7 @@ var docReadyForms = function () {
                 placeholder: $select.attr('placeholder'),
                 width: 'resolve',
                 closeOnSelect: false,
-                templateResult: function(state) {
-                    if (!state.id) {
-                        return state.text;
-                    }
-                    var icon = state.element.getAttribute('data-icon'),
-                        html = '<div><i class="fa ' + icon + '"></i> ' + state.text + '<div>';
-                    return $(html);
-                }
+                templateResult: select2TemplateResult.prependIcon
             });
         }
 

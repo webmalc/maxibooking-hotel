@@ -614,6 +614,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'optGroupRooms' => $optGroupRooms,
             'roomType' => $entity->getRoomType(),
             'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
+            'roomStatusIcons' => $this->container->getParameter('mbh.room_status_icons'),
         ]);
 
         if ($request->getMethod() == 'PUT' &&

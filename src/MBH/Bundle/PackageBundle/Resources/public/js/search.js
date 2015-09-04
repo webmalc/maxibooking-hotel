@@ -88,12 +88,11 @@ $(document).ready(function () {
                                 templateSelection: format
                             });
                         });
-                        $('.search-room-select').each(function () {
-                            $(this).select2({
-                                placeholder: 'при заезде',
-                                allowClear: true,
-                                width: 'element',
-                            });
+                        $('.search-room-select').select2({
+                            placeholder: 'при заезде',
+                            allowClear: true,
+                            templateResult: select2TemplateResult.appendIcon,
+                            width: 'element'
                         });
                         $('[data-toggle="tooltip"]').tooltip();
                     }());
