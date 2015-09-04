@@ -407,15 +407,11 @@ var select2TemplateResult = {
             templateResult: select2TemplateResult.prependIcon
         }
     };
-    function tagsSelectWidget(element, options)
+    function tagsSelectWidget($wrapper, options)
     {
         var that = this,
-            $element = $(element);
-        if ($element.is("select")) {
-            $element = $element.wrap('<div class="' + mainClass + '"></div>').closest('.' + mainClass).prepend('<div class="list"></div>');
-        }
-        var $select = $element.find('select'),
-            $list = $element.find('.list'),
+            $select = $wrapper.find('select'),
+            $list = $wrapper.find('.list'),
             inputName = $select.attr('name'),
             isMultiple = $select.attr('multiple'),
             isRequired = $select.attr('required'),
@@ -481,6 +477,9 @@ var select2TemplateResult = {
                 $select.removeAttr('multiple');
             } else {
                 inputName += '[]';
+                if (!$.isArray(value)) {
+                    value = [];
+                }
             }
             if (isRequired) {
                 $select.removeAttr('required');
@@ -522,16 +521,27 @@ var select2TemplateResult = {
 
             this.help.update();
         }
-
-        $element.data('tagsSelectWidget', this);
     }
 
     var methods = {
         init : function (options) {
             options = $.extend({}, defaultOption, options);
             return this.each(function () {
-                var widget = new tagsSelectWidget(this, options);
+                var $this = $(this);
+                var $wrapper;
+
+                if ($this.is("select")) {
+                    $wrapper = $this.wrap('<div class="' + mainClass + '"></div>').closest('.' + mainClass);
+                    $wrapper.prepend('<div class="list"></div>');
+                } else if($this.hasClass(mainClass)) {
+                    $wrapper = $this;
+                } else {
+                    throw new Error();
+                }
+
+                var widget = new tagsSelectWidget($wrapper, options);
                 widget.init();
+                $wrapper.data('tagsSelectWidget', widget);
             });
         },
         clear : function () {
@@ -560,7 +570,7 @@ var select2TemplateResult = {
     };
 })(window.jQuery);
 $('.tags-select-widget').tagsSelectWidget();
-$('.tags-select-input-widget').tagsSelectWidget();
+//$('.tags-select-input-widget').tagsSelectWidget();
 
 
 
