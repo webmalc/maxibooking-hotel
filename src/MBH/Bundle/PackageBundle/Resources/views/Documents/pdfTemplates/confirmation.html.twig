@@ -54,7 +54,7 @@
                 {% if formParams.hasFull is defined and formParams.hasFull %}
                     заказа № {{ entity.order.id }} от {{ entity.order.createdAt|date("d.m.Y") }} г.
                 {% else %}
-                    брони № {{ entity.number }} от {{ entity.createdAt|date("d.m.Y") }} г.
+                    брони № {{ entity.numberWithPrefix }} от {{ entity.createdAt|date("d.m.Y") }} г.
                 {% endif %}
             </p>
         </div>

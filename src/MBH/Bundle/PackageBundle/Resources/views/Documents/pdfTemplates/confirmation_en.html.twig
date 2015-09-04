@@ -57,7 +57,7 @@
                 {% if formParams.hasFull is defined and formParams.hasFull %}
                     № {{ entity.order.id }} FROM {{ entity.order.createdAt|date("d.m.Y") }}
                 {% else %}
-                    № {{ entity.number }} FROM {{ entity.createdAt|date("d.m.Y") }}
+                    № {{ entity.numberWithPrefix }} FROM {{ entity.createdAt|date("d.m.Y") }}
                 {% endif %}
             </p>
         </div>
