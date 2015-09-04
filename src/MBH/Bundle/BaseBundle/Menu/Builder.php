@@ -39,10 +39,24 @@ class Builder extends ContainerAware
         $menu->addChild('reservations', ['route' => 'package_search', 'label' => 'Подбор'])
             ->setAttributes(['icon' => 'fa fa-search']);
 
+        //porter
+        $menu->addChild('porter_links', ['route' => '_welcome', 'label' => 'Портье'])
+            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bell']);
+
+        $menu['porter_links']->addChild('report_room_types', ['route' => 'report_room_types', 'label' => 'Номерной фонд'])
+        ->setAttributes(['icon' => 'fa fa-bed']);
+
+        $menu['porter_links']->addChild('report_porter', ['route' => 'report_porter', 'label' => 'Заезд/Выезд'])
+            ->setAttributes(['icon' => 'fa fa-bell']);
+        $menu['porter_links']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
+            ->setAttributes(['icon' => 'fa fa-table']);
+
         //Prices links
         $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Номера и цены'])
             ->setAttributes(['dropdown' => true, 'icon' => $this->container->get('mbh.currency')->info()['icon']]);
 
+
+        //Tasks links
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         /** @var UserInterface $user */
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
@@ -86,11 +100,6 @@ class Builder extends ContainerAware
         // report
         $menu->addChild('reports', ['route' => '_welcome', 'label' => 'Отчеты'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bar-chart']);
-        
-        $menu['reports']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
-            ->setAttributes(['icon' => 'fa fa-table']);
-        $menu['reports']->addChild('report_porter', ['route' => 'report_porter', 'label' => 'Заезд/Выезд'])
-            ->setAttributes(['icon' => 'fa fa-bell']);
         $menu['reports']->addChild('service_list', ['route' => 'service_list', 'label' => 'Услуги'])
             ->setAttributes(['icon' => 'fa fa-plug']);
         $menu['reports']->addChild('clients', ['route' => 'tourist', 'label' => 'Клиенты'])
@@ -103,8 +112,7 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
-        $menu['reports']->addChild('report_room_types', ['route' => 'report_room_types', 'label' => 'Номерной фонд'])
-            ->setAttributes(['icon' => 'fa fa-bed']);
+
 
 
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
