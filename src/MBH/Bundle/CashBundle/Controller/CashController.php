@@ -133,6 +133,11 @@ class CashController extends Controller
         }
 
         $queryCriteria->isPaid = !$request->get('show_no_paid');
+
+        if ($request->get('show_no_confirmed')) {
+            $queryCriteria->isConfirmed = false;
+        }
+
         $queryCriteria->begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
         $queryCriteria->end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
 

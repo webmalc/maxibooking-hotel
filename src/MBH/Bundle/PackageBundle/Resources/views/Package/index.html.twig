@@ -162,12 +162,6 @@
                         <i class="fa fa-search"> </i> {{ 'package.index.selection'|trans({}, 'MBHPackageBundle')}}</button>
                 </li>
                 {% endif %}
-                {% if is_granted('ROLE_PORTER_REPORT') %}
-                <li>
-                    <button onclick="location.href = '{{ path('report_porter') }}'" type="submit" class="btn btn-default navbar-btn">
-                        <i class="fa fa-bell"> </i> {{ 'package.index.porter_link'|trans({}, 'MBHPackageBundle')}}</button>
-                </li>
-                {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li id='list-export'></li>

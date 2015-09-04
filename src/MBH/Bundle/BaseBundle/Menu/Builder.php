@@ -23,6 +23,12 @@ class Builder extends ContainerAware
     public function mainMenu(FactoryInterface $factory, array $options)
     {
 
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $hotel = $this->container->get('mbh.hotel.selector')->getSelected();
+
+        /** @var UserInterface $user */
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+
         $menu = $factory->createItem('root');
 
         $menu->setChildrenAttributes([
@@ -39,19 +45,49 @@ class Builder extends ContainerAware
         $menu->addChild('reservations', ['route' => 'package_search', 'label' => 'Подбор'])
             ->setAttributes(['icon' => 'fa fa-search']);
 
+        //porter
+        $menu->addChild('porter_links', ['route' => '_welcome', 'label' => 'Портье'])
+            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bell']);
+
+        $menu['porter_links']->addChild('report_room_types', ['route' => 'report_room_types', 'label' => 'Номерной фонд'])
+        ->setAttributes(['icon' => 'fa fa-bed']);
+
+        $arrivals = $dm->getRepository('MBHPackageBundle:Package')->fetch([
+            'begin' => new \DateTime('midnight'),
+            'end' => new \DateTime('midnight'),
+            'dates' => 'begin',
+            'checkIn' => false,
+            'checkOut' => false,
+            'hotel' => $hotel,
+            'count' => true
+        ]);
+
+        $menu['porter_links']->addChild('report_porter', [
+            'route' => 'report_porter',
+            'label' => 'Заезд/Выезд',
+        ])
+        ->setAttributes([
+            'icon' => 'fa fa-bell',
+            'badge' => true,
+            'badge_class' => 'bg-red',
+            'badge_id' => 'arrivals',
+            'badge_value' => $arrivals
+        ]);
+        $menu['porter_links']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
+            ->setAttributes(['icon' => 'fa fa-table']);
+
         //Prices links
         $menu->addChild('prices', ['route' => '_welcome', 'label' => 'Номера и цены'])
             ->setAttributes(['dropdown' => true, 'icon' => $this->container->get('mbh.currency')->info()['icon']]);
 
-        $dm = $this->container->get('doctrine_mongodb')->getManager();
-        /** @var UserInterface $user */
-        $user = $this->container->get('security.token_storage')->getToken()->getUser();
 
+        //Tasks links
         $queryCriteria = new TaskQueryCriteria();
         $queryCriteria->roles = $user->getRoles();
         $queryCriteria->performer = $user->getId();
         $queryCriteria->onlyOwned = true;
         $queryCriteria->status = 'open';
+        $queryCriteria->hotel = $hotel;
 
         $openTaskCount = $dm->getRepository('MBHHotelBundle:Task')->getCountByCriteria($queryCriteria);
 
@@ -86,11 +122,6 @@ class Builder extends ContainerAware
         // report
         $menu->addChild('reports', ['route' => '_welcome', 'label' => 'Отчеты'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bar-chart']);
-        
-        $menu['reports']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
-            ->setAttributes(['icon' => 'fa fa-table']);
-        $menu['reports']->addChild('report_porter', ['route' => 'report_porter', 'label' => 'Заезд/Выезд'])
-            ->setAttributes(['icon' => 'fa fa-bell']);
         $menu['reports']->addChild('service_list', ['route' => 'service_list', 'label' => 'Услуги'])
             ->setAttributes(['icon' => 'fa fa-plug']);
         $menu['reports']->addChild('clients', ['route' => 'tourist', 'label' => 'Клиенты'])
@@ -103,8 +134,7 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
-        $menu['reports']->addChild('report_room_types', ['route' => 'report_room_types', 'label' => 'Номерной фонд'])
-            ->setAttributes(['icon' => 'fa fa-bed']);
+
 
 
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])

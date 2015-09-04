@@ -23,6 +23,7 @@ views.cash.jsonButtons.delete_record: 'Удаление записи'
 views.cash.layout.cash: Касса
 
 views.cash.index.show_no_paid: Показать неоплаченные
+views.cash.index.show_not_confirmed: Показать только неподтвержденные
 views.cash.index.show_deleted: Показать удаленные
 views.cash.index.byDay: По дням
 views.cash.index.result: Итого

@@ -52,19 +52,26 @@
                 </select>
             </div>
             <div class="input">
+                <i class="fa fa-check"
+                   title="{{ 'views.cash.index.show_not_confirmed'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"
+                ></i>
+                &nbsp;
+                <input type="checkbox" name="show_no_confirmed" id="show_no_confirmed" value="1">
+
+                &nbsp;
                 <i class="{{ currency().icon }}"
                    title="{{ 'views.cash.index.show_no_paid'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"
-                   style="opacity: 0.5"></i>
+                ></i>
                 &nbsp;
-                <input type="checkbox" name="show_no_paid" id="show_no_paid">
+                <input type="checkbox" name="show_no_paid" id="show_no_paid" value="1">
 
                 &nbsp; <i class="fa fa-trash-o" title="{{ 'views.cash.index.show_deleted'|trans({}, 'MBHCashBundle') }}"
                           data-toggle="tooltip"></i>&nbsp;
-                <input type="checkbox" name="deleted" id="deleted-checkbox">
+                <input type="checkbox" name="deleted" id="deleted-checkbox" value="1">
 
                 &nbsp; <i class="fa fa-calendar" title="{{ 'views.cash.index.byDay'|trans({}, 'MBHCashBundle') }}"
                           data-toggle="tooltip"></i>&nbsp;
-                <input type="checkbox" name="by_day" id="by_day">
+                <input type="checkbox" name="by_day" id="by_day" value="1">
             </div>
         </form>
         </div></div>
