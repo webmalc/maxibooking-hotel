@@ -247,7 +247,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'housings' => $this->dm->getRepository('MBHHotelBundle:Housing')->findBy([
                 'hotel.id' => $this->hotel->getId()
             ]),
-            'floors' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchFloors()
+            'floors' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchFloors(),
+            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
     }
 
@@ -391,7 +392,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'roomsData' => $roomsData,
             'totalDays' => count($period),
             'begin' => $begin,
-            'end' => $end
+            'end' => $end,
+            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
     }
 
@@ -516,6 +518,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'result' => $result,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'statuses' => $roomTypeReport->getAvailableStatues(),
+            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
     }
 
@@ -543,7 +546,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         return [
             'roomTypeReport' => $roomTypeReport,
             'result' => $result,
-            'facilities' => $this->get('mbh.facility_repository')->getAll()
+            'facilities' => $this->get('mbh.facility_repository')->getAll(),
+            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
     }
 }

@@ -49,7 +49,12 @@
                         <ul class="calendarDates list-unstyled" data-obj="{{ roomData.room.id }}"
                             data-index="{{ key }}">
                             <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
-                                <div class="title-sub">{{ roomData.room.getName[0:48] }}</div>
+                                <div class="title-sub">
+                                    {{ roomData.room.getName[0:48] }}
+                                    {% if roomData.room.status %}
+                                        <i class="pull-right margin-right-md fa mbf-{{ roomStatusIcons[roomData.room.status.code] }}" title='{{ roomData.room.status.title }}'></i>
+                                    {% endif %}
+                                </div>
                             </li>
 
                             <!---------------------------- PACKAGE INFO ------------------------->

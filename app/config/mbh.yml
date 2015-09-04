@@ -321,6 +321,12 @@ parameters:
         correspondent_account: '33300000000000000000'
         accountant_fio: ''
 
+    mbh.room_status_icons:
+        repair: 'tools'
+        cleaning: 'clean'
+        reserve: 'lock'
+        other: 'clock'
+
     # BaseBundle/Resources/translations/messages.ru.yml
     mbh.languages:
         - en
