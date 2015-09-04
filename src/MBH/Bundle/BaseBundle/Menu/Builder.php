@@ -62,17 +62,21 @@ class Builder extends ContainerAware
             'count' => true
         ]);
 
+        $arrivalsData = [];
+        if ($arrivals) {
+            $arrivalsData = [
+                'badge' => true,
+                'badge_class' => 'bg-red',
+                'badge_id' => 'arrivals',
+                'badge_value' => $arrivals
+            ];
+        }
+
         $menu['porter_links']->addChild('report_porter', [
             'route' => 'report_porter',
             'label' => 'Заезд/Выезд',
         ])
-        ->setAttributes([
-            'icon' => 'fa fa-bell',
-            'badge' => true,
-            'badge_class' => 'bg-red',
-            'badge_id' => 'arrivals',
-            'badge_value' => $arrivals
-        ]);
+        ->setAttributes(['icon' => 'fa fa-bell'] + $arrivalsData);
         $menu['porter_links']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
             ->setAttributes(['icon' => 'fa fa-table']);
 

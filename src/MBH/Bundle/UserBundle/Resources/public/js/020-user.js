@@ -43,5 +43,5 @@ $(document).ready(function () {
             }
         },
         dropdownCssClass: "bigdrop"
-    })
+    });
 })
