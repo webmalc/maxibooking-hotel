@@ -25,14 +25,14 @@
     </tr>
     </thead>
     <tbody>
-    {% if dataTable is empty %}
+    {% if result.dataTable is empty %}
         <tr class="danger text-cente">
             <td colspan="9">
                 Ничего не найдено
             </td>
         </tr>
     {% endif %}
-    {% for data in dataTable %}
+    {% for data in result.dataTable %}
         {% set roomType = data.roomType %}
         <tr class="info">
             <td colspan="9">
@@ -46,8 +46,12 @@
             </td>
         </tr>
         {% for room in data.rooms %}
-            {% set package = packages[room.id] is defined ? packages[room.id] : null %}
+            {% set package = result.packages[room.id] is defined ? result.packages[room.id] : null %}
             {% set style = '' %}
+
+            {% if room.status %}
+                {% set style = 'bg-gray' %}
+            {% endif %}
 
             {% if package and package.order %}
                 {% if not package.isCheckIn %}
@@ -158,7 +162,7 @@
                             {% set style = 'warning' %}
                         {% endif %}
 
-                        {% set status = statusesResolver.getStatusByPackage(package) %}
+                        {% set status = roomTypeReport.getStatusByPackage(package) %}
                     {% endif %}
 
                     <a data-id="{% if package %}{{ package.id }}{% endif %}"
@@ -210,4 +214,13 @@
         {% endfor %}
     {% endfor %}
     </tbody>
+    <tfoot>
+    </tfoot>
 </table>
+
+<div class="text-center bg-gray color-palette alert" id="package-summary">
+    <span class="package-summary-row"><b>Номеров: </b><span>{{ result.total.rooms }}</span></span>
+    <span class="package-summary-row"><b>Свободно: </b><span>{{ result.total.open }}</span></span>
+    <span class="package-summary-row"><b>Занято: </b><span>{{ result.total.reserve }}</span></span>
+    <span class="package-summary-row"><b>Проживают: </b><span>{{ result.total.guests }}</span></span>
+</div>

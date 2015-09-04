@@ -4,11 +4,12 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Document\Room;
-use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
-use MBH\Bundle\PackageBundle\Component\ReportRoomTypeStatus;
+use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
+use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -495,39 +496,26 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     {
         /** @var RoomTypeRepository $roomTypeRepository */
         $roomTypeRepository = $this->dm->getRepository('MBHHotelBundle:RoomType');
-        /** @var PackageRepository $packageRepository */
-        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
         /** @var RoomType[] $roomTypes */
         $roomTypes = $roomTypeRepository->findBy(['hotel.id' => $this->hotel->getId()]);
         $housings = $this->dm->getRepository('MBHHotelBundle:Housing')->findAll();
         $floors = $this->dm->getRepository('MBHHotelBundle:Room')->createQueryBuilder()->select('floor')->distinct('floor')->getQuery()->execute();
 
-        $date = new \DateTime('midnight');
-        $packages = [];
-        $dataTable = [];
 
-        foreach($roomTypes as $roomType) {
-            foreach($roomType->getRooms() as $room) {
-                $packages[$room->getId()] = $packageRepository->getPackageByAccommodation($room, $date);
-
-                $dataTable[$room->getRoomType()->getId()]['roomType'] = $room->getRoomType();
-                $dataTable[$room->getRoomType()->getId()]['rooms'][] = $room;
-            }
-        }
-
-        $statusesResolver = new ReportRoomTypeStatus();
+        $criteria = new RoomTypeReportCriteria();
+        $criteria->hotel = $this->hotel->getId();
+        $roomTypeReport = new RoomTypeReport($this->container);
+        $result = $roomTypeReport->findByCriteria($criteria);
 
         return [
-            'dataTable' => $dataTable,
-            'packages' => $packages,
             'roomTypes' => $roomTypes,
             'housings' => $housings,
             'floors' => $floors,
-            'date' => $date,
-            'statusesResolver' => $statusesResolver,
+            'roomTypeReport' => $roomTypeReport,
+            'result' => $result,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
-            'statuses' => $statusesResolver->getAvailableStatues()
+            'statuses' => $roomTypeReport->getAvailableStatues(),
         ];
     }
 
@@ -542,61 +530,19 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function roomTypesTableAction(Request $request)
     {
-        $date = new \DateTime('midnight');
-        /** @var RoomTypeRepository $roomTypeRepository */
-        $roomTypeRepository = $this->dm->getRepository('MBHHotelBundle:RoomType');
-        /** @var PackageRepository $packageRepository */
-        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+        $criteria = new RoomTypeReportCriteria();
+        $criteria->hotel = $this->hotel->getId();
+        $criteria->roomType = $request->get('roomType');
+        $criteria->housing = $request->get('housing');
+        $criteria->floor = $request->get('floor');
+        $criteria->status = $request->get('status');
 
-        $criteria = ['hotel.id' => $this->hotel->getId()];
-
-        if($request->get('roomType')) {
-            $criteria['id'] = $request->get('roomType');
-        }
-        /** @var RoomType[] $roomTypes */
-        $roomTypes = $roomTypeRepository->findBy($criteria);
-
-        $roomTypeIDs = [];
-        foreach($roomTypes as $roomType) {
-            $roomTypeIDs[] = $roomType->getId();
-        }
-        /** @var RoomRepository $roomRepository */
-        $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
-        $queryBuilder = $roomRepository->createQueryBuilder()
-            ->field('roomType.id')->in($roomTypeIDs);
-
-        if($request->get('housing')) {
-            $queryBuilder->field('housing.id')->equals($request->get('housing'));
-        }
-        if($request->get('floor')) {
-            $queryBuilder->field('floor')->equals($request->get('floor'));
-        }
-
-        /** @var Room[] $rooms */
-        $rooms = $queryBuilder->getQuery()->execute();
-        $packages = [];
-        $dataTable = [];
-
-        $statusesResolver = new ReportRoomTypeStatus();
-        $status = $request->get('status');
-        foreach($rooms as $room) {
-            $package = $packageRepository->getPackageByAccommodation($room, $date);
-            if (
-                empty($status) ||
-                ($package === null && $status === ReportRoomTypeStatus::OPEN) ||
-                $package && $statusesResolver->getStatusByPackage($package) === $status
-            ) {
-                $packages[$room->getId()] = $package;
-                $dataTable[$room->getRoomType()->getId()]['roomType'] = $room->getRoomType();
-                $dataTable[$room->getRoomType()->getId()]['rooms'][] = $room;
-            }
-        }
+        $roomTypeReport = new RoomTypeReport($this->container);
+        $result = $roomTypeReport->findByCriteria($criteria);
 
         return [
-            'statusesResolver' => $statusesResolver,
-            'dataTable' => $dataTable,
-            'packages' => $packages,
-            'date' => $date,
+            'roomTypeReport' => $roomTypeReport,
+            'result' => $result,
             'facilities' => $this->get('mbh.facility_repository')->getAll()
         ];
     }
