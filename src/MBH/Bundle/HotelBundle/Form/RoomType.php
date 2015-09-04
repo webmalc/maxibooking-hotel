@@ -76,6 +76,11 @@ class RoomType extends AbstractType
         }
 
         $builder
+            ->add('facilities', 'mbh_facilities', [
+                'label' => 'form.roomType.facilities',
+                'group' => 'form.roomType.general_info',
+                'required' => false
+            ])
             ->add('status', 'document', [
                 'label' => 'form.roomType.status',
                 'group' => 'form.roomType.settings',
@@ -86,11 +91,6 @@ class RoomType extends AbstractType
                 },
                 'class' => 'MBH\Bundle\HotelBundle\Document\RoomStatus',
                 'empty_value' => '',
-            ])
-            ->add('facilities', 'mbh_facilities', [
-                'label' => 'form.roomType.facilities',
-                'group' => 'form.roomType.settings',
-                'required' => false
             ]);
     }
 

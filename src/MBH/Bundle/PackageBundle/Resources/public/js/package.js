@@ -169,7 +169,7 @@ var docReadyPackages = function () {
 
         });
 
-        deleted.on('switchChange', function () {
+        deleted.on('switchChange.bootstrapSwitch', function () {
 
             if ($.cookie('order-packages-panel-deleted') === undefined) {
                 $.cookie('order-packages-panel-deleted', 1, {path: '/'});

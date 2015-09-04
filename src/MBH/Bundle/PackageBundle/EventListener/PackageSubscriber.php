@@ -231,20 +231,20 @@ class PackageSubscriber implements EventSubscriber
         if (!$entity instanceof Package) {
             return;
         }
-        
+        /** @var Package $entity */
         // Set number
         if (empty($entity->getNumber())) {
-            /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-            $dm = $this->container->get('doctrine_mongodb')->getManager();
+            $dm = $args->getDocumentManager();
 
             if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $dm->getFilterCollection()->disable('softdeleteable');
             }
             $lastEntity = $dm->getRepository('MBHPackageBundle:Package')
-                         ->createQueryBuilder('q')
-                         ->sort('number', 'desc')
-                         ->getQuery()
-                         ->getSingleResult()
+                ->createQueryBuilder('q')
+                ->field('order.id')->equals($entity->getOrder()->getId())
+                ->sort('number', 'desc')
+                ->getQuery()
+                ->getSingleResult()
             ;
             
             $dm->getFilterCollection()->enable('softdeleteable');

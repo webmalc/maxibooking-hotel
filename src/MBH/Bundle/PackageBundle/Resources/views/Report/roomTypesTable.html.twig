@@ -76,16 +76,18 @@
                     {{ room.floor }}
                 </td>
                 <td>
-                    <span class="label {% if room.facilities is not empty %}label-warning{% else %}label-default{% endif %}">
-                        <i class="fa fa-bed"
-                           style="cursor: pointer;"
-                           data-html="true"
-                           data-container="body"
-                           data-toggle="popover"
-                           data-placement="top"
-                           data-content="{% for facility in (room.facilities is not empty ? room.facilities : room.allFacilities) %}<i style='margin-left: 3px' data-toggle='tooltip' data-title='{{ facilities[facility] }}' class='fa fa-lg mbf-{{ facility }}'></i>{% endfor %}"
-                        ></i>
-                    </span>
+                    {% if not room.facilities is empty or not room.allFacilities is empty %}
+                        <span class="label {% if room.facilities is not empty %}label-warning{% else %}label-default{% endif %}">
+                            <i class="fa fa-bed"
+                               style="cursor: pointer;"
+                               data-html="true"
+                               data-container="body"
+                               data-toggle="popover"
+                               data-placement="top"
+                               data-content="{% for facility in (room.facilities is not empty ? room.facilities : room.allFacilities) %}<i style='margin-left: 3px' data-toggle='tooltip' data-title='{{ facilities[facility] }}' class='fa fa-lg mbf-{{ facility }}'></i>{% endfor %}"
+                            ></i>
+                        </span>
+                    {% endif %}
                 </td>
                 <td>
                     {% if package %}
