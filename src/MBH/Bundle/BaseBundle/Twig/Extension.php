@@ -154,7 +154,7 @@ class Extension extends \Twig_Extension
     public function initial($user)
     {
         return $user->getLastName() . ' ' .
-        mb_substr($user->getFirstName(), 0, 1) . '.' .
+        ($user->getFirstName() ? mb_substr($user->getFirstName(), 0, 1) . '.' : '' ).
         ($user->getPatronymic() ? mb_substr($user->getPatronymic(), 0, 1) . '.' : '');
     }
 }

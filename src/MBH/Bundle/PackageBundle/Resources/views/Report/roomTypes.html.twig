@@ -18,24 +18,28 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group">
-                <label><i class="fa fa-home" title='Корпус' data-toggle='tooltip'></i></label>
-                <select name="housing" data-placeholder="Корпус" id="accommodation-report-filter-housing" class="form-control input-sm">
-                    <option></option>
-                    {% for housing in housings %}
-                        <option value="{{ housing.id }}" {% if housing.id in app.request.get('housing') and housing|length != app.request.get('housing')|length %}selected{% endif %}>{{ housing.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label><i class="fa fa-building" title='Этаж' data-toggle='tooltip'></i></label>
-                <select name="floor" data-placeholder="Этаж" id="accommodation-report-filter-floor" class="form-control input-sm" style="width: 75px">
-                    <option></option>
-                    {% for floor in floors %}
-                        <option value="{{ floor }}" {% if floor in app.request.get('floor') and floor|length != app.request.get('floor')|length %}selected{% endif %}>{{ floor }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+            {% if housings %}
+                <div class="form-group">
+                    <label><i class="fa fa-home" title='Корпус' data-toggle='tooltip'></i></label>
+                    <select name="housing" data-placeholder="Корпус" id="accommodation-report-filter-housing" class="form-control input-sm">
+                        <option></option>
+                        {% for housing in housings %}
+                            <option value="{{ housing.id }}" {% if housing.id in app.request.get('housing') and housing|length != app.request.get('housing')|length %}selected{% endif %}>{{ housing.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+            {% if floors %}
+                <div class="form-group">
+                    <label><i class="fa fa-building" title='Этаж' data-toggle='tooltip'></i></label>
+                    <select name="floor" data-placeholder="Этаж" id="accommodation-report-filter-floor" class="form-control input-sm" style="width: 75px">
+                        <option></option>
+                        {% for floor in floors %}
+                            <option value="{{ floor }}" {% if floor in app.request.get('floor') and floor|length != app.request.get('floor')|length %}selected{% endif %}>{{ floor }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
             <div class="form-group">
                 <label><i class="{{ currency().icon }}" title='Статус оплаты' data-toggle='tooltip'></i></label>
                 <select name="status" data-placeholder="Статус оплаты" id="accommodation-report-filter-status" class="form-control input-sm">

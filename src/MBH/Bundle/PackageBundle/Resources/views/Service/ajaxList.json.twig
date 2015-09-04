@@ -6,7 +6,7 @@
         {% for item in results %}
             [
                 "<div class='text-center {% if item.deletedAt %}deleted-entry{% endif %}'><i class='fa fa-plug'></i></div>",
-                "{{ item.package.number }} <small><a class='external' href='{{ path("package_service", {id: item.package.id}) }}' rel='main' target='_blank'><i class='fa fa-external-link'></i></a></small>",
+                "{{ item.package.numberWithPrefix }} <small><a class='external' href='{{ path("package_service", {id: item.package.id}) }}' rel='main' target='_blank'><i class='fa fa-external-link'></i></a></small>",
                 "{% if item.service.date %}{% if item.begin %}{{ item.begin|mbh_format }}{% else %}<small><a href='{{ path("package_service", {id: item.package.id}) }}' class='danger'>&lt;дата не указана&gt;</a></small>{% endif %}{% else %}{{ item.begin|mbh_format }} - {{ item.end|mbh_format }}{% endif %}{% if item.service.time %}<br>{% if item.time %}<small>{{ item.time|date('H:i') }}{% else %}<a href='{{ path("package_service", {id: item.package.id}) }}' class='danger'>&lt;время не указано&gt;</a>{% endif %}</small>{% endif %}",
                 "{{ item.service.name }}",
                 "{{ item.calcType == 'per_night' ? item.nights : '' }}",
