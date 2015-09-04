@@ -282,6 +282,10 @@ var docReadyPackages = function () {
         var $body = $modal.find('.modal-body');
         $body.empty();
     });
+
+    $('#mbh_bundle_packagebundle_package_accommodation_type_accommodation').select2({
+        templateResult: select2TemplateResult.appendIcon
+    });
 }
 
 $(document).ready(function () {

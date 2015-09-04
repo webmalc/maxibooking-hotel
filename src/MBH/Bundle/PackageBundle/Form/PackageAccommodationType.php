@@ -2,16 +2,22 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
+use MBH\Bundle\HotelBundle\Document\Room;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+/**
+ * Class PackageAccommodationType
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
 class PackageAccommodationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $optGroupRooms = $options['optGroupRooms'];
+        $roomStatusIcons = $options['roomStatusIcons'];
 
         if ($options['roomType']) {
             $name = $options['roomType']->getName();
@@ -33,6 +39,13 @@ class PackageAccommodationType extends AbstractType
                 'group' => 'form.packageAccommodationType.choose_placement',
                 'choices' => $optGroupRooms,
                 'property' => 'name',
+                'attr' => [
+                    'class' => 'plain-html'
+                ],
+                'choice_attr' => function(Room $room) use($roomStatusIcons) {
+                    $status = $room->getStatus();
+                    return $status ? ['data-icon' => 'mbf-'.$roomStatusIcons[$status->getCode()]] : [];
+                },
                 'constraints' => new NotBlank()
             ])
             ->add('purposeOfArrival', 'choice', [
@@ -76,13 +89,14 @@ class PackageAccommodationType extends AbstractType
             ));
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
             'optGroupRooms' => [],
             'arrivals' => [],
-            'roomType' => null
+            'roomType' => null,
+            'roomStatusIcons' => []
         ]);
     }
 

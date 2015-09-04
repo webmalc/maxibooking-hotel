@@ -9,7 +9,7 @@
                 "{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'room'} %}{% endembed %}",
                 "{{ entity.housing }}",
                 "{{ entity.floor }}",
-                "{% if entity.status %}{{ entity.status.title }}{% endif %}",
+                "<div class='text-center'>{% if entity.status %}<i class='fa mbf-{{ roomStatusIcons[entity.status.code] }}' data-toggle='tooltip' data-title='{{ entity.status.title }}'></i>{% endif %}</div>",
                 "<div class='btn-list'>{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'room'} %}{% endembed %}</div>"
             ]{% if loop.index != entities.count(true) %},{% endif %}
         {% endfor %}

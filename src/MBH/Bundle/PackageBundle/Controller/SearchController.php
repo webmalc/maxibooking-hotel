@@ -118,7 +118,8 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             'results' => $results,
             'query' => $query,
             'tariffResults' => $tariffResults,
-            'selectedTariff' => $data['tariff']
+            'selectedTariff' => $data['tariff'],
+            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons')
         ];
     }
 
