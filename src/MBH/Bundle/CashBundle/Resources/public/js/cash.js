@@ -65,6 +65,7 @@ $(document).ready(function () {
         $cashTable = $('#cash-table'),
         $cashTableByDay = $('#cash-table-by-day'),
         $showNoPaidCheckbox = $('#show_no_paid'),
+        $showNoConfirmed = $('#show_no_confirmed'),
         $deletedCheckbox = $('#deleted-checkbox'),
         $byDayCheckbox = $('#by_day'),
         $user = $('#user'),
@@ -78,6 +79,7 @@ $(document).ready(function () {
             data.filter = $filterSelectElement.select2('val');
             data.method = $methodSelectElement.select2('val');
             data.show_no_paid = $showNoPaidCheckbox.prop("checked") ? 1 : 0;
+            data.show_no_confirmed = $showNoConfirmed.prop("checked") ? 1 : 0;
             data.by_day = $byDayCheckbox.prop("checked") ? 1 : 0;
             data.deleted = $deletedCheckbox.prop("checked") ? 1 : 0;
             data.user = $user.val();
@@ -161,7 +163,6 @@ $(document).ready(function () {
             }
         } else {
             if(!this.initCashTable) {
-                console.log(dataTableOptions);
                 $cashTable.dataTable(dataTableOptions);
                 this.initCashTable = true;
             }
