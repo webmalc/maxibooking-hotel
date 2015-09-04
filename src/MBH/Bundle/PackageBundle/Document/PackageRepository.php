@@ -332,14 +332,13 @@ class PackageRepository extends DocumentRepository
         $order = 'createdAt';
         $dir = 'desc';
         $cols = [
-            1 => 'number',
-            2 => 'order.id',
-            3 => 'begin',
-            4 => 'roomType',
-            5 => 'mainTourist',
-            6 => 'price',
-            7 => 'createdAt',
-            8 => 'end'
+            1 => 'number', //['order.id', 'number']
+            2 => 'begin',
+            3 => 'roomType',
+            4 => 'mainTourist',
+            5 => 'price',
+            6 => 'createdAt',
+            7 => 'end'
         ];
         if (isset($data['order']) && isset($cols[$data['order']])) {
             $order = $cols[$data['order']];

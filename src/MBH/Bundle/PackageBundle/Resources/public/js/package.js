@@ -85,7 +85,6 @@ var docReadyPackages = function () {
         "aoColumns": [
             {"bSortable": false}, // icon
             null, // prefix
-            null, // order
             null, // created
             null, // room
             null, //dates

@@ -256,7 +256,7 @@ class PackageSubscriber implements EventSubscriber
             }
             
             if ($entity->getTariff() && empty($entity->getNumberWithPrefix())) {
-                $entity->setNumberWithPrefix($entity->getTariff()->getHotel()->getPrefix() . $number);
+                $entity->setNumberWithPrefix($entity->getTariff()->getHotel()->getPrefix() . $entity->getOrder()->getId(). '/' . $number);
             }
         }
     }
