@@ -23,6 +23,12 @@ class Builder extends ContainerAware
     public function mainMenu(FactoryInterface $factory, array $options)
     {
 
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $hotel = $this->container->get('mbh.hotel.selector')->getSelected();
+
+        /** @var UserInterface $user */
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+
         $menu = $factory->createItem('root');
 
         $menu->setChildrenAttributes([
@@ -46,8 +52,27 @@ class Builder extends ContainerAware
         $menu['porter_links']->addChild('report_room_types', ['route' => 'report_room_types', 'label' => 'Номерной фонд'])
         ->setAttributes(['icon' => 'fa fa-bed']);
 
-        $menu['porter_links']->addChild('report_porter', ['route' => 'report_porter', 'label' => 'Заезд/Выезд'])
-            ->setAttributes(['icon' => 'fa fa-bell']);
+        $arrivals = $dm->getRepository('MBHPackageBundle:Package')->fetch([
+            'begin' => new \DateTime('midnight'),
+            'end' => new \DateTime('midnight'),
+            'dates' => 'begin',
+            'checkIn' => false,
+            'checkOut' => false,
+            'hotel' => $hotel,
+            'count' => true
+        ]);
+
+        $menu['porter_links']->addChild('report_porter', [
+            'route' => 'report_porter',
+            'label' => 'Заезд/Выезд',
+        ])
+        ->setAttributes([
+            'icon' => 'fa fa-bell',
+            'badge' => true,
+            'badge_class' => 'bg-red',
+            'badge_id' => 'arrivals',
+            'badge_value' => $arrivals
+        ]);
         $menu['porter_links']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
             ->setAttributes(['icon' => 'fa fa-table']);
 
@@ -57,15 +82,12 @@ class Builder extends ContainerAware
 
 
         //Tasks links
-        $dm = $this->container->get('doctrine_mongodb')->getManager();
-        /** @var UserInterface $user */
-        $user = $this->container->get('security.token_storage')->getToken()->getUser();
-
         $queryCriteria = new TaskQueryCriteria();
         $queryCriteria->roles = $user->getRoles();
         $queryCriteria->performer = $user->getId();
         $queryCriteria->onlyOwned = true;
         $queryCriteria->status = 'open';
+        $queryCriteria->hotel = $hotel;
 
         $openTaskCount = $dm->getRepository('MBHHotelBundle:Task')->getCountByCriteria($queryCriteria);
 
