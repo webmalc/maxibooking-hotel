@@ -9,10 +9,14 @@
     <div class="tab-content">
         {{ form_start(form, {'action': path('tourist_edit_black_list', {'id': tourist.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
         {{ form_widget(form) }}
-        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': tourist, 'route': 'tourist' } %}
+        {% if isInBlackList %}
+            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': tourist, 'route': 'tourist' } %}
+        {% else %}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'entity': tourist, 'route': 'tourist', save_text: 'form.blackListInfoType.add'|trans, save_close: false } %}
+        {% endif %}
         {{ form_end(form) }}
 
-        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': tourist, 'logs': logs, 'delete_route': 'tourist_delete' } %}
+        {#% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': tourist, 'logs': logs, 'delete_route': 'tourist_delete' } %#}
     </div>
 
 {% endblock %}

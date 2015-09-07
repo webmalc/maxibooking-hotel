@@ -171,6 +171,8 @@ languages.ru: 'Русский'
 
 security.not_access: Нет прав доступа
 
+crud.add: Добавить
+crud.create: Создать
 crud.edit: Редактировать
 crud.delete: Удалить
 form.quick_links: Быстрые ссылки

@@ -334,11 +334,12 @@ class TouristController extends Controller
         $blackListRepository = new BlackListRepository();
         $flashBag = $request->getSession()->getFlashBag();
         $blackListInfo = $blackListRepository->findOneByTourist($tourist);
-        $blackListInfo = new BlackListInfo();
-        if(!$blackListInfo) {
-            $flashBag->set('success', 'Гость не в черном списке');
-        } else {
+        $isInBlackList = isset($blackListInfo);
+        if($isInBlackList) {
             $flashBag->set('error', 'Гость в черном списке');
+        } else {
+            $flashBag->set('success', 'Гость не в черном списке');
+            $blackListInfo = new BlackListInfo();
         }
 
         $blackListInfo->setHotel($this->hotel);
@@ -355,6 +356,7 @@ class TouristController extends Controller
 
         return [
             'form' => $form->createView(),
+            'isInBlackList' => $isInBlackList,
             'tourist' => $tourist,
             'logs' => $this->logs($tourist),
         ];

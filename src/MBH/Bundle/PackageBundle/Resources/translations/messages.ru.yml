@@ -298,3 +298,4 @@ report.roomType.statuses.out_now: Выезжает
 
 form.blackListInfoType.aggressor: Агрессивность
 form.blackListInfoType.comment: Комментарий
+form.blackListInfoType.add: Добавить в черный список
