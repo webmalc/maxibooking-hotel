@@ -367,18 +367,18 @@ class TouristController extends Controller
     }
 
     /**
-     * @Route("/{id}/delete/black_list", name="tourist_delete_black_list")
+     * @Route("/{id}/delete/unwelcome", name="tourist_delete_unwelcome")
      * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
-    public function deleteBlackListAction(Tourist $tourist, Request $request)
+    public function deleteBlackListAction(Tourist $tourist)
     {
-        /** @var BlackListRepository $blackListRepository */
-        $blackListRepository = $this->get('mbh.package.black_list_repository');
-        $blackListRepository->deleteByTourist($tourist);
+        /** @var UnwelcomeRepository $unwelcomeRepository */
+        $unwelcomeRepository = $this->get('mbh.package.unwelcome_repository');
+        $unwelcomeRepository->deleteByTourist($tourist);
 
-        return $this->redirectToRoute('tourist_edit_black_list', ['id' => $tourist->getId()]);
+        return $this->redirectToRoute('tourist_edit_unwelcome', ['id' => $tourist->getId()]);
     }
 
 
