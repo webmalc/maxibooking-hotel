@@ -1,0 +1,18 @@
+{% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
+
+{% set small_title = "редактирование гостя #" ~ tourist.id %}
+{% set layout = 'tabs' %}
+
+{% block content %}
+    {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 5, 'entity': tourist} %}
+
+    <div class="tab-content">
+        {{ form_start(form, {'action': path('tourist_edit_black_list', {'id': tourist.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': tourist, 'route': 'tourist' } %}
+        {{ form_end(form) }}
+
+        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': tourist, 'logs': logs, 'delete_route': 'tourist_delete' } %}
+    </div>
+
+{% endblock %}

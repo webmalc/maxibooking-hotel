@@ -4,10 +4,12 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
+use MBH\Bundle\PackageBundle\Document\BlackListInfo;
+use MBH\Bundle\PackageBundle\Document\BlackListRepository;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Migration;
 use MBH\Bundle\PackageBundle\Document\Visa;
-use MBH\Bundle\PackageBundle\Form\TouristExtendedType;
+use MBH\Bundle\PackageBundle\Form\BlackListInfoType;
 use MBH\Bundle\PackageBundle\Form\TouristMigrationType;
 use MBH\Bundle\PackageBundle\Form\TouristVisaType;
 use MBH\Bundle\VegaBundle\Document\VegaFMS;
@@ -317,6 +319,44 @@ class TouristController extends Controller
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
+        ];
+    }
+
+    /**
+     * @Route("/{id}/edit/black_list", name="tourist_edit_black_list")
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_TOURIST_EDIT')")
+     * @Template()
+     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     */
+    public function editBlackListAction(Tourist $tourist, Request $request)
+    {
+        $blackListRepository = new BlackListRepository();
+        $flashBag = $request->getSession()->getFlashBag();
+        $blackListInfo = $blackListRepository->findOneByTourist($tourist);
+        $blackListInfo = new BlackListInfo();
+        if(!$blackListInfo) {
+            $flashBag->set('success', 'Гость не в черном списке');
+        } else {
+            $flashBag->set('error', 'Гость в черном списке');
+        }
+
+        $blackListInfo->setHotel($this->hotel);
+        $blackListInfo->setTourist($tourist);
+
+        $form = $this->createForm(new BlackListInfoType(), $blackListInfo, [
+            'method' => Request::METHOD_PUT
+        ]);
+
+        $form->handleRequest($request);
+        if($form->isValid()) {
+            $blackListRepository->add($blackListInfo);
+        }
+
+        return [
+            'form' => $form->createView(),
+            'tourist' => $tourist,
+            'logs' => $this->logs($tourist),
         ];
     }
 

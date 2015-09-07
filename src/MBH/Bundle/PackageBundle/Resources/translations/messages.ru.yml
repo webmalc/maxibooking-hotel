@@ -295,3 +295,6 @@ report.roomType.statuses.dept: Долг
 report.roomType.statuses.paid: Оплачен
 report.roomType.statuses.not_out: Не выехал
 report.roomType.statuses.out_now: Выезжает
+
+form.blackListInfoType.aggressor: Агрессивность
+form.blackListInfoType.comment: Комментарий
