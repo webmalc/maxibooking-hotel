@@ -1,0 +1,36 @@
+{% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
+
+{% set small_title = "редактирование гостя #" ~ tourist.id %}
+{% set layout = 'tabs' %}
+
+{% block content %}
+    {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 5, 'entity': tourist} %}
+
+    <div class="tab-content">
+        {% if tourist.firstName and tourist.lastName and tourist.birthday %}
+            {% if isInBlackList %}
+                <div class="alert alert-error alert-dismissable">
+                    Гость в черном списке
+                </div>
+            {% else %}
+                <div class="alert alert-success alert-dismissable">
+                    Гость не в черном списке
+                </div>
+            {% endif %}
+
+            {{ form_start(form, {'action': path('tourist_edit_unwelcome', {'id': tourist.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% if isInBlackList %}
+                {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': tourist, 'route': 'tourist', delete_route: 'tourist_delete_black_list' } %}
+            {% else %}
+                {% include 'MBHBaseBundle:Actions:new.html.twig' with {'entity': tourist, 'route': 'tourist', save_text: 'form.blackListInfoType.add'|trans, save_close: false } %}
+            {% endif %}
+            {{ form_end(form) }}
+        {% else %}
+            <div class="alert alert-warning alert-dismissable">
+                Укажите имя фамилию и дату рождения гостя
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}

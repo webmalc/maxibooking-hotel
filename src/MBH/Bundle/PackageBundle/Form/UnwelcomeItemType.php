@@ -8,15 +8,16 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class TouristBlackListType
+ * Class UnwelcomeItemType
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class BlackListInfoType extends AbstractType
+class UnwelcomeItemType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('aggressor', 'checkbox', [
-            'label' => 'form.blackListInfoType.aggressor'
+        $builder->add('isAggressor', 'checkbox', [
+            'label' => 'form.blackListInfoType.aggressor',
+            'required' => false
         ]);
 
         $builder->add('comment', 'textarea', [
@@ -28,13 +29,13 @@ class BlackListInfoType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MBH\Bundle\PackageBundle\Document\BlackListInfo'
+            'data_class' => 'MBH\Bundle\PackageBundle\Document\UnwelcomeItem'
         ]);
     }
 
 
     public function getName()
     {
-        return 'mbh_package_bundle_tourist_black_list';
+        return 'mbh_package_bundle_unwelcome_item';
     }
 }

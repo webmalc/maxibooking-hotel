@@ -4,14 +4,14 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
-use MBH\Bundle\PackageBundle\Document\BlackListInfo;
-use MBH\Bundle\PackageBundle\Document\BlackListRepository;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Migration;
+use MBH\Bundle\PackageBundle\Document\UnwelcomeItem;
+use MBH\Bundle\PackageBundle\Document\UnwelcomeRepository;
 use MBH\Bundle\PackageBundle\Document\Visa;
-use MBH\Bundle\PackageBundle\Form\BlackListInfoType;
 use MBH\Bundle\PackageBundle\Form\TouristMigrationType;
 use MBH\Bundle\PackageBundle\Form\TouristVisaType;
+use MBH\Bundle\PackageBundle\Form\UnwelcomeItemType;
 use MBH\Bundle\VegaBundle\Document\VegaFMS;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -323,35 +323,39 @@ class TouristController extends Controller
     }
 
     /**
-     * @Route("/{id}/edit/black_list", name="tourist_edit_black_list")
+     * @Route("/{id}/edit/unwelcome", name="tourist_edit_unwelcome")
      * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @Template()
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
-    public function editBlackListAction(Tourist $tourist, Request $request)
+    public function editUnwelcomeAction(Tourist $tourist, Request $request)
     {
-        $blackListRepository = new BlackListRepository();
-        $flashBag = $request->getSession()->getFlashBag();
-        $blackListInfo = $blackListRepository->findOneByTourist($tourist);
+        /** @var UnwelcomeRepository $unwelcomeRepository */
+        $unwelcomeRepository = $this->get('mbh.package.unwelcome_repository');
+
+        $blackListInfo = $unwelcomeRepository->findOneByTourist($tourist);
         $isInBlackList = isset($blackListInfo);
-        if($isInBlackList) {
-            $flashBag->set('error', 'Гость в черном списке');
-        } else {
-            $flashBag->set('success', 'Гость не в черном списке');
-            $blackListInfo = new BlackListInfo();
+
+        if(!$isInBlackList) {
+            $blackListInfo = new UnwelcomeItem();
         }
 
         $blackListInfo->setHotel($this->hotel);
         $blackListInfo->setTourist($tourist);
 
-        $form = $this->createForm(new BlackListInfoType(), $blackListInfo, [
+        $form = $this->createForm(new UnwelcomeItemType(), $blackListInfo, [
             'method' => Request::METHOD_PUT
         ]);
 
         $form->handleRequest($request);
         if($form->isValid()) {
-            $blackListRepository->add($blackListInfo);
+            if($isInBlackList) {
+                $unwelcomeRepository->update($blackListInfo);
+            } else {
+                $unwelcomeRepository->add($blackListInfo);
+            }
+            return $this->redirectToRoute('tourist_edit_unwelcome', ['id' => $tourist->getId()]);
         }
 
         return [
@@ -361,6 +365,22 @@ class TouristController extends Controller
             'logs' => $this->logs($tourist),
         ];
     }
+
+    /**
+     * @Route("/{id}/delete/black_list", name="tourist_delete_black_list")
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_TOURIST_EDIT')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     */
+    public function deleteBlackListAction(Tourist $tourist, Request $request)
+    {
+        /** @var BlackListRepository $blackListRepository */
+        $blackListRepository = $this->get('mbh.package.black_list_repository');
+        $blackListRepository->deleteByTourist($tourist);
+
+        return $this->redirectToRoute('tourist_edit_black_list', ['id' => $tourist->getId()]);
+    }
+
 
     /**
      * @Route("/regions", name="get_json_regions", options={"expose"=true})

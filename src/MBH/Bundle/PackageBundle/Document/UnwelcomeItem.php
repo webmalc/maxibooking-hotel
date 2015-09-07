@@ -6,10 +6,10 @@ namespace MBH\Bundle\PackageBundle\Document;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
- * Class BlackListInfo
+ * Class UnwelcomeItem
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class BlackListInfo
+class UnwelcomeItem
 {
     protected $id;
     /**
@@ -25,7 +25,7 @@ class BlackListInfo
     /**
      * @var bool
      */
-    protected $aggressor;
+    protected $isAggressor;
 
     /**
      * @var string
@@ -83,17 +83,17 @@ class BlackListInfo
     /**
      * @return boolean
      */
-    public function isAggressor()
+    public function getIsAggressor()
     {
-        return $this->aggressor;
+        return $this->isAggressor;
     }
 
     /**
      * @param boolean $aggressor
      */
-    public function setAggressor($aggressor)
+    public function setIsAggressor($aggressor)
     {
-        $this->aggressor = $aggressor;
+        $this->isAggressor = $aggressor;
     }
 
     /**
