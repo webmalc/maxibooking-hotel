@@ -23,6 +23,24 @@ use Zend\Stdlib\JsonSerializable;
 class Tourist extends Base implements JsonSerializable, PayerInterface, RecipientInterface
 {
     /**
+     * Hook timestampable behavior
+     * updates createdAt, updatedAt fields
+     */
+    use TimestampableDocument;
+
+    /**
+     * Hook softdeleteable behavior
+     * deletedAt field
+     */
+    use SoftDeleteableDocument;
+
+    /**
+     * Hook blameable behavior
+     * createdBy&updatedBy fields
+     */
+    use BlameableDocument;
+
+    /**
      * @ODM\ReferenceMany(targetDocument="Order", nullable="true", mappedBy="mainTourist")
      */
     public $orders;
@@ -47,24 +65,6 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      * )
      */
     protected $firstName;
-
-    /**
-     * Hook timestampable behavior
-     * updates createdAt, updatedAt fields
-     */
-    use TimestampableDocument;
-
-    /**
-     * Hook softdeleteable behavior
-     * deletedAt field
-     */
-    use SoftDeleteableDocument;
-
-    /**
-     * Hook blameable behavior
-     * createdBy&updatedBy fields
-     */
-    use BlameableDocument;
     /**
      * @var string
      * @Gedmo\Versioned
