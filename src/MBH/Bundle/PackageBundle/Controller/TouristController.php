@@ -6,12 +6,13 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Migration;
-use MBH\Bundle\PackageBundle\Document\UnwelcomeItem;
-use MBH\Bundle\PackageBundle\Document\UnwelcomeRepository;
+use MBH\Bundle\PackageBundle\Document\Unwelcome;
+use MBH\Bundle\PackageBundle\Document\UnwelcomeHistory;
+use MBH\Bundle\PackageBundle\Document\UnwelcomeHistoryRepository;
 use MBH\Bundle\PackageBundle\Document\Visa;
 use MBH\Bundle\PackageBundle\Form\TouristMigrationType;
 use MBH\Bundle\PackageBundle\Form\TouristVisaType;
-use MBH\Bundle\PackageBundle\Form\UnwelcomeItemType;
+use MBH\Bundle\PackageBundle\Form\UnwelcomeType;
 use MBH\Bundle\VegaBundle\Document\VegaFMS;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -331,36 +332,47 @@ class TouristController extends Controller
      */
     public function editUnwelcomeAction(Tourist $tourist, Request $request)
     {
-        /** @var UnwelcomeRepository $unwelcomeRepository */
-        $unwelcomeRepository = $this->get('mbh.package.unwelcome_repository');
+        /** @var UnwelcomeHistoryRepository $unwelcomeHistoryRepository */
+        $unwelcomeHistoryRepository = $this->get('mbh.package.unwelcome_history_repository');
 
-        $blackListInfo = $unwelcomeRepository->findOneByTourist($tourist);
-        $isInBlackList = isset($blackListInfo);
+        $unwelcomeHistory = $unwelcomeHistoryRepository->findByTourist($tourist);
+        $isUnwelcomeTourist = false;
 
-        if(!$isInBlackList) {
-            $blackListInfo = new UnwelcomeItem();
+        $unwelcome = new Unwelcome();
+        /** @var Unwelcome[] $unwelcomeList */
+        $unwelcomeList = [];
+        if($unwelcomeHistory) {
+            foreach($unwelcomeHistory->getItems() as $un) {
+                if($un->isIsMy()) {
+                    $isUnwelcomeTourist = true;
+                    $unwelcome = $un;
+                } else {
+                    $unwelcomeList[] = $un;
+                }
+            }
+        } else {
+            $unwelcomeHistory = new UnwelcomeHistory();
+            $unwelcomeHistory->setTourist($tourist);
         }
 
-        $blackListInfo->setHotel($this->hotel);
-        $blackListInfo->setTourist($tourist);
-
-        $form = $this->createForm(new UnwelcomeItemType(), $blackListInfo, [
+        $form = $this->createForm(new UnwelcomeType(), $unwelcome, [
             'method' => Request::METHOD_PUT
         ]);
 
         $form->handleRequest($request);
         if($form->isValid()) {
-            if($isInBlackList) {
-                $unwelcomeRepository->update($blackListInfo);
+            if($isUnwelcomeTourist) {
+                $unwelcomeHistoryRepository->update($unwelcome, $tourist);
             } else {
-                $unwelcomeRepository->add($blackListInfo);
+                $unwelcomeHistoryRepository->add($unwelcome, $tourist);
             }
             return $this->redirectToRoute('tourist_edit_unwelcome', ['id' => $tourist->getId()]);
         }
 
         return [
             'form' => $form->createView(),
-            'isInBlackList' => $isInBlackList,
+            'isUnwelcomeTourist' => $isUnwelcomeTourist,
+            'unwelcomeList' => $unwelcomeList,
             'tourist' => $tourist,
             'logs' => $this->logs($tourist),
         ];
@@ -374,9 +386,9 @@ class TouristController extends Controller
      */
     public function deleteBlackListAction(Tourist $tourist)
     {
-        /** @var UnwelcomeRepository $unwelcomeRepository */
-        $unwelcomeRepository = $this->get('mbh.package.unwelcome_repository');
-        $unwelcomeRepository->deleteByTourist($tourist);
+        /** @var UnwelcomeHistoryRepository $unwelcomeHistoryRepository */
+        $unwelcomeHistoryRepository = $this->get('mbh.package.unwelcome_history_repository');
+        $unwelcomeHistoryRepository->deleteByTourist($tourist);
 
         return $this->redirectToRoute('tourist_edit_unwelcome', ['id' => $tourist->getId()]);
     }

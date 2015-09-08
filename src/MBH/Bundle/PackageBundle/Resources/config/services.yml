@@ -76,6 +76,6 @@ services:
                    - [addFactory, [@mbh.package.document_xls_factory]]
                    - [setContainer, [@service_container]]
 
-    mbh.package.unwelcome_repository:
-            class: MBH\Bundle\PackageBundle\Document\UnwelcomeRepository
+    mbh.package.unwelcome_history_repository:
+            class: MBH\Bundle\PackageBundle\Document\UnwelcomeHistoryRepository
             arguments: [@mbh.mbhs]

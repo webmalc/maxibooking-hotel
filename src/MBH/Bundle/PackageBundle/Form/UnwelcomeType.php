@@ -8,10 +8,10 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class UnwelcomeItemType
+ * Class UnwelcomeItem
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class UnwelcomeItemType extends AbstractType
+class UnwelcomeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -29,13 +29,13 @@ class UnwelcomeItemType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MBH\Bundle\PackageBundle\Document\UnwelcomeItem'
+            'data_class' => 'MBH\Bundle\PackageBundle\Document\Unwelcome'
         ]);
     }
 
 
     public function getName()
     {
-        return 'mbh_package_bundle_unwelcome_item';
+        return 'mbh_package_bundle_unwelcome';
     }
 }

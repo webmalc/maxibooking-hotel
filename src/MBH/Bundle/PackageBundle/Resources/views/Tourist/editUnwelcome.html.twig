@@ -8,7 +8,7 @@
 
     <div class="tab-content">
         {% if tourist.firstName and tourist.lastName and tourist.birthday %}
-            {% if isInBlackList %}
+            {% if isUnwelcomeTourist %}
                 <div class="alert alert-error alert-dismissable">
                     Гость в черном списке
                 </div>
@@ -20,12 +20,34 @@
 
             {{ form_start(form, {'action': path('tourist_edit_unwelcome', {'id': tourist.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% if isInBlackList %}
+            {% if isUnwelcomeTourist %}
                 {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': tourist, 'route': 'tourist', delete_route: 'tourist_delete_unwelcome' } %}
             {% else %}
                 {% include 'MBHBaseBundle:Actions:new.html.twig' with {'entity': tourist, 'route': 'tourist', save_text: 'form.blackListInfoType.add'|trans, save_close: false } %}
             {% endif %}
             {{ form_end(form) }}
+
+
+            {% if unwelcomeList %}
+                <table class="table" title="Данные из других отелей">
+                    <thead>
+                    <tr>
+                        <th>Аргессор</th>
+                        <th>Комментарий</th>
+                        <th>Дата добавления</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for unwelcome in unwelcomeList %}
+                        <tr>
+                            <td>{{ unwelcome.isAggressor ? 'Да' : 'Нет' }}</td>
+                            <td>{{ unwelcome.comment }}</td>
+                            <td>{{ unwelcome.createdAt ? unwelcome.createdAt|date('d.m.Y') : '' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
         {% else %}
             <div class="alert alert-warning alert-dismissable">
                 Укажите имя фамилию и дату рождения гостя

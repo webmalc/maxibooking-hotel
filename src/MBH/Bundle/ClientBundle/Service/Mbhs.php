@@ -2,9 +2,10 @@
 
 namespace MBH\Bundle\ClientBundle\Service;
 
+use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\Response;
-use MBH\Bundle\OnlineBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use MBH\Bundle\PackageBundle\Document\UnwelcomeItem;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\BaseBundle\Document\Message;
@@ -207,113 +208,82 @@ class Mbhs
     }
 
     /**
-     * @param UnwelcomeItem $blackListInfo
+     * @param Unwelcome $unwelcome
+     * @param Tourist $tourist
      * @return bool
      */
-    public function addUnwelcomeItem(UnwelcomeItem $blackListInfo)
+    public function addUnwelcome(Unwelcome $unwelcome, Tourist $tourist)
     {
-        try {
-            /** @var Response $response */
-            $response = $this->guzzle
-                ->post(base64_decode($this->config['mbhs']) . 'client/unwelcome/add')
-                ->setBody(json_encode([
-                    'comment' => $blackListInfo->getComment(),
-                    'isAggressor' => $blackListInfo->getIsAggressor(),
-                    'tourist' => $blackListInfo->getTourist()->jsonSerialize(),
-                    'url' => $this->getSchemeAndHttpHost(),
-                    'key' => $this->config['key'],
-                ]))
-                ->setHeader('Content-Type', 'application/json')
-                ->send()
-            ;
-            return true;
-        } catch (\Exception $e) {
-            if ($this->container->get('kernel')->getEnvironment() == 'dev') {
-                dump($e->getMessage());
-                dump($e);
-            };
-            return false;
-        }
+        return $this->exchangeJson([
+            'comment' => $unwelcome->getComment(),
+            'isAggressor' => $unwelcome->getIsAggressor(),
+            'tourist' => $tourist
+        ], 'client/unwelcome/add');
     }
 
     /**
-     * @param UnwelcomeItem $blackListInfo
+     * @param Unwelcome $unwelcome
+     * @param Tourist $tourist
      * @return bool
      */
-    public function updateUnwelcomeItem(UnwelcomeItem $blackListInfo)
+    public function updateUnwelcome(Unwelcome $unwelcome, Tourist $tourist)
     {
-        try {
-            /** @var Response $response */
-            $response = $this->guzzle
-                ->post(base64_decode($this->config['mbhs']) . 'client/unwelcome/update')
-                ->setBody(json_encode([
-                    'comment' => $blackListInfo->getComment(),
-                    'isAggressor' => $blackListInfo->getIsAggressor(),
-                    'tourist' => $blackListInfo->getTourist()->jsonSerialize(),
-                    'url' => $this->getSchemeAndHttpHost(),
-                    'key' => $this->config['key'],
-                ]))
-                ->setHeader('Content-Type', 'application/json')
-                ->send()
-            ;
-            return true;
-        } catch (\Exception $e) {
-            if ($this->container->get('kernel')->getEnvironment() == 'dev') {
-                dump($e->getMessage());
-                dump($e);
-            };
-            return false;
-        }
+        return $this->exchangeJson([
+            'comment' => $unwelcome->getComment(),
+            'isAggressor' => $unwelcome->getIsAggressor(),
+            'tourist' => $tourist
+        ], 'client/unwelcome/update');
     }
 
     /**
      * @param Tourist $tourist
      * @return null|array
      */
-    public function findUnwelcomeItemByTourist(Tourist $tourist)
+    public function findUnwelcomeHistoryByTourist(Tourist $tourist)
     {
-        try {
-            /** @var Response $response */
-            $response = $this->guzzle
-                ->post(base64_decode($this->config['mbhs']) . 'client/unwelcome/find_by_tourist')
-                ->setBody(json_encode([
-                    'tourist' => $tourist->jsonSerialize(),
-                    'url' => $this->getSchemeAndHttpHost(),
-                    'key' => $this->config['key'],
-                ]))
-                ->setHeader('Content-Type', 'application/json')
-                ->send()
-            ;
-            return json_decode($response->getBody(true), true);
-        } catch (\Exception $e) {
-            if ($this->container->get('kernel')->getEnvironment() == 'dev') {
-                dump($e->getMessage());
-                dump($e);
-            };
-            return null;
-        }
+        return $this->exchangeJson([
+            'tourist' => $tourist
+        ], 'client/unwelcome/find_by_tourist');
     }
 
     /**
      * @param Tourist $tourist
      * @return array|null
      */
-    public function deleteUnwelcomeItemByTourist(Tourist $tourist)
+    public function deleteUnwelcomeByTourist(Tourist $tourist)
     {
+        return $this->exchangeJson([
+            'tourist' => $tourist
+        ], 'client/unwelcome/delete_by_tourist');
+    }
+
+    /**
+     * @param array $requestData
+     * @param string $url
+     * @return array|null
+     */
+    private function exchangeJson(array $requestData, $url)
+    {
+        //authorization data
+        $requestData = array_merge($requestData, [
+            'url' => $this->getSchemeAndHttpHost(),
+            'key' => $this->config['key'],
+        ]);
+        $uri = base64_decode($this->config['mbhs']) . $url;
         try {
             /** @var Response $response */
             $response = $this->guzzle
-                ->post(base64_decode($this->config['mbhs']) . 'client/unwelcome/delete_by_tourist')
-                ->setBody(json_encode([
-                    'tourist' => $tourist->jsonSerialize(),
-                    'url' => $this->getSchemeAndHttpHost(),
-                    'key' => $this->config['key'],
-                ]))
+                ->post($uri)
+                ->setBody(json_encode($requestData))
                 ->setHeader('Content-Type', 'application/json')
                 ->send()
             ;
-            return json_decode($response->getBody(true), true);
-        } catch (\Exception $e) {
+            $responseData = json_decode($response->getBody(true), true);
+            if(!$responseData['status']) {
+                //throw new \MbhsResponseException();
+            }
+            return $responseData;
+        } catch (RequestException $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                 dump($e->getMessage());
                 dump($e);
