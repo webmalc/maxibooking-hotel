@@ -22,7 +22,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
  * @MongoDBUnique(fields="fullTitle", message="Такой отель уже существует")
  * @ODM\HasLifecycleCallbacks
  */
-class Hotel extends Base
+class Hotel extends Base implements \JsonSerializable
 {
 
     /**
@@ -1131,5 +1131,13 @@ class Hotel extends Base
     public function setVegaAddressId($vegaAddressId)
     {
         $this->vegaAddressId = $vegaAddressId;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'title' => $this->getTitle(),
+            'city' => $this->getCity() ? $this->getCity() : $this->getCity()->getTitle(),
+        ];
     }
 }

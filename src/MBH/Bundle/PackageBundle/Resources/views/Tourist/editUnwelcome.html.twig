@@ -26,32 +26,31 @@
                 {% include 'MBHBaseBundle:Actions:new.html.twig' with {'entity': tourist, 'route': 'tourist', save_text: 'form.blackListInfoType.add'|trans, save_close: false } %}
             {% endif %}
             {{ form_end(form) }}
-
-
-            {% if unwelcomeList %}
-                <table class="table" title="Данные из других отелей">
-                    <thead>
-                    <tr>
-                        <th>Аргессор</th>
-                        <th>Комментарий</th>
-                        <th>Дата добавления</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for unwelcome in unwelcomeList %}
-                        <tr>
-                            <td>{{ unwelcome.isAggressor ? 'Да' : 'Нет' }}</td>
-                            <td>{{ unwelcome.comment }}</td>
-                            <td>{{ unwelcome.createdAt ? unwelcome.createdAt|date('d.m.Y') : '' }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            {% endif %}
         {% else %}
             <div class="alert alert-warning alert-dismissable">
                 Укажите имя фамилию и дату рождения гостя
             </div>
+        {% endif %}
+
+        {% if unwelcomeList %}
+            <table class="table" title="Данные из других отелей">
+                <thead>
+                <tr>
+                    <th>Аргессор</th>
+                    <th>Комментарий</th>
+                    <th>Дата добавления</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for unwelcome in unwelcomeList %}
+                    <tr>
+                        <td>{{ unwelcome.isAggressor ? 'Да' : 'Нет' }}</td>
+                        <td>{{ unwelcome.comment }}</td>
+                        <td>{{ unwelcome.createdAt ? unwelcome.createdAt|date('d.m.Y') : '' }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         {% endif %}
     </div>
 

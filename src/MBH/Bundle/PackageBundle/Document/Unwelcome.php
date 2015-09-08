@@ -6,7 +6,7 @@ namespace MBH\Bundle\PackageBundle\Document;
  * Class Unwelcome
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class Unwelcome
+class Unwelcome implements \JsonSerializable
 {
     /**
      * @var bool
@@ -98,5 +98,13 @@ class Unwelcome
     {
         $this->createdAt = $createdAt;
         return $this;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'comment' => $this->getComment(),
+            'isAggressor' => $this->getIsAggressor(),
+        ];
     }
 }

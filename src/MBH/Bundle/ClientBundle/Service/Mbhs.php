@@ -6,7 +6,6 @@ use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\Response;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
-use MBH\Bundle\PackageBundle\Document\UnwelcomeItem;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\BaseBundle\Document\Message;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -215,9 +214,9 @@ class Mbhs
     public function addUnwelcome(Unwelcome $unwelcome, Tourist $tourist)
     {
         return $this->exchangeJson([
-            'comment' => $unwelcome->getComment(),
-            'isAggressor' => $unwelcome->getIsAggressor(),
-            'tourist' => $tourist
+            'unwelcome' => $unwelcome,
+            'tourist' => $tourist,
+            'hotel' => $this->getHotelData()
         ], 'client/unwelcome/add');
     }
 
@@ -229,8 +228,7 @@ class Mbhs
     public function updateUnwelcome(Unwelcome $unwelcome, Tourist $tourist)
     {
         return $this->exchangeJson([
-            'comment' => $unwelcome->getComment(),
-            'isAggressor' => $unwelcome->getIsAggressor(),
+            'unwelcome' => $unwelcome,
             'tourist' => $tourist
         ], 'client/unwelcome/update');
     }
@@ -260,20 +258,17 @@ class Mbhs
     /**
      * @param array $requestData
      * @param string $url
+     * @param string $method
      * @return array|null
      */
-    private function exchangeJson(array $requestData, $url)
+    private function exchangeJson(array $requestData, $url, $method = 'POST')
     {
-        //authorization data
-        $requestData = array_merge($requestData, [
-            'url' => $this->getSchemeAndHttpHost(),
-            'key' => $this->config['key'],
-        ]);
+        $requestData = array_merge($requestData, $this->getAuthorizationData());
         $uri = base64_decode($this->config['mbhs']) . $url;
         try {
             /** @var Response $response */
             $response = $this->guzzle
-                ->post($uri)
+                ->createRequest($method, $uri)
                 ->setBody(json_encode($requestData))
                 ->setHeader('Content-Type', 'application/json')
                 ->send()
@@ -290,5 +285,22 @@ class Mbhs
             };
             return null;
         }
+    }
+
+    /**
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel|null
+     */
+    private function getHotelData()
+    {
+        $selector = $this->container->get('mbh.hotel.selector');
+        return $selector->getSelected();
+    }
+
+    private function getAuthorizationData()
+    {
+        return [
+            'url' => $this->getSchemeAndHttpHost(),
+            'key' => $this->config['key'],
+        ];
     }
 }
