@@ -149,26 +149,25 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      *
      * @Route("/{id}/tourist/edit/{packageId}", name="package_order_tourist_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', entity) and is_granted('ROLE_PACKAGE_VIEW'))")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', order) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
-     * @param Order $entity
+     * @param Order $order
      * @param Package $package
      * @return Response
      * @Template()
      */
-    public function touristEditAction(Order $entity, Package $package)
+    public function touristEditAction(Order $order, Package $package)
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
-        if (!$permissions->checkHotel($entity)) {
+        if (!$permissions->checkHotel($order)) {
             throw $this->createNotFoundException();
         }
 
         $form = $this->createForm(new OrderTouristType());
-
         return [
-            'entity' => $entity,
-            'logs' => $this->logs($entity),
+            'order' => $order,
+            'logs' => $this->logs($order),
             'vegaDocumentTypes' => $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes(),
             'genders' => $this->container->getParameter('mbh.gender.types'),
             'form' => $form->createView(),

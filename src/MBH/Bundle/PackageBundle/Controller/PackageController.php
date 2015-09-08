@@ -365,22 +365,23 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      *
      * @Route("/{id}/guest", name="package_guest")
      * @Method({"GET", "PUT"})
-     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', entity) and is_granted('ROLE_PACKAGE_VIEW'))")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      * @Template()
      */
-    public function guestAction(Request $request, Package $entity)
+    public function guestAction(Request $request, Package $package)
     {
-        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
 
         $form = $this->createForm(new OrderTouristType(), null, ['guest' => false]);
 
+        $authorizationChecker = $this->container->get('security.authorization_checker');
         if ($request->getMethod() == 'PUT' &&
-            $this->container->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_GUESTS') && (
-            $this->container->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_EDIT_ALL') ||
-            $this->container->get('security.authorization_checker')->isGranted('EDIT', $entity)
+            $authorizationChecker->isGranted('ROLE_PACKAGE_GUESTS') && (
+            $authorizationChecker->isGranted('ROLE_PACKAGE_EDIT_ALL') ||
+            $authorizationChecker->isGranted('EDIT', $package)
             )
         ) {
             $form->submit($request);
@@ -392,22 +393,21 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     $data['lastName'], $data['firstName'], $data['patronymic'], $data['birthday'], $data['email'],
                     $data['phone'], $data['communicationLanguage']
                 );
-                $entity->addTourist($tourist);
+                $package->addTourist($tourist);
 
-                $this->dm->persist($entity);
+                $this->dm->persist($package);
                 $this->dm->flush();
 
                 $request->getSession()->getFlashBag()->set('success',
                     $this->get('translator')->trans('controller.packageController.guest_added_success'));
 
-                return $this->afterSaveRedirect('package', $entity->getId(), [], '_guest');
+                return $this->afterSaveRedirect('package', $package->getId(), [], '_guest');
             }
         }
-
         return [
-            'entity' => $entity,
+            'package' => $package,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'logs' => $this->logs($package)
         ];
     }
 
