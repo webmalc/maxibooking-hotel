@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use MBH\Bundle\HotelBundle\Document\Hotel;
+
 /**
  * Class Unwelcome
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
@@ -24,9 +26,24 @@ class Unwelcome implements \JsonSerializable
     protected $isMy;
 
     /**
+     * @var Hotel
+     */
+    protected $hotel;
+
+    /**
      * @var \DateTime|null
      */
     protected $createdAt;
+
+    /**
+     * @var \DateTime
+     */
+    protected $arrivalTime;
+
+    /**
+     * @var \DateTime
+     */
+    protected $departureTime;
 
     /**
      * @return boolean
@@ -100,11 +117,65 @@ class Unwelcome implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return Hotel
+     */
+    public function getHotel()
+    {
+        return $this->hotel;
+    }
+
+    /**
+     * @param Hotel $hotel
+     */
+    public function setHotel(Hotel $hotel = null)
+    {
+        $this->hotel = $hotel;
+    }
+
+    /**
+     * @param \DateTime $arrivalTime
+     * @return self
+     */
+    public function setArrivalTime(\DateTime $arrivalTime = null)
+    {
+        $this->arrivalTime = $arrivalTime;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime $arrivalTime
+     */
+    public function getArrivalTime()
+    {
+        return $this->arrivalTime;
+    }
+
+    /**
+     * @param \DateTime $departureTime
+     * @return self
+     */
+    public function setDepartureTime(\DateTime $departureTime = null)
+    {
+        $this->departureTime = $departureTime;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime $departureTime
+     */
+    public function getDepartureTime()
+    {
+        return $this->departureTime;
+    }
+
     public function jsonSerialize()
     {
         return [
             'comment' => $this->getComment(),
             'isAggressor' => $this->getIsAggressor(),
+            'arrivalTime' => $this->getArrivalTime() ? $this->getArrivalTime()->format('d.m.Y') : null,
+            'departureTime' => $this->getDepartureTime() ? $this->getDepartureTime()->format('d.m.Y') : null,
         ];
     }
 }

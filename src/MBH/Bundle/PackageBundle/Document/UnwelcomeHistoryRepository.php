@@ -3,6 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use MBH\Bundle\ClientBundle\Service\Mbhs;
+use MBH\Bundle\HotelBundle\Document\City;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  * Class UnwelcomeHistoryRepository
@@ -74,6 +76,23 @@ class UnwelcomeHistoryRepository
             ->setComment($data['comment'])
             ->setIsMy($data['isMy'])
         ;
+
+        if(isset($data['arrivalTime']) && isset($data['departureTime'])) {
+            $unwelcome
+                ->setArrivalTime(\DateTime::createFromFormat('d.m.Y H:i:s', $data['arrivalTime']. ' 00:00:00'))
+                ->setDepartureTime(\DateTime::createFromFormat('d.m.Y H:i:s', $data['departureTime']. ' 00:00:00'))
+            ;
+        }
+
+        if(isset($data['hotel'])) {
+            $hotel = new Hotel();
+            $hotel->setTitle($data['hotel']['title']);
+            $city = new City();
+            $city->setTitle($data['hotel']['city']);
+            $hotel->setCity($city);
+            $unwelcome->setHotel($hotel);
+        }
+
         if ($data['createdAt']) {
             $unwelcome->setCreatedAt(
                 \DateTime::createFromFormat('d.m.Y H:i:s', $data['createdAt']. ' 00:00:00')

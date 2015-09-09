@@ -1137,7 +1137,7 @@ class Hotel extends Base implements \JsonSerializable
     {
         return [
             'title' => $this->getTitle(),
-            'city' => $this->getCity() ? $this->getCity() : $this->getCity()->getTitle(),
+            'city' => $this->getCity() ? $this->getCity()->getTitle() : null,
         ];
     }
 }

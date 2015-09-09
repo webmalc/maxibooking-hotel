@@ -8,8 +8,25 @@ use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Form\RoomType;
 use Symfony\Component\Validator\Constraints\DateTime;
 
+/**
+ * Class PackageRepository
+ */
 class PackageRepository extends DocumentRepository
 {
+    /**
+     * @param Tourist $tourist
+     * @return null|Package
+     */
+    public function getPackageByTourist(Tourist $tourist)
+    {
+        $queryBuilder = $this->createQueryBuilder();
+        $package = $queryBuilder
+            ->field('tourists.id')->equals($tourist->getId())
+            ->limit(1)
+            ->getQuery()->getSingleResult();
+        return $package;
+    }
+
     /**
      * @param \DateTime $begin
      * @param \DateTime $end

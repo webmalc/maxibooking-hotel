@@ -730,10 +730,8 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Set arrivalTime
-     *
      * @param \DateTime $arrivalTime
-     * @return self
+     * @return $this
      */
     public function setArrivalTime(\DateTime $arrivalTime = null)
     {
@@ -742,8 +740,6 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Get arrivalTime
-     *
      * @return \DateTime $arrivalTime
      */
     public function getArrivalTime()
@@ -752,10 +748,8 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Set departureTime
-     *
      * @param \DateTime $departureTime
-     * @return self
+     * @return $this
      */
     public function setDepartureTime(\DateTime $departureTime = null)
     {
@@ -764,8 +758,6 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Get departureTime
-     *
      * @return \DateTime $departureTime
      */
     public function getDepartureTime()
@@ -774,10 +766,8 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Set discount
-     *
      * @param int $discount
-     * @return self
+     * @return $this
      */
     public function setDiscount($discount)
     {
@@ -786,8 +776,6 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Get discount
-     *
      * @return int $discount
      */
     public function getDiscount($percent = true)

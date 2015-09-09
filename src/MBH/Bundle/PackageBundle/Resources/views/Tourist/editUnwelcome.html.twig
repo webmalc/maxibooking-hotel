@@ -39,6 +39,8 @@
                     <th>Аргессор</th>
                     <th>Комментарий</th>
                     <th>Дата добавления</th>
+                    <th>Отель</th>
+                    <th>Период проживания</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -47,6 +49,20 @@
                         <td>{{ unwelcome.isAggressor ? 'Да' : 'Нет' }}</td>
                         <td>{{ unwelcome.comment }}</td>
                         <td>{{ unwelcome.createdAt ? unwelcome.createdAt|date('d.m.Y') : '' }}</td>
+                        <td>
+                            {% if unwelcome.hotel %}
+                                <div>{{ unwelcome.hotel.title }}</div>
+                                <small>{{ unwelcome.hotel.city }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if unwelcome.arrivalTime and unwelcome.departureTime %}
+                                <div>
+                                    {{ unwelcome.arrivalTime|date('d.m.Y') }} -
+                                    {{ unwelcome.departureTime|date('d.m.Y') }}
+                                </div>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

@@ -364,7 +364,13 @@ class TouristController extends Controller
             if($isUnwelcomeTourist) {
                 $unwelcomeHistoryRepository->update($unwelcome, $tourist);
             } else {
-                $unwelcomeHistoryRepository->add($unwelcome, $tourist);
+                $package = $this->dm->getRepository('MBHPackageBundle:Package')->getPackageByTourist($tourist);
+                if($package) {
+                    dump($package);
+                    $unwelcome->setArrivalTime($package->getArrivalTime());
+                    $unwelcome->setDepartureTime($package->getDepartureTime());
+                }
+                $unwelcomeHistoryRepository->add($unwelcome, $tourist, $package);
             }
             return $this->redirectToRoute('tourist_edit_unwelcome', ['id' => $tourist->getId()]);
         }
