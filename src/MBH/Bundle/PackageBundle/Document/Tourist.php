@@ -204,6 +204,12 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      */
     protected $communicationLanguage;
 
+    /**
+     * @var bool
+     * @ODM\Boolean()
+     */
+    protected $isUnwelcome = false;
+
     public function __construct()
     {
         $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
@@ -894,5 +900,21 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     public function setCommunicationLanguage($communicationLanguage)
     {
         $this->communicationLanguage = $communicationLanguage;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsUnwelcome()
+    {
+        return $this->isUnwelcome;
+    }
+
+    /**
+     * @param boolean $isUnwelcome
+     */
+    public function setIsUnwelcome($isUnwelcome)
+    {
+        $this->isUnwelcome = $isUnwelcome;
     }
 }

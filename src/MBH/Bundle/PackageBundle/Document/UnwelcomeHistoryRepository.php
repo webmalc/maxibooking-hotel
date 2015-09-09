@@ -65,6 +65,24 @@ class UnwelcomeHistoryRepository
     }
 
     /**
+     * @param Tourist $tourist
+     * @return bool
+     */
+    public function isUnwelcome(Tourist $tourist)
+    {
+        return $this->hasUnwelcomeHistory($tourist);
+    }
+
+    /**
+     * @param Tourist $tourist
+     * @return bool
+     */
+    public function hasUnwelcomeHistory(Tourist $tourist)
+    {
+        return $this->mbhs->hasUnwelcomeHistory($tourist);
+    }
+
+    /**
      * @param array $data
      * @return Unwelcome
      */

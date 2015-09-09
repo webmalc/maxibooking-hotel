@@ -246,6 +246,18 @@ class Mbhs
 
     /**
      * @param Tourist $tourist
+     * @return bool
+     */
+    public function hasUnwelcomeHistory(Tourist $tourist)
+    {
+        $response = $this->exchangeJson([
+            'tourist' => $tourist
+        ], 'client/unwelcome/has_unwelcome_history');
+        return isset($response['result']) ? $response['result'] : false;
+    }
+
+    /**
+     * @param Tourist $tourist
      * @return array|null
      */
     public function deleteUnwelcomeByTourist(Tourist $tourist)

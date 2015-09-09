@@ -21,7 +21,7 @@
             {{ form_start(form, {'action': path('tourist_edit_unwelcome', {'id': tourist.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
             {% if isUnwelcomeTourist %}
-                {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': tourist, 'route': 'tourist', delete_route: 'tourist_delete_unwelcome' } %}
+                {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': tourist, 'route': 'tourist', delete_route: 'tourist_delete_unwelcome', delete_title: 'unwelcome.actions.delete' } %}
             {% else %}
                 {% include 'MBHBaseBundle:Actions:new.html.twig' with {'entity': tourist, 'route': 'tourist', save_text: 'form.blackListInfoType.add'|trans, save_close: false } %}
             {% endif %}

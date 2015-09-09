@@ -312,3 +312,5 @@ tourist.visa.type_series: 'Серия'
 tourist.visa.type_number: 'Номер'
 tourist.visa.type_issued: 'Дата выдачи'
 tourist.visa.type_expiry: 'Срок действия'
+
+unwelcome.actions.delete: Удалить из черного списка
