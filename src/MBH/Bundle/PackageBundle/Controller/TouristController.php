@@ -161,24 +161,27 @@ class TouristController extends Controller
      */
     public function createAction(Request $request)
     {
-        $entity = new Tourist();
-        $form = $this->createForm(new TouristType(), $entity,
+        $tourist = new Tourist();
+        $form = $this->createForm(new TouristType(), $tourist,
             ['genders' => $this->container->getParameter('mbh.gender.types')]);
 
         $form->submit($request);
         if ($form->isValid()) {
 
-            $this->dm->persist($entity);
+            $this->dm->persist($tourist);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success',
-                $this->get('translator')->trans('controller.touristController.record_created_success'));
+            $message = $tourist->getIsUnwelcome() ?
+                'controller.touristController.record_created_success_unwelcome' :
+                'controller.touristController.record_created_success'
+            ;
+            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans($message));
 
-            return $this->afterSaveRedirect('tourist', $entity->getId());
+            return $this->afterSaveRedirect('tourist', $tourist->getId());
         }
 
         return [
-            'entity' => $entity,
+            'entity' => $tourist,
             'form' => $form->createView(),
         ];
     }
@@ -339,6 +342,13 @@ class TouristController extends Controller
         $isUnwelcomeTourist = false;
 
         $unwelcome = new Unwelcome();
+        $unwelcome->setAggression(0);
+        $unwelcome->setFoul(0);
+        $unwelcome->setInadequacy(0);
+        $unwelcome->setDrunk(0);
+        $unwelcome->setDrugs(0);
+        $unwelcome->setDestruction(0);
+        $unwelcome->setMaterialDamage(0);
         /** @var Unwelcome[] $unwelcomeList */
         $unwelcomeList = [];
         if($unwelcomeHistory) {
@@ -366,7 +376,6 @@ class TouristController extends Controller
             } else {
                 $package = $this->dm->getRepository('MBHPackageBundle:Package')->getPackageByTourist($tourist);
                 if($package) {
-                    dump($package);
                     $unwelcome->setArrivalTime($package->getArrivalTime());
                     $unwelcome->setDepartureTime($package->getDepartureTime());
                 }
@@ -380,6 +389,7 @@ class TouristController extends Controller
             'isUnwelcomeTourist' => $isUnwelcomeTourist,
             'unwelcomeList' => $unwelcomeList,
             'tourist' => $tourist,
+            'characteristics' => UnwelcomeType::getCharacteristics(),
             'logs' => $this->logs($tourist),
         ];
     }
@@ -390,7 +400,7 @@ class TouristController extends Controller
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
-    public function deleteBlackListAction(Tourist $tourist)
+    public function deleteUnwelcomeAction(Tourist $tourist)
     {
         /** @var UnwelcomeHistoryRepository $unwelcomeHistoryRepository */
         $unwelcomeHistoryRepository = $this->get('mbh.package.unwelcome_history_repository');

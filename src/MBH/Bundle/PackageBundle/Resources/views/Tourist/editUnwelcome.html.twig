@@ -9,21 +9,30 @@
     <div class="tab-content">
         {% if tourist.firstName and tourist.lastName and tourist.birthday %}
             {% if isUnwelcomeTourist %}
-                <div class="alert alert-error alert-dismissable">
-                    Гость в черном списке
-                </div>
-            {% else %}
-                <div class="alert alert-success alert-dismissable">
-                    Гость не в черном списке
+                <div class="bg-gray color-palette alert">
+                        <i class="fa fa-user-secret"></i> Вы внесли клиента в список нежелательных гостей.
+                    <div class="pull-right">
+                        <a class="btn btn-xs btn-danger delete-link" href="{{ path('tourist_delete_unwelcome', {'id': tourist.id}) }}" title="" data-toggle="tooltip" data-original-title="{{ 'unwelcome.actions.delete'|trans }}">
+                            <i class="fa fa-trash-o"></i>
+                        </a>
+                    </div>
                 </div>
             {% endif %}
+
+            <div class="bg-gray color-palette alert">
+                <i class="fa fa-exclamation"></i> 123
+            </div>
 
             {{ form_start(form, {'action': path('tourist_edit_unwelcome', {'id': tourist.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
             {% if isUnwelcomeTourist %}
-                {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': tourist, 'route': 'tourist', delete_route: 'tourist_delete_unwelcome', delete_title: 'unwelcome.actions.delete' } %}
+                <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+                    <div class="container-fluid">
+                        {% include 'MBHBaseBundle:Actions:saveButtons.html.twig' with {'save_close': true, 'save_text': 'views.actions.update.save'|trans({}, 'MBHBaseBundle')}%}
+                    </div>
+                </div>
             {% else %}
-                {% include 'MBHBaseBundle:Actions:new.html.twig' with {'entity': tourist, 'route': 'tourist', save_text: 'form.blackListInfoType.add'|trans, save_close: false } %}
+                {% include 'MBHBaseBundle:Actions:new.html.twig' with {'entity': tourist, 'route': 'tourist', save_text: 'form.unwelcomeType.add'|trans, save_close: false } %}
             {% endif %}
             {{ form_end(form) }}
         {% else %}
@@ -33,40 +42,64 @@
         {% endif %}
 
         {% if unwelcomeList %}
-            <table class="table" title="Данные из других отелей">
-                <thead>
-                <tr>
-                    <th>Аргессор</th>
-                    <th>Комментарий</th>
-                    <th>Дата добавления</th>
-                    <th>Отель</th>
-                    <th>Период проживания</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for unwelcome in unwelcomeList %}
+
+            <div class="box box-default box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Жалобы других отелей</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool form-group-collapse" data-widget="collapse" id="mbh_package_tourist_unwelcome_list">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                <table class="table">
+                    <thead>
                     <tr>
-                        <td>{{ unwelcome.isAggressor ? 'Да' : 'Нет' }}</td>
-                        <td>{{ unwelcome.comment }}</td>
-                        <td>{{ unwelcome.createdAt ? unwelcome.createdAt|date('d.m.Y') : '' }}</td>
-                        <td>
-                            {% if unwelcome.hotel %}
-                                <div>{{ unwelcome.hotel.title }}</div>
-                                <small>{{ unwelcome.hotel.city }}</small>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if unwelcome.arrivalTime and unwelcome.departureTime %}
-                                <div>
-                                    {{ unwelcome.arrivalTime|date('d.m.Y') }} -
-                                    {{ unwelcome.departureTime|date('d.m.Y') }}
-                                </div>
-                            {% endif %}
-                        </td>
+                        <th>Отель</th>
+                        <th>Период проживания</th>
+                        <th>Оценки</th>
+                        <th>Комментарий</th>
+                        <th>Добавлено</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for unwelcome in unwelcomeList %}
+                        <tr>
+                            <td>
+                                {% if unwelcome.hotel %}
+                                    <div>{{ unwelcome.hotel.title }}</div>
+                                    <small>{{ unwelcome.hotel.city }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if unwelcome.arrivalTime and unwelcome.departureTime %}
+                                    <div>
+                                        {{ unwelcome.arrivalTime|mbh_format }} -
+                                        {{ unwelcome.departureTime|mbh_format }}
+                                    </div>
+                                    <small>{{ unwelcome.night }} {{ 'nights'|transchoice(unwelcome.night) }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div>
+                                    {% for characteristic in characteristics %}
+                                        {% if attribute(unwelcome, characteristic) %}
+                                            <div>
+                                                <small>{{ ('form.unwelcomeType.' ~ characteristic)|trans }}: {{ attribute(unwelcome, characteristic) }}</small>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td>{{ unwelcome.comment }}</td>
+                            <td>{{ unwelcome.createdAt ? unwelcome.createdAt|date('d.m.Y') : '' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <div>
+            </div>
         {% endif %}
     </div>
 

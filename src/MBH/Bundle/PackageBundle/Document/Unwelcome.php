@@ -11,9 +11,33 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 class Unwelcome implements \JsonSerializable
 {
     /**
-     * @var bool
+     * @var int
      */
-    protected $isAggressor;
+    protected $foul;
+    /**
+     * @var int
+     */
+    protected $aggression;
+    /**
+     * @var int
+     */
+    protected $inadequacy;
+    /**
+     * @var int
+     */
+    protected $drunk;
+    /**
+     * @var int
+     */
+    protected $drugs;
+    /**
+     * @var int
+     */
+    protected $destruction;
+    /**
+     * @var int
+     */
+    protected $materialDamage;
 
     /**
      * @var string
@@ -46,20 +70,128 @@ class Unwelcome implements \JsonSerializable
     protected $departureTime;
 
     /**
-     * @return boolean
+     * @return int
      */
-    public function getIsAggressor()
+    public function getFoul()
     {
-        return $this->isAggressor;
+        return $this->foul;
     }
 
     /**
-     * @param boolean $aggressor
-     * @return self
+     * @param int $foul
+     * @return $this
      */
-    public function setIsAggressor($aggressor)
+    public function setFoul($foul)
     {
-        $this->isAggressor = $aggressor;
+        $this->foul = $foul;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAggression()
+    {
+        return $this->aggression;
+    }
+
+    /**
+     * @param int $aggression
+     * @return $this
+     */
+    public function setAggression($aggression)
+    {
+        $this->aggression = $aggression;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInadequacy()
+    {
+        return $this->inadequacy;
+    }
+
+    /**
+     * @param int $inadequacy
+     * @return $this
+     */
+    public function setInadequacy($inadequacy)
+    {
+        $this->inadequacy = $inadequacy;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDrunk()
+    {
+        return $this->drunk;
+    }
+
+    /**
+     * @param int $drunk
+     * @return $this
+     */
+    public function setDrunk($drunk)
+    {
+        $this->drunk = $drunk;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDrugs()
+    {
+        return $this->drugs;
+    }
+
+    /**
+     * @param int $drugs
+     * @return $this
+     */
+    public function setDrugs($drugs)
+    {
+        $this->drugs = $drugs;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDestruction()
+    {
+        return $this->destruction;
+    }
+
+    /**
+     * @param int $destruction
+     * @return $this
+     */
+    public function setDestruction($destruction)
+    {
+        $this->destruction = $destruction;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaterialDamage()
+    {
+        return $this->materialDamage;
+    }
+
+    /**
+     * @param int $materialDamage
+     * @return $this
+     */
+    public function setMaterialDamage($materialDamage)
+    {
+        $this->materialDamage = $materialDamage;
         return $this;
     }
 
@@ -73,7 +205,7 @@ class Unwelcome implements \JsonSerializable
 
     /**
      * @param string $comment
-     * @return self
+     * @return $this
      */
     public function setComment($comment)
     {
@@ -152,6 +284,17 @@ class Unwelcome implements \JsonSerializable
     }
 
     /**
+     * @return int
+     */
+    public function getNight()
+    {
+        if($this->getArrivalTime() && $this->getDepartureTime()) {
+            return $this->getArrivalTime()->diff($this->getDepartureTime())->d;
+        }
+        return 0;
+    }
+
+    /**
      * @param \DateTime $departureTime
      * @return self
      */
@@ -172,8 +315,14 @@ class Unwelcome implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
+            'foul' => $this->getFoul(),
+            'aggression' => $this->getAggression(),
+            'inadequacy' => $this->getInadequacy(),
+            'drunk' => $this->getDrunk(),
+            'drugs' => $this->getDrugs(),
+            'destruction' => $this->getDestruction(),
+            'materialDamage' => $this->getMaterialDamage(),
             'comment' => $this->getComment(),
-            'isAggressor' => $this->getIsAggressor(),
             'arrivalTime' => $this->getArrivalTime() ? $this->getArrivalTime()->format('d.m.Y') : null,
             'departureTime' => $this->getDepartureTime() ? $this->getDepartureTime()->format('d.m.Y') : null,
         ];

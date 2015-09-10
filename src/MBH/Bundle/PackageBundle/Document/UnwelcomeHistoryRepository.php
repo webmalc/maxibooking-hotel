@@ -90,7 +90,13 @@ class UnwelcomeHistoryRepository
     {
         $unwelcome = new Unwelcome();
         $unwelcome
-            ->setIsAggressor($data['isAggressor'])
+            ->setFoul($data['foul'])
+            ->setAggression($data['aggression'])
+            ->setInadequacy($data['inadequacy'])
+            ->setDrunk($data['drunk'])
+            ->setDrugs($data['drugs'])
+            ->setDestruction($data['destruction'])
+            ->setMaterialDamage($data['materialDamage'])
             ->setComment($data['comment'])
             ->setIsMy($data['isMy'])
         ;
@@ -126,15 +132,5 @@ class UnwelcomeHistoryRepository
     public function deleteByTourist(Tourist $tourist)
     {
         return $this->mbhs->deleteUnwelcomeByTourist($tourist);
-    }
-
-    /**
-     * @param Tourist[] $tourists
-     */
-    public function updateTourists(array $tourists)
-    {
-        foreach($tourists as $tourist) {
-            //$tourist->setIsInBlackList();
-        }
     }
 }

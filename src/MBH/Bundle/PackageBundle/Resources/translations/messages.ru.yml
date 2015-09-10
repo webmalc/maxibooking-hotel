@@ -148,6 +148,7 @@ controller.packageController.record_deleted_success: 'Запись успешн�
 controller.sourceController.record_created_success: 'Запись успешно создана.'
 controller.sourceController.record_edited_success: 'Запись успешно отредактирована.'
 controller.touristController.record_created_success: 'Запись успешно создана.'
+controller.touristController.record_created_success_unwelcome: 'Клиент успешно создан. Он был найден в черном списке'
 controller.touristController.record_edited_success: 'Запись успешно отредактирована.'
 controller.packageController.record_edited_fail: 'Ошибка при обновлении брони. Нет доступных номеров.'
 controller.packageController.record_edited_fail_accommodation: 'Ошибка при обновлении брони. Номер недоступен для размещения.'
@@ -296,9 +297,18 @@ report.roomType.statuses.paid: Оплачен
 report.roomType.statuses.not_out: Не выехал
 report.roomType.statuses.out_now: Выезжает
 
-form.blackListInfoType.aggressor: Агрессивность
-form.blackListInfoType.comment: Комментарий
-form.blackListInfoType.add: Добавить в черный список
+form.unwelcomeType.group.common: Внести в черный список
+
+form.unwelcomeType.foul: Нарушения правил отеля
+form.unwelcomeType.aggression: Агрессивность
+form.unwelcomeType.inadequacy: Неадекватность
+form.unwelcomeType.drunk: Алкогольное опьянение
+form.unwelcomeType.drugs: Употребление наркотиков
+form.unwelcomeType.destruction: Порча имущества
+form.unwelcomeType.materialDamage: Материальный ущерб
+form.unwelcomeType.comment: Комментарий
+
+form.unwelcomeType.add: Добавить в черный список
 
 
 tourist.migration.type_series: 'Серия'

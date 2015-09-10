@@ -420,20 +420,20 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      * @ParamConverter("tourist", class="MBHPackageBundle:Tourist", options={"id" = "touristId"})
      */
-    public function guestDeleteAction(Request $request, Package $entity, Tourist $tourist)
+    public function guestDeleteAction(Request $request, Package $package, Tourist $tourist)
     {
-        if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
-        $entity->removeTourist($tourist);
+        $package->removeTourist($tourist);
 
         $this->dm->persist($tourist);
-        $this->dm->persist($entity);
+        $this->dm->persist($package);
         $this->dm->flush();
 
         $request->getSession()->getFlashBag()->set('success', 'Гость успешно удален.');
 
-        return $this->redirectToRoute('package_guest', ['id' => $entity->getId()]);
+        return $this->redirectToRoute('package_guest', ['id' => $package->getId()]);
     }
 
     /**

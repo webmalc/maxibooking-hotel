@@ -39,27 +39,32 @@ class TouristSubscriber implements EventSubscriber
 
     public function preUpdate(LifecycleEventArgs $args)
     {
-        $document = $args->getDocument();
-        if($document instanceof Tourist) {
-            $this->checkUpdateIsUnwelcome($document, $args->getDocumentManager());
+        $tourist = $args->getDocument();
+        if($tourist instanceof Tourist) {
+            $dm = $args->getDocumentManager();
+
+            $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($tourist);
+            $isUpdated =
+                isset($changeSet['firstName']) && array_key_exists(1, $changeSet['firstName']) ||
+                isset($changeSet['lastName']) && array_key_exists(1, $changeSet['lastName']) ||
+                isset($changeSet['birthday']) && array_key_exists(1, $changeSet['birthday']);
+
+            if($isUpdated) {
+                $this->checkUpdateIsUnwelcome($tourist, $dm);
+                $uow = $dm->getUnitOfWork();
+                $meta = $dm->getClassMetadata(Tourist::class);
+                $uow->recomputeSingleDocumentChangeSet($meta, $tourist);
+            }
         }
     }
 
-    public function checkUpdateIsUnwelcome(Tourist $tourist, DocumentManager $dm)
+    public function checkUpdateIsUnwelcome(Tourist $tourist)
     {
-        $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($tourist);
-        $isUpdated =
-            isset($changeSet['firstName'][1]) ||
-            isset($changeSet['lastName'][1]) ||
-            isset($changeSet['birthday'][1]);
-
-        if($isUpdated && $tourist->getFirstName() && $tourist->getLastName() && $tourist->getBirthday()) {
+        if($tourist->getFirstName() && $tourist->getLastName() && $tourist->getBirthday()) {
             $isUnwelcome = $this->container->get('mbh.package.unwelcome_history_repository')->isUnwelcome($tourist);
             $tourist->setIsUnwelcome($isUnwelcome);
-            dump($tourist->getIsUnwelcome());
-            $uow = $dm->getUnitOfWork();
-            $meta = $dm->getClassMetadata(Tourist::class);
-            $uow->recomputeSingleDocumentChangeSet($meta, $tourist);
+        } else {
+            $tourist->setIsUnwelcome(false);
         }
     }
 }
