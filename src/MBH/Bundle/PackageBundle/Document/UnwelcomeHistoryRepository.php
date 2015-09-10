@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Service\Mbhs;
 use MBH\Bundle\HotelBundle\Document\City;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -50,15 +51,7 @@ class UnwelcomeHistoryRepository
     {
         $responseData = $this->mbhs->findUnwelcomeHistoryByTourist($tourist);
         if($responseData && isset($responseData['unwelcomeHistory'])) {
-            $historyData = $responseData['unwelcomeHistory'];
-            $unwelcomeHistory = new UnwelcomeHistory();
-
-            $unwelcomeHistory->setTourist($tourist);
-            foreach($historyData['items'] as $data) {
-                $unwelcome = $this->hydrateUnwelcome($data);
-                $unwelcomeHistory->addItem($unwelcome);
-            }
-            return $unwelcomeHistory;
+            return $this->hydrateUnwelcomeHistory($responseData['unwelcomeHistory']);;
         }
 
         return null;
@@ -83,54 +76,91 @@ class UnwelcomeHistoryRepository
     }
 
     /**
-     * @param array $data
-     * @return Unwelcome
-     */
-    private function hydrateUnwelcome(array $data)
-    {
-        $unwelcome = new Unwelcome();
-        $unwelcome
-            ->setFoul($data['foul'])
-            ->setAggression($data['aggression'])
-            ->setInadequacy($data['inadequacy'])
-            ->setDrunk($data['drunk'])
-            ->setDrugs($data['drugs'])
-            ->setDestruction($data['destruction'])
-            ->setMaterialDamage($data['materialDamage'])
-            ->setComment($data['comment'])
-            ->setIsMy($data['isMy'])
-        ;
-
-        if(isset($data['arrivalTime']) && isset($data['departureTime'])) {
-            $unwelcome
-                ->setArrivalTime(\DateTime::createFromFormat('d.m.Y H:i:s', $data['arrivalTime']. ' 00:00:00'))
-                ->setDepartureTime(\DateTime::createFromFormat('d.m.Y H:i:s', $data['departureTime']. ' 00:00:00'))
-            ;
-        }
-
-        if(isset($data['hotel'])) {
-            $hotel = new Hotel();
-            $hotel->setTitle($data['hotel']['title']);
-            $city = new City();
-            $city->setTitle($data['hotel']['city']);
-            $hotel->setCity($city);
-            $unwelcome->setHotel($hotel);
-        }
-
-        if ($data['createdAt']) {
-            $unwelcome->setCreatedAt(
-                \DateTime::createFromFormat('d.m.Y H:i:s', $data['createdAt']. ' 00:00:00')
-            );
-        }
-        return $unwelcome;
-    }
-
-    /**
      * @param Tourist $tourist
      * @return null
      */
     public function deleteByTourist(Tourist $tourist)
     {
         return $this->mbhs->deleteUnwelcomeByTourist($tourist);
+    }
+
+    /**
+     * @param array $historyData
+     * @return UnwelcomeHistory
+     */
+    public function hydrateUnwelcomeHistory(array $historyData)
+    {
+        $unwelcomeHistory = new UnwelcomeHistory();
+
+        if(isset($historyData['tourist'])) {
+            $tourist = $this->hydrateTourist($historyData['tourist']);
+            $unwelcomeHistory->setTourist($tourist);
+        }
+        foreach($historyData['items'] as $unwelcomeData) {
+            $unwelcome = $this->hydrateUnwelcome($unwelcomeData);
+            $unwelcomeHistory->addItem($unwelcome);
+        }
+
+        return $unwelcomeHistory;
+    }
+
+    /**
+     * @param array $touristData
+     * @return Tourist
+     */
+    private function hydrateTourist(array $touristData)
+    {
+        $tourist = new Tourist();
+        $tourist->setFirstName($touristData['firstName']);
+        $tourist->setLastName($touristData['lastName']);
+        $tourist->setPatronymic($touristData['patronymic']);
+        $tourist->setBirthday(Helper::getDateFromString($touristData['birthday']));
+        $tourist->setPhone($touristData['phone']);
+        $tourist->setEmail($touristData['email']);
+        //$tourist->setCitizenship($touristData['citizenship']);
+        return $tourist;
+    }
+
+    /**
+     * @param array $unwelcomeData
+     * @return Unwelcome
+     */
+    private function hydrateUnwelcome(array $unwelcomeData)
+    {
+        $unwelcome = new Unwelcome();
+        $unwelcome
+            ->setFoul($unwelcomeData['foul'])
+            ->setAggression($unwelcomeData['aggression'])
+            ->setInadequacy($unwelcomeData['inadequacy'])
+            ->setDrunk($unwelcomeData['drunk'])
+            ->setDrugs($unwelcomeData['drugs'])
+            ->setDestruction($unwelcomeData['destruction'])
+            ->setMaterialDamage($unwelcomeData['materialDamage'])
+            ->setComment($unwelcomeData['comment'])
+            ->setIsMy($unwelcomeData['isMy'])
+        ;
+
+        if(isset($unwelcomeData['arrivalTime']) && isset($unwelcomeData['departureTime'])) {
+            $unwelcome
+                ->setArrivalTime(\DateTime::createFromFormat('d.m.Y H:i:s', $unwelcomeData['arrivalTime']. ' 00:00:00'))
+                ->setDepartureTime(\DateTime::createFromFormat('d.m.Y H:i:s', $unwelcomeData['departureTime']. ' 00:00:00'))
+            ;
+        }
+
+        if(isset($unwelcomeData['hotel'])) {
+            $hotel = new Hotel();
+            $hotel->setTitle($unwelcomeData['hotel']['title']);
+            $city = new City();
+            $city->setTitle($unwelcomeData['hotel']['city']);
+            $hotel->setCity($city);
+            $unwelcome->setHotel($hotel);
+        }
+
+        if ($unwelcomeData['createdAt']) {
+            $unwelcome->setCreatedAt(
+                \DateTime::createFromFormat('d.m.Y H:i:s', $unwelcomeData['createdAt']. ' 00:00:00')
+            );
+        }
+        return $unwelcome;
     }
 }

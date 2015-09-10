@@ -65,7 +65,7 @@ class Helper
      * @param string $format
      * @return \DateTime|null
      */
-    public function getDateFromString($date, $format = "d.m.Y")
+    public static function getDateFromString($date, $format = "d.m.Y")
     {
         if (empty($date)) {
             return null;

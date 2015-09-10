@@ -332,14 +332,13 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
             'birthday' => $this->birthday ? $this->birthday->format('d.m.Y') : null,
             'phone' => $this->phone,
             'email' => $this->email,
-            'communicationLanguage' => $this->communicationLanguage
+            'communicationLanguage' => $this->communicationLanguage,
+            'citizenship' => $this->getCitizenship() ? $this->getCitizenship()->getName() : null
         ];
     }
 
     /**
-     * Get sex
-     *
-     * @return date $sex
+     * @return string $sex
      */
     public function getSex()
     {
