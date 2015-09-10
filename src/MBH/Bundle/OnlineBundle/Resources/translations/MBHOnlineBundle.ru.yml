@@ -80,4 +80,5 @@ views.form.index.search_page_embed_code: Код страницы поиска д
 views.form.index.to_results_place: На место для результатов:
 views.form.layout.online_form: "Онлайн форма"
 views.form.layout.online_polls: "Оценки"
+views.form.layout.invite: "Визовое приглашение"
 online_form.notification: "Оформлены новые брони через онлайн форму."

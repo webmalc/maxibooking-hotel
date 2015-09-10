@@ -1,0 +1,22 @@
+{% extends "MBHOnlineBundle::layout.html.twig" %}
+
+{% set title = 'views.form.layout.invite'|trans({}, 'MBHOnlineBundle') %}
+{% set title_url = path('invite') %}
+{% set layout = "box" %}
+
+{% block content %}
+    {{ form_start(form, {'action': path('invite'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+    {{ form_end(form) }}
+
+    <div class="panel panel-default">
+        <div class="panel-heading"><h3 class="panel-title">Код голосования для вставки на сайт</h3></div>
+        <div class="panel-body">
+            <span class="text-success">
+                {{ '<iframe src="' ~ url('invite_form') ~ '" frameBorder="0"></iframe>' }}
+            </span>
+        </div>
+    </div>
+{% endblock %}
+

@@ -294,6 +294,8 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-globe']);
         $menu['services']->addChild('online_polls', ['route' => 'online_poll_config', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
+        $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'Визовое приглашение'])
+            ->setAttributes(['icon' => 'fa fa-star']);
 
         return $this->filter($menu, $factory, $options);
     }

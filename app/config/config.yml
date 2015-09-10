@@ -33,7 +33,6 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
     base_template_class: MBH\Bundle\BaseBundle\Twig\Template
-    
     globals:
         meta_title: 'Система бронирования "MaxiBooking".'
         project_title: 'MaxiBooking'
@@ -60,6 +59,8 @@ twig:
           7: 'Вс'
         environment: "%mbh.environment%"
         version: "%mbh.version%"
+    form:
+        resources: ['bootstrap_3_layout.html.twig']
 
 # Assetic Configuration
 # Assetic Configuration
