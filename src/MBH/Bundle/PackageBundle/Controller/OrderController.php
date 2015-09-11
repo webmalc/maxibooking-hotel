@@ -164,7 +164,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new OrderTouristType());
+        $form = $this->createForm(new OrderTouristType(), ['addToPackage' => true]);
         return [
             'order' => $order,
             'logs' => $this->logs($order),

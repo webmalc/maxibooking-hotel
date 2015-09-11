@@ -91,12 +91,18 @@
                     {% if order.deletedAt is empty %}
                         <div class="row spacer-top">
                             <div class="col-md-12 text-right btn-list">
+                                <a href="{{ path('tourist_edit_unwelcome', {'id': order.mainTourist.id }) }}"
+                                        class="btn btn-info btn-sm" title="" data-toggle="tooltip"
+                                        data-original-title="Добавить плательщика в черный список">
+                                        <i class="fa fa-user-secret"></i>
+                                    </a>
                                 {% if package.deletedAt is empty and is_granted('ROLE_TOURIST_EDIT') %}
-                                <a href="{{ path('tourist_edit', {'id': order.mainTourist.id }) }}"
-                                   class="btn btn-success btn-sm" title="" data-toggle="tooltip"
-                                   data-original-title="Редактирование записи"><i class="fa fa-pencil-square-o"></i></a>
+                                    <a href="{{ path('tourist_edit', {'id': order.mainTourist.id }) }}"
+                                        class="btn btn-success btn-sm" title="" data-toggle="tooltip"
+                                        data-original-title="Редактирование записи">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                    </a>
                                 {% endif %}
-
                                 {% if package.deletedAt is empty and is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', order) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                                 <a data-toggle="tooltip"
                                    title="{{ 'order.touristEdit.delete_payer'|trans({}, 'MBHPackageBundle') }}"

@@ -64,7 +64,7 @@
                         <th>Отель</th>
                         <th>Период проживания</th>
                         <th>Оценки</th>
-                        <th>Комментарий</th>
+                        <th>Гражданство гостя</th>
                         <th>Добавлено</th>
                     </tr>
                     </thead>
@@ -97,7 +97,7 @@
                                     {% endfor %}
                                 </div>
                             </td>
-                            <td>{{ unwelcome.comment }}</td>
+                            <td>{{ unwelcome.touristCitizenship }}</td>
                             <td>{{ unwelcome.createdAt ? unwelcome.createdAt|date('d.m.Y') : '' }}</td>
                         </tr>
                     {% endfor %}

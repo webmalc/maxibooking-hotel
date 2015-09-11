@@ -55,6 +55,21 @@ class Unwelcome implements \JsonSerializable
     protected $hotel;
 
     /**
+     * @var string
+     */
+    protected $touristEmail;
+
+    /**
+     * @var string
+     */
+    protected $touristPhone;
+
+    /**
+     * @var string
+     */
+    protected $touristCitizenship;
+
+    /**
      * @var \DateTime|null
      */
     protected $createdAt;
@@ -232,6 +247,60 @@ class Unwelcome implements \JsonSerializable
     }
 
     /**
+     * @return string
+     */
+    public function getTouristEmail()
+    {
+        return $this->touristEmail;
+    }
+
+    /**
+     * @param string $touristEmail
+     * @return $this
+     */
+    public function setTouristEmail($touristEmail)
+    {
+        $this->touristEmail = $touristEmail;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTouristPhone()
+    {
+        return $this->touristPhone;
+    }
+
+    /**
+     * @param string $touristPhone
+     * @return $this
+     */
+    public function setTouristPhone($touristPhone)
+    {
+        $this->touristPhone = $touristPhone;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTouristCitizenship()
+    {
+        return $this->touristCitizenship;
+    }
+
+    /**
+     * @param string $touristCitizenship
+     * @return $this
+     */
+    public function setTouristCitizenship($touristCitizenship)
+    {
+        $this->touristCitizenship = $touristCitizenship;
+        return $this;
+    }
+
+    /**
      * @return \DateTime|null
      */
     public function getCreatedAt()
@@ -323,6 +392,9 @@ class Unwelcome implements \JsonSerializable
             'destruction' => $this->getDestruction(),
             'materialDamage' => $this->getMaterialDamage(),
             'comment' => $this->getComment(),
+            'touristCitizenship' => $this->getTouristCitizenship(),
+            'touristEmail' => $this->getTouristEmail(),
+            'touristPhone' => $this->getTouristPhone(),
             'arrivalTime' => $this->getArrivalTime() ? $this->getArrivalTime()->format('d.m.Y') : null,
             'departureTime' => $this->getDepartureTime() ? $this->getDepartureTime()->format('d.m.Y') : null,
         ];

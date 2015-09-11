@@ -102,7 +102,7 @@ form.touristType.second_name: Отчество
 form.touristType.placeholder_second_name: Иванович
 form.touristType.birth_date: Дата рождения
 form.touristType.gender: Пол
-form.touristType.communication_language: Язык
+form.touristType.communication_language: Язык общения
 form.touristType.sex_male: Муж.
 form.touristType.sex_female: Жен.
 form.touristType.sex_unknown: -
@@ -148,7 +148,7 @@ controller.packageController.record_deleted_success: 'Запись успешн�
 controller.sourceController.record_created_success: 'Запись успешно создана.'
 controller.sourceController.record_edited_success: 'Запись успешно отредактирована.'
 controller.touristController.record_created_success: 'Запись успешно создана.'
-controller.touristController.record_created_success_unwelcome: 'Клиент успешно создан. Он был найден в черном списке'
+controller.touristController.tourist_was_found_in_unwelcome: 'Турист был найден в черном списке'
 controller.touristController.record_edited_success: 'Запись успешно отредактирована.'
 controller.packageController.record_edited_fail: 'Ошибка при обновлении брони. Нет доступных номеров.'
 controller.packageController.record_edited_fail_accommodation: 'Ошибка при обновлении брони. Номер недоступен для размещения.'

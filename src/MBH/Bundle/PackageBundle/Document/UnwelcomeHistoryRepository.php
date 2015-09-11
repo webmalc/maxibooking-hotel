@@ -30,7 +30,15 @@ class UnwelcomeHistoryRepository
      */
     public function add(Unwelcome $unwelcome, Tourist $tourist)
     {
+        $this->fillUnwelcome($unwelcome, $tourist);
         return $this->mbhs->addUnwelcome($unwelcome, $tourist);
+    }
+
+    private function fillUnwelcome(Unwelcome $unwelcome, Tourist $tourist)
+    {
+        $unwelcome->setTouristCitizenship($tourist->getCitizenship() ? $tourist->getCitizenship()->getName() : null);
+        $unwelcome->setTouristEmail($tourist->getEmail());
+        $unwelcome->setTouristPhone($tourist->getPhone());
     }
 
     /**
@@ -40,6 +48,7 @@ class UnwelcomeHistoryRepository
      */
     public function update(Unwelcome $unwelcome, Tourist $tourist)
     {
+        $this->fillUnwelcome($unwelcome, $tourist);
         return $this->mbhs->updateUnwelcome($unwelcome, $tourist);
     }
 
@@ -136,6 +145,9 @@ class UnwelcomeHistoryRepository
             ->setDrugs($unwelcomeData['drugs'])
             ->setDestruction($unwelcomeData['destruction'])
             ->setMaterialDamage($unwelcomeData['materialDamage'])
+            ->setTouristCitizenship($unwelcomeData['touristCitizenship'])
+            ->setTouristEmail($unwelcomeData['touristEmail'])
+            ->setTouristPhone($unwelcomeData['touristPhone'])
             ->setComment($unwelcomeData['comment'])
             ->setIsMy($unwelcomeData['isMy'])
         ;

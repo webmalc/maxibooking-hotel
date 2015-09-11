@@ -59,8 +59,6 @@ twig:
           7: 'Вс'
         environment: "%mbh.environment%"
         version: "%mbh.version%"
-    form:
-        resources: ['bootstrap_3_layout.html.twig']
 
 # Assetic Configuration
 # Assetic Configuration

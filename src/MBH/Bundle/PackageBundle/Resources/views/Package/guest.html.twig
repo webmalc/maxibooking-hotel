@@ -50,7 +50,13 @@
                             <td>
                                 <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}" rel="main"
                                    title=" {{ 'package.guest.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">{{ tourist.fullName }}</a>
-                                {% if tourist.isUnwelcome %}<a href='{{ path('tourist_edit_unwelcome', {id: tourist.id}) }}'><i data-toggle='tooltip' data-original-title='Клиент в черном списке' class='fa fa-user-secret unwelcome-icon'></i></a>{% endif %}
+                                {% if tourist.isUnwelcome %}
+                                    <a href='{{ path('tourist_edit_unwelcome', {id: tourist.id}) }}'>
+                                        <i data-toggle='tooltip' data-original-title='Клиент в черном списке' class='fa fa-user-secret unwelcome-icon'></i>
+                                    </a>
+                                {% else %}
+                                    <i style='opacity:0.4' data-toggle='tooltip' data-original-title='Клиент в не черном списке' class='fa fa-check-circle'></i>
+                                {% endif %}
                             </td>
                             <td>{% if tourist.phone %}{{ tourist.phone }}{% endif %}</td>
                             <td>{% if tourist.email %}<a href="mailto:{{ tourist.email }}" data-toggle="tooltip" title="{{ 'package.guest.write_a_client'|trans({}, 'MBHPackageBundle') }}">{{ tourist.email }}</a>{% endif %}</td>

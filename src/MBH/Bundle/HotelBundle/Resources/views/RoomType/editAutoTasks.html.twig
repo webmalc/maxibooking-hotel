@@ -1,15 +1,15 @@
 {% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
 
-{% set small_title = 'views.roomType.edit.edit_room_type'|trans({}, 'MBHHotelBundle') ~ entity.id %}
+{% set small_title = 'views.roomType.edit.edit_room_type'|trans({}, 'MBHHotelBundle') ~ roomType.id %}
 {% set layout = "tabs" %}
 
 {% block content %}
 
-    {% include 'MBHHotelBundle:RoomType:editTabs.html.twig' with {'active' : 3, 'entity': entity} %}
+    {% include 'MBHHotelBundle:RoomType:editTabs.html.twig' with {'active' : 3, 'entity': roomType} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="general_info">
-            {{ form_start(form, {'action': path('room_type_task_edit', {'id': entity.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_start(form, {'action': path('room_type_task_edit', {'id': roomType.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
 
             {% if form.vars.errors|length > 0 %}
                 <div class="alert alert-danger global-errors">{{ form_errors(form) }}</div>
@@ -41,11 +41,11 @@
                 </div>
                 {{ form_row(form.checkOut) }}
             </div>
-            {{ form_rest(form.daily) }}
-            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'room_type_delete' } %}
-            {{ form_end(form) }}
+            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': roomType, 'delete_route': 'room_type_delete' } %}
+            {{ form_row(form._token) }}
+            {{ form_end(form, {'render_rest': false}) }}
 
-            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'hotel_delete' } %}
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': roomType, 'logs': logs, 'delete_route': 'hotel_delete' } %}
         </div>
     </div>
 {% endblock %}

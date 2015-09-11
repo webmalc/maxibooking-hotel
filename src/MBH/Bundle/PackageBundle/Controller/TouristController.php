@@ -165,17 +165,21 @@ class TouristController extends Controller
         $form = $this->createForm(new TouristType(), $tourist,
             ['genders' => $this->container->getParameter('mbh.gender.types')]);
 
+        $notUnwelcome = !$tourist->getIsUnwelcome();
         $form->submit($request);
         if ($form->isValid()) {
 
             $this->dm->persist($tourist);
             $this->dm->flush();
 
-            $message = $tourist->getIsUnwelcome() ?
-                'controller.touristController.record_created_success_unwelcome' :
-                'controller.touristController.record_created_success'
-            ;
-            $request->getSession()->getFlashBag()->set('success', $this->get('translator')->trans($message));
+            $flashBag = $request->getSession()->getFlashBag();
+            if($notUnwelcome && $tourist->getIsUnwelcome()) {
+                $flashBag->set('warning', '<i class="fa fa-user-secret"></i> '.$this->get('translator')
+                    ->trans('controller.touristController.tourist_was_found_in_unwelcome'));
+            }
+
+            $flashBag->set('success', $this->get('translator')
+                ->trans('controller.touristController.record_created_success'));
 
             return $this->afterSaveRedirect('tourist', $tourist->getId());
         }
@@ -195,27 +199,34 @@ class TouristController extends Controller
      * @Template("MBHPackageBundle:Tourist:edit.html.twig")
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
-    public function updateAction(Request $request, Tourist $entity)
+    public function updateAction(Request $request, Tourist $tourist)
     {
-        $form = $this->createForm(new TouristType(), $entity,
+        $form = $this->createForm(new TouristType(), $tourist,
             ['genders' => $this->container->getParameter('mbh.gender.types')]);
 
+        $notUnwelcome = !$tourist->getIsUnwelcome();
         $form->submit($request);
         if ($form->isValid()) {
 
-            $this->dm->persist($entity);
+            $this->dm->persist($tourist);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.touristController.record_edited_success'));
+            $flashBag = $request->getSession()->getFlashBag();
+            if($notUnwelcome && $tourist->getIsUnwelcome()) {
+                $flashBag->set('warning', '<i class="fa fa-user-secret"></i> '.$this->get('translator')
+                    ->trans('controller.touristController.tourist_was_found_in_unwelcome'));
+            }
 
-            return $this->afterSaveRedirect('tourist', $entity->getId());
+            $flashBag->set('success', $this->get('translator')
+                ->trans('controller.touristController.record_edited_success'));
+
+            return $this->afterSaveRedirect('tourist', $tourist->getId());
         }
 
         return [
-            'entity' => $entity,
+            'entity' => $tourist,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'logs' => $this->logs($tourist)
         ];
     }
 

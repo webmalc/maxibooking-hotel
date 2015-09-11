@@ -82,6 +82,7 @@ class OrderTouristType extends AbstractType
                 'constraints' => [new Date()]
             ))
             ->add('communicationLanguage', 'mbh_language', [
+                'label' => 'form.touristType.communication_language',
                 'group' => 'form.orderTouristType.add_guest',
                 'attr' => ['class' => 'guestCommunicationLanguage'],
                 'required' => false,
@@ -89,11 +90,11 @@ class OrderTouristType extends AbstractType
         ;
 
         if ($options['guest']) {
-            $builder->add('addToPackage', 'checkbox', array(
+            $builder->add('addToPackage', 'checkbox', [
                 'label' => 'form.orderTouristType.add_to_package',
                 'group' => 'form.orderTouristType.add_guest',
                 'required' => false
-            ));
+            ]);
         }
     }
 
