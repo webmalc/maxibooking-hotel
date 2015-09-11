@@ -324,3 +324,6 @@ tourist.visa.type_issued: 'Дата выдачи'
 tourist.visa.type_expiry: 'Срок действия'
 
 unwelcome.actions.delete: Удалить из черного списка
+
+package.tourist_in_unwelcome: Гость находится в черном списке
+package.payer_in_unwelcome: Плательщик находится в черном списке

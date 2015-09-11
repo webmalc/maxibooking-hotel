@@ -398,8 +398,13 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 $this->dm->persist($package);
                 $this->dm->flush();
 
-                $request->getSession()->getFlashBag()->set('success',
-                    $this->get('translator')->trans('controller.packageController.guest_added_success'));
+                $flashBag = $request->getSession()->getFlashBag();
+                $flashBag->set('success', $this->get('translator')
+                    ->trans('controller.packageController.guest_added_success'));
+                if($tourist->getIsUnwelcome()) {
+                    $flashBag->set('warning', '<i class="fa fa-user-secret"></i> '.$this->get('translator')
+                        ->trans('package.tourist_in_unwelcome'));
+                }
 
                 return $this->afterSaveRedirect('package', $package->getId(), [], '_guest');
             }

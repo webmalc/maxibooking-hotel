@@ -212,13 +212,12 @@ class TouristController extends Controller
             $this->dm->flush();
 
             $flashBag = $request->getSession()->getFlashBag();
+            $flashBag->set('success', $this->get('translator')
+                ->trans('controller.touristController.record_edited_success'));
             if($notUnwelcome && $tourist->getIsUnwelcome()) {
                 $flashBag->set('warning', '<i class="fa fa-user-secret"></i> '.$this->get('translator')
                     ->trans('controller.touristController.tourist_was_found_in_unwelcome'));
             }
-
-            $flashBag->set('success', $this->get('translator')
-                ->trans('controller.touristController.record_edited_success'));
 
             return $this->afterSaveRedirect('tourist', $tourist->getId());
         }

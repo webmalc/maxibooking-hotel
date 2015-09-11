@@ -215,19 +215,19 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      *
      * @Route("/{id}/tourist/update/{packageId}", name="package_order_tourist_update")
      * @Method("PUT")
-     * @@Security("is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
+     * @@Security("is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', $order) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
      * @Template("MBHPackageBundle:Order:touristEdit.html.twig")
      * @ParamConverter("package", class="MBHPackageBundle:Package", options={"id" = "packageId"})
-     * @param Order $entity
+     * @param Order $order
      * @param Package $package
      * @param Request $request
      * @return Response
      */
-    public function touristUpdateAction(Order $entity, Package $package, Request $request)
+    public function touristUpdateAction(Order $order, Package $package, Request $request)
     {
         $permissions = $this->container->get('mbh.package.permissions');
 
-        if (!$permissions->checkHotel($entity)) {
+        if (!$permissions->checkHotel($order)) {
             throw $this->createNotFoundException();
         }
 
@@ -241,7 +241,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
                 $data['lastName'], $data['firstName'], $data['patronymic'], $data['birthday'], $data['email'],
                 $data['phone']
             );
-            $entity->setMainTourist($tourist);
+            $order->setMainTourist($tourist);
 
             if ($data['addToPackage'] &&
                 $this->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_GUESTS')
@@ -252,23 +252,27 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
                 $this->dm->persist($package);
             }
 
-            $this->dm->persist($entity);
+            $this->dm->persist($order);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.orderController.payer_added_success'));
-
-            if ($request->get('save') !== null) {
-                return $this->redirect($this->generateUrl('package_order_tourist_edit',
-                    ['id' => $entity->getId(), 'packageId' => $package->getId()]));
+            $flashBag = $request->getSession()->getFlashBag();
+            $flashBag->set('success', $this->get('translator')->trans('controller.orderController.payer_added_success'));
+            if($tourist->getIsUnwelcome()) {
+                $flashBag->set('warning', '<i class="fa fa-user-secret"></i> '.$this->get('translator')
+                        ->trans('package.payer_in_unwelcome'));
             }
 
-            return $this->redirect($this->generateUrl('package'));
+            if ($request->get('save') !== null) {
+                return $this->redirectToRoute('package_order_tourist_edit',
+                    ['id' => $order->getId(), 'packageId' => $package->getId()]);
+            }
+
+            return $this->redirectToRoute('package');
         }
 
         return [
-            'entity' => $entity,
-            'logs' => $this->logs($entity),
+            'entity' => $order,
+            'logs' => $this->logs($order),
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
             'form' => $form->createView(),
             'package' => $package
