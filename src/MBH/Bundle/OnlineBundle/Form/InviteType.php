@@ -15,45 +15,36 @@ class InviteType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('arrival', 'date', [
+                'widget' => 'single_text',
+                'required' => false,
+            ])
+            ->add('departure', 'date', [
+                'widget' => 'single_text',
+                'required' => false,
+            ])
             ->add('type', 'choice', [
                 'expanded' => true,
                 'choices' => [
                     'Однократная (600 руб.)',
                     'Двукратная (900 руб.)',
-                ]
-            ])
-            ->add('arrival', 'date', [
-                'widget' => 'single_text'
-            ])
-            ->add('departure', 'date', [
-                'widget' => 'single_text'
+                ],
+                'required' => false,
+                'empty_value' => null,
             ])
             ->add('reservation', 'choice', [
                 'expanded' => true,
                 'choices' => [
                     1,2,3,4,5
-                ]
+                ],
+                'empty_value' => null,
+                'required' => false,
             ])
-            //->add('city', 'text')
-            ->add('firstName', 'text')
-            ->add('lastName', 'text')
-            ->add('sex', 'choice', [
-                'expanded' => true,
-                'choices' => [
-                    'Господин', 'Госпожа'
-                ]
+            ->add('guests', 'collection', [
+                'type' => new InvitedTouristType(),
+                'allow_add' => true,
+                'required' => false
             ])
-            ->add('birthday', 'date', [
-                'widget' => 'single_text'
-            ])
-            ->add('birthplace', 'date', [
-                'widget' => 'single_text'
-            ])
-            ->add('passport', 'text')
-            ->add('expiry', 'date', [
-                'widget' => 'single_text'
-            ])
-            ->add('citizenship', 'text')
             //->add('agree', 'checkbox')
         ;
     }
@@ -61,7 +52,10 @@ class InviteType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-
+        $resolver->setDefaults([
+            //'cascade_validation' => true,
+            //'validation_groups' => true
+        ]);
     }
 
     public function getName()

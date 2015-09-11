@@ -43,7 +43,12 @@ class InviteController extends Controller  implements CheckHotelControllerInterf
     {
         $form = $this->createForm(new InviteType());
         if($request->isMethod(Request::METHOD_POST)) {
-            //..
+            $form->handleRequest($request);
+            if($form->isValid()) {
+
+            }
+        } else {
+            $form->setData(['guests' => [[]]]);
         }
         return [
             'form' => $form->createView(),

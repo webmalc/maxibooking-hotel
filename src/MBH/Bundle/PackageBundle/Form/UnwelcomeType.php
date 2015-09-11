@@ -62,7 +62,8 @@ class UnwelcomeType extends AbstractType
         $builder->add('comment', 'textarea', [
             'label' => 'form.unwelcomeType.comment',
             'group' => 'form.unwelcomeType.group.common',
-            'attr' => ['style' => 'height:150px']
+            'attr' => ['style' => 'height:150px'],
+            'help' => 'Доступен только для вас и не передается в сервис нежелательных гостей'
         ]);
     }
 

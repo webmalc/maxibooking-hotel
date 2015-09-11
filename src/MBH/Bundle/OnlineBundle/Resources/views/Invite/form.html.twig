@@ -8,117 +8,142 @@
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-{#% form_theme form 'bootstrap_3_layout.html.twig' %#}
 {% form_theme form 'MBHBaseBundle:Form:fields.html.twig' %}
-{{ form_start(form, {'action': path('invite_form'), 'attr': {'id': 'mbvi-form-wrapper'}}) }}
-    <div id="mbvi-navigation-wrapper">
-        <div class="mbvi-navigation-item active"><i class="fa fa-check-square-o"></i> Информация о гостях и визе</div>
-        <div class="mbvi-navigation-item current"><i class="fa fa-edit"></i> Места посещения</div>
-        <div class="mbvi-navigation-item disable"><i class="fa fa-square-o"></i> Оплата заявки</div>
-        <div class="mbvi-navigation-item disable"><i class="fa fa-square-o"></i> Получение приглашения</div>
-    </div>
+{{ form_start(form, {'attr': {'id': 'mbvi-form-wrapper'}}) }}
+<div id="mbvi-navigation-wrapper">
+    <div class="mbvi-navigation-item active"><i class="fa fa-check-square-o"></i> Информация о гостях и визе</div>
+    <div class="mbvi-navigation-item current"><i class="fa fa-edit"></i> Места посещения</div>
+    <div class="mbvi-navigation-item disable"><i class="fa fa-square-o"></i> Оплата заявки</div>
+    <div class="mbvi-navigation-item disable"><i class="fa fa-square-o"></i> Получение приглашения</div>
+</div>
 
-    <h4><i class="fa fa-calendar fa-lg"></i>&nbsp; Даты поездки<i class="fa fa-check-square-o fa-lg" style="margin-top:4px;float:right;"></i></h4>
-    <div class="mbvi-form-block mbvi-form-block-odd">
+<h4><i class="fa fa-calendar fa-lg"></i>&nbsp; Даты поездки<i class="fa fa-check-square-o fa-lg"
+                                                              style="margin-top:4px;float:right;"></i></h4>
 
-        <div class="mbvi-form-group">
-            <label for="input1" class="mbvi-form-span3 control-label">Даты поездки</label>
-            <div class="mbvi-form-span4">
-                <div style="white-space:nowrap;">
-                    {{ form_widget(form.arrival) }}
-                    <small class="help-block" style="display:inline;">&mdash;</small> </div>
-                <small class="help-block"><i class="fa fa-suitcase"></i>&nbsp; 6 дней</small>
+<div class="mbvi-form-block mbvi-form-block-odd">
+
+    <div class="mbvi-form-group">
+        <label for="input1" class="mbvi-form-span3 control-label">Даты поездки</label>
+
+        <div class="mbvi-form-span4">
+            <div style="white-space:nowrap;">
+                {{ form_widget(form.arrival) }}
+                <small class="help-block" style="display:inline;">&mdash;</small>
             </div>
-            <div class="mbvi-form-span4">
-                {{ form_widget(form.departure) }}
-            </div>
+            <small class="help-block"><i class="fa fa-suitcase"></i>&nbsp; 6 дней</small>
         </div>
-        <div class="mbvi-form-group">
-            <label for="" class="mbvi-form-span3 control-label">Тип визы</label>
-            <div class="mbvi-form-span9">
-                {{ form_widget(form.type) }}
-            </div>
-        </div>
-        <div class="mbvi-form-group">
-            <label for="" class="mbvi-form-span3 control-label">Количество</label>
-            <div class="mbvi-form-span9">
-                {{ form_widget(form.reservation) }}
-            </div>
+        <div class="mbvi-form-span4">
+            {{ form_widget(form.departure) }}
         </div>
     </div>
+    <div class="mbvi-form-group">
+        <label for="" class="mbvi-form-span3 control-label">Тип визы</label>
 
-    <h4><i class="fa fa-group fa-lg"></i>&nbsp; Сведения о персонах<i class="fa fa-square-o fa-lg" style="margin-top:4px;float:right;"></i></h4>
+        <div class="mbvi-form-span9">
+            {{ form_widget(form.type) }}
+        </div>
+    </div>
+    <div class="mbvi-form-group">
+        <label for="" class="mbvi-form-span3 control-label">Количество</label>
 
-    <ul class="nav nav-tabs">
-        <li class="active">
-            <a data-toggle="tab" href="#guest_1"><i class="fa fa-edit"></i>&nbsp; 1 персона</a>
-        </li>
-        <li>
-            <a id="guest-add" href="#">
-                <i class="fa fa-plus"></i> Добавть
+        <div class="mbvi-form-span9">
+            {{ form_widget(form.reservation) }}
+        </div>
+    </div>
+</div>
+
+<h4><i class="fa fa-group fa-lg"></i>&nbsp; Сведения о персонах<i class="fa fa-square-o fa-lg"
+                                                                  style="margin-top:4px;float:right;"></i></h4>
+
+<ul class="nav nav-tabs">
+    {% for key, guestForm in form.guests %}
+        <li class="{% if key == 0 %}active{% endif %}">
+            <a data-toggle="tab" class="{% if not guestForm.vars.valid %}errors{% endif %}" href="#guest_{{ key + 1 }}">
+                <i class="glyphicon {% if guestForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
+                {#<i class="fa {% if guestForm.vars.errors %}errors{% endif %} fa-edit"></i>#}
+                &nbsp; {{ key + 1 }} персона
             </a>
         </li>
-    </ul>
+    {% endfor %}
+    <li>
+        <a id="guest-add" href="#">
+            <i class="fa fa-plus"></i> Добавть
+        </a>
+    </li>
+</ul>
 
 <div class="tab-content" id="guests">
-    <div class="tab-pane active" id="guest_1">
-          <div class="mbvi-form-block mbvi-form-block-even">
-            <div class="mbvi-form-group">
-                <label for="" class="mbvi-form-span3 control-label">Обращение</label>
-                <div class="mbvi-form-span9">
-                    {{ form_widget(form.sex) }}
+    {% for key, guestForm in form.guests %}
+        <div class="tab-pane {% if key == 0 %}active{% endif %}" id="guest_{{ key + 1 }}">
+            <div class="mbvi-form-block mbvi-form-block-even">
+                <div class="mbvi-form-group">
+                    <label for="" class="mbvi-form-span3 control-label">Обращение</label>
+
+                    <div class="mbvi-form-span9">
+                        {{ form_widget(guestForm.sex) }}
+                    </div>
                 </div>
-            </div>
-            <div class="mbvi-form-group">
-                <label for="input6" class="mbvi-form-span3 control-label">Фамилия</label>
-                <div class="mbvi-form-span9">
-                    {{ form_widget(form.lastName) }}
+                <div class="mbvi-form-group">
+                    <label for="input6" class="mbvi-form-span3 control-label">Фамилия</label>
+                    <div class="mbvi-form-span9">
+                        {{ form_widget(guestForm.lastName) }}
+                    </div>
+                    {% if guestForm.lastName.vars.errors|length > 0 %}
+                        <span class="text-danger text-left input-errors">{{ form_errors(guestForm.lastName) }}</span>
+                    {% endif %}
                 </div>
-            </div>
-            <div class="mbvi-form-group">
-                <label for="input7" class="mbvi-form-span3 control-label">Имя</label>
-                <div class="mbvi-form-span9">
-                    {{ form_widget(form.firstName) }}
+                <div class="mbvi-form-group">
+                    <label for="input7" class="mbvi-form-span3 control-label">Имя</label>
+
+                    <div class="mbvi-form-span9">
+                        {{ form_widget(guestForm.firstName) }}
+                    </div>
                 </div>
-            </div>
-            <div class="mbvi-form-group">
-                <label for="input8" class="mbvi-form-span3 control-label">Дата рождения</label>
-                <div class="mbvi-form-span9">
-                    {{ form_widget(form.birthday) }}
+                <div class="mbvi-form-group">
+                    <label for="input8" class="mbvi-form-span3 control-label">Дата рождения</label>
+
+                    <div class="mbvi-form-span9">
+                        {{ form_widget(guestForm.birthday) }}
+                    </div>
                 </div>
-            </div>
-            <div class="mbvi-form-group">
-                <label for="input9" class="mbvi-form-span3 control-label">Место рождения</label>
-                <div class="mbvi-form-span9">
-                    {{ form_widget(form.birthplace) }}
+                <div class="mbvi-form-group">
+                    <label for="input9" class="mbvi-form-span3 control-label">Место рождения</label>
+
+                    <div class="mbvi-form-span9">
+                        {{ form_widget(guestForm.birthplace) }}
+                    </div>
                 </div>
-            </div>
-            <div class="mbvi-form-group" style="margin:20px 0;">
-                <label for="inputEmail3" class="mbvi-form-span3 control-label">Гражданство</label>
-                <div class="mbvi-form-span9">
-                    {{ form_widget(form.citizenship) }}
+                <div class="mbvi-form-group" style="margin:20px 0;">
+                    <label for="inputEmail3" class="mbvi-form-span3 control-label">Гражданство</label>
+
+                    <div class="mbvi-form-span9">
+                        {{ form_widget(guestForm.citizenship) }}
+                    </div>
                 </div>
-            </div>
-            <div class="mbvi-form-group">
-                <label for="input9" class="mbvi-form-span3 control-label">Пспорт №</label>
-                <div class="mbvi-form-span9">
-                    {{ form_widget(form.passport) }}
+                <div class="mbvi-form-group">
+                    <label for="input9" class="mbvi-form-span3 control-label">Пспорт №</label>
+
+                    <div class="mbvi-form-span9">
+                        {{ form_widget(guestForm.passport) }}
+                    </div>
                 </div>
-            </div>
-            <div class="mbvi-form-group">
-                <label for="input8" class="mbvi-form-span3 control-label">Действует до</label>
-                <div class="mbvi-form-span9">
-                    {{ form_widget(form.expiry) }}
+                <div class="mbvi-form-group">
+                    <label for="input8" class="mbvi-form-span3 control-label">Действует до</label>
+
+                    <div class="mbvi-form-span9">
+                        {{ form_widget(guestForm.expiry) }}
+                    </div>
                 </div>
             </div>
         </div>
-</div>
+    {% endfor %}
 </div>
 
 
-    <button title="" class="button" style="margin-top:20px;">Продолжить</button>
+<button type="submit" class="button" style="margin-top:20px;">Продолжить</button>
 
 {{ form_end(form) }}
 
@@ -131,22 +156,45 @@
         $guestAdd = $('#guest-add'),
         $guestAddTab = $guestAdd.parent(),
         $firstGuestForm = $('#guest_1'),
-        $prototypeGuestForm = $firstGuestForm.clone().removeClass("active"),
-        $guests = $('#guests');
+        prototypeGuestForm = $firstGuestForm.clone().removeClass("active")[0].outerHTML,
+        $guests = $('#guests'),
+        guestFullInputName = '{{ form.guests.vars.full_name }}';
 
-    console.log($firstGuestForm.length);
+    guestFullInputName = guestFullInputName.replace('[', '\\\\[');
+    guestFullInputName = guestFullInputName.replace(']', '\\\\]');
 
-    $guestAdd.on('click', function () {
-        var $newGuestForm = $prototypeGuestForm.clone(),
+    var replaceAll = function(string, search, replace){
+        return string.split(search).join(replace);
+    }
+
+    var addNewGuestTab = function() {
+        var newGuestForm = prototypeGuestForm,
                 $newGuestTab = $prototypeGuestTab.clone();
-        var number = $guestTabs.find('li').length;
+        var number = $guestTabs.find('li a[data-toggle=tab]').length + 1;
         var id = 'guest_' + number;
+        //var pattern = guestFullInputName + '\\\\[0\\\\]';
+        var pattern = 'mbh_online_bundle_invite[guests][0]';
+        //var replaceValue = guestFullInputName + '['+number+']';
+        var replaceValue = 'mbh_online_bundle_invite[guests]' + '[' + (number - 1) + ']';
+        //newGuestForm = newGuestForm.replace(pattern, replaceValue);
+        newGuestForm = replaceAll(newGuestForm, pattern, replaceValue);
 
+        var $newGuestForm = $(newGuestForm);
         $newGuestForm.attr('id', id);
-        $newGuestTab.find('a').attr('href', '#' + id).html('<i class="fa fa-edit"></i>&nbsp; '+ number +' персона');
+        $newGuestTab.find('a').attr('href', '#' + id).html('<i class="fa fa-edit"></i>&nbsp; ' + number + ' персона');
 
         $guests.append($newGuestForm);
         $guestAddTab.before($newGuestTab);
+        return $newGuestTab;
+    }
+
+    $guestAdd.on('click', function (e) {
+        e.preventDefault();
+        var $tab = addNewGuestTab();
+        $guestTabs.find('li').removeClass('active')
+        $tab.addClass('active');
+        $('.tab-pane').removeClass('active');
+        $($tab.find('a').attr('href')).addClass('active');
     })
 </script>
 
@@ -163,20 +211,24 @@
         text-decoration: none;
         font-size: 16px;
         float: right;
-        text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+        text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
         cursor: pointer;
     }
+
     #mbvi-form-wrapper .button:hover {
         color: #ffc;
-        box-shadow: 0 0 3px rgba(255,255,205,0.95);
+        box-shadow: 0 0 3px rgba(255, 255, 205, 0.95);
     }
+
     #mbvi-form-wrapper .button:active {
         box-shadow: 0 3px 5px rgba(0, 0, 0, 0.125) inset;
         background: #308dac;
     }
+
     #mbvi-form-wrapper .button:disabled {
         color: #43809f;
     }
+
     .help-block {
         color: #737373;
         display: block;
@@ -192,19 +244,23 @@
         box-sizing: border-box;
         cursor: default;
     }
+
     #mbvi-form-wrapper a {
         color: #308dac;
     }
+
     #mbvi-form-wrapper div, #mbvi-form-wrapper a, #mbvi-form-wrapper li {
         box-sizing: border-box;
         font-family: Arial;
         font-size: 12px;
     }
+
     #mbvi-form-wrapper h4 {
         margin-top: 20px;
         margin-bottom: 10px;
-        box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
     }
+
     #mbvi-form-wrapper h4, #mbvi-form-wrapper h4 a {
         background-color: #308dac;
         border-radius: 4px;
@@ -212,12 +268,14 @@
         color: #fff;
         font-size: 16px;
         padding: 8px 10px 10px;
-        text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+        text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
     }
+
     #mbvi-navigation-wrapper {
         width: 100%;
         min-height: 20px;
     }
+
     .mbvi-navigation-item {
         float: left;
         display: inline-block;
@@ -228,16 +286,20 @@
         padding: 3px 8px;
         border-radius: 4px;
     }
+
     .mbvi-navigation-item.current {
         background-color: #ff7800;
         color: #fff;
     }
+
     .mbvi-navigation-item.active {
         background-color: #eee;
     }
+
     .mbvi-navigation-item.disable {
         opacity: 0.5;
     }
+
     .mbvi-form-block {
         width: 100%;
         padding: 15px 20px;
@@ -248,23 +310,29 @@
         z-index: 10;
         border-radius: 4px;
     }
+
     .mbvi-form-block-odd {
         background-color: #f2f8fa;
     }
+
     .mbvi-form-block-even {
         background-color: #e5f1f5;
     }
+
     .mbvi-form-group {
         margin-bottom: 10px;
     }
+
     .mbvi-form-group:before, .mbvi-form-group:after {
         content: "";
         display: table;
         line-height: 0;
     }
+
     .mbvi-form-group:after {
         clear: both;
     }
+
     .mbvi-form-group [class*="mbvi-form-span"] {
         box-sizing: border-box;
         display: block;
@@ -273,44 +341,60 @@
         min-height: 30px;
         width: 100%;
     }
+
     .mbvi-form-group [class*="mbvi-form-span"]:first-child {
         margin-left: 0;
     }
+
     .mbvi-form-group .mbvi-form-span12 {
         width: 100%;
     }
+
     .mbvi-form-group .mbvi-form-span11 {
         width: 91.4894%;
     }
+
     .mbvi-form-group .mbvi-form-span10 {
         width: 82.9787%;
     }
+
     .mbvi-form-group .mbvi-form-span9 {
         width: 78.4681%;
     }
+
     .mbvi-form-group .mbvi-form-span8 {
         width: 65.9574%;
     }
+
     .mbvi-form-group .mbvi-form-span7 {
         width: 57.4468%;
     }
+
     .mbvi-form-group .mbvi-form-span6 {
         width: 48.9362%;
     }
+
     .mbvi-form-group .mbvi-form-span5 {
         width: 40.4255%;
     }
+
     .mbvi-form-group .mbvi-form-span4 {
         width: 31.9149%;
     }
+
     .mbvi-form-group .mbvi-form-span3 {
         width: 19.4043%;
     }
+
     .mbvi-form-group .mbvi-form-span2 {
         width: 14.8936%;
     }
+
     .mbvi-form-group .mbvi-form-span1 {
         width: 6.38298%;
+    }
+    .nav-tabs li a.errors {
+        background-color: rgba(255, 0, 17, 0.1);
     }
 </style>
 </html>
