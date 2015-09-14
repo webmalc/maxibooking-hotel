@@ -30,8 +30,8 @@
 
         <div class="mbvi-form-span4">
             <div style="white-space:nowrap;">
-                {{ form_widget(form.arrival) }}
-                <small class="help-block" style="display:inline;">&mdash;</small>
+                {{ form_widget(form.arrival, {attr: {class: 'ib'}}) }}
+                <small class="help-block ib">&mdash;</small>
             </div>
             <small class="help-block"><i class="fa fa-suitcase"></i>&nbsp; 6 дней</small>
         </div>
@@ -46,13 +46,6 @@
             {{ form_widget(form.type) }}
         </div>
     </div>
-    <div class="mbvi-form-group">
-        <label for="" class="mbvi-form-span3 control-label">Количество</label>
-
-        <div class="mbvi-form-span9">
-            {{ form_widget(form.reservation) }}
-        </div>
-    </div>
 </div>
 
 <h4><i class="fa fa-group fa-lg"></i>&nbsp; Сведения о персонах<i class="fa fa-square-o fa-lg"
@@ -60,84 +53,25 @@
 
 <ul class="nav nav-tabs">
     {% for key, guestForm in form.guests %}
-        <li class="{% if key == 0 %}active{% endif %}">
+        <li class="{% if loop.index == 1 %}active{% endif %}">
             <a data-toggle="tab" class="{% if not guestForm.vars.valid %}errors{% endif %}" href="#guest_{{ key + 1 }}">
                 <i class="glyphicon {% if guestForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
                 {#<i class="fa {% if guestForm.vars.errors %}errors{% endif %} fa-edit"></i>#}
-                &nbsp; {{ key + 1 }} персона
+                &nbsp; {{ loop.index }} персона
             </a>
         </li>
     {% endfor %}
     <li>
         <a id="guest-add" href="#">
-            <i class="fa fa-plus"></i> Добавть
+            <i class="fa fa-plus"></i> Добавить
         </a>
     </li>
 </ul>
-
 <div class="tab-content" id="guests">
+    {% form_theme form 'MBHOnlineBundle:Invite:invitedTourist.html.twig' %}
     {% for key, guestForm in form.guests %}
-        <div class="tab-pane {% if key == 0 %}active{% endif %}" id="guest_{{ key + 1 }}">
-            <div class="mbvi-form-block mbvi-form-block-even">
-                <div class="mbvi-form-group">
-                    <label for="" class="mbvi-form-span3 control-label">Обращение</label>
-
-                    <div class="mbvi-form-span9">
-                        {{ form_widget(guestForm.sex) }}
-                    </div>
-                </div>
-                <div class="mbvi-form-group">
-                    <label for="input6" class="mbvi-form-span3 control-label">Фамилия</label>
-                    <div class="mbvi-form-span9">
-                        {{ form_widget(guestForm.lastName) }}
-                    </div>
-                    {% if guestForm.lastName.vars.errors|length > 0 %}
-                        <span class="text-danger text-left input-errors">{{ form_errors(guestForm.lastName) }}</span>
-                    {% endif %}
-                </div>
-                <div class="mbvi-form-group">
-                    <label for="input7" class="mbvi-form-span3 control-label">Имя</label>
-
-                    <div class="mbvi-form-span9">
-                        {{ form_widget(guestForm.firstName) }}
-                    </div>
-                </div>
-                <div class="mbvi-form-group">
-                    <label for="input8" class="mbvi-form-span3 control-label">Дата рождения</label>
-
-                    <div class="mbvi-form-span9">
-                        {{ form_widget(guestForm.birthday) }}
-                    </div>
-                </div>
-                <div class="mbvi-form-group">
-                    <label for="input9" class="mbvi-form-span3 control-label">Место рождения</label>
-
-                    <div class="mbvi-form-span9">
-                        {{ form_widget(guestForm.birthplace) }}
-                    </div>
-                </div>
-                <div class="mbvi-form-group" style="margin:20px 0;">
-                    <label for="inputEmail3" class="mbvi-form-span3 control-label">Гражданство</label>
-
-                    <div class="mbvi-form-span9">
-                        {{ form_widget(guestForm.citizenship) }}
-                    </div>
-                </div>
-                <div class="mbvi-form-group">
-                    <label for="input9" class="mbvi-form-span3 control-label">Пспорт №</label>
-
-                    <div class="mbvi-form-span9">
-                        {{ form_widget(guestForm.passport) }}
-                    </div>
-                </div>
-                <div class="mbvi-form-group">
-                    <label for="input8" class="mbvi-form-span3 control-label">Действует до</label>
-
-                    <div class="mbvi-form-span9">
-                        {{ form_widget(guestForm.expiry) }}
-                    </div>
-                </div>
-            </div>
+        <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="guest_{{ key + 1 }}">
+            {{ form_widget(guestForm) }}
         </div>
     {% endfor %}
 </div>
@@ -155,46 +89,101 @@
         $prototypeGuestTab = $firstGuestTab.clone().removeClass("active"),
         $guestAdd = $('#guest-add'),
         $guestAddTab = $guestAdd.parent(),
-        $firstGuestForm = $('#guest_1'),
-        prototypeGuestForm = $firstGuestForm.clone().removeClass("active")[0].outerHTML,
-        $guests = $('#guests'),
-        guestFullInputName = '{{ form.guests.vars.full_name }}';
+        prototypeGuestForm = '<div class="tab-pane">{{ form_widget(form.guests.vars.prototype)|replace({"\n":''})|raw }}</div>',
+        $guests = $('#guests');
 
-    guestFullInputName = guestFullInputName.replace('[', '\\\\[');
-    guestFullInputName = guestFullInputName.replace(']', '\\\\]');
-
-    var replaceAll = function(string, search, replace){
+    var replaceAll = function (string, search, replace) {
         return string.split(search).join(replace);
     }
 
-    var addNewGuestTab = function() {
-        var newGuestForm = prototypeGuestForm,
-                $newGuestTab = $prototypeGuestTab.clone();
-        var number = $guestTabs.find('li a[data-toggle=tab]').length + 1;
-        var id = 'guest_' + number;
-        //var pattern = guestFullInputName + '\\\\[0\\\\]';
-        var pattern = 'mbh_online_bundle_invite[guests][0]';
-        //var replaceValue = guestFullInputName + '['+number+']';
-        var replaceValue = 'mbh_online_bundle_invite[guests]' + '[' + (number - 1) + ']';
-        //newGuestForm = newGuestForm.replace(pattern, replaceValue);
-        newGuestForm = replaceAll(newGuestForm, pattern, replaceValue);
+    var getTabsQuantity = function() {
+        return getTabs().length;
+    }
+    var getTabs = function() {
+        return $guestTabs.find('li a[data-toggle=tab]');
+    }
 
+    var incrementQuantity = getTabsQuantity();
+
+    var updateTabTitleNumber = function() {
+        getTabs().each(function(index){
+            $(this).html(getTitle(index + 1));
+        });
+    }
+
+    var getTitle = function(number) {
+        return '<i class="fa fa-edit"></i>&nbsp; ' + number + ' персона';
+    }
+
+    var addGuestTab = function () {
+        var newGuestForm = prototypeGuestForm,
+            $newGuestTab = $prototypeGuestTab.clone();
+        incrementQuantity = incrementQuantity + 1;
+        var id = 'guest_' + incrementQuantity;
+        newGuestForm = replaceAll(newGuestForm, '__name__', incrementQuantity);
         var $newGuestForm = $(newGuestForm);
         $newGuestForm.attr('id', id);
-        $newGuestTab.find('a').attr('href', '#' + id).html('<i class="fa fa-edit"></i>&nbsp; ' + number + ' персона');
+
+        updateTabTitleNumber();
+        $newGuestTab.find('a').attr('href', '#' + id).html(getTitle(getTabsQuantity() + 1));
 
         $guests.append($newGuestForm);
         $guestAddTab.before($newGuestTab);
+        $newGuestForm.find('.tourist-remove').on('click', onTouristRemove);
         return $newGuestTab;
     }
 
-    $guestAdd.on('click', function (e) {
-        e.preventDefault();
-        var $tab = addNewGuestTab();
+    var removeTabForm = function ($guestForm) {
+        var id = $guestForm.attr('id');
+        $guestForm.remove();
+        $guestTabs.find('a[href=#'+id+']').parent().remove();
+
+        updateTabTitleNumber();
+        updateGuestAdd();
+
+        showTabByIndex(0);
+    }
+
+    var showTabByIndex = function(index) {
+        var $tab = $guestTabs.find('li:eq('+index+')');
+        if($tab) {
+            $tab.find('a').tab('show');
+        }
+    }
+
+    var onTouristRemove = function() {
+        removeTabForm($(this).closest('.tab-pane'));
+    }
+
+    $guests.find('.tab-pane .tourist-remove').on('click', onTouristRemove);
+
+
+    var updateGuestAdd = function () {
+        if(getTabsQuantity() >= 5) {
+            $guestAdd.addClass('disable');
+        } else {
+            $guestAdd.removeClass("disable");
+        }
+    }
+    var isDisabledAdd = function() {
+        return $guestAdd.hasClass("disable");
+    }
+
+    var openTab = function($tab) {
         $guestTabs.find('li').removeClass('active')
         $tab.addClass('active');
         $('.tab-pane').removeClass('active');
         $($tab.find('a').attr('href')).addClass('active');
+    }
+
+    $guestAdd.on('click', function (e) {
+        e.preventDefault();
+        if (isDisabledAdd()) {
+            return false;
+        }
+        var $tab = addGuestTab();
+        openTab($tab);
+        updateGuestAdd();
     })
 </script>
 
@@ -252,7 +241,7 @@
     #mbvi-form-wrapper div, #mbvi-form-wrapper a, #mbvi-form-wrapper li {
         box-sizing: border-box;
         font-family: Arial;
-        font-size: 12px;
+        font-size: 11.7px;
     }
 
     #mbvi-form-wrapper h4 {
@@ -393,8 +382,18 @@
     .mbvi-form-group .mbvi-form-span1 {
         width: 6.38298%;
     }
-    .nav-tabs li a.errors {
-        background-color: rgba(255, 0, 17, 0.1);
+    .ib {
+        display: inline
+    }
+    .nav-tabs a.disable {
+        opacity: 0.5;
+    }
+    .tourist-remove {
+        cursor:pointer;
+        position:absolute;
+        float: right;
+        margin-top: 5px;
+        margin-left: 600px
     }
 </style>
 </html>

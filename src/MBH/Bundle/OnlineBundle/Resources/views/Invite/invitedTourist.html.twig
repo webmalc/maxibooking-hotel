@@ -1,0 +1,86 @@
+{% extends 'MBHBaseBundle:Form:fields.html.twig' %}
+
+{% block form_label %}
+    {% spaceless %}
+        <label for="" class="mbvi-form-span3 control-label">{{ label|trans({}, translation_domain)|raw }}{% if required %}&nbsp;<span class="required-star text-danger">*</span>{% endif %}</label>
+    {% endspaceless %}
+{% endblock form_label %}
+
+{% block form_errors %}
+    {% spaceless %}
+        <span class="text-danger text-left input-errors">
+            {% if errors|length > 0 %}
+                {{ (errors|first).message|raw }}
+                {#<ul>
+                    {% for error in errors %}
+                        <li>{{ error.message|raw }}</li>
+                    {% endfor %}
+                </ul>#}
+            {% endif %}
+        </span>
+    {% endspaceless %}
+{% endblock form_errors %}
+
+
+{% block mbh_online_bundle_invited_tourist_widget %}
+    <div class="mbvi-form-block mbvi-form-block-even">
+        <div class="mbvi-form-group">
+            {{ form_label(form.sex) }}
+            <div class="mbvi-form-span9">
+                {{ form_widget(form.sex) }}
+            </div>
+            {{ form_errors(form.sex) }}
+        </div>
+        <div class="mbvi-form-group">
+            {{ form_label(form.lastName) }}
+            <div class="mbvi-form-span9">
+                {{ form_widget(form.lastName) }}
+            </div>
+            {{ form_errors(form.lastName) }}
+        </div>
+        <div class="mbvi-form-group">
+            {{ form_label(form.firstName) }}
+            <div class="mbvi-form-span9">
+                {{ form_widget(form.firstName) }}
+            </div>
+            {{ form_errors(form.firstName) }}
+        </div>
+        <div class="mbvi-form-group">
+            {{ form_label(form.birthday) }}
+            <div class="mbvi-form-span9">
+                {{ form_widget(form.birthday) }}
+            </div>
+            {{ form_errors(form.birthday) }}
+        </div>
+        <div class="mbvi-form-group">
+            {{ form_label(form.birthplace) }}
+            <div class="mbvi-form-span9">
+                {{ form_widget(form.birthplace) }}
+            </div>
+            {{ form_errors(form.birthplace) }}
+        </div>
+        <div class="mbvi-form-group" style="margin:20px 0;">
+            {{ form_label(form.citizenship) }}
+            <div class="mbvi-form-span9">
+                {{ form_widget(form.citizenship) }}
+            </div>
+            {{ form_errors(form.citizenship) }}
+        </div>
+        <div class="mbvi-form-group">
+            {{ form_label(form.passport) }}
+            <div class="mbvi-form-span9">
+                {{ form_widget(form.passport) }}
+            </div>
+            {{ form_errors(form.passport) }}
+        </div>
+        <div class="mbvi-form-group">
+            {{ form_label(form.expiry) }}
+            <div class="mbvi-form-span9">
+                {{ form_widget(form.expiry) }}
+            </div>
+            {{ form_errors(form.expiry) }}
+        </div>
+
+        <i class="glyphicon glyphicon-remove tourist-remove"></i>
+    </div>
+{% endblock mbh_online_bundle_invited_tourist_widget %}

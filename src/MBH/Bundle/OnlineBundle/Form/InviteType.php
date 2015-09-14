@@ -32,18 +32,10 @@ class InviteType extends AbstractType
                 'required' => false,
                 'empty_value' => null,
             ])
-            ->add('reservation', 'choice', [
-                'expanded' => true,
-                'choices' => [
-                    1,2,3,4,5
-                ],
-                'empty_value' => null,
-                'required' => false,
-            ])
             ->add('guests', 'collection', [
                 'type' => new InvitedTouristType(),
                 'allow_add' => true,
-                'required' => false
+                'prototype' => true
             ])
             //->add('agree', 'checkbox')
         ;
