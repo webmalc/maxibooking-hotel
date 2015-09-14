@@ -17,10 +17,12 @@ class InviteType extends AbstractType
         $builder
             ->add('arrival', 'date', [
                 'widget' => 'single_text',
+                'format' => 'yyyy-MM-dd',
                 'required' => false,
             ])
             ->add('departure', 'date', [
                 'widget' => 'single_text',
+                'format' => 'yyyy-MM-dd',
                 'required' => false,
             ])
             ->add('type', 'choice', [
@@ -45,8 +47,7 @@ class InviteType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            //'cascade_validation' => true,
-            //'validation_groups' => true
+            'data_class' => 'MBH\Bundle\OnlineBundle\Document\Invite'
         ]);
     }
 

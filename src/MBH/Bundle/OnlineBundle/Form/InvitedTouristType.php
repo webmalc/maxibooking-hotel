@@ -89,7 +89,7 @@ class InvitedTouristType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            //'compound' => true
+            'data_class' => 'MBH\Bundle\OnlineBundle\Document\InvitedTourist'
         ]);
     }
 

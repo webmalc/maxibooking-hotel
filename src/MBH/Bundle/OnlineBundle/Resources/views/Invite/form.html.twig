@@ -11,7 +11,8 @@
 <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-{% form_theme form 'MBHBaseBundle:Form:fields.html.twig' %}
+{% form_theme form 'MBHOnlineBundle:Invite:invitedTourist.html.twig' %}
+
 {{ form_start(form, {'attr': {'id': 'mbvi-form-wrapper'}}) }}
 <div id="mbvi-navigation-wrapper">
     <div class="mbvi-navigation-item active"><i class="fa fa-check-square-o"></i> Информация о гостях и визе</div>
@@ -34,10 +35,12 @@
                 <small class="help-block ib">&mdash;</small>
             </div>
             <small class="help-block"><i class="fa fa-suitcase"></i>&nbsp; 6 дней</small>
+            {{ form_errors(form.arrival) }}
         </div>
         <div class="mbvi-form-span4">
             {{ form_widget(form.departure) }}
         </div>
+        {{ form_errors(form.departure) }}
     </div>
     <div class="mbvi-form-group">
         <label for="" class="mbvi-form-span3 control-label">Тип визы</label>
@@ -68,7 +71,6 @@
     </li>
 </ul>
 <div class="tab-content" id="guests">
-    {% form_theme form 'MBHOnlineBundle:Invite:invitedTourist.html.twig' %}
     {% for key, guestForm in form.guests %}
         <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="guest_{{ key + 1 }}">
             {{ form_widget(guestForm) }}
@@ -78,8 +80,8 @@
 
 
 <button type="submit" class="button" style="margin-top:20px;">Продолжить</button>
-
-{{ form_end(form) }}
+{{ form_widget(form._token) }}
+{{ form_end(form, {render_rest: false}) }}
 
 </body>
 
@@ -92,44 +94,64 @@
         prototypeGuestForm = '<div class="tab-pane">{{ form_widget(form.guests.vars.prototype)|replace({"\n":''})|raw }}</div>',
         $guests = $('#guests');
 
+    var tabs = {
+        getElements: function() {
+            return $guestTabs.find('li a[data-toggle=tab]')
+        },
+        getLiElements: function() {
+            return $guestTabs.find('li')
+        },
+        getQuantity : function() {
+            return this.getElements().length;
+        },
+        updateTitleNumber : function() {
+            var that = this;
+            this.getElements().each(function(index){
+                $(this).html(that.getTitle(index + 1));
+            });
+        },
+        getTitle: function(number) {
+            return '<i class="fa fa-edit"></i>&nbsp; ' + number + ' персона';
+        },
+        showTabByIndex: function(index) {
+            var $tab = $guestTabs.find('li:eq('+index+')');
+            if($tab) {
+                $tab.find('a').tab('show');
+            }
+        },
+        openTab: function($tab) {
+            this.getLiElements().removeClass('active')
+            $tab.addClass('active');
+            $('.tab-pane').removeClass('active');
+            $($tab.find('a').attr('href')).addClass('active');
+        },
+        add: function(id){
+            var $newGuestTab = $prototypeGuestTab.clone();
+            $newGuestTab.find('a').attr('href', '#' + id).html(tabs.getTitle(tabs.getQuantity() + 1));
+            $guestAddTab.before($newGuestTab);
+            return $newGuestTab;
+        }
+    }
+
+
     var replaceAll = function (string, search, replace) {
         return string.split(search).join(replace);
     }
 
-    var getTabsQuantity = function() {
-        return getTabs().length;
-    }
-    var getTabs = function() {
-        return $guestTabs.find('li a[data-toggle=tab]');
-    }
-
-    var incrementQuantity = getTabsQuantity();
-
-    var updateTabTitleNumber = function() {
-        getTabs().each(function(index){
-            $(this).html(getTitle(index + 1));
-        });
-    }
-
-    var getTitle = function(number) {
-        return '<i class="fa fa-edit"></i>&nbsp; ' + number + ' персона';
-    }
+    var incrementQuantity = tabs.getQuantity();
 
     var addGuestTab = function () {
-        var newGuestForm = prototypeGuestForm,
-            $newGuestTab = $prototypeGuestTab.clone();
+        var newGuestForm = prototypeGuestForm;
         incrementQuantity = incrementQuantity + 1;
         var id = 'guest_' + incrementQuantity;
         newGuestForm = replaceAll(newGuestForm, '__name__', incrementQuantity);
         var $newGuestForm = $(newGuestForm);
         $newGuestForm.attr('id', id);
 
-        updateTabTitleNumber();
-        $newGuestTab.find('a').attr('href', '#' + id).html(getTitle(getTabsQuantity() + 1));
-
+        tabs.updateTitleNumber();
         $guests.append($newGuestForm);
-        $guestAddTab.before($newGuestTab);
         $newGuestForm.find('.tourist-remove').on('click', onTouristRemove);
+        var $newGuestTab = tabs.add(id);
         return $newGuestTab;
     }
 
@@ -138,17 +160,10 @@
         $guestForm.remove();
         $guestTabs.find('a[href=#'+id+']').parent().remove();
 
-        updateTabTitleNumber();
-        updateGuestAdd();
+        tabs.updateTitleNumber();
+        addGuestButton.update();
 
-        showTabByIndex(0);
-    }
-
-    var showTabByIndex = function(index) {
-        var $tab = $guestTabs.find('li:eq('+index+')');
-        if($tab) {
-            $tab.find('a').tab('show');
-        }
+        tabs.showTabByIndex(0);
     }
 
     var onTouristRemove = function() {
@@ -157,33 +172,27 @@
 
     $guests.find('.tab-pane .tourist-remove').on('click', onTouristRemove);
 
-
-    var updateGuestAdd = function () {
-        if(getTabsQuantity() >= 5) {
-            $guestAdd.addClass('disable');
-        } else {
-            $guestAdd.removeClass("disable");
+    var addGuestButton = {
+        $element: $guestAdd,
+        update: function () {
+            if(tabs.getQuantity() >= 5) {
+                this.$element.addClass('disable');
+            } else {
+                this.$element.removeClass("disable");
+            }
+        },
+        isDisabled:function() {
+            return this.$element.hasClass("disable");
         }
-    }
-    var isDisabledAdd = function() {
-        return $guestAdd.hasClass("disable");
-    }
-
-    var openTab = function($tab) {
-        $guestTabs.find('li').removeClass('active')
-        $tab.addClass('active');
-        $('.tab-pane').removeClass('active');
-        $($tab.find('a').attr('href')).addClass('active');
-    }
-
+    };
     $guestAdd.on('click', function (e) {
         e.preventDefault();
-        if (isDisabledAdd()) {
+        if (addGuestButton.isDisabled()) {
             return false;
         }
         var $tab = addGuestTab();
-        openTab($tab);
-        updateGuestAdd();
+        tabs.openTab($tab);
+        addGuestButton.update();
     })
 </script>
 

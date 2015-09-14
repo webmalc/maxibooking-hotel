@@ -3,9 +3,13 @@
 namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\OnlineBundle\Document\Invite;
+use MBH\Bundle\OnlineBundle\Document\InvitedTourist;
 use MBH\Bundle\OnlineBundle\Form\InviteType;
 use MBH\Bundle\OnlineBundle\Form\SettingsInviteType;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
@@ -23,6 +27,7 @@ class InviteController extends Controller  implements CheckHotelControllerInterf
     /**
      * @Route("/", name="invite")
      * @Method("GET")
+     * @Security("is_granted('ROLE_USER')")
      * @Template()
      */
     public function indexAction()
@@ -41,14 +46,18 @@ class InviteController extends Controller  implements CheckHotelControllerInterf
      */
     public function formAction(Request $request)
     {
-        $form = $this->createForm(new InviteType());
+        $invite = new Invite();
+        $form = $this->createForm(new InviteType(), $invite);
         if($request->isMethod(Request::METHOD_POST)) {
             $form->handleRequest($request);
             if($form->isValid()) {
-
+                $this->dm->persist($invite);
+                $this->dm->flush();
+                return $this->redirectToRoute('invite_form');
             }
         } else {
-            $form->setData(['guests' => [[]]]);
+            $invite->addGuest(new InvitedTourist());
+            $form->setData($invite);
         }
         return [
             'form' => $form->createView(),
