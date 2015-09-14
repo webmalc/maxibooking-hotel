@@ -53,6 +53,8 @@ class Invite extends Base
      */
     protected $guests;
 
+    protected $city;
+
     /**
      * @return mixed
      */
@@ -122,6 +124,23 @@ class Invite extends Base
     {
         $this->guests = $guests;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    /**
+     * @param mixed $city
+     */
+    public function setCity($city)
+    {
+        $this->city = $city;
+    }
+
 
 
 }

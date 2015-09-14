@@ -39,6 +39,11 @@ class InviteType extends AbstractType
                 'allow_add' => true,
                 'prototype' => true
             ])
+            ->add('city', 'collection', [
+                'type' => 'text',
+                'allow_add' => true,
+                'prototype' => true
+            ])
             //->add('agree', 'checkbox')
         ;
     }
