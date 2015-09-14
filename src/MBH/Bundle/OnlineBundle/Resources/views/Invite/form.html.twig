@@ -199,6 +199,9 @@
             $newGuestTab.find('a').attr('href', '#' + id).html(tabs.getTitle(tabs.getQuantity() + 1));
             addGuestButton.$element.parent().before($newGuestTab);
             return $newGuestTab;
+        },
+        removeById: function(id) {
+            this.$element.find('a[href=#'+id+']').parent().remove();
         }
     }
     tabs.$prototypeGuestTab = tabs.$element.first().find('li:first').clone().removeClass("active");
@@ -228,7 +231,7 @@
         remove: function($guestForm) {
             var id = $guestForm.attr('id');
             $guestForm.remove();
-            tabs.$element.find('a[href=#'+id+']').parent().remove();
+            tabs.removeById(id);
 
             tabs.updateTitleNumber();
             addGuestButton.update();
