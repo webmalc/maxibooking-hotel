@@ -57,7 +57,7 @@ class InviteController extends Controller  implements CheckHotelControllerInterf
             }
         } else {
             $invite->addGuest(new InvitedTourist());
-            $invite->setCity(['']);
+            $invite->setCity([['country' => '', 'city' => '']]);
             $form->setData($invite);
         }
         return [

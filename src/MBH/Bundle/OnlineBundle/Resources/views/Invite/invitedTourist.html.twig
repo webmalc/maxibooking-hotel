@@ -84,3 +84,24 @@
         <i class="glyphicon glyphicon-remove tourist-remove"></i>
     </div>
 {% endblock mbh_online_bundle_invited_tourist_widget %}
+
+{% block mbh_online_bundle_invite_city_widget %}
+    <div class="mbvi-form-block mbvi-form-block-even">
+        <div class="mbvi-form-group">
+            {{ form_label(form.country) }}
+            <div class="mbvi-form-span9">
+                {{ form_widget(form.country) }}
+            </div>
+            {{ form_errors(form.country) }}
+        </div>
+        <div class="mbvi-form-group">
+            {{ form_label(form.city) }}
+            <div class="mbvi-form-span9">
+                {{ form_widget(form.city) }}
+            </div>
+            {{ form_errors(form.city) }}
+        </div>
+
+        <i class="glyphicon glyphicon-remove tourist-remove"></i>
+    </div>
+{% endblock mbh_online_bundle_invite_city_widget %}

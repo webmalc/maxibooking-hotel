@@ -8,6 +8,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
+use MBH\Bundle\OnlineBundle\Form\InvitedCityType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -140,7 +141,4 @@ class Invite extends Base
     {
         $this->city = $city;
     }
-
-
-
 }

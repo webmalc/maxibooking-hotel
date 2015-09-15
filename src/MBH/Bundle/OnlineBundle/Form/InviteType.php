@@ -40,7 +40,7 @@ class InviteType extends AbstractType
                 'prototype' => true
             ])
             ->add('city', 'collection', [
-                'type' => 'text',
+                'type' => new InvitedCityType(),
                 'allow_add' => true,
                 'prototype' => true
             ])

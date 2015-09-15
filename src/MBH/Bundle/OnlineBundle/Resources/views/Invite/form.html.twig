@@ -90,14 +90,6 @@
 
 
 
-
-
-
-
-
-
-
-
 <h4><i class="fa fa-calendar fa-lg"></i>&nbsp; Маршрут поездки<i class="fa fa-check-square-o fa-lg"
                                                               style="margin-top:4px;float:right;"></i></h4>
 
@@ -107,7 +99,7 @@
             <li class="{% if loop.index == 1 %}active{% endif %}">
                 <a data-toggle="tab" class="{% if not cityForm.vars.valid %}errors{% endif %}" href="#city_{{ key + 1 }}">
                     <i class="glyphicon {% if cityForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
-                    &nbsp; {{ loop.index }} персона
+                    &nbsp; {{ loop.index }} город
                 </a>
             </li>
         {% endfor %}
@@ -125,17 +117,6 @@
         {% endfor %}
     </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -169,6 +150,7 @@
     var Tabs = function ($element, $prototypeTab) {
         this.$element = $element;
         this.$prototypeTab = $prototypeTab;
+        this.title = 'вкладка';
 
         this.getElements = function() {
             return this.getLiElements().find('a[data-toggle=tab]')
@@ -186,7 +168,7 @@
             });
         }
         this.getTitle = function(number) {
-            return '<i class="fa fa-edit"></i>&nbsp; ' + number + ' персона';
+            return '<i class="fa fa-edit"></i>&nbsp; ' + number + ' ' + this.title;
         }
         this.showTabByIndex = function(index) {
             var $tab = this.$element.find('li:eq('+index+')');
@@ -280,6 +262,7 @@
         var $guestsNavTabs = $guestsField.find('.nav.nav-tabs');
 
         var guestTabs = new Tabs($guestsNavTabs, $guestsNavTabs.find('li:first').clone().removeClass("active"));
+        guestTabs.title = 'персона';
         var addGuestButton = new AddButton($guestsField.find('.add-tab'));
 
         var prototypeGuestForm = '<div class="tab-pane">{{ form_widget(form.guests.vars.prototype)|replace({"\n":''})|raw }}</div>';
@@ -296,6 +279,7 @@
 
         var $cityNavTabs = $cityField.find('.nav.nav-tabs');
         var cityTabs = new Tabs($cityNavTabs, $cityNavTabs.find('li:first').clone().removeClass("active"));
+        cityTabs.title = 'город';
         var addCityButton = new AddButton($cityField.find('.add-tab'));
 
         var prototypeCityForm = '<div class="tab-pane">{{ form_widget(form.city.vars.prototype)|replace({"\n":''})|raw }}</div>';
