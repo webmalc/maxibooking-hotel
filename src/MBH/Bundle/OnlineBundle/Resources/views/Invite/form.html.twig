@@ -152,26 +152,11 @@
 </body>
 
 <script>
-    var AddButton = function($element, tabs) {
+    var AddButton = function($element) {
         this.$element = $element;
-        this.tabs = tabs;
-        this.embeddedForms = null;
 
-        this.init = function() {
-            var that = this;
-            this.$element.on('click', function (e) {
-                e.preventDefault();
-                if (that.isDisabled()) {
-                    return false;
-                }
-                var $tab = that.embeddedForms.add();
-                that.tabs.openTab($tab);
-                that.update();
-            })
-        }
-
-        this.update = function () {
-            if(this.tabs.getQuantity() >= 5) {
+        this.update = function (qunantity) {
+            if(qunantity >= 5) {
                 this.$element.addClass('disable');
             } else {
                 this.$element.removeClass("disable");
@@ -212,8 +197,6 @@
         this.openTab = function($tab) {
             this.getLiElements().removeClass('active');
             $tab.addClass('active');
-            $('.tab-pane').removeClass('active');
-            $($tab.find('a').attr('href')).addClass('active');
         }
         this.add = function(id){
             var $newTab = this.$prototypeTab.clone();
@@ -225,22 +208,11 @@
             this.$element.find('a[href=#'+id+']').parent().remove();
         }
     }
-    var EmbeddedForms = function($element, tabs, addButton, prototypeForm) {
+    var EmbeddedForms = function($element, incrementQuantity, prototypeForm) {
         this.$element = $element;
-        this.tabs = tabs;
-        this.addButton = addButton;
+        this.incrementQuantity = incrementQuantity;
         this.prototypeForm = prototypeForm;
-        this.incrementQuantity = tabs.getQuantity();
         this.idPrefix = null;
-        var that = this;
-
-        this.touristRemoveHandler = function() {
-            that.remove($(this).closest('.tab-pane'));
-        }
-
-        this.init = function() {
-            this.$element.find('.tab-pane .tourist-remove').on('click', this.touristRemoveHandler);
-        }
 
         this.add = function() {
             var newForm = this.prototypeForm;
@@ -250,19 +222,8 @@
             var $newForm = $(newForm);
             $newForm.attr('id', id);
 
-            this.tabs.updateTitleNumber();
             this.$element.append($newForm);
-            $newForm.find('.tourist-remove').on('click', this.touristRemoveHandler);
-            return this.tabs.add(id);
-        }
-        this.remove = function($form) {
-            var id = $form.attr('id');
-            $form.remove();
-
-            this.tabs.removeById(id);
-            this.tabs.updateTitleNumber();
-            this.addButton.update();
-            this.tabs.showTabByIndex(0);
+            return $newForm;
         }
 
         this.replaceAll = function (string, search, replace) {
@@ -270,20 +231,63 @@
         }
     }
 
+    var Manager = function (addButton, tabs, embeddedForms) {
+        this.addButton = addButton;
+        this.tabs = tabs;
+        this.embeddedForms = embeddedForms;
+        var that = this;
+
+        this.touristRemoveHandler = function() {
+            that.remove($(this).closest('.tab-pane'));
+        }
+
+        this.init = function(){
+            this.addButton.$element.on('click', function (e) {
+                e.preventDefault();
+                if (that.addButton.isDisabled()) {
+                    return false;
+                }
+                that.addNewTab();
+            });
+
+            this.embeddedForms.$element.find('.tab-pane .tourist-remove').on('click', this.touristRemoveHandler);
+        }
+        this.addNewTab = function () {
+            var $newForm = that.embeddedForms.add();
+            $newForm.find('.tourist-remove').on('click', this.touristRemoveHandler);
+            this.tabs.updateTitleNumber();
+            var $tab = this.tabs.add($newForm.attr('id'));
+
+            this.openTab($tab);
+            that.addButton.update(that.tabs.getQuantity());
+        }
+        this.openTab = function($tab) {
+            that.tabs.openTab($tab);
+            this.embeddedForms.$element.find('.tab-pane').removeClass('active');
+            $($tab.find('a').attr('href')).addClass('active');
+        }
+        this.remove = function ($tab) {
+            $tab.remove();
+            this.tabs.removeById($tab.attr('id'));
+            this.tabs.updateTitleNumber();
+            this.addButton.update();
+            this.tabs.showTabByIndex(0);
+        }
+    }
+
     $(function(){
         var $guestsField = $('#guests-field');
-
         var $guestsNavTabs = $guestsField.find('.nav.nav-tabs');
+
         var guestTabs = new Tabs($guestsNavTabs, $guestsNavTabs.find('li:first').clone().removeClass("active"));
-        var addGuestButton = new AddButton($guestsField.find('.add-tab'), guestTabs);
+        var addGuestButton = new AddButton($guestsField.find('.add-tab'));
 
         var prototypeGuestForm = '<div class="tab-pane">{{ form_widget(form.guests.vars.prototype)|replace({"\n":''})|raw }}</div>';
-        var guestForms = new EmbeddedForms($guestsField.find('.tab-content'), guestTabs, addGuestButton, prototypeGuestForm);
+        var guestForms = new EmbeddedForms($guestsField.find('.tab-content'), guestTabs.getQuantity(), prototypeGuestForm);
         guestForms.idPrefix = 'guest';
-        guestForms.init();
 
-        addGuestButton.embeddedForms = guestForms;
-        addGuestButton.init();
+        var guestsManager = new Manager(addGuestButton, guestTabs, guestForms);
+        guestsManager.init();
     });
 
 
@@ -292,15 +296,14 @@
 
         var $cityNavTabs = $cityField.find('.nav.nav-tabs');
         var cityTabs = new Tabs($cityNavTabs, $cityNavTabs.find('li:first').clone().removeClass("active"));
-        var addCityButton = new AddButton($cityField.find('.add-tab'), cityTabs);
+        var addCityButton = new AddButton($cityField.find('.add-tab'));
 
         var prototypeCityForm = '<div class="tab-pane">{{ form_widget(form.city.vars.prototype)|replace({"\n":''})|raw }}</div>';
-        var cityForms = new EmbeddedForms($cityField.find('.tab-content'), cityTabs, addCityButton, prototypeCityForm);
+        var cityForms = new EmbeddedForms($cityField.find('.tab-content'), cityTabs.getQuantity(), prototypeCityForm);
         cityForms.idPrefix = 'city';
-        cityForms.init();
 
-        addCityButton.embeddedForms = cityForms;
-        addCityButton.init();
+        var guestsManager = new Manager(addCityButton, cityTabs, cityForms);
+        guestsManager.init();
     })
 </script>
 
