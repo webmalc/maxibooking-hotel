@@ -148,75 +148,90 @@
 </body>
 
 <script>
-    var addGuestButton = {
-        $element: $('#guest-add'),
-        update: function () {
+    var AddButton = function($element) {
+        this.$element = $element;
+
+        this.update = function () {
             if(tabs.getQuantity() >= 5) {
                 this.$element.addClass('disable');
             } else {
                 this.$element.removeClass("disable");
             }
-        },
-        isDisabled:function() {
+        };
+        this.isDisabled = function() {
             return this.$element.hasClass("disable");
         }
-    };
+    }
+    var addGuestButton = new AddButton($('#guest-add'));
 
-    var tabs = {
-        $element: $('.nav.nav-tabs'),
-        getElements: function() {
+
+    var Tabs = function ($element, $prototypeGuestTab) {
+        this.$element = $element;
+        this.$prototypeGuestTab = $prototypeGuestTab;
+
+        this.getElements = function() {
             return this.$element.find('li a[data-toggle=tab]')
-        },
-        getLiElements: function() {
+        };
+        this.getLiElements = function() {
             return this.$element.find('li')
-        },
-        getQuantity : function() {
+        };
+        this.getQuantity = function() {
             return this.getElements().length;
-        },
-        updateTitleNumber : function() {
+        };
+        this.updateTitleNumber = function() {
             var that = this;
             this.getElements().each(function(index){
                 $(this).html(that.getTitle(index + 1));
             });
-        },
-        getTitle: function(number) {
+        };
+        this.getTitle = function(number) {
             return '<i class="fa fa-edit"></i>&nbsp; ' + number + ' персона';
-        },
-        showTabByIndex: function(index) {
+        };
+        this.showTabByIndex = function(index) {
             var $tab = this.$element.find('li:eq('+index+')');
             if($tab) {
                 $tab.find('a').tab('show');
             }
-        },
-        openTab: function($tab) {
+        };
+        this.openTab = function($tab) {
             this.getLiElements().removeClass('active')
             $tab.addClass('active');
             $('.tab-pane').removeClass('active');
             $($tab.find('a').attr('href')).addClass('active');
-        },
-        add: function(id){
+        };
+        this.add = function(id){
             var $newGuestTab = this.$prototypeGuestTab.clone();
             $newGuestTab.find('a').attr('href', '#' + id).html(tabs.getTitle(tabs.getQuantity() + 1));
             addGuestButton.$element.parent().before($newGuestTab);
             return $newGuestTab;
-        },
-        removeById: function(id) {
+        };
+        this.removeById = function(id) {
             this.$element.find('a[href=#'+id+']').parent().remove();
         }
     }
-    tabs.$prototypeGuestTab = tabs.$element.first().find('li:first').clone().removeClass("active");
-
+    var $navTabs = $('.nav.nav-tabs');
+    var tabs = new Tabs($navTabs, $navTabs.first().find('li:first').clone().removeClass("active"));
 
     var replaceAll = function (string, search, replace) {
         return string.split(search).join(replace);
     }
 
-    var guestForms = {
-        prototypeGuestForm: '<div class="tab-pane">{{ form_widget(form.guests.vars.prototype)|replace({"\n":''})|raw }}</div>',
-        incrementQuantity: tabs.getQuantity(),
-        $element: $('#guests'),
-        add: function() {
-            var newGuestForm = this.prototypeGuestForm;
+    var EmbeddedForms = function($element, prototypeForm) {
+        this.prototypeForm = prototypeForm;
+        this.incrementQuantity = tabs.getQuantity();
+        this.$element = $element;
+        var that = this;
+
+        this.touristRemoveHandler = function() {
+            that.remove($(this).closest('.tab-pane'));
+        }
+
+        this.init = function() {
+            this.$element.find('.tab-pane .tourist-remove').on('click', this.touristRemoveHandler);
+        }
+
+        this.add = function() {
+            var newGuestForm = this.prototypeForm;
             this.incrementQuantity = this.incrementQuantity + 1;
             var id = 'guest_' + this.incrementQuantity;
             newGuestForm = replaceAll(newGuestForm, '__name__', this.incrementQuantity);
@@ -225,10 +240,10 @@
 
             tabs.updateTitleNumber();
             this.$element.append($newGuestForm);
-            $newGuestForm.find('.tourist-remove').on('click', onTouristRemove);
+            $newGuestForm.find('.tourist-remove').on('click', this.touristRemoveHandler);
             return tabs.add(id);
-        },
-        remove: function($guestForm) {
+        }
+        this.remove = function($guestForm) {
             var id = $guestForm.attr('id');
             $guestForm.remove();
             tabs.removeById(id);
@@ -240,12 +255,9 @@
         }
     }
 
-
-    var onTouristRemove = function() {
-        guestForms.remove($(this).closest('.tab-pane'));
-    }
-
-    guestForms.$element.find('.tab-pane .tourist-remove').on('click', onTouristRemove);
+    var prototypeGuestForm = '<div class="tab-pane">{{ form_widget(form.guests.vars.prototype)|replace({"\n":''})|raw }}</div>';
+    var guestForms = new EmbeddedForms($('#guests'), prototypeGuestForm);
+    guestForms.init();
 
     addGuestButton.$element.on('click', function (e) {
         e.preventDefault();
