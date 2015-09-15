@@ -58,9 +58,9 @@
 
     <div id="guests-field">
         <ul class="nav nav-tabs">
-            {% for key, guestForm in form.guests %}
+            {% for guestForm in form.guests %}
                 <li class="{% if loop.index == 1 %}active{% endif %}">
-                    <a data-toggle="tab" class="{% if not guestForm.vars.valid %}errors{% endif %}" href="#guest_{{ key + 1 }}">
+                    <a data-toggle="tab" class="{% if not guestForm.vars.valid %}errors{% endif %}" href="#guest_{{ loop.index }}">
                         <i class="glyphicon {% if guestForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
                         {#<i class="fa {% if guestForm.vars.errors %}errors{% endif %} fa-edit"></i>#}
                         &nbsp; {{ loop.index }} персона
@@ -75,7 +75,7 @@
         </ul>
         <div class="tab-content">
             {% for key, guestForm in form.guests %}
-                <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="guest_{{ key + 1 }}">
+                <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="guest_{{ loop.index }}">
                     {{ form_widget(guestForm) }}
                 </div>
             {% endfor %}
@@ -89,10 +89,10 @@
 
     <div id="city-field">
         <ul class="nav nav-tabs">
-            {% for key, cityForm in form.city %}
+            {% for routeForm in form.tripRoutes %}
                 <li class="{% if loop.index == 1 %}active{% endif %}">
-                    <a data-toggle="tab" class="{% if not cityForm.vars.valid %}errors{% endif %}" href="#city_{{ key + 1 }}">
-                        <i class="glyphicon {% if cityForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
+                    <a data-toggle="tab" class="{% if not routeForm.vars.valid %}errors{% endif %}" href="#city_{{ loop.index }}">
+                        <i class="glyphicon {% if routeForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
                         &nbsp; {{ loop.index }} город
                     </a>
                 </li>
@@ -104,9 +104,9 @@
             </li>
         </ul>
         <div class="tab-content">
-            {% for key, cityForm in form.city %}
-                <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="city_{{ key + 1 }}">
-                    {{ form_widget(cityForm) }}
+            {% for routeForm in form.tripRoutes %}
+                <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="city_{{ loop.index }}">
+                    {{ form_widget(routeForm) }}
                 </div>
             {% endfor %}
         </div>
@@ -128,9 +128,16 @@
     var $steps = $('.step');
     var $form = $('form#mbvi-form-wrapper');
     var $backButton = $('.back');
-    var $stepsMenu = $('#mbvi-navigation-wrapper')
+    var $stepsMenu = $('#mbvi-navigation-wrapper');
+    var $stepsMenuItem = $stepsMenu.find('div');
+
+    $stepsMenuItem.not('.disable').css('cursor', 'pointer').on('click', function() {
+        step = $(this).data('step');
+        updateStep();
+    });
+
     var updateProgress = function() {
-        $stepsMenu.find('div').removeClass('current').removeClass('active');
+        $stepsMenuItem.removeClass('current').removeClass('active');
         var currentStep = $stepsMenu.find('div[data-step='+step+']');
         currentStep.addClass('current');
         currentStep.prevAll().addClass('active');
@@ -299,7 +306,7 @@
         var addGuestButton = new AddButton($guestsField.find('.add-tab'));
 
         var prototypeGuestForm = '<div class="tab-pane">{{ form_widget(form.guests.vars.prototype)|replace({"\n":''})|raw }}</div>';
-        var guestForms = new EmbeddedForms($guestsField.find('.tab-content'), guestTabs.getQuantity(), prototypeGuestForm);
+        var guestForms = new EmbeddedForms($guestsField.find('.tab-content'), {{ max(form.guests.vars.value|keys) }} + 1, prototypeGuestForm);
         guestForms.idPrefix = 'guest';
 
         var guestsManager = new Manager(addGuestButton, guestTabs, guestForms);
@@ -315,8 +322,8 @@
         cityTabs.title = 'город';
         var addCityButton = new AddButton($cityField.find('.add-tab'));
 
-        var prototypeCityForm = '<div class="tab-pane">{{ form_widget(form.city.vars.prototype)|replace({"\n":''})|raw }}</div>';
-        var cityForms = new EmbeddedForms($cityField.find('.tab-content'), cityTabs.getQuantity(), prototypeCityForm);
+        var prototypeCityForm = '<div class="tab-pane">{{ form_widget(form.tripRoutes.vars.prototype)|replace({"\n":''})|raw }}</div>';
+        var cityForms = new EmbeddedForms($cityField.find('.tab-content'), {{ max(form.tripRoutes.vars.value|keys) }} + 1, prototypeCityForm);
         cityForms.idPrefix = 'city';
 
         var guestsManager = new Manager(addCityButton, cityTabs, cityForms);

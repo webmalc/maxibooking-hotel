@@ -8,24 +8,24 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
- * Class InvitedCityType
+ * Class TripRouteType
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class InvitedCityType extends AbstractType
+class TripRouteType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('country', 'text', [
+            ->add('hotel', 'text', [
                 'required' => false,
-                'label' => 'Country',
+                'label' => 'Гостиница',
                 'constraints' => [
                     new NotBlank()
                 ],
             ])
-            ->add('city', 'text', [
+            ->add('address', 'text', [
                 'required' => false,
-                'label' => 'City',
+                'label' => 'Город',
                 'constraints' => [
                     new NotBlank()
                 ],
@@ -37,12 +37,13 @@ class InvitedCityType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'data_class' => 'MBH\Bundle\OnlineBundle\Document\TripRoute'
         ]);
     }
 
     public function getName()
     {
-        return 'mbh_online_bundle_invite_city';
+        return 'mbh_online_bundle_invite_trip_route';
     }
 
 }

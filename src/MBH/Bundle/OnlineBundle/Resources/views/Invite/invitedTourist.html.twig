@@ -85,23 +85,23 @@
     </div>
 {% endblock mbh_online_bundle_invited_tourist_widget %}
 
-{% block mbh_online_bundle_invite_city_widget %}
+{% block mbh_online_bundle_invite_trip_route_widget %}
     <div class="mbvi-form-block mbvi-form-block-even">
         <div class="mbvi-form-group">
-            {{ form_label(form.country) }}
+            {{ form_label(form.hotel) }}
             <div class="mbvi-form-span9">
-                {{ form_widget(form.country) }}
+                {{ form_widget(form.hotel) }}
             </div>
-            {{ form_errors(form.country) }}
+            {{ form_errors(form.hotel) }}
         </div>
         <div class="mbvi-form-group">
-            {{ form_label(form.city) }}
+            {{ form_label(form.address) }}
             <div class="mbvi-form-span9">
-                {{ form_widget(form.city) }}
+                {{ form_widget(form.address) }}
             </div>
-            {{ form_errors(form.city) }}
+            {{ form_errors(form.address) }}
         </div>
 
         <i class="glyphicon glyphicon-remove tourist-remove"></i>
     </div>
-{% endblock mbh_online_bundle_invite_city_widget %}
+{% endblock mbh_online_bundle_invite_trip_route_widget %}

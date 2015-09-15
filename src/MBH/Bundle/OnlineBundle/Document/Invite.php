@@ -54,7 +54,11 @@ class Invite extends Base
      */
     protected $guests;
 
-    protected $city;
+    /**
+     * @ODM\EmbedMany(targetDocument="MBH\Bundle\OnlineBundle\Document\TripRoute")
+     * @var TripRoute[]
+     */
+    protected $tripRoutes = [];
 
     /**
      * @return mixed
@@ -127,18 +131,26 @@ class Invite extends Base
     }
 
     /**
-     * @return mixed
+     * @return TripRoute[]
      */
-    public function getCity()
+    public function getTripRoutes()
     {
-        return $this->city;
+        return $this->tripRoutes;
     }
 
     /**
-     * @param mixed $city
+     * @param TripRoute[] $tripRoutes
      */
-    public function setCity($city)
+    public function setTripRoutes($tripRoutes)
     {
-        $this->city = $city;
+        $this->tripRoutes = $tripRoutes;
+    }
+
+    /**
+     * @param TripRoute $tripRoute
+     */
+    public function addTripRoute(TripRoute $tripRoute)
+    {
+        $this->tripRoutes[] = $tripRoute;
     }
 }

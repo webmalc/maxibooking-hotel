@@ -5,6 +5,7 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\OnlineBundle\Document\Invite;
 use MBH\Bundle\OnlineBundle\Document\InvitedTourist;
+use MBH\Bundle\OnlineBundle\Document\TripRoute;
 use MBH\Bundle\OnlineBundle\Form\InviteType;
 use MBH\Bundle\OnlineBundle\Form\SettingsInviteType;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -57,7 +58,11 @@ class InviteController extends Controller  implements CheckHotelControllerInterf
             }
         } else {
             $invite->addGuest(new InvitedTourist());
-            $invite->setCity([['country' => '', 'city' => '']]);
+            $tripRoute = new TripRoute();
+            $tripRoute
+                ->setHotel($this->hotel->getTitle())
+                ->setAddress($this->hotel->getCity().' '.$this->hotel->getRegion().' '.$this->hotel->getStreet());
+            $invite->addTripRoute($tripRoute);
             $form->setData($invite);
         }
         return [

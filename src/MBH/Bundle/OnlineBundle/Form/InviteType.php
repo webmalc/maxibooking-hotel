@@ -39,8 +39,8 @@ class InviteType extends AbstractType
                 'allow_add' => true,
                 'prototype' => true
             ])
-            ->add('city', 'collection', [
-                'type' => new InvitedCityType(),
+            ->add('tripRoutes', 'collection', [
+                'type' => new TripRouteType(),
                 'allow_add' => true,
                 'prototype' => true
             ])
