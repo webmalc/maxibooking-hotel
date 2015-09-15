@@ -54,28 +54,31 @@
 <h4><i class="fa fa-group fa-lg"></i>&nbsp; Сведения о персонах<i class="fa fa-square-o fa-lg"
                                                                   style="margin-top:4px;float:right;"></i></h4>
 
-<ul class="nav nav-tabs">
-    {% for key, guestForm in form.guests %}
-        <li class="{% if loop.index == 1 %}active{% endif %}">
-            <a data-toggle="tab" class="{% if not guestForm.vars.valid %}errors{% endif %}" href="#guest_{{ key + 1 }}">
-                <i class="glyphicon {% if guestForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
-                {#<i class="fa {% if guestForm.vars.errors %}errors{% endif %} fa-edit"></i>#}
-                &nbsp; {{ loop.index }} персона
+
+<div id="guests-field">
+    <ul class="nav nav-tabs">
+        {% for key, guestForm in form.guests %}
+            <li class="{% if loop.index == 1 %}active{% endif %}">
+                <a data-toggle="tab" class="{% if not guestForm.vars.valid %}errors{% endif %}" href="#guest_{{ key + 1 }}">
+                    <i class="glyphicon {% if guestForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
+                    {#<i class="fa {% if guestForm.vars.errors %}errors{% endif %} fa-edit"></i>#}
+                    &nbsp; {{ loop.index }} персона
+                </a>
+            </li>
+        {% endfor %}
+        <li>
+            <a class="add-tab" href="#">
+                <i class="fa fa-plus"></i> Добавить
             </a>
         </li>
-    {% endfor %}
-    <li>
-        <a id="guest-add" href="#">
-            <i class="fa fa-plus"></i> Добавить
-        </a>
-    </li>
-</ul>
-<div class="tab-content" id="guests">
-    {% for key, guestForm in form.guests %}
-        <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="guest_{{ key + 1 }}">
-            {{ form_widget(guestForm) }}
-        </div>
-    {% endfor %}
+    </ul>
+    <div class="tab-content">
+        {% for key, guestForm in form.guests %}
+            <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="guest_{{ key + 1 }}">
+                {{ form_widget(guestForm) }}
+            </div>
+        {% endfor %}
+    </div>
 </div>
 
 
@@ -98,28 +101,29 @@
 <h4><i class="fa fa-calendar fa-lg"></i>&nbsp; Маршрут поездки<i class="fa fa-check-square-o fa-lg"
                                                               style="margin-top:4px;float:right;"></i></h4>
 
-<ul class="nav nav-tabs">
-    {% for key, guestForm in form.city %}
-        <li class="{% if loop.index == 1 %}active{% endif %}">
-            <a data-toggle="tab" class="{% if not guestForm.vars.valid %}errors{% endif %}" href="#guest_{{ key + 1 }}">
-                <i class="glyphicon {% if guestForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
-                {#<i class="fa {% if guestForm.vars.errors %}errors{% endif %} fa-edit"></i>#}
-                &nbsp; {{ loop.index }} персона
+<div id="city-field">
+    <ul class="nav nav-tabs">
+        {% for key, cityForm in form.city %}
+            <li class="{% if loop.index == 1 %}active{% endif %}">
+                <a data-toggle="tab" class="{% if not cityForm.vars.valid %}errors{% endif %}" href="#city_{{ key + 1 }}">
+                    <i class="glyphicon {% if cityForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
+                    &nbsp; {{ loop.index }} персона
+                </a>
+            </li>
+        {% endfor %}
+        <li>
+            <a class="add-tab" href="#">
+                <i class="fa fa-plus"></i> Добавить
             </a>
         </li>
-    {% endfor %}
-    <li>
-        <a id="guest-add" href="#">
-            <i class="fa fa-plus"></i> Добавить
-        </a>
-    </li>
-</ul>
-<div class="tab-content" id="guests">
-    {% for key, guestForm in form.city %}
-        <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="guest_{{ key + 1 }}">
-            {{ form_widget(guestForm) }}
-        </div>
-    {% endfor %}
+    </ul>
+    <div class="tab-content">
+        {% for key, cityForm in form.city %}
+            <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="city_{{ key + 1 }}">
+                {{ form_widget(cityForm) }}
+            </div>
+        {% endfor %}
+    </div>
 </div>
 
 
@@ -148,11 +152,26 @@
 </body>
 
 <script>
-    var AddButton = function($element) {
+    var AddButton = function($element, tabs) {
         this.$element = $element;
+        this.tabs = tabs;
+        this.embeddedForms = null;
+
+        this.init = function() {
+            var that = this;
+            this.$element.on('click', function (e) {
+                e.preventDefault();
+                if (that.isDisabled()) {
+                    return false;
+                }
+                var $tab = that.embeddedForms.add();
+                that.tabs.openTab($tab);
+                that.update();
+            })
+        }
 
         this.update = function () {
-            if(tabs.getQuantity() >= 5) {
+            if(this.tabs.getQuantity() >= 5) {
                 this.$element.addClass('disable');
             } else {
                 this.$element.removeClass("disable");
@@ -162,64 +181,57 @@
             return this.$element.hasClass("disable");
         }
     }
-    var addGuestButton = new AddButton($('#guest-add'));
-
-
-    var Tabs = function ($element, $prototypeGuestTab) {
+    var Tabs = function ($element, $prototypeTab) {
         this.$element = $element;
-        this.$prototypeGuestTab = $prototypeGuestTab;
+        this.$prototypeTab = $prototypeTab;
 
         this.getElements = function() {
-            return this.$element.find('li a[data-toggle=tab]')
-        };
+            return this.getLiElements().find('a[data-toggle=tab]')
+        }
         this.getLiElements = function() {
-            return this.$element.find('li')
-        };
+            return this.$element.find('li:not(:last)')
+        }
         this.getQuantity = function() {
             return this.getElements().length;
-        };
+        }
         this.updateTitleNumber = function() {
             var that = this;
             this.getElements().each(function(index){
                 $(this).html(that.getTitle(index + 1));
             });
-        };
+        }
         this.getTitle = function(number) {
             return '<i class="fa fa-edit"></i>&nbsp; ' + number + ' персона';
-        };
+        }
         this.showTabByIndex = function(index) {
             var $tab = this.$element.find('li:eq('+index+')');
             if($tab) {
                 $tab.find('a').tab('show');
             }
-        };
+        }
         this.openTab = function($tab) {
-            this.getLiElements().removeClass('active')
+            this.getLiElements().removeClass('active');
             $tab.addClass('active');
             $('.tab-pane').removeClass('active');
             $($tab.find('a').attr('href')).addClass('active');
-        };
+        }
         this.add = function(id){
-            var $newGuestTab = this.$prototypeGuestTab.clone();
-            $newGuestTab.find('a').attr('href', '#' + id).html(tabs.getTitle(tabs.getQuantity() + 1));
-            addGuestButton.$element.parent().before($newGuestTab);
-            return $newGuestTab;
+            var $newTab = this.$prototypeTab.clone();
+            $newTab.find('a').attr('href', '#' + id).html(this.getTitle(this.getQuantity() + 1));
+            this.getLiElements().last().after($newTab);
+            return $newTab;
         };
         this.removeById = function(id) {
             this.$element.find('a[href=#'+id+']').parent().remove();
         }
     }
-    var $navTabs = $('.nav.nav-tabs');
-    var tabs = new Tabs($navTabs, $navTabs.first().find('li:first').clone().removeClass("active"));
-
-    var replaceAll = function (string, search, replace) {
-        return string.split(search).join(replace);
-    }
-
-    var EmbeddedForms = function($element, prototypeForm) {
+    var EmbeddedForms = function($element, tabs, addButton, prototypeForm) {
+        this.$element = $element;
+        this.tabs = tabs;
+        this.addButton = addButton;
         this.prototypeForm = prototypeForm;
         this.incrementQuantity = tabs.getQuantity();
-        this.$element = $element;
+        this.idPrefix = null;
         var that = this;
 
         this.touristRemoveHandler = function() {
@@ -231,42 +243,64 @@
         }
 
         this.add = function() {
-            var newGuestForm = this.prototypeForm;
+            var newForm = this.prototypeForm;
             this.incrementQuantity = this.incrementQuantity + 1;
-            var id = 'guest_' + this.incrementQuantity;
-            newGuestForm = replaceAll(newGuestForm, '__name__', this.incrementQuantity);
-            var $newGuestForm = $(newGuestForm);
-            $newGuestForm.attr('id', id);
+            var id = this.idPrefix + '_' + this.incrementQuantity;
+            newForm = this.replaceAll(newForm, '__name__', this.incrementQuantity);
+            var $newForm = $(newForm);
+            $newForm.attr('id', id);
 
-            tabs.updateTitleNumber();
-            this.$element.append($newGuestForm);
-            $newGuestForm.find('.tourist-remove').on('click', this.touristRemoveHandler);
-            return tabs.add(id);
+            this.tabs.updateTitleNumber();
+            this.$element.append($newForm);
+            $newForm.find('.tourist-remove').on('click', this.touristRemoveHandler);
+            return this.tabs.add(id);
         }
-        this.remove = function($guestForm) {
-            var id = $guestForm.attr('id');
-            $guestForm.remove();
-            tabs.removeById(id);
+        this.remove = function($form) {
+            var id = $form.attr('id');
+            $form.remove();
 
-            tabs.updateTitleNumber();
-            addGuestButton.update();
+            this.tabs.removeById(id);
+            this.tabs.updateTitleNumber();
+            this.addButton.update();
+            this.tabs.showTabByIndex(0);
+        }
 
-            tabs.showTabByIndex(0);
+        this.replaceAll = function (string, search, replace) {
+            return string.split(search).join(replace);
         }
     }
 
-    var prototypeGuestForm = '<div class="tab-pane">{{ form_widget(form.guests.vars.prototype)|replace({"\n":''})|raw }}</div>';
-    var guestForms = new EmbeddedForms($('#guests'), prototypeGuestForm);
-    guestForms.init();
+    $(function(){
+        var $guestsField = $('#guests-field');
 
-    addGuestButton.$element.on('click', function (e) {
-        e.preventDefault();
-        if (addGuestButton.isDisabled()) {
-            return false;
-        }
-        var $tab = guestForms.add();
-        tabs.openTab($tab);
-        addGuestButton.update();
+        var $guestsNavTabs = $guestsField.find('.nav.nav-tabs');
+        var guestTabs = new Tabs($guestsNavTabs, $guestsNavTabs.find('li:first').clone().removeClass("active"));
+        var addGuestButton = new AddButton($guestsField.find('.add-tab'), guestTabs);
+
+        var prototypeGuestForm = '<div class="tab-pane">{{ form_widget(form.guests.vars.prototype)|replace({"\n":''})|raw }}</div>';
+        var guestForms = new EmbeddedForms($guestsField.find('.tab-content'), guestTabs, addGuestButton, prototypeGuestForm);
+        guestForms.idPrefix = 'guest';
+        guestForms.init();
+
+        addGuestButton.embeddedForms = guestForms;
+        addGuestButton.init();
+    });
+
+
+    $(function(){
+        var $cityField = $('#city-field');
+
+        var $cityNavTabs = $cityField.find('.nav.nav-tabs');
+        var cityTabs = new Tabs($cityNavTabs, $cityNavTabs.find('li:first').clone().removeClass("active"));
+        var addCityButton = new AddButton($cityField.find('.add-tab'), cityTabs);
+
+        var prototypeCityForm = '<div class="tab-pane">{{ form_widget(form.city.vars.prototype)|replace({"\n":''})|raw }}</div>';
+        var cityForms = new EmbeddedForms($cityField.find('.tab-content'), cityTabs, addCityButton, prototypeCityForm);
+        cityForms.idPrefix = 'city';
+        cityForms.init();
+
+        addCityButton.embeddedForms = cityForms;
+        addCityButton.init();
     })
 </script>
 
