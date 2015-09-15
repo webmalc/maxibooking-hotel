@@ -15,124 +15,157 @@
 
 {{ form_start(form, {'attr': {'id': 'mbvi-form-wrapper'}}) }}
 <div id="mbvi-navigation-wrapper">
-    <div class="mbvi-navigation-item active"><i class="fa fa-check-square-o"></i> Информация о гостях и визе</div>
-    <div class="mbvi-navigation-item current"><i class="fa fa-edit"></i> Места посещения</div>
-    <div class="mbvi-navigation-item disable"><i class="fa fa-square-o"></i> Оплата заявки</div>
-    <div class="mbvi-navigation-item disable"><i class="fa fa-square-o"></i> Получение приглашения</div>
+    <div class="mbvi-navigation-item active" data-step="1"><i class="fa fa-check-square-o"></i> Информация о гостях и визе</div>
+    <div class="mbvi-navigation-item current" data-step="2"><i class="fa fa-edit"></i> Места посещения</div>
+    <div class="mbvi-navigation-item disable" data-step="3"><i class="fa fa-square-o"></i> Оплата заявки</div>
+    <div class="mbvi-navigation-item disable" data-step="4"><i class="fa fa-square-o"></i> Получение приглашения</div>
 </div>
 
-<h4><i class="fa fa-calendar fa-lg"></i>&nbsp; Даты поездки<i class="fa fa-check-square-o fa-lg"
-                                                              style="margin-top:4px;float:right;"></i></h4>
 
-<div class="mbvi-form-block mbvi-form-block-odd">
 
-    <div class="mbvi-form-group">
-        <label for="input1" class="mbvi-form-span3 control-label">Даты поездки</label>
-
-        <div class="mbvi-form-span4">
-            <div style="white-space:nowrap;">
-                {{ form_widget(form.arrival, {attr: {class: 'ib'}}) }}
-                <small class="help-block ib">&mdash;</small>
-            </div>
-            <small class="help-block"><i class="fa fa-suitcase"></i>&nbsp; 6 дней</small>
-            {{ form_errors(form.arrival) }}
-        </div>
-        <div class="mbvi-form-span4">
-            {{ form_widget(form.departure) }}
-        </div>
-        {{ form_errors(form.departure) }}
-    </div>
-    <div class="mbvi-form-group">
-        <label for="" class="mbvi-form-span3 control-label">Тип визы</label>
-
-        <div class="mbvi-form-span9">
-            {{ form_widget(form.type) }}
-        </div>
-    </div>
-</div>
-
-<h4><i class="fa fa-group fa-lg"></i>&nbsp; Сведения о персонах<i class="fa fa-square-o fa-lg"
+<div class="step" id="step-1-content">
+    <h4><i class="fa fa-calendar fa-lg"></i>&nbsp; Даты поездки<i class="fa fa-check-square-o fa-lg"
                                                                   style="margin-top:4px;float:right;"></i></h4>
+    <div class="mbvi-form-block mbvi-form-block-odd">
 
+        <div class="mbvi-form-group">
+            <label for="input1" class="mbvi-form-span3 control-label">Даты поездки</label>
 
-<div id="guests-field">
-    <ul class="nav nav-tabs">
-        {% for key, guestForm in form.guests %}
-            <li class="{% if loop.index == 1 %}active{% endif %}">
-                <a data-toggle="tab" class="{% if not guestForm.vars.valid %}errors{% endif %}" href="#guest_{{ key + 1 }}">
-                    <i class="glyphicon {% if guestForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
-                    {#<i class="fa {% if guestForm.vars.errors %}errors{% endif %} fa-edit"></i>#}
-                    &nbsp; {{ loop.index }} персона
+            <div class="mbvi-form-span4">
+                <div style="white-space:nowrap;">
+                    {{ form_widget(form.arrival, {attr: {class: 'ib'}}) }}
+                    <small class="help-block ib">&mdash;</small>
+                </div>
+                <small class="help-block"><i class="fa fa-suitcase"></i>&nbsp; 6 дней</small>
+                {{ form_errors(form.arrival) }}
+            </div>
+            <div class="mbvi-form-span4">
+                {{ form_widget(form.departure) }}
+            </div>
+            {{ form_errors(form.departure) }}
+        </div>
+        <div class="mbvi-form-group">
+            <label for="" class="mbvi-form-span3 control-label">Тип визы</label>
+
+            <div class="mbvi-form-span9">
+                {{ form_widget(form.type) }}
+            </div>
+        </div>
+    </div>
+
+    <h4><i class="fa fa-group fa-lg"></i>&nbsp; Сведения о персонах<i class="fa fa-square-o fa-lg"
+                                                                      style="margin-top:4px;float:right;"></i></h4>
+
+    <div id="guests-field">
+        <ul class="nav nav-tabs">
+            {% for key, guestForm in form.guests %}
+                <li class="{% if loop.index == 1 %}active{% endif %}">
+                    <a data-toggle="tab" class="{% if not guestForm.vars.valid %}errors{% endif %}" href="#guest_{{ key + 1 }}">
+                        <i class="glyphicon {% if guestForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
+                        {#<i class="fa {% if guestForm.vars.errors %}errors{% endif %} fa-edit"></i>#}
+                        &nbsp; {{ loop.index }} персона
+                    </a>
+                </li>
+            {% endfor %}
+            <li>
+                <a class="add-tab" href="#">
+                    <i class="fa fa-plus"></i> Добавить
                 </a>
             </li>
-        {% endfor %}
-        <li>
-            <a class="add-tab" href="#">
-                <i class="fa fa-plus"></i> Добавить
-            </a>
-        </li>
-    </ul>
-    <div class="tab-content">
-        {% for key, guestForm in form.guests %}
-            <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="guest_{{ key + 1 }}">
-                {{ form_widget(guestForm) }}
-            </div>
-        {% endfor %}
+        </ul>
+        <div class="tab-content">
+            {% for key, guestForm in form.guests %}
+                <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="guest_{{ key + 1 }}">
+                    {{ form_widget(guestForm) }}
+                </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 
+<div class="step" id="step-2-content">
+    <h4><i class="fa fa-calendar fa-lg"></i>&nbsp; Маршрут поездки<i class="fa fa-check-square-o fa-lg"
+                                                                     style="margin-top:4px;float:right;"></i></h4>
 
-
-
-
-
-
-
-
-
-<h4><i class="fa fa-calendar fa-lg"></i>&nbsp; Маршрут поездки<i class="fa fa-check-square-o fa-lg"
-                                                              style="margin-top:4px;float:right;"></i></h4>
-
-<div id="city-field">
-    <ul class="nav nav-tabs">
-        {% for key, cityForm in form.city %}
-            <li class="{% if loop.index == 1 %}active{% endif %}">
-                <a data-toggle="tab" class="{% if not cityForm.vars.valid %}errors{% endif %}" href="#city_{{ key + 1 }}">
-                    <i class="glyphicon {% if cityForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
-                    &nbsp; {{ loop.index }} город
+    <div id="city-field">
+        <ul class="nav nav-tabs">
+            {% for key, cityForm in form.city %}
+                <li class="{% if loop.index == 1 %}active{% endif %}">
+                    <a data-toggle="tab" class="{% if not cityForm.vars.valid %}errors{% endif %}" href="#city_{{ key + 1 }}">
+                        <i class="glyphicon {% if cityForm.vars.valid %}glyphicon-check{% else %}glyphicon-unchecked{% endif %} fa-edit"></i>
+                        &nbsp; {{ loop.index }} город
+                    </a>
+                </li>
+            {% endfor %}
+            <li>
+                <a class="add-tab" href="#">
+                    <i class="fa fa-plus"></i> Добавить
                 </a>
             </li>
-        {% endfor %}
-        <li>
-            <a class="add-tab" href="#">
-                <i class="fa fa-plus"></i> Добавить
-            </a>
-        </li>
-    </ul>
-    <div class="tab-content">
-        {% for key, cityForm in form.city %}
-            <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="city_{{ key + 1 }}">
-                {{ form_widget(cityForm) }}
-            </div>
-        {% endfor %}
+        </ul>
+        <div class="tab-content">
+            {% for key, cityForm in form.city %}
+                <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="city_{{ key + 1 }}">
+                    {{ form_widget(cityForm) }}
+                </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 
-
-
-
-
-
-
-
-
-<button type="submit" class="button" style="margin-top:20px;">Продолжить</button>
+<div style="margin-top:20px;">
+    <button type="button" class="button back" style="display: inline-block; margin: 0 5px">Назад</button>
+    <button type="submit" class="button" style="display: inline-block">Продолжить</button>
+</div>
 {{ form_widget(form._token) }}
 {{ form_end(form, {render_rest: false}) }}
 
 </body>
 
 <script>
+    var stepTotal = 2;
+    var step = 1;
+    var $steps = $('.step');
+    var $form = $('form#mbvi-form-wrapper');
+    var $backButton = $('.back');
+    var $stepsMenu = $('#mbvi-navigation-wrapper')
+    var updateProgress = function() {
+        $stepsMenu.find('div').removeClass('current').removeClass('active');
+        var currentStep = $stepsMenu.find('div[data-step='+step+']');
+        currentStep.addClass('current');
+        currentStep.prevAll().addClass('active');
+    }
+    var updateStep = function() {
+        $steps.hide();
+        $('#step-'+step+'-content').show();
+        $form.off('submit');
+        if(step < stepTotal) {
+            $form.on('submit', function(e) {
+                e.preventDefault();
+                nextStep();
+            })
+        }
+        if(step > 1) {
+            $backButton.show();
+        } else {
+            $backButton.hide();
+        }
+        updateProgress();
+    }
+    var nextStep = function() {
+        step = step + 1;
+        updateStep();
+    }
+    var backStep = function() {
+        step = step - 1;
+        updateStep();
+    }
+    updateStep();
+    $backButton.on('click', function() {
+        backStep();
+    })
+
+
     var AddButton = function($element) {
         this.$element = $element;
 
