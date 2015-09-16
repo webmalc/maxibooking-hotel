@@ -4,12 +4,17 @@ namespace MBH\Bundle\ClientBundle\Service;
 
 use Guzzle\Http\Exception\RequestException;
 use Guzzle\Http\Message\Response;
+use MBH\Bundle\OnlineBundle\Document\Invite;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\BaseBundle\Document\Message;
 use MBH\Bundle\PackageBundle\Document\Package;
 
+/**
+ * Class Mbhs
+ * Maxi Booking Hotel Server
+ */
 class Mbhs
 {
     /**
@@ -267,6 +272,13 @@ class Mbhs
         ], 'client/unwelcome/delete_by_tourist');
     }
 
+    public function addInvite(Invite $invite)
+    {
+        return $this->exchangeJson([
+            'invite' => $invite
+        ], 'client/invite/add');
+    }
+
     /**
      * @param array $requestData
      * @param string $url
@@ -277,11 +289,14 @@ class Mbhs
     {
         $requestData = array_merge($requestData, $this->getAuthorizationData());
         $uri = base64_decode($this->config['mbhs']) . $url;
+
+        $jsonDate = $this->container->get('serializer')->encode($requestData, 'json');
+
         try {
             /** @var Response $response */
             $response = $this->guzzle
                 ->createRequest($method, $uri)
-                ->setBody(json_encode($requestData))
+                ->setBody($jsonDate)
                 ->setHeader('Content-Type', 'application/json')
                 ->send()
             ;

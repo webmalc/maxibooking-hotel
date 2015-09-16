@@ -149,3 +149,7 @@ services:
         arguments: [@mbh.hotel.selector]
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+    mbh.get_set_method_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer
+        tags:
+            - { name: serializer.normalizer }

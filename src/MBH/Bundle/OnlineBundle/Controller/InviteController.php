@@ -54,6 +54,8 @@ class InviteController extends Controller  implements CheckHotelControllerInterf
             if($form->isValid()) {
                 $this->dm->persist($invite);
                 $this->dm->flush();
+                $this->get('mbh.mbhs')->addInvite($invite);
+
                 return $this->redirectToRoute('invite_form');
             }
         } else {

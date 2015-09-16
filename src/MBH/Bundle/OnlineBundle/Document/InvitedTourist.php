@@ -88,10 +88,12 @@ class InvitedTourist
 
     /**
      * @param mixed $lastName
+     * @return $this
      */
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
+        return $this;
     }
 
     /**
@@ -104,10 +106,12 @@ class InvitedTourist
 
     /**
      * @param mixed $sex
+     * @return $this
      */
     public function setSex($sex)
     {
         $this->sex = $sex;
+        return $this;
     }
 
     /**
@@ -120,10 +124,12 @@ class InvitedTourist
 
     /**
      * @param mixed $birthday
+     * @return $this
      */
     public function setBirthday($birthday)
     {
         $this->birthday = $birthday;
+        return $this;
     }
 
     /**
@@ -136,10 +142,12 @@ class InvitedTourist
 
     /**
      * @param mixed $birthplace
+     * @return $this
      */
     public function setBirthplace($birthplace)
     {
         $this->birthplace = $birthplace;
+        return $this;
     }
 
     /**
@@ -152,10 +160,12 @@ class InvitedTourist
 
     /**
      * @param mixed $citizenship
+     * @return $this
      */
     public function setCitizenship($citizenship)
     {
         $this->citizenship = $citizenship;
+        return $this;
     }
 
     /**
@@ -168,10 +178,12 @@ class InvitedTourist
 
     /**
      * @param mixed $passport
+     * @return $this
      */
     public function setPassport($passport)
     {
         $this->passport = $passport;
+        return $this;
     }
 
     /**
@@ -184,10 +196,12 @@ class InvitedTourist
 
     /**
      * @param mixed $expiry
+     * @return $this
      */
     public function setExpiry($expiry)
     {
         $this->expiry = $expiry;
+        return $this;
     }
 
 }

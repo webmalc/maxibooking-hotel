@@ -78,4 +78,4 @@ services:
 
     mbh.package.unwelcome_history_repository:
             class: MBH\Bundle\PackageBundle\Document\UnwelcomeHistoryRepository
-            arguments: [@mbh.mbhs]
+            arguments: [@mbh.mbhs,@serializer]

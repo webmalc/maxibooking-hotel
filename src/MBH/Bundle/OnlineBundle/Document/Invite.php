@@ -21,7 +21,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ODM\HasLifecycleCallbacks
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class Invite extends Base
+class Invite extends Base implements \JsonSerializable
 {
     const TYPE_SINGLE = 'single';
     const TYPE_TWICE = 'twice';
@@ -64,7 +64,7 @@ class Invite extends Base
     protected $tripRoutes = [];
 
     /**
-     * @return mixed
+     * @return \DateTime
      */
     public function getArrival()
     {
@@ -73,10 +73,12 @@ class Invite extends Base
 
     /**
      * @param \DateTime|null $arrival
+     * @return $this
      */
     public function setArrival(\DateTime $arrival = null)
     {
         $this->arrival = $arrival;
+        return $this;
     }
 
     /**
@@ -89,10 +91,12 @@ class Invite extends Base
 
     /**
      * @param \DateTime|null $departure
+     * @return $this
      */
     public function setDeparture($departure = null)
     {
         $this->departure = $departure;
+        return $this;
     }
 
     /**
@@ -105,10 +109,12 @@ class Invite extends Base
 
     /**
      * @param string $type
+     * @return $this
      */
     public function setType($type)
     {
         $this->type = $type;
+        return $this;
     }
 
     /**
@@ -120,17 +126,21 @@ class Invite extends Base
     }
     /**
      * @param InvitedTourist $guest
+     * @return $this
      */
     public function addGuest(InvitedTourist $guest)
     {
         $this->guests[] = $guest;
+        return $this;
     }
     /**
      * @param InvitedTourist[] $guests
+     * @return $this
      */
     public function setGuests($guests)
     {
         $this->guests = $guests;
+        return $this;
     }
 
     /**
@@ -143,17 +153,32 @@ class Invite extends Base
 
     /**
      * @param TripRoute[] $tripRoutes
+     * @return $this
      */
     public function setTripRoutes($tripRoutes)
     {
         $this->tripRoutes = $tripRoutes;
+        return $this;
     }
 
     /**
      * @param TripRoute $tripRoute
+     * @return $this
      */
     public function addTripRoute(TripRoute $tripRoute)
     {
         $this->tripRoutes[] = $tripRoute;
+        return $this;
+    }
+
+
+    public function jsonSerialize()
+    {
+        return [
+            'arrival' => $this->getArrival() ? $this->getArrival()->format('d.m.Y') : null,
+            'departure' => $this->getDeparture() ? $this->getDeparture()->format('d.m.Y') : null,
+            'type' => $this->getType(),
+            'guests' => []
+        ];
     }
 }
