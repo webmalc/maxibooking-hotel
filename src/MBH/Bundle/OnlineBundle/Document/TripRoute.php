@@ -11,7 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @Gedmo\Loggable
  * @ODM\HasLifecycleCallbacks
  */
-class TripRoute
+class TripRoute implements \JsonSerializable
 {
     /**
      * @var string
@@ -60,5 +60,13 @@ class TripRoute
     {
         $this->hotel = $hotel;
         return $this;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'hotel' => $this->hotel,
+            'address' => $this->address
+        ];
     }
 }

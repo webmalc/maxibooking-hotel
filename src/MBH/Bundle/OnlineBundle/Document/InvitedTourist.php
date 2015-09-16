@@ -11,7 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @Gedmo\Loggable
  * @ODM\HasLifecycleCallbacks
  */
-class InvitedTourist
+class InvitedTourist implements \JsonSerializable
 {
     /**
      * @var string
@@ -204,4 +204,15 @@ class InvitedTourist
         return $this;
     }
 
+    public function jsonSerialize()
+    {
+        return [
+            'firstName' => $this->getFirstName(),
+            'lastName' => $this->getLastName(),
+            'birthDay' => $this->getBirthday(),
+            'birthplace' => $this->getBirthplace(),
+            'passport' => $this->getPassport(),
+            'sex' => $this->getSex(),
+        ];
+    }
 }

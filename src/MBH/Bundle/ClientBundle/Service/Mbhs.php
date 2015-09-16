@@ -291,7 +291,8 @@ class Mbhs
         $uri = base64_decode($this->config['mbhs']) . $url;
 
         $jsonDate = $this->container->get('serializer')->encode($requestData, 'json');
-
+        dump($requestData);
+        dump($jsonDate);
         try {
             /** @var Response $response */
             $response = $this->guzzle
@@ -300,7 +301,7 @@ class Mbhs
                 ->setHeader('Content-Type', 'application/json')
                 ->send()
             ;
-            $responseData = json_decode($response->getBody(true), true);
+            $responseData = $this->container->get('serializer')->decode($response->getBody(true), 'json');
             if(!$responseData['status']) {
                 //throw new \MbhsResponseException();
             }

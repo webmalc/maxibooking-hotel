@@ -52,10 +52,10 @@ class Invite extends Base implements \JsonSerializable
      */
     protected $type;
     /**
-     * @ODM\EmbedMany(targetDocument="MBH\Bundle\OnlineBundle\Document\InvitedTourist")
      * @var InvitedTourist[]
+     * @ODM\EmbedMany(targetDocument="MBH\Bundle\OnlineBundle\Document\InvitedTourist")
      */
-    protected $guests;
+    protected $guests = [];
 
     /**
      * @ODM\EmbedMany(targetDocument="MBH\Bundle\OnlineBundle\Document\TripRoute")
@@ -178,7 +178,9 @@ class Invite extends Base implements \JsonSerializable
             'arrival' => $this->getArrival() ? $this->getArrival()->format('d.m.Y') : null,
             'departure' => $this->getDeparture() ? $this->getDeparture()->format('d.m.Y') : null,
             'type' => $this->getType(),
-            'guests' => []
+            'hotel' => $this->getHotel(),
+            'guests' => $this->getGuests(),
+            'tripRoutes' => $this->getTripRoutes()
         ];
     }
 }
