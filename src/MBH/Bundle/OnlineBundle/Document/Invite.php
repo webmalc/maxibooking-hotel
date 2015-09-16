@@ -185,8 +185,8 @@ class Invite extends Base implements \JsonSerializable
             'departure' => $this->getDeparture() ? $this->getDeparture()->format('d.m.Y') : null,
             'type' => $this->getType(),
             'hotel' => $this->getHotel(),
-            'guests' => $this->getGuests(),
-            'tripRoutes' => $this->getTripRoutes()
+            'guests' => iterator_to_array($this->getGuests()),
+            'tripRoutes' => iterator_to_array($this->getTripRoutes())
         ];
     }
 }
