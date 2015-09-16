@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Form;
 
 use MBH\Bundle\OnlineBundle\Document\Invite;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -16,12 +17,12 @@ class InviteType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('arrival', 'date', [
+            ->add('arrival', new DateType(), [
                 'widget' => 'single_text',
-                'format' => 'yyyy-MM-dd',
+                //'format' => 'yyyy-MM-dd',
                 'required' => false,
             ])
-            ->add('departure', 'date', [
+            ->add('departure', new DateType(), [
                 'widget' => 'single_text',
                 'format' => 'yyyy-MM-dd',
                 'required' => false,

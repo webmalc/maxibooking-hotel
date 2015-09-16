@@ -63,6 +63,12 @@ class Invite extends Base implements \JsonSerializable
      */
     protected $tripRoutes = [];
 
+    public function __construct()
+    {
+        $this->guests = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tripRoutes = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
     /**
      * @return \DateTime
      */
@@ -93,7 +99,7 @@ class Invite extends Base implements \JsonSerializable
      * @param \DateTime|null $departure
      * @return $this
      */
-    public function setDeparture($departure = null)
+    public function setDeparture(\DateTime $departure = null)
     {
         $this->departure = $departure;
         return $this;
