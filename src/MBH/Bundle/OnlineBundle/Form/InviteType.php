@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\OnlineBundle\Form;
 
+use MBH\Bundle\OnlineBundle\Document\Invite;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -28,8 +29,8 @@ class InviteType extends AbstractType
             ->add('type', 'choice', [
                 'expanded' => true,
                 'choices' => [
-                    'Однократная (600 руб.)',
-                    'Двукратная (900 руб.)',
+                    Invite::TYPE_SINGLE => 'form.inviteType.type.single',
+                    Invite::TYPE_TWICE => 'form.inviteType.type.twice',
                 ],
                 'required' => false,
                 'empty_value' => null,
@@ -52,7 +53,7 @@ class InviteType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MBH\Bundle\OnlineBundle\Document\Invite'
+            'data_class' => Invite::class
         ]);
     }
 

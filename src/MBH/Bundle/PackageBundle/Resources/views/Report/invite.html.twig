@@ -1,0 +1,39 @@
+{% extends "MBHPackageBundle::layout.html.twig" %}
+
+{% set title = 'report.layout.title'|trans({}, 'MBHPackageBundle') %}
+{% set small_title = 'report.poll.small_title'|trans({}, 'MBHPackageBundle') %}
+{% set title_url = path('report_invite') %}
+{% set layout = 'box' %}
+
+{% block content %}
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Период</th>
+            <th>Клиенты</th>
+            <th>Тип визы</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for invite in invites %}
+            <tr>
+                <td>
+                    {% if invite.arrival and invite.departure %}
+                        {{ invite.arrival|mbh_format }} - {{ invite.departure|mbh_format }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% for guest in invite.guests %}
+                        {{ guest.firstName }} {{ guest.lastName }}{% if loop.index < invite.guests|length %},{% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {{ ('form.inviteType.type.' ~ invite.type)|trans }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

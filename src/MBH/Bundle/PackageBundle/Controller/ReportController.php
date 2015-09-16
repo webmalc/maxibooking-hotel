@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
+use MBH\Bundle\OnlineBundle\Document\Invite;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -548,6 +549,23 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'result' => $result,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
+        ];
+    }
+
+    /**
+     * @return array
+     * @Route("/invite", name="report_invite", options={"expose"=true})
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     * @Template()
+     */
+    public function inviteAction()
+    {
+        /** @var Invite[] $invites */
+        $invites = $this->dm->getRepository('MBHOnlineBundle:Invite')->findAll();
+
+        return [
+            'invites' => $invites
         ];
     }
 }

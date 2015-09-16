@@ -23,6 +23,9 @@ use Gedmo\Mapping\Annotation as Gedmo;
  */
 class Invite extends Base
 {
+    const TYPE_SINGLE = 'single';
+    const TYPE_TWICE = 'twice';
+
     use HotelableDocument;
     use TimestampableDocument;
     use SoftDeleteableDocument;
