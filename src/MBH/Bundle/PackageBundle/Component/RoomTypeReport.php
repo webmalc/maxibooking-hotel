@@ -22,6 +22,7 @@ class RoomTypeReport
     const STATUS_PAID = 'paid';
     const STATUS_NOT_OUT = 'not_out';
     const STATUS_OUT_NOW = 'out_now';
+    const STATUS_WAIT = 'wait';
 
     /**
      * @var ContainerInterface
@@ -40,8 +41,12 @@ class RoomTypeReport
 
     public function getStatusByPackage(Package $package)
     {
-        if (!$package->getOrder() or !$package->getIsCheckIn()) {
+        if (!$package->getOrder()) {
             return self::STATUS_OPEN;
+        }
+
+        if(!$package->getIsCheckIn()) {
+            return self::STATUS_WAIT;
         }
 
         $now = new \DateTime('midnight');
@@ -65,6 +70,7 @@ class RoomTypeReport
             self::STATUS_PAID,
             self::STATUS_NOT_OUT,
             self::STATUS_OUT_NOW,
+            self::STATUS_WAIT,
         ];
     }
 
@@ -107,6 +113,7 @@ class RoomTypeReport
         $rooms = $queryBuilder->getQuery()->execute();
 
         $result = new RoomTypeReportResult();
+
         $result->total = [
             'rooms' => count($rooms),
             'open' => 0,
@@ -114,25 +121,48 @@ class RoomTypeReport
             'guests' => 0,
         ];
 
+        /** @var Package[] $supposeAccommodations */
+        $supposeAccommodations = $this->dm->getRepository('MBHPackageBundle:Package')->findBy([
+            'roomType.id' => ['$in' => $roomTypeIDs],
+            'accommodation' => ['$exists' => false],
+            'isCheckOut' => false
+        ], [], $result->total['rooms']);
+
+        $supposeAccommodationTotal = count($supposeAccommodations);
+        foreach($supposeAccommodations as $package) {
+            $result->supposeAccommodations[$package->getRoomType()->getId()][] = $package;
+        }
+
         $now = new \DateTime('midnight');
         foreach($rooms as $room) {
             /** @var Package $package */
             $package = $packageRepository->getPackageByAccommodation($room, $now);
-            $packageStatus = $package ? $this->getStatusByPackage($package) : null;
-            if($packageStatus == self::STATUS_OPEN || $package == null) {
-                $result->total['open']++;
-            } else {
-                $result->total['reserve']++;
+            $roomStatus = self::STATUS_OPEN;
+            if($package) {
+                $roomStatus = $this->getStatusByPackage($package);
             }
-            if (empty($criteria->status) || ($package === null && $criteria->status === self::STATUS_OPEN) ||
-                ($package && $packageStatus === $criteria->status)
-            ) {
-                $result->dataTable[$room->getRoomType()->getId()]['roomType'] = $room->getRoomType();
-                $result->dataTable[$room->getRoomType()->getId()]['rooms'][] = $room;
+
+            if (!$criteria->status || $roomStatus === $criteria->status) {
+                $roomTypeID = $room->getRoomType()->getId();
+                $result->dataTable[$roomTypeID]['roomType'] = $room->getRoomType();
+                $result->dataTable[$roomTypeID]['rooms'][] = $room;
 
                 if($package) {
                     $result->packages[$room->getId()] = $package;
                     $result->total['guests'] += $package->getAdults() + $package->getChildren();
+
+                    if($roomStatus == self::STATUS_OPEN) {
+                        $result->total['open']++;
+                    } else {
+                        $result->total['reserve']++;
+                    }
+                } else {
+                    if($supposeAccommodationTotal) {
+                        $supposeAccommodationTotal--;
+                        $result->total['reserve']++;
+                    }else {
+                        $result->total['open']++;
+                    }
                 }
             }
         }

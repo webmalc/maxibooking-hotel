@@ -296,6 +296,7 @@ report.roomType.statuses.dept: Долг
 report.roomType.statuses.paid: Оплачен
 report.roomType.statuses.not_out: Не выехал
 report.roomType.statuses.out_now: Выезжает
+report.roomType.statuses.wait: Ожидается
 
 form.unwelcomeType.group.common: Внести в черный список
 

@@ -83,7 +83,7 @@ class PackageRepository extends DocumentRepository
         $queryBuilder = $this->createQueryBuilder();
         $queryBuilder
             ->field('accommodation.id')->equals($room->getId())
-            ->field('arrivalTime')->lte($data)
+            //->field('arrivalTime')->lte($data)
             ->field('isCheckOut')->equals(false)
             ->sort('arrivalTime', -1)
             ->limit(1)

@@ -9,9 +9,15 @@ namespace MBH\Bundle\PackageBundle\Component;
  */
 class RoomTypeReportResult
 {
-    public $dataTable;
+    public $dataTable = [];
 
     public $total;
 
-    public $packages;
+    /**
+     * Key is accommodationID
+     * @var array
+     */
+    public $packages = [];
+
+    public $supposeAccommodations = [];
 }
