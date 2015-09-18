@@ -2,17 +2,188 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Form\RoomType;
-use Symfony\Component\Validator\Constraints\DateTime;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 
 /**
  * Class PackageRepository
  */
 class PackageRepository extends DocumentRepository
 {
+    /**
+     * @param PackageQueryCriteria $criteria
+     * @return Package[]
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function findByQueryCriteria(PackageQueryCriteria $criteria)
+    {
+        return $this->queryCriteriaToBuilder($criteria)
+            ->limit(50)//todo move to args
+            ->getQuery()->execute();
+    }
+
+    /**
+     * @param PackageQueryCriteria $criteria
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     */
+    protected function queryCriteriaToBuilder(PackageQueryCriteria $criteria)
+    {
+        $queryBuilder = $this->createQueryBuilder();
+        $now = new \DateTime('midnight');
+        $orderData = [];
+
+        //confirmed
+        if (isset($criteria->confirmed)) {
+            $orderData['asIdsArray'] = true;
+            $orderData['confirmed'] = $criteria->confirmed;
+        }
+        //paid status
+        if (isset($criteria->paid) && in_array($criteria->paid, ['paid', 'part', 'not_paid'])) {
+            $orderData['asIdsArray'] = true;
+            $orderData['paid'] = $criteria->paid;
+        }
+        //status
+        if (isset($criteria->status)) {
+            $orderData['asIdsArray'] = true;
+            $orderData['status'] = $criteria->status;
+        }
+        if (!empty($orderData)) {
+            $orders = $this->dm->getRepository('MBHPackageBundle:Order')->fetch($orderData);
+            $queryBuilder->field('order.id')->in($orders);
+        }
+
+        //hotel
+        if (isset($criteria->hotel)) {
+            $roomTypesIds = [];
+            foreach ($criteria->hotel->getRoomTypes() as $roomType) {
+                $roomTypesIds[] = $roomType->getId();
+            }
+            if (count($roomTypesIds) > 0) {
+                $queryBuilder->field('roomType.id')->in($roomTypesIds);
+            }
+        }
+        //order
+        if (isset($criteria->packageOrder)) {
+            if ($criteria->order instanceof Order) {
+                $criteria->order = $criteria->packageOrder->getId();
+            }
+            $queryBuilder->field('order.id')->equals($criteria->packageOrder);
+        }
+        //order ids
+        if ($criteria->packageOrders) {
+            $queryBuilder->field('order.id')->in($criteria->packageOrders);
+        }
+
+        //roomType
+        if (isset($criteria->roomType)) {
+            $queryBuilder->field('roomType.id')->equals($criteria->roomType->getId());
+        }
+
+        $dateFilterBy = $criteria->dateFilterBy ? $criteria->dateFilterBy : 'begin';
+        //begin
+        if (isset($criteria->begin)) {
+            $queryBuilder->field($dateFilterBy)->gte($criteria->begin);
+        }
+
+        //end
+        if (isset($criteria->end)) {
+            $queryBuilder->field($dateFilterBy)->lte($criteria->end);
+        }
+
+        // filter
+        if (isset($criteria->filter)) {
+            //live now
+            if ($criteria->filter == 'live_now') {
+                $queryBuilder->field('begin')->lte($now);
+                $queryBuilder->field('end')->gte($now);
+            }
+            // without accommodation
+            if ($criteria->filter == 'without_accommodation') {
+                $queryBuilder->addOr($queryBuilder->expr()->field('accommodation')->exists(false));
+                $queryBuilder->addOr($queryBuilder->expr()->field('accommodation')->equals(null));
+            }
+
+            // live_between
+            if ($criteria->filter == 'live_between' && isset($criteria->liveBegin) && isset($criteria->liveEnd)) {
+                $queryBuilder->field('begin')->lte($criteria->liveEnd);
+                $queryBuilder->field('end')->gte($criteria->liveBegin);
+            }
+        }
+
+        if (isset($criteria->createdBy)) {
+            $queryBuilder->field('createdBy')->equals($criteria->createdBy);
+        }
+
+        //query
+        if (isset($criteria->query)) {
+            $query = trim($criteria->query);
+            $tourists = $this->dm->getRepository('MBHPackageBundle:Tourist')
+                ->createQueryBuilder('t')
+                ->field('fullName')->equals(new \MongoRegex('/.*'.$query.'.*/ui'))
+                ->getQuery()
+                ->execute();
+
+            $touristsIds = [];
+            foreach ($tourists as $tourist) {
+                $touristsIds[] = $tourist->getId();
+            }
+
+            if (count($touristsIds)) {
+                $queryBuilder->addOr($queryBuilder->expr()->field('tourists.id')->in($touristsIds));
+                $queryBuilder->addOr($queryBuilder->expr()->field('mainTourist.id')->in($touristsIds));
+            }
+
+            $queryBuilder->addOr($queryBuilder->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*'.$query.'.*/ui')));
+        }
+
+        //isCheckIn
+        if (isset($criteria->checkIn)) {
+            if ($criteria->checkIn) {
+                $queryBuilder->field('isCheckIn')->equals(true);
+            } else {
+                $queryBuilder->field('isCheckIn')->notEqual(true);
+            }
+        }
+
+        //isCheckOut
+        if (isset($criteria->checkOut)) {
+            if ($criteria->checkOut) {
+                $queryBuilder->field('isCheckOut')->equals(true);
+            } else {
+                $queryBuilder->field('isCheckOut')->notEqual(true);
+            }
+        }
+
+        if($criteria->sort) {
+            $queryBuilder->sort($criteria->sort);
+        }
+
+        // paging
+        if (isset($criteria->skip)) {
+            $queryBuilder->skip($criteria->skip);
+        }
+        if (isset($criteria->limit)) {
+            $queryBuilder->limit($criteria->limit);
+        }
+
+        //deleted
+        if ($criteria->deleted) {
+            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->disable('softdeleteable');
+            }
+        } else {
+            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->enable('softdeleteable');
+            }
+        }
+
+        return $queryBuilder;
+    }
+
     /**
      * @param Tourist $tourist
      * @return null|Package
@@ -411,4 +582,71 @@ class PackageRepository extends DocumentRepository
         return $docs;
     }
 
+
+    protected function getArrivalsQueryBuilder()
+    {
+        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder
+            ->addOr($queryBuilder->expr()
+                ->field('begin')->gte(new \DateTime('midnight'))
+                ->field('begin')->lte(new \DateTime('midnight + 1 day'))
+            )
+            ->addOr($queryBuilder->expr()
+                ->field('begin')->lte(new \DateTime('midnight'))
+                ->field('isCheckIn')->equals(false)
+            )
+        ;
+        return $queryBuilder;
+    }
+
+    protected function getLivesQueryBuilder()
+    {
+        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder
+            ->field('begin')->lte(new \DateTime('midnight'))
+            ->field('end')->gte(new \DateTime('midnight'))
+            ->field('isCheckIn')->equals(true)
+            ->field('isCheckOut')->equals(false)
+        ;
+        return $queryBuilder;
+    }
+
+    /**
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     */
+    protected function getOutQueryBuilder()
+    {
+        $queryBuilder = $this->createQueryBuilder();
+        $queryBuilder
+            ->field('isCheckIn')->equals(true)
+            ->addOr($queryBuilder->expr()
+                ->field('end')->gte(new \DateTime('midnight'))
+                ->field('end')->lte(new \DateTime('midnight + 1 day'))
+            )
+            ->addOr($queryBuilder->expr()
+                ->field('end')->lte(new \DateTime('midnight'))
+                ->field('isCheckOut')->equals(false)
+            )
+        ;
+        return $queryBuilder;
+    }
+
+    /**
+     * @param $type
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     */
+    protected function getQueryBuilderByType($type)
+    {
+        return $this->{'get'. ucfirst($type) .'QueryBuilder'}();
+    }
+
+    /**
+     * @param $type
+     * @return Package[]
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function findByType($type)
+    {
+        return $this->getQueryBuilderByType($type)->getQuery()->execute();
+    }
 }

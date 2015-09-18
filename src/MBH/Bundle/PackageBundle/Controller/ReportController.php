@@ -3,12 +3,14 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\OnlineBundle\Document\Invite;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
@@ -20,26 +22,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * @Route("/report")
  */
 class ReportController extends Controller implements CheckHotelControllerInterface
 {
-
-    /**
-     * Porter report.
-     *
-     * @Route("/porter", name="report_porter")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_PORTER_REPORT')")
-     * @Template()
-     */
-    public function porterAction()
-    {
-        return [];
-    }
-
     /**
      * Porter report table.
      *
@@ -48,11 +37,11 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @Security("is_granted('ROLE_PORTER_REPORT')")
      * @Template()
      */
-    public function  porterTableAction(Request $request)
+    public function porterTableAction(Request $request)
     {
+        /*
         $helper = $this->container->get('mbh.helper');
 
-        //dates
         $begin = $helper->getDateFromString($request->get('begin'));
         $end = $helper->getDateFromString($request->get('end'));
 
@@ -63,9 +52,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         if ($end != $begin) {
             $to->modify('-1 day');
         }
-
-        $repo = $this->dm->getRepository('MBHPackageBundle:Package');
-        $arrivals = $repo->fetch([
+        $arrivals = $packageRepository->fetch([
             'begin' => $begin,
             'end' => $to,
             'dates' => 'begin',
@@ -75,7 +62,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'dir' => 'asc',
             'hotel' => $this->hotel
         ]);
-        $lives = $repo->fetch([
+        $lives = $packageRepository->fetch([
             'live_begin' => $begin,
             'live_end' => $end,
             'filter' => 'live_between',
@@ -84,14 +71,82 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'hotel' => $this->hotel,
             'order' => 8,
             'dir' => 'asc'
-        ]);
+        ]);*/
+
+        $type = $request->get('type');
+
+
+        $begin = new \DateTime('midnight');
+        $end = new \DateTime('midnight');
+        $end->modify('+ 1 day');
+
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+
+        /*
+        $packageQueryCriteria = new PackageQueryCriteria();
+        if($type == 'lives') {
+            $packageQueryCriteria->filter = 'live_between';
+            $packageQueryCriteria->checkIn = true;
+            $packageQueryCriteria->checkOut = false;
+        } elseif($type == 'arrivals') {
+            $packageQueryCriteria->checkIn = false;
+            $packageQueryCriteria->checkOut = false;
+        } elseif($type == 'out') {
+
+        }
+
+        $packages = $packageRepository->findByQueryCriteria($packageQueryCriteria);
+        */
+
+        $packages = $packageRepository->findByType($type);
 
         return [
             'begin' => $begin,
             'end' => $end,
-            'arrivals' => $arrivals,
-            'lives' => $lives,
+            'packages' => $packages,
+            'type' => $type,
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
+        ];
+    }
+
+    /**
+     * Porter report.
+     *
+     * @Route("/porter/{type}", name="report_porter", defaults={"type"="lives"}, requirements={
+     *      "type" : "lives|arrivals|out"
+     * })
+     * @Method("GET")
+     * @Security("is_granted('ROLE_PORTER_REPORT')")
+     * @Template()
+     */
+    public function porterAction($type = 'lives')
+    {
+        $menuItem = $this->get('knp_menu.factory')->createItem('types');
+        $menuItem->setChildrenAttribute('id', 'porter-report-tabs');
+        $menuItem->setChildrenAttribute('class', 'nav nav-tabs');
+        $menuItem
+            ->addChild('arrivals', ['route' => 'report_porter', 'routeParameters' => ['type' => 'arrivals']])
+            ->setLabel('Заезд')
+        ;
+        $menuItem
+            ->addChild('lives', ['route' => 'report_porter', 'routeParameters' => ['type' => 'lives']])
+            ->setLabel('Проживание')
+        ;
+        $menuItem
+            ->addChild('out', ['route' => 'report_porter', 'routeParameters' => ['type' => 'out']])
+            ->setLabel('Выезд')
+        ;
+
+        foreach($menuItem->getChildren() as $child) {
+            if($child->getName() == $type) {
+                $child->setCurrent(true);
+            }
+        }
+
+
+        return [
+            'type' => $type,
+            'menuItem' => $menuItem
         ];
     }
 
@@ -515,10 +570,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'roomTypes' => $roomTypes,
             'housings' => $housings,
             'floors' => $floors,
-            'roomTypeReport' => $roomTypeReport,
             'result' => $result,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
-            'statuses' => $roomTypeReport->getAvailableStatues(),
+            'statuses' => Package::getRoomStatuses(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
     }
@@ -545,7 +599,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $result = $roomTypeReport->findByCriteria($criteria);
 
         return [
-            'roomTypeReport' => $roomTypeReport,
             'result' => $result,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),

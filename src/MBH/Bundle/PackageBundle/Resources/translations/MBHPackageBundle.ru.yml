@@ -390,11 +390,16 @@ report.users.error: 'Брони не найдены'
 report.porter.small_title: 'Портье'
 report.porter.error: 'Даты заданы неверно'
 report.porter.arrivals.empty: 'Брони не найдены'
+
 report.porter.live.empty: 'Брони не найдены'
 report.porter.live.debt: Оплата
 report.porter.live.departure: Выезд
 report.porter.live.arrival: Заезд
 report.porter.live.table: Проживающие
+
+report.porter.lives.table: Проживающие
 report.porter.arrivals.table: Заезжающие
+report.porter.out.table: Выезд
+
 report.porter.note: Комментарий
 

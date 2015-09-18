@@ -164,18 +164,14 @@
                     %}
 
                     {% if package and package.order %}
-                        {% set status = roomTypeReport.getStatusByPackage(package) %}
+                        {% set status = package.roomStatus %}
 
                         {% if status == 'open' %}
                             {% set style = 'default' %}
                         {% elseif status == 'wait' or supposeAccommodation %}
                             {% set style = 'info' %}
-                        {% elseif package.order.isPaid and package.order.price <= package.order.paid %}
-                            {% set style = 'success' %}
-                        {% elseif package.order.isPaid == false and package.order.paid == 0 %}
-                            {% set style = 'danger' %}
-                        {% elseif package.order.isPaid == false and  package.order.paid < package.order.price %}
-                            {% set style = 'warning' %}
+                        {% else %}
+                            {% set style = package.order.paidStatus %}
                         {% endif %}
                     {% endif %}
 
@@ -210,7 +206,7 @@
                         {{ settle ? 'report.roomType.settle'|trans : ('report.roomType.statuses.' ~ status)|trans }}
                     </a>
                     {% if not settle and supposeAccommodation %}
-                        <a data-id="{% if package %}{{ package.id }}{% endif %}" target="_blank"
+                        <a style="margin-top: 3px" data-id="{% if package %}{{ package.id }}{% endif %}" target="_blank"
                            href="{{ settle_link }}" class="btn btn-xs btn-default">
                             {{ 'report.roomType.settle'|trans }}
                         </a>

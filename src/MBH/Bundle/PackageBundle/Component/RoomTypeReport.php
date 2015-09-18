@@ -17,13 +17,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class RoomTypeReport
 {
-    const STATUS_OPEN = 'open';
-    const STATUS_DEPT = 'dept';
-    const STATUS_PAID = 'paid';
-    const STATUS_NOT_OUT = 'not_out';
-    const STATUS_OUT_NOW = 'out_now';
-    const STATUS_WAIT = 'wait';
-
     /**
      * @var ContainerInterface
      */
@@ -37,41 +30,6 @@ class RoomTypeReport
     {
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
-    }
-
-    public function getStatusByPackage(Package $package)
-    {
-        if (!$package->getOrder()) {
-            return self::STATUS_OPEN;
-        }
-
-        if(!$package->getIsCheckIn()) {
-            return self::STATUS_WAIT;
-        }
-
-        $now = new \DateTime('midnight');
-        if (!$package->getIsCheckOut() && $now->format('Ymd') > $package->getEnd()->format('Ymd')) {
-            return self::STATUS_NOT_OUT;
-        }
-        if ($package->getIsPaid()) {
-            return $now->format('d.m.Y') == $package->getEnd()->format('d.m.Y') ?
-                self::STATUS_OUT_NOW :
-                self::STATUS_PAID;
-        } else {
-            return self::STATUS_DEPT;
-        }
-    }
-
-    public function getAvailableStatues()
-    {
-        return [
-            self::STATUS_OPEN,
-            self::STATUS_DEPT,
-            self::STATUS_PAID,
-            self::STATUS_NOT_OUT,
-            self::STATUS_OUT_NOW,
-            self::STATUS_WAIT,
-        ];
     }
 
     /**
@@ -137,10 +95,7 @@ class RoomTypeReport
         foreach($rooms as $room) {
             /** @var Package $package */
             $package = $packageRepository->getPackageByAccommodation($room, $now);
-            $roomStatus = self::STATUS_OPEN;
-            if($package) {
-                $roomStatus = $this->getStatusByPackage($package);
-            }
+            $roomStatus = $package ? $package->getRoomStatus() : Package::ROOM_STATUS_OPEN;
 
             if (!$criteria->status || $roomStatus === $criteria->status) {
                 $roomTypeID = $room->getRoomType()->getId();
@@ -151,7 +106,7 @@ class RoomTypeReport
                     $result->packages[$room->getId()] = $package;
                     $result->total['guests'] += $package->getAdults() + $package->getChildren();
 
-                    if($roomStatus == self::STATUS_OPEN) {
+                    if($roomStatus == Package::ROOM_STATUS_OPEN) {
                         $result->total['open']++;
                     } else {
                         $result->total['reserve']++;

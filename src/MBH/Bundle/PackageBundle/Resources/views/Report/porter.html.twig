@@ -7,6 +7,7 @@
 
 {% block content %}
 
+{#
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'porter-report-filter-widget'} %}
         <form id="porter-report-filter" class="form-inline filter-form remember" role="form">
             <div class="input">
@@ -27,8 +28,20 @@
             {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
         </form>
     </div></div>
+#}
 
-    <div id="porter-report-table-wrapper"></div>
+<div class="nav-tabs-custom">
+    {{ knp_menu_render(menuItem) }}
+</div>
+    <input type="hidden" name="type" id="input-type" value="{{ type }}">
+<div class="tab-content">
+    <div class="tab-pane active">
+        <div id="porter-report-table-wrapper">
+
+        </div>
+    </div>
+</div>
+
 
 
 {% endblock %}
