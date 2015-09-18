@@ -124,7 +124,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
         $this->getRequest()->getSession()->getFlashBag()->set('success', 'Изображение успешно удалено.');
 
-        return $this->redirect($this->generateUrl('room_type_edit', ['id' => $id, 'imageTab' => 'active']));
+        return $this->redirectToRoute('room_type_image_edit', ['id' => $id, 'imageTab' => 'active']);
 
     }
 
@@ -293,7 +293,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
             $request->getSession()->getFlashBag()->set('success', 'Фотография успешно создана.');
 
-            return $this->redirectToRoute('room_type_image_room_edit', [
+            return $this->redirectToRoute('room_type_image_edit', [
                 'id' => $entity->getId()
             ]);
         }
