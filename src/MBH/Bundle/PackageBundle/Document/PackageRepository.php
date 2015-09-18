@@ -649,4 +649,23 @@ class PackageRepository extends DocumentRepository
     {
         return $this->getQueryBuilderByType($type)->getQuery()->execute();
     }
+    /**
+     * @param $type
+     * @param bool $attention
+     * @return int
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function countByType($type, $attention = false)
+    {
+        $queryBuilder = $this->getQueryBuilderByType($type);
+        if($attention) {
+            if($type == 'arrivals') {
+                $queryBuilder->field('isCheckIn')->equals(false);
+            }
+            if($type == 'out') {
+                $queryBuilder->field('isCheckOut')->equals(false);
+            }
+        }
+        return $queryBuilder->getQuery()->count();
+    }
 }

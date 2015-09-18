@@ -31,7 +31,7 @@
 #}
 
 <div class="nav-tabs-custom">
-    {{ knp_menu_render(menuItem) }}
+    {{ knp_menu_render(menuItem, {'allow_safe_labels': true, 'template' : 'knp_menu.html.twig'}) }}
 </div>
     <input type="hidden" name="type" id="input-type" value="{{ type }}">
 <div class="tab-content">

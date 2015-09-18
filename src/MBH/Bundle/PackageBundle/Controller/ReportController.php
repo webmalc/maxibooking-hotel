@@ -124,9 +124,12 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $menuItem = $this->get('knp_menu.factory')->createItem('types');
         $menuItem->setChildrenAttribute('id', 'porter-report-tabs');
         $menuItem->setChildrenAttribute('class', 'nav nav-tabs');
+
         $menuItem
-            ->addChild('arrivals', ['route' => 'report_porter', 'routeParameters' => ['type' => 'arrivals']])
-            ->setLabel('Заезд')
+            ->addChild('arrivals', [
+                'route' => 'report_porter', 'routeParameters' => ['type' => 'arrivals'],
+                'label' => 'Заезд'
+            ])
         ;
         $menuItem
             ->addChild('lives', ['route' => 'report_porter', 'routeParameters' => ['type' => 'lives']])
@@ -137,7 +140,15 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             ->setLabel('Выезд')
         ;
 
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+
         foreach($menuItem->getChildren() as $child) {
+            $count = $packageRepository->countByType($child->getName(), true);
+            if($count > 0) {
+                $class = $child->getName() == 'lives' ? 'default' : 'danger';
+                $child->setLabel($child->getLabel(). ' <small class="label label-'.$class.' label-as-badge">'.$count.'</small>');
+                $child->setExtras(['safe_label' => true]);
+            }
             if($child->getName() == $type) {
                 $child->setCurrent(true);
             }

@@ -78,18 +78,22 @@
         </td>
 
     {% if type == 'arrivals' %}
-    <td class="text-right">
+        <td class="text-right">
         {% if entity.isCheckIn %}
             {{ entity.arrivalTime|mbh_format }} {{  entity.arrivalTime|date('H:i') }}<br>
             <small>&nbsp;Заехал</small>
         {% else %}
             {{ entity.begin|mbh_format }}
         {% endif %}
-    </td>
+        </td>
     {% else %}{#if type == 'out'#}
         <td class="text-right">
+        {% if entity.isCheckOut %}
+            {{ entity.departureTime|mbh_format }} {{  entity.arrivalTime|date('H:i') }}<br>
+            <small>&nbsp;Выехал</small>
+        {% else %}
             {{ entity.end|mbh_format }}<br>
-            <small>&nbsp;{% if entity.isCheckOut %}Выехал{% endif %}</small>
+        {% endif %}
         </td>
     {% endif %}
     {% set note = entity.order.note ~ " " ~ entity.note %}
