@@ -291,8 +291,6 @@ class Mbhs
         $uri = base64_decode($this->config['mbhs']) . $url;
 
         $jsonDate = $this->container->get('serializer')->encode($requestData, 'json');
-        dump($requestData);
-        dump($jsonDate);
         try {
             /** @var Response $response */
             $response = $this->guzzle

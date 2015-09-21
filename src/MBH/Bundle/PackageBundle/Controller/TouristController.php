@@ -348,55 +348,63 @@ class TouristController extends Controller
         /** @var UnwelcomeHistoryRepository $unwelcomeHistoryRepository */
         $unwelcomeHistoryRepository = $this->get('mbh.package.unwelcome_history_repository');
 
-        $unwelcomeHistory = $unwelcomeHistoryRepository->findByTourist($tourist);
-        $isUnwelcomeTourist = false;
-
-        $unwelcome = new Unwelcome();
-        $unwelcome->setAggression(0);
-        $unwelcome->setFoul(0);
-        $unwelcome->setInadequacy(0);
-        $unwelcome->setDrunk(0);
-        $unwelcome->setDrugs(0);
-        $unwelcome->setDestruction(0);
-        $unwelcome->setMaterialDamage(0);
         /** @var Unwelcome[] $unwelcomeList */
         $unwelcomeList = [];
-        if($unwelcomeHistory) {
-            foreach($unwelcomeHistory->getItems() as $un) {
-                if($un->isIsMy()) {
-                    $isUnwelcomeTourist = true;
-                    $unwelcome = $un;
-                } else {
-                    $unwelcomeList[] = $un;
-                }
-            }
-        } else {
-            $unwelcomeHistory = new UnwelcomeHistory();
-            $unwelcomeHistory->setTourist($tourist);
-        }
 
-        $form = $this->createForm(new UnwelcomeType(), $unwelcome, [
+        $form = $this->createForm(new UnwelcomeType(), null, [
             'method' => Request::METHOD_PUT
         ]);
 
-        $form->handleRequest($request);
-        if($form->isValid()) {
-            if($isUnwelcomeTourist) {
-                $unwelcomeHistoryRepository->update($unwelcome, $tourist);
-            } else {
-                $package = $this->dm->getRepository('MBHPackageBundle:Package')->getPackageByTourist($tourist);
-                if($package) {
-                    $unwelcome->setArrivalTime($package->getArrivalTime());
-                    $unwelcome->setDepartureTime($package->getDepartureTime());
+        $isTouristValid = $unwelcomeHistoryRepository->isTouristValid($tourist);
+
+        if($isTouristValid) {
+            $unwelcomeHistory = $unwelcomeHistoryRepository->findByTourist($tourist);
+            if($unwelcomeHistory) {
+                foreach($unwelcomeHistory->getItems() as $unwelcome) {
+                    if($unwelcome->getIsMy()) {
+                        $form->setData($unwelcome);
+                    } else {
+                        $unwelcomeList[] = $unwelcome;
+                    }
                 }
-                $unwelcomeHistoryRepository->add($unwelcome, $tourist, $package);
             }
-            return $this->redirectToRoute('tourist_edit_unwelcome', ['id' => $tourist->getId()]);
+
+            if(!$form->getData()) {
+                $unwelcome = new Unwelcome();
+                $unwelcome
+                    ->setAggression(0)
+                    ->setFoul(0)
+                    ->setInadequacy(0)
+                    ->setDrunk(0)
+                    ->setDrugs(0)
+                    ->setDestruction(0)
+                    ->setMaterialDamage(0)
+                    ->setIsMy(false);
+
+                $form->setData($unwelcome);
+            }
+
+            $form->handleRequest($request);
+            if($form->isValid()) {
+                $unwelcome = $form->getData();
+                if($unwelcome->getIsMy()) {
+                    $unwelcomeHistoryRepository->update($unwelcome, $tourist);
+                } else {
+                    $package = $this->dm->getRepository('MBHPackageBundle:Package')->getPackageByTourist($tourist);
+                    if($package) {
+                        $unwelcome->setArrivalTime($package->getArrivalTime());
+                        $unwelcome->setDepartureTime($package->getDepartureTime());
+                    }
+                    $unwelcomeHistoryRepository->add($unwelcome, $tourist, $package);
+                }
+                return $this->redirectToRoute('tourist_edit_unwelcome', ['id' => $tourist->getId()]);
+            }
         }
 
         return [
+            'isTouristValid' => $isTouristValid,
             'form' => $form->createView(),
-            'isUnwelcomeTourist' => $isUnwelcomeTourist,
+            'unwelcome' => $form->getData(),
             'unwelcomeList' => $unwelcomeList,
             'tourist' => $tourist,
             'characteristics' => UnwelcomeType::getCharacteristics(),

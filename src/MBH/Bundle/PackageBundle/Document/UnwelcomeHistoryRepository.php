@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Service\Mbhs;
 use MBH\Bundle\HotelBundle\Document\City;
@@ -31,12 +32,27 @@ class UnwelcomeHistoryRepository
     }
 
     /**
-     * @param Unwelcome $unwelcome
+     * for insert to unwelcome history repository
      * @param Tourist $tourist
      * @return bool
      */
+    public function isTouristValid(Tourist $tourist)
+    {
+        return $tourist->getFirstName() && $tourist->getLastName() && $tourist->getBirthday();
+    }
+
+    /**
+     * @param Unwelcome $unwelcome
+     * @param Tourist $tourist
+     * @return bool
+     * @throws Exception
+     */
     public function add(Unwelcome $unwelcome, Tourist $tourist)
     {
+        if(!$this->isTouristValid($tourist)) {
+            throw new Exception('Tourist is not valid for adding to unwelcome history repository');
+        }
+
         $this->fillUnwelcome($unwelcome, $tourist);
         return $this->mbhs->addUnwelcome($unwelcome, $tourist);
     }

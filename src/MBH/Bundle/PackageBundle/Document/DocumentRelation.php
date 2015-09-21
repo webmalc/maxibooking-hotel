@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ODM\EmbeddedDocument
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class DocumentRelation
+class DocumentRelation implements \JsonSerializable
 {
     /**
      * @var String
@@ -196,8 +196,25 @@ class DocumentRelation
         return !($this->issued && $this->expiry && $this->issued->getTimestamp() > $this->expiry->getTimestamp());
     }
 
-    function __toString()
+    public function __toString()
     {
         return $this->getAuthority() . ' ' . ($this->getIssued() ? $this->getIssued()->format('d.m.Y') : '');
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'type' => $this->getType(),
+            //'authorityOrgan' => $this->getAuthorityOrgan() ? $this->getAuthorityOrgan() : null,
+            'authority' => $this->getAuthority(),
+            'series' => $this->getSeries(),
+            'number' => $this->getNumber(),
+            'issued' => $this->getIssued() ? $this->getIssued()->format('d.m.Y') : null,
+            'expiry' => $this->getExpiry() ? $this->getExpiry()->format('d.m.Y') : null,
+            'relation' => $this->getRelation()
+        ];
     }
 }

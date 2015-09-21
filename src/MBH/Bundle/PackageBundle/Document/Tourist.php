@@ -13,6 +13,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 use Zend\Stdlib\JsonSerializable;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 
 /**
  * @ODM\Document(collection="Tourists", repositoryClass="MBH\Bundle\PackageBundle\Document\TouristRepository")
@@ -323,20 +324,6 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
         return $this;
     }
 
-    public function jsonSerialize()
-    {
-        return [
-            'firstName' => $this->firstName,
-            'lastName' => $this->lastName,
-            'patronymic' => $this->patronymic,
-            'birthday' => $this->birthday ? $this->birthday->format('d.m.Y') : null,
-            'phone' => $this->phone,
-            'email' => $this->email,
-            'communicationLanguage' => $this->communicationLanguage,
-            'citizenship' => $this->getCitizenship() ? $this->getCitizenship()->getName() : null
-        ];
-    }
-
     /**
      * @return string $sex
      */
@@ -637,9 +624,9 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * Add package
      *
-     * @param \MBH\Bundle\PackageBundle\Document\Package $package
+     * @param Package $package
      */
-    public function addPackage(\MBH\Bundle\PackageBundle\Document\Package $package)
+    public function addPackage(Package $package)
     {
         $this->packages[] = $package;
     }
@@ -647,9 +634,9 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * Remove package
      *
-     * @param \MBH\Bundle\PackageBundle\Document\Package $package
+     * @param Package $package
      */
-    public function removePackage(\MBH\Bundle\PackageBundle\Document\Package $package)
+    public function removePackage(Package $package)
     {
         $this->packages->removeElement($package);
     }
@@ -702,9 +689,9 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * Add cashDocument
      *
-     * @param \MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
+     * @param CashDocument $cashDocument
      */
-    public function addCashDocument(\MBH\Bundle\CashBundle\Document\CashDocument $cashDocument)
+    public function addCashDocument(CashDocument $cashDocument)
     {
         $this->cashDocuments[] = $cashDocument;
     }
@@ -712,9 +699,9 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * Remove cashDocument
      *
-     * @param \MBH\Bundle\CashBundle\Document\CashDocument $cashDocument
+     * @param CashDocument $cashDocument
      */
-    public function removeCashDocument(\MBH\Bundle\CashBundle\Document\CashDocument $cashDocument)
+    public function removeCashDocument(CashDocument $cashDocument)
     {
         $this->cashDocuments->removeElement($cashDocument);
     }
@@ -732,9 +719,9 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * Add order
      *
-     * @param \MBH\Bundle\PackageBundle\Document\Order $order
+     * @param Order $order
      */
-    public function addOrder(\MBH\Bundle\PackageBundle\Document\Order $order)
+    public function addOrder(Order $order)
     {
         $this->orders[] = $order;
     }
@@ -742,9 +729,9 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * Remove order
      *
-     * @param \MBH\Bundle\PackageBundle\Document\Order $order
+     * @param Order $order
      */
-    public function removeOrder(\MBH\Bundle\PackageBundle\Document\Order $order)
+    public function removeOrder(Order $order)
     {
         $this->orders->removeElement($order);
     }
@@ -816,25 +803,6 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     public function setAddressObjectDecomposed(AddressObjectDecomposed $addressObjectDecomposed = null)
     {
         $this->addressObjectDecomposed = $addressObjectDecomposed;
-    }
-
-    private function fillAddressObject()
-    {
-        $chain = [
-            $this->getAddressObjectDecomposed()->getCountry()->getName(),
-            $this->getAddressObjectDecomposed()->getRegion()->getName(),
-            $this->getAddressObjectDecomposed()->getCity(),
-            $this->getAddressObjectDecomposed()->getStreet(),
-            $this->getAddressObjectDecomposed()->getHouse(),
-            $this->getAddressObjectDecomposed()->getCorpus(),
-            $this->getAddressObjectDecomposed()->getFlat()
-        ];
-
-        $chain = array_map('strval', $chain);
-        if (($lastKey = array_search('', $chain)) !== false)
-            $chain = array_slice($chain, 0, $lastKey);
-
-        $this->setAddressObjectCombined(implode(' ', $chain));
     }
 
     /**
@@ -915,5 +883,39 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     public function setIsUnwelcome($isUnwelcome)
     {
         $this->isUnwelcome = $isUnwelcome;
+    }
+
+    private function fillAddressObject()
+    {
+        $chain = [
+            $this->getAddressObjectDecomposed()->getCountry()->getName(),
+            $this->getAddressObjectDecomposed()->getRegion()->getName(),
+            $this->getAddressObjectDecomposed()->getCity(),
+            $this->getAddressObjectDecomposed()->getStreet(),
+            $this->getAddressObjectDecomposed()->getHouse(),
+            $this->getAddressObjectDecomposed()->getCorpus(),
+            $this->getAddressObjectDecomposed()->getFlat()
+        ];
+
+        $chain = array_map('strval', $chain);
+        if (($lastKey = array_search('', $chain)) !== false)
+            $chain = array_slice($chain, 0, $lastKey);
+
+        $this->setAddressObjectCombined(implode(' ', $chain));
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'firstName' => $this->firstName,
+            'lastName' => $this->lastName,
+            'patronymic' => $this->patronymic,
+            'birthday' => $this->birthday ? $this->birthday->format('d.m.Y') : null,
+            'phone' => $this->phone,
+            'email' => $this->email,
+            'communicationLanguage' => $this->communicationLanguage,
+            'citizenship' => $this->getCitizenship() ? $this->getCitizenship()->getName() : null,
+            'documentRelation' => $this->getDocumentRelation() ? $this->getDocumentRelation() : null
+        ];
     }
 }

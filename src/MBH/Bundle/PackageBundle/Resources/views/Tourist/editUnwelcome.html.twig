@@ -7,8 +7,8 @@
     {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 5, 'entity': tourist} %}
 
     <div class="tab-content">
-        {% if tourist.firstName and tourist.lastName and tourist.birthday %}
-            {% if isUnwelcomeTourist %}
+        {% if isTouristValid %}
+            {% if unwelcome.isMy %}
                 <div class="bg-gray color-palette alert">
                         <i class="fa fa-user-secret"></i> Вы внесли клиента в список нежелательных гостей.
                     <div class="pull-right">
@@ -30,7 +30,7 @@
 
             {{ form_start(form, {'action': path('tourist_edit_unwelcome', {'id': tourist.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% if isUnwelcomeTourist %}
+            {% if unwelcome.isMy %}
                 <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
                     <div class="container-fluid">
                         {% include 'MBHBaseBundle:Actions:saveButtons.html.twig' with {'save_close': true, 'save_text': 'views.actions.update.save'|trans({}, 'MBHBaseBundle')}%}

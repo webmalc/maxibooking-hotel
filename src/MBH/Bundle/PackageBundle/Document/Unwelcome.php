@@ -231,7 +231,7 @@ class Unwelcome implements \JsonSerializable
     /**
      * @return boolean
      */
-    public function isIsMy()
+    public function getIsMy()
     {
         return $this->isMy;
     }
