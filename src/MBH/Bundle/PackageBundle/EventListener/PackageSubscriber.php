@@ -33,6 +33,7 @@ class PackageSubscriber implements EventSubscriber
             Events::postPersist => 'postPersist',
             'postSoftDelete' => 'postSoftDelete',
             Events::onFlush => 'onFlush',
+            Events::preUpdate => 'preUpdate',
             Events::postUpdate => 'postUpdate'
         );
     }
@@ -220,7 +221,7 @@ class PackageSubscriber implements EventSubscriber
 
     public function prePersist(LifecycleEventArgs $args)
     {
-        $entity = $args->getEntity();
+        $entity = $args->getDocument();
 
         //Calc services price
         if($entity instanceof PackageService) {
@@ -231,10 +232,10 @@ class PackageSubscriber implements EventSubscriber
         if (!$entity instanceof Package) {
             return;
         }
+        $dm = $args->getDocumentManager();
         /** @var Package $entity */
         // Set number
         if (empty($entity->getNumber())) {
-            $dm = $args->getDocumentManager();
 
             if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $dm->getFilterCollection()->disable('softdeleteable');
@@ -258,6 +259,23 @@ class PackageSubscriber implements EventSubscriber
             if ($entity->getTariff() && empty($entity->getNumberWithPrefix())) {
                 $entity->setNumberWithPrefix($entity->getTariff()->getHotel()->getPrefix() . $entity->getOrder()->getId(). '/' . $number);
             }
+        }
+    }
+
+    public function preUpdate(LifecycleEventArgs $args)
+    {
+        $entity = $args->getDocument();
+
+        if (!$entity instanceof Package) {
+            return;
+        }
+
+        $dm = $args->getDocumentManager();
+        $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($entity);
+        if(isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {
+            $entity->setIsLocked(true);
+            $meta = $dm->getClassMetadata(get_class($entity));
+            $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($meta, $entity);
         }
     }
 

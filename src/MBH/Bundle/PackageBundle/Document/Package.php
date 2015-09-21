@@ -280,6 +280,13 @@ class Package extends Base implements JsonSerializable
      * @Assert\Type(type="boolean")
      */
     protected $corrupted = false;
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isLocked = false;
 
     /**
      * Set tariff
@@ -1202,6 +1209,24 @@ class Package extends Base implements JsonSerializable
     public function getPaidStatus()
     {
         return $this->order->getPaidStatus();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsLocked()
+    {
+        return $this->isLocked;
+    }
+
+    /**
+     * @param boolean $isLocked
+     * @return $this
+     */
+    public function setIsLocked($isLocked)
+    {
+        $this->isLocked = $isLocked;
+        return $this;
     }
 
     /**

@@ -86,6 +86,8 @@ package.accommodation.stopped: заехали
 package.accommodation.placement_not_specified: Размещение не указано
 package.actions: Действия
 package.actions.save_and_close: Сохранить и закрыть
+package.actions.unlock: Разблокировать
+package.actions.locked: Заблокировано
 package.actions.guests_stopped: Гости заехали
 package.actions.guests_check_out: Гости выехали
 package.actions.accommodation: Размещение

@@ -1,17 +1,17 @@
 {% extends 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ entity.numberWithPrefix %}
+{% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ package.numberWithPrefix %}
 {% set layout = 'box' %}
 
 {% block content %}
-    {{ form_start(form, {'action': path('package_service_edit', {'id': entity.id, 'serviceId': service.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
+    {{ form_start(form, {'action': path('package_service_edit', {'id': package.id, 'serviceId': service.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
     {{ form_widget(form) }}
-    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'role': 'ROLE_PACKAGE_SERVICES'} %}
+    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'package': package, 'role': 'ROLE_PACKAGE_SERVICES'} %}
     {{ form_end(form) }}
 {% endblock %}
 
 {% block scripts %}
     {{ parent() }}
 
-    {% include 'MBHPackageBundle:Package:serviceScripts.html.twig' with {'entity': entity} %}
+    {% include 'MBHPackageBundle:Package:serviceScripts.html.twig' with {'package': package} %}
 {% endblock %}
