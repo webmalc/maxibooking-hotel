@@ -355,35 +355,34 @@ class TouristController extends Controller
             'method' => Request::METHOD_PUT
         ]);
 
-        $isTouristValid = $unwelcomeHistoryRepository->isTouristValid($tourist);
-
-        if($isTouristValid) {
-            $unwelcomeHistory = $unwelcomeHistoryRepository->findByTourist($tourist);
-            if($unwelcomeHistory) {
-                foreach($unwelcomeHistory->getItems() as $unwelcome) {
-                    if($unwelcome->getIsMy()) {
-                        $form->setData($unwelcome);
-                    } else {
-                        $unwelcomeList[] = $unwelcome;
-                    }
+        $unwelcomeHistory = $unwelcomeHistoryRepository->findByTourist($tourist);
+        if($unwelcomeHistory) {
+            foreach($unwelcomeHistory->getItems() as $unwelcome) {
+                if($unwelcome->getIsMy()) {
+                    $form->setData($unwelcome);
+                } else {
+                    $unwelcomeList[] = $unwelcome;
                 }
             }
+        }
 
-            if(!$form->getData()) {
-                $unwelcome = new Unwelcome();
-                $unwelcome
-                    ->setAggression(0)
-                    ->setFoul(0)
-                    ->setInadequacy(0)
-                    ->setDrunk(0)
-                    ->setDrugs(0)
-                    ->setDestruction(0)
-                    ->setMaterialDamage(0)
-                    ->setIsMy(false);
+        if(!$form->getData()) {
+            $unwelcome = new Unwelcome();
+            $unwelcome
+                ->setAggression(0)
+                ->setFoul(0)
+                ->setInadequacy(0)
+                ->setDrunk(0)
+                ->setDrugs(0)
+                ->setDestruction(0)
+                ->setMaterialDamage(0)
+                ->setIsMy(false);
 
-                $form->setData($unwelcome);
-            }
+            $form->setData($unwelcome);
+        }
 
+        $isTouristValid = $unwelcomeHistoryRepository->isInsertedTouristValid($tourist);
+        if($isTouristValid) {
             $form->handleRequest($request);
             if($form->isValid()) {
                 $unwelcome = $form->getData();
@@ -397,6 +396,9 @@ class TouristController extends Controller
                     }
                     $unwelcomeHistoryRepository->add($unwelcome, $tourist, $package);
                 }
+                $tourist->setIsUnwelcome(true);
+                $this->dm->persist($tourist);
+                $this->dm->flush($tourist);
                 return $this->redirectToRoute('tourist_edit_unwelcome', ['id' => $tourist->getId()]);
             }
         }
@@ -423,6 +425,10 @@ class TouristController extends Controller
         /** @var UnwelcomeHistoryRepository $unwelcomeHistoryRepository */
         $unwelcomeHistoryRepository = $this->get('mbh.package.unwelcome_history_repository');
         $unwelcomeHistoryRepository->deleteByTourist($tourist);
+
+        $tourist->setIsUnwelcome($unwelcomeHistoryRepository->isUnwelcome($tourist));
+        $this->dm->persist($tourist);
+        $this->dm->flush($tourist);
 
         return $this->redirectToRoute('tourist_edit_unwelcome', ['id' => $tourist->getId()]);
     }

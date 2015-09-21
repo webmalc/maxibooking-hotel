@@ -15,9 +15,9 @@ class UnwelcomeHistory
     protected $tourist;
 
     /**
-     * @var Unwelcome
+     * @var Unwelcome[]
      */
-    protected $items;
+    protected $items = [];
 
     /**
      * @return Unwelcome[]

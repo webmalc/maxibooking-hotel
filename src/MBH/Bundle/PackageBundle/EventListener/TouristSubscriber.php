@@ -30,7 +30,7 @@ class TouristSubscriber implements EventSubscriber
     {
         $document = $args->getDocument();
         if($document instanceof Tourist) {
-            $this->checkUpdateIsUnwelcome($document, $args->getDocumentManager());
+            $this->checkUpdateIsUnwelcome($document);
             if(!$document->getCommunicationLanguage()) {
                 $document->setCommunicationLanguage($this->container->getParameter('locale'));
             }
@@ -43,14 +43,24 @@ class TouristSubscriber implements EventSubscriber
         if($tourist instanceof Tourist) {
             $dm = $args->getDocumentManager();
 
-            $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($tourist);
+            /*$changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($tourist);
             $isUpdated =
                 isset($changeSet['firstName']) && array_key_exists(1, $changeSet['firstName']) ||
                 isset($changeSet['lastName']) && array_key_exists(1, $changeSet['lastName']) ||
                 isset($changeSet['birthday']) && array_key_exists(1, $changeSet['birthday']);
+*/
+
+            $isUpdated = false;
+            if($tourist->getDocumentRelation()) {
+                $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($tourist->getDocumentRelation());
+                $isUpdated =
+                    isset($changeSet['type']) && array_key_exists(1, $changeSet['type']) ||
+                    isset($changeSet['series']) && array_key_exists(1, $changeSet['series']) ||
+                    isset($changeSet['number']) && array_key_exists(1, $changeSet['number']);
+            }
 
             if($isUpdated) {
-                $this->checkUpdateIsUnwelcome($tourist, $dm);
+                $this->checkUpdateIsUnwelcome($tourist);
                 $uow = $dm->getUnitOfWork();
                 $meta = $dm->getClassMetadata(Tourist::class);
                 $uow->recomputeSingleDocumentChangeSet($meta, $tourist);
@@ -60,9 +70,9 @@ class TouristSubscriber implements EventSubscriber
 
     public function checkUpdateIsUnwelcome(Tourist $tourist)
     {
-        if($tourist->getFirstName() && $tourist->getLastName() && $tourist->getBirthday()) {
-            $isUnwelcome = $this->container->get('mbh.package.unwelcome_history_repository')->isUnwelcome($tourist);
-            $tourist->setIsUnwelcome($isUnwelcome);
+        $unwelcomeHistoryRepository = $this->container->get('mbh.package.unwelcome_history_repository');
+        if($unwelcomeHistoryRepository->isFoundTouristValid($tourist)) {
+            $tourist->setIsUnwelcome($unwelcomeHistoryRepository->isUnwelcome($tourist));
         } else {
             $tourist->setIsUnwelcome(false);
         }

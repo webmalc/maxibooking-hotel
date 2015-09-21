@@ -118,10 +118,12 @@ class DocumentRelation implements \JsonSerializable
 
     /**
      * @param String $series
+     * @return $this
      */
     public function setSeries($series)
     {
         $this->series = $series;
+        return $this;
     }
 
     /**

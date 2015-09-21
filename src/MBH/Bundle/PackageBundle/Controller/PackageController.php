@@ -705,13 +705,29 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Route("/{id}/unlock", name="package_unlock")
      * @Method("GET")
      * @Security("is_granted('ROLE_ADMIN')")
-     * @ParamConverter("entity", class="MBHPackageBundle:Package")
+     * @ParamConverter("package", class="MBHPackageBundle:Package")
      */
     public function unlockAction(Package $package)
     {
         $package->setIsLocked(false);
         $this->dm->persist($package);
         $this->dm->flush();
+        return $this->redirectToRoute('package_edit', ['id' => $package->getId()]);
+    }
+
+    /**
+     * @Route("/{id}/lock", name="package_lock")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @ParamConverter("package", class="MBHPackageBundle:Package")
+     */
+    public function lockAction(Package $package)
+    {
+        if($package->getIsCheckOut()) {
+            $package->setIsLocked(true);
+            $this->dm->persist($package);
+            $this->dm->flush();
+        }
         return $this->redirectToRoute('package_edit', ['id' => $package->getId()]);
     }
 }

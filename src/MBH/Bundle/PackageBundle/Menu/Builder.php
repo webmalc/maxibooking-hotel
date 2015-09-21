@@ -116,6 +116,19 @@ class Builder extends ContainerAware
                         'icon' => 'fa fa-trash-o'
                     ]);
             }
+
+            if($package->getIsCheckOut() && $checker->isGranted('ROLE_ADMIN')) {
+                $rootItem->addChild('Lock', [
+                    'route' => 'package_lock',
+                    'routeParameters' => ['id' => $package->getId()],
+                    'label' => $translator->trans('order.navbar.lock', [], 'MBHPackageBundle'),
+                ])
+                    ->setAttributes([
+                        'icon' => 'fa fa-lock',
+                        'divider_prepend' => true,
+                    ])
+                ;
+            }
         }
         return $menu;
     }

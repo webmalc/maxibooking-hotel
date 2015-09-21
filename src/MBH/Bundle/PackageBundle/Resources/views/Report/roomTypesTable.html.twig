@@ -178,7 +178,7 @@
                     {% set settle = status == 'open' %}
 
                     <a data-id="{% if package %}{{ package.id }}{% endif %}" {% if settle %} target="_blank" {% endif %}
-                       href="{{ settle ? settle_link : '#' }}" class="btn btn-xs btn-{{ style }}"
+                       href="{{ settle ? settle_link : 'javascript:void(0)' }}" class="btn btn-xs btn-{{ style }}"
                             {% if not settle %}
                                 style="cursor: pointer;"
                                 data-html="true"

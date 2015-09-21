@@ -36,9 +36,19 @@ class UnwelcomeHistoryRepository
      * @param Tourist $tourist
      * @return bool
      */
-    public function isTouristValid(Tourist $tourist)
+    public function isInsertedTouristValid(Tourist $tourist)
     {
-        return $tourist->getFirstName() && $tourist->getLastName() && $tourist->getBirthday();
+        return
+            $tourist->getDocumentRelation() &&
+            $tourist->getDocumentRelation()->getNumber() &&
+            $tourist->getDocumentRelation()->getSeries()
+        ;
+    }
+
+    public function isFoundTouristValid(Tourist $tourist)
+    {
+        return $this->isInsertedTouristValid($tourist) ||
+        ($tourist->getFirstName() && $tourist->getLastName() && $tourist->getBirthday());
     }
 
     /**
@@ -49,7 +59,7 @@ class UnwelcomeHistoryRepository
      */
     public function add(Unwelcome $unwelcome, Tourist $tourist)
     {
-        if(!$this->isTouristValid($tourist)) {
+        if(!$this->isInsertedTouristValid($tourist)) {
             throw new Exception('Tourist is not valid for adding to unwelcome history repository');
         }
 
@@ -81,6 +91,10 @@ class UnwelcomeHistoryRepository
      */
     public function findByTourist(Tourist $tourist)
     {
+        if(!$this->isFoundTouristValid($tourist)) {
+            //throw new Exception;
+        }
+
         $responseData = $this->mbhs->findUnwelcomeHistoryByTourist($tourist);
         if($responseData && isset($responseData['unwelcomeHistory'])) {
             return $this->hydrateUnwelcomeHistory($responseData['unwelcomeHistory']);;
@@ -95,6 +109,10 @@ class UnwelcomeHistoryRepository
      */
     public function isUnwelcome(Tourist $tourist)
     {
+        if(!$this->isFoundTouristValid($tourist)) {
+            //throw new Exception;
+        }
+
         return $this->hasUnwelcomeHistory($tourist);
     }
 
@@ -109,12 +127,13 @@ class UnwelcomeHistoryRepository
 
     /**
      * @param Tourist $tourist
-     * @return null
+     * @return array|null
      */
     public function deleteByTourist(Tourist $tourist)
     {
         return $this->mbhs->deleteUnwelcomeByTourist($tourist);
     }
+
 
     /**
      * @param array $historyData

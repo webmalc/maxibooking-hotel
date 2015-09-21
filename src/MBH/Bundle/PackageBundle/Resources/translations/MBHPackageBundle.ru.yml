@@ -44,6 +44,7 @@ order.edit.is_confirmed_yes: да
 order.edit.is_confirmed_no: нет
 order.layout.reservation: Бронирование
 order.navbar.delete_order: 'Удалить заказ'
+order.navbar.lock: 'Блокировать'
 order.packages.dates: Даты
 order.packages.placement: Размещение
 order.packages.guests: Гости
