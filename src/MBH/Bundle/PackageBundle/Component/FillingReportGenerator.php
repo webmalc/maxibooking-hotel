@@ -40,22 +40,24 @@ class FillingReportGenerator
         $dm = $this->container->get('doctrine_mongodb')->getManager();
 
         $rangeDateList = [$begin];
-        $begin = clone($begin);
-        while($begin < $end) {
-            $rangeDateList[] = clone($begin->modify('+1 day'));
+        $cloneBegin = clone($begin);
+        while($cloneBegin < $end) {
+            $rangeDateList[] = clone($cloneBegin->modify('+1 day'));
         }
 
         $priceCacheRepository = $dm->getRepository('MBHPriceBundle:PriceCache');
 
+        $roomTypeIDs = $this->container->get('mbh.helper')->toIds($roomTypes);
+
         $priceCaches = $priceCacheRepository->findBy([
             'date' => ['$gte' => reset($rangeDateList), '$lte' => end($rangeDateList)],
-            'roomType.id' => ['$in' => $this->container->get('mbh.helper')->toIds($roomTypes)]
+            'roomType.id' => ['$in' => $roomTypeIDs]
         ]);
 
         $packages = $dm->getRepository('MBHPackageBundle:Package')->findBy([
             'begin' => ['$gte' => reset($rangeDateList)],
-            //'end' => ['lte' => end($dates)],
-            'roomType.id' => ['$in' => $this->container->get('mbh.helper')->toIds($roomTypes)]
+            //'end' => ['$lte' => end($rangeDateList)],
+            'roomType.id' => ['$in' => $roomTypeIDs]
         ]);
 
         $packagesByRoomType = [];
@@ -91,6 +93,27 @@ class FillingReportGenerator
 
         $roomCacheRepository = $dm->getRepository('MBHPriceBundle:RoomCache');
 
+        /** @var RoomCache[] $roomCaches */
+        $roomCaches = $roomCacheRepository->findBy([
+            'date' => [
+                '$gte' => $begin,
+                '$lte' => $end,
+            ],
+            'roomType.id' => ['$in' => $roomTypeIDs],
+            'hotel.id' => $this->hotel->getId()
+        ]);
+
+        $roomCachesByRoomTypeAndDate = [];
+        foreach($roomCaches as $roomCache) {
+            $roomTypeID = $roomCache->getRoomType()->getId();
+            $date = $roomCache->getDate()->format('d.m.Y');
+            if (!isset($roomCachesByRoomTypeAndDate[$roomTypeID])) {
+                $roomCachesByRoomTypeAndDate[$roomTypeID] = [];
+            }
+            $roomCachesByRoomTypeAndDate[$roomTypeID][$date] = $roomCache;
+        }
+        unset($roomCaches);
+
         foreach($roomTypes as $roomType) {
             $roomTypeID = $roomType->getId();
             $tableDataByRoomType[$roomTypeID] = [
@@ -104,9 +127,10 @@ class FillingReportGenerator
 
             foreach($rangeDateList as $date) {
                 //RoomCache Rows Data
-                $roomCache = $roomCacheRepository->findOneBy(['date' => $date, 'roomType.id' => $roomType->getId(),
-                    'hotel.id' => $this->hotel->getId()
-                ]);
+                $roomCache =
+                    isset($roomCachesByRoomTypeAndDate[$roomTypeID]) && isset($roomCachesByRoomTypeAndDate[$roomTypeID][$date->format('d.m.Y')]) ?
+                        $roomCachesByRoomTypeAndDate[$roomTypeID][$date->format('d.m.Y')] :
+                        null;
 
                 $roomCacheRow = $roomCache ? [
                     'totalRooms' => $roomCache->getTotalRooms(),
