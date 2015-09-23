@@ -14,6 +14,7 @@ use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -630,6 +631,145 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         return [
             'invites' => $invites
+        ];
+    }
+
+    /**
+     * @return array
+     * @Route("/filling", name="report_filling", options={"expose"=true})
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     * @Template()
+     */
+    public function fillingAction()
+    {
+        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $this->hotel->getId()]);
+
+        $dates = [
+            new \DateTime('midnight -8 day'),
+            new \DateTime('midnight -7 day'),
+            new \DateTime('midnight -6 day'),
+            new \DateTime('midnight -5 day'),
+            new \DateTime('midnight -4 day'),
+            new \DateTime('midnight -3 day'),
+            new \DateTime('midnight -2 day'),
+            new \DateTime('midnight -1 day'),
+            new \DateTime('midnight'),
+            new \DateTime('midnight +1 day'),
+            new \DateTime('midnight +2 day'),
+        ];
+
+        $roomCacheRepository = $this->dm->getRepository('MBHPriceBundle:RoomCache');
+        $roomCaches = [];
+
+        $fakeCache = new RoomCache();
+        $fakeCache
+            ->setPackagesCount(0)
+            ->setTotalRooms(0)
+            ->setLeftRooms(0)
+        ;
+        foreach($roomTypes as $roomType) {
+            $roomCaches[$roomType->getId()] = [];
+            foreach($dates as $date) {
+                $roomCache = $roomCacheRepository->findOneBy([
+                    'date' => $date,
+                    'roomType.id' => $roomType->getId(),
+                    'hotel.id' => $this->hotel->getId()
+                ]);
+                $roomCaches[$roomType->getId()][$date->format('d.m.Y')] = $roomCache ? $roomCache : $fakeCache;
+
+            }
+        }
+
+        $priceCacheRepository = $this->dm->getRepository('MBHPriceBundle:PriceCache');
+
+        $priceCaches = $priceCacheRepository->findBy([
+            'date' => ['$gte' => reset($dates), '$lte' => end($dates)],
+            'roomType.id' => ['$in' => $this->get('mbh.helper')->toIds($roomTypes)]
+        ]);
+
+        $allPackages = $this->dm->getRepository('MBHPackageBundle:Package')->findBy([
+            'begin' => ['$gte' => reset($dates)],
+            //'end' => ['lte' => end($dates)],
+            'roomType.id' => ['$in' => $this->get('mbh.helper')->toIds($roomTypes)]
+        ]);
+
+        $packagesDataByDay = [];
+        foreach($dates as $date) {
+            $packagePrice = 0;
+            $servicePrice = 0;
+            $price = 0;
+            $paid = 0;
+            $paidPercent = 0;
+            $debt = 0;
+            $maxIncome = 0;
+            $maxIncomePercent = 0;
+            $guests = 0;
+            $roomGuests = 0;
+
+            $countPackage = 0;
+
+            foreach($priceCaches as $priceCache) {
+                if($priceCache->getDate()->getTimestamp() == $date->getTimestamp()) {
+
+                    $totalRooms = 0;
+                    if(isset($roomCaches[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')])) {
+                        $totalRooms = $roomCaches[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')]->getTotalRooms();
+                    }
+
+                    $maxIncome += $priceCache->getMaxIncome() * $totalRooms;
+                    break;
+                }
+            }
+
+            foreach($allPackages as $package) {
+                if(!isset($packagesDataByDay[$package->getRoomType()->getId()])) {
+                    $packagesDataByDay[$package->getRoomType()->getId()] = [];
+                }
+                $packagesDataByDay[$package->getRoomType()->getId()][$date->format('d.m.Y')] = [];
+                if($date >= $package->getBegin() && $date < $package->getEnd()){
+                    $countPackage++;
+
+                    $priceByDate = $package->getPricesByDate();
+                    if(isset($priceByDate[$date->format('d_m_Y')])) {
+                        $packagePrice += $priceByDate[$date->format('d_m_Y')];
+                    }
+
+                    $servicePrice += $package->getServicesPrice() / $package->getNights();
+
+                    $paid += $package->getNights() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
+                    $paidPercent += $package->getPaid() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
+
+                    $debt += $package->getDebt() > 0 ? $package->getDebt() / $package->getNights() : 0;
+
+                    $maxIncomePercent += $packagePrice / $maxIncome;
+                    $guests += $package->getAdults();
+                    $roomGuests += $guests;
+                }
+            }
+
+            $price = $packagePrice + $servicePrice;
+            $paidPercent = $paidPercent / $price;
+
+            $packagesDataByDay[$package->getRoomType()->getId()][$date->format('d.m.Y')] = [
+                'packagePrice' => number_format($packagePrice, 2),
+                'servicePrice' => number_format($servicePrice, 2),
+                'price' => number_format($price, 2),
+                'paid' => number_format($paid, 2),
+                'paidPercent' => number_format($paidPercent * 100, 2),
+                'debt' => number_format($debt, 2),
+                'maxIncome' => number_format($maxIncome, 2),
+                'maxIncomePercent' => number_format($maxIncomePercent * 100, 2),
+                'guests' => $guests,
+                'roomGuests' => $countPackage > 0 ? number_format($roomGuests / $countPackage, 2) : 0,
+            ];
+        }
+
+        return [
+            'roomTypes' => $roomTypes,
+            'dates' => $dates,
+            'roomCaches' => $roomCaches,
+            'packagesDataByDay' => $packagesDataByDay,
         ];
     }
 }

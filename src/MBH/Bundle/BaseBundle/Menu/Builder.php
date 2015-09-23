@@ -140,6 +140,8 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-star']);
         $menu['reports']->addChild('report_invite', ['route' => 'report_invite', 'label' => 'Визовые приглашения'])
             ->setAttributes(['icon' => 'fa fa-star']);
+        $menu['reports']->addChild('report_filling', ['route' => 'report_filling', 'label' => 'Заполняймость'])
+            ->setAttributes(['icon' => 'fa fa-star']);
 
 
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])

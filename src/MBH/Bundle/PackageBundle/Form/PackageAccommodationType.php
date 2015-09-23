@@ -6,6 +6,7 @@ use MBH\Bundle\HotelBundle\Document\Room;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\EqualTo;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
@@ -70,14 +71,24 @@ class PackageAccommodationType extends AbstractType
                 'time_widget' => 'single_text',
                 'date_widget' => 'single_text',
                 'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),
-            ))
-            ->add('isCheckOut', 'checkbox', [
-                'label' => 'form.packageAccommodationType.are_guests_checked_out',
-                'value' => true,
-                'group' => 'form.packageAccommodationType.check_in_group',
-                'required' => false,
-                'help' => 'form.packageAccommodationType.are_guests_checked_out_help'
-            ])
+            ));
+        $isCheckOutOptions = [
+            'label' => 'form.packageAccommodationType.are_guests_checked_out',
+            'value' => true,
+            'group' => 'form.packageAccommodationType.check_in_group',
+            'required' => false,
+            'help' => 'form.packageAccommodationType.are_guests_checked_out_help'
+        ];
+        if ($options['debt']) {
+            $isCheckOutOptions['attr'] = ['disabled' => 'disabled'];
+            $isCheckOutOptions['help'] = 'form.packageAccommodationType.can_not_checkout_with_debt';
+            $isCheckOutOptions['constraints'] = [
+                new EqualTo(['value' => false])
+            ];
+        }
+        $builder
+            ->add('isCheckOut', 'checkbox', $isCheckOutOptions);
+        $builder
             ->add('departureTime', 'datetime', array(
                 'label' => 'form.packageMainType.check_out_time',
                 'html5' => false,
@@ -96,6 +107,7 @@ class PackageAccommodationType extends AbstractType
             'optGroupRooms' => [],
             'arrivals' => [],
             'roomType' => null,
+            'debt' => false,
             'roomStatusIcons' => []
         ]);
     }

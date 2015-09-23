@@ -33,10 +33,11 @@ class Package extends Base implements JsonSerializable
     const ROOM_STATUS_WAIT = 'wait';
 
     /**
+     * @var Order
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Order", inversedBy="packages")
      * @Assert\NotNull(message= "validator.document.package.order_not_selected")
-    **/
+     */
     protected $order;
 
     /** @ODM\ReferenceMany(targetDocument="PackageService", mappedBy="package") */

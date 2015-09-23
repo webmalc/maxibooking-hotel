@@ -8,8 +8,8 @@
     {% include 'MBHPackageBundle:Documents:documentFormModal.html.twig' %}
 {% endblock %}
 
-{% if package is not defined %}{#todo remove#}
+{% if package is not defined and entity is defined %}{#todo remove#}
     {% set package = entity %}
 {% endif %}
 
-{% set small_title = small_title ~ ' ' ~ (package.isLocked ? ' &nbsp&nbsp<i class="fa fa-lg fa-lock"></i>' : '') %}
+{% set small_title = small_title ~ ' ' ~ (package is defined and package.isLocked ? ' &nbsp&nbsp<i class="fa fa-lg fa-lock"></i>' : '') %}

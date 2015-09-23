@@ -1,0 +1,283 @@
+{% extends 'MBHPackageBundle:Report:layout.html.twig' %}
+
+{% set small_title = "source.index.filling"|trans({}, "MBHPackageBundle") %}
+{% set layout = 'box' %}
+
+{% block content %}
+
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {id: 'room-type-table-filter-widget'} %}
+        {% block content %}
+        <form id="room-types-table-filter" class="form-inline form-icon-label">
+            <div class="form-group">
+                <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-5 days")|date('d.m.Y') : app.request.get('begin') }}">
+            </div>
+            <div class="form-group">
+                </label>-</label>
+                <input type="text" name="end" id="accommodation-report-filter-end" class="datepicker accommodation-report-filter end-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ? 'now'|date_modify("+40 days")|date('d.m.Y') : app.request.get('end') }}">
+            </div>
+
+            <div class="form-group">
+                {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i></label>
+                <select name="roomType" data-placeholder="Тип номера" id="accommodation-report-filter-roomType" class="form-control input-sm">
+                    <option></option>
+                    {% for roomType in roomTypes %}
+                        <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+        {% endblock content %}
+    {% endembed %}
+
+    <div id="filling-report-table-wrapper" class="scrolling">
+
+    <table class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+        <tbody>
+
+        <tr class="header">
+            <td class="first-th">Даты</td>
+            {% for date in dates %}
+                <td class="text-danger">{{ date|mbh_format }}</td>
+            {% endfor %}
+            <td>Итого</td>
+        </tr>
+
+        {% for roomType in roomTypes %}
+            <tr class="mbh-grid-header1 info">
+                <td colspan=" {{ dates|length + 2 }}  ">
+                    <strong>{{ roomType.fullTitle }}</strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="first-td">
+                    Номеров в продаже
+                </td>
+                {% for date in dates %}
+                    <td class="content">
+                        {{ roomCaches[roomType.id][date|date('d.m.Y')].totalRooms }}
+                    </td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        0
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="first-td">
+                    Забронировано номеров
+                </td>
+                {% for date in dates %}
+                    <td class="content">
+                        {{ roomCaches[roomType.id][date|date('d.m.Y')].packagesCount }}
+                    </td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        0
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="first-td">
+                    Забронировано номеров %
+                </td>
+                {% for date in dates %}
+                    <td class="content">
+                        {{ roomCaches[roomType.id][date|date('d.m.Y')].totalRooms > 0 ? roomCaches[roomType.id][date|date('d.m.Y')].packagesCountPercent : 0 }} %
+                    </td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        0
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="first-td">
+                    Стоимость бронирования
+                </td>
+                {% for date in dates %}
+                    {% set packageDate = packagesDataByDay[roomType.id][date|date('d.m.Y')] is defined ? packagesDataByDay[roomType.id][date|date('d.m.Y')] : null %}
+                    <td class="text-right">
+                        {{ packageDate ? packageDate.packagePrice : 0 }}
+                    </td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        0
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="first-td">
+                    Стоимость услуг
+                </td>
+                {% for date in dates %}
+                    {% set packageDate = packagesDataByDay[roomType.id][date|date('d.m.Y')] is defined ? packagesDataByDay[roomType.id][date|date('d.m.Y')] : null %}
+                    <td class="text-right">
+                        {{ packageDate ? packageDate.servicePrice : 0 }}
+                    </td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        0
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="first-td">
+                    Стоимость
+                </td>
+                {% for date in dates %}
+                    {% set packageDate = packagesDataByDay[roomType.id][date|date('d.m.Y')] is defined ? packagesDataByDay[roomType.id][date|date('d.m.Y')] : null %}
+                    <td class="text-right">
+                        {{ packageDate ? packageDate.price : 0 }}
+                    </td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        0
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="first-td">
+                    Получено
+                </td>
+                {% for date in dates %}
+                    {% set packageDate = packagesDataByDay[roomType.id][date|date('d.m.Y')] is defined ? packagesDataByDay[roomType.id][date|date('d.m.Y')] : null %}
+                    <td class="text-right">
+                        {{ packageDate ? packageDate.paid : 0 }}
+                    </td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        0
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="first-td">
+                    Получено %
+                </td>
+                {% for date in dates %}
+                    {% set packageDate = packagesDataByDay[roomType.id][date|date('d.m.Y')] is defined ? packagesDataByDay[roomType.id][date|date('d.m.Y')] : null %}
+                    <td class="text-right">
+                        {{ packageDate ? packageDate.paidPercent : 0 }} %
+                    </td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        0
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="first-td">
+                    Долг
+                </td>
+                {% for date in dates %}
+                    {% set packageDate = packagesDataByDay[roomType.id][date|date('d.m.Y')] is defined ? packagesDataByDay[roomType.id][date|date('d.m.Y')] : null %}
+                    <td class="text-right">
+                        {{ packageDate ? packageDate.debt : 0 }}
+                    </td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        0
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="first-td">
+                    Макс. выручка
+                </td>
+                {% for date in dates %}
+                    {% set packageDate = packagesDataByDay[roomType.id][date|date('d.m.Y')] is defined ? packagesDataByDay[roomType.id][date|date('d.m.Y')] : null %}
+                    <td class="text-right">
+                        {{ packageDate ? packageDate.maxIncome : 0 }}
+                    </td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        0
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="first-td">
+                    Выручка от макс. %
+                </td>
+                {% for date in dates %}
+                    {% set packageDate = packagesDataByDay[roomType.id][date|date('d.m.Y')] is defined ? packagesDataByDay[roomType.id][date|date('d.m.Y')] : null %}
+                    <td class="text-right">
+                        {{ packageDate ? packageDate.maxIncomePercent : 0 }} %
+                    </td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        0
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="first-td">
+                    Гостей
+                </td>
+                {% for date in dates %}
+                    {% set packageDate = packagesDataByDay[roomType.id][date|date('d.m.Y')] is defined ? packagesDataByDay[roomType.id][date|date('d.m.Y')] : null %}
+                    <td class="text-right">
+                        {{ packageDate ? packageDate.guests : 0 }}
+                    </td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        0
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="first-td">
+                    Гостей на номер
+                </td>
+                {% for date in dates %}
+                    {% set packageDate = packagesDataByDay[roomType.id][date|date('d.m.Y')] is defined ? packagesDataByDay[roomType.id][date|date('d.m.Y')] : null %}
+                    <td class="text-right">
+                        {{ packageDate ? packageDate.roomGuests : 0 }}
+                    </td>
+                {% endfor %}
+                <td class="content-total">
+                    <strong>
+                        0
+                    </strong>
+                </td>
+            </tr>
+
+
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+    </div>
+
+{% endblock %}

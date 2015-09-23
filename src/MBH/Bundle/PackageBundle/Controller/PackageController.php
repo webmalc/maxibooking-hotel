@@ -621,6 +621,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'roomType' => $package->getRoomType(),
             'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
             'roomStatusIcons' => $this->container->getParameter('mbh.room_status_icons'),
+            'debt' => $package->getPaidStatus() != 'success' && !$package->getIsCheckOut()
         ]);
 
         if ($request->getMethod() == 'PUT' &&
