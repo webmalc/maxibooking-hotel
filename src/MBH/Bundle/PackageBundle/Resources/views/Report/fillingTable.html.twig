@@ -1,9 +1,9 @@
 <table class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
     <tbody>
-    <tr>
+    <tr class="header">
         <td class="td-md-lg">Даты</td>
         {% for date in rangeDateList %}
-            <td class="text-danger">{{ date|mbh_format }}</td>
+            <td>{{ date|mbh_format }}</td>
         {% endfor %}
         <td>Итого</td>
     </tr>
@@ -19,51 +19,66 @@
         <tr>
             <td class="td-md-lg">Номеров в продаже</td>
             {% for date in rangeDateList %}
-                {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="content">
-                    {{ packageDate.totalRooms|default(0) }}
+                    {{ row.totalRooms|default(0) }}
                 </td>
             {% endfor %}
-            <td class="content">
+            <td class="content-total">
                 <strong>
-                    {{ tableData.totals.totalRooms|default(0) }}
+                    {{ tableData.totals.totalRooms|default(0)|number_format(2) }}
                 </strong>
             </td>
         </tr>
         <tr>
             <td class="td-md-lg">Забронировано номеров</td>
             {% for date in rangeDateList %}
-                {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="content">
-                    {{ packageDate.packagesCount|default(0) }}
+                    {{ row.packagesCount|default(0) }}
                 </td>
             {% endfor %}
-            <td class="content">
+            <td class="content-total">
                 <strong>
-                    {{ tableData.totals.packagesCount|default(0) }}
+                    {{ tableData.totals.packagesCount|default(0)|number_format(2) }}
                 </strong>
             </td>
         </tr>
         <tr>
             <td class="td-md-lg">Забронировано номеров %</td>
             {% for date in rangeDateList %}
-                {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="content">
-                    {{ packageDate.packagesCountPercent|default(0)|number_format(2) }} %
+                    {{ row.packagesCountPercent|default(0)|number_format(2) }} %
                 </td>
             {% endfor %}
-            <td class="content">
+            <td class="content-total">
                 <strong>
                     {{ tableData.totals.packagesCountPercent|default(0)|number_format(2) }} %
+                </strong>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="td-md-lg">Неоплаченные номера</td>
+            {% for date in rangeDateList %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                <td class="content">
+                    {{ row.notPaidRooms|default(0) }}
+                </td>
+            {% endfor %}
+            <td class="content-total">
+                <strong>
+                    {{ tableData.totals.notPaidRooms|default(0)|number_format(2) }}
                 </strong>
             </td>
         </tr>
         <tr>
             <td class="td-md-lg">Стоимость бронирования</td>
             {% for date in rangeDateList %}
-                {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="text-right">
-                    {{ packageDate.packagePrice|default(0)|number_format(2) }}
+                    {{ row.packagePrice|default(0)|number_format(2) }}
                 </td>
             {% endfor %}
             <td class="content-total">
@@ -75,9 +90,9 @@
         <tr>
             <td class="td-md-lg">Стоимость услуг</td>
             {% for date in rangeDateList %}
-                {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="text-right">
-                    {{ packageDate.servicePrice|default(0)|number_format(2) }}
+                    {{ row.servicePrice|default(0)|number_format(2) }}
                 </td>
             {% endfor %}
             <td class="content-total">
@@ -89,9 +104,9 @@
         <tr>
             <td class="td-md-lg">Стоимость</td>
             {% for date in rangeDateList %}
-                {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="text-right">
-                    {{ packageDate.price|default(0)|number_format(2) }}
+                    {{ row.price|default(0)|number_format(2) }}
                 </td>
             {% endfor %}
             <td class="content-total">
@@ -103,9 +118,9 @@
         <tr>
             <td class="td-md-lg">Получено</td>
             {% for date in rangeDateList %}
-                {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="text-right">
-                    {{ packageDate.paid|default(0)|number_format(2) }}
+                    {{ row.paid|default(0)|number_format(2) }}
                 </td>
             {% endfor %}
             <td class="content-total">
@@ -117,9 +132,9 @@
         <tr>
             <td class="td-md-lg">Получено %</td>
             {% for date in rangeDateList %}
-                {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="content">
-                    {{ packageDate.paidPercent|default(0)|number_format(2) }} %
+                    {{ row.paidPercent|default(0)|number_format(2) }} %
                 </td>
             {% endfor %}
             <td class="content-total">
@@ -131,9 +146,9 @@
         <tr>
             <td class="td-md-lg">Долг</td>
             {% for date in rangeDateList %}
-                {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="text-right">
-                    {{ packageDate.debt|default(0)|number_format(2) }}
+                    {{ row.debt|default(0)|number_format(2) }}
                 </td>
             {% endfor %}
             <td class="content-total">
@@ -145,9 +160,9 @@
         <tr>
             <td class="td-md-lg">Макс. выручка</td>
             {% for date in rangeDateList %}
-                {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="text-right">
-                    {{ packageDate.maxIncome|default(0)|number_format(2) }}
+                    {{ row.maxIncome|default(0)|number_format(2) }}
                 </td>
             {% endfor %}
             <td class="content-total">
@@ -159,9 +174,9 @@
         <tr>
             <td class="td-md-lg">Выручка от макс. %</td>
             {% for date in rangeDateList %}
-                {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="content">
-                    {{ packageDate.maxIncomePercent|default(0)|number_format(2) }} %
+                    {{ row.maxIncomePercent|default(0)|number_format(2) }} %
                 </td>
             {% endfor %}
             <td class="content-total">
@@ -173,23 +188,23 @@
         <tr>
             <td class="td-md-lg">Гостей</td>
             {% for date in rangeDateList %}
-                {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="text-right">
-                    {{ packageDate.guests|default(0) }}
+                    {{ row.guests|default(0) }}
                 </td>
             {% endfor %}
             <td class="content-total">
                 <strong>
-                    {{ tableData.totals.guests|default(0) }}
+                    {{ tableData.totals.guests|default(0)|number_format(2) }}
                 </strong>
             </td>
         </tr>
         <tr>
             <td class="td-md-lg">Гостей на номер</td>
             {% for date in rangeDateList %}
-                {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="text-right">
-                    {{ packageDate.roomGuests|default(0)|number_format(2) }}
+                    {{ row.roomGuests|default(0)|number_format(2) }}
                 </td>
             {% endfor %}
             <td class="content-total">
