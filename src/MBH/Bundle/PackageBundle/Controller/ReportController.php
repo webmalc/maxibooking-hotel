@@ -720,17 +720,17 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             ];
 
             foreach($dates as $date) {
-                $packagesDataByDay[$date->format('d.m.Y')] = [];
-
-                $packagePrice = 0;
-                $servicePrice = 0;
-                $paid = 0;
-                $paidPercent = 0;
-                $debt = 0;
-                $maxIncome = 0;
-                $maxIncomePercent = 0;
-                $guests = 0;
-                $roomGuests = 0;
+                $data = [
+                    'packagePrice' => 0,
+                    'servicePrice' => 0,
+                    'paid' => 0,
+                    'paidPercent' => 0,
+                    'debt' => 0,
+                    'maxIncome' => 0,
+                    'maxIncomePercent' => 0,
+                    'guests' => 0,
+                    'roomGuests' => 0,
+                ];
 
                 foreach($priceCaches as $priceCache) {
                     if($priceCache->getDate()->getTimestamp() == $date->getTimestamp()) {
@@ -740,7 +740,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                             $totalRooms = $roomCaches[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')]->getTotalRooms();
                         }
 
-                        $maxIncome += $priceCache->getMaxIncome() * $totalRooms;
+                        $data['maxIncome'] += $priceCache->getMaxIncome() * $totalRooms;
                         break;
                     }
                 }
@@ -750,60 +750,43 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
                         $priceByDate = $package->getPricesByDate();
                         if(isset($priceByDate[$date->format('d_m_Y')])) {
-                            $packagePrice += $priceByDate[$date->format('d_m_Y')];
+                            $data['packagePrice'] += $priceByDate[$date->format('d_m_Y')];
                         }
 
-                        $servicePrice += $package->getServicesPrice() / $package->getNights();
+                        $data['servicePrice'] += $package->getServicesPrice() / $package->getNights();
 
-                        $paid += $package->getNights() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
-                        $paidPercent += $package->getPaid() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
+                        $data['paid'] += $package->getNights() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
+                        $data['paidPercent'] += $package->getPaid() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
 
-                        $debt += $package->getDebt() > 0 ? $package->getDebt() / $package->getNights() : 0;
+                        $data['debt'] += $package->getDebt() > 0 ? $package->getDebt() / $package->getNights() : 0;
 
-                        $maxIncomePercent += $packagePrice / $maxIncome;
-                        $guests += $package->getAdults();
-                        $roomGuests += $guests;
+                        $data['maxIncomePercent'] += $data['packagePrice'] / $data['maxIncome'];
+                        $data['guests'] += $package->getAdults();
+                        $data['roomGuests'] += $data['guests'];
                     }
                 }
 
-                $price = $packagePrice + $servicePrice;
-                $paidPercent = $paidPercent / $price;
+                $data['price'] = $data['packagePrice'] + $data['servicePrice'];
+                $data['paidPercent'] = $data['paidPercent'] / $data['price'] * 100;
+                $data['maxIncomePercent'] = $data['maxIncomePercent'] * 100;
+                $data['roomGuests'] = $data['roomGuests'] / count($packages);
 
-                $packagesDataByDay[$date->format('d.m.Y')] = [
-                    'packagePrice' => number_format($packagePrice, 2),
-                    'servicePrice' => number_format($servicePrice, 2),
-                    'price' => number_format($price, 2),
-                    'paid' => number_format($paid, 2),
-                    'paidPercent' => number_format($paidPercent * 100, 2),
-                    'debt' => number_format($debt, 2),
-                    'maxIncome' => number_format($maxIncome, 2),
-                    'maxIncomePercent' => number_format($maxIncomePercent * 100, 2),
-                    'guests' => $guests,
-                    'roomGuests' => number_format($roomGuests / count($packages), 2),
-                ];
+                $packagesDataByDay[$date->format('d.m.Y')] = $data;
 
-                $totals['packagePrice'] += $packagePrice;
-                $totals['servicePrice'] += $servicePrice;
-                $totals['price'] += $price;
-                $totals['paid'] += $paid;
-                $totals['paidPercent'] += $paidPercent * 100;
-                $totals['debt'] += $debt;
-                $totals['maxIncome'] += $maxIncome;
-                $totals['maxIncomePercent'] += $maxIncomePercent * 100;
-                $totals['guests'] += $guests;
-                $totals['roomGuests'] += $roomGuests;
+                $totals['packagePrice'] += $data['packagePrice'];
+                $totals['servicePrice'] += $data['servicePrice'];
+                $totals['price'] += $data['price'];
+                $totals['paid'] += $data['paid'];
+                $totals['paidPercent'] += $data['paidPercent'];
+                $totals['debt'] += $data['debt'];
+                $totals['maxIncome'] += $data['maxIncome'];
+                $totals['maxIncomePercent'] += $data['maxIncomePercent'];
+                $totals['guests'] += $data['guests'];
+                $totals['roomGuests'] += $data['roomGuests'];
             }
 
-            $totals['packagePrice'] = number_format($totals['packagePrice'], 2);
-            $totals['servicePrice'] = number_format($totals['servicePrice'], 2);
-            $totals['price'] = number_format($totals['price'], 2);
-            $totals['paid'] = number_format($totals['paid'], 2);
-            $totals['paidPercent'] = number_format($totals['paidPercent'] / count($packages), 2);
-            $totals['debt'] = number_format($totals['debt'], 2);
-            $totals['maxIncome'] = number_format($totals['maxIncome'], 2);
-            $totals['maxIncomePercent'] = number_format($totals['maxIncomePercent'] / count($packages), 2);
-            //$totals['guests'] = $totals['guests'];
-            $totals['roomGuests'] = number_format($totals['roomGuests'], 2);
+            $totals['paidPercent'] = $totals['paidPercent'] / count($dates);
+            $totals['maxIncomePercent'] = $totals['maxIncomePercent'] / count($dates);
 
             $dataTable[$roomTypeID] = [
                 'rows' => $packagesDataByDay,

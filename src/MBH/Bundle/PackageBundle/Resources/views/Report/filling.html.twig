@@ -34,7 +34,7 @@
         {% endblock content %}
     {% endembed %}
 
-    <div id="filling-report-table-wrapper" class="scrolling">
+    <div id="filling-report-table-wrapper">
 
     <table class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
         <tbody>
@@ -110,12 +110,12 @@
                 {% for date in dates %}
                     {% set packageDate = data.rows[date|date('d.m.Y')] is defined ? data.rows[date|date('d.m.Y')] : null %}
                     <td class="text-right">
-                        {{ packageDate.packagePrice|default(0) }}
+                        {{ packageDate.packagePrice|default(0)|number_format(2) }}
                     </td>
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        {{ data.totals.packagePrice|default(0) }}
+                        {{ data.totals.packagePrice|default(0)|number_format(2) }}
                     </strong>
                 </td>
             </tr>
@@ -127,12 +127,12 @@
                 {% for date in dates %}
                     {% set packageDate = data.rows[date|date('d.m.Y')] is defined ? data.rows[date|date('d.m.Y')] : null %}
                     <td class="text-right">
-                        {{ packageDate.servicePrice|default(0) }}
+                        {{ packageDate.servicePrice|default(0)|number_format(2) }}
                     </td>
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        {{ data.totals.servicePrice|default(0) }}
+                        {{ data.totals.servicePrice|default(0)|number_format(2) }}
                     </strong>
                 </td>
             </tr>
@@ -144,12 +144,12 @@
                 {% for date in dates %}
                     {% set packageDate = data.rows[date|date('d.m.Y')] is defined ? data.rows[date|date('d.m.Y')] : null %}
                     <td class="text-right">
-                        {{ packageDate.price|default(0) }}
+                        {{ packageDate.price|default(0)|number_format(2) }}
                     </td>
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        {{ data.totals.price|default(0) }}
+                        {{ data.totals.price|default(0)|number_format(2) }}
                     </strong>
                 </td>
             </tr>
@@ -161,12 +161,12 @@
                 {% for date in dates %}
                     {% set packageDate = data.rows[date|date('d.m.Y')] is defined ? data.rows[date|date('d.m.Y')] : null %}
                     <td class="text-right">
-                        {{ packageDate.paid|default(0) }}
+                        {{ packageDate.paid|default(0)|number_format(2) }}
                     </td>
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        {{ data.totals.paid|default(0) }}
+                        {{ data.totals.paid|default(0)|number_format(2) }}
                     </strong>
                 </td>
             </tr>
@@ -178,12 +178,12 @@
                 {% for date in dates %}
                     {% set packageDate = data.rows[date|date('d.m.Y')] is defined ? data.rows[date|date('d.m.Y')] : null %}
                     <td class="content">
-                        {{ packageDate.paidPercent|default(0) }} %
+                        {{ packageDate.paidPercent|default(0)|number_format(2) }} %
                     </td>
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        {{ data.totals.paidPercent|default(0) }} %
+                        {{ data.totals.paidPercent|default(0)|number_format(2) }} %
                     </strong>
                 </td>
             </tr>
@@ -195,12 +195,12 @@
                 {% for date in dates %}
                     {% set packageDate = data.rows[date|date('d.m.Y')] is defined ? data.rows[date|date('d.m.Y')] : null %}
                     <td class="text-right">
-                        {{ packageDate.debt|default(0) }}
+                        {{ packageDate.debt|default(0)|number_format(2) }}
                     </td>
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        {{ data.totals.debt|default(0) }}
+                        {{ data.totals.debt|default(0)|number_format(2) }}
                     </strong>
                 </td>
             </tr>
@@ -212,12 +212,12 @@
                 {% for date in dates %}
                     {% set packageDate = data.rows[date|date('d.m.Y')] is defined ? data.rows[date|date('d.m.Y')] : null %}
                     <td class="text-right">
-                        {{ packageDate.maxIncome|default(0) }}
+                        {{ packageDate.maxIncome|default(0)|number_format(2) }}
                     </td>
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        {{ data.totals.maxIncome|default(0) }}
+                        {{ data.totals.maxIncome|default(0)|number_format(2) }}
                     </strong>
                 </td>
             </tr>
@@ -229,12 +229,12 @@
                 {% for date in dates %}
                     {% set packageDate = data.rows[date|date('d.m.Y')] is defined ? data.rows[date|date('d.m.Y')] : null %}
                     <td class="content">
-                        {{ packageDate.maxIncomePercent|default(0) }} %
+                        {{ packageDate.maxIncomePercent|default(0)|number_format(2) }} %
                     </td>
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        {{ data.totals.maxIncomePercent|default(0) }} %
+                        {{ data.totals.maxIncomePercent|default(0)|number_format(2) }} %
                     </strong>
                 </td>
             </tr>
@@ -263,12 +263,12 @@
                 {% for date in dates %}
                     {% set packageDate = data.rows[date|date('d.m.Y')] is defined ? data.rows[date|date('d.m.Y')] : null %}
                     <td class="text-right">
-                        {{ packageDate.roomGuests|default(0) }}
+                        {{ packageDate.roomGuests|default(0)|number_format(2) }}
                     </td>
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        {{ data.totals.roomGuests|default(0) }}
+                        {{ data.totals.roomGuests|default(0)|number_format(2) }}
                     </strong>
                 </td>
             </tr>
