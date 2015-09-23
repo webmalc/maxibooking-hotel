@@ -114,7 +114,7 @@
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        0
+                        {{ totals[roomType.id] is defined ? totals[roomType.id].packagePrice : 0 }}
                     </strong>
                 </td>
             </tr>
@@ -131,7 +131,7 @@
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        0
+                        {{ totals[roomType.id] is defined ? totals[roomType.id].servicePrice : 0 }}
                     </strong>
                 </td>
             </tr>
@@ -148,7 +148,7 @@
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        0
+                        {{ totals[roomType.id] is defined ? totals[roomType.id].price : 0 }}
                     </strong>
                 </td>
             </tr>
@@ -165,7 +165,7 @@
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        0
+                        {{ totals[roomType.id] is defined ? totals[roomType.id].paid : 0 }}
                     </strong>
                 </td>
             </tr>
@@ -176,13 +176,13 @@
                 </td>
                 {% for date in dates %}
                     {% set packageDate = packagesDataByDay[roomType.id][date|date('d.m.Y')] is defined ? packagesDataByDay[roomType.id][date|date('d.m.Y')] : null %}
-                    <td class="text-right">
+                    <td class="content">
                         {{ packageDate ? packageDate.paidPercent : 0 }} %
                     </td>
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        0
+                        {{ totals[roomType.id] is defined ? totals[roomType.id].paidPercent : 0 }} %
                     </strong>
                 </td>
             </tr>
@@ -199,7 +199,7 @@
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        0
+                        {{ totals[roomType.id] is defined ? totals[roomType.id].debt : 0 }}
                     </strong>
                 </td>
             </tr>
@@ -216,7 +216,7 @@
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        0
+                        {{ totals[roomType.id] is defined ? totals[roomType.id].maxIncome : 0 }}
                     </strong>
                 </td>
             </tr>
@@ -227,13 +227,13 @@
                 </td>
                 {% for date in dates %}
                     {% set packageDate = packagesDataByDay[roomType.id][date|date('d.m.Y')] is defined ? packagesDataByDay[roomType.id][date|date('d.m.Y')] : null %}
-                    <td class="text-right">
+                    <td class="content">
                         {{ packageDate ? packageDate.maxIncomePercent : 0 }} %
                     </td>
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        0
+                        {{ totals[roomType.id] is defined ? totals[roomType.id].maxIncomePercent : 0 }} %
                     </strong>
                 </td>
             </tr>
@@ -250,7 +250,7 @@
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        0
+                        {{ totals[roomType.id] is defined ? totals[roomType.id].guests : 0 }}
                     </strong>
                 </td>
             </tr>
@@ -267,7 +267,7 @@
                 {% endfor %}
                 <td class="content-total">
                     <strong>
-                        0
+                        {{ totals[roomType.id] is defined ? totals[roomType.id].roomGuests : 0 }}
                     </strong>
                 </td>
             </tr>

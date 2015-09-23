@@ -695,10 +695,12 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         ]);
 
         $packagesDataByDay = [];
+        $totals = [];
+        $countPackages = [];
+
         foreach($dates as $date) {
             $packagePrice = 0;
             $servicePrice = 0;
-            $price = 0;
             $paid = 0;
             $paidPercent = 0;
             $debt = 0;
@@ -706,8 +708,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             $maxIncomePercent = 0;
             $guests = 0;
             $roomGuests = 0;
-
-            $countPackage = 0;
 
             foreach($priceCaches as $priceCache) {
                 if($priceCache->getDate()->getTimestamp() == $date->getTimestamp()) {
@@ -723,12 +723,33 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             }
 
             foreach($allPackages as $package) {
-                if(!isset($packagesDataByDay[$package->getRoomType()->getId()])) {
-                    $packagesDataByDay[$package->getRoomType()->getId()] = [];
+                $roomTypeID = $package->getRoomType()->getId();
+
+                if(!isset($packagesDataByDay[$roomTypeID])) {
+                    $packagesDataByDay[$roomTypeID] = [];
                 }
-                $packagesDataByDay[$package->getRoomType()->getId()][$date->format('d.m.Y')] = [];
+                if(!isset($countPackages[$roomTypeID])) {
+                    $countPackages[$roomTypeID] = 0;
+                }
+                if(!isset($totals[$roomTypeID])) {
+                    $totals[$roomTypeID] = [
+                        'packagePrice' => 0,
+                        'servicePrice' => 0,
+                        'price' => 0,
+                        'paid' => 0,
+                        'paidPercent' => 0,
+                        'debt' => 0,
+                        'maxIncome' => 0,
+                        'maxIncomePercent' => 0,
+                        'guests' => 0,
+                        'roomGuests' => 0,
+                    ];
+                }
+
+                $packagesDataByDay[$roomTypeID][$date->format('d.m.Y')] = [];
+
                 if($date >= $package->getBegin() && $date < $package->getEnd()){
-                    $countPackage++;
+                    $countPackages[$roomTypeID]++;
 
                     $priceByDate = $package->getPricesByDate();
                     if(isset($priceByDate[$date->format('d_m_Y')])) {
@@ -751,7 +772,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             $price = $packagePrice + $servicePrice;
             $paidPercent = $paidPercent / $price;
 
-            $packagesDataByDay[$package->getRoomType()->getId()][$date->format('d.m.Y')] = [
+            $packagesDataByDay[$roomTypeID][$date->format('d.m.Y')] = [
                 'packagePrice' => number_format($packagePrice, 2),
                 'servicePrice' => number_format($servicePrice, 2),
                 'price' => number_format($price, 2),
@@ -761,8 +782,31 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 'maxIncome' => number_format($maxIncome, 2),
                 'maxIncomePercent' => number_format($maxIncomePercent * 100, 2),
                 'guests' => $guests,
-                'roomGuests' => $countPackage > 0 ? number_format($roomGuests / $countPackage, 2) : 0,
+                'roomGuests' => $countPackages[$roomTypeID] > 0 ? number_format($roomGuests / $countPackages[$roomTypeID], 2) : 0,
             ];
+
+            $totals[$roomTypeID]['packagePrice'] += $packagePrice;
+            $totals[$roomTypeID]['servicePrice'] += $servicePrice;
+            $totals[$roomTypeID]['price'] += $price;
+            $totals[$roomTypeID]['paid'] += $paid;
+            $totals[$roomTypeID]['paidPercent'] += $paidPercent * 100;
+            $totals[$roomTypeID]['debt'] += $debt;
+            $totals[$roomTypeID]['maxIncome'] += $maxIncome;
+            $totals[$roomTypeID]['maxIncomePercent'] += $maxIncomePercent * 100;
+            $totals[$roomTypeID]['guests'] += $guests;
+            $totals[$roomTypeID]['roomGuests'] += $roomGuests;
+        }
+        foreach($totals as $roomTypeID => &$total) {
+            $total['packagePrice'] = number_format($total['packagePrice'], 2);
+            $total['servicePrice'] = number_format($total['servicePrice'], 2);
+            $total['price'] = number_format($total['price'], 2);
+            $total['paid'] = number_format($total['paid'], 2);
+            $total['paidPercent'] = number_format($total['paidPercent'] / $countPackages[$roomTypeID], 2);
+            $total['debt'] = number_format($total['debt'], 2);
+            $total['maxIncome'] = number_format($total['maxIncome'], 2);
+            $total['maxIncomePercent'] = number_format($total['maxIncomePercent'] / $countPackages[$roomTypeID], 2);
+            //$total['guests'] = $total['guests'];
+            $total['roomGuests'] = number_format($total['roomGuests'], 2);
         }
 
         return [
@@ -770,6 +814,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'dates' => $dates,
             'roomCaches' => $roomCaches,
             'packagesDataByDay' => $packagesDataByDay,
+            'totals' => $totals,
         ];
     }
 }
