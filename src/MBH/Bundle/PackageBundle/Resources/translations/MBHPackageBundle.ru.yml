@@ -322,7 +322,7 @@ source.edit.edit_reservation_source: "редактрирование источ�
 source.index.reservation_source: "источник броней"
 source.index.services: "Услуги"
 source.index.fms: "Для ФМС"
-source.index.filling: "Заполняймость"
+source.index.filling: "Заполняемость"
 source.index.name: Название
 source.index.inner_name: Внутреннее название
 source.index.created: Создан

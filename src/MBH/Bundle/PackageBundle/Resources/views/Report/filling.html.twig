@@ -34,7 +34,7 @@
         {% endblock content %}
     {% endembed %}
 
-    <div id="filling-table" style="overflow-y: auto">
+    <div id="filling-table-wrapper" style="overflow-y: auto">
         {% include 'MBHPackageBundle:Report:fillingTable.html.twig' with {'roomTypes': roomTypes, 'rangeDateList' : rangeDateList, 'tableDataByRoomType': tableDataByRoomType} %}
     </div>
 {% endblock %}
