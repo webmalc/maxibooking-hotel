@@ -704,37 +704,27 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         }
 
         $dataTable = [];
+        $emptyData = [
+            'packagePrice' => 0,
+            'servicePrice' => 0,
+            'price' => 0,
+            'paid' => 0,
+            'paidPercent' => 0,
+            'debt' => 0,
+            'maxIncome' => 0,
+            'maxIncomePercent' => 0,
+            'guests' => 0,
+            'roomGuests' => 0,
+        ];
         foreach($allPackagesByRoomType as $roomTypeID => $packages) {
             $packagesDataByDay = [];
-            $totals = [
-                'packagePrice' => 0,
-                'servicePrice' => 0,
-                'price' => 0,
-                'paid' => 0,
-                'paidPercent' => 0,
-                'debt' => 0,
-                'maxIncome' => 0,
-                'maxIncomePercent' => 0,
-                'guests' => 0,
-                'roomGuests' => 0,
-            ];
+            $totals = $emptyData;
 
             foreach($dates as $date) {
-                $data = [
-                    'packagePrice' => 0,
-                    'servicePrice' => 0,
-                    'paid' => 0,
-                    'paidPercent' => 0,
-                    'debt' => 0,
-                    'maxIncome' => 0,
-                    'maxIncomePercent' => 0,
-                    'guests' => 0,
-                    'roomGuests' => 0,
-                ];
+                $data = $emptyData;
 
                 foreach($priceCaches as $priceCache) {
                     if($priceCache->getDate()->getTimestamp() == $date->getTimestamp()) {
-
                         $totalRooms = 0;
                         if(isset($roomCaches[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')])) {
                             $totalRooms = $roomCaches[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')]->getTotalRooms();
@@ -747,19 +737,15 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
                 foreach($packages as $package) {
                     if($date >= $package->getBegin() && $date < $package->getEnd()){
-
                         $priceByDate = $package->getPricesByDate();
                         if(isset($priceByDate[$date->format('d_m_Y')])) {
                             $data['packagePrice'] += $priceByDate[$date->format('d_m_Y')];
                         }
 
                         $data['servicePrice'] += $package->getServicesPrice() / $package->getNights();
-
                         $data['paid'] += $package->getNights() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
                         $data['paidPercent'] += $package->getPaid() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
-
                         $data['debt'] += $package->getDebt() > 0 ? $package->getDebt() / $package->getNights() : 0;
-
                         $data['maxIncomePercent'] += $data['packagePrice'] / $data['maxIncome'];
                         $data['guests'] += $package->getAdults();
                         $data['roomGuests'] += $data['guests'];
@@ -773,16 +759,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
                 $packagesDataByDay[$date->format('d.m.Y')] = $data;
 
-                $totals['packagePrice'] += $data['packagePrice'];
-                $totals['servicePrice'] += $data['servicePrice'];
-                $totals['price'] += $data['price'];
-                $totals['paid'] += $data['paid'];
-                $totals['paidPercent'] += $data['paidPercent'];
-                $totals['debt'] += $data['debt'];
-                $totals['maxIncome'] += $data['maxIncome'];
-                $totals['maxIncomePercent'] += $data['maxIncomePercent'];
-                $totals['guests'] += $data['guests'];
-                $totals['roomGuests'] += $data['roomGuests'];
+                foreach($totals as $kay => $value) {
+                    $totals[$kay] = $value + $data[$kay];
+                }
             }
 
             $totals['paidPercent'] = $totals['paidPercent'] / count($dates);
