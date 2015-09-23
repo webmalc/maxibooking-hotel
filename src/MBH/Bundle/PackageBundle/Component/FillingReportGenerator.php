@@ -69,7 +69,7 @@ class FillingReportGenerator
         unset($packages);
 
         $tableDataByRoomType = [];
-        $emptyData = [
+        $emptyPackageRowData = [
             'packagePrice' => 0,
             'servicePrice' => 0,
             'price' => 0,
@@ -81,54 +81,90 @@ class FillingReportGenerator
             'guests' => 0,
             'roomGuests' => 0,
         ];
-        foreach($packagesByRoomType as $roomTypeID => $packages) {
+
+        $emptyRoomCacheRow = [
+            'totalRooms' => 0,
+            'packagesCount' => 0,
+            'leftRooms' => 0,
+            'packagesCountPercent' => 0,
+        ];
+
+        $roomCacheRepository = $dm->getRepository('MBHPriceBundle:RoomCache');
+
+        foreach($roomTypes as $roomType) {
+            $roomTypeID = $roomType->getId();
+            $tableDataByRoomType[$roomTypeID] = [
+                'rows' => [],
+                'totals' => [],
+            ];
+
             /** @var array $rows packages info by day, keys is dates (format d.m.Y) */
             $rows = [];
-            $totals = $emptyData;
+            $totals = $emptyPackageRowData + $emptyRoomCacheRow;
 
             foreach($rangeDateList as $date) {
-                $rowData = $emptyData;
+                //RoomCache Rows Data
+                $roomCache = $roomCacheRepository->findOneBy(['date' => $date, 'roomType.id' => $roomType->getId(),
+                    'hotel.id' => $this->hotel->getId()
+                ]);
 
-                foreach($priceCaches as $priceCache) {
-                    if($priceCache->getDate()->getTimestamp() == $date->getTimestamp()) {
-                        $totalRooms = 0;
-                        if(isset($roomCaches[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')])) {
-                            $totalRooms = $roomCaches[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')]->getTotalRooms();
+                $roomCacheRow = $roomCache ? [
+                    'totalRooms' => $roomCache->getTotalRooms(),
+                    'packagesCount' => $roomCache->getPackagesCount(),
+                    'leftRooms' => $roomCache->getLeftRooms(),
+                    'packagesCountPercent' => $roomCache->getTotalRooms() ? $roomCache->packagesCountPercent() : 0,
+                ] : $emptyRoomCacheRow;
+
+
+                //Package Rows Data
+                $packages = isset($packagesByRoomType[$roomTypeID]) ? $packagesByRoomType[$roomTypeID] : [];
+                $packageRowData = $emptyPackageRowData;
+
+                if($packages) {
+                    foreach($priceCaches as $priceCache) {
+                        if($priceCache->getDate()->getTimestamp() == $date->getTimestamp()) {
+                            $totalRooms = 0;
+                            if(isset($roomCaches[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')])) {
+                                $totalRooms = $roomCaches[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')]->getTotalRooms();
+                            }
+
+                            $packageRowData['maxIncome'] += $priceCache->getMaxIncome() * $totalRooms;
+                            break;
                         }
-
-                        $rowData['maxIncome'] += $priceCache->getMaxIncome() * $totalRooms;
-                        break;
                     }
+
+                    foreach($packages as $package) {
+                        if($date >= $package->getBegin() && $date < $package->getEnd()){
+                            $priceByDate = $package->getPricesByDate();
+                            if(isset($priceByDate[$date->format('d_m_Y')])) {
+                                $packageRowData['packagePrice'] += $priceByDate[$date->format('d_m_Y')];
+                            }
+
+                            $packageRowData['servicePrice'] += $package->getServicesPrice() / $package->getNights();
+                            $packageRowData['paid'] += $package->getNights() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
+                            $packageRowData['paidPercent'] += $package->getPaid() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
+                            $packageRowData['debt'] += $package->getDebt() > 0 ? $package->getDebt() / $package->getNights() : 0;
+                            $packageRowData['maxIncomePercent'] += $packageRowData['maxIncome'] > 0 ? $packageRowData['packagePrice'] / $packageRowData['maxIncome'] : 0;
+                            $packageRowData['guests'] += $package->getAdults();
+                            $packageRowData['roomGuests'] += $packageRowData['guests'];
+                        }
+                    }
+
+                    $packageRowData['price'] = $packageRowData['packagePrice'] + $packageRowData['servicePrice'];
+                    $packageRowData['paidPercent'] = $packageRowData['price'] ? $packageRowData['paidPercent'] / $packageRowData['price'] * 100 : 0;
+                    $packageRowData['maxIncomePercent'] = $packageRowData['maxIncomePercent'] * 100;
+                    $packageRowData['roomGuests'] = $packageRowData['roomGuests'] / count($packages);
                 }
 
-                foreach($packages as $package) {
-                    if($date >= $package->getBegin() && $date < $package->getEnd()){
-                        $priceByDate = $package->getPricesByDate();
-                        if(isset($priceByDate[$date->format('d_m_Y')])) {
-                            $rowData['packagePrice'] += $priceByDate[$date->format('d_m_Y')];
-                        }
+                $rowDate = $packageRowData + $roomCacheRow;
 
-                        $rowData['servicePrice'] += $package->getServicesPrice() / $package->getNights();
-                        $rowData['paid'] += $package->getNights() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
-                        $rowData['paidPercent'] += $package->getPaid() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
-                        $rowData['debt'] += $package->getDebt() > 0 ? $package->getDebt() / $package->getNights() : 0;
-                        $rowData['maxIncomePercent'] += $rowData['maxIncome'] > 0 ? $rowData['packagePrice'] / $rowData['maxIncome'] : 0;
-                        $rowData['guests'] += $package->getAdults();
-                        $rowData['roomGuests'] += $rowData['guests'];
-                    }
-                }
+                $rows[$date->format('d.m.Y')] = $rowDate;
 
-                $rowData['price'] = $rowData['packagePrice'] + $rowData['servicePrice'];
-                $rowData['paidPercent'] = $rowData['price'] ? $rowData['paidPercent'] / $rowData['price'] * 100 : 0;
-                $rowData['maxIncomePercent'] = $rowData['maxIncomePercent'] * 100;
-                $rowData['roomGuests'] = $rowData['roomGuests'] / count($packages);
-
-                $rows[$date->format('d.m.Y')] = $rowData;
-
-                foreach($totals as $kay => $value) {
-                    $totals[$kay] = $value + $rowData[$kay];
+                foreach($rowDate as $kay => $value) {
+                    $totals[$kay] = $totals[$kay] + $value;
                 }
             }
+
 
             $totals['paidPercent'] = $totals['paidPercent'] / count($rangeDateList);
             $totals['maxIncomePercent'] = $totals['maxIncomePercent'] / count($rangeDateList);
@@ -137,45 +173,6 @@ class FillingReportGenerator
                 'rows' => $rows,
                 'totals' => $totals
             ];
-        }
-
-
-        $roomCacheRepository = $dm->getRepository('MBHPriceBundle:RoomCache');
-
-        $fakeCache = new RoomCache();
-        $fakeCache
-            ->setPackagesCount(0)
-            ->setTotalRooms(0)
-            ->setLeftRooms(0);
-        foreach($roomTypes as $roomType) {
-            $roomTypeID = $roomType->getId();
-            if(!isset($tableDataByRoomType[$roomTypeID])) {
-                $tableDataByRoomType[$roomTypeID] = [];
-            }
-            foreach($rangeDateList as $date) {
-                if (!isset($tableDataByRoomType[$roomTypeID]['rows'])) {
-                    $tableDataByRoomType[$roomTypeID]['rows'] = [];
-                }
-
-                $roomCache = $roomCacheRepository->findOneBy(['date' => $date, 'roomType.id' => $roomType->getId(),
-                    'hotel.id' => $this->hotel->getId()
-                ]);
-
-                $roomCache = $roomCache ? $roomCache : $fakeCache;
-
-                $roomCacheRow = [
-                    'totalRooms' => $roomCache->getTotalRooms(),
-                    'packagesCount' => $roomCache->getPackagesCount(),
-                    'leftRooms' => $roomCache->getLeftRooms(),
-                    'packagesCountPercent' => $roomCache->getTotalRooms() ? $roomCache->packagesCountPercent() : 0,
-                ];
-
-                if (!isset($tableDataByRoomType[$roomTypeID]['rows'][$date->format('d.m.Y')])) {
-                    $tableDataByRoomType[$roomTypeID]['rows'][$date->format('d.m.Y')] = [];
-                }
-
-                $tableDataByRoomType[$roomTypeID]['rows'][$date->format('d.m.Y')] += $roomCacheRow;
-            }
         }
 
         return [
