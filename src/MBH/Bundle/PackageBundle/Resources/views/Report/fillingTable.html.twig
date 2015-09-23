@@ -24,7 +24,7 @@
                     {{ packageDate.totalRooms|default(0) }}
                 </td>
             {% endfor %}
-            <td class="content-total">
+            <td class="content">
                 <strong>
                     {{ tableData.totals.totalRooms|default(0) }}
                 </strong>
@@ -38,7 +38,7 @@
                     {{ packageDate.packagesCount|default(0) }}
                 </td>
             {% endfor %}
-            <td class="content-total">
+            <td class="content">
                 <strong>
                     {{ tableData.totals.packagesCount|default(0) }}
                 </strong>
@@ -49,12 +49,12 @@
             {% for date in rangeDateList %}
                 {% set packageDate = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="content">
-                    {{ packageDate.packagesCountPercent|default(0) }} %
+                    {{ packageDate.packagesCountPercent|default(0)|number_format(2) }} %
                 </td>
             {% endfor %}
-            <td class="content-total">
+            <td class="content">
                 <strong>
-                    {{ tableData.totals.packagesCountPercent|default(0) }}
+                    {{ tableData.totals.packagesCountPercent|default(0)|number_format(2) }} %
                 </strong>
             </td>
         </tr>

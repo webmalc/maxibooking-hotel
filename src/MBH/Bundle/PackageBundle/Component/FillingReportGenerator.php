@@ -87,7 +87,6 @@ class FillingReportGenerator
         $emptyRoomCacheRow = [
             'totalRooms' => 0,
             'packagesCount' => 0,
-            'leftRooms' => 0,
             'packagesCountPercent' => 0,
         ];
 
@@ -135,7 +134,6 @@ class FillingReportGenerator
                 $roomCacheRow = $roomCache ? [
                     'totalRooms' => $roomCache->getTotalRooms(),
                     'packagesCount' => $roomCache->getPackagesCount(),
-                    'leftRooms' => $roomCache->getLeftRooms(),
                     'packagesCountPercent' => $roomCache->getTotalRooms() ? $roomCache->packagesCountPercent() : 0,
                 ] : $emptyRoomCacheRow;
 
@@ -148,8 +146,8 @@ class FillingReportGenerator
                     foreach($priceCaches as $priceCache) {
                         if($priceCache->getDate()->getTimestamp() == $date->getTimestamp()) {
                             $totalRooms = 0;
-                            if(isset($roomCaches[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')])) {
-                                $totalRooms = $roomCaches[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')]->getTotalRooms();
+                            if(isset($roomCachesByRoomTypeAndDate[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')])) {
+                                $totalRooms = $roomCachesByRoomTypeAndDate[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')]->getTotalRooms();
                             }
 
                             $packageRowData['maxIncome'] += $priceCache->getMaxIncome() * $totalRooms;
@@ -170,14 +168,13 @@ class FillingReportGenerator
                             $packageRowData['debt'] += $package->getDebt() > 0 ? $package->getDebt() / $package->getNights() : 0;
                             $packageRowData['maxIncomePercent'] += $packageRowData['maxIncome'] > 0 ? $packageRowData['packagePrice'] / $packageRowData['maxIncome'] : 0;
                             $packageRowData['guests'] += $package->getAdults();
-                            $packageRowData['roomGuests'] += $packageRowData['guests'];
                         }
                     }
 
                     $packageRowData['price'] = $packageRowData['packagePrice'] + $packageRowData['servicePrice'];
                     $packageRowData['paidPercent'] = $packageRowData['price'] ? $packageRowData['paidPercent'] / $packageRowData['price'] * 100 : 0;
                     $packageRowData['maxIncomePercent'] = $packageRowData['maxIncomePercent'] * 100;
-                    $packageRowData['roomGuests'] = $packageRowData['roomGuests'] / count($packages);
+                    $packageRowData['roomGuests'] = $roomCacheRow['packagesCount'] ? $packageRowData['guests'] / $roomCacheRow['packagesCount'] : 0;
                 }
 
                 $rowDate = $packageRowData + $roomCacheRow;
@@ -190,6 +187,7 @@ class FillingReportGenerator
             }
 
 
+            $totals['packagesCountPercent'] = $totals['packagesCountPercent'] / count($rangeDateList);
             $totals['paidPercent'] = $totals['paidPercent'] / count($rangeDateList);
             $totals['maxIncomePercent'] = $totals['maxIncomePercent'] / count($rangeDateList);
 
