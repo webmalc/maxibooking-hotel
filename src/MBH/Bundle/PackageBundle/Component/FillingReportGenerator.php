@@ -162,13 +162,23 @@ class FillingReportGenerator
                     foreach($packages as $package) {
                         if($date >= $package->getBegin() && $date < $package->getEnd()){
                             $priceByDate = $package->getPricesByDate();
+                            $packagePrice = 0;
                             if(isset($priceByDate[$date->format('d_m_Y')])) {
-                                $packageRowData['packagePrice'] += $priceByDate[$date->format('d_m_Y')];
+                                $packagePrice = $priceByDate[$date->format('d_m_Y')];
                             }
+                            $packageRowData['packagePrice'] += $packagePrice;
 
-                            $packageRowData['servicePrice'] += $package->getServicesPrice() / $package->getNights();
-                            $packageRowData['paid'] += $package->getNights() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
-                            $packageRowData['paidPercent'] += $package->getNights() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
+                            foreach($package->getServices() as $service) {
+                                if($date >= $service->getBegin() && $date < $service->getEnd()) {
+                                    $packageRowData['servicePrice'] += $service->calcTotal() / $service->getNights();
+                                }
+                            }
+                            //$packageRowData['servicePrice'] += $package->getServicesPrice() / $package->getNights();
+                            //$packageRowData['paid'] += $package->getNights() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
+
+                            $relationPaid = $package->getOrder()->getPrice() ?
+                                $package->getOrder()->getPaid() / $package->getOrder()->getPrice() : 0;
+                            $packageRowData['paid'] += $relationPaid * ($packagePrice + $packageRowData['servicePrice']);
                             //$packageRowData['debt'] += $package->getNights() > 0 ? $package->getDebt() / $package->getNights() : 0;
                             $packageRowData['maxIncomePercent'] += $packageRowData['maxIncome'] > 0 ? $packageRowData['packagePrice'] / $packageRowData['maxIncome'] : 0;
                             $packageRowData['guests'] += $package->getAdults();
@@ -181,7 +191,7 @@ class FillingReportGenerator
 
                     $packageRowData['price'] = $packageRowData['packagePrice'] + $packageRowData['servicePrice'];
                     $packageRowData['debt'] = $packageRowData['price'] - $packageRowData['paid'];
-                    $packageRowData['paidPercent'] = $packageRowData['price'] ? $packageRowData['paidPercent'] / $packageRowData['price'] * 100 : 0;
+                    $packageRowData['paidPercent'] = $packageRowData['price'] ? $packageRowData['paid'] / $packageRowData['price'] * 100 : 0;
                     $packageRowData['maxIncomePercent'] = $packageRowData['maxIncomePercent'] * 100;
                     $packageRowData['roomGuests'] = $roomCacheRow['packagesCount'] ? $packageRowData['guests'] / $roomCacheRow['packagesCount'] : 0;
                 }

@@ -1,13 +1,5 @@
 <table id="filling-table" class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
     <tbody>
-    <tr class="header">
-        <td>Даты</td>
-        {% for date in rangeDateList %}
-            <td>{{ date|mbh_format }}</td>
-        {% endfor %}
-        <td>Итого</td>
-    </tr>
-
     {% for roomType in roomTypes %}
         {% set tableData = (tableDataByRoomType[roomType.id] is defined ? tableDataByRoomType[roomType.id] : null) %}
         <tr class="mbh-grid-header1 info">
@@ -16,8 +8,18 @@
             </td>
         </tr>
 
+        <tr class="header">
+            <td>Даты</td>
+            {% for date in rangeDateList %}
+                <td>{{ date|mbh_format }}</td>
+            {% endfor %}
+            <td>Итого</td>
+        </tr>
+
         <tr>
-            <td>Номеров в продаже</td>
+            <td>
+                <small>Номеров в продаже</small>
+            </td>
             {% for date in rangeDateList %}
                 {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="content">
@@ -31,7 +33,9 @@
             </td>
         </tr>
         <tr>
-            <td>Забронировано номеров</td>
+            <td>
+                <small>Забронировано номеров</small>
+            </td>
             {% for date in rangeDateList %}
                 {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="content">
@@ -45,7 +49,9 @@
             </td>
         </tr>
         <tr>
-            <td>Забронировано номеров %</td>
+            <td>
+                <small>Забронировано номеров %</small>
+            </td>
             {% for date in rangeDateList %}
                 {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="content">
@@ -60,7 +66,9 @@
         </tr>
 
         <tr>
-            <td>Неоплаченные номера</td>
+            <td>
+                <small>Номера без оплаты (брони)</small>
+            </td>
             {% for date in rangeDateList %}
                 {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="content">
@@ -73,120 +81,11 @@
                 </strong>
             </td>
         </tr>
+
         <tr>
-            <td>Стоимость бронирования</td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.packagePrice|default(0)|number_format(2) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.packagePrice|default(0)|number_format(2) }}
-                </strong>
+            <td>
+                <small>Гостей всего</small>
             </td>
-        </tr>
-        <tr>
-            <td>Стоимость услуг</td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.servicePrice|default(0)|number_format(2) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.servicePrice|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr>
-            <td>Стоимость</td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.price|default(0)|number_format(2) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.price|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr>
-            <td>Получено</td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.paid|default(0)|number_format(2) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.paid|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr>
-            <td>Получено %</td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.paidPercent|default(0)|number_format(2) }} %
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.paidPercent|default(0)|number_format(2) }} %
-                </strong>
-            </td>
-        </tr>
-        <tr>
-            <td>Долг</td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.debt|default(0)|number_format(2) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.debt|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr>
-            <td>Макс. выручка</td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.maxIncome|default(0)|number_format(2) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.maxIncome|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr>
-            <td>Выручка от макс. %</td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.maxIncomePercent|default(0)|number_format(2) }} %
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.maxIncomePercent|default(0)|number_format(2) }} %
-                </strong>
-            </td>
-        </tr>
-        <tr>
-            <td>Гостей</td>
             {% for date in rangeDateList %}
                 {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="content">
@@ -200,7 +99,9 @@
             </td>
         </tr>
         <tr>
-            <td>Гостей на номер</td>
+            <td>
+                <small>Гостей на 1 номер</small>
+            </td>
             {% for date in rangeDateList %}
                 {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
                 <td class="content">
@@ -210,6 +111,135 @@
             <td class="content-total">
                 <strong>
                     {{ tableData.totals.roomGuests|default(0)|number_format(2) }}
+                </strong>
+            </td>
+        </tr>
+
+        <tr class="info">
+            <td>
+                <small>Стоимость проживания</small>
+            </td>
+            {% for date in rangeDateList %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                <td class="content">
+                    {{ row.packagePrice|default(0)|number_format(2) }}
+                </td>
+            {% endfor %}
+            <td class="content-total">
+                <strong>
+                    {{ tableData.totals.packagePrice|default(0)|number_format(2) }}
+                </strong>
+            </td>
+        </tr>
+        <tr class="info">
+            <td>
+                <small>Стоимость услуг</small>
+            </td>
+            {% for date in rangeDateList %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                <td class="content">
+                    {{ row.servicePrice|default(0)|number_format(2) }}
+                </td>
+            {% endfor %}
+            <td class="content-total">
+                <strong>
+                    {{ tableData.totals.servicePrice|default(0)|number_format(2) }}
+                </strong>
+            </td>
+        </tr>
+        <tr class="info">
+            <td>
+                <small>Общая стоимость</small>
+            </td>
+            {% for date in rangeDateList %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                <td class="content">
+                    {{ row.price|default(0)|number_format(2) }}
+                </td>
+            {% endfor %}
+            <td class="content-total">
+                <strong>
+                    {{ tableData.totals.price|default(0)|number_format(2) }}
+                </strong>
+            </td>
+        </tr>
+        <tr class="success">
+            <td>
+                <small>Получено (выручка)</small>
+            </td>
+            {% for date in rangeDateList %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                <td class="content">
+                    {{ row.paid|default(0)|number_format(2) }}
+                </td>
+            {% endfor %}
+            <td class="content-total">
+                <strong>
+                    {{ tableData.totals.paid|default(0)|number_format(2) }}
+                </strong>
+            </td>
+        </tr>
+        <tr class="success">
+            <td>
+                <small>Получено (выручка) %</small>
+            </td>
+            {% for date in rangeDateList %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                <td class="content">
+                    {{ row.paidPercent|default(0)|number_format(2) }} %
+                </td>
+            {% endfor %}
+            <td class="content-total">
+                <strong>
+                    {{ tableData.totals.paidPercent|default(0)|number_format(2) }} %
+                </strong>
+            </td>
+        </tr>
+        <tr class="danger">
+            <td>
+                <small>Долг</small>
+            </td>
+            {% for date in rangeDateList %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                <td class="content">
+                    {{ row.debt|default(0)|number_format(2) }}
+                </td>
+            {% endfor %}
+            <td class="content-total">
+                <strong>
+                    {{ tableData.totals.debt|default(0)|number_format(2) }}
+                </strong>
+            </td>
+        </tr>
+        <tr class="warning">
+            <td>
+                <small>Макс. возможная выручка</small>
+            </td>
+            {% for date in rangeDateList %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                <td class="content">
+                    {{ row.maxIncome|default(0)|number_format(2) }}
+                </td>
+            {% endfor %}
+            <td class="content-total">
+                <strong>
+                    {{ tableData.totals.maxIncome|default(0)|number_format(2) }}
+                </strong>
+            </td>
+        </tr>
+        <tr class="warning">
+            <td>
+                <small>Выручка от макс. возможной %</small>
+            </td>
+            {% for date in rangeDateList %}
+                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+                <td class="content">
+                    {{ row.maxIncomePercent|default(0)|number_format(2) }} %
+                </td>
+            {% endfor %}
+            <td class="content-total">
+                <strong>
+                    {{ tableData.totals.maxIncomePercent|default(0)|number_format(2) }} %
                 </strong>
             </td>
         </tr>
