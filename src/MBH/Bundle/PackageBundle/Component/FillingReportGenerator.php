@@ -56,8 +56,8 @@ class FillingReportGenerator
         ]);
 
         $packages = $dm->getRepository('MBHPackageBundle:Package')->findBy([
-            'begin' => ['$gte' => reset($rangeDateList)],
-            //'end' => ['$lte' => end($rangeDateList)],
+            'end' => ['$gte' => reset($rangeDateList)],
+            //'begin' => ['$lte' => end($rangeDateList)],
             'roomType.id' => ['$in' => $roomTypeIDs]
         ]);
 
@@ -115,6 +115,8 @@ class FillingReportGenerator
         }
         unset($roomCaches);
 
+        $columnCount = count($rangeDateList);
+
         foreach($roomTypes as $roomType) {
             $roomTypeID = $roomType->getId();
             $tableDataByRoomType[$roomTypeID] = [
@@ -125,6 +127,8 @@ class FillingReportGenerator
             /** @var array $rows packages info by day, keys is dates (format d.m.Y) */
             $rows = [];
             $totals = $emptyPackageRowData + $emptyRoomCacheRow;
+
+            $packageDaysTotal = 0;
 
             foreach($rangeDateList as $date) {
                 //RoomCache Rows Data
@@ -140,7 +144,6 @@ class FillingReportGenerator
                     'packagesCountPercent' => $roomCache->getTotalRooms() ? $roomCache->packagesCountPercent() : 0,
                 ] : $emptyRoomCacheRow;
 
-
                 //Package Rows Data
                 /** @var Package[] $packages */
                 $packages = isset($packagesByRoomType[$roomTypeID]) ? $packagesByRoomType[$roomTypeID] : [];
@@ -148,10 +151,10 @@ class FillingReportGenerator
 
                 if($packages) {
                     foreach($priceCaches as $priceCache) {
-                        if($priceCache->getDate()->getTimestamp() == $date->getTimestamp()) {
+                        if($priceCache->getRoomType()->getId() == $roomTypeID && $priceCache->getDate()->getTimestamp() == $date->getTimestamp()) {
                             $totalRooms = 0;
-                            if(isset($roomCachesByRoomTypeAndDate[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')])) {
-                                $totalRooms = $roomCachesByRoomTypeAndDate[$priceCache->getRoomType()->getId()][$date->format('d.m.Y')]->getTotalRooms();
+                            if(isset($roomCachesByRoomTypeAndDate[$roomTypeID][$date->format('d.m.Y')])) {
+                                $totalRooms = $roomCachesByRoomTypeAndDate[$roomTypeID][$date->format('d.m.Y')]->getTotalRooms();
                             }
 
                             $packageRowData['maxIncome'] += $priceCache->getMaxIncome() * $totalRooms;
@@ -159,40 +162,45 @@ class FillingReportGenerator
                         }
                     }
 
-                    foreach($packages as $package) {
-                        if($date >= $package->getBegin() && $date < $package->getEnd()){
-                            $priceByDate = $package->getPricesByDate();
-                            $packagePrice = 0;
-                            if(isset($priceByDate[$date->format('d_m_Y')])) {
-                                $packagePrice = $priceByDate[$date->format('d_m_Y')];
-                            }
-                            $packageRowData['packagePrice'] += $packagePrice;
+                    $filteredPackages = array_filter($packages, function ($package) use($date) {
+                        return $date >= $package->getBegin() && $date < $package->getEnd();
+                    });
 
-                            foreach($package->getServices() as $service) {
-                                if($date >= $service->getBegin() && $date < $service->getEnd()) {
-                                    $packageRowData['servicePrice'] += $service->calcTotal() / $service->getNights();
-                                }
-                            }
-                            //$packageRowData['servicePrice'] += $package->getServicesPrice() / $package->getNights();
-                            //$packageRowData['paid'] += $package->getNights() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
+                    if(count($filteredPackages) > 0) {
+                        ++$packageDaysTotal;
+                    }
 
-                            $relationPaid = $package->getOrder()->getPrice() ?
-                                $package->getOrder()->getPaid() / $package->getOrder()->getPrice() : 0;
-                            $packageRowData['paid'] += $relationPaid * ($packagePrice + $packageRowData['servicePrice']);
-                            //$packageRowData['debt'] += $package->getNights() > 0 ? $package->getDebt() / $package->getNights() : 0;
-                            $packageRowData['maxIncomePercent'] += $packageRowData['maxIncome'] > 0 ? $packageRowData['packagePrice'] / $packageRowData['maxIncome'] : 0;
-                            $packageRowData['guests'] += $package->getAdults();
+                    foreach($filteredPackages as $package) {
+                        $priceByDate = $package->getPricesByDate();
+                        $packagePrice = 0;
+                        if(isset($priceByDate[$date->format('d_m_Y')])) {
+                            $packagePrice = $priceByDate[$date->format('d_m_Y')];
+                        }
+                        $packageRowData['packagePrice'] += $packagePrice;
 
-                            if($package->getPaidStatus() == 'danger') {
-                                $packageRowData['notPaidRooms']++;
+                        foreach($package->getServices() as $service) {
+                            if($date >= $service->getBegin() && $date < $service->getEnd()) {
+                                $packageRowData['servicePrice'] += $service->calcTotal() / $service->getNights();
                             }
+                        }
+                        //$packageRowData['servicePrice'] += $package->getServicesPrice() / $package->getNights();
+                        //$packageRowData['paid'] += $package->getNights() > 0 ? ($package->getPaid() / $package->getNights()) : 0;
+
+                        $relationPaid = $package->getOrder()->getPrice() ?
+                            $package->getOrder()->getPaid() / $package->getOrder()->getPrice() : 0;
+                        $packageRowData['paid'] += $relationPaid * ($packagePrice + $packageRowData['servicePrice']);
+                        //$packageRowData['debt'] += $package->getNights() > 0 ? $package->getDebt() / $package->getNights() : 0;
+                        $packageRowData['guests'] += $package->getAdults();
+
+                        if($package->getPaidStatus() == 'danger') {
+                            $packageRowData['notPaidRooms']++;
                         }
                     }
 
                     $packageRowData['price'] = $packageRowData['packagePrice'] + $packageRowData['servicePrice'];
                     $packageRowData['debt'] = $packageRowData['price'] - $packageRowData['paid'];
                     $packageRowData['paidPercent'] = $packageRowData['price'] ? $packageRowData['paid'] / $packageRowData['price'] * 100 : 0;
-                    $packageRowData['maxIncomePercent'] = $packageRowData['maxIncomePercent'] * 100;
+                    $packageRowData['maxIncomePercent'] = $packageRowData['maxIncome'] > 0 ? $packageRowData['packagePrice'] / $packageRowData['maxIncome'] * 100 : 0;
                     $packageRowData['roomGuests'] = $roomCacheRow['packagesCount'] ? $packageRowData['guests'] / $roomCacheRow['packagesCount'] : 0;
                 }
 
@@ -205,16 +213,14 @@ class FillingReportGenerator
                 }
             }
 
-
-            $dateCount = count($rangeDateList);
-            $totals['totalRooms'] = $totals['totalRooms'] / $dateCount;
-            $totals['packagesCount'] = $totals['packagesCount'] / $dateCount;
-            $totals['notPaidRooms']  = $totals['notPaidRooms'] / $dateCount;
-            $totals['guests'] = $totals['guests'] / $dateCount;
-            $totals['roomGuests'] = $totals['roomGuests'] / $dateCount;
-            $totals['packagesCountPercent'] = $totals['packagesCountPercent'] / $dateCount;
-            $totals['paidPercent'] = $totals['paidPercent'] / $dateCount;
-            $totals['maxIncomePercent'] = $totals['maxIncomePercent'] / $dateCount;
+            $totals['totalRooms'] = $totals['totalRooms'] / $columnCount;
+            $totals['packagesCount'] = $totals['packagesCount'] / $columnCount;
+            $totals['notPaidRooms']  = $packageDaysTotal ? $totals['notPaidRooms'] / $packageDaysTotal : 0;
+            $totals['guests'] = $packageDaysTotal ? $totals['guests'] / $packageDaysTotal : 0;
+            $totals['roomGuests'] = $packageDaysTotal ? $totals['roomGuests'] / $packageDaysTotal : 0;
+            $totals['packagesCountPercent'] = $totals['packagesCountPercent'] / $columnCount;
+            $totals['paidPercent'] = $totals['paidPercent'] / $columnCount;
+            $totals['maxIncomePercent'] = $totals['maxIncomePercent'] / $columnCount;
 
             $tableDataByRoomType[$roomTypeID] = [
                 'rows' => $rows,
@@ -222,9 +228,87 @@ class FillingReportGenerator
             ];
         }
 
+        $totalRows = [];
+        $totals = [];
+
+        $roomTypeCount = count($tableDataByRoomType);
+        foreach($tableDataByRoomType as $roomTypeID => $data) {
+            $rows = $data['rows'];
+            $total = $data['totals'];
+
+            foreach($rows as $date => $row) {
+                if(!isset($totalRows[$date])) {
+                    $totalRows[$date] = [
+                        'packagePrice' => 0,
+                        'servicePrice'  => 0,
+                        'price' => 0,
+                        'paid' => 0,
+                        'debt' => 0,
+                        'maxIncome' => 0,
+                        'maxIncomePercent' => 0,
+                        'packagesCountPercent' => 0,
+                        'guests' => 0,
+                        'roomGuests' => 0,
+                        'notPaidRooms' => 0,
+                        'totalRooms' => 0,
+                        'packagesCount' => 0,
+                    ];
+                }
+
+                $totalRows[$date]['packagePrice'] += $row['packagePrice'];
+                $totalRows[$date]['servicePrice'] += $row['servicePrice'];
+                $totalRows[$date]['price'] += $row['price'];
+                $totalRows[$date]['paid'] += $row['paid'];
+                $totalRows[$date]['debt'] += $row['debt'];
+                $totalRows[$date]['maxIncome'] += $row['maxIncome'];
+                $totalRows[$date]['maxIncomePercent'] += $row['maxIncomePercent'];
+                $totalRows[$date]['guests'] += $row['guests'];
+                $totalRows[$date]['roomGuests'] += $row['roomGuests'];
+                $totalRows[$date]['notPaidRooms'] += $row['notPaidRooms'];
+                $totalRows[$date]['totalRooms'] += $row['totalRooms'];
+                $totalRows[$date]['packagesCount'] += $row['packagesCount'];
+
+                $totalRows[$date]['packagesCountPercent'] += $row['packagesCountPercent'] / $roomTypeCount;
+
+                //$totalRows[$date]['paidPercent'] = $totalRows[$date]['paidPercent'] / $roomTypeCount;
+                $totalRows[$date]['paidPercent'] = $totalRows[$date]['price'] ? $totalRows[$date]['paid'] / $totalRows[$date]['price'] * 100 : 0;
+                $totalRows[$date]['maxIncomePercent'] = $totalRows[$date]['maxIncome'] > 0 ?
+                    $totalRows[$date]['packagePrice'] / $totalRows[$date]['maxIncome'] * 100 :
+                    0;
+
+                $totalRows[$date]['roomGuests'] = $totalRows[$date]['packagesCount'] ?
+                    $totalRows[$date]['guests'] / $totalRows[$date]['packagesCount'] :
+                    0;
+            }
+
+            foreach($total as $key => $value) {
+                if(!isset($totals[$key])) {
+                    $totals[$key] = 0;
+                }
+                $totals[$key] += $value;
+            }
+        }
+
+        if($columnCount > 0) {
+            $totals['totalRooms'] = $totals['totalRooms'] / $roomTypeCount;
+            $totals['packagesCount'] = $totals['packagesCount'] / $roomTypeCount;
+            $totals['notPaidRooms'] = $totals['notPaidRooms'] / $roomTypeCount;
+            //$totals['guests'] = $totals['guests'] / $roomTypeCount;
+            $totals['roomGuests'] = $totals['roomGuests'] / $roomTypeCount;
+            $totals['packagesCountPercent'] = $totals['packagesCountPercent'] / $roomTypeCount;
+            $totals['paidPercent'] = $totals['paidPercent'] / $roomTypeCount;
+            $totals['maxIncomePercent'] = $totals['maxIncomePercent'] / $roomTypeCount;
+        }
+
+        $totalTableData = [
+            'rows' => $totalRows,
+            'totals' => $totals,
+        ];
+
         return [
             'rangeDateList' => $rangeDateList,
-            'tableDataByRoomType' => $tableDataByRoomType
+            'tableDataByRoomType' => $tableDataByRoomType,
+            'totalTableData' => $totalTableData
         ];
     }
 }

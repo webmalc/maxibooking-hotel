@@ -1,7 +1,6 @@
 <table id="filling-table" class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
     <tbody>
     {% for roomType in roomTypes %}
-        {% set tableData = (tableDataByRoomType[roomType.id] is defined ? tableDataByRoomType[roomType.id] : null) %}
         <tr class="mbh-grid-header1 info">
             <td colspan=" {{ rangeDateList|length + 2 }}  ">
                 <strong>{{ roomType.fullTitle }}</strong>
@@ -16,233 +15,26 @@
             <td>Итого</td>
         </tr>
 
-        <tr>
-            <td>
-                <small>Номеров в продаже</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.totalRooms|default(0) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.totalRooms|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <small>Забронировано номеров</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.packagesCount|default(0) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.packagesCount|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <small>Забронировано номеров %</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.packagesCountPercent|default(0)|number_format(2) }} %
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.packagesCountPercent|default(0)|number_format(2) }} %
-                </strong>
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-                <small>Номера без оплаты (брони)</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.notPaidRooms|default(0) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.notPaidRooms|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-                <small>Гостей всего</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.guests|default(0) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.guests|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <small>Гостей на 1 номер</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.roomGuests|default(0)|number_format(2) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.roomGuests|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-
-        <tr class="info">
-            <td>
-                <small>Стоимость проживания</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.packagePrice|default(0)|number_format(2) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.packagePrice|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr class="info">
-            <td>
-                <small>Стоимость услуг</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.servicePrice|default(0)|number_format(2) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.servicePrice|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr class="info">
-            <td>
-                <small>Общая стоимость</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.price|default(0)|number_format(2) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.price|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr class="success">
-            <td>
-                <small>Получено (выручка)</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.paid|default(0)|number_format(2) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.paid|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr class="success">
-            <td>
-                <small>Получено (выручка) %</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.paidPercent|default(0)|number_format(2) }} %
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.paidPercent|default(0)|number_format(2) }} %
-                </strong>
-            </td>
-        </tr>
-        <tr class="danger">
-            <td>
-                <small>Долг</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.debt|default(0)|number_format(2) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.debt|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr class="warning">
-            <td>
-                <small>Макс. возможная выручка</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.maxIncome|default(0)|number_format(2) }}
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.maxIncome|default(0)|number_format(2) }}
-                </strong>
-            </td>
-        </tr>
-        <tr class="warning">
-            <td>
-                <small>Выручка от макс. возможной %</small>
-            </td>
-            {% for date in rangeDateList %}
-                {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
-                <td class="content">
-                    {{ row.maxIncomePercent|default(0)|number_format(2) }} %
-                </td>
-            {% endfor %}
-            <td class="content-total">
-                <strong>
-                    {{ tableData.totals.maxIncomePercent|default(0)|number_format(2) }} %
-                </strong>
-            </td>
-        </tr>
+        {% set tableData = (tableDataByRoomType[roomType.id] is defined ? tableDataByRoomType[roomType.id] : null) %}
+        {% include 'MBHPackageBundle:Report:fillingTableRows.html.twig' with {tableData: tableData } %}
     {% endfor %}
+
+    {% if tableDataByRoomType|length > 1 %}
+        <tr class="mbh-grid-header1 info">
+            <td colspan=" {{ rangeDateList|length + 2 }}  ">
+                <strong>Итог</strong>
+            </td>
+        </tr>
+
+        <tr class="header">
+            <td>Даты</td>
+            {% for date in rangeDateList %}
+                <td>{{ date|mbh_format }}</td>
+            {% endfor %}
+            <td>Итого</td>
+        </tr>
+
+        {% include 'MBHPackageBundle:Report:fillingTableRows.html.twig' with {tableData: totalTableData} %}
+    {% endif %}
     </tbody>
 </table>
