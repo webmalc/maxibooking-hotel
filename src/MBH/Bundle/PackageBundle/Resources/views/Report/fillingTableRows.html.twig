@@ -59,7 +59,7 @@
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ tableData.totals.notPaidRooms|default(0)|number_format(2) }}
+            {{ tableData.totals.uniqueNotPaidRooms }} ({{ tableData.totals.notPaidRooms|default(0)|number_format(2) }})
         </strong>
     </td>
 </tr>
@@ -76,7 +76,7 @@
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ tableData.totals.guests|default(0)|number_format(2) }}
+            {{ tableData.totals.uniqueGuests|default(0) }} ({{ tableData.totals.guests|default(0)|number_format(2) }})
         </strong>
     </td>
 </tr>
@@ -147,7 +147,7 @@
 </tr>
 <tr class="success">
     <td>
-        <small>Получено (выручка)</small>
+        <small>Получено фактически</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -163,7 +163,7 @@
 </tr>
 <tr class="success">
     <td>
-        <small>Получено (выручка) %</small>
+        <small>Получено фактически %</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -195,7 +195,7 @@
 </tr>
 <tr class="warning">
     <td>
-        <small>Макс. возможная выручка</small>
+        <small>Макс. возм. выручка за прож.</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
@@ -211,7 +211,7 @@
 </tr>
 <tr class="warning">
     <td>
-        <small>Выручка от макс. возможной %</small>
+        <small>Тек. стоим. прожив. от макс. возм. %</small>
     </td>
     {% for date in rangeDateList %}
         {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}

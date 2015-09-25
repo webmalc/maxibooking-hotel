@@ -451,6 +451,28 @@ class PackageRepository extends DocumentRepository
             $qb->field($dateType)->lte($data['end']);
         }
 
+        if ($dateType == 'accommodation') {
+            if($data['begin'] && $data['end']) {
+                $expr = $qb->expr();
+                $expr->addOr($qb->expr()
+                    ->field('arrivalTime')->gte($data['begin'])->lte($data['end'])
+                );
+                $expr->addOr($qb->expr()
+                    ->field('departureTime')->gte($data['begin'])->lte($data['end'])
+                );
+                $expr->addOr($qb->expr()
+                    ->field('arrivalTime')->lte($data['begin'])
+                    ->field('departureTime')->gte($data['end'])
+                );
+                $expr->addOr($qb->expr()
+                    ->field('arrivalTime')->gte($data['begin'])
+                    ->field('departureTime')->lte($data['end'])
+                );
+
+                $qb->addAnd($expr);
+            }
+        }
+
         // filter
         if (isset($data['filter']) && $data['filter'] != null) {
             //live now
