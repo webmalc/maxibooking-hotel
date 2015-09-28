@@ -700,6 +700,12 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             $end->modify('+7 day');
         }
 
+        if($begin->diff($end)->days > 90) {
+            return $this->render('MBHPackageBundle:Report:report_filling_table_error.html.twig' , [
+                'message' => 'Период не должен превышать 90 дней'
+            ]);
+        }
+
         $roomType = $roomTypeRepository->find($request->get('roomType'));
         if($roomType) {
             $roomTypes = [$roomType];

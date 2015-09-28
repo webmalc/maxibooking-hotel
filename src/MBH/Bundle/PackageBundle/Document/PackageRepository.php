@@ -358,6 +358,9 @@ class PackageRepository extends DocumentRepository
     }
 
     /**
+     * @deprecated todo use queryCriteriaToBuilder
+     * @see PackageRepository::queryCriteriaToBuilder
+     *
      * @param $data
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      * @throws \Exception
@@ -433,43 +436,36 @@ class PackageRepository extends DocumentRepository
             $dateType = $data['dates'];
         }
 
-        //begin
-        if (isset($data['begin']) && !empty($data['begin'])) {
-            if (!$data['begin'] instanceof \DateTime) {
-                $data['begin'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['begin'].' 00:00:00');
-            }
-
-            $qb->field($dateType)->gte($data['begin']);
+        if (isset($data['begin']) && !$data['begin'] instanceof \DateTime) {
+            $data['begin'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['begin'].' 00:00:00');
         }
 
-        //end
-        if (isset($data['end']) && !empty($data['end'])) {
-            if (!$data['end'] instanceof \DateTime) {
-                $data['end'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['end'].' 00:00:00');
-            }
-
-            $qb->field($dateType)->lte($data['end']);
+        if(isset($data['end']) && !$data['end'] instanceof \DateTime) {
+            $data['end'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['end'].' 00:00:00');
         }
 
         if ($dateType == 'accommodation') {
             if($data['begin'] && $data['end']) {
                 $expr = $qb->expr();
                 $expr->addOr($qb->expr()
-                    ->field('arrivalTime')->gte($data['begin'])->lte($data['end'])
+                    ->field('begin')->gte($data['begin'])->lte($data['end'])
                 );
                 $expr->addOr($qb->expr()
-                    ->field('departureTime')->gte($data['begin'])->lte($data['end'])
+                    ->field('end')->gte($data['begin'])->lte($data['end'])
                 );
                 $expr->addOr($qb->expr()
-                    ->field('arrivalTime')->lte($data['begin'])
-                    ->field('departureTime')->gte($data['end'])
-                );
-                $expr->addOr($qb->expr()
-                    ->field('arrivalTime')->gte($data['begin'])
-                    ->field('departureTime')->lte($data['end'])
+                    ->field('begin')->lte($data['begin'])
+                    ->field('end')->gte($data['end'])
                 );
 
                 $qb->addAnd($expr);
+            }
+        }else {
+            if (isset($data['begin']) && !empty($data['begin'])) {
+                $qb->field($dateType)->gte($data['begin']);
+            }
+            if (isset($data['end']) && !empty($data['end'])) {
+                $qb->field($dateType)->lte($data['end']);
             }
         }
 
@@ -572,8 +568,8 @@ class PackageRepository extends DocumentRepository
             $qb->limit($data['limit']);
         }
 
-        //deleted
-        if (isset($data['deleted']) && $data['deleted']) {
+        //deletedif
+        if (isset($data['deleted']) && $data['deleted'] || $dateType == 'deletedAt') {
             if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $dm->getFilterCollection()->disable('softdeleteable');
             }
@@ -587,6 +583,8 @@ class PackageRepository extends DocumentRepository
     }
 
     /**
+     * @deprecated todo use findByQueryCriteria
+     * @see PackageRepository::findByQueryCriteria
      * @param $data
      * @return \MBH\Bundle\PackageBundle\Document\Package[]
      * @throws \Exception

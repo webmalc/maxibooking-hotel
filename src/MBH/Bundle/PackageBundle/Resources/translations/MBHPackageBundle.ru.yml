@@ -175,6 +175,7 @@ package.index.check_in: Заезд
 package.index.check_out: Выезд
 package.index.create: Создание
 package.index.accommodation: Проживание
+package.index.deletedAt: Удаление
 package.index.paid: Оплачена
 package.index.partly_paid: Частично оплачена
 package.index.not_paid: не оплачена

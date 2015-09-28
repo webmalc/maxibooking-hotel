@@ -132,16 +132,16 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-male']);
         $menu['reports']->addChild('organizations', ['route' => 'organizations', 'label' => 'Организации'])
             ->setAttributes(['icon' => 'fa fa-users']);
+        $menu['reports']->addChild('report_filling', ['route' => 'report_filling', 'label' => 'Заполняемость'])
+            ->setAttributes(['icon' => 'fa fa-hourglass-half']);
         $menu['reports']->addChild('report_user', ['route' => 'report_users', 'label' => 'Менеджеры'])
             ->setAttributes(['icon' => 'fa fa-user']);
+        $menu['reports']->addChild('report_invite', ['route' => 'report_invite', 'label' => 'Визовые приглашения'])
+            ->setAttributes(['icon' => 'fa fa-map']);
         $menu['reports']->addChild('analytics', ['route' => 'analytics', 'label' => 'Аналитика'])
             ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
-        $menu['reports']->addChild('report_invite', ['route' => 'report_invite', 'label' => 'Визовые приглашения'])
-            ->setAttributes(['icon' => 'fa fa-star']);
-        $menu['reports']->addChild('report_filling', ['route' => 'report_filling', 'label' => 'Заполняемость'])
-            ->setAttributes(['icon' => 'fa fa-hourglass-half']);
 
 
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
