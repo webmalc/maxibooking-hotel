@@ -76,7 +76,7 @@ class Builder extends ContainerAware
             'route' => 'report_porter',
             'label' => 'Заезд/Выезд',
         ])
-        ->setAttributes(['icon' => 'fa fa-bell'] + $arrivalsData);
+        ->setAttributes(['icon' => 'fa fa-exchange'] + $arrivalsData);
         $menu['porter_links']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
             ->setAttributes(['icon' => 'fa fa-table']);
 

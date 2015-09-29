@@ -22,7 +22,7 @@
                 <tr {% if entity.isEnabled != true or entity.isLocked == true %}class="warning"{% endif %}>
                     <td class="text-center table-icon"><i class="fa fa-user"></i></td>
                     <td>
-                        {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'user'} %}{% endembed %}
+                        {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'user', 'action': 'username'} %}{% endembed %}
                     </td>
                     <td>
                         {% for group in entity.groups %}<small>{% if loop.index0 > 0 %}, {% endif %}{{ group|trans({}, 'MBHUserBundleRoles') }}</small>{% endfor %}

@@ -232,7 +232,7 @@ class User extends BaseUser implements RecipientInterface
 
     public function __toString()
     {
-        return $this->getName();
+        return $this->username;
     }
 
     public function getName()

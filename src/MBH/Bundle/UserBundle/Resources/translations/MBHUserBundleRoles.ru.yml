@@ -186,3 +186,5 @@ ROLE_SOURCE_VIEW:  Просмотр источников
 ROLE_SOURCE_NEW:  Создание источников
 ROLE_SOURCE_EDIT:  Редактирование источников
 ROLE_SOURCE_DELETE:  Удаление источников
+
+ROLE_DOCUMENTS_GENERATOR: Генерация документов

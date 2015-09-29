@@ -40,7 +40,7 @@ class Builder extends ContainerAware
 
 
 
-        if ($checker->isGranted('ROLE_PACKAGE_DOCS')) {
+        if ($checker->isGranted('ROLE_DOCUMENTS_GENERATOR')) {
 
             $rootItem
                 ->addChild('Docs header', [

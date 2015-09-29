@@ -32,7 +32,7 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
      *      "type" : "confirmation|confirmation_en|registration_card|fms_form_5|evidence|form_1_g|receipt|act|xls_notice|bill"
      * })
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_DOCUMENTS_GENERATOR')")
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
      */
     public function actPdfAction(Package $entity, $type, Request $request)
@@ -71,7 +71,7 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
     /**
      * @Route("/{id}/modal_form/{type}", name="document_modal_form", options={"expose"=true})
      * @ParamConverter("entity", class="MBHPackageBundle:Package")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_DOCUMENTS_GENERATOR')")
      */
     public function documentModalFormAction(Package $entity, $type)
     {
@@ -115,7 +115,7 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
     /**
      * @Route("/stamp/{id}.jpg", name="stamp")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_DOCUMENTS_GENERATOR')")
      * @return Response
      * @ParamConverter(class="\MBH\Bundle\PackageBundle\Document\Organization")
      */
