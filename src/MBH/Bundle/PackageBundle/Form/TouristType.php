@@ -51,7 +51,7 @@ class TouristType extends AbstractType
             ->add('communication_language', 'mbh_language', [
                 'label' => 'form.touristType.communication_language',
                 'group' => 'form.touristType.general_info',
-                'expanded' => true
+                //'expanded' => true
             ])
             ->add('phone', 'text', [
                 'label' => 'form.touristType.phone',

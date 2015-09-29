@@ -21,29 +21,23 @@ use Zend\Stdlib\JsonSerializable;
  */
 class Package extends Base implements JsonSerializable
 {
-    /**
-     * Hook timestampable behavior
-     * updates createdAt, updatedAt fields
-     */
     use TimestampableDocument;
-
-    /**
-     * Hook softdeleteable behavior
-     * deletedAt field
-     */
     use SoftDeleteableDocument;
-    
-    /**
-     * Hook blameable behavior
-     * createdBy&updatedBy fields
-     */
     use BlameableDocument;
 
+    const ROOM_STATUS_OPEN = 'open';
+    const ROOM_STATUS_DEPT = 'dept';
+    const ROOM_STATUS_PAID = 'paid';
+    const ROOM_STATUS_NOT_OUT = 'not_out';
+    const ROOM_STATUS_OUT_NOW = 'out_now';
+    const ROOM_STATUS_WAIT = 'wait';
+
     /**
+     * @var Order
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Order", inversedBy="packages")
      * @Assert\NotNull(message= "validator.document.package.order_not_selected")
-    **/
+     */
     protected $order;
 
     /** @ODM\ReferenceMany(targetDocument="PackageService", mappedBy="package") */
@@ -287,6 +281,13 @@ class Package extends Base implements JsonSerializable
      * @Assert\Type(type="boolean")
      */
     protected $corrupted = false;
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isLocked = false;
 
     /**
      * Set tariff
@@ -730,10 +731,8 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Set arrivalTime
-     *
      * @param \DateTime $arrivalTime
-     * @return self
+     * @return $this
      */
     public function setArrivalTime(\DateTime $arrivalTime = null)
     {
@@ -742,8 +741,6 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Get arrivalTime
-     *
      * @return \DateTime $arrivalTime
      */
     public function getArrivalTime()
@@ -752,10 +749,8 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Set departureTime
-     *
      * @param \DateTime $departureTime
-     * @return self
+     * @return $this
      */
     public function setDepartureTime(\DateTime $departureTime = null)
     {
@@ -764,8 +759,6 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Get departureTime
-     *
      * @return \DateTime $departureTime
      */
     public function getDepartureTime()
@@ -774,10 +767,8 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Set discount
-     *
      * @param int $discount
-     * @return self
+     * @return $this
      */
     public function setDiscount($discount)
     {
@@ -786,8 +777,6 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * Get discount
-     *
      * @return int $discount
      */
     public function getDiscount($percent = true)
@@ -1223,4 +1212,62 @@ class Package extends Base implements JsonSerializable
         return $this->order->getPaidStatus();
     }
 
+    /**
+     * @return boolean
+     */
+    public function getIsLocked()
+    {
+        return $this->isLocked;
+    }
+
+    /**
+     * @param boolean $isLocked
+     * @return $this
+     */
+    public function setIsLocked($isLocked)
+    {
+        $this->isLocked = $isLocked;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoomStatus()
+    {
+        if (!$this->getOrder()) {
+            return self::ROOM_STATUS_OPEN;
+        }
+
+        if(!$this->getIsCheckIn()) {
+            return self::ROOM_STATUS_WAIT;
+        }
+
+        $now = new \DateTime('midnight');
+        if (!$this->getIsCheckOut() && $now->format('Ymd') > $this->getEnd()->format('Ymd')) {
+            return self::ROOM_STATUS_NOT_OUT;
+        }
+        if ($this->getIsPaid()) {
+            return $now->format('d.m.Y') == $this->getEnd()->format('d.m.Y') ?
+                self::ROOM_STATUS_OUT_NOW :
+                self::ROOM_STATUS_PAID;
+        } else {
+            return self::ROOM_STATUS_DEPT;
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public static function getRoomStatuses()
+    {
+        return [
+            self::ROOM_STATUS_OPEN,
+            self::ROOM_STATUS_DEPT,
+            self::ROOM_STATUS_PAID,
+            self::ROOM_STATUS_NOT_OUT,
+            self::ROOM_STATUS_OUT_NOW,
+            self::ROOM_STATUS_WAIT,
+        ];
+    }
 }

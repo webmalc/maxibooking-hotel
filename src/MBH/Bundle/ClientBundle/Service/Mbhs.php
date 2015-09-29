@@ -2,11 +2,19 @@
 
 namespace MBH\Bundle\ClientBundle\Service;
 
-use MBH\Bundle\OnlineBundle\Document\Order;
+use Guzzle\Http\Exception\RequestException;
+use Guzzle\Http\Message\Response;
+use MBH\Bundle\OnlineBundle\Document\Invite;
+use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\BaseBundle\Document\Message;
 use MBH\Bundle\PackageBundle\Document\Package;
 
+/**
+ * Class Mbhs
+ * Maxi Booking Hotel Server
+ */
 class Mbhs
 {
     /**
@@ -201,5 +209,124 @@ class Mbhs
         }
 
         return $result;
+    }
+
+    /**
+     * @param Unwelcome $unwelcome
+     * @param Tourist $tourist
+     * @return bool
+     */
+    public function addUnwelcome(Unwelcome $unwelcome, Tourist $tourist)
+    {
+        return $this->exchangeJson([
+            'unwelcome' => $unwelcome,
+            'tourist' => $tourist
+        ], 'client/unwelcome/add');
+    }
+
+    /**
+     * @param Unwelcome $unwelcome
+     * @param Tourist $tourist
+     * @return bool
+     */
+    public function updateUnwelcome(Unwelcome $unwelcome, Tourist $tourist)
+    {
+        return $this->exchangeJson([
+            'unwelcome' => $unwelcome,
+            'tourist' => $tourist
+        ], 'client/unwelcome/update');
+    }
+
+    /**
+     * @param Tourist $tourist
+     * @return null|array
+     */
+    public function findUnwelcomeListByTourist(Tourist $tourist)
+    {
+        return $this->exchangeJson([
+            'tourist' => $tourist
+        ], 'client/unwelcome/find_by_tourist');
+    }
+
+    /**
+     * @param Tourist $tourist
+     * @return bool
+     */
+    public function hasUnwelcome(Tourist $tourist)
+    {
+        $response = $this->exchangeJson([
+            'tourist' => $tourist
+        ], 'client/unwelcome/has');
+        return isset($response['result']) ? $response['result'] : false;
+    }
+
+    /**
+     * @param Tourist $tourist
+     * @return array|null
+     */
+    public function deleteUnwelcomeByTourist(Tourist $tourist)
+    {
+        return $this->exchangeJson([
+            'tourist' => $tourist
+        ], 'client/unwelcome/delete_by_tourist');
+    }
+
+    public function addInvite(Invite $invite)
+    {
+        return $this->exchangeJson([
+            'invite' => $invite
+        ], 'client/invite/add');
+    }
+
+    /**
+     * @param array $requestData
+     * @param string $url
+     * @param string $method
+     * @return array|null
+     */
+    private function exchangeJson(array $requestData, $url, $method = 'POST')
+    {
+        $requestData = array_merge($requestData, $this->getAuthorizationData());
+        $uri = base64_decode($this->config['mbhs']) . $url;
+
+        $jsonDate = $this->container->get('serializer')->encode($requestData, 'json');
+        try {
+            /** @var Response $response */
+            $response = $this->guzzle
+                ->createRequest($method, $uri)
+                ->setBody($jsonDate)
+                ->setHeader('Content-Type', 'application/json')
+                ->send()
+            ;
+            $responseData = $this->container->get('serializer')->decode($response->getBody(true), 'json');
+            if(!$responseData['status']) {
+                //throw new \MbhsResponseException();
+            }
+            return $responseData;
+        } catch (RequestException $e) {
+            if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+                dump($e->getMessage());
+                dump($e);
+            };
+            return null;
+        }
+    }
+
+    /**
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel|null
+     */
+    private function getHotelData()
+    {
+        $selector = $this->container->get('mbh.hotel.selector');
+        return $selector->getSelected();
+    }
+
+    private function getAuthorizationData()
+    {
+        return [
+            'url' => $this->getSchemeAndHttpHost(),
+            'key' => $this->config['key'],
+            'hotel' => $this->getHotelData()
+        ];
     }
 }

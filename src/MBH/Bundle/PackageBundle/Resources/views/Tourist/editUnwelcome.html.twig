@@ -1,0 +1,111 @@
+{% extends 'MBHPackageBundle:Tourist:layout.html.twig' %}
+
+{% set small_title = "редактирование гостя #" ~ tourist.id %}
+{% set layout = 'tabs' %}
+
+{% block content %}
+    {% include 'MBHPackageBundle:Tourist:tabs.html.twig' with {'active': 5, 'entity': tourist} %}
+
+    <div class="tab-content">
+        {% if isTouristValid %}
+            {% if unwelcome.isMy %}
+                <div class="bg-gray color-palette alert">
+                        <i class="fa fa-user-secret"></i> Вы внесли клиента в список нежелательных гостей.
+                    <div class="pull-right">
+                        <a class="btn btn-xs btn-danger delete-link" href="{{ path('tourist_delete_unwelcome', {'id': tourist.id}) }}" title="" data-toggle="tooltip" data-original-title="{{ 'unwelcome.actions.delete'|trans }}">
+                            <i class="fa fa-trash-o"></i>
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="bg-gray color-palette alert">
+                <i class="fa fa-exclamation"></i>
+                Внесение информации в список нежелательных гостей должно
+                производиться только компетентными сотрудниками, максимально объективно и беспристрастно.
+                Не допускаются оскорбительные, неуважительные выражения, какие-либо выводы, рекомендации и определения,
+                которые могут выноситься только судебным органом, раскрытие какой-либо персональной информации клиента, а также упоминания фактов, не имеющих
+                официального подтверждения в виде акта, протокола, видеофиксации событий или ином виде, составленных в надлежащей форме и/или компетентными органами.
+            </div>
+
+            {{ form_start(form, {'action': path('tourist_edit_unwelcome', {'id': tourist.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% if unwelcome.isMy %}
+                <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+                    <div class="container-fluid">
+                        {% include 'MBHBaseBundle:Actions:saveButtons.html.twig' with {'save_close': true, 'save_text': 'views.actions.update.save'|trans({}, 'MBHBaseBundle')}%}
+                    </div>
+                </div>
+            {% else %}
+                {% include 'MBHBaseBundle:Actions:new.html.twig' with {'entity': tourist, 'route': 'tourist', save_text: 'form.unwelcomeType.add'|trans, save_close: false } %}
+            {% endif %}
+            {{ form_end(form) }}
+        {% else %}
+            <div class="alert alert-warning alert-dismissable">
+                Укажите основной документ удостоверения личности
+            </div>
+        {% endif %}
+
+        {% if unwelcomeList %}
+
+            <div class="box box-default box-solid">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Жалобы других отелей</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool form-group-collapse" data-widget="collapse" id="mbh_package_tourist_unwelcome_list">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Отель</th>
+                        <th>Период проживания</th>
+                        <th>Оценки</th>
+                        <th>Гражданство гостя</th>
+                        <th>Добавлено</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for unwelcome in unwelcomeList %}
+                        <tr>
+                            <td>
+                                {% if unwelcome.hotel %}
+                                    <div>{{ unwelcome.hotel.title }}</div>
+                                    <small>{{ unwelcome.hotel.city }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if unwelcome.arrivalTime and unwelcome.departureTime %}
+                                    <div>
+                                        {{ unwelcome.arrivalTime|mbh_format }} -
+                                        {{ unwelcome.departureTime|mbh_format }}
+                                    </div>
+                                    <small>{{ unwelcome.night }} {{ 'nights'|transchoice(unwelcome.night) }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div>
+                                    {% for characteristic in characteristics %}
+                                        {% if attribute(unwelcome, characteristic) %}
+                                            <div>
+                                                <small>{{ ('form.unwelcomeType.' ~ characteristic)|trans }}: {{ attribute(unwelcome, characteristic) }}</small>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td>{{ unwelcome.touristCitizenship }}</td>
+                            <td>{{ unwelcome.createdAt ? unwelcome.createdAt|date('d.m.Y') : '' }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <div>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}

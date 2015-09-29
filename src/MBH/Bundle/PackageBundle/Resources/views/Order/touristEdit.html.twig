@@ -17,9 +17,9 @@
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
-            {% include 'MBHPackageBundle:Order:tabs.html.twig' with {'active': 1, 'entity': entity, 'package': package} %}
+            {% include 'MBHPackageBundle:Order:tabs.html.twig' with {'active': 1, 'entity': order, 'package': package} %}
 
-            {% if entity.mainTourist is null %}
+            {% if order.mainTourist is null %}
                 <div class="alert alert-warning alert-danger">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <i class="fa fa-exclamation-circle"></i>
@@ -28,80 +28,85 @@
             {% else %}
                 {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'package-payer-widget', 'header': 'info' } %}
                     <table class="table not-auto-datatable table-striped">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'order.touristEdit.fio'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            {{ entity.mainTourist.firstName }} {{ entity.mainTourist.lastName }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'order.touristEdit.phone'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            {{ entity.mainTourist.phone|default('-') }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'order.touristEdit.email'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            {{ entity.mainTourist.email|default('-') }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'order.touristEdit.birth_date'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            {{ entity.mainTourist.birthday ? entity.mainTourist.birthday|date('d.m.Y') : '-' }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'order.touristEdit.gender'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            {{ genders[entity.mainTourist.sex]|default('-') }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'order.touristEdit.address'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            {% if entity.mainTourist %}{% autoescape false %}{{ entity.mainTourist.address|nl2br|default('-') }}{% endautoescape %}{% endif %}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>{{ 'order.touristEdit.document'|trans({}, 'MBHPackageBundle') }}</strong>
-                                        </td>
-                                        <td>
-                                            {% if entity.mainTourist and entity.mainTourist.documentRelation and entity.mainTourist.documentRelation.type %}{% autoescape false %}{{ vegaDocumentTypes[entity.mainTourist.documentRelation.type]|capitalize|nl2br|default('-') }}{% endautoescape %}{% endif %}
-                                        </td>
-                                    </tr>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <strong>{{ 'order.touristEdit.fio'|trans({}, 'MBHPackageBundle') }}</strong>
+                                </td>
+                                <td>
+                                    {{ order.mainTourist.firstName }} {{ order.mainTourist.lastName }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>{{ 'order.touristEdit.phone'|trans({}, 'MBHPackageBundle') }}</strong>
+                                </td>
+                                <td>
+                                    {{ order.mainTourist.phone|default('-') }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>{{ 'order.touristEdit.email'|trans({}, 'MBHPackageBundle') }}</strong>
+                                </td>
+                                <td>
+                                    {{ order.mainTourist.email|default('-') }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>{{ 'order.touristEdit.birth_date'|trans({}, 'MBHPackageBundle') }}</strong>
+                                </td>
+                                <td>
+                                    {{ order.mainTourist.birthday ? order.mainTourist.birthday|date('d.m.Y') : '-' }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>{{ 'order.touristEdit.gender'|trans({}, 'MBHPackageBundle') }}</strong>
+                                </td>
+                                <td>
+                                    {{ genders[order.mainTourist.sex]|default('-') }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>{{ 'order.touristEdit.address'|trans({}, 'MBHPackageBundle') }}</strong>
+                                </td>
+                                <td>
+                                    {% if order.mainTourist %}{% autoescape false %}{{ order.mainTourist.address|nl2br|default('-') }}{% endautoescape %}{% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>{{ 'order.touristEdit.document'|trans({}, 'MBHPackageBundle') }}</strong>
+                                </td>
+                                <td>
+                                    {% if order.mainTourist and order.mainTourist.documentRelation and order.mainTourist.documentRelation.type %}{% autoescape false %}{{ vegaDocumentTypes[order.mainTourist.documentRelation.type]|capitalize|nl2br|default('-') }}{% endautoescape %}{% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                                </tbody>
-                            </table>
-
-                    {% if entity.deletedAt is empty %}
+                    {% if order.deletedAt is empty %}
                         <div class="row spacer-top">
                             <div class="col-md-12 text-right btn-list">
+                                <a href="{{ path('tourist_edit_unwelcome', {'id': order.mainTourist.id }) }}"
+                                        class="btn btn-info btn-sm" title="" data-toggle="tooltip"
+                                        data-original-title="Добавить плательщика в черный список">
+                                        <i class="fa fa-user-secret"></i>
+                                    </a>
                                 {% if package.deletedAt is empty and is_granted('ROLE_TOURIST_EDIT') %}
-                                <a href="{{ path('tourist_edit', {'id': entity.mainTourist.id }) }}"
-                                   class="btn btn-success btn-sm" title="" data-toggle="tooltip"
-                                   data-original-title="Редактирование записи"><i class="fa fa-pencil-square-o"></i></a>
+                                    <a href="{{ path('tourist_edit', {'id': order.mainTourist.id }) }}"
+                                        class="btn btn-success btn-sm" title="" data-toggle="tooltip"
+                                        data-original-title="Редактирование записи">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                    </a>
                                 {% endif %}
-
-                                {% if package.deletedAt is empty and is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                                {% if package.deletedAt is empty and is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', order) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                                 <a data-toggle="tooltip"
                                    title="{{ 'order.touristEdit.delete_payer'|trans({}, 'MBHPackageBundle') }}"
-                                   href="{{ path('package_order_tourist_delete', {'id': entity.id, 'packageId': package.id}) }}"
+                                   href="{{ path('package_order_tourist_delete', {'id': order.id, 'packageId': package.id}) }}"
                                    class="delete-link btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></a>
                                 {% endif %}
                             </div>
@@ -112,14 +117,14 @@
             {% endif %}
 
 
-            {% if is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
-                {{ form_start(form, {'action': path('package_order_tourist_update', {'id': entity.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {% if is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', order) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                {{ form_start(form, {'action': path('package_order_tourist_update', {'id': order.id, 'packageId': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
                 {{ form_widget(form) }}
             {% endif %}
 
                 {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_ORDER_PAYER'} %}
 
-            {% if is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+            {% if is_granted('ROLE_ORDER_PAYER') and (is_granted('EDIT', order) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                 {{ form_end(form) }}
             {% endif %}
 

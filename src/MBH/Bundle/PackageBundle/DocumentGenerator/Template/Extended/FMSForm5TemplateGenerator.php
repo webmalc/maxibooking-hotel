@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\PackageBundle\DocumentGenerator\Template\Extended;
 
+use MBH\Bundle\PackageBundle\Document\Tourist;
+
 
 /**
  * Class FMSForm5TemplateGenerator
@@ -19,6 +21,9 @@ class FMSForm5TemplateGenerator extends RegistrationCardTemplateGenerator
                 return $tourist && (empty($tourist->getCitizenship()) || $tourist->getCitizenship()->getName() == 'Россия');
             }
         );
+        if(!$params['tourists']) {
+            $params['tourists'] = [new Tourist()];
+        }
 
         return $params;
     }

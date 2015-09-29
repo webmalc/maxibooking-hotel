@@ -17,7 +17,11 @@
         
         {% if delete_route is defined and delete_route is not empty and delete_role is defined and is_granted(delete_role) %}
         <ul class="nav navbar-nav navbar-right">
-            <li><button data-href="{{ path(delete_route, {'id': entity.id}) }}" {% if confirm_text is defined  %} data-text="{{ confirm_text }}" {% endif %} class="btn btn-danger navbar-btn delete-link"><i class="fa fa-trash-o"> </i> {{ delete_title|default('views.actions.update.delete'|trans({}, 'MBHBaseBundle')) }}</button></li>
+            <li>
+                <button data-href="{{ path(delete_route, {'id': entity.id}) }}" {% if confirm_text is defined  %} data-text="{{ confirm_text }}" {% endif %} class="btn btn-danger navbar-btn delete-link">
+                    <i class="fa fa-trash-o"> </i> {{ delete_title|default('views.actions.update.delete'|trans({}, 'MBHBaseBundle')) }}
+                </button>
+            </li>
         </ul>
         {% endif %}
     </div>

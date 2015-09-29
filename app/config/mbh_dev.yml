@@ -15,3 +15,6 @@ parameters:
           service: 'mbh.channelmanager.ostrovok'
           username: 722ac50470d8af33d509c069ccb83443
           password: edfdfba3f6902eb63aa254935e9a8a36
+    mbh.mbhs:
+          mbhs: 'aHR0cDovL21iaHMuaC9hcHBfZGV2LnBocC8=' #http://mbhs.h/app_dev.php/
+          key: 2743004999743693560727430049997436935607

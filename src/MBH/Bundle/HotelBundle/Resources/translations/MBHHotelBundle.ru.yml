@@ -94,6 +94,7 @@ views.hotel.tabs.birthplace: 'Место рождения'
 views.hotel.tabs.document_relation: 'Удостоверение личности'
 views.hotel.tabs.address: 'Адрес'
 views.hotel.tabs.visa: 'Виза'
+views.hotel.tabs.unwelcome: 'Черный список'
 views.hotel.tabs.main_info_required: "Необходимо заполнить основную информацию!"
 
 # RoomType

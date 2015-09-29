@@ -1,4 +1,4 @@
-<table class="table table-bordered not-auto-datatable table-hover table-condensed mbh-grid">
+<table class="table table-bordered not-auto-datatable table-hover table-condensed mbh-grid room-types-table">
     <thead>
     <tr>
         <th class="td-md">#</th>
@@ -28,7 +28,7 @@
     {% endif %}
     {% for data in result.dataTable %}
         {% set roomType = data.roomType %}
-        <tr class="info">
+        <tr class="bg-gray">
             <td colspan="9">
                 <strong>{{ roomType }}</strong>&nbsp;
                 <small>места: {{ roomType.places }} + доп. места: {{ roomType.additionalPlaces }}</small>&nbsp;
@@ -39,7 +39,10 @@
                 </small>
             </td>
         </tr>
+        {% set supposeIncrement = 0 %}
         {% for room in data.rooms %}
+            {% set supposeAccommodation = null %}
+            {% set roomTypeSupposeAccommodation = result.supposeAccommodations[room.roomType.id] is defined ? result.supposeAccommodations[room.roomType.id] : null %}
             {% set package = result.packages[room.id] is defined ? result.packages[room.id] : null %}
             {% set style = '' %}
 
@@ -57,6 +60,12 @@
                 {% elseif package.order.isPaid == false and  package.order.paid < package.order.price %}
                     {% set style = 'warning' %}
                 {% endif %}
+            {% elseif roomTypeSupposeAccommodation and roomTypeSupposeAccommodation[supposeIncrement] is defined %}
+                {% set supposeAccommodation =  roomTypeSupposeAccommodation[supposeIncrement] %}
+                {% set supposeIncrement = supposeIncrement + 1 %}
+                {% set style = 'wait-accommodation info' %}
+
+                {% set package = supposeAccommodation %}
             {% endif %}
 
             <tr class="{{ style }}">
@@ -79,7 +88,7 @@
                                data-toggle="popover"
                                data-placement="top"
                                data-content="{% for facility in (room.facilities is not empty ? room.facilities : room.allFacilities) %}<i style='margin-left: 3px' data-toggle='tooltip' data-title='{{ facilities[facility] }}' class='fa fa-lg mbf-{{ facility }}'></i>{% endfor %}"
-                            ></i>
+                                    ></i>
                         </span>
                     {% endif %}
                 </td>
@@ -148,44 +157,35 @@
                 <td>
                     {% set style = 'default' %}
                     {% set status = 'open' %}
+                    {% set settle_link = path('package_search') ~ '#' ~ {'s': {
+                        'begin' : 'today'|date('d.m.Y'), 'end' : 'tomorrow'|date('d.m.Y'),
+                        'roomType': (room.roomType ? [room.roomType.id] : null), 'room': room.id
+                        }}|url_encode
+                    %}
 
                     {% if package and package.order %}
-                        {% if package.order.isPaid and  package.order.price <= package.order.paid %}
-                            {% set style = 'success' %}
-                        {% elseif package.order.isPaid == false and package.order.paid == 0 %}
-                            {% set style = 'danger' %}
-                        {% elseif package.order.isPaid == false and  package.order.paid < package.order.price %}
-                            {% set style = 'warning' %}
-                        {% endif %}
+                        {% set status = package.roomStatus %}
 
-                        {% set status = roomTypeReport.getStatusByPackage(package) %}
+                        {% if status == 'open' %}
+                            {% set style = 'default' %}
+                        {% elseif status == 'wait' or supposeAccommodation %}
+                            {% set style = 'info' %}
+                        {% else %}
+                            {% set style = package.order.paidStatus %}
+                        {% endif %}
                     {% endif %}
 
-                    <a data-id="{% if package %}{{ package.id }}{% endif %}"
-                       {% if status == 'open' %}
-                           target="_blank"
-                       {% endif %}
-                       href="{% if status == 'open' %}
-                            {{ path('package_search') ~ '#' ~ {
-                           's':
-                               {
-                                   'begin' : 'today'|date('d.m.Y'),
-                                   'end' : 'tomorrow'|date('d.m.Y'),
-                                   'roomType': (room.roomType ? [room.roomType.id] : null),
-                                   'room': room.id
-                               }
-                           }|url_encode }}
-                        {% else %}
-                            #
-                        {% endif %}
-                        " class="btn btn-xs btn-{{ style }}"
-                       {%  if status != 'open' %}
-                           style="cursor: pointer;"
-                           data-html="true"
-                           data-container="body"
-                           data-toggle="popover"
-                           data-placement="top"
-                           data-content="
+                    {% set settle = status == 'open' %}
+
+                    <a data-id="{% if package %}{{ package.id }}{% endif %}" {% if settle %} target="_blank" {% endif %}
+                       href="{{ settle ? settle_link : 'javascript:void(0)' }}" class="btn btn-xs btn-{{ style }}"
+                            {% if not settle %}
+                                style="cursor: pointer;"
+                                data-html="true"
+                                data-container="body"
+                                data-toggle="popover"
+                                data-placement="top"
+                                data-content="
                            <b>Заказ:</b> #12 {% if package.isPaid %}
                                 <small class='text-success'><i class='fa fa-check'></i> {{ 'order.edit.paid'|trans({}, 'MBHPackageBundle') }}</small> {% else %}
                                 <small class='text-danger'><i class='fa fa-times'></i> {{ 'order.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}</small><br>
@@ -201,10 +201,16 @@
                             {% endif %}
                             <div class='text-center'><small><a target='_blanck' href='{{ path('package_edit', {'id': package.id}) }}'>перейти к записи</a></small></div>
                            "
-                       {% endif %}
+                            {% endif %}
                             >
-                        {{ status == 'open' ? 'report.roomType.settle'|trans : ('report.roomType.statuses.' ~ status)|trans }}
+                        {{ settle ? 'report.roomType.settle'|trans : ('report.roomType.statuses.' ~ status)|trans }}
                     </a>
+                    {% if not settle and supposeAccommodation %}
+                        <a style="margin-top: 3px" data-id="{% if package %}{{ package.id }}{% endif %}" target="_blank"
+                           href="{{ settle_link }}" class="btn btn-xs btn-default">
+                            {{ 'report.roomType.settle'|trans }}
+                        </a>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

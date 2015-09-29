@@ -148,7 +148,7 @@ rooms: номера
 bed: койко-место
 beds: койко-места
 
-form.main.group: Оновная информация
+form.main.group: Основная информация
 form.filter: Фильтр
 info: Информация
 list: список
@@ -171,6 +171,8 @@ languages.ru: 'Русский'
 
 security.not_access: Нет прав доступа
 
+crud.add: Добавить
+crud.create: Создать
 crud.edit: Редактировать
 crud.delete: Удалить
 form.quick_links: Быстрые ссылки

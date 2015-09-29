@@ -3,14 +3,19 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
+use MBH\Bundle\OnlineBundle\Document\Invite;
+use MBH\Bundle\PackageBundle\Component\FillingReportGenerator;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -19,26 +24,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * @Route("/report")
  */
 class ReportController extends Controller implements CheckHotelControllerInterface
 {
-
-    /**
-     * Porter report.
-     *
-     * @Route("/porter", name="report_porter")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_PORTER_REPORT')")
-     * @Template()
-     */
-    public function porterAction()
-    {
-        return [];
-    }
-
     /**
      * Porter report table.
      *
@@ -47,11 +39,11 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @Security("is_granted('ROLE_PORTER_REPORT')")
      * @Template()
      */
-    public function  porterTableAction(Request $request)
+    public function porterTableAction(Request $request)
     {
+        /*
         $helper = $this->container->get('mbh.helper');
 
-        //dates
         $begin = $helper->getDateFromString($request->get('begin'));
         $end = $helper->getDateFromString($request->get('end'));
 
@@ -62,9 +54,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         if ($end != $begin) {
             $to->modify('-1 day');
         }
-
-        $repo = $this->dm->getRepository('MBHPackageBundle:Package');
-        $arrivals = $repo->fetch([
+        $arrivals = $packageRepository->fetch([
             'begin' => $begin,
             'end' => $to,
             'dates' => 'begin',
@@ -74,7 +64,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'dir' => 'asc',
             'hotel' => $this->hotel
         ]);
-        $lives = $repo->fetch([
+        $lives = $packageRepository->fetch([
             'live_begin' => $begin,
             'live_end' => $end,
             'filter' => 'live_between',
@@ -83,14 +73,93 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'hotel' => $this->hotel,
             'order' => 8,
             'dir' => 'asc'
-        ]);
+        ]);*/
+
+        $type = $request->get('type');
+
+
+        $begin = new \DateTime('midnight');
+        $end = new \DateTime('midnight');
+        $end->modify('+ 1 day');
+
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+
+        /*
+        $packageQueryCriteria = new PackageQueryCriteria();
+        if($type == 'lives') {
+            $packageQueryCriteria->filter = 'live_between';
+            $packageQueryCriteria->checkIn = true;
+            $packageQueryCriteria->checkOut = false;
+        } elseif($type == 'arrivals') {
+            $packageQueryCriteria->checkIn = false;
+            $packageQueryCriteria->checkOut = false;
+        } elseif($type == 'out') {
+
+        }
+
+        $packages = $packageRepository->findByQueryCriteria($packageQueryCriteria);
+        */
+
+        $packages = $packageRepository->findByType($type);
 
         return [
             'begin' => $begin,
             'end' => $end,
-            'arrivals' => $arrivals,
-            'lives' => $lives,
+            'packages' => $packages,
+            'type' => $type,
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
+        ];
+    }
+
+    /**
+     * Porter report.
+     *
+     * @Route("/porter/{type}", name="report_porter", defaults={"type"="lives"}, requirements={
+     *      "type" : "lives|arrivals|out"
+     * })
+     * @Method("GET")
+     * @Security("is_granted('ROLE_PORTER_REPORT')")
+     * @Template()
+     */
+    public function porterAction($type = 'lives')
+    {
+        $menuItem = $this->get('knp_menu.factory')->createItem('types');
+        $menuItem->setChildrenAttribute('id', 'porter-report-tabs');
+        $menuItem->setChildrenAttribute('class', 'nav nav-tabs');
+
+        $menuItem
+            ->addChild('arrivals', [
+                'route' => 'report_porter', 'routeParameters' => ['type' => 'arrivals'],
+                'label' => 'Заезд'
+            ])
+        ;
+        $menuItem
+            ->addChild('lives', ['route' => 'report_porter', 'routeParameters' => ['type' => 'lives']])
+            ->setLabel('Проживание')
+        ;
+        $menuItem
+            ->addChild('out', ['route' => 'report_porter', 'routeParameters' => ['type' => 'out']])
+            ->setLabel('Выезд')
+        ;
+
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+
+        foreach($menuItem->getChildren() as $child) {
+            $count = $packageRepository->countByType($child->getName(), true);
+            if($count > 0) {
+                $class = $child->getName() == 'lives' ? 'default' : 'danger';
+                $child->setLabel($child->getLabel(). ' <small class="label label-'.$class.' label-as-badge">'.$count.'</small>');
+                $child->setExtras(['safe_label' => true]);
+            }
+            if($child->getName() == $type) {
+                $child->setCurrent(true);
+            }
+        }
+
+
+        return [
+            'type' => $type,
+            'menuItem' => $menuItem
         ];
     }
 
@@ -514,10 +583,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'roomTypes' => $roomTypes,
             'housings' => $housings,
             'floors' => $floors,
-            'roomTypeReport' => $roomTypeReport,
             'result' => $result,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
-            'statuses' => $roomTypeReport->getAvailableStatues(),
+            'statuses' => Package::getRoomStatuses(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
     }
@@ -544,10 +612,114 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $result = $roomTypeReport->findByCriteria($criteria);
 
         return [
-            'roomTypeReport' => $roomTypeReport,
             'result' => $result,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
+    }
+
+    /**
+     * @return array
+     * @Route("/invite", name="report_invite", options={"expose"=true})
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     * @Template()
+     */
+    public function inviteAction()
+    {
+        /** @var Invite[] $invites */
+        $invites = $this->dm->getRepository('MBHOnlineBundle:Invite')->findAll();
+
+        return [
+            'invites' => $invites
+        ];
+    }
+
+    /**
+     * @return array
+     * @Route("/filling", name="report_filling", options={"expose"=true})
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     * @Template()
+     */
+    public function fillingAction(Request $request)
+    {
+        $roomTypeRepository = $this->dm->getRepository('MBHHotelBundle:RoomType');
+        $roomTypes = [];
+        if($request->get('roomType')) {
+            $roomType = $roomTypeRepository->find($request->get('roomType'));
+            if($roomType) {
+                $roomTypes = [$roomType];
+            }
+        }
+
+        $roomTypeList = $roomTypeRepository->findBy(['hotel.id' => $this->hotel->getId()]);
+
+        if(!$roomTypes) {
+            $roomTypes = $roomTypeList;
+        }
+
+        $begin = new \DateTime('midnight -1 day');
+        $end = new \DateTime('midnight +6 day');
+
+        $generator = $this->get('mbh.package.report.filling_report_generator');
+        $result = $generator->setHotel($this->hotel)->generate($begin, $end, $roomTypes);
+
+        return [
+            'roomTypes' => $roomTypes,
+            'roomTypeList' => $roomTypeList,
+            'begin' => $begin,
+            'end' => $end,
+        ] + $result;
+    }
+
+    /**
+     * @return array
+     * @Route("/filling/table", name="report_filling_table", options={"expose"=true})
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     * @Template()
+     *
+     * ParamConverter("begin", options={"format": "d.m.Y"})
+     * ParamConverter("end", options={"format": "d.m.Y"})
+     */
+    public function fillingTableAction(Request $request)//\DateTime $begin = null, \DateTime $end  = null)
+    {
+        $roomTypeRepository = $this->dm->getRepository('MBHHotelBundle:RoomType');
+
+        $begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
+        $end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
+        if(!$begin && !$end) {
+            $begin = new \DateTime('midnight -1 day');
+            $end = new \DateTime('midnight +6 day');
+        }elseif(!$begin) {
+            $begin = clone($end);
+            $begin->modify('-7 day');
+        } elseif(!$end) {
+            $end = clone($begin);
+            $end->modify('+7 day');
+        }
+
+        if($begin->diff($end)->days > 90) {
+            return $this->render('MBHPackageBundle:Report:report_filling_table_error.html.twig' , [
+                'message' => 'Период не должен превышать 90 дней'
+            ]);
+        }
+
+        $roomType = $roomTypeRepository->find($request->get('roomType'));
+        if($roomType) {
+            $roomTypes = [$roomType];
+        } else {
+            $roomTypes = $roomTypeRepository->findBy(['hotel.id' => $this->hotel->getId()]);
+        }
+        if(!$begin && !$end) {
+            $begin = new \DateTime('midnight -1 day');
+            $end = new\DateTime('midnight +6 day');
+        }
+
+        $generator = $this->get('mbh.package.report.filling_report_generator');
+        $result = $generator->setHotel($this->hotel)->generate($begin, $end, $roomTypes);
+
+        return $result + ['roomTypes' => $roomTypes];
     }
 }

@@ -142,7 +142,7 @@ class RoomCache extends Base
     /**
      * Get date
      *
-     * @return date $date
+     * @return \DateTime $date
      */
     public function getDate()
     {

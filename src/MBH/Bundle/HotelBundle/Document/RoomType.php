@@ -555,7 +555,7 @@ class RoomType extends Base
     /**
      * Get images
      *
-     * @return \Doctrine\Common\Collections\Collection $images
+     * @return \Doctrine\Common\Collections\Collection|RoomTypeImage[] $images
      */
     public function getImages()
     {

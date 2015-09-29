@@ -84,41 +84,52 @@ class Builder extends ContainerAware
 
 
 
-        $rootItem
-            ->addChild('Delete Header', [
-                'label' => $translator->trans('package.actions.delete', [], 'MBHPackageBundle')
-            ])
-            ->setAttribute('dropdown_header', true);
-
-
-
-
-        if ($checker->isGranted('ROLE_PACKAGE_DELETE') && ($checker->isGranted('DELETE', $package) || $checker->isGranted('ROLE_PACKAGE_DELETE_ALL'))) {
+        if(!$package->getIsLocked()) {
             $rootItem
-                ->addChild('Delete', [
-                    'route' => 'package_delete',
-                    'routeParameters' => ['id' => $package->getId()],
-                    'label' => $translator->trans('package.actions.delete', [], 'MBHPackageBundle'),
+                ->addChild('Delete Header', [
+                    'label' => $translator->trans('package.actions.delete', [], 'MBHPackageBundle')
                 ])
-                ->setLinkAttribute('class', 'delete-link')
-                ->setAttributes([
-                    'icon' => 'fa fa-trash-o',
-                ]);
-        }
+                ->setAttribute('dropdown_header', true);
 
-        if ($checker->isGranted('ROLE_PACKAGE_DELETE') && ($checker->isGranted('DELETE', $package->getOrder()) || $checker->isGranted('ROLE_PACKAGE_DELETE_ALL'))) {
-            $rootItem
-                ->addChild('Order delete', [
-                    'route' => 'package_order_delete',
-                    'routeParameters' => ['id' => $package->getOrder()->getId()],
-                    'label' => $translator->trans('order.navbar.delete_order', [], 'MBHPackageBundle'),
-                ])
-                ->setLinkAttribute('class', 'delete-link')
-                ->setAttributes([
-                    'icon' => 'fa fa-trash-o'
-                ]);
-
+            if ($checker->isGranted('ROLE_PACKAGE_DELETE') && ($checker->isGranted('DELETE', $package) || $checker->isGranted('ROLE_PACKAGE_DELETE_ALL'))) {
+                $rootItem
+                    ->addChild('Delete', [
+                        'route' => 'package_delete',
+                        'routeParameters' => ['id' => $package->getId()],
+                        'label' => $translator->trans('package.actions.delete', [], 'MBHPackageBundle'),
+                    ])
+                    ->setLinkAttribute('class', 'delete-link')
+                    ->setAttributes([
+                        'icon' => 'fa fa-trash-o',
+                    ]);
             }
+
+            if ($checker->isGranted('ROLE_PACKAGE_DELETE') && ($checker->isGranted('DELETE', $package->getOrder()) || $checker->isGranted('ROLE_PACKAGE_DELETE_ALL'))) {
+                $rootItem
+                    ->addChild('Order delete', [
+                        'route' => 'package_order_delete',
+                        'routeParameters' => ['id' => $package->getOrder()->getId()],
+                        'label' => $translator->trans('order.navbar.delete_order', [], 'MBHPackageBundle'),
+                    ])
+                    ->setLinkAttribute('class', 'delete-link')
+                    ->setAttributes([
+                        'icon' => 'fa fa-trash-o'
+                    ]);
+            }
+
+            if($package->getIsCheckOut() && $checker->isGranted('ROLE_ADMIN')) {
+                $rootItem->addChild('Lock', [
+                    'route' => 'package_lock',
+                    'routeParameters' => ['id' => $package->getId()],
+                    'label' => $translator->trans('order.navbar.lock', [], 'MBHPackageBundle'),
+                ])
+                    ->setAttributes([
+                        'icon' => 'fa fa-lock',
+                        'divider_prepend' => true,
+                    ])
+                ;
+            }
+        }
         return $menu;
     }
 

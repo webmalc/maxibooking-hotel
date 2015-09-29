@@ -400,35 +400,23 @@ var select2TemplateResult = {
     var mainClass = 'tags-select-widget';
     var defaultOption = {
         value: null,
-        emptyHelp: null
+        emptyHelp: null,
+        select2Options: {
+            width: 'resolve',
+            closeOnSelect: false,
+            templateResult: select2TemplateResult.prependIcon
+        }
     };
-    function tagsSelectWidget(element, options)
+    function tagsSelectWidget($wrapper, options)
     {
         var that = this,
-            $element = $(element);
-        if ($element.is("select")) {
-            $element = $element.wrap('<div class="' + mainClass + '"></div>').closest('.' + mainClass).prepend('<div class="list"></div>');
-        }
-        var $select = $element.find('select'),
-            $list = $element.find('.list'),
+            $select = $wrapper.find('select'),
+            $list = $wrapper.find('.list'),
             inputName = $select.attr('name'),
             isMultiple = $select.attr('multiple'),
             isRequired = $select.attr('required'),
             hasSelect2 = $select.data('select2'),
             value = options.value;
-
-        if (isMultiple) {
-            if($select.val() && options.value === false) {
-                value = $select.val();
-            }
-            $select.removeAttr('multiple');
-        } else {
-            inputName += '[]';
-        }
-        if (isRequired) {
-            $select.removeAttr('required');
-        }
-
 
         this.items = {
             add: function (value, text, title) {
@@ -449,27 +437,6 @@ var select2TemplateResult = {
             {
                 return $list.find('.btn').length == 0;
             }
-        }
-
-
-        if ($list.find('.btn').length == 0 && value.length > 0) {
-            value.forEach(function (value) {
-                var $option = $select.find('option[value=' + value + ']');
-                if ($option.length == 1) {
-                    that.items.addIcon(value, $option.text(), $option.data('icon'));
-                }
-            });
-        }
-
-        $select.val(null);
-        $select.attr('name', inputName.replace(/(\[.*\])/g, '') + '_fake');
-        if (!hasSelect2) {
-            $select.select2({
-                placeholder: $select.attr('placeholder'),
-                width: 'resolve',
-                closeOnSelect: false,
-                templateResult: select2TemplateResult.prependIcon
-            });
         }
 
         this.help = {
@@ -500,32 +467,81 @@ var select2TemplateResult = {
                 }
             }
         }
-        if(options.emptyHelp) {
-            this.help.init();
+
+        this.init = function ()
+        {
+            if (isMultiple) {
+                if($select.val() && options.value === false) {
+                    value = $select.val();
+                }
+                $select.removeAttr('multiple');
+            } else {
+                inputName += '[]';
+                if (!$.isArray(value)) {
+                    value = [];
+                }
+            }
+            if (isRequired) {
+                $select.removeAttr('required');
+            }
+
+            if ($list.find('.btn').length == 0 && value.length > 0) {
+                value.forEach(function (value) {
+                    var $option = $select.find('option[value=' + value + ']');
+                    if ($option.length == 1) {
+                        that.items.addIcon(value, $option.text(), $option.data('icon'));
+                    }
+                });
+            }
+
+            $select.val(null);
+            $select.attr('name', inputName.replace(/(\[.*\])/g, '') + '_fake');
+            if (!hasSelect2) {
+                var select2Options = options.select2Options;
+                select2Options.placeholder = $select.attr('placeholder');
+                $select.select2(select2Options);
+            }
+
+            $select.on('select2:selecting', function (event) {
+                var element = event.params.args.data.element;
+                that.items.addIcon(element.value, element.text, element.getAttribute('data-icon'));
+                that.help.hide();
+                event.preventDefault();
+            });
+
+            $list.on('click', '.btn', function () {
+                $list.find('[data-toggle=tooltip]').tooltip('hide');
+                $(this).remove();
+                that.help.update();
+            });
+
+            if(options.emptyHelp) {
+                this.help.init();
+            }
+
+            this.help.update();
         }
-
-        $select.on('select2:selecting', function (event) {
-            var element = event.params.args.data.element;
-            that.items.addIcon(element.value, element.text, element.getAttribute('data-icon'));
-            that.help.hide();
-            event.preventDefault();
-        });
-
-        $list.on('click', '.btn', function () {
-            $list.find('[data-toggle=tooltip]').tooltip('hide');
-            $(this).remove();
-            that.help.update();
-        });
-
-        this.help.update();
-        $element.data('tagsSelectWidget', this);
     }
 
     var methods = {
         init : function (options) {
             options = $.extend({}, defaultOption, options);
             return this.each(function () {
-                var widget = new tagsSelectWidget(this, options);
+                var $this = $(this);
+                var $wrapper;
+
+                if ($this.is("select")) {
+                    $wrapper = $this.wrap('<div class="' + mainClass + '"></div>').closest('.' + mainClass);
+                    $wrapper.prepend('<div class="list"></div>');
+                } else if($this.hasClass(mainClass)) {
+                    $wrapper = $this;
+                } else {
+                    throw new Error();
+                }
+
+                var widget = new tagsSelectWidget($wrapper, options);
+                widget.init();
+                $wrapper.data('tagsSelectWidget', widget);
             });
         },
         clear : function () {
@@ -554,7 +570,7 @@ var select2TemplateResult = {
     };
 })(window.jQuery);
 $('.tags-select-widget').tagsSelectWidget();
-$('.tags-select-input-widget').tagsSelectWidget();
+//$('.tags-select-input-widget').tagsSelectWidget();
 
 
 

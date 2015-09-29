@@ -2,8 +2,19 @@
     {'route': 'tourist_edit', 'title': '<i class="fa fa-info-circle"></i> '~ 'views.hotel.tabs.main_info'|trans({}, 'MBHHotelBundle')},
     {'route': 'tourist_edit_document', 'title': '<i class="fa fa-book"></i> '~ 'views.hotel.tabs.document_relation'|trans({}, 'MBHHotelBundle')},
     {'route': 'tourist_edit_address', 'title': '<i class="fa fa-map-marker"></i> '~ 'views.hotel.tabs.address'|trans({}, 'MBHHotelBundle')},
-    {'route': 'tourist_edit_visa', 'title': '<i class="fa fa-book"></i> '~ 'views.hotel.tabs.visa'|trans({}, 'MBHHotelBundle')},
+    {'route': 'tourist_edit_visa', 'title': '<i class="fa fa-book"></i> '~ 'views.hotel.tabs.visa'|trans({}, 'MBHHotelBundle')}
 ] %}
+
+{% set style = null %}
+{% if entity.isUnwelcome %}
+    {% set title = '<i class="fa fa-user-secret"></i> '~ 'views.hotel.tabs.unwelcome'|trans({}, 'MBHHotelBundle') %}
+{% else %}
+    {% set title = '<i class="fa fa-check-circle"></i> '~ 'views.hotel.tabs.unwelcome'|trans({}, 'MBHHotelBundle') %}
+    {% if active != 5 %}
+        {% set style = 'opacity:0.4' %}
+    {% endif %}
+{% endif %}
+{% set menu = menu|merge([{'route': 'tourist_edit_unwelcome', 'title' : title, 'style' : style}]) %}
 
 <ul class="nav nav-tabs" role="tablist">
     {% for item in menu %}
@@ -13,7 +24,7 @@
                    title={{ 'views.hotel.tabs.main_info_required'|trans({}, 'MBHHotelBundle') }}>{{ item.title|raw }}</a>
             </li>
         {% else %}
-            <li {% if loop.index == active %}class="active"{% endif %}>
+            <li{% if item.style is defined and item.style %} style="{{ item.style }}"{% endif %} {% if loop.index == active %}class="active"{% endif %}>
                 {% if entity is null %}{% set route = 'hotel_new' %}{% else %}{% set route = item.route %}{% endif %}
                 <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"
                    {% else %}href="{{ path(item.route, {'id': entity.id|default(null)}) }}"{% endif %}>{{ item.title|raw }}</a>

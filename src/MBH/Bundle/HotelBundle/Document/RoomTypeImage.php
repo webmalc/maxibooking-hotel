@@ -49,7 +49,7 @@ class RoomTypeImage
      * @Gedmo\Versioned
      * @ODM\Boolean(name="isMain")
      */
-    protected $isMain = 0;
+    protected $isMain = false;
 
     /**
      * @Gedmo\Versioned

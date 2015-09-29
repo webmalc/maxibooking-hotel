@@ -6,10 +6,12 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Migration;
+use MBH\Bundle\PackageBundle\Document\Unwelcome;
+use MBH\Bundle\PackageBundle\Document\UnwelcomeRepository;
 use MBH\Bundle\PackageBundle\Document\Visa;
-use MBH\Bundle\PackageBundle\Form\TouristExtendedType;
 use MBH\Bundle\PackageBundle\Form\TouristMigrationType;
 use MBH\Bundle\PackageBundle\Form\TouristVisaType;
+use MBH\Bundle\PackageBundle\Form\UnwelcomeType;
 use MBH\Bundle\VegaBundle\Document\VegaFMS;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -158,24 +160,31 @@ class TouristController extends Controller
      */
     public function createAction(Request $request)
     {
-        $entity = new Tourist();
-        $form = $this->createForm(new TouristType(), $entity,
+        $tourist = new Tourist();
+        $form = $this->createForm(new TouristType(), $tourist,
             ['genders' => $this->container->getParameter('mbh.gender.types')]);
 
+        $notUnwelcome = !$tourist->getIsUnwelcome();
         $form->submit($request);
         if ($form->isValid()) {
 
-            $this->dm->persist($entity);
+            $this->dm->persist($tourist);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success',
-                $this->get('translator')->trans('controller.touristController.record_created_success'));
+            $flashBag = $request->getSession()->getFlashBag();
+            if($notUnwelcome && $tourist->getIsUnwelcome()) {
+                $flashBag->set('warning', '<i class="fa fa-user-secret"></i> '.$this->get('translator')
+                    ->trans('controller.touristController.tourist_was_found_in_unwelcome'));
+            }
 
-            return $this->afterSaveRedirect('tourist', $entity->getId());
+            $flashBag->set('success', $this->get('translator')
+                ->trans('controller.touristController.record_created_success'));
+
+            return $this->afterSaveRedirect('tourist', $tourist->getId());
         }
 
         return [
-            'entity' => $entity,
+            'entity' => $tourist,
             'form' => $form->createView(),
         ];
     }
@@ -189,27 +198,33 @@ class TouristController extends Controller
      * @Template("MBHPackageBundle:Tourist:edit.html.twig")
      * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
      */
-    public function updateAction(Request $request, Tourist $entity)
+    public function updateAction(Request $request, Tourist $tourist)
     {
-        $form = $this->createForm(new TouristType(), $entity,
+        $form = $this->createForm(new TouristType(), $tourist,
             ['genders' => $this->container->getParameter('mbh.gender.types')]);
 
+        $notUnwelcome = !$tourist->getIsUnwelcome();
         $form->submit($request);
         if ($form->isValid()) {
 
-            $this->dm->persist($entity);
+            $this->dm->persist($tourist);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.touristController.record_edited_success'));
+            $flashBag = $request->getSession()->getFlashBag();
+            $flashBag->set('success', $this->get('translator')
+                ->trans('controller.touristController.record_edited_success'));
+            if($notUnwelcome && $tourist->getIsUnwelcome()) {
+                $flashBag->set('warning', '<i class="fa fa-user-secret"></i> '.$this->get('translator')
+                    ->trans('controller.touristController.tourist_was_found_in_unwelcome'));
+            }
 
-            return $this->afterSaveRedirect('tourist', $entity->getId());
+            return $this->afterSaveRedirect('tourist', $tourist->getId());
         }
 
         return [
-            'entity' => $entity,
+            'entity' => $tourist,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'logs' => $this->logs($tourist)
         ];
     }
 
@@ -319,6 +334,101 @@ class TouristController extends Controller
             'logs' => $this->logs($entity)
         ];
     }
+
+    /**
+     * @Route("/{id}/edit/unwelcome", name="tourist_edit_unwelcome")
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_TOURIST_EDIT')")
+     * @Template()
+     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     */
+    public function editUnwelcomeAction(Tourist $tourist, Request $request)
+    {
+        $form = $this->createForm(new UnwelcomeType(), null, [
+            'method' => Request::METHOD_PUT
+        ]);
+
+        /** @var UnwelcomeRepository $unwelcomeRepository */
+        $unwelcomeRepository = $this->get('mbh.package.unwelcome_repository');
+        /** @var Unwelcome[] $unwelcomeList */
+        $unwelcomeList = $unwelcomeRepository->findByTourist($tourist);
+        if($unwelcomeList) {
+            foreach($unwelcomeList as $unwelcome) {
+                if($unwelcome->getIsMy()) {
+                    $form->setData($unwelcome);
+                } else {
+                    $unwelcomeList[] = $unwelcome;
+                }
+            }
+        }
+
+        if(!$form->getData()) {
+            $unwelcome = new Unwelcome();
+            $unwelcome
+                ->setAggression(0)
+                ->setFoul(0)
+                ->setInadequacy(0)
+                ->setDrunk(0)
+                ->setDrugs(0)
+                ->setDestruction(0)
+                ->setMaterialDamage(0)
+                ->setIsMy(false);
+
+            $form->setData($unwelcome);
+        }
+
+        $isTouristValid = $unwelcomeRepository->isInsertedTouristValid($tourist);
+        if($isTouristValid) {
+            $form->handleRequest($request);
+            if($form->isValid()) {
+                $unwelcome = $form->getData();
+                if($unwelcome->getIsMy()) {
+                    $unwelcomeRepository->update($unwelcome, $tourist);
+                } else {
+                    $package = $this->dm->getRepository('MBHPackageBundle:Package')->getPackageByTourist($tourist);
+                    if($package) {
+                        $unwelcome->setArrivalTime($package->getArrivalTime());
+                        $unwelcome->setDepartureTime($package->getDepartureTime());
+                    }
+                    $unwelcomeRepository->add($unwelcome, $tourist, $package);
+                }
+                $tourist->setIsUnwelcome(true);
+                $this->dm->persist($tourist);
+                $this->dm->flush($tourist);
+                return $this->redirectToRoute('tourist_edit_unwelcome', ['id' => $tourist->getId()]);
+            }
+        }
+
+        return [
+            'isTouristValid' => $isTouristValid,
+            'form' => $form->createView(),
+            'unwelcome' => $form->getData(),
+            'unwelcomeList' => $unwelcomeList,
+            'tourist' => $tourist,
+            'characteristics' => UnwelcomeType::getCharacteristics(),
+            'logs' => $this->logs($tourist),
+        ];
+    }
+
+    /**
+     * @Route("/{id}/delete/unwelcome", name="tourist_delete_unwelcome")
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_TOURIST_EDIT')")
+     * @ParamConverter("entity", class="MBHPackageBundle:Tourist")
+     */
+    public function deleteUnwelcomeAction(Tourist $tourist)
+    {
+        /** @var UnwelcomeRepository $unwelcomeRepository */
+        $unwelcomeRepository = $this->get('mbh.package.unwelcome_repository');
+        $unwelcomeRepository->deleteByTourist($tourist);
+
+        $tourist->setIsUnwelcome($unwelcomeRepository->isUnwelcome($tourist));
+        $this->dm->persist($tourist);
+        $this->dm->flush($tourist);
+
+        return $this->redirectToRoute('tourist_edit_unwelcome', ['id' => $tourist->getId()]);
+    }
+
 
     /**
      * @Route("/regions", name="get_json_regions", options={"expose"=true})

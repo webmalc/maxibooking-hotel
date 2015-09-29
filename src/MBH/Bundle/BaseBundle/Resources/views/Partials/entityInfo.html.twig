@@ -21,7 +21,7 @@
             {% if logs is empty %}
                 <p>{{ 'views.partials.entityInfo.no_changes_made'|trans({}, 'MBHBaseBundle') }}</p>
             {% else %}
-                <table class="table table-striped table-hover table-condensed without-fixed-header without-table-tools">
+                <table class="table table-striped table-hover table-condensed without-fixed-header without-table-tools not-auto-datatable entity-log-table">
                     <thead>
                     <tr>
                         <th class="td-md">{{ 'views.partials.entityInfo.date'|trans({}, 'MBHBaseBundle') }}</th>

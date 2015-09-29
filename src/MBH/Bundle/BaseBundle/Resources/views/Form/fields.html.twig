@@ -2,7 +2,7 @@
     {% spaceless %}
         <div {{ block('widget_container_attributes') }} class="btn-group" data-toggle="buttons">
             {% for child in form %}
-                <label class="btn btn-sm btn-default {% if child.vars.checked %} active{% endif %}">
+                <label {% for k, a in child.vars.attr %} {{ k }}="{{ a }}" {% endfor %} class="btn btn-sm btn-default {% if child.vars.checked %} active{% endif %}">
                     <input type="radio" {{ block('widget_attributes') }}{% if child.vars.value is defined %} value="{{ child.vars.value }}"{% endif %}{% if child.vars.checked %} checked="checked"{% endif %} />
                     {{ child.vars.label|trans }}
                 </label>

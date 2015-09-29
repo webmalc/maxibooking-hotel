@@ -6,6 +6,8 @@ imports:
     - { resource: roles.yml }
 
 framework:
+    serializer:
+        enabled: true
     #esi:             ~
     translator:      { fallback: ["%locale%", ru] }
     secret:          "%secret%"
@@ -33,7 +35,6 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
     base_template_class: MBH\Bundle\BaseBundle\Twig\Template
-    
     globals:
         meta_title: 'Система бронирования "MaxiBooking".'
         project_title: 'MaxiBooking'

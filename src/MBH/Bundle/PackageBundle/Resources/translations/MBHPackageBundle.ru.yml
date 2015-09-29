@@ -44,6 +44,7 @@ order.edit.is_confirmed_yes: да
 order.edit.is_confirmed_no: нет
 order.layout.reservation: Бронирование
 order.navbar.delete_order: 'Удалить заказ'
+order.navbar.lock: 'Блокировать'
 order.packages.dates: Даты
 order.packages.placement: Размещение
 order.packages.guests: Гости
@@ -86,6 +87,8 @@ package.accommodation.stopped: заехали
 package.accommodation.placement_not_specified: Размещение не указано
 package.actions: Действия
 package.actions.save_and_close: Сохранить и закрыть
+package.actions.unlock: Разблокировать
+package.actions.locked: Заблокировано
 package.actions.guests_stopped: Гости заехали
 package.actions.guests_check_out: Гости выехали
 package.actions.accommodation: Размещение
@@ -171,6 +174,8 @@ package.index.reservations_list: "список броней"
 package.index.check_in: Заезд
 package.index.check_out: Выезд
 package.index.create: Создание
+package.index.accommodation: Проживание
+package.index.deletedAt: Удаление
 package.index.paid: Оплачена
 package.index.partly_paid: Частично оплачена
 package.index.not_paid: не оплачена
@@ -319,6 +324,7 @@ source.edit.edit_reservation_source: "редактрирование источ�
 source.index.reservation_source: "источник броней"
 source.index.services: "Услуги"
 source.index.fms: "Для ФМС"
+source.index.filling: "Заполняемость"
 source.index.name: Название
 source.index.inner_name: Внутреннее название
 source.index.created: Создан
@@ -370,6 +376,7 @@ poll.question.hotel_entertainment: 'Качество и разнообразие
 poll.controller.save_success: 'Спасибо! Ваша оценка успешно сохранена!'
 
 report.poll.small_title: 'Оценки'
+report.poll.invite: 'Визовые приглашения'
 report.poll.small_title_order: 'Оценки заказа '
 views.report.polls.th.order: Заказ
 views.report.polls.th.hotel: Отель
@@ -389,11 +396,16 @@ report.users.error: 'Брони не найдены'
 report.porter.small_title: 'Портье'
 report.porter.error: 'Даты заданы неверно'
 report.porter.arrivals.empty: 'Брони не найдены'
+
 report.porter.live.empty: 'Брони не найдены'
 report.porter.live.debt: Оплата
 report.porter.live.departure: Выезд
 report.porter.live.arrival: Заезд
 report.porter.live.table: Проживающие
+
+report.porter.lives.table: Проживающие
 report.porter.arrivals.table: Заезжающие
+report.porter.out.table: Выезд
+
 report.porter.note: Комментарий
 

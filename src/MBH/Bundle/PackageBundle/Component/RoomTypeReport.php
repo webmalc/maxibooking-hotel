@@ -17,12 +17,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class RoomTypeReport
 {
-    const STATUS_OPEN = 'open';
-    const STATUS_DEPT = 'dept';
-    const STATUS_PAID = 'paid';
-    const STATUS_NOT_OUT = 'not_out';
-    const STATUS_OUT_NOW = 'out_now';
-
     /**
      * @var ContainerInterface
      */
@@ -36,36 +30,6 @@ class RoomTypeReport
     {
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
-    }
-
-    public function getStatusByPackage(Package $package)
-    {
-        if (!$package->getOrder() or !$package->getIsCheckIn()) {
-            return self::STATUS_OPEN;
-        }
-
-        $now = new \DateTime('midnight');
-        if (!$package->getIsCheckOut() && $now->format('Ymd') > $package->getEnd()->format('Ymd')) {
-            return self::STATUS_NOT_OUT;
-        }
-        if ($package->getIsPaid()) {
-            return $now->format('d.m.Y') == $package->getEnd()->format('d.m.Y') ?
-                self::STATUS_OUT_NOW :
-                self::STATUS_PAID;
-        } else {
-            return self::STATUS_DEPT;
-        }
-    }
-
-    public function getAvailableStatues()
-    {
-        return [
-            self::STATUS_OPEN,
-            self::STATUS_DEPT,
-            self::STATUS_PAID,
-            self::STATUS_NOT_OUT,
-            self::STATUS_OUT_NOW,
-        ];
     }
 
     /**
@@ -107,6 +71,7 @@ class RoomTypeReport
         $rooms = $queryBuilder->getQuery()->execute();
 
         $result = new RoomTypeReportResult();
+
         $result->total = [
             'rooms' => count($rooms),
             'open' => 0,
@@ -114,25 +79,45 @@ class RoomTypeReport
             'guests' => 0,
         ];
 
+        /** @var Package[] $supposeAccommodations */
+        $supposeAccommodations = $this->dm->getRepository('MBHPackageBundle:Package')->findBy([
+            'roomType.id' => ['$in' => $roomTypeIDs],
+            'accommodation' => ['$exists' => false],
+            'isCheckOut' => false
+        ], [], $result->total['rooms']);
+
+        $supposeAccommodationTotal = count($supposeAccommodations);
+        foreach($supposeAccommodations as $package) {
+            $result->supposeAccommodations[$package->getRoomType()->getId()][] = $package;
+        }
+
         $now = new \DateTime('midnight');
         foreach($rooms as $room) {
             /** @var Package $package */
             $package = $packageRepository->getPackageByAccommodation($room, $now);
-            $packageStatus = $package ? $this->getStatusByPackage($package) : null;
-            if($packageStatus == self::STATUS_OPEN || $package == null) {
-                $result->total['open']++;
-            } else {
-                $result->total['reserve']++;
-            }
-            if (empty($criteria->status) || ($package === null && $criteria->status === self::STATUS_OPEN) ||
-                ($package && $packageStatus === $criteria->status)
-            ) {
-                $result->dataTable[$room->getRoomType()->getId()]['roomType'] = $room->getRoomType();
-                $result->dataTable[$room->getRoomType()->getId()]['rooms'][] = $room;
+            $roomStatus = $package ? $package->getRoomStatus() : Package::ROOM_STATUS_OPEN;
+
+            if (!$criteria->status || $roomStatus === $criteria->status) {
+                $roomTypeID = $room->getRoomType()->getId();
+                $result->dataTable[$roomTypeID]['roomType'] = $room->getRoomType();
+                $result->dataTable[$roomTypeID]['rooms'][] = $room;
 
                 if($package) {
                     $result->packages[$room->getId()] = $package;
                     $result->total['guests'] += $package->getAdults() + $package->getChildren();
+
+                    if($roomStatus == Package::ROOM_STATUS_OPEN) {
+                        $result->total['open']++;
+                    } else {
+                        $result->total['reserve']++;
+                    }
+                } else {
+                    if($supposeAccommodationTotal) {
+                        $supposeAccommodationTotal--;
+                        $result->total['reserve']++;
+                    }else {
+                        $result->total['open']++;
+                    }
                 }
             }
         }

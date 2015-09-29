@@ -1,18 +1,18 @@
 {% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ entity.numberWithPrefix %}
+{% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ package.numberWithPrefix %}
 {% set layout = 'tabs' %}
 
-{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~ ' (' ~ entity.deletedAt|date('d.m.Y H:i') ~ ') </span>' %}{% endif %}
+{% if package.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~ ' (' ~ package.deletedAt|date('d.m.Y H:i') ~ ') </span>' %}{% endif %}
 
 {% block prepend_content %}
-    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': entity} %}
+    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
 {% endblock %}
 
 {% block content %}
 
     {% if app.request.isxmlhttprequest is empty %}
-        {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 2 , 'entity': entity} %}
+        {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 2 , 'entity': package} %}
     {% endif %}
 
     <div class="tab-content">
@@ -29,7 +29,7 @@
                                             <strong>{{ 'package.edit.tariff'|trans({}, 'MBHPackageBundle') }}</strong>
                                         </td>
                                         <td>
-                                            {{ entity.tariff.name }}
+                                            {{ package.tariff.name }}
                                         </td>
                                     </tr>
                                     <tr>
@@ -37,9 +37,9 @@
                                             <strong>{{ 'package.edit.price'|trans({}, 'MBHPackageBundle') }}</strong>
                                         </td>
                                         <td>
-                                            {{ entity.price|number_format(2) }}
+                                            {{ package.price|number_format(2) }}
                                             &nbsp;
-                                            {% if entity.isPaid %}
+                                            {% if package.isPaid %}
                                                 <small class="text-success"><i
                                                             class="fa fa-check"> </i> {{ 'package.edit.paid'|trans({}, 'MBHPackageBundle') }}
                                                 </small>
@@ -55,7 +55,7 @@
                                             <strong>{{ 'package.edit.price_by_day'|trans({}, 'MBHPackageBundle') }}</strong>
                                         </td>
                                         <td>
-                                            {% for date, price in entity.pricesByDate %}
+                                            {% for date, price in package.pricesByDate %}
                                                 <small>{{ date|replace({'_': '.'}) }} - <strong>{{ price }}</strong></small><br>
                                             {% endfor %}
                                         </td>
@@ -71,7 +71,7 @@
                                             <strong>{{ 'package.edit.service_price'|trans({}, 'MBHPackageBundle') }}</strong>
                                         </td>
                                         <td>
-                                            {{ entity.servicesPrice|number_format(2) }}
+                                            {{ package.servicesPrice|number_format(2) }}
                                         </td>
                                     </tr>
                                     <tr>
@@ -80,8 +80,8 @@
                                         </td>
                                         <td>
                                             <span
-                                        class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }} {% if entity.status == 'channel_manager' %}({{ entity.channelManagerType }}){% endif %}</span>
-                                        {% if entity.deletedAt %} &nbsp;
+                                        class="text-{{ statuses[package.status].class }}">{{ statuses[package.status].title }} {% if package.status == 'channel_manager' %}({{ package.channelManagerType }}){% endif %}</span>
+                                        {% if package.deletedAt %} &nbsp;
                                             <small class="text-danger"><i
                                                     class="fa fa-trash-o"> </i> {{ 'package.edit.deleted'|trans({}, 'MBHPackageBundle') }}
                                             </small>
@@ -93,7 +93,7 @@
                                             <strong>{{ 'package.edit.is_confirmed'|trans({}, 'MBHPackageBundle') }}</strong></div>
                                         </td>
                                         <td>
-                                            {% if entity.confirmed %}
+                                            {% if package.confirmed %}
                                                 <small class="text-success"><i
                                                             class="fa fa-check"> </i> {{ 'package.edit.is_confirmed_yes'|trans({}, 'MBHPackageBundle') }}
                                                 </small>
@@ -114,12 +114,12 @@
                 </div>
             </div>
 
-            {{ form_start(form, {'action': path('package_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_start(form, {'action': path('package_update', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'role': 'ROLE_PACKAGE_EDIT'} %}
+            {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_EDIT'} %}
             {{ form_end(form) }}
 
-            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': package, 'logs': logs, 'delete_route': 'package_delete' } %}
         </div>
     </div>
 {% endblock %}

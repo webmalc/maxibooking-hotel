@@ -1,6 +1,6 @@
 {% if entity.isCheckIn and entity.accommodation %}{% set checkIn = true %}{% else %}{% set checkIn = false %}{% endif %}
 {% if entity.isCheckOut and entity.accommodation %}{% set checkOut = true %}{% else %}{% set checkOut = false %}{% endif %}
-<tr class="{% if entity.deletedAt or entity.corrupted %}danger{% elseif not entity.order.confirmed %}info{% endif %}">
+<tr {% if (type == 'arrivals' and entity.isCheckIn) or type == ('out' and entity.isCheckOut) %}style="opacity: 0.4"{% endif %} class="{{ entity.roomStatus == 'open' ? 'default' : (entity.roomStatus == 'wait' ? 'info' : entity.order.paidStatus) }}">
     <td class="text-center">
         <span data-toggle='tooltip'
               title='{{ 'package.json.reservation_type'|trans({}, 'MBHPackageBundle') }}  {{ statuses[entity.order.status].title }}'>
@@ -77,17 +77,23 @@
             </small>
         </td>
 
-    {% if type == 'lives' %}
-        <td class="text-right">
-            {{ entity.end|mbh_format }}<br>
-            <small>&nbsp;</small>
-        </td>
-    {% endif %}
-
     {% if type == 'arrivals' %}
         <td class="text-right">
-            {{ entity.begin|mbh_format }}<br>
-            <small>&nbsp;</small>
+        {% if entity.isCheckIn %}
+            {{ entity.arrivalTime|mbh_format }} {{  entity.arrivalTime|date('H:i') }}<br>
+            <small>&nbsp;Заехал</small>
+        {% else %}
+            {{ entity.begin|mbh_format }}
+        {% endif %}
+        </td>
+    {% else %}{#if type == 'out'#}
+        <td class="text-right">
+        {% if entity.isCheckOut %}
+            {{ entity.departureTime|mbh_format }} {{  entity.arrivalTime|date('H:i') }}<br>
+            <small>&nbsp;Выехал</small>
+        {% else %}
+            {{ entity.end|mbh_format }}<br>
+        {% endif %}
         </td>
     {% endif %}
     {% set note = entity.order.note ~ " " ~ entity.note %}

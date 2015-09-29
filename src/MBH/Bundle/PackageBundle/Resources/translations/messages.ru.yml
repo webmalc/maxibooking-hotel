@@ -30,6 +30,7 @@ form.packageAccommodationType.are_guests_checked_in_help: Заехал ли го
 form.packageAccommodationType.are_guests_checked_out: Гости выехали?
 form.packageAccommodationType.are_guests_checked_out_help: Выехали ли гости из номера?
 form.packageAccommodationType.check_in_group: Время заезда/выезда
+form.packageAccommodationType.can_not_checkout_with_debt: <div class="text-danger"><i class="fa fa-exclamation-triangle"></i> Нельзя выселить при наличии долга</div>
 form.packageCopyType.reservation: Бронь
 form.packageCopyType.transfer_parameters: Параметры переноса
 form.packageCopyType.data_transfer_reservation: Бронь в которую будет произведен перенос данных.
@@ -102,7 +103,7 @@ form.touristType.second_name: Отчество
 form.touristType.placeholder_second_name: Иванович
 form.touristType.birth_date: Дата рождения
 form.touristType.gender: Пол
-form.touristType.communication_language: Язык
+form.touristType.communication_language: Язык общения
 form.touristType.sex_male: Муж.
 form.touristType.sex_female: Жен.
 form.touristType.sex_unknown: -
@@ -148,6 +149,7 @@ controller.packageController.record_deleted_success: 'Запись успешн�
 controller.sourceController.record_created_success: 'Запись успешно создана.'
 controller.sourceController.record_edited_success: 'Запись успешно отредактирована.'
 controller.touristController.record_created_success: 'Запись успешно создана.'
+controller.touristController.tourist_was_found_in_unwelcome: 'Турист был найден в черном списке'
 controller.touristController.record_edited_success: 'Запись успешно отредактирована.'
 controller.packageController.record_edited_fail: 'Ошибка при обновлении брони. Нет доступных номеров.'
 controller.packageController.record_edited_fail_accommodation: 'Ошибка при обновлении брони. Номер недоступен для размещения.'
@@ -295,3 +297,35 @@ report.roomType.statuses.dept: Долг
 report.roomType.statuses.paid: Оплачен
 report.roomType.statuses.not_out: Не выехал
 report.roomType.statuses.out_now: Выезжает
+report.roomType.statuses.wait: Ожидается
+
+form.unwelcomeType.group.common: Внести в черный список
+
+form.unwelcomeType.foul: Нарушения правил отеля
+form.unwelcomeType.aggression: Агрессивность
+form.unwelcomeType.inadequacy: Неадекватность
+form.unwelcomeType.drunk: Алкогольное опьянение
+form.unwelcomeType.drugs: Употребление наркотиков
+form.unwelcomeType.destruction: Порча имущества
+form.unwelcomeType.materialDamage: Материальный ущерб
+form.unwelcomeType.comment: Комментарий
+
+form.unwelcomeType.add: Добавить в черный список
+
+
+tourist.migration.type_series: 'Серия'
+tourist.migration.type_number: 'Номер'
+tourist.migration.type_profession: 'Профессия'
+tourist.migration.type_representative: 'Сведения о законных представителях'
+tourist.migration.type_address: 'Адрес прежнего места пребывания'
+
+tourist.visa.type_type: 'Тип'
+tourist.visa.type_series: 'Серия'
+tourist.visa.type_number: 'Номер'
+tourist.visa.type_issued: 'Дата выдачи'
+tourist.visa.type_expiry: 'Срок действия'
+
+unwelcome.actions.delete: Удалить из черного списка
+
+package.tourist_in_unwelcome: Гость находится в черном списке
+package.payer_in_unwelcome: Плательщик находится в черном списке

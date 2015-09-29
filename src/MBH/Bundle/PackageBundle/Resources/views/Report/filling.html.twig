@@ -1,0 +1,41 @@
+{% extends 'MBHPackageBundle:Report:layout.html.twig' %}
+
+{% set small_title = "source.index.filling"|trans({}, "MBHPackageBundle") %}
+{% set layout = 'box' %}
+{% set title_url = path('report_filling') %}
+
+{% block content %}
+
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {id: 'room-type-table-filter-widget'} %}
+        {% block content %}
+        <form id="filling-table-filter" class="form-inline form-icon-label">
+            <div class="form-group">
+                <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y') }}">
+            </div>
+            <div class="form-group">
+                <label> - </label>
+                <input type="text" name="end" id="accommodation-report-filter-end" class="datepicker accommodation-report-filter end-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
+            </div>
+
+            <div class="form-group">
+                {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
+            </div>
+
+            <div class="form-group">
+                <label><i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i></label>
+                <select name="roomType" data-placeholder="Тип номера" id="filling-report-filter-roomType" class="form-control input-sm">
+                    <option></option>
+                    {% for roomType in roomTypeList %}
+                        <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+        {% endblock content %}
+    {% endembed %}
+
+    <div id="filling-table-wrapper" class="scrolling">
+        {% include 'MBHPackageBundle:Report:fillingTable.html.twig' with {'roomTypes': roomTypes, 'rangeDateList' : rangeDateList, 'tableDataByRoomType': tableDataByRoomType} %}
+    </div>
+{% endblock %}

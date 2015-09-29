@@ -1,0 +1,40 @@
+<table id="filling-table" class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+    <tbody>
+    {% for roomType in roomTypes %}
+        <tr class="mbh-grid-header1 info">
+            <td colspan=" {{ rangeDateList|length + 2 }}  ">
+                <strong>{{ roomType.fullTitle }}</strong>
+            </td>
+        </tr>
+
+        <tr class="header">
+            <td>Даты</td>
+            {% for date in rangeDateList %}
+                <td>{{ date|mbh_format }}</td>
+            {% endfor %}
+            <td>Итого</td>
+        </tr>
+
+        {% set tableData = (tableDataByRoomType[roomType.id] is defined ? tableDataByRoomType[roomType.id] : null) %}
+        {% include 'MBHPackageBundle:Report:fillingTableRows.html.twig' with {tableData: tableData } %}
+    {% endfor %}
+
+    {% if tableDataByRoomType|length > 1 %}
+        <tr class="mbh-grid-header1 info">
+            <td colspan=" {{ rangeDateList|length + 2 }}  ">
+                <strong>Итог</strong>
+            </td>
+        </tr>
+
+        <tr class="header">
+            <td>Даты</td>
+            {% for date in rangeDateList %}
+                <td>{{ date|mbh_format }}</td>
+            {% endfor %}
+            <td>Итого</td>
+        </tr>
+
+        {% include 'MBHPackageBundle:Report:fillingTableRows.html.twig' with {tableData: totalTableData} %}
+    {% endif %}
+    </tbody>
+</table>

@@ -20,3 +20,6 @@ controller.apiController.thank_you: 'Большое спасибо. '
 controller.apiController.we_will_call_you_back_soon: ' Мы свяжемся с Вами в ближайшее время.<br>'
 controller.apiController.your_order_number: 'Номер вашего заказа: '
 controller.formController.settings_saved_success: 'Настройки успешно сохранены.'
+
+form.inviteType.type.single: 'Однократная (600 руб.)'
+form.inviteType.type.twice: 'Двукратная (900 руб.)'

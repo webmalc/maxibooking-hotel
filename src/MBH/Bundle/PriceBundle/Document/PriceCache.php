@@ -146,7 +146,7 @@ class PriceCache extends Base
     /**
      * Get date
      *
-     * @return date $date
+     * @return \DateTime $date
      */
     public function getDate()
     {
@@ -283,5 +283,19 @@ class PriceCache extends Base
     public function getSinglePrice()
     {
         return $this->singlePrice;
+    }
+
+    /**
+     * @return float|int
+     */
+    public function getMaxIncome()
+    {
+        if ($this->getIsPersonPrice()) {
+            $commonPlace = $this->getRoomType()->getPlaces() * $this->getPrice();
+        } else {
+            $commonPlace = $this->getPrice();
+        }
+        $additionalPlace = $this->getRoomType()->getAdditionalPlaces() * $this->getAdditionalPrice();
+        return $commonPlace + $additionalPlace;
     }
 }

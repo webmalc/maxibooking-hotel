@@ -5,18 +5,19 @@ $(document).ready(function () {
 
     //Show table
     var porterProcessing = false,
+        $wrapper = $('#porter-report-table-wrapper'),
+        $begin = $('#porter-report-filter-begin'),
+        $end = $('#porter-report-filter-end'),
         showTable = function () {
-            var wrapper = $('#porter-report-table-wrapper'),
-                begin = $('#porter-report-filter-begin'),
-                end = $('#porter-report-filter-end'),
-                data = {
-                    'begin': begin.val(),
-                    'end': end.val()
-                };
-            if (wrapper.length === 0) {
+            var data = {
+                //begin: $begin.val(),
+                //end: $end.val()
+                type: $('#input-type').val()
+            };
+            if ($wrapper.length === 0) {
                 return false;
             }
-            wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+            $wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
 
             if (!porterProcessing) {
                 $.ajax({
@@ -26,19 +27,18 @@ $(document).ready(function () {
                         porterProcessing = true;
                     },
                     success: function (data) {
-                        wrapper.html(data);
+                        $wrapper.html(data);
                         porterProcessing = false;
                         $("[data-toggle='tooltip']").tooltip();
                     },
-                    dataType: 'html'
                 });
             }
         };
 
     showTable();
-    $('.porter-report-filter').change(function () {
+    /*$('.porter-report-filter').on('change', function () {
         showTable();
-    });
+    });*/
 
 });
 

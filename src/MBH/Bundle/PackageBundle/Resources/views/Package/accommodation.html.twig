@@ -1,28 +1,28 @@
 {% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ entity.numberWithPrefix %}
+{% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ package.numberWithPrefix %}
 {% set layout =  'tabs' %}
 
-{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~ ' (' ~ entity.deletedAt|date('d.m.Y H:i') ~ ') </span>' %}{% endif %}
+{% if package.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~ ' (' ~ package.deletedAt|date('d.m.Y H:i') ~ ') </span>' %}{% endif %}
 
 {% block prepend_content %}
-    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': entity} %}
+    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
 {% endblock %}
 
 {% block content %}
 
     {% if app.request.isxmlhttprequest is empty %}
-        {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 6 , 'entity': entity} %}
+        {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 6 , 'entity': package} %}
     {% endif %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
-            {% if entity.accommodation %}
+            {% if package.accommodation %}
                 <div class="bg-gray color-palette alert">
-                    <i class="fa fa-bed"> </i> {{ 'package.accommodation.placement'|trans({}, 'MBHPackageBundle') }} {{ entity.accommodation.name(true, true) }}, {{ 'package.accommodation.guests'|trans({}, 'MBHPackageBundle') }} {{ entity.isCheckIn ? '' : 'не ' }} {{ 'package.accommodation.stopped'|trans({}, 'MBHPackageBundle') }}
-                    {% if entity.deletedAt is empty and is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                    <i class="fa fa-bed"> </i> {{ 'package.accommodation.placement'|trans({}, 'MBHPackageBundle') }} {{ package.accommodation.name(true, true) }}, {{ 'package.accommodation.guests'|trans({}, 'MBHPackageBundle') }} {{ package.isCheckIn ? '' : 'не ' }} {{ 'package.accommodation.stopped'|trans({}, 'MBHPackageBundle') }}
+                    {% if package.deletedAt is empty and is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                         <div class="pull-right">
-                            <a href="{{ path('package_accommodation_delete', { 'id': entity.id }) }}" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
+                            <a href="{{ path('package_accommodation_delete', { 'id': package.id }) }}" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
                                 <i class="fa fa-trash-o"></i>
                             </a>
                         </div>
@@ -34,12 +34,12 @@
                 </div>
             {% endif %}
 
-                {{ form_start(form, {'action': path('package_accommodation', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+                {{ form_start(form, {'action': path('package_accommodation', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
                 {{ form_widget(form) }}
-                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, 'role': 'ROLE_PACKAGE_ACCOMMODATION'} %}
+                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_ACCOMMODATION'} %}
                 {{ form_end(form) }}
 
-            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'package_delete' } %}
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': package, 'logs': logs, 'delete_route': 'package_delete' } %}
         </div>
     </div>
 

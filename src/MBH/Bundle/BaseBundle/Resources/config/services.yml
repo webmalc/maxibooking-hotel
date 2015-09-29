@@ -15,16 +15,16 @@ services:
         - { name: validator.constraint_validator, alias: doctrine_odm.mongodb.unique }
 
     mbh.base_on_request_listener:
-            class: MBH\Bundle\BaseBundle\EventListener\OnRequest
-            arguments: [@service_container]
-            tags:
-                - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+        class: MBH\Bundle\BaseBundle\EventListener\OnRequest
+        arguments: [@service_container]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
 
     mbh.base_on_controller_listener:
-                class: MBH\Bundle\BaseBundle\EventListener\OnController
-                arguments: [@service_container]
-                tags:
-                    - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+        class: MBH\Bundle\BaseBundle\EventListener\OnController
+        arguments: [@service_container]
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
     mongodb_acl_provider:
             parent: doctrine_mongodb.odm.security.acl.provider
@@ -36,16 +36,16 @@ services:
             - { name: twig.extension }
 
     mbh.twig.plural_extension:
-            class: MBH\Bundle\BaseBundle\Twig\PluralExtension
-            arguments: [@service_container]
-            tags:
-                - { name: twig.extension }
+        class: MBH\Bundle\BaseBundle\Twig\PluralExtension
+        arguments: [@service_container]
+        tags:
+            - { name: twig.extension }
 
     mbh.twig.extension:
-                class: MBH\Bundle\BaseBundle\Twig\Extension
-                arguments: [@service_container]
-                tags:
-                    - { name: twig.extension }
+        class: MBH\Bundle\BaseBundle\Twig\Extension
+        arguments: [@service_container]
+        tags:
+            - { name: twig.extension }
             
     mbh.form.fieldset_extension:
         class: MBH\Bundle\BaseBundle\Form\Extension\FieldsetExtension
@@ -149,3 +149,7 @@ services:
         arguments: [@mbh.hotel.selector]
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+    mbh.get_set_method_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer
+        tags:
+            - { name: serializer.normalizer }

@@ -1,18 +1,18 @@
 {% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
 
-{% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ entity.numberWithPrefix %}
+{% set small_title = 'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ ' ' ~ package.numberWithPrefix %}
 {% set layout =  'tabs' %}
 
-{% if entity.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~ ' (' ~ entity.deletedAt|date('d.m.Y H:i') ~ ') </span>' %}{% endif %}
+{% if package.deletedAt %}{% set small_title = small_title ~ ' - <span class="text-danger">'~'package.edit.deleted'|trans({}, 'MBHPackageBundle')~ ' (' ~ package.deletedAt|date('d.m.Y H:i') ~ ') </span>' %}{% endif %}
 
 {% block prepend_content %}
-    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': entity} %}
+    {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
 {% endblock %}
 
 {% block content %}
 
     {% if app.request.isxmlhttprequest is empty %}
-        {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 5 , 'entity': entity} %}
+        {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 5 , 'entity': package} %}
     {% endif %}
 
     <div class="tab-content">
@@ -20,19 +20,19 @@
 
             <div class="bg-gray color-palette alert">
                 <i class="{{ currency().icon }}"></i>
-                Цена: {{ entity.price|number_format(2) }}
+                Цена: {{ package.price|number_format(2) }}
                 &nbsp;
-                {% if entity.isPaid %}
+                {% if package.isPaid %}
                     <small class="text-success"><i class="fa fa-check"> </i> {{ "package.service.paid"|trans({}, "MBHPackageBundle") }}</small>
                 {% else %}
                     <small class="text-danger"><i class="fa fa-times"> </i> {{ "package.service.not_paid"|trans({}, "MBHPackageBundle") }}</small>
                 {% endif %}
                 &nbsp;
                 <i class="fa fa-plug"></i>
-                Цена услуг: {{ entity.servicesPrice|number_format(2) }}
+                Цена услуг: {{ package.servicesPrice|number_format(2) }}
             </div>
 
-            {% if entity.services|length > 0 %}
+            {% if package.services|length > 0 %}
                 <table class="package-service-table table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable">
                     <thead>
                     <tr>
@@ -52,7 +52,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for service in entity.services %}
+                    {% for service in package.services %}
                         <tr {% if service.deletedAt %}class="danger"{% endif %}>
                             <td class="text-center table-icon"><i class="fa fa-plug"></i></td>
                             <td>{{ service.service }}</td>
@@ -71,13 +71,13 @@
 
                             <td class="table-actions-td text-center">
 
-                                {% if entity.deletedAt is empty and service.deletedAt is empty and is_granted('ROLE_PACKAGE_SERVICES') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
-                                <a href="{{ path('package_service_edit', { 'id': entity.id, "serviceId": service.id }) }}"
+                                {% if package.deletedAt is empty and service.deletedAt is empty and is_granted('ROLE_PACKAGE_SERVICES') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                                <a href="{{ path('package_service_edit', { 'id': package.id, "serviceId": service.id }) }}"
                                    class="btn btn-success btn-xs " title="{{ 'package.service.edit_record'|trans({}, 'MBHPackageBundle')}}"
                                    data-toggle="tooltip">
                                     <i class="fa fa-pencil-square-o"></i>
                                 </a>
-                                <a href="{{ path('package_service_delete', { 'id': entity.id, "serviceId": service.id }) }}"
+                                <a href="{{ path('package_service_delete', { 'id': package.id, "serviceId": service.id }) }}"
                                    class="btn btn-danger btn-xs delete-link " title="{{ 'package.service.delete_record'|trans({}, 'MBHPackageBundle')}}"
                                    data-toggle="tooltip">
                                     <i class="fa fa-trash-o"></i>
@@ -90,18 +90,18 @@
                 </table>
             {% endif %}
 
-                 {% if is_granted('ROLE_PACKAGE_SERVICES') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
-                    {{ form_start(form, {'action': path('package_service', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
+                 {% if is_granted('ROLE_PACKAGE_SERVICES') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                    {{ form_start(form, {'action': path('package_service', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
                     {{ form_widget(form) }}
                 {% endif %}
 
-                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': entity, role: 'ROLE_PACKAGE_SERVICES'} %}
+                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, role: 'ROLE_PACKAGE_SERVICES'} %}
 
-                {% if is_granted('ROLE_PACKAGE_SERVICES') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                {% if is_granted('ROLE_PACKAGE_SERVICES') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                     {{ form_end(form) }}
                 {% endif %}
 
-            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs } %}
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': package, 'logs': logs } %}
         </div>
     </div>
 
@@ -110,5 +110,5 @@
 {% block scripts %}
     {{ parent() }}
 
-    {% include 'MBHPackageBundle:Package:serviceScripts.html.twig' with {'entity': entity} %}
+    {% include 'MBHPackageBundle:Package:serviceScripts.html.twig' with {'entity': package} %}
 {% endblock %}
