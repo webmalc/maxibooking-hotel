@@ -220,8 +220,7 @@ class Mbhs
     {
         return $this->exchangeJson([
             'unwelcome' => $unwelcome,
-            'tourist' => $tourist,
-            'hotel' => $this->getHotelData()
+            'tourist' => $tourist
         ], 'client/unwelcome/add');
     }
 
@@ -242,7 +241,7 @@ class Mbhs
      * @param Tourist $tourist
      * @return null|array
      */
-    public function findUnwelcomeHistoryByTourist(Tourist $tourist)
+    public function findUnwelcomeListByTourist(Tourist $tourist)
     {
         return $this->exchangeJson([
             'tourist' => $tourist
@@ -253,11 +252,11 @@ class Mbhs
      * @param Tourist $tourist
      * @return bool
      */
-    public function hasUnwelcomeHistory(Tourist $tourist)
+    public function hasUnwelcome(Tourist $tourist)
     {
         $response = $this->exchangeJson([
             'tourist' => $tourist
-        ], 'client/unwelcome/has_unwelcome_history');
+        ], 'client/unwelcome/has');
         return isset($response['result']) ? $response['result'] : false;
     }
 
@@ -327,6 +326,7 @@ class Mbhs
         return [
             'url' => $this->getSchemeAndHttpHost(),
             'key' => $this->config['key'],
+            'hotel' => $this->getHotelData()
         ];
     }
 }

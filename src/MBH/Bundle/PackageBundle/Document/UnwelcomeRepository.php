@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Serializer;
  * Class UnwelcomeHistoryRepository
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class UnwelcomeHistoryRepository
+class UnwelcomeRepository
 {
     /**
      * @var Mbhs
@@ -95,9 +95,9 @@ class UnwelcomeHistoryRepository
             //throw new Exception;
         }
 
-        $responseData = $this->mbhs->findUnwelcomeHistoryByTourist($tourist);
-        if($responseData && isset($responseData['unwelcomeHistory'])) {
-            return $this->hydrateUnwelcomeHistory($responseData['unwelcomeHistory']);;
+        $responseData = $this->mbhs->findUnwelcomeListByTourist($tourist);
+        if($responseData && isset($responseData['unwelcomeList'])) {
+            return $this->hydrateUnwelcomeList($responseData['unwelcomeList']);;
         }
 
         return null;
@@ -113,16 +113,16 @@ class UnwelcomeHistoryRepository
             //throw new Exception;
         }
 
-        return $this->hasUnwelcomeHistory($tourist);
+        return $this->hasUnwelcome($tourist);
     }
 
     /**
      * @param Tourist $tourist
      * @return bool
      */
-    public function hasUnwelcomeHistory(Tourist $tourist)
+    public function hasUnwelcome(Tourist $tourist)
     {
-        return $this->mbhs->hasUnwelcomeHistory($tourist);
+        return $this->mbhs->hasUnwelcome($tourist);
     }
 
     /**
@@ -136,23 +136,17 @@ class UnwelcomeHistoryRepository
 
 
     /**
-     * @param array $historyData
-     * @return UnwelcomeHistory
+     * @param array $unwelcomeList
+     * @return Unwelcome[]
      */
-    public function hydrateUnwelcomeHistory(array $historyData)
+    public function hydrateUnwelcomeList(array $unwelcomeList)
     {
-        $unwelcomeHistory = new UnwelcomeHistory();
-
-        if(isset($historyData['tourist'])) {
-            $tourist = $this->hydrateTourist($historyData['tourist']);
-            $unwelcomeHistory->setTourist($tourist);
-        }
-        foreach($historyData['items'] as $unwelcomeData) {
-            $unwelcome = $this->hydrateUnwelcome($unwelcomeData);
-            $unwelcomeHistory->addItem($unwelcome);
+        $result = [];
+        foreach($unwelcomeList as $unwelcomeData) {
+            $result[] = $this->hydrateUnwelcome($unwelcomeData);
         }
 
-        return $unwelcomeHistory;
+        return $result;
     }
 
     /**
@@ -187,9 +181,9 @@ class UnwelcomeHistoryRepository
             ->setDrugs($unwelcomeData['drugs'])
             ->setDestruction($unwelcomeData['destruction'])
             ->setMaterialDamage($unwelcomeData['materialDamage'])
-            ->setTouristCitizenship($unwelcomeData['touristCitizenship'])
-            ->setTouristEmail($unwelcomeData['touristEmail'])
-            ->setTouristPhone($unwelcomeData['touristPhone'])
+            //->setTouristCitizenship($unwelcomeData['touristCitizenship'])
+            //->setTouristEmail($unwelcomeData['touristEmail'])
+            //->setTouristPhone($unwelcomeData['touristPhone'])
             ->setComment($unwelcomeData['comment'])
             ->setIsMy($unwelcomeData['isMy'])
         ;

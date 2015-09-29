@@ -7,8 +7,7 @@ use MBH\Bundle\PackageBundle\Document\BirthPlace;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Migration;
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
-use MBH\Bundle\PackageBundle\Document\UnwelcomeHistory;
-use MBH\Bundle\PackageBundle\Document\UnwelcomeHistoryRepository;
+use MBH\Bundle\PackageBundle\Document\UnwelcomeRepository;
 use MBH\Bundle\PackageBundle\Document\Visa;
 use MBH\Bundle\PackageBundle\Form\TouristMigrationType;
 use MBH\Bundle\PackageBundle\Form\TouristVisaType;
@@ -345,19 +344,16 @@ class TouristController extends Controller
      */
     public function editUnwelcomeAction(Tourist $tourist, Request $request)
     {
-        /** @var UnwelcomeHistoryRepository $unwelcomeHistoryRepository */
-        $unwelcomeHistoryRepository = $this->get('mbh.package.unwelcome_history_repository');
-
-        /** @var Unwelcome[] $unwelcomeList */
-        $unwelcomeList = [];
-
         $form = $this->createForm(new UnwelcomeType(), null, [
             'method' => Request::METHOD_PUT
         ]);
 
-        $unwelcomeHistory = $unwelcomeHistoryRepository->findByTourist($tourist);
-        if($unwelcomeHistory) {
-            foreach($unwelcomeHistory->getItems() as $unwelcome) {
+        /** @var UnwelcomeRepository $unwelcomeRepository */
+        $unwelcomeRepository = $this->get('mbh.package.unwelcome_repository');
+        /** @var Unwelcome[] $unwelcomeList */
+        $unwelcomeList = $unwelcomeRepository->findByTourist($tourist);
+        if($unwelcomeList) {
+            foreach($unwelcomeList as $unwelcome) {
                 if($unwelcome->getIsMy()) {
                     $form->setData($unwelcome);
                 } else {
@@ -381,20 +377,20 @@ class TouristController extends Controller
             $form->setData($unwelcome);
         }
 
-        $isTouristValid = $unwelcomeHistoryRepository->isInsertedTouristValid($tourist);
+        $isTouristValid = $unwelcomeRepository->isInsertedTouristValid($tourist);
         if($isTouristValid) {
             $form->handleRequest($request);
             if($form->isValid()) {
                 $unwelcome = $form->getData();
                 if($unwelcome->getIsMy()) {
-                    $unwelcomeHistoryRepository->update($unwelcome, $tourist);
+                    $unwelcomeRepository->update($unwelcome, $tourist);
                 } else {
                     $package = $this->dm->getRepository('MBHPackageBundle:Package')->getPackageByTourist($tourist);
                     if($package) {
                         $unwelcome->setArrivalTime($package->getArrivalTime());
                         $unwelcome->setDepartureTime($package->getDepartureTime());
                     }
-                    $unwelcomeHistoryRepository->add($unwelcome, $tourist, $package);
+                    $unwelcomeRepository->add($unwelcome, $tourist, $package);
                 }
                 $tourist->setIsUnwelcome(true);
                 $this->dm->persist($tourist);
@@ -422,11 +418,11 @@ class TouristController extends Controller
      */
     public function deleteUnwelcomeAction(Tourist $tourist)
     {
-        /** @var UnwelcomeHistoryRepository $unwelcomeHistoryRepository */
-        $unwelcomeHistoryRepository = $this->get('mbh.package.unwelcome_history_repository');
-        $unwelcomeHistoryRepository->deleteByTourist($tourist);
+        /** @var UnwelcomeRepository $unwelcomeRepository */
+        $unwelcomeRepository = $this->get('mbh.package.unwelcome_repository');
+        $unwelcomeRepository->deleteByTourist($tourist);
 
-        $tourist->setIsUnwelcome($unwelcomeHistoryRepository->isUnwelcome($tourist));
+        $tourist->setIsUnwelcome($unwelcomeRepository->isUnwelcome($tourist));
         $this->dm->persist($tourist);
         $this->dm->flush($tourist);
 

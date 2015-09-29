@@ -70,9 +70,9 @@ class TouristSubscriber implements EventSubscriber
 
     public function checkUpdateIsUnwelcome(Tourist $tourist)
     {
-        $unwelcomeHistoryRepository = $this->container->get('mbh.package.unwelcome_history_repository');
-        if($unwelcomeHistoryRepository->isFoundTouristValid($tourist)) {
-            $tourist->setIsUnwelcome($unwelcomeHistoryRepository->isUnwelcome($tourist));
+        $unwelcomeRepository = $this->container->get('mbh.package.unwelcome_repository');
+        if($unwelcomeRepository->isFoundTouristValid($tourist)) {
+            $tourist->setIsUnwelcome($unwelcomeRepository->isUnwelcome($tourist));
         } else {
             $tourist->setIsUnwelcome(false);
         }

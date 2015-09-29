@@ -1136,7 +1136,8 @@ class Hotel extends Base implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'title' => $this->getTitle(),
+            'id' => $this->getId(),
+            'title' => $this->getFullTitle(),
             'city' => $this->getCity() ? $this->getCity()->getTitle() : null,
         ];
     }
