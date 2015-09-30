@@ -30,6 +30,40 @@ class TariffType extends AbstractType
                 'required' => false,
                 'help' => 'Описание тарифа для онлайн бронирования'
             ])
+            ->add(
+                'begin',
+                'date',
+                array(
+                    'label' => 'Начало',
+                    'group' => 'Срок действия тарифа',
+                    'widget' => 'single_text',
+                    'format' => 'dd.MM.yyyy',
+                    'help' => 'С какого числа используется тариф?',
+                    'required' => false,
+                    'attr' => array(
+                        'class' => 'datepicker begin-datepiker input-small',
+                        'data-date-format' => 'dd.mm.yyyy',
+                        'placeholder' => 'Не ограничен'
+                    ),
+                )
+            )
+            ->add(
+                'end',
+                'date',
+                array(
+                    'label' => 'Конец',
+                    'group' => 'Срок действия тарифа',
+                    'widget' => 'single_text',
+                    'format' => 'dd.MM.yyyy',
+                    'help' => 'По какое число используется тариф?',
+                    'required' => false,
+                    'attr' => array(
+                        'class' => 'datepicker end-datepiker input-small',
+                        'data-date-format' => 'dd.mm.yyyy',
+                        'placeholder' => 'Не ограничен'
+                    ),
+                )
+            )
             ->add('isOnline', 'checkbox', [
                 'label' => 'Онлайн?',
                 'group' => 'Настройки',
@@ -37,6 +71,32 @@ class TariffType extends AbstractType
                 'required' => false,
                 'help' => 'Использовать ли тариф в онлайн бронировании?'
             ])
+            ->add(
+                'childAge',
+                'choice',
+                [
+                    'label' => 'Ребенок до',
+                    'group' => 'Настройки',
+                    'required' => false,
+                    'multiple' => false,
+                    'choices' => range(0, 18),
+                    'attr' => array('class' => 'input-xxs plain-html'),
+                    'help' => 'До какого возраста клиент считается ребенком?'
+                ]
+            )
+            ->add(
+                'infantAge',
+                'choice',
+                [
+                    'label' => 'Инфант до',
+                    'group' => 'Настройки',
+                    'required' => false,
+                    'multiple' => false,
+                    'choices' => range(0, 18),
+                    'attr' => array('class' => 'input-xxs plain-html'),
+                    'help' => 'До какого возраста клиент считается инфантом?'
+                ]
+            )
             ->add('isEnabled', 'checkbox', [
                 'label' => 'Включен?',
                 'group' => 'Настройки',
