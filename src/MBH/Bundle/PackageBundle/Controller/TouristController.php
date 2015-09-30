@@ -451,20 +451,25 @@ class TouristController extends Controller
     /**
      * @Route("/authority_organ_json_list", name="authority_organ_json_list", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_BASE_USER')")
      */
     public function authorityOrganListAction(Request $request)
     {
         $list = [];
-        if($query = $request->get('query')) {
+        if($query = $request->get('query')['term']) {
             $repository = $this->dm->getRepository('MBHVegaBundle:VegaFMS');
             $entities = $repository->findBy(['name' => new \MongoRegex('/.*' . $query . '.*/ui')], ['name' => 1], 50);
             foreach ($entities as $entity) {
-                $list[$entity->getId()] = $entity->getName();
+
+                $list[] = ['id' => $entity->getId(),
+                    'text' => $entity->getName()
+                ];
+
+                //$list[$entity->getId()] = $entity->getName();
             }
         }
 
-        return new JsonResponse($list);
+        return new JsonResponse(['results' => $list]);
     }
 
     /**

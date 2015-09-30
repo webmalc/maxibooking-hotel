@@ -28,7 +28,7 @@ class InviteController extends Controller  implements CheckHotelControllerInterf
     /**
      * @Route("/", name="invite")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_BASE_USER')")
      * @Template()
      */
     public function indexAction()

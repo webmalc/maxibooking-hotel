@@ -469,7 +469,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     /**
      * @Route("/fms", name="report_fms", options={"expose"=true})
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_USER')")
+     * @Security("is_granted('ROLE_BASE_USER')")
      * @Template()
      */
     public function fmsAction(Request $request)

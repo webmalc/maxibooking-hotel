@@ -94,7 +94,9 @@ var docReadyTourists = function () {
         });
     }());
 
-    $('#mbh_document_relation_authorityOrgan').select2({
+
+
+    select2Text($('#mbh_document_relation_authorityOrgan')).select2({
         minimumInputLength: 3,
         placeholder: "Сделайте выбор",
         allowClear: true,
