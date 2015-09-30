@@ -1,4 +1,5 @@
 {% spaceless %}
+{% if hotels|length %}
 <form id="mbh-form" method="get" action="{{ config.result.url }}">
 
     <h3>{{ 'views.api.form.rooms_reservation'|trans({}, 'MBHOnlineBundle') }}</h3>
@@ -70,7 +71,6 @@
     <div id="mbh-actions-wrapper"></div>
 
 </form>
-
-
+{% endif %}
 {% endspaceless %}
 

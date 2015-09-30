@@ -1,5 +1,6 @@
 {% spaceless %}
 
+    {% if tariffResults|length > 0 %}
     <div id="mbh-results-global-wrapper">
 
     {% if results|length %}
@@ -116,4 +117,5 @@
         </div>
     {% endif %}
             </div>
+    {% endif %}
 {% endspaceless %}

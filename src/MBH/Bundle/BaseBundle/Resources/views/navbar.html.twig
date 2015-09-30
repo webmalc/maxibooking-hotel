@@ -66,8 +66,8 @@
                             </ul>
                         </li>
                         {% if is_granted('ROLE_ADMIN') %}
-                            <li class="footer"><a href="{{ path('hotel_new') }}">
-                                    <i class="fa fa-plus"></i>Добавить отель</a>
+                            <li class="footer">
+                                <a href="{{ path('hotel') }}"><i class="fa fa-home"></i>Список отелей</a>
                             </li>
                         {% endif %}
                     </ul>

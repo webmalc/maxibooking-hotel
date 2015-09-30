@@ -270,7 +270,7 @@ class Search
      */
     public function searchTariffs(SearchQuery $query)
     {
-        $tariffs = [];
+        $tariffs = $results = [];
         if (!empty($query->roomTypes)) {
             $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch(null, $query->roomTypes);
             foreach ($roomTypes as $roomType) {
