@@ -132,7 +132,7 @@ $(document).ready(function () {
 
                     //accommodation alert
                     (function () {
-                        var select = $('.search-room-select'),
+                        var select = $('select.search-room-select'),
                             warning = $('#accommodation-alert'),
                             date = new Date(),
                             show = function () {

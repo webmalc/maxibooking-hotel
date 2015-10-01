@@ -1,7 +1,11 @@
 {#todo remove. use embed_filter.html.twig#}
 <div class="box box-default box-solid">
     <div class="box-header">
-        <h3 class="box-title">{{ header|default('form.filter')|trans|raw }}</h3>
+        <h3 class="box-title">{{ header|default('form.filter')|trans|raw }}
+            {% if smallHeader is defined and smallHeader is not empty %}
+                <small>{{ smallHeader|trans|raw }}</small>
+            {% endif %}
+        </h3>
         <div class="box-tools pull-right">
             <button class="btn btn-box-tool form-group-collapse" id="{{ id }}" data-widget="collapse"><i class="fa fa-minus"></i></button>
         </div>

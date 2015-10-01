@@ -67,8 +67,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
      */
     public function resultsAction(Request $request)
     {
-        $results = $tariffResults = $selectedTariff = false;
-
         $form = $this->createForm(new SearchType(), [], [
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,
@@ -88,7 +86,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                 $query->end = $data['end'];
                 $query->adults = (int)$data['adults'];
                 $query->children = (int)$data['children'];
-                $query->tariff = $data['tariff'];
                 $query->room = $data['room'];
                 $query->accommodations = true;
 
@@ -99,7 +96,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                         if (!$hotel) {
                             continue;
                         }
-
                         foreach ($hotel->getRoomTypes() as $roomType) {
                             $query->addRoomType($roomType->getId());
                         }
@@ -108,17 +104,30 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                     }
                 }
 
-                $results = $this->get('mbh.package.search')->search($query);
-                $query->grouped = true;
-                $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
+                $results = $groupedResult = [];
+                $tariffs = $this->get('mbh.package.search')->searchTariffs($query);
+
+                foreach ($tariffs as $tariff) {
+                    $query->tariff = $tariff;
+                    $results = array_merge($results, $this->get('mbh.package.search')->search($query));
+                }
+
+                // Group results by roomTypes
+                foreach($results as $row) {
+                    if (!isset($groupedResult[$row->getRoomType()->getId()])) {
+                        $groupedResult[$row->getRoomType()->getId()] = [
+                            'roomType' => $row->getRoomType(),
+                            'results' => []
+                        ];
+                    }
+                    $groupedResult[$row->getRoomType()->getId()]['results'][] = $row;
+                }
             }
         }
 
         return [
-            'results' => $results,
+            'results' => $groupedResult,
             'query' => $query,
-            'tariffResults' => $tariffResults,
-            'selectedTariff' => $data['tariff'],
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons')
         ];
     }

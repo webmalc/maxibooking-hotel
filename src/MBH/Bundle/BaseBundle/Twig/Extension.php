@@ -30,8 +30,11 @@ class Extension extends \Twig_Extension
     /**
      * @return string
      */
-    public function format(\DateTime $date)
+    public function format(\DateTime $date = null)
     {
+        if (!$date) {
+            return "<span class='date-month date-infinity'>∞</span>";
+        }
         $now = new \DateTime();
 
         if ($now->format('Y') != $date->format('Y')) {
@@ -154,7 +157,7 @@ class Extension extends \Twig_Extension
     public function initial($user)
     {
         return $user->getLastName() . ' ' .
-        ($user->getFirstName() ? mb_substr($user->getFirstName(), 0, 1) . '.' : '' ).
+        ($user->getFirstName() ? mb_substr($user->getFirstName(), 0, 1) . '.' : '') .
         ($user->getPatronymic() ? mb_substr($user->getPatronymic(), 0, 1) . '.' : '');
     }
 }

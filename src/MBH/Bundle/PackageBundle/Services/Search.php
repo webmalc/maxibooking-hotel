@@ -23,10 +23,16 @@ class Search
      */
     protected $dm;
 
+    /**
+     * @var \DateTime
+     */
+    public $now;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
+        $this->now = new \DateTime('midnight');
     }
 
     /**
@@ -45,6 +51,7 @@ class Search
         if (!empty($query->tariff) && !$query->tariff instanceof Tariff) {
             $query->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($query->tariff);
         }
+
         // dates
         $end = clone $query->end;
         $end->modify('-1 day');
@@ -88,6 +95,17 @@ class Search
         }
         if (!isset($groupedCaches['room'])) {
             return $results;
+        }
+
+        //tariff dates
+        if (!empty($query->tariff)) {
+
+            if ($query->tariff->getBegin() && $query->tariff->getBegin() > $this->now) {
+                return $results;
+            }
+            if ($query->tariff->getEnd() && $query->tariff->getEnd() < $this->now) {
+                return $results;
+            }
         }
 
         //delete short cache chains
@@ -260,7 +278,7 @@ class Search
                 $results[] = $result;
             }
         }
-        sort($results);
+        //sort($results);
         return $results;
     }
 
@@ -281,7 +299,25 @@ class Search
         }
 
         foreach($tariffs as $tariff) {
+
+            if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->disable('softdeleteable');
+            }
+            if ($tariff->getHotel()->getDeletedAt()) {
+                continue;
+            }
+            if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                $this->dm->getFilterCollection()->enable('softdeleteable');
+            }
+
             if (!$query->isOnline && !$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel())) {
+                continue;
+            }
+
+            if ($tariff->getBegin() && $tariff->getBegin() > $this->now) {
+                continue;
+            }
+            if ($tariff->getEnd() && $tariff->getEnd() < $this->now) {
                 continue;
             }
 

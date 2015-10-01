@@ -10,6 +10,9 @@
         <tr>
             <th class="td-xs"></th>
             <th>Название</th>
+            <th class="td-xs text-center">Ребенок</th>
+            <th class="td-xs text-center">Инфант</th>
+            <th class="td-md text-center">Сроки</th>
             <th class="td-sm text-center">Основной</th>
             <th class="td-sm text-center">Онлайн</th>
             <th class="td-sm"></th>
@@ -21,6 +24,15 @@
                 <td class="text-center table-icon"><i class="fa fa-sliders"></i></td>
                 <td>
                     {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'tariff'} %}{% endembed %}
+                </td>
+                <td class="text-center">
+                    {{ entity.childAge }}
+                </td>
+                <td class="text-center">
+                    {{ entity.infantAge }}
+                </td>
+                <td class="text-center">
+                    {{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}
                 </td>
                 <td class="text-center">
                     {% if entity.isDefault %}
