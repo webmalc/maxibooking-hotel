@@ -288,30 +288,8 @@ var docReadyPackages = function () {
     });
 
 
-    var $discountInput = $('#mbh_bundle_packagebundle_package_main_type_discount');
-    $discountInput.TouchSpin({
-        min: 1,
-        max: 100000000,
-        step: 1,
-        postfix: '%'
-    });
-    var $discountTypeInputPostfix = $discountInput.siblings('span.bootstrap-touchspin-postfix');
-    var $isPercentDiscountCheckbox = $('#mbh_bundle_packagebundle_package_main_type_isPercentDiscount');
 
-    var discountInputUpdate = function(state) {
-        if(state) { //$isPercentDiscountCheckbox.is(':checked')
-            $discountInput.trigger("touchspin.updatesettings", {max: 100});
-            $discountTypeInputPostfix.html('%');
-        }else {
-            $discountInput.trigger("touchspin.updatesettings", {max: 100000000});
-            $discountTypeInputPostfix.html('<i class="fa fa-money"></i>')
-        }
-    }
-
-    $isPercentDiscountCheckbox.on('switchChange.bootstrapSwitch', function (event, state) {
-        discountInputUpdate(state)
-    })
-    discountInputUpdate($isPercentDiscountCheckbox.is(':checked'));
+    discountInit($('#mbh_bundle_packagebundle_package_main_type_discount'), $('#mbh_bundle_packagebundle_package_main_type_isPercentDiscount'))
 }
 
 $(document).ready(function () {

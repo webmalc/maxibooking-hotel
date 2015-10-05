@@ -153,3 +153,10 @@ services:
         class: Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer
         tags:
             - { name: serializer.normalizer }
+
+    #mbh.menu.voter.request:
+    #    class: MBH\Bundle\BaseBundle\Menu\RequestContentIdentityVoter
+    #    arguments:
+    #        - @service_container
+    #    tags:
+    #       - { name: knp_menu.voter }

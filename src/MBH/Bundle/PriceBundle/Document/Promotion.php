@@ -65,16 +65,16 @@ class Promotion extends Base
     protected $title;
 
     /**
-     * @ODM\Bool()
-     * @var bool
-     */
-    protected $isPercentType;
-
-    /**
      * @ODM\Integer()
      * @var int
      */
-    protected $amount;
+    protected $discount;
+
+    /**
+     * @ODM\Bool()
+     * @var bool
+     */
+    protected $isPercentDiscount;
 
     /**
      * @ODM\Bool()
@@ -121,35 +121,35 @@ class Promotion extends Base
     }
 
     /**
-     * @return boolean
-     */
-    public function getIsPercentType()
-    {
-        return $this->isPercentType;
-    }
-
-    /**
-     * @param boolean $isPercentType
-     */
-    public function setIsPercentType($isPercentType)
-    {
-        $this->isPercentType = $isPercentType;
-    }
-
-    /**
      * @return int
      */
-    public function getAmount()
+    public function getDiscount()
     {
-        return $this->amount;
+        return $this->discount;
     }
 
     /**
-     * @param int $amount
+     * @param int $discount
      */
-    public function setAmount($amount)
+    public function setDiscount($discount)
     {
-        $this->amount = $amount;
+        $this->discount = $discount;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getisPercentDiscount()
+    {
+        return $this->isPercentDiscount;
+    }
+
+    /**
+     * @param boolean $isPercentDiscount
+     */
+    public function setisPercentDiscount($isPercentDiscount)
+    {
+        $this->isPercentDiscount = $isPercentDiscount;
     }
 
     /**

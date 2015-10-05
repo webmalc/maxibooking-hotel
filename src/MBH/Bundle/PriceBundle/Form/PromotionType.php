@@ -25,12 +25,12 @@ class PromotionType extends AbstractType
                 'label' => 'form.promotionType.label.isIndividual',
                 'required' => false
             ])
-            ->add('isPercentType', 'checkbox', [
-                'label' => 'form.promotionType.label.isPercentType',
+            ->add('discount', 'number', [
+                'label' => 'form.promotionType.label.discount',
                 'required' => false
             ])
-            ->add('amount', 'number', [
-                'label' => 'form.promotionType.label.amount',
+            ->add('isPercentDiscount', 'checkbox', [
+                'label' => 'form.promotionType.label.isPercentDiscount',
                 'required' => false
             ])
             ->add('comment', 'textarea', [

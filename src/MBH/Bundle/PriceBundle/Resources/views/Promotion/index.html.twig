@@ -3,20 +3,23 @@
 
 {% block content %}
 <table class="table table-striped">
-    <tr>
-        <td>Название</td>
-        <td>Индивидуальная</td>
-        <td>В процентах</td>
-        <td>Скидка</td>
-        <td>Комментарий</td>
-        <td class="td-sm"></td>
-    </tr>
+    <thead>
+        <tr>
+            <td>Название</td>
+            <td>Индивидуальная</td>
+            <td>В процентах</td>
+            <td>Скидка</td>
+            <td>Комментарий</td>
+            <td class="td-sm"></td>
+        </tr>
+    </thead>
+    <tbody>
     {% for promotion in promotions %}
         <tr>
             <td>{{ promotion.title }}</td>
             <td>{{ promotion.isIndividual }}</td>
-            <td>{{ promotion.isPercentType }}</td>
-            <td>{{ promotion.amount }}</td>
+            <td>{{ promotion.isPercentDiscount }}</td>
+            <td>{{ promotion.discount }}</td>
             <td>{{ promotion.comment }}</td>
             <td class="text-center">
                 <div class='btn-list'>
@@ -30,6 +33,7 @@
             </td>
         </tr>
     {% endfor %}
+    </tbody>
 </table>
 
     {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'promotion_new', 'role': 'tourist'} %}

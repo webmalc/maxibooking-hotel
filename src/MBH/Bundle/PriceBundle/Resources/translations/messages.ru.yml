@@ -4,6 +4,6 @@ form:
             title: Внутреннее название
             fullTitle: Название
             isIndividual: Индивидуальная
-            isPercentType: В процентах
-            amount: Скидка
+            isPercentDiscount: В процентах
+            discount: Скидка
             comment: Комментарий

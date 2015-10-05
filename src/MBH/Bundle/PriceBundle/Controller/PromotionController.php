@@ -7,6 +7,7 @@ use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Form\PromotionType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,7 @@ class PromotionController extends BaseController
     /**
      * @Route("/", name="promotions")
      * @Method("GET")
+     * @Security("is_granted('ROLE_PROMOTION_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -37,6 +39,7 @@ class PromotionController extends BaseController
     /**
      * @Route("/new", name="promotion_new")
      * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_PROMOTION_NEW')")
      * @Template()
      */
     public function newAction(Request $request)
@@ -63,6 +66,7 @@ class PromotionController extends BaseController
      * @Route("{id}/edit", name="promotion_edit")
      * @Method({"GET", "POST"})
      * @Template()
+     * @Security("is_granted('ROLE_PROMOTION_EDIT')")
      * @ParamConverter(class="MBH\Bundle\PriceBundle\Document\Promotion")
      */
     public function editAction(Request $request, Promotion $promotion)
@@ -89,6 +93,7 @@ class PromotionController extends BaseController
 
     /**
      * @Route("/{id}/delete", name="promotion_delete")
+     * @Security("is_granted('ROLE_PROMOTION_DELETE')")
      * @ParamConverter(class="MBH\Bundle\PriceBundle\Document\Promotion")
      */
     public function deleteAction(Promotion $promotion)

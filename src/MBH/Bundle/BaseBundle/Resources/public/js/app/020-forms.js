@@ -363,6 +363,8 @@ var docReadyForms = function () {
         });
         topLinks.on('ifToggled', function () {disable($(this))});
     }());
+
+    $('.tags-select-widget').tagsSelectWidget();
 };
 
 
@@ -569,9 +571,33 @@ var select2TemplateResult = {
         }
     };
 })(window.jQuery);
-$('.tags-select-widget').tagsSelectWidget();
-//$('.tags-select-input-widget').tagsSelectWidget();
 
+
+var discountInit = function($discountInput, $isPercentDiscountCheckbox) {
+    $discountInput.TouchSpin({
+        min: 1,
+        max: 100000000,
+        step: 1,
+        postfix: '%'
+    });
+    var $discountTypeInputPostfix = $discountInput.siblings('span.bootstrap-touchspin-postfix');
+
+    var discountInputUpdate = function(state) {
+        if(state) { //$isPercentDiscountCheckbox.is(':checked')
+            $discountInput.trigger("touchspin.updatesettings", {max: 100});
+            $discountTypeInputPostfix.html('%');
+        }else {
+            $discountInput.trigger("touchspin.updatesettings", {max: 100000000});
+            $discountTypeInputPostfix.html('<i class="fa fa-money"></i>')
+        }
+    }
+
+    $isPercentDiscountCheckbox.on('switchChange.bootstrapSwitch', function (event, state) {
+        discountInputUpdate(state)
+    })
+
+    discountInputUpdate($isPercentDiscountCheckbox.is(':checked'));
+}
 
 
 

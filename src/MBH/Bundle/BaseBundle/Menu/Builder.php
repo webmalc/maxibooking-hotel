@@ -176,7 +176,7 @@ class Builder extends ContainerAware
     {
         $router = $this->container->get('router');
         $router->getContext()->setMethod('GET');
-        $security = $this->container->get('security.context');
+        $security = $this->container->get('security.authorization_checker');
 
         !empty($options['title_url']) ? $title_url = $options['title_url'] : $title_url = null;
 
