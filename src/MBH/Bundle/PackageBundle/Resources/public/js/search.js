@@ -84,8 +84,8 @@ $(document).ready(function () {
                                 allowClear: false,
                                 width: 'element',
                                 minimumResultsForSearch: -1,
-                                templateResult: format,
-                                templateSelection: format
+                                //templateResult: format,
+                                //templateSelection: format
                             });
                         });
                         $('.search-room-select').select2({

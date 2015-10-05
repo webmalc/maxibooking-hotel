@@ -141,7 +141,15 @@ class Calculation
             $all = $combination['adults'] + $combination['children'];
             $adds = $all - $places;
             if ($all > $places) {
-                $mains = $places;
+
+                if ($combination['adults'] >= $places) {
+                    $mainAdults = $places;
+                    $mainChildren = 0;
+                } else {
+                    $mainAdults = $combination['adults'];
+                    $mainChildren = $places - $combination['adults'];
+                }
+
                 if ($adds > $combination['children']) {
                     $addsChildren = $combination['children'];
                     $addsAdults = $adds - $addsChildren;
@@ -150,7 +158,8 @@ class Calculation
                     $addsAdults = 0;
                 }
             } else {
-                $mains = $all;
+                $mainAdults = $combination['adults'];
+                $mainChildren = $combination['children'];
                 $addsAdults = 0;
                 $addsChildren = 0;
             }
@@ -162,7 +171,11 @@ class Calculation
                 if ($cache->getSinglePrice() !== null && $all == 1 && !$cache->getRoomType()->getIsHostel()) {
                     $dayPrice += $cache->getSinglePrice();
                 } elseif ($cache->getIsPersonPrice()) {
-                    $dayPrice += $mains * $cache->getPrice();
+                    if ($roomType->getIsChildPrices() && $cache->getChildPrice() !== null) {
+                        $dayPrice += $mainAdults * $cache->getPrice() + $mainChildren * $cache->getChildPrice();
+                    } else {
+                        $dayPrice += ($mainAdults + $mainChildren) * $cache->getPrice();
+                    }
                 } else {
                     $dayPrice += $cache->getPrice();
                 }

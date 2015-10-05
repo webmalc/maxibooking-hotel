@@ -40,7 +40,7 @@ class PriceCache
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param Hotel $hotel
-     * @param $price
+     * @param int $price
      * @param bool $isPersonPrice
      * @param null $singlePrice
      * @param null $additionalPrice
@@ -48,6 +48,7 @@ class PriceCache
      * @param array $availableRoomTypes
      * @param array $availableTariffs
      * @param array $weekdays
+     * @param int $childPrice
      */
     public function update(
         \DateTime $begin,
@@ -60,15 +61,17 @@ class PriceCache
         $additionalChildrenPrice = null,
         array $availableRoomTypes = [],
         array $availableTariffs = [],
-        array $weekdays = []
+        array $weekdays = [],
+        $childPrice = null
     ) {
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
         $priceCaches = $updateCaches = $updates = $remove = [];
 
-        is_numeric($singlePrice) ? $singlePrice = (int) $singlePrice : $singlePrice;
-        is_numeric($additionalPrice) ? $additionalPrice = (int) $additionalPrice : $additionalPrice;
-        is_numeric($additionalChildrenPrice) ? $additionalChildrenPrice = (int) $additionalChildrenPrice : $additionalChildrenPrice;
+        is_numeric($singlePrice) ? $singlePrice = (float) $singlePrice : $singlePrice;
+        is_numeric($additionalPrice) ? $additionalPrice = (float) $additionalPrice : $additionalPrice;
+        is_numeric($childPrice) ? $childPrice = (float) $childPrice : $childPrice;
+        is_numeric($additionalChildrenPrice) ? $additionalChildrenPrice = (float) $additionalChildrenPrice : $additionalChildrenPrice;
 
         (empty($availableRoomTypes)) ? $roomTypes = $hotel->getRoomTypes()->toArray() : $roomTypes = $availableRoomTypes;
         (empty($availableTariffs)) ? $tariffs = $hotel->getTariffs()->toArray() : $tariffs = $availableTariffs;
@@ -93,6 +96,7 @@ class PriceCache
                 'criteria' => ['_id' => new \MongoId($oldPriceCache->getId())],
                 'values' => [
                     'price' => (float) $price,
+                    'childPrice' => $childPrice,
                     'isPersonPrice' => $isPersonPrice,
                     'singlePrice' => $singlePrice,
                     'additionalPrice' => $additionalPrice,
@@ -117,6 +121,7 @@ class PriceCache
                         'tariff' => \MongoDBRef::create('Tariffs', new \MongoId($tariff->getId())),
                         'date' => new \MongoDate($date->getTimestamp()),
                         'price' => (float) $price,
+                        'childPrice' => $childPrice,
                         'isPersonPrice' => $isPersonPrice,
                         'singlePrice' => $singlePrice,
                         'additionalPrice' => $additionalPrice,

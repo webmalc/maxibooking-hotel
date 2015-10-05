@@ -55,6 +55,14 @@ class PriceCache extends Base
     protected $price;
 
     /**
+     * @var int
+     * @ODM\Float()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=0)
+     */
+    protected $childPrice;
+
+    /**
      * @var boolean
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
@@ -71,12 +79,26 @@ class PriceCache extends Base
     protected $additionalPrice = null;
 
     /**
+     * @var array
+     * @ODM\Collection()
+     * @Assert\Type(type="array")
+     */
+    protected $additionalPrices = [];
+
+    /**
      * @var int
      * @ODM\Float()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
      */
     protected $additionalChildrenPrice = null;
+
+    /**
+     * @var array
+     * @ODM\Collection()
+     * @Assert\Type(type="array")
+     */
+    protected $additionalChildrenPrices = [];
 
     /**
      * @var int
@@ -298,4 +320,62 @@ class PriceCache extends Base
         $additionalPlace = $this->getRoomType()->getAdditionalPlaces() * $this->getAdditionalPrice();
         return $commonPlace + $additionalPlace;
     }
+
+    /**
+     * @return int
+     */
+    public function getChildPrice()
+    {
+        return $this->childPrice;
+    }
+
+    /**
+     * @param int $childPrice
+     * @return PriceCache
+     */
+    public function setChildPrice($childPrice)
+    {
+        $this->childPrice = $childPrice;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAdditionalPrices()
+    {
+        return $this->additionalPrices;
+    }
+
+    /**
+     * @param array $additionalPrices
+     * @return PriceCache
+     */
+    public function setAdditionalPrices(array $additionalPrices)
+    {
+        $this->additionalPrices = $additionalPrices;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAdditionalChildrenPrices()
+    {
+        return $this->additionalChildrenPrices;
+    }
+
+    /**
+     * @param array $additionalChildrenPrices
+     * @return PriceCache
+     */
+    public function setAdditionalChildrenPrices(array $additionalChildrenPrices)
+    {
+        $this->additionalChildrenPrices = $additionalChildrenPrices;
+        return $this;
+    }
+
+
 }

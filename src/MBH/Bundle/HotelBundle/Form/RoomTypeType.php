@@ -59,24 +59,38 @@ class RoomTypeType extends AbstractType
             ])
             ->add('isHostel', 'checkbox', [
                 'label' => 'form.hotelType.hostel',
-                'group' => 'form.roomTypeType.settings',
+                'group' => 'form.roomTypeType.places',
                 'value' => true,
                 'required' => false,
                 'help' => 'form.hotelType.hostel_hotel_or_not'
             ])
             ->add('places', 'text', [
                 'label' => 'form.roomTypeType.main_places',
-                'group' => 'form.roomTypeType.settings',
+                'group' => 'form.roomTypeType.places',
                 'required' => true,
                 'attr' => ['placeholder' => 'hotel', 'class' => 'spinner room-type-places'],
                 'help' => 'form.roomTypeType.room_main_places_amount'
             ])
             ->add('additionalPlaces', 'text', [
                 'label' => 'form.roomTypeType.additional_places',
-                'group' => 'form.roomTypeType.settings',
+                'group' => 'form.roomTypeType.places',
                 'required' => true,
                 'attr' => ['placeholder' => 'hotel', 'class' => 'spinner room-type-places'],
                 'help' => 'form.roomTypeType.room_additional_places_amount'
+            ])
+            ->add('isChildPrices', 'checkbox', [
+                'label' => 'form.roomTypeType.isChildPrices',
+                'group' => 'form.roomTypeType.prices',
+                'value' => true,
+                'required' => false,
+                'help' => 'form.roomTypeType.isChildPricesDesc'
+            ])
+            ->add('isIndividualAdditionalPrices', 'checkbox', [
+                'label' => 'form.roomTypeType.isIndividualAdditionalPrices',
+                'group' => 'form.roomTypeType.prices',
+                'value' => true,
+                'required' => false,
+                'help' => 'form.roomTypeType.isIndividualAdditionalPricesDesc'
             ])
             ->add('isEnabled', 'checkbox', [
                 'label' => 'form.roomTypeType.is_included',

@@ -135,10 +135,29 @@ class RoomType extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="validator.document.roomType.places_amount_less_zero"
+     *      minMessage="validator.document.roomType.places_amount_less_zero",
+     *      max=5
      * )
      */
     protected $additionalPlaces = 0;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isChildPrices = false;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isIndividualAdditionalPrices = false;
 
     /**
      * @var string
@@ -153,6 +172,7 @@ class RoomType extends Base
      * @ODM\String()
      */
     protected $image;
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -345,6 +365,10 @@ class RoomType extends Base
      */
     public function getAdultsChildrenCombination($adults, $children)
     {
+        if ($this->getIsChildPrices()) {
+            return ['adults' => $adults, 'children' => $children];
+        }
+
         $result = ['adults' => 0, 'children' => 0];
         $total = $children + $adults;
 
@@ -448,12 +472,16 @@ class RoomType extends Base
     {
         $result = [];
 
-        for ($i = 1; $i <= $this->getTotalPlaces(); $i++) {
+        $total = $this->getTotalPlaces();
+        $this->getIsChildPrices() ? $additional = $this->getTotalPlaces() : $additional = $this->getAdditionalPlaces();
+        $this->getIsChildPrices() ? $places = 1 : $places = $this->getPlaces();
+
+        for ($i = 1; $i <= $total; $i++) {
             $result[] = ['adults' => $i, 'children' => 0];
         }
-        for ($i = $this->getPlaces(); $i <= $this->getTotalPlaces(); $i++) {
-            for ($k = 1; $k <= $this->getAdditionalPlaces(); $k++) {
-                if (($k + $i) && ($k + $i) <= $this->getTotalPlaces()) {
+        for ($i = $places; $i <= $total; $i++) {
+            for ($k = 1; $k <= $additional; $k++) {
+                if (($k + $i) && ($k + $i) <= $total) {
                     $result[] = ['adults' => $i, 'children' => $k];
                 }
             }
@@ -629,5 +657,59 @@ class RoomType extends Base
     {
         $this->facilities = $facilities;
         return $this;
+    }
+
+    /**
+     * Set isChildPrices
+     *
+     * @param boolean $isChildPrices
+     * @return self
+     */
+    public function setIsChildPrices($isChildPrices)
+    {
+        $this->isChildPrices = $isChildPrices;
+        return $this;
+    }
+
+    /**
+     * Get isChildPrices
+     *
+     * @return boolean $isChildPrices
+     */
+    public function getIsChildPrices()
+    {
+        return $this->isChildPrices;
+    }
+
+    /**
+     * Set isIndividualAdditionalPrices
+     *
+     * @param boolean $isIndividualAdditionalPrices
+     * @return self
+     */
+    public function setIsIndividualAdditionalPrices($isIndividualAdditionalPrices)
+    {
+        $this->isIndividualAdditionalPrices = $isIndividualAdditionalPrices;
+        return $this;
+    }
+
+    /**
+     * Get isIndividualAdditionalPrices
+     *
+     * @return boolean $isIndividualAdditionalPrices
+     */
+    public function getIsIndividualAdditionalPrices()
+    {
+        return $this->isIndividualAdditionalPrices;
+    }
+
+    /**
+     * Get image
+     *
+     * @return string $image
+     */
+    public function getImage()
+    {
+        return $this->image;
     }
 }

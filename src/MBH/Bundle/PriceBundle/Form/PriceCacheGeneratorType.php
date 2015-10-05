@@ -81,6 +81,16 @@ class PriceCacheGeneratorType extends AbstractType
                     new NotBlank()
                 ],
             ])
+            ->add('childPrice', 'text', [
+                'label' => 'Цена за ребёнка',
+                'group' => 'Цены',
+                'required' => false,
+                'data' => null,
+                'attr' => ['class' => 'spinner-0f'],
+                'constraints' => [
+                    new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше минус одного']),
+                ],
+            ])
             ->add('isPersonPrice', 'checkbox', [
                 'label' => 'Цена за человека?',
                 'group' => 'Цены',

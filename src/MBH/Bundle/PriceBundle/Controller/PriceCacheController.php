@@ -143,6 +143,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                         ->setTariff($tariff)
                         ->setDate($helper->getDateFromString($date))
                         ->setPrice($prices['price'])
+                        ->setChildPrice(isset($prices['childPrice']) && $prices['childPrice'] !== ''  ? $prices['childPrice'] : null)
                         ->setIsPersonPrice(isset($prices['isPersonPrice']) && $prices['isPersonPrice'] !== '' ? true : false)
                         ->setSinglePrice(isset($prices['singlePrice']) && $prices['singlePrice'] !== ''  ? $prices['singlePrice'] : null)
                         ->setAdditionalPrice(isset($prices['additionalPrice']) && $prices['additionalPrice'] !== ''  ? $prices['additionalPrice'] : null)
@@ -170,7 +171,9 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 continue;
             }
 
-            $priceCache->setPrice($prices['price'])
+            $priceCache
+                ->setPrice($prices['price'])
+                ->setChildPrice(isset($prices['childPrice']) && $prices['childPrice'] !== ''  ? $prices['childPrice'] : null)
                 ->setIsPersonPrice(isset($prices['isPersonPrice']) ? true : false)
                 ->setSinglePrice(isset($prices['singlePrice']) && $prices['singlePrice'] !== '' ? $prices['singlePrice'] : null)
                 ->setAdditionalPrice(isset($prices['additionalPrice'])  && $prices['additionalPrice'] !== '' ? $prices['additionalPrice'] : null)
@@ -244,7 +247,8 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             $this->get('mbh.price.cache')->update(
                 $data['begin'], $data['end'], $hotel, $data['price'], $data['isPersonPrice'],
                 $data['singlePrice'], $data['additionalPrice'], $data['additionalChildrenPrice'],
-                $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
+                $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays'],
+                $data['childPrice']
             );
 
             $this->get('mbh.channelmanager')->updatePricesInBackground();
