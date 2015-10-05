@@ -10,6 +10,7 @@ use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Zend\Stdlib\JsonSerializable;
 
 /**
@@ -241,7 +242,7 @@ class Package extends Base implements JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Int()
      * @Assert\Type(type="numeric")
-     * @Assert\Range(
+     * Assert\Range(
      *      min=1,
      *      minMessage= "validator.document.package.discount_less_1",
      *      max=100,
@@ -249,6 +250,14 @@ class Package extends Base implements JsonSerializable
      * )
      */
     protected $discount;
+
+    /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Bool()
+     * @Assert\NotNull()
+     */
+    protected $isPercentDiscount = true;
 
     /**
      * @var boolean
@@ -522,7 +531,7 @@ class Package extends Base implements JsonSerializable
             return $this->getTotalOverwrite();
         }
 
-        return $this->price - $this->price * $this->getDiscount(false) + $this->getServicesPrice();
+        return $this->price - $this->getDiscountMoney() + $this->getServicesPrice();
     }
 
     /**
@@ -534,7 +543,7 @@ class Package extends Base implements JsonSerializable
     public function getPackagePrice($discount = false)
     {
         if ($discount) {
-            return $this->price - $this->price * $this->getDiscount(false);
+            return $this->price - $this->getDiscountMoney();//$this->price * $this->getDiscount(false);
         }
 
         return $this->price;
@@ -785,11 +794,38 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
+     * @return float|int
+     */
+    public function getDiscountMoney()
+    {
+        if ($this->isPercentDiscount) {
+            return $this->price * $this->getDiscount(false);
+        }
+        return $this->discount;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsPercentDiscount()
+    {
+        return $this->isPercentDiscount;
+    }
+
+    /**
+     * @param bool $isPercentDiscount
+     */
+    public function setIsPercentDiscount($isPercentDiscount)
+    {
+        $this->isPercentDiscount = $isPercentDiscount;
+    }
+
+    /**
      * Add service
      *
-     * @param \MBH\Bundle\PackageBundle\Document\PackageService $service
+     * @param PackageService $service
      */
-    public function addService(\MBH\Bundle\PackageBundle\Document\PackageService $service)
+    public function addService(PackageService $service)
     {
         $this->services[] = $service;
     }
@@ -797,9 +833,9 @@ class Package extends Base implements JsonSerializable
     /**
      * Remove service
      *
-     * @param \MBH\Bundle\PackageBundle\Document\PackageService $service
+     * @param PackageService $service
      */
-    public function removeService(\MBH\Bundle\PackageBundle\Document\PackageService $service)
+    public function removeService(PackageService $service)
     {
         $this->services->removeElement($service);
     }
@@ -1269,5 +1305,18 @@ class Package extends Base implements JsonSerializable
             self::ROOM_STATUS_OUT_NOW,
             self::ROOM_STATUS_WAIT,
         ];
+    }
+
+    /**
+     * @param ExecutionContextInterface $context
+     * @Assert\Callback(callback="isDiscountValid")
+     */
+    public function isDiscountValid(ExecutionContextInterface $context)
+    {
+        if ($this->isPercentDiscount) {
+            $rangeValidator = new Assert\RangeValidator();
+            $rangeValidator->initialize($context);
+            $rangeValidator->validate($this->discount, new Assert\Range(['min' => 0, 'max' => 100]));
+        }
     }
 }

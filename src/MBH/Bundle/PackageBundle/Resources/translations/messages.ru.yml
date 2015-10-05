@@ -60,6 +60,7 @@ form.packageGuestType.max_second_name: Слишком длинное отчес�
 form.packageGuestType.birth_date: Дата рождения
 form.packageMainType.price: Цена
 form.packageMainType.discount: Скидка
+form.packageMainType.isPercentDiscount: В процентах
 form.packageMainType.check_in_time: Время заезда
 form.packageMainType.check_out_time: Время отъезда
 form.packageMainType.arrival_purpose: Цель приезда
