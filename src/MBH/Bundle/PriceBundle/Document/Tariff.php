@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
@@ -11,6 +12,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  * @ODM\Document(collection="Tariffs", repositoryClass="MBH\Bundle\PriceBundle\Document\TariffRepository")
@@ -141,12 +143,29 @@ class Tariff extends Base
     protected $infantAge = 2;
 
     /**
+     * @var Promotion|ArrayCollection
+     * @ODM\ReferenceMany(targetDocument="Promotion")
+     */
+    protected $promotions;
+
+    /**
+     * @ODM\ReferenceOne(targetDocument="Promotion")
+     * @var Promotion|null
+     */
+    protected $defaultPromotion;
+
+    public function __construct()
+    {
+        $this->promotions = new ArrayCollection();
+    }
+
+    /**
      * Set hotel
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     * @param Hotel $hotel
      * @return self
      */
-    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
+    public function setHotel(Hotel $hotel)
     {
         $this->hotel = $hotel;
         return $this;
@@ -358,5 +377,37 @@ class Tariff extends Base
     public function getInfantAge()
     {
         return $this->infantAge;
+    }
+
+    /**
+     * @return ArrayCollection|Promotion
+     */
+    public function getPromotions()
+    {
+        return $this->promotions;
+    }
+
+    /**
+     * @param ArrayCollection|Promotion $promotions
+     */
+    public function setPromotions($promotions)
+    {
+        $this->promotions = $promotions;
+    }
+
+    /**
+     * @return Promotion|null
+     */
+    public function getDefaultPromotion()
+    {
+        return $this->defaultPromotion;
+    }
+
+    /**
+     * @param Promotion|null $defaultPromotion
+     */
+    public function setDefaultPromotion(Promotion $defaultPromotion = null)
+    {
+        $this->defaultPromotion = $defaultPromotion;
     }
 }

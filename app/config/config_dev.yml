@@ -33,3 +33,6 @@ monolog:
 
 assetic:
     use_controller: %use_assetic_controller%
+
+doctrine_mongodb:
+    auto_generate_hydrator_classes: true

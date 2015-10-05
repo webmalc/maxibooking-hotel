@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PriceBundle\Form\TariffPromotionsType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -146,6 +147,37 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity)
+        ];
+    }
+
+    /**
+     * @Route("/edit/{id}/promotions", name="tariff_promotions_edit")
+     * @Method({"GET", "POST"})
+     * @Template()
+     * @ParamConverter(class="MBHPriceBundle:Tariff")
+     */
+    public function editPromotionsAction(Request $request, Tariff $tariff)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel())) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(new TariffPromotionsType(), $tariff);
+
+        $form->handleRequest($request);
+        if($form->isValid()) {
+            $this->dm->persist($tariff);
+            $this->dm->flush();
+
+            return $this->isSavedRequest() ?
+                $this->redirectToRoute('tariff_promotions_edit', ['id' => $tariff->getId()]) :
+                $this->redirectToRoute('tariff');
+        }
+
+        return [
+            'entity' => $tariff,
+            'form' => $form->createView(),
+            'logs' => $this->logs($tariff)
         ];
     }
 

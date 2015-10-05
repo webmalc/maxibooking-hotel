@@ -1,0 +1,13 @@
+{% extends 'MBHPriceBundle:Promotion:layout.html.twig' %}
+
+{% set small_title = "редактирование акции" %}
+{% set layout = 'box' %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('promotion_edit', {id: promotion.id}), 'attr': {'class': 'form-horizontal'}, 'method' : 'POST'}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' %}
+    {{ form_end(form) }}
+
+{% endblock %}

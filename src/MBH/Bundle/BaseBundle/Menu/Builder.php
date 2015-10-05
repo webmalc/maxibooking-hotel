@@ -117,6 +117,8 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-exclamation-circle']);
         $menu['prices']->addChild('services', ['route' => 'price_service_category', 'label' => 'Услуги'])
             ->setAttributes(['icon' => 'fa fa-plug']);
+        $menu['prices']->addChild('promotions', ['route' => 'promotions', 'label' => 'Акции'])
+            ->setAttributes(['icon' => 'fa fa-bookmark']);
 
         // cash
         $menu->addChild('cash', ['route' => 'cash', 'label' => 'Касса'])

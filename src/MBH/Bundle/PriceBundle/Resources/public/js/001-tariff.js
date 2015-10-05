@@ -77,4 +77,20 @@ $(document).ready(function () {
         stepinterval: 50,
         maxboostedstep: 10000000
     });
+
+    var $promotionsGroup = $('#mbh_price_tariff_promotions_promotions').closest('.form-group');
+    var $defaultPromotionInput = $('#mbh_price_tariff_promotions_defaultPromotion');
+    $defaultPromotionInput.on('change', function() {
+        switchPromotions();
+    });
+
+    var switchPromotions = function() {
+        if($defaultPromotionInput.val()) {
+            $promotionsGroup.hide();
+        } else {
+            $promotionsGroup.show();
+        }
+    }
+
+    switchPromotions();
 });

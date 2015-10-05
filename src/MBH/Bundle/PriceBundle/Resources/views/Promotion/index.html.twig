@@ -1,0 +1,37 @@
+{% extends "MBHPriceBundle:Promotion:layout.html.twig" %}
+{% set layout = "box" %}
+
+{% block content %}
+<table class="table table-striped">
+    <tr>
+        <td>Название</td>
+        <td>Индивидуальная</td>
+        <td>В процентах</td>
+        <td>Скидка</td>
+        <td>Комментарий</td>
+        <td class="td-sm"></td>
+    </tr>
+    {% for promotion in promotions %}
+        <tr>
+            <td>{{ promotion.title }}</td>
+            <td>{{ promotion.isIndividual }}</td>
+            <td>{{ promotion.isPercentType }}</td>
+            <td>{{ promotion.amount }}</td>
+            <td>{{ promotion.comment }}</td>
+            <td class="text-center">
+                <div class='btn-list'>
+                    <a href='{{ path('promotion_edit', {'id': promotion.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
+                        <i class='fa fa-pencil-square-o'></i>
+                    </a>
+                    <a href='{{ path('promotion_delete', {'id': promotion.id }) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
+                        <i class='fa fa-trash-o'></i>
+                    </a>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'promotion_new', 'role': 'tourist'} %}
+
+{% endblock content %}
