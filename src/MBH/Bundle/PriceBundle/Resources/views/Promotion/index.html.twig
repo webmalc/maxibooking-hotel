@@ -6,10 +6,10 @@
     <thead>
         <tr>
             <th class="td-xxs"></th>
-            <th>Название</th>
-            <th>Индивидуальная</th>
-            <th>В процентах</th>
-            <th>Скидка</th>
+            <th >Название</th>
+            <th class="text-center td-md">Индивидуальная</th>
+            <th class="text-center td-md">В процентах</th>
+            <th class="td-md">Скидка</th>
             <th>Комментарий</th>
             <th class="td-sm"></th>
         </tr>
@@ -21,12 +21,12 @@
             <td>
                 {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': promotion, 'route': 'promotion'} %}{% endembed %}
             </td>
-            <td>
+            <td class="text-center">
                 {% if promotion.isIndividual %}
                     <span class="label label-success">Да</span>
                 {% endif %}
             </td>
-            <td>
+            <td class="text-center">
                 {% if promotion.isPercentDiscount %}
                     <span class="label label-success">Да</span>
                 {% endif %}
