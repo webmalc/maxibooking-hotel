@@ -142,7 +142,7 @@ class Promotion extends Base
     /**
      * @return boolean
      */
-    public function getisPercentDiscount()
+    public function getIsPercentDiscount()
     {
         return $this->isPercentDiscount;
     }
@@ -150,7 +150,7 @@ class Promotion extends Base
     /**
      * @param boolean $isPercentDiscount
      */
-    public function setisPercentDiscount($isPercentDiscount)
+    public function setIsPercentDiscount($isPercentDiscount)
     {
         $this->isPercentDiscount = $isPercentDiscount;
     }
