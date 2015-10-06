@@ -37,35 +37,41 @@ class RoomTypeReportTest extends WebTestCase
         $package = $this->getPackage();
         $package->expects($this->any())->method('getBegin')->willReturn($now);
         $package->expects($this->any())->method('getEnd')->willReturn($tomorrow);
-        $this->assertEquals($package->getRoomStatus(), Package::ROOM_STATUS_OPEN);
+        $package = new Package();
+        $package
+            ->setOrder(new Order())
+            ->setBegin($now)
+            ->setEnd($tomorrow)
+        ;
+        $this->assertEquals(Package::ROOM_STATUS_OPEN, $package->getRoomStatus());
 
         $package = $this->getPackage();
         $package->expects($this->any())->method('getBegin')->willReturn($now);
         $package->expects($this->any())->method('getEnd')->willReturn($now);
         $package->expects($this->any())->method('getIsCheckIn')->willReturn(true);
         $package->expects($this->any())->method('getIsPaid')->willReturn(true);
-        $this->assertEquals($package->getRoomStatus(), Package::ROOM_STATUS_OUT_NOW);
+        $this->assertEquals(Package::ROOM_STATUS_OUT_NOW, $package->getRoomStatus());
 
         $package = $this->getPackage();
         $package->expects($this->any())->method('getBegin')->willReturn($yesterday);
         $package->expects($this->any())->method('getEnd')->willReturn($tomorrow);
         $package->expects($this->any())->method('getIsCheckIn')->willReturn(true);
         $package->expects($this->any())->method('getIsPaid')->willReturn(true);
-        $this->assertEquals($package->getRoomStatus(), Package::ROOM_STATUS_PAID);
+        $this->assertEquals(Package::ROOM_STATUS_PAID, $package->getRoomStatus());
 
         $package = $this->getPackage();
         $package->expects($this->any())->method('getBegin')->willReturn($yesterday);
         $package->expects($this->any())->method('getEnd')->willReturn($tomorrow);
         $package->expects($this->any())->method('getIsCheckIn')->willReturn(true);
         $package->expects($this->any())->method('getIsPaid')->willReturn(false);
-        $this->assertEquals($package->getRoomStatus(), Package::ROOM_STATUS_DEPT);
+        $this->assertEquals(Package::ROOM_STATUS_DEPT, $package->getRoomStatus());
 
         $package = $this->getPackage();
         $package->expects($this->any())->method('getBegin')->willReturn($yesterday);
         $package->expects($this->any())->method('getEnd')->willReturn($yesterday);
         $package->expects($this->any())->method('getIsCheckIn')->willReturn(true);
         $package->expects($this->any())->method('getIsCheckOut')->willReturn(false);
-        $this->assertEquals($package->getRoomStatus(), Package::ROOM_STATUS_NOT_OUT);
+        $this->assertEquals(Package::ROOM_STATUS_NOT_OUT, $package->getRoomStatus());
     }
 
     /**

@@ -557,7 +557,20 @@ class Package extends Base implements JsonSerializable
             return $this->getTotalOverwrite();
         }
 
-        return $this->price - $this->getDiscountMoney() + $this->getServicesPrice();
+        return $this->price - $this->getPromotionDiscountMoney() - $this->getDiscountMoney() + $this->getServicesPrice();
+    }
+
+    /**
+     * @return float|int
+     */
+    public function getPromotionDiscountMoney()
+    {
+        if ($promotion = $this->getPromotion()) {
+            return $promotion->getisPercentDiscount() ?
+                $this->price * $promotion->getDiscount() / 100 :
+                $promotion->getDiscount();
+        }
+        return 0;
     }
 
     /**
@@ -1309,6 +1322,7 @@ class Package extends Base implements JsonSerializable
         if (!$this->getIsCheckOut() && $now->format('Ymd') > $this->getEnd()->format('Ymd')) {
             return self::ROOM_STATUS_NOT_OUT;
         }
+
         if ($this->getIsPaid()) {
             return $now->format('d.m.Y') == $this->getEnd()->format('d.m.Y') ?
                 self::ROOM_STATUS_OUT_NOW :
