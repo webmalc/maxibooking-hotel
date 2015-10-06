@@ -188,3 +188,12 @@ ROLE_SOURCE_EDIT:  Редактирование источников
 ROLE_SOURCE_DELETE:  Удаление источников
 
 ROLE_DOCUMENTS_GENERATOR: Генерация документов
+
+ROLE_PROMOTION: Акции
+ROLE_PROMOTION_VIEW: Просмотр акций
+ROLE_PROMOTION_NEW: Создание акции
+ROLE_PROMOTION_INDIVIDUAL: Управление индивидуальными скидками
+ROLE_PROMOTION_EDIT: Редактирование акций
+ROLE_PROMOTION_DELETE: Удаление акции
+
+ROLE_DISCOUNT_ADD: Добавление скидки

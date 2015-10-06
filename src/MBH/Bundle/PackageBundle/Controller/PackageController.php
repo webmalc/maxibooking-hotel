@@ -245,9 +245,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $form = $this->createForm(new PackageMainType(), $package, [
-            'price' => $this->get('security.authorization_checker')->isGranted([
-                'ROLE_ADMIN'
-            ]),
+            'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_ADMIN']),
+            'discount' => $this->get('security.authorization_checker')->isGranted('ROLE_DISCOUNT_ADD'),
             'hotel' => $package->getRoomType()->getHotel(),
             'corrupted' => $package->getCorrupted()
         ]);

@@ -23,12 +23,16 @@
             <td>{{ promotion.comment }}</td>
             <td class="text-center">
                 <div class='btn-list'>
-                    <a href='{{ path('promotion_edit', {'id': promotion.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
-                        <i class='fa fa-pencil-square-o'></i>
-                    </a>
-                    <a href='{{ path('promotion_delete', {'id': promotion.id }) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
-                        <i class='fa fa-trash-o'></i>
-                    </a>
+                    {% if app.security.granted('ROLE_PROMOTION_EDIT') %}
+                        <a href='{{ path('promotion_edit', {'id': promotion.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
+                            <i class='fa fa-pencil-square-o'></i>
+                        </a>
+                    {% endif %}
+                    {% if app.security.granted('ROLE_PROMOTION_DELETE') %}
+                        <a href='{{ path('promotion_delete', {'id': promotion.id }) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
+                            <i class='fa fa-trash-o'></i>
+                        </a>
+                    {% endif %}
                 </div>
             </td>
         </tr>
@@ -36,6 +40,6 @@
     </tbody>
 </table>
 
-    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'promotion_new', 'role': 'tourist'} %}
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'promotion_new', 'role': 'promotion'} %}
 
 {% endblock content %}

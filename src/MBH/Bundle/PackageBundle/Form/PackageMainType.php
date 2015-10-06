@@ -90,18 +90,20 @@ class PackageMainType extends AbstractType
             ]);
         }
 
+        if($options['discount']) {
+            $builder
+                ->add('discount', 'text', [
+                    'label' => 'form.packageMainType.discount',
+                    'required' => false,
+                    'group' => 'Цена'
+                ])
+                ->add('isPercentDiscount', 'checkbox', [
+                    'label' => 'form.packageMainType.isPercentDiscount',
+                    'required' => false,
+                    'group' => 'Цена'
+                ]);
+        }
         $builder
-            ->add('discount', 'text', [
-                'label' => 'form.packageMainType.discount',
-                'required' => false,
-                'group' => 'Цена'
-            ]);
-        $builder
-            ->add('isPercentDiscount', 'checkbox', [
-                'label' => 'form.packageMainType.isPercentDiscount',
-                'required' => false,
-                'group' => 'Цена'
-            ])
             ->add('note', 'textarea', [
                 'label' => 'form.packageMainType.comment',
                 'group' => 'Информация',
@@ -125,6 +127,7 @@ class PackageMainType extends AbstractType
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
             'price' => false,
+            'discount' => false,
             'hotel' => null,
             'corrupted' => false
         ]);

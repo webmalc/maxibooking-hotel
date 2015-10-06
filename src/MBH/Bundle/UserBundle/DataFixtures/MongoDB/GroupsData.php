@@ -55,7 +55,8 @@ class GroupsData implements FixtureInterface, ContainerAwareInterface
                 'ROLE_ORDER_EDIT', 'ROLE_PACKAGE_EDIT', 'ROLE_ORDER_PAYER', 'ROLE_PACKAGE_GUESTS',
                 'ROLE_PACKAGE_SERVICES', 'ROLE_PACKAGE_ACCOMMODATION', 'ROLE_ORDER_DOCUMENTS',
                 'ROLE_ORDER_CASH_DOCUMENTS', 'ROLE_PACKAGE_DOCS', 'ROLE_ORDER_AUTO_CONFIRMATION',
-                'ROLE_PRICE_CACHE_VIEW', 'ROLE_RESTRICTION_VIEW', 'ROLE_ROOM_CACHE_VIEW', 'ROLE_SERVICE_VIEW'
+                'ROLE_PRICE_CACHE_VIEW', 'ROLE_RESTRICTION_VIEW', 'ROLE_ROOM_CACHE_VIEW', 'ROLE_SERVICE_VIEW',
+                'ROLE_PROMOTION_ADD', 'ROLE_DISCOUNT_ADD'
                 
             ]
         ],
@@ -68,7 +69,7 @@ class GroupsData implements FixtureInterface, ContainerAwareInterface
                 'ROLE_PACKAGE_SERVICES', 'ROLE_PACKAGE_ACCOMMODATION', 'ROLE_ORDER_DOCUMENTS',
                 'ROLE_ORDER_CASH_DOCUMENTS', 'ROLE_PACKAGE_DOCS', 'ROLE_ORDER_AUTO_CONFIRMATION',
                 'ROLE_PRICE_CACHE_VIEW', 'ROLE_RESTRICTION_VIEW', 'ROLE_ROOM_CACHE_VIEW', 'ROLE_SERVICE_VIEW',
-                'ROLE_DOCUMENTS_GENERATOR'
+                'ROLE_DOCUMENTS_GENERATOR', 'ROLE_PROMOTION_ADD', 'ROLE_DISCOUNT_ADD'
 
             ]
         ],
@@ -83,7 +84,7 @@ class GroupsData implements FixtureInterface, ContainerAwareInterface
                 'ROLE_CASH_VIEW', 'ROLE_CASH_NEW', 'ROLE_CASH_EDIT', 'ROLE_CASH_DELETE',
                 'ROLE_SERVICE', 'ROLE_SERVICE_CATEGORY', 'ROLE_PRICE_CACHE', 'ROLE_RESTRICTION',
                 'ROLE_ROOM_CACHE', 'ROLE_PACKAGE_EDIT_ALL', 'ROLE_SERVICES_REPORT',
-                'ROLE_DOCUMENTS_GENERATOR'
+                'ROLE_DOCUMENTS_GENERATOR', 'ROLE_INDIVIDUAL_PROMOTION_ADD', 'ROLE_PROMOTION_ADD', 'ROLE_DISCOUNT_ADD'
             ]
         ],
         'porter' => [
@@ -98,7 +99,7 @@ class GroupsData implements FixtureInterface, ContainerAwareInterface
                 'ROLE_CASH_VIEW', 'ROLE_CASH_NEW', 'ROLE_CASH_EDIT', 'ROLE_CASH_DELETE',
                 'ROLE_SERVICE_VIEW', 'ROLE_PACKAGE_EDIT_ALL', 'ROLE_SERVICES_REPORT',
                 'ROLE_PORTER_REPORT', 'ROLE_ACCOMMODATION_REPORT', 'ROLE_ROOMS_REPORT',
-                'ROLE_DOCUMENTS_GENERATOR'
+                'ROLE_DOCUMENTS_GENERATOR', 'ROLE_PROMOTION_ADD', 'ROLE_DISCOUNT_ADD'
             ]
         ],
 
