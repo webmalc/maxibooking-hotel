@@ -58,6 +58,7 @@ form.packageGuestType.placeholder_second_name: Иванович
 form.packageGuestType.min_second_name: Слишком короткое отчество
 form.packageGuestType.max_second_name: Слишком длинное отчество
 form.packageGuestType.birth_date: Дата рождения
+form.packageMainType.promotion: Акция
 form.packageMainType.price: Цена
 form.packageMainType.discount: Скидка
 form.packageMainType.isPercentDiscount: В процентах

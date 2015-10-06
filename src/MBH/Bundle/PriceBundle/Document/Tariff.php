@@ -143,7 +143,7 @@ class Tariff extends Base
     protected $infantAge = 2;
 
     /**
-     * @var Promotion|ArrayCollection
+     * @var Promotion[]|ArrayCollection
      * @ODM\ReferenceMany(targetDocument="Promotion")
      */
     protected $promotions;
@@ -380,7 +380,7 @@ class Tariff extends Base
     }
 
     /**
-     * @return ArrayCollection|Promotion
+     * @return ArrayCollection|Promotion[]
      */
     public function getPromotions()
     {
@@ -388,7 +388,7 @@ class Tariff extends Base
     }
 
     /**
-     * @param ArrayCollection|Promotion $promotions
+     * @param ArrayCollection|Promotion[] $promotions
      */
     public function setPromotions($promotions)
     {

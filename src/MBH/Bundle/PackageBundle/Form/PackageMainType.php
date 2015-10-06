@@ -5,6 +5,8 @@ namespace MBH\Bundle\PackageBundle\Form;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
@@ -90,17 +92,36 @@ class PackageMainType extends AbstractType
             ]);
         }
 
+        if ($options['promotion']) {
+            $package = $options['package'];
+            /** @var Package $package */
+            if($package && $package->getPromotion() && !in_array($package->getPromotion(), $options['promotions'])) {
+                $options['promotions'][] = $package->getPromotion();
+            }
+            $builder
+                ->add('promotion', 'document', [
+                    'label' => 'form.packageMainType.promotion',
+                    'class' => 'MBH\Bundle\PriceBundle\Document\Promotion',
+                    'required' => false,
+                    'group' => 'Акция',
+                    'choices' => $options['promotions']
+                    /*'query_builder' => function (DocumentRepository $repository) {
+                        return $repository->createQueryBuilder()->field('_id')
+                    }*/
+                ]);
+        }
+
         if($options['discount']) {
             $builder
                 ->add('discount', 'text', [
                     'label' => 'form.packageMainType.discount',
                     'required' => false,
-                    'group' => 'Цена'
+                    'group' => 'Скидка'
                 ])
                 ->add('isPercentDiscount', 'checkbox', [
                     'label' => 'form.packageMainType.isPercentDiscount',
                     'required' => false,
-                    'group' => 'Цена'
+                    'group' => 'Скидка'
                 ]);
         }
         $builder
@@ -119,7 +140,6 @@ class PackageMainType extends AbstractType
                     'help' => 'Бронь с поврежденной информацией. Подробности в комментарии к брони.'
                 ]);
         }
-
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -129,7 +149,10 @@ class PackageMainType extends AbstractType
             'price' => false,
             'discount' => false,
             'hotel' => null,
-            'corrupted' => false
+            'corrupted' => false,
+            'promotion' => false,
+            'promotions' => [],
+            'package' => null
         ]);
     }
 

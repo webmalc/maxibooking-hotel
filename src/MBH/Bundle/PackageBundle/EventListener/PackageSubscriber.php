@@ -40,35 +40,35 @@ class PackageSubscriber implements EventSubscriber
 
     public function postPersist(LifecycleEventArgs $args)
     {
-        $doc = $args->getEntity();
+        $package = $args->getDocument();
 
-        if ($doc instanceof Package) {
-            $end = clone $doc->getEnd();
+        if ($package instanceof Package) {
+            $end = clone $package->getEnd();
             $this->container->get('mbh.room.cache')->recalculate(
-                $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff()
+                $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff()
             );
-            $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
+            $this->container->get('mbh.channelmanager')->updateRoomsInBackground($package->getBegin(), $package->getEnd());
 
             //corrupted
-            if ($doc->getCorrupted()) {
+            if ($package->getCorrupted()) {
                 $notifier = $this->container->get('mbh.notifier');
                 $message = $notifier::createMessage();
                 $message
-                    ->setText($this->container->get('translator')->trans('package.corrupted.message.text', ['%package%' => $doc->getNumberWithPrefix()], 'MBHPackageBundle'))
+                    ->setText($this->container->get('translator')->trans('package.corrupted.message.text', ['%package%' => $package->getNumberWithPrefix()], 'MBHPackageBundle'))
                     ->setFrom('system')
                     ->setType('danger')
                     ->setCategory('error')
                     ->setAutohide(false)
-                    ->setHotel($doc->getRoomType()->getHotel())
+                    ->setHotel($package->getRoomType()->getHotel())
                     ->setEnd(new \DateTime('+10 minute'))
                     ->setLinkText('mailer.to_package')
-                    ->setLink($this->container->get('router')->generate('package_edit', ['id' => $doc->getId()], true))
+                    ->setLink($this->container->get('router')->generate('package_edit', ['id' => $package->getId()], true))
                 ;
                 $notifier->setMessage($message)->notify();
             }
 
             $this->container->get('mbh.mbhs')
-                ->sendPackageInfo($doc, $this->container->get('request')->getClientIp());
+                ->sendPackageInfo($package, $this->container->get('request')->getClientIp());
         }
     }
 
@@ -247,18 +247,22 @@ class PackageSubscriber implements EventSubscriber
                 ->getQuery()
                 ->getSingleResult()
             ;
-            
+
             $dm->getFilterCollection()->enable('softdeleteable');
-            
+
             (empty($lastEntity) || empty($lastEntity->getNumber())) ? $number = 1 : $number = $lastEntity->getNumber() + 1;
 
             if (empty($entity->getNumber())) {
                 $entity->setNumber($number);
             }
-            
+
             if ($entity->getTariff() && empty($entity->getNumberWithPrefix())) {
                 $entity->setNumberWithPrefix($entity->getTariff()->getHotel()->getPrefix() . $entity->getOrder()->getId(). '/' . $number);
             }
+        }
+
+        if($entity->getTariff()->getDefaultPromotion()) {
+            $entity->setPromotion($entity->getTariff()->getDefaultPromotion());
         }
     }
 

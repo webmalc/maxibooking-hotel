@@ -8,6 +8,7 @@ use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Form\OrderTouristType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
+use MBH\Bundle\PriceBundle\Document\Promotion;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -23,6 +24,7 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 /**
  * Class PackageController
@@ -244,11 +246,33 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
+        /** @var AuthorizationChecker $authorizationChecker */
+        $authorizationChecker = $this->get('security.authorization_checker');
+
+        $promotions = [];
+        if($authorizationChecker->isGranted('ROLE_PROMOTION_ADD')) {
+            /** @var Promotion[] $promotions */
+            $promotions = $package->getTariff()->getDefaultPromotion() ?
+                [$package->getTariff()->getDefaultPromotion()] :
+                iterator_to_array($package->getTariff()->getPromotions())
+            ;
+
+            if(!$authorizationChecker->isGranted('ROLE_INDIVIDUAL_PROMOTION_ADD')) {
+                $promotions = array_filter($promotions, function($promotion) {
+                    /** @var Promotion $promotion */
+                    return $promotion->getIsIndividual() === false;
+                });
+            }
+        }
+
         $form = $this->createForm(new PackageMainType(), $package, [
-            'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_ADMIN']),
-            'discount' => $this->get('security.authorization_checker')->isGranted('ROLE_DISCOUNT_ADD'),
+            'price' => $authorizationChecker->isGranted(['ROLE_ADMIN']),
+            'discount' => $authorizationChecker->isGranted('ROLE_DISCOUNT_ADD'),
+            'promotion' => $authorizationChecker->isGranted('ROLE_PROMOTION_ADD'),
+            'promotions' => $promotions,
+            'package' => $package,
             'hotel' => $package->getRoomType()->getHotel(),
-            'corrupted' => $package->getCorrupted()
+            'corrupted' => $package->getCorrupted(),
         ]);
 
         return [
@@ -275,9 +299,32 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
+        /** @var AuthorizationChecker $authorizationChecker */
+        $authorizationChecker = $this->get('security.authorization_checker');
+
+        $promotions = [];
+        if($authorizationChecker->isGranted('ROLE_PROMOTION_ADD')) {
+            /** @var Promotion[] $promotions */
+            $promotions = $package->getTariff()->getDefaultPromotion() ?
+                [$package->getTariff()->getDefaultPromotion()] :
+                iterator_to_array($package->getTariff()->getPromotions())
+            ;
+
+            if(!$authorizationChecker->isGranted('ROLE_INDIVIDUAL_PROMOTION_ADD')) {
+                $promotions = array_filter($promotions, function($promotion) {
+                    /** @var Promotion $promotion */
+                    return $promotion->getIsIndividual() === false;
+                });
+            }
+        }
+
         $oldPackage = clone $package;
         $form = $this->createForm(new PackageMainType(), $package, [
             'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_ADMIN']),
+            'discount' => $authorizationChecker->isGranted('ROLE_DISCOUNT_ADD'),
+            'promotion' => $authorizationChecker->isGranted('ROLE_PROMOTION_ADD'),
+            'promotions' => $promotions,
+            'package' => $package,
             'hotel' => $package->getRoomType()->getHotel(),
             'corrupted' => $package->getCorrupted()
         ]);

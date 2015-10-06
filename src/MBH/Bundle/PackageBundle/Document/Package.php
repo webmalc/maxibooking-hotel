@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PriceBundle\Document\Promotion;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
@@ -127,7 +128,14 @@ class Package extends Base implements JsonSerializable
      * @Assert\Date()
      */
     protected $end;
-    
+
+    /**
+     * @var Promotion|null
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Promotion")
+     */
+    protected $promotion;
+
     /**
      * @var float
      * @Gedmo\Versioned
@@ -506,6 +514,24 @@ class Package extends Base implements JsonSerializable
     public function getEnd()
     {
         return $this->end;
+    }
+
+    /**
+     * @return Promotion|null
+     */
+    public function getPromotion()
+    {
+        return $this->promotion;
+    }
+
+    /**
+     * @param Promotion|null $promotion
+     * @return $this
+     */
+    public function setPromotion(Promotion $promotion = null)
+    {
+        $this->promotion = $promotion;
+        return $this;
     }
 
     /**
