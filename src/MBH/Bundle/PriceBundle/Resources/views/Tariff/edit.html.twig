@@ -14,7 +14,7 @@
         {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': entity.isDefault ? null : 'tariff_delete' } %}
         {{ form_end(form) }}
         </div>
+        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tariff_delete' } %}
     </div>
-    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tariff_delete' } %}
 
 {% endblock %}
