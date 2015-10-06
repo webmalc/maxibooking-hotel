@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Range;
 
 /**
  * Class PromotionType
@@ -27,7 +28,9 @@ class PromotionType extends AbstractType
             ])
             ->add('discount', 'number', [
                 'label' => 'form.promotionType.label.discount',
-                'required' => false
+                'constraints' => [
+                    new Range(['min' => 1])
+                ]
             ])
             ->add('isPercentDiscount', 'checkbox', [
                 'label' => 'form.promotionType.label.isPercentDiscount',

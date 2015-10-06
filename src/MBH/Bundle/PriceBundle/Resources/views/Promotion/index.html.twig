@@ -5,21 +5,36 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <td>Название</td>
-            <td>Индивидуальная</td>
-            <td>В процентах</td>
-            <td>Скидка</td>
-            <td>Комментарий</td>
-            <td class="td-sm"></td>
+            <th class="td-xxs"></th>
+            <th>Название</th>
+            <th>Индивидуальная</th>
+            <th>В процентах</th>
+            <th>Скидка</th>
+            <th>Комментарий</th>
+            <th class="td-sm"></th>
         </tr>
     </thead>
     <tbody>
     {% for promotion in promotions %}
         <tr>
-            <td>{{ promotion.title }}</td>
-            <td>{{ promotion.isIndividual }}</td>
-            <td>{{ promotion.isPercentDiscount }}</td>
-            <td>{{ promotion.discount }}</td>
+            <th class="td-xxs"><i class="fa fa-bookmark"></i></th>
+            <td>
+                {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': promotion, 'route': 'promotion'} %}{% endembed %}
+            </td>
+            <td>
+                {% if promotion.isIndividual %}
+                    <span class="label label-success">Да</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if promotion.isPercentDiscount %}
+                    <span class="label label-success">Да</span>
+                {% endif %}
+            </td>
+            <td>
+                {{ promotion.discount }}
+                {{ promotion.isPercentDiscount ? '%' : ('<i class="' ~ currency().icon ~ '"></i>')|raw }}
+            </td>
             <td>{{ promotion.comment }}</td>
             <td class="text-center">
                 <div class='btn-list'>

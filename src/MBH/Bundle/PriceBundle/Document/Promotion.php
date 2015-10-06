@@ -16,6 +16,9 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
+ *
+ * @todo add validator
+ * @see Package::isDiscountValid
  */
 class Promotion extends Base
 {
