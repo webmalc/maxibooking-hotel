@@ -13,6 +13,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
  * @ODM\HasLifecycleCallbacks
  * @Gedmo\Loggable
  * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="PriceCache already exist.")
+ * @ODM\HasLifecycleCallbacks
  */
 class PriceCache extends Base
 {
@@ -55,6 +56,14 @@ class PriceCache extends Base
     protected $price;
 
     /**
+     * @var int
+     * @ODM\Float()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=0)
+     */
+    protected $childPrice;
+
+    /**
      * @var boolean
      * @ODM\Boolean()
      * @Assert\Type(type="boolean")
@@ -71,12 +80,26 @@ class PriceCache extends Base
     protected $additionalPrice = null;
 
     /**
+     * @var array
+     * @ODM\Collection()
+     * @Assert\Type(type="array")
+     */
+    protected $additionalPrices = [];
+
+    /**
      * @var int
      * @ODM\Float()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
      */
     protected $additionalChildrenPrice = null;
+
+    /**
+     * @var array
+     * @ODM\Collection()
+     * @Assert\Type(type="array")
+     */
+    protected $additionalChildrenPrices = [];
 
     /**
      * @var int
@@ -227,7 +250,12 @@ class PriceCache extends Base
      */
     public function setAdditionalPrice($additionalPrice)
     {
-        $this->additionalPrice = $additionalPrice;
+        if ($additionalPrice != '' && !is_null($additionalPrice)) {
+            $this->additionalPrice = (float) $additionalPrice;
+        } else {
+            $this->additionalPrice = null;
+        }
+
         return $this;
     }
 
@@ -249,7 +277,12 @@ class PriceCache extends Base
      */
     public function setAdditionalChildrenPrice($additionalChildrenPrice)
     {
-        $this->additionalChildrenPrice = $additionalChildrenPrice;
+        if ($additionalChildrenPrice != '' && !is_null($additionalChildrenPrice)) {
+            $this->additionalChildrenPrice = (float) $additionalChildrenPrice;
+        } else {
+            $this->additionalChildrenPrice = null;
+        }
+
         return $this;
     }
 
@@ -271,7 +304,7 @@ class PriceCache extends Base
      */
     public function setSinglePrice($singlePrice)
     {
-        $this->singlePrice = $singlePrice;
+        $this->singlePrice = (float) $singlePrice;
         return $this;
     }
 
@@ -297,5 +330,112 @@ class PriceCache extends Base
         }
         $additionalPlace = $this->getRoomType()->getAdditionalPlaces() * $this->getAdditionalPrice();
         return $commonPlace + $additionalPlace;
+    }
+
+    /**
+     * @return int
+     */
+    public function getChildPrice()
+    {
+        return $this->childPrice;
+    }
+
+    /**
+     * @param int $childPrice
+     * @return PriceCache
+     */
+    public function setChildPrice($childPrice)
+    {
+        $this->childPrice = $childPrice;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAdditionalPrices()
+    {
+        return $this->additionalPrices;
+    }
+
+    /**
+     * @param array $additionalPrices
+     * @return PriceCache
+     */
+    public function setAdditionalPrices(array $additionalPrices)
+    {
+        $this->additionalPrices = $additionalPrices;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAdditionalChildrenPrices()
+    {
+        return $this->additionalChildrenPrices;
+    }
+
+    /**
+     * @param array $additionalChildrenPrices
+     * @return PriceCache
+     */
+    public function setAdditionalChildrenPrices(array $additionalChildrenPrices)
+    {
+        $this->additionalChildrenPrices = $additionalChildrenPrices;
+        return $this;
+    }
+
+    /**
+     * @ODM\PrePersist
+     */
+    public function prePersist()
+    {
+        $this->saveAdditionalPrices();
+    }
+
+    /**
+     * @ODM\preUpdate
+     */
+    public function preUpdate()
+    {
+        $this->saveAdditionalPrices();
+    }
+
+    private function saveAdditionalPrices()
+    {
+        $this->additionalPrices = [0 => $this->getAdditionalPrice()] + $this->additionalPrices;
+        $this->additionalChildrenPrices = [0 => $this->getAdditionalChildrenPrice()] + $this->additionalChildrenPrices;
+
+        foreach ($this->additionalPrices as $key => $price) {
+            if ($price != '' && !is_null($price)) {
+                $this->additionalPrices[$key] = (float) $price;
+            } else {
+                $this->additionalPrices[$key] = null;
+            }
+        }
+        foreach ($this->additionalChildrenPrices as $key => $price) {
+            if ($price != '' && !is_null($price)) {
+                $this->additionalChildrenPrices[$key] = (float) $price;
+            } else {
+                $this->additionalChildrenPrices[$key] = null;
+            }
+        }
+    }
+
+    public function __call($name , array $arguments)
+    {
+        if (preg_match('/^(additionalPrice|additionalChildrenPrice){1}\d+$/iu', $name, $matches)) {
+            $num = (int) preg_replace('/[^\d]+/iu', '', $name);
+            $methodName = 'get' . ucfirst($matches[1]) . 's';
+            if (isset($this->$methodName()[$num])) {
+                return $this->$methodName()[$num];
+            }
+            return null;
+        }
+
+        throw new \BadMethodCallException('Method not implemented.');
     }
 }

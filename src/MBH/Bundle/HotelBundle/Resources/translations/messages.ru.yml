@@ -80,6 +80,12 @@ form.roomTypeType.chess_room_type_color: Цвет типа номера на ш�
 form.roomTypeType.image: Изображение
 form.roomTypeType.main_places: Основные места
 form.roomTypeType.settings: Настройки
+form.roomTypeType.places: Места
+form.roomTypeType.prices: Ценообразование
+form.roomTypeType.isChildPrices: Основные детские цены?
+form.roomTypeType.isChildPricesDesc: Использовать ли основные детские цены для номера?
+form.roomTypeType.isIndividualAdditionalPrices: Индивидуальные цены на доп. места?
+form.roomTypeType.isIndividualAdditionalPricesDesc:  Использовать ли разные цены для каждого дополнительнго места?
 form.roomTypeType.room_main_places_amount: Количество основных мест в номере
 form.roomTypeType.additional_places: Дополнительные места
 form.roomTypeType.room_additional_places_amount: Количество дополнительных мест в номере

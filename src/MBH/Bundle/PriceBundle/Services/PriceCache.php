@@ -41,13 +41,16 @@ class PriceCache
      * @param \DateTime $end
      * @param Hotel $hotel
      * @param $price
-     * @param bool $isPersonPrice
+     * @param bool|false $isPersonPrice
      * @param null $singlePrice
      * @param null $additionalPrice
      * @param null $additionalChildrenPrice
      * @param array $availableRoomTypes
      * @param array $availableTariffs
      * @param array $weekdays
+     * @param null $childPrice
+     * @param array $additionalPrices
+     * @param array $additionalChildrenPrices
      */
     public function update(
         \DateTime $begin,
@@ -60,15 +63,34 @@ class PriceCache
         $additionalChildrenPrice = null,
         array $availableRoomTypes = [],
         array $availableTariffs = [],
-        array $weekdays = []
+        array $weekdays = [],
+        $childPrice = null,
+        array $additionalPrices = [],
+        array $additionalChildrenPrices = []
     ) {
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
         $priceCaches = $updateCaches = $updates = $remove = [];
 
-        is_numeric($singlePrice) ? $singlePrice = (int) $singlePrice : $singlePrice;
-        is_numeric($additionalPrice) ? $additionalPrice = (int) $additionalPrice : $additionalPrice;
-        is_numeric($additionalChildrenPrice) ? $additionalChildrenPrice = (int) $additionalChildrenPrice : $additionalChildrenPrice;
+        is_numeric($singlePrice) ? $singlePrice = (float) $singlePrice : $singlePrice;
+        is_numeric($additionalPrice) ? $additionalPrice = (float) $additionalPrice : $additionalPrice;
+        is_numeric($childPrice) ? $childPrice = (float) $childPrice : $childPrice;
+        is_numeric($additionalChildrenPrice) ? $additionalChildrenPrice = (float) $additionalChildrenPrice : $additionalChildrenPrice;
+
+        foreach ($additionalPrices as $key => $p) {
+            if ($p != '' && !is_null($p)) {
+                $additionalPrices[$key] = (float) $p;
+            } else {
+                $additionalPrices[$key] = null;
+            }
+        }
+        foreach ($additionalChildrenPrices as $key => $p) {
+            if ($p != '' && !is_null($p)) {
+                $additionalChildrenPrices[$key] = (float) $p;
+            } else {
+                $additionalChildrenPrices[$key] = null;
+            }
+        }
 
         (empty($availableRoomTypes)) ? $roomTypes = $hotel->getRoomTypes()->toArray() : $roomTypes = $availableRoomTypes;
         (empty($availableTariffs)) ? $tariffs = $hotel->getTariffs()->toArray() : $tariffs = $availableTariffs;
@@ -93,10 +115,13 @@ class PriceCache
                 'criteria' => ['_id' => new \MongoId($oldPriceCache->getId())],
                 'values' => [
                     'price' => (float) $price,
+                    'childPrice' => $childPrice,
                     'isPersonPrice' => $isPersonPrice,
                     'singlePrice' => $singlePrice,
                     'additionalPrice' => $additionalPrice,
                     'additionalChildrenPrice' => $additionalChildrenPrice,
+                    'additionalPrices' => $additionalPrices,
+                    'additionalChildrenPrices' => $additionalChildrenPrices
                 ]
             ];
         }
@@ -117,10 +142,13 @@ class PriceCache
                         'tariff' => \MongoDBRef::create('Tariffs', new \MongoId($tariff->getId())),
                         'date' => new \MongoDate($date->getTimestamp()),
                         'price' => (float) $price,
+                        'childPrice' => $childPrice,
                         'isPersonPrice' => $isPersonPrice,
                         'singlePrice' => $singlePrice,
                         'additionalPrice' => $additionalPrice,
                         'additionalChildrenPrice' => $additionalChildrenPrice,
+                        'additionalPrices' => $additionalPrices,
+                        'additionalChildrenPrices' => $additionalChildrenPrices,
                         'isEnabled' => true
                     ];
                 }

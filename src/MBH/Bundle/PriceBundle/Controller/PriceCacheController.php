@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -143,11 +144,14 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                         ->setTariff($tariff)
                         ->setDate($helper->getDateFromString($date))
                         ->setPrice($prices['price'])
+                        ->setChildPrice(isset($prices['childPrice']) && $prices['childPrice'] !== ''  ? $prices['childPrice'] : null)
                         ->setIsPersonPrice(isset($prices['isPersonPrice']) && $prices['isPersonPrice'] !== '' ? true : false)
                         ->setSinglePrice(isset($prices['singlePrice']) && $prices['singlePrice'] !== ''  ? $prices['singlePrice'] : null)
                         ->setAdditionalPrice(isset($prices['additionalPrice']) && $prices['additionalPrice'] !== ''  ? $prices['additionalPrice'] : null)
                         ->setAdditionalChildrenPrice(isset($prices['additionalChildrenPrice']) && $prices['additionalChildrenPrice'] !== ''  ? $prices['additionalChildrenPrice'] : null)
                     ;
+
+                    $newPriceCache = $this->addAdditionalPrices($roomType, $newPriceCache, $prices);
 
                     if ($validator->validate($newPriceCache)) {
                         $dm->persist($newPriceCache);
@@ -170,12 +174,16 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 continue;
             }
 
-            $priceCache->setPrice($prices['price'])
+            $priceCache
+                ->setPrice($prices['price'])
+                ->setChildPrice(isset($prices['childPrice']) && $prices['childPrice'] !== ''  ? $prices['childPrice'] : null)
                 ->setIsPersonPrice(isset($prices['isPersonPrice']) ? true : false)
                 ->setSinglePrice(isset($prices['singlePrice']) && $prices['singlePrice'] !== '' ? $prices['singlePrice'] : null)
                 ->setAdditionalPrice(isset($prices['additionalPrice'])  && $prices['additionalPrice'] !== '' ? $prices['additionalPrice'] : null)
                 ->setAdditionalChildrenPrice(isset($prices['additionalChildrenPrice'])  && $prices['additionalChildrenPrice'] !== '' ? $prices['additionalChildrenPrice'] : null)
             ;
+
+            $priceCache = $this->addAdditionalPrices($priceCache->getRoomType(), $priceCache, $prices);
 
             if ($validator->validate($priceCache)) {
                 $dm->persist($priceCache);
@@ -195,6 +203,32 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             'roomTypes' => $request->get('roomTypes'),
             'tariffs' => $request->get('tariffs'),
         ]));
+    }
+
+    /**
+     * @param RoomType $roomType
+     * @param PriceCache $priceCache
+     * @param array $prices
+     * @return PriceCache
+     */
+    private function addAdditionalPrices(RoomType $roomType, PriceCache $priceCache, array $prices)
+    {
+        if ($roomType->getIsIndividualAdditionalPrices() && $roomType->getAdditionalPlaces() > 1) {
+            $childrenPrices = $additionalPrices = [];
+            for ($i = 1; $i < $roomType->getAdditionalPlaces(); $i++) {
+                if (isset($prices['additionalPrice' . $i])) {
+                    $additionalPrices[$i] = $prices['additionalPrice' . $i];
+                }
+                if (isset($prices['additionalChildrenPrice' . $i])) {
+                    $childrenPrices[$i] = $prices['additionalChildrenPrice' . $i];
+                }
+
+                $priceCache->setAdditionalPrices($additionalPrices);
+                $priceCache->setAdditionalChildrenPrices($childrenPrices);
+            }
+        }
+
+        return $priceCache;
     }
 
     /**
@@ -241,10 +275,25 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             $request->getSession()->getFlashBag()->set('success', 'Данные успешно сгенерированы.');
             $data = $form->getData();
 
+            $childrenPrices = [
+                0 => $data['additionalChildrenPrice']
+            ];
+            $additionalPrices = [
+                0 => $data['additionalPrice']
+            ];
+
+            if (!empty($data['additionalPricesCount'])) {
+                for ($i = 1; $i < $data['additionalPricesCount']; $i++) {
+                    $additionalPrices[$i] = $data['additionalPrice' . $i];
+                    $childrenPrices[$i] = $data['additionalChildrenPrice' . $i];
+                }
+            }
+
             $this->get('mbh.price.cache')->update(
                 $data['begin'], $data['end'], $hotel, $data['price'], $data['isPersonPrice'],
                 $data['singlePrice'], $data['additionalPrice'], $data['additionalChildrenPrice'],
-                $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
+                $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays'],
+                $data['childPrice'], $additionalPrices, $childrenPrices
             );
 
             $this->get('mbh.channelmanager')->updatePricesInBackground();

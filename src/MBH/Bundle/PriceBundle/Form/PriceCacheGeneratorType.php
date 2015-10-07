@@ -17,6 +17,18 @@ class PriceCacheGeneratorType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $isIndividualAdditionalPrices = 0;
+
+        if ($options['hotel']) {
+            foreach ($options['hotel']->getRoomTypes() as $roomType) {
+                if ($roomType->getIsIndividualAdditionalPrices()) {
+                    if ($roomType->getAdditionalPlaces() > $isIndividualAdditionalPrices) {
+                        $isIndividualAdditionalPrices = $roomType->getAdditionalPlaces();
+                    }
+                }
+            }
+        }
+
         $builder
             ->add('begin', 'date', array(
                 'label' => 'Начало периода',
@@ -56,7 +68,7 @@ class PriceCacheGeneratorType extends AbstractType
                     return $dr->fetchQueryBuilder($options['hotel']);
                 },
                 'help' => 'Типы номеров для готорых будет произведена генерация цен',
-                'attr' => array('placeholder' => $options['hotel'].': все типы номеров'),
+                'attr' => array('placeholder' => $options['hotel'] . ': все типы номеров'),
             ])
             ->add('tariffs', 'document', [
                 'label' => 'Тарифы',
@@ -68,7 +80,7 @@ class PriceCacheGeneratorType extends AbstractType
                     return $dr->fetchQueryBuilder($options['hotel']);
                 },
                 'help' => 'Тарифы для готорых будет произведена генерация цен',
-                'attr' => array('placeholder' => $options['hotel'].': все тарифы'),
+                'attr' => array('placeholder' => $options['hotel'] . ': все тарифы'),
             ])
             ->add('price', 'text', [
                 'label' => 'Цена',
@@ -99,6 +111,16 @@ class PriceCacheGeneratorType extends AbstractType
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                 ],
             ])
+            ->add('childPrice', 'text', [
+                'label' => 'Цена за детское осн. место',
+                'group' => 'Цены',
+                'required' => false,
+                'data' => null,
+                'attr' => ['class' => 'spinner-0f'],
+                'constraints' => [
+                    new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше минус одного']),
+                ],
+            ])
             ->add('additionalPrice', 'text', [
                 'label' => 'Цена взрослого доп. места',
                 'group' => 'Цены',
@@ -118,8 +140,34 @@ class PriceCacheGeneratorType extends AbstractType
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                 ],
-            ])
-        ;
+            ]);
+
+        if ($isIndividualAdditionalPrices) {
+            for ($i = 1; $i < $isIndividualAdditionalPrices; $i++) {
+                $builder
+                    ->add('additionalPrice' . $i, 'text', [
+                        'label' => 'Цена взрослого доп. места #' . ($i + 1),
+                        'group' => 'Цены',
+                        'required' => false,
+                        'data' => null,
+                        'attr' => ['class' => 'spinner-0f delete-prices', 'placeholder' => 'данные будут удалены'],
+                        'constraints' => [
+                            new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
+                        ],
+                    ])
+                    ->add('additionalChildrenPrice' . $i, 'text', [
+                        'label' => 'Цена детского доп. места #' . ($i + 1),
+                        'group' => 'Цены',
+                        'required' => false,
+                        'data' => null,
+                        'attr' => ['class' => 'spinner-0f delete-prices', 'placeholder' => 'данные будут удалены'],
+                        'constraints' => [
+                            new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
+                        ],
+                    ]);
+            }
+            $builder->add('additionalPricesCount', 'hidden', ['data' => $isIndividualAdditionalPrices]);
+        }
     }
 
     public function checkDates($data, ExecutionContextInterface $context)

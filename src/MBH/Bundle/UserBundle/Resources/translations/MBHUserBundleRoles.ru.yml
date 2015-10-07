@@ -136,6 +136,7 @@ ROLE_VASHOTEL: ВашОтель
 ROLE_OSTROVOK: Ostrovok
 ROLE_OKTOGO: Oktogo
 ROLE_HOTELINN: Hotel-inn
+ROLE_MYALLOCATOR: MyAllocator
 
 ROLE_ONLINE_FORM: Онлайн форма
 ROLE_POLLS: Голосования
