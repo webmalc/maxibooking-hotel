@@ -188,7 +188,28 @@ class Calculation
                     continue 2;
                 }
 
-                $dayPrice += $addsAdults * $cache->getAdditionalPrice() + $addsChildren * $cache->getAdditionalChildrenPrice();
+                if ($roomType->getIsIndividualAdditionalPrices() and ($addsChildren + $addsAdults) > 1) {
+                    $addsPrice = 0;
+                    $additionalCalc = function ($num, $prices, $price) {
+                        $result = 0;
+                        for ($i = 0; $i < $num; $i++) {
+                            if (isset($prices[$i]) && $prices[$i] !== null) {
+                                $result += $prices[$i];
+                            } else {
+                                $result += $price;
+                            }
+                        }
+
+                        return $result;
+                    };
+
+                    $addsPrice += $additionalCalc($addsAdults, $cache->getAdditionalPrices(), $cache->getAdditionalPrice());
+                    $addsPrice += $additionalCalc($addsChildren, $cache->getAdditionalChildrenPrices(), $cache->getAdditionalChildrenPrice());
+                } else {
+                    $addsPrice = $addsAdults * $cache->getAdditionalPrice() + $addsChildren * $cache->getAdditionalChildrenPrice();
+                }
+
+                $dayPrice += $addsPrice;
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
                 $total += $dayPrice;
             }

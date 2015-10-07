@@ -40,15 +40,17 @@ class PriceCache
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param Hotel $hotel
-     * @param int $price
-     * @param bool $isPersonPrice
+     * @param $price
+     * @param bool|false $isPersonPrice
      * @param null $singlePrice
      * @param null $additionalPrice
      * @param null $additionalChildrenPrice
      * @param array $availableRoomTypes
      * @param array $availableTariffs
      * @param array $weekdays
-     * @param int $childPrice
+     * @param null $childPrice
+     * @param array $additionalPrices
+     * @param array $additionalChildrenPrices
      */
     public function update(
         \DateTime $begin,
@@ -62,7 +64,9 @@ class PriceCache
         array $availableRoomTypes = [],
         array $availableTariffs = [],
         array $weekdays = [],
-        $childPrice = null
+        $childPrice = null,
+        array $additionalPrices = [],
+        array $additionalChildrenPrices = []
     ) {
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
@@ -72,6 +76,21 @@ class PriceCache
         is_numeric($additionalPrice) ? $additionalPrice = (float) $additionalPrice : $additionalPrice;
         is_numeric($childPrice) ? $childPrice = (float) $childPrice : $childPrice;
         is_numeric($additionalChildrenPrice) ? $additionalChildrenPrice = (float) $additionalChildrenPrice : $additionalChildrenPrice;
+
+        foreach ($additionalPrices as $key => $p) {
+            if ($p != '' && !is_null($p)) {
+                $additionalPrices[$key] = (float) $p;
+            } else {
+                $additionalPrices[$key] = null;
+            }
+        }
+        foreach ($additionalChildrenPrices as $key => $p) {
+            if ($p != '' && !is_null($p)) {
+                $additionalChildrenPrices[$key] = (float) $p;
+            } else {
+                $additionalChildrenPrices[$key] = null;
+            }
+        }
 
         (empty($availableRoomTypes)) ? $roomTypes = $hotel->getRoomTypes()->toArray() : $roomTypes = $availableRoomTypes;
         (empty($availableTariffs)) ? $tariffs = $hotel->getTariffs()->toArray() : $tariffs = $availableTariffs;
@@ -101,6 +120,8 @@ class PriceCache
                     'singlePrice' => $singlePrice,
                     'additionalPrice' => $additionalPrice,
                     'additionalChildrenPrice' => $additionalChildrenPrice,
+                    'additionalPrices' => $additionalPrices,
+                    'additionalChildrenPrices' => $additionalChildrenPrices
                 ]
             ];
         }
@@ -126,6 +147,8 @@ class PriceCache
                         'singlePrice' => $singlePrice,
                         'additionalPrice' => $additionalPrice,
                         'additionalChildrenPrice' => $additionalChildrenPrice,
+                        'additionalPrices' => $additionalPrices,
+                        'additionalChildrenPrices' => $additionalChildrenPrices,
                         'isEnabled' => true
                     ];
                 }

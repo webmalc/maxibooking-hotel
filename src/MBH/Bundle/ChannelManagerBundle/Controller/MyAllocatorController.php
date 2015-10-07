@@ -20,7 +20,7 @@ class MyAllocatorController extends Controller implements CheckHotelControllerIn
 {
     /**
      * Main configuration page
-     * @Route("/", name="myallocator")
+     * @Route("/", name="channels")
      * @Method("GET")
      * @Security("is_granted('ROLE_MYALLOCATOR')")
      * @Template()

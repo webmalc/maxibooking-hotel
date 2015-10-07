@@ -284,7 +284,7 @@ class Builder extends ContainerAware
         if ($this->container->getParameter('mbh.environment') == 'prod') {
             $menu['services']->addChild('booking', ['route' => 'booking', 'label' => 'Booking.com'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
-            $menu['services']->addChild('myallocator', ['route' => 'myallocator', 'label' => 'MyAllocator'])
+            $menu['services']->addChild('myallocator', ['route' => 'channels', 'label' => 'Дополнительные каналы'])
                 ->setAttributes(['icon' => 'fa fa-cloud-download']);
             //$menu['services']->addChild('ostrovok', ['route' => 'ostrovok', 'label' => 'Ostrovok'])
             //  ->setAttributes(['icon' => 'fa fa-cloud-download']);

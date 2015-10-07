@@ -93,6 +93,7 @@ if [[ $2 == 'new' ]]; then
     ssh $SERVER $FOLDER'bin/console mbh:city:load'
     ssh $SERVER $FOLDER'bin/console mbh:vega:import'
     ssh $SERVER $FOLDER'bin/console mbh:currency:load'
+    ssh $SERVER $FOLDER'bin/console doctrine:mongodb:fixtures:load --append'
 fi
 
 echo -e "${GREEN}Start clear:cache${NC}"
