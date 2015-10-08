@@ -107,6 +107,8 @@ class Builder extends ContainerAware
 
         $menu->addChild('task', ['route' => 'task', 'label' => 'Задачи'])->setAttributes($taskAttributes);
 
+        $menu['prices']->addChild('tariff', ['route' => 'tariff', 'label' => 'Тарифы'])
+            ->setAttributes(['icon' => 'fa fa-sliders']);
         $menu['prices']->addChild('overview', ['route' => 'room_overview', 'label' => 'Обзор'])
             ->setAttributes(['icon' => 'fa fa-info-circle']);
         $menu['prices']->addChild('room_cache', ['route' => 'room_cache_overview', 'label' => 'Номера в продаже'])
@@ -255,8 +257,6 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-building']);
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номерной фонд'])
                 ->setAttributes(['icon' => 'fa fa-bed']);
-        $menu['hotels']->addChild('tariff', ['route' => 'tariff', 'label' => 'Тарифы'])
-            ->setAttributes(['icon' => 'fa fa-sliders']);
 
         //Users links
         $menu->addChild('configs', ['route' => '_welcome', 'label' => 'Настройки'])
