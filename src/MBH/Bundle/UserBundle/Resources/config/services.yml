@@ -17,3 +17,9 @@ services:
                 - %security.role_hierarchy.roles%
             tags:
                 - { name: form.type, alias: roles }
+
+
+    mbh.user.metadata_listener:
+            class: MBH\Bundle\UserBundle\EventListener\ClassMetadataListener
+            tags:
+                -  { name: doctrine_mongodb.odm.event_listener, event: loadClassMetadata }
