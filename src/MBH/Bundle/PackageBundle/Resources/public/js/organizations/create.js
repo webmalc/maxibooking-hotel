@@ -30,7 +30,7 @@
         $hotelsGroup.show()
     }
 
-    $("#organization_inn").mask("9999999999?99");
-    $("#organization_kpp").mask("999999999");
+    $("#organization_inn").mask("000000000000");
+    $("#organization_kpp").mask("000000000");
 
 })(jQuery);

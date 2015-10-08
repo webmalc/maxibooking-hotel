@@ -1087,7 +1087,7 @@ class Package extends Base implements JsonSerializable
                 if(!$nextDate) {
                     $nextDate = \DateTime::createFromFormat('d_m_Y', $date)->modify('+1 day')->format('d_m_Y');
                 }
-                $result[$date.' - '.$nextDate] = [
+                $result[$begin.' - '.$nextDate] = [
                     'price' => $price,
                     'nights' => $nights
                 ];
