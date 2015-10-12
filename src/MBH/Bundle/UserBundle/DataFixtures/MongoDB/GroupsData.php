@@ -99,7 +99,7 @@ class GroupsData implements FixtureInterface, ContainerAwareInterface
                 'ROLE_CASH_VIEW', 'ROLE_CASH_NEW', 'ROLE_CASH_EDIT', 'ROLE_CASH_DELETE',
                 'ROLE_SERVICE_VIEW', 'ROLE_PACKAGE_EDIT_ALL', 'ROLE_SERVICES_REPORT',
                 'ROLE_PORTER_REPORT', 'ROLE_ACCOMMODATION_REPORT', 'ROLE_ROOMS_REPORT',
-                'ROLE_DOCUMENTS_GENERATOR', 'ROLE_PROMOTION_ADD', 'ROLE_DISCOUNT_ADD'
+                'ROLE_DOCUMENTS_GENERATOR', 'ROLE_PROMOTION_ADD', 'ROLE_DISCOUNT_ADD', 'ROLE_ROOM_STATUS_EDIT'
             ]
         ],
 

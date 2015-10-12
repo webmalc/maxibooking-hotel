@@ -623,7 +623,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @return array
      * @Route("/set_room_status", name="report_set_room_status", options={"expose"=true})
      * @Method({"GET"})
-     * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     * @Security("is_granted('ROLE_ROOM_STATUS_EDIT')")
      */
     public function setRoomStatusAction(Request $request)
     {

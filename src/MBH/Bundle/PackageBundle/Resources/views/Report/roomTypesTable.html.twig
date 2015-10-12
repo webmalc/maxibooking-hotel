@@ -47,7 +47,7 @@
             {% set style = '' %}
 
             {% if room.status %}
-                {% set style = 'bg-gray' %}
+                {% set style = 'bg-gray-lite' %}
             {% endif %}
 
             {% if package and package.order %}
@@ -150,17 +150,20 @@
                     {% endif %}
                 </td>
                 <td class="text-center">
-                    <select data-room="{{ room.id }}" class="plain-html select-status select2">
-                        <option data-icon="fa-lg mbf-keys">.</option>
-                        {% for status, icon in roomStatusIcons %}
-                            <option value="{{ status }}" {{ room.status and room.status.code == status ? 'selected="selected"' : '' }} data-icon="fa-lg mbf-{{ icon }}">
-                                {{ status }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                    {#% if room.status %}
+                    {% if not app.security.granted('ROLE_ROOM_STATUS_EDIT') %}
+                        <select data-room="{{ room.id }}" class="plain-html select-status select2">
+                            <option data-icon="fa-lg mbf-keys">.</option>
+                            {% for status, icon in roomStatusIcons %}
+                                <option value="{{ status }}" {{ room.status and room.status.code == status ? 'selected="selected"' : '' }} data-icon="fa-lg mbf-{{ icon }}">
+                                    {{ status }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    {% elseif room.status %}
                         <i class="fa fa-lg mbf-{{ roomStatusIcons[room.status.code] }}" data-toggle='tooltip' data-title='{{ room.status.title }}'></i>
-                    {% endif %#}
+                    {% else %}
+                        <i class="fa fa-lg mbf-keys" data-toggle='tooltip'></i>
+                    {% endif %}
                 </td>
                 <td>
                     {% set style = 'default' %}
