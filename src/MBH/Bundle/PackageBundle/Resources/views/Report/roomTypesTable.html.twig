@@ -63,7 +63,7 @@
             {% elseif roomTypeSupposeAccommodation and roomTypeSupposeAccommodation[supposeIncrement] is defined %}
                 {% set supposeAccommodation =  roomTypeSupposeAccommodation[supposeIncrement] %}
                 {% set supposeIncrement = supposeIncrement + 1 %}
-                {% set style = 'wait-accommodation info' %}
+                {% set style = 'wait-accommodation' %}
 
                 {% set package = supposeAccommodation %}
             {% endif %}

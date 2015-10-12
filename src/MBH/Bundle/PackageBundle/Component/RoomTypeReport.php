@@ -83,7 +83,8 @@ class RoomTypeReport
         $supposeAccommodations = $this->dm->getRepository('MBHPackageBundle:Package')->findBy([
             'roomType.id' => ['$in' => $roomTypeIDs],
             'accommodation' => ['$exists' => false],
-            'isCheckOut' => false
+            'isCheckOut' => false,
+            'begin' => ['$lte' => new \DateTime('midnight')]
         ], [], $result->total['rooms']);
 
         $supposeAccommodationTotal = count($supposeAccommodations);
