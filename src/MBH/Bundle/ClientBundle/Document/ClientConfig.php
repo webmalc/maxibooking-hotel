@@ -47,6 +47,15 @@ class ClientConfig extends Base
     protected $isSendSms = false;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isDisabledRoomTypeCategory = false;
+
+    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
@@ -98,6 +107,22 @@ class ClientConfig extends Base
     public function getIsSendSms()
     {
         return $this->isSendSms;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsDisabledRoomTypeCategory()
+    {
+        return $this->isDisabledRoomTypeCategory;
+    }
+
+    /**
+     * @param boolean $isDisabledRoomTypeCategory
+     */
+    public function setIsDisabledRoomTypeCategory($isDisabledRoomTypeCategory)
+    {
+        $this->isDisabledRoomTypeCategory = $isDisabledRoomTypeCategory;
     }
 
     /**

@@ -147,7 +147,6 @@ class Builder extends ContainerAware
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
 
-
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
             ->setAttributes(['icon' => 'fa fa-file-archive-o']);*/
 
@@ -257,6 +256,12 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-building']);
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номерной фонд'])
                 ->setAttributes(['icon' => 'fa fa-bed']);
+
+        $config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        if ($config && $config->getIsDisabledRoomTypeCategory()) {
+            $menu['hotels']->addChild('room_type_category', ['route' => 'room_type_category', 'label' => 'Группы номеров'])
+                ->setAttributes(['icon' => 'fa fa-bookmark']);
+        }
 
         //Users links
         $menu->addChild('configs', ['route' => '_welcome', 'label' => 'Настройки'])

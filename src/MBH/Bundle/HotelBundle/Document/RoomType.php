@@ -195,6 +195,11 @@ class RoomType extends Base
      * @ODM\Collection()
      */
     protected $facilities = [];
+    /**
+     * @var RoomTypeCategory|null
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomTypeCategory")
+     */
+    protected $category;
 
     public function __construct()
     {
@@ -711,5 +716,21 @@ class RoomType extends Base
     public function getImage()
     {
         return $this->image;
+    }
+
+    /**
+     * @return RoomTypeCategory|null
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param RoomTypeCategory|null $category
+     */
+    public function setCategory(RoomTypeCategory $category = null)
+    {
+        $this->category = $category;
     }
 }
