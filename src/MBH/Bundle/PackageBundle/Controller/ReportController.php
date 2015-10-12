@@ -20,6 +20,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
@@ -616,6 +617,32 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
+    }
+
+    /**
+     * @return array
+     * @Route("/set_room_status", name="report_set_room_status", options={"expose"=true})
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     */
+    public function setRoomStatusAction(Request $request)
+    {
+        $roomID = $request->get('roomID');
+        $code = $request->get('value');
+        $roomRepository = $this->dm->getRepository('MBHHotelBundle:Room');
+        $roomStatusRepository = $this->dm->getRepository('MBHHotelBundle:RoomStatus');
+        $room = $roomRepository->find($roomID);
+        $roomStatus = $roomStatusRepository->findOneByCode($code);
+        if(!$room || !$roomStatus) {
+            throw $this->createNotFoundException();
+        }
+        $room->setStatus($roomStatus);
+        $this->dm->persist($room);
+        $this->dm->flush();
+
+        return new JsonResponse([
+            'success' => true
+        ]);
     }
 
     /**

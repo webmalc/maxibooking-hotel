@@ -150,9 +150,17 @@
                     {% endif %}
                 </td>
                 <td class="text-center">
-                    {% if room.status %}
-                        <i class="fa mbf-{{ roomStatusIcons[room.status.code] }}" data-toggle='tooltip' data-title='{{ room.status.title }}'></i>
-                    {% endif %}
+                    <select data-room="{{ room.id }}" class="plain-html select-status select2">
+                        <option data-icon="fa-lg mbf-keys">.</option>
+                        {% for status, icon in roomStatusIcons %}
+                            <option value="{{ status }}" {{ room.status and room.status.code == status ? 'selected="selected"' : '' }} data-icon="fa-lg mbf-{{ icon }}">
+                                {{ status }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {#% if room.status %}
+                        <i class="fa fa-lg mbf-{{ roomStatusIcons[room.status.code] }}" data-toggle='tooltip' data-title='{{ room.status.title }}'></i>
+                    {% endif %#}
                 </td>
                 <td>
                     {% set style = 'default' %}
