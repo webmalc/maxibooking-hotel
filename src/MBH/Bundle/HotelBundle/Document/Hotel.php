@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -192,6 +193,9 @@ class Hotel extends Base implements \JsonSerializable
 
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig", mappedBy="hotel") */
     protected $ostrovokConfig;
+
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig", mappedBy="hotel") */
+    protected $myallocatorConfig;
 
     /**
      * @Gedmo\Versioned
@@ -1141,4 +1145,24 @@ class Hotel extends Base implements \JsonSerializable
             'city' => $this->getCity() ? $this->getCity()->getTitle() : null,
         ];
     }
+
+    /**
+     * @return mixed
+     */
+    public function getMyallocatorConfig()
+    {
+        return $this->myallocatorConfig;
+    }
+
+    /**
+     * @param mixed $myallocatorConfig
+     * @return Hotel
+     */
+    public function setMyallocatorConfig(MyallocatorConfig $myallocatorConfig)
+    {
+        $this->myallocatorConfig = $myallocatorConfig;
+        return $this;
+    }
+
+
 }

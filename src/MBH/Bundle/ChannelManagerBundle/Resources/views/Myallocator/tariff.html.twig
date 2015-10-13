@@ -1,0 +1,37 @@
+{% extends 'MBHChannelManagerBundle:Myallocator:layout.html.twig' %}
+
+{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle')  %}
+{% set layout = 'tabs' %}
+
+{% block content %}
+
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 3, 'entity': config, 'base': 'channels', 'services': false} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+
+            {% if config is empty %}
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-circle"></i> Необходимо сначала заполнить основные настройки.
+                </div>
+            {% endif %}
+
+            {% if config.token is empty %}
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-circle"></i>
+                    Необходимо сначала привязать channelmanager`а к MaxiBooking в вкладке "Основные настройки".
+                </div>
+            {% endif %}
+
+            {{ form_start(form, {'action': path('channels_tariff'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHChannelManagerBundle::actions.html.twig'%}
+            {{ form_end(form) }}
+
+            {% if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

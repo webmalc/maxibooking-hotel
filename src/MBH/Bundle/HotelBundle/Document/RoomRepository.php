@@ -97,6 +97,13 @@ class RoomRepository extends AbstractBaseRepository
     public function fetchAccommodationRooms(\DateTime $begin, \DateTime $end, Hotel $hotel, $roomTypes = null, $rooms = null, $excludePackages = null, $grouped = false)
     {
         $dm = $this->getDocumentManager();
+        $filter = $this->dm->getFilterCollection()->isEnabled('softdeleteable');
+
+
+        if (!$filter) {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
+        }
+
         $roomTypes && !is_array($roomTypes) ? $roomTypes = [$roomTypes] : $roomTypes;
         $rooms && !is_array($rooms) ? $rooms = [$rooms] : $rooms;
         $excludePackages and !is_array($excludePackages) ? $excludePackages = [$excludePackages] : $excludePackages;
@@ -132,6 +139,10 @@ class RoomRepository extends AbstractBaseRepository
         }
         foreach ($roomDocs as $room) {
             $groupedRooms[$room->getRoomType()->getId()][] = $room;
+        }
+
+        if (!$filter && $this->dm->getFilterCollection()->enable('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
         }
 
         return $groupedRooms;

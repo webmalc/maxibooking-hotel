@@ -16,6 +16,7 @@ class RoomsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         foreach ($options['booking'] as $name => $label) {
+
             $builder->add($name, 'document', [
                 'label' => $label,
                 'class' => 'MBHHotelBundle:RoomType',

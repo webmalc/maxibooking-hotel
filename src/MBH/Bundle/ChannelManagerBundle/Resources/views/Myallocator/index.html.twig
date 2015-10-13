@@ -1,0 +1,43 @@
+{% extends 'MBHChannelManagerBundle:Myallocator:layout.html.twig' %}
+
+{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle')  %}
+{% set layout = 'tabs' %}
+
+{% block content %}
+
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': config, 'base': 'channels', 'services': false} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+
+            {% if config and config.token is not empty %}
+                <div class="bg-gray color-palette alert">
+                    <i class="fa fa-check-circle"></i> Сhannelmanager успешно привязан к MaxiBooking.
+                    <a href="{{ path('channels_user_unlink') }}" data-toggle="tooltip" title="Удалить пользователя" class="btn btn-xs btn-danger pull-right">
+                        <i class="fa fa-trash"></i>
+                    </a>
+                </div>
+
+                {% if config.hotelId is empty %}
+                    <div class="alert alert-warning">
+                        <i class="fa fa-exclamation-circle"></i> Выберите соотвествующий отель на форме ниже для ассоциации с MaxiBooking
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-circle"></i> Введите логи и пароль от кабинета для первичной привязки channelmanager`а к MaxiBooking
+                </div>
+            {% endif %}
+
+            {{ form_start(form, {'action': path('channels_save'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHChannelManagerBundle::actions.html.twig' %}
+            {{ form_end(form) }}
+
+            {% if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

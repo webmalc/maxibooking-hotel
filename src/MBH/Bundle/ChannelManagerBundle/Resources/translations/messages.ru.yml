@@ -49,6 +49,19 @@ form.ostrovokType.hotel_id: ID отеля
 form.ostrovokType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
 form.ostrovokType.ostrovok_ru_settings_hotel_id:  ID отеля в настройках Ostrovok.ru
 
+
+#myAllocator
+form.myallocatorType.username: Логин
+form.myallocatorType.username_desc: Логин для доступа в личный кабинет. Не будет сохранен.
+form.myallocatorType.password: Пароль
+form.myallocatorType.password_desc: Пароль для доступа в личный кабинет. Не будет сохранен.
+form.myallocatorType.isEnabled: Включен?
+form.myallocatorType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.myallocatorType.hotels: Отели
+controller.myallocatorController.settings_saved_success: Настройки успешно сохранены
+controller.myallocatorController.invalid_credentials: Неверные логин/пароль для от личного кабинета
+
+
 form.roomTypeTasks.checkIn: При заселении
 form.roomTypeTasks.checkOut: При выезде
 form.roomTypeTasks.daily: Каждые n дней проживания

@@ -1,0 +1,12 @@
+{% extends 'MBHChannelManagerBundle:Myallocator:layout.html.twig' %}
+
+{% set small_title = 'views.channnelmanager.settings'|trans({}, 'MBHChannelManagerBundle')  %}
+{% set layout = 'tabs' %}
+
+{% block content %}
+    {% if result %}
+        <div class="alert alert-success">VendorSet: Success</div>
+    {% else %}
+        <div class="alert alert-danger">VendorSet: Fail</div>
+    {% endif %}
+{% endblock %}
