@@ -202,7 +202,7 @@ ROLE_DISCOUNT_ADD: Добавление скидки
 
 ROLE_ROOM_TYPE_CATEGORY: Управление категориями типов номеров
 
-ROLE_ROOM_TYPE_CATEGORY_VIEW: Просмотр категориии типов номеров
-ROLE_ROOM_TYPE_CATEGORY_NEW: Добавление категории типов номеров
-ROLE_ROOM_TYPE_CATEGORY_EDIT: Редактирование категории типов номеров
-ROLE_ROOM_TYPE_CATEGORY_DELETE: Удаление категории типов номеров
+ROLE_ROOM_TYPE_CATEGORY_VIEW: Просмотр групп типов номеров
+ROLE_ROOM_TYPE_CATEGORY_NEW: Добавление групп типов номеров
+ROLE_ROOM_TYPE_CATEGORY_EDIT: Редактирование групп типов номеров
+ROLE_ROOM_TYPE_CATEGORY_DELETE: Удаление групп типов номеров

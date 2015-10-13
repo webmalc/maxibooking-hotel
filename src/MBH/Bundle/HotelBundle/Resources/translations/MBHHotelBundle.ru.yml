@@ -139,7 +139,7 @@ views.task.layout.tasks: "Задачи"
 views:
     roomTypeCaterory:
         layout:
-            index: "Категории типов номеров"
+            index: Группы номеров
 
 # Housing
 views.corpus.name: Имя
