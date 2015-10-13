@@ -6,6 +6,8 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskType;
 use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
@@ -67,6 +69,13 @@ class CheckDeleteRelationSubscriber implements EventSubscriber
                     'document' => TaskType::class,
                     'field' => 'category',
                     'message' => 'exception.relation_delete.message.taskType',
+                ]
+            ],
+            RoomTypeCategory::class => [
+                [
+                    'document' => RoomType::class,
+                    'field' => 'category',
+                    'message' => 'exception.relation_delete.message.roomTypeCategory'
                 ]
             ]
         ];

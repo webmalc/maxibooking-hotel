@@ -6,9 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
-use MBH\Bundle\BaseBundle\Service\Helper;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -57,6 +55,17 @@ class RoomTypeCategory extends Base
     protected $title;
 
     /**
+     * @var RoomType[]|ArrayCollection
+     * @ODM\ReferenceMany(targetDocument="\MBH\Bundle\HotelBundle\Document\RoomType", mappedBy="category")
+     */
+    protected $types;
+
+    public function __construct()
+    {
+        $this->types = new ArrayCollection();
+    }
+
+    /**
      * Get fullTitle
      *
      * @return string $fullTitle
@@ -99,5 +108,21 @@ class RoomTypeCategory extends Base
     {
         $this->title = $title;
         return $this;
+    }
+
+    /**
+     * @return ArrayCollection|RoomType[]
+     */
+    public function getTypes()
+    {
+        return $this->types;
+    }
+
+    /**
+     * @param ArrayCollection|RoomType[] $types
+     */
+    public function setTypes($types)
+    {
+        $this->types = $types;
     }
 }

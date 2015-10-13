@@ -67,7 +67,7 @@ class RoomTypeCategoryController extends BaseController
      * @Route("/edit/{id}", name="room_type_category_edit")
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ROOM_TYPE_CATEGORY_EDIT')")
-     * @ParamConverter(class="MBH\Bundle\HotelBundle\DocumentС\RoomTypeCategory")
+     * @ParamConverter(class="MBH\Bundle\HotelBundle\Document\RoomTypeCategory")
      * @Template()
      */
     public function editAction(Request $request, RoomTypeCategory $category)

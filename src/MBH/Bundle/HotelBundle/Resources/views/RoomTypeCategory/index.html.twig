@@ -8,6 +8,7 @@
             <tr>
                 <th>Название</th>
                 <th>Включена</th>
+                <th>Кол. типов</th>
                 <th></th>
             </tr>
         </thead>
@@ -22,15 +23,20 @@
                             <span class="label label-success">Да</span>
                         {% endif %}
                     </td>
+                    <td>
+                        {{ category.types|length }}
+                    </td>
                     <td class="table-actions-td text-center">
                         <a href="{{ path('room_type_category_edit', { 'id': category.id }) }}" class="btn btn-success btn-xs"
                            title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
                             <i class="fa fa-pencil-square-o"></i>
                         </a>
-                        <a href="{{ path('room_type_category_delete', { 'id': category.id }) }}" class="btn btn-danger btn-xs delete-link "
-                           title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
-                            <i class="fa fa-trash-o"></i>
-                        </a>
+                        {% if category.types|length == 0 %}
+                            <a href="{{ path('room_type_category_delete', { 'id': category.id }) }}" class="btn btn-danger btn-xs delete-link "
+                               title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
+                                <i class="fa fa-trash-o"></i>
+                            </a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
