@@ -12,6 +12,7 @@ form.userType.groups: Группы
 form.userType.hotels: Отели
 form.userType.hotels_user_has_access_to: Отели к которым имеет доступ пользователь.
 form.userType.is_included: Включен?
+form.userType.expires_at: Действует до
 form.userType.surname: Фамилия
 form.userType.general_info: Общая информация
 form.userType.placeholder_surname: Иванов
