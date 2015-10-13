@@ -76,6 +76,14 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     }
 
     /**
+     * @return bool
+     */
+    public function isDevEnvironment()
+    {
+        return $this->container->get('kernel')->getEnvironment() == 'prod' ? false : true;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function closeAll()

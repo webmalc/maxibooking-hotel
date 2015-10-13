@@ -6,12 +6,16 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 
 interface ChannelManagerConfigInterface
 {
-    public function getIsEnabled ();
+    public function getIsEnabled();
 
     public function getHotel();
 
     public function setHotel(Hotel $hotel);
-    
+
+    public function getHotelId();
+
+    public function setHotelId($hotelId);
+
     /**
      * @return string
      */

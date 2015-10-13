@@ -13,3 +13,4 @@ validator.document.vashotelConfig.no_hotel_id_specified: Не указан Id о
 roomtype.validation: 'Выбрано более одного типа номера'
 tarifftype.validation: 'Выбрано более одного типа тарифа'
 validator.default_currency: Курс по умолчанию обязателен к заполнению
+document.myallocatorConfig.no_hotel_selected: Не выбран отель

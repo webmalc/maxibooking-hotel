@@ -316,4 +316,25 @@ class OktogoConfig extends Base implements BaseInterface
 
         return $this;
     }
+
+    /**
+     * Set hotelId
+     *
+     * @param string $hotelId
+     * @return self
+     */
+    public function setHotelId($hotelId)
+    {
+        return $this;
+    }
+
+    /**
+     * Get hotelId
+     *
+     * @return string $hotelId
+     */
+    public function getHotelId()
+    {
+        return null;
+    }
 }

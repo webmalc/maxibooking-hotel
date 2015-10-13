@@ -290,7 +290,7 @@ class Order
         //accommodation
         if ($query->accommodations) {
             $room = $this->dm->getRepository('MBHHotelBundle:Room')->find($data['accommodation']);
-            if (!$room || !in_array($room->getId(), $this->helper->toIds($results[0]->getRooms()))) {
+            if (!$room) {
                 throw new Exception('Create package error: accommodation not found.');
             }
             $package->setAccommodation($room);

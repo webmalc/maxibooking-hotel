@@ -15,6 +15,10 @@ services:
                 class: MBH\Bundle\ChannelManagerBundle\Services\Booking
                 arguments: [@service_container]
 
+    mbh.channelmanager.myallocator:
+                    class: MBH\Bundle\ChannelManagerBundle\Services\MyAllocator
+                    arguments: [@service_container]
+
     mbh.channelmanager.ostrovok:
                 class: MBH\Bundle\ChannelManagerBundle\Services\Ostrovok
                 arguments: [@service_container]
@@ -22,6 +26,10 @@ services:
     mbh.channelmanager.booking_type:
                     class: MBH\Bundle\ChannelManagerBundle\Form\BookingType
                     arguments: [@mbh.currency]
+
+    mbh.channelmanager.myallocator_type:
+                        class: MBH\Bundle\ChannelManagerBundle\Form\MyallocatorType
+                        arguments: [@mbh.channelmanager.myallocator]
 
     mbh.channelmanager.logger:
         class:     Symfony\Bridge\Monolog\Logger
