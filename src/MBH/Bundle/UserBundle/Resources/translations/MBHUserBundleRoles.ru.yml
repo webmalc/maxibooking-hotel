@@ -69,6 +69,7 @@ ROLE_HOUSING_DELETE: Удаление корпусов
 ROLE_ROOM: Номера
 ROLE_ROOM_VIEW: Просмотр номеров отеля
 ROLE_ROOM_NEW: Создание номеров отеля
+ROLE_ROOM_STATUS_EDIT: Изменение статуса номера отеля
 ROLE_ROOM_EDIT: Редактирование номеров отеля
 ROLE_ROOM_DELETE: Удаление номеров отеля
 

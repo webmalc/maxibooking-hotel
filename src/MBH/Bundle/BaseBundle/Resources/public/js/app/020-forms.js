@@ -391,6 +391,10 @@ var select2TemplateResult = {
             state.text;
 
         return $('<div>' + html + '</div>');
+    },
+    icon: function(state) {
+        var iconHtml = select2TemplateResult._iconHtml(state);
+        return $('<div>' + iconHtml + '</div>');
     }
 };
 

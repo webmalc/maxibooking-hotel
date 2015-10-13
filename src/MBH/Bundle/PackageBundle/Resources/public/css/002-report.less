@@ -422,8 +422,35 @@
 
 }
 
-.room-types-table .wait-accommodation {
-  opacity: 0.35;
+.room-types-table {
+  .wait-accommodation {
+    background-color: #f4fafd;
+    td:nth-child(5),:nth-child(6),:nth-child(7) {
+      opacity: 0.35;
+    }
+    td:last-child .btn-info {
+      opacity: 0.35;
+    }
+  }
+  .select-status {
+    width: 40px;
+  }
+  .select2 {
+    .select2-selection__arrow {
+      display: none;
+    }
+    .select2-selection {
+      padding: 3px 0;
+      background-color: transparent;
+      border: none;
+    }
+    .select2-selection__rendered{
+      padding-right: 0;
+    }
+    .select2-selection {
+      height: 25px;
+    }
+  }
 }
 
 
