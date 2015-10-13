@@ -98,7 +98,19 @@ class RoomTypeType extends AbstractType
                 'value' => true,
                 'required' => false,
                 'help' => 'form.roomTypeType.is_room_included_in_search'
-            ]);
+            ])
+        ;
+        if ($options['disabledRoomTypeCategory']) {
+            $builder
+                ->add('category', 'document', [
+                    'label' => 'form.roomTypeType.category',
+                    'group' => 'form.roomTypeType.settings',
+                    'required' => true,
+                    'empty_data' => true,
+                    'class' => 'MBH\Bundle\HotelBundle\Document\RoomTypeCategory'
+                ])
+            ;
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -108,6 +120,7 @@ class RoomTypeType extends AbstractType
             'imageUrl' => null,
             'deleteImageUrl' => null,
             'facilities' => [],
+            'disabledRoomTypeCategory' => false,
         ]);
     }
 

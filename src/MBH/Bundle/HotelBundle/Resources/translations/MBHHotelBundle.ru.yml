@@ -136,6 +136,11 @@ views.roomType.help.empty_facilities: 'Используются удобства
 views.hotel.index.confirm_delete: 'Вы действительно хотите удалить отель "%hotelname%"?'
 views.task.layout.tasks: "Задачи"
 
+views:
+    roomTypeCaterory:
+        layout:
+            index: "Категории типов номеров"
+
 # Housing
 views.corpus.name: Имя
 views.corpus.internal_name: Внутреннее имя

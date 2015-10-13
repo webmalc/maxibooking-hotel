@@ -199,3 +199,10 @@ ROLE_PROMOTION_EDIT: Редактирование акций
 ROLE_PROMOTION_DELETE: Удаление акции
 
 ROLE_DISCOUNT_ADD: Добавление скидки
+
+ROLE_ROOM_TYPE_CATEGORY: Управление категориями типов номеров
+
+ROLE_ROOM_TYPE_CATEGORY_VIEW: Просмотр категориии типов номеров
+ROLE_ROOM_TYPE_CATEGORY_NEW: Добавление категории типов номеров
+ROLE_ROOM_TYPE_CATEGORY_EDIT: Редактирование категории типов номеров
+ROLE_ROOM_TYPE_CATEGORY_DELETE: Удаление категории типов номеров

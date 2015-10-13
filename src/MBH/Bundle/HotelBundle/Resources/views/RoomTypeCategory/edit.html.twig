@@ -1,0 +1,14 @@
+{% extends 'MBHHotelBundle:RoomTypeCategory:layout.html.twig' %}
+
+{% set layout = "tabs" %}
+
+{% block content %}
+    <div class="tab-content">
+        <div class="tab-pane active" id="general_info">
+            {{ form_start(form, {'action': path('room_type_category_edit', {id: category.id}), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:update.html.twig' %}
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

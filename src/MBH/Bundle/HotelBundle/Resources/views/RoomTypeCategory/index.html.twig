@@ -1,0 +1,42 @@
+{% extends "MBHHotelBundle:RoomTypeCategory:layout.html.twig" %}
+{% set layout = "box" %}
+
+{% block content %}
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Включена</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+                <tr>
+                    <td>
+                        <a href="{{ path('room_type_category_edit', { 'id': category.id }) }}" rel="main">{{ category.title }}</a>
+                    </td>
+                    <td>
+                        {% if category.isEnabled %}
+                            <span class="label label-success">Да</span>
+                        {% endif %}
+                    </td>
+                    <td class="table-actions-td text-center">
+                        <a href="{{ path('room_type_category_edit', { 'id': category.id }) }}" class="btn btn-success btn-xs"
+                           title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
+                            <i class="fa fa-pencil-square-o"></i>
+                        </a>
+                        <a href="{{ path('room_type_category_delete', { 'id': category.id }) }}" class="btn btn-danger btn-xs delete-link "
+                           title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
+                            <i class="fa fa-trash-o"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'room_type_category_new', 'role': 'HOTEL'} %}
+
+{% endblock content %}

@@ -153,7 +153,15 @@ class User extends BaseUser implements RecipientInterface
     {
         parent::__construct();
     }
-    
+
+    /**
+     * @return \DateTime
+     */
+    public function getExpiresAt()
+    {
+        return $this->expiresAt;
+    }
+
     /**
      * Get firstName
      *

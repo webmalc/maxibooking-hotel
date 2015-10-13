@@ -1,4 +1,5 @@
 form.clientConfigType.sms_notification: Смс оповещение?
+form.clientConfigType.is_disabled_room_type_category: Категории для типов номеров
 form.clientConfigType.is_sms_notification_turned_on: Включено ли смс оповещение клиентов?
 form.clientPaymentSystemType.payment_system: Платежная система
 form.clientPaymentSystemType.robokassa_service: Сервис ROBOKASSA

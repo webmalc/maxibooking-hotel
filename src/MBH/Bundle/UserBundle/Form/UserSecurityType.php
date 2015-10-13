@@ -17,6 +17,15 @@ class UserSecurityType extends AbstractType
                 'value' => true,
                 'required' => false,
             ])
+            ->add('expiresAt', 'date', [
+                'label' => 'form.userType.expires_at',
+                'group' => 'form.userType.settings',
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'required' => false,
+                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year'],
+                'help' => 'Если не указано - срок действия пользователя неограничен'
+            ])
             ->add('groups', 'document', [
                 'class' => 'MBHUserBundle:Group',
                 'group' => 'form.groupType.group.roles',
