@@ -105,8 +105,8 @@ class RoomTypeType extends AbstractType
                 ->add('category', 'document', [
                     'label' => 'form.roomTypeType.category',
                     'group' => 'form.roomTypeType.settings',
-                    'required' => true,
-                    'empty_data' => true,
+                    'required' => false,
+                    'empty_data' => null,
                     'class' => 'MBH\Bundle\HotelBundle\Document\RoomTypeCategory'
                 ])
             ;

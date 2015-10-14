@@ -57,10 +57,10 @@ services:
         tags:
             - { name: form.type_extension, alias: form }
 
-    form.type.date:
-            class: MBH\Bundle\BaseBundle\Form\Extension\DateType
-            tags:
-                - { name: form.type, alias: date }
+    #form.type.date:
+    #        class: MBH\Bundle\BaseBundle\Form\Extension\DateType
+    #        tags:
+    #            - { name: form.type, alias: date }
             
     mbh.form.bottom_extension:
         class: MBH\Bundle\BaseBundle\Form\Extension\BottomMessageTypeExtension
