@@ -65,16 +65,7 @@ class SearchType extends AbstractType
                 'multiple' => true,
                 'error_bubbling' => true,
                 'choices' => $roomTypes
-                //'data' => $data,
             ])
-            /*->add('roomType', 'document', [
-                'label' => 'form.searchType.room_type',
-                'required' => false,
-                'multiple' => true,
-                'error_bubbling' => true,
-                'class' => RoomType::class,
-                'group_by' => 'hotel',
-            ])*/
             ->add('tariff', 'document', [
                 'label' => 'form.searchType.tariff',
                 'required' => false,
@@ -108,7 +99,7 @@ class SearchType extends AbstractType
                 'required' => true,
                 'error_bubbling' => true,
                 'data' => 0,
-                'attr' => ['class' => 'input-xxs only-int'],
+                'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 10],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'form.searchType.adults_amount_less_zero']),
                     new NotBlank(['message' => 'form.searchType.adults_amount_not_filled'])
@@ -119,7 +110,7 @@ class SearchType extends AbstractType
                 'required' => true,
                 'error_bubbling' => true,
                 'data' => 0,
-                'attr' => ['class' => 'input-xxs only-int'],
+                'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 6],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'form.searchType.children_amount_less_zero']),
                     new NotBlank(['message' => 'form.searchType.children_amount_not_filled'])
@@ -135,10 +126,11 @@ class SearchType extends AbstractType
     {
         $resolver->setDefaults([
             'csrf_protection' => false,
+            'allow_extra_fields' => true,
             'dm' => null,
             'security' => null,
             'hotel' => null,
-            'orderId' => null
+            'orderId' => null,
         ]);
     }
 

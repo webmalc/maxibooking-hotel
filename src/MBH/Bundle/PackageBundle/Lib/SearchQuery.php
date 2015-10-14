@@ -37,6 +37,11 @@ class SearchQuery
     public $children;
 
     /**
+     * @var array
+     */
+    public $childrenAges = [];
+
+    /**
      * @var boolean
      */
     public $isOnline = false;
@@ -110,6 +115,18 @@ class SearchQuery
     {
         if (!in_array($id, $this->roomTypes) && !empty($id)) {
             $this->roomTypes[] = $id;
+        }
+    }
+
+    /**
+     * @param array $ages
+     */
+    public function setChildrenAges(array $ages)
+    {
+        foreach ($ages as $age) {
+            if (is_numeric($age)) {
+                $this->childrenAges[] = (int) $age;
+            }
         }
     }
 
