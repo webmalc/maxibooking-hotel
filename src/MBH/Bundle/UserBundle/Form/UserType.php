@@ -64,7 +64,8 @@ class UserType extends AbstractType
                 'constraints' => new Length(array('min' => 6))
             ]);
         }
-        $builder->add('hotels', 'document', [
+        $builder
+            ->add('hotels', 'document', [
                 'group' => 'form.userType.settings',
                 'label' => 'form.userType.hotels',
                 'multiple' => true,
@@ -74,7 +75,14 @@ class UserType extends AbstractType
                 'property' => 'name',
                 'help' => 'form.userType.hotels_user_has_access_to',
                 'attr' => array('class' => "chzn-select")
-        ]);
+            ])
+            ->add('isEnabledWorkShift', 'checkbox', [
+                'label' => 'form.clientConfigType.is_enabled_work_shift',
+                'group' => 'form.userType.settings',
+                //'value' => false,
+                'required' => false,
+            ])
+        ;
 
         $builder
             ->add('notifications', 'checkbox', [
@@ -126,7 +134,8 @@ class UserType extends AbstractType
                 'format' => 'dd.MM.yyyy',
                 'required' => false,
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year'),
-            ));
+            ))
+        ;
     }
 
     /**

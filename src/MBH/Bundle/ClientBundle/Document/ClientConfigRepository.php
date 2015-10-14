@@ -4,7 +4,9 @@ namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
-
+/**
+ * Class ClientConfigRepository
+ */
 class ClientConfigRepository extends DocumentRepository
 {
     /**

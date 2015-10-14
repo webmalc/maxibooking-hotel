@@ -132,6 +132,15 @@ class User extends BaseUser implements RecipientInterface
     protected $groups;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isEnabledWorkShift = false;
+
+    /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
      */
@@ -419,5 +428,21 @@ class User extends BaseUser implements RecipientInterface
     public function getCommunicationLanguage()
     {
         return null;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsEnabledWorkShift()
+    {
+        return $this->isEnabledWorkShift;
+    }
+
+    /**
+     * @param boolean $isEnabledWorkShift
+     */
+    public function setIsEnabledWorkShift($isEnabledWorkShift)
+    {
+        $this->isEnabledWorkShift = $isEnabledWorkShift;
     }
 }

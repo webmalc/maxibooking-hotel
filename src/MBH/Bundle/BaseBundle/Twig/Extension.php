@@ -143,21 +143,42 @@ class Extension extends \Twig_Extension
         return $interval->format($format);
     }
 
+    public function initial($user)
+    {
+        return $user->getLastName() . ' ' .
+        ($user->getFirstName() ? mb_substr($user->getFirstName(), 0, 1) . '.' : '') .
+        ($user->getPatronymic() ? mb_substr($user->getPatronymic(), 0, 1) . '.' : '');
+    }
+
     /**
      * @return array
      */
     public function getFunctions()
     {
         return [
-            'currency' => new \Twig_Function_Method($this, 'currency', array('is_safe' => array('html'))),
-            'user_cash' => new \Twig_Function_Method($this, 'cashDocuments', array('is_safe' => array('html')))
+            'currency' => new \Twig_Function_Method($this, 'currency', ['is_safe' => ['html']]),
+            'user_cash' => new \Twig_Function_Method($this, 'cashDocuments', ['is_safe' => ['html']]),
+            //'clientConfig' => new \Twig_Function_Method($this, 'fetchConfig'),
+            'currentWorkShift' => new \Twig_Function_Method($this, 'currentWorkShift')
         ];
     }
 
-    public function initial($user)
+    /**
+     * @return \MBH\Bundle\ClientBundle\Document\ClientConfig
+     */
+    /*public function fetchConfig()
     {
-        return $user->getLastName() . ' ' .
-        ($user->getFirstName() ? mb_substr($user->getFirstName(), 0, 1) . '.' : '') .
-        ($user->getPatronymic() ? mb_substr($user->getPatronymic(), 0, 1) . '.' : '');
+        $clientConfigRepository = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig');
+        return $clientConfigRepository->fetchConfig();
+    }*/
+
+    /**
+     * @return \MBH\Bundle\UserBundle\Document\WorkShift|null
+     */
+    public function currentWorkShift()
+    {
+        $repository = $this->container->get('doctrine_mongodb')->getRepository('MBHUserBundle:WorkShift');
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        return $repository->findCurrent($user);
     }
 }

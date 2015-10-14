@@ -142,11 +142,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
-
-        /** @var ClientConfig $config */
-        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
         $form = $this->createForm(new RoomTypeType(), $entity, [
-            'disabledRoomTypeCategory' => $config ? $config->getIsDisabledRoomTypeCategory() : false
+            'disabledRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getIsDisabledRoomTypeCategory()
         ]);
 
         return array(

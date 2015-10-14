@@ -43,6 +43,21 @@
             {% endif %}
 
 
+            {% if app.user and app.user.isEnabledWorkShift %}
+                <li class="dropdown notifications-menu" id="work-shift-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                        <i class="fa fa-clock-o"></i>&nbsp;Смена <span class="label label-info">{{ currentWorkShift().getPastHours }} ч.</span>
+                        &nbsp;<i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="footer">
+                            <a href="{{ path('work_shift_close') }}">Закрыть смену</a>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+
             <!-- Menu selected hotel: begin -->
             {% if selected_hotel() and is_granted('ROLE_HOTEL_VIEW') %}
 
@@ -107,7 +122,7 @@
                         </div>
                         {% endif %}
                         <div class="pull-right">
-                            <a href="{{ path('fos_user_security_logout') }}" class="btn btn-default btn-flat">
+                            <a id="logout-btn" href="{{ path('fos_user_security_logout') }}" class="btn btn-default btn-flat">
                                 <i class=""></i>&nbsp;Выйти
                             </a>
                         </div>
