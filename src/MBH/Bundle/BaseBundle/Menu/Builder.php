@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerAware;
 use Knp\Menu\ItemInterface;
 use JMS\SecurityExtraBundle\Metadata\Driver\AnnotationDriver;
@@ -146,8 +147,13 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
-        $menu['reports']->addChild('report_work_shift', ['route' => 'report_work_shift', 'label' => 'Рабочие смены'])
-            ->setAttributes(['icon' => 'fa fa-clock-o']);
+        $token = $this->container->get('security.token_storage')->getToken();
+        //$this->container->get('security.authorization_checker')->isGranted('ROLE_BASE_USER') && //AuthenticatedVoter::IS_AUTHENTICATED_FULLY
+        if ($token && $token->getUser() instanceof User && $token->getUser()->getIsEnabledWorkShift()) {
+            $menu['reports']->addChild('report_work_shift',
+                ['route' => 'report_work_shift', 'label' => 'Рабочие смены'])
+                ->setAttributes(['icon' => 'fa fa-clock-o']);
+        }
 
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
             ->setAttributes(['icon' => 'fa fa-file-archive-o']);*/
