@@ -98,4 +98,12 @@ class WorkShift extends Base
     {
         return $this->begin->diff(new \DateTime())->h;
     }
+
+    /**
+     * @return int
+     */
+    public function getHours()
+    {
+        return $this->begin->diff($this->end)->h;
+    }
 }

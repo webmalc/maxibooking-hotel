@@ -197,6 +197,7 @@ package.index.placement: Размещение
 package.index.guests: Гости
 package.index.price: Стоимость
 package.index.created: Создана
+package.index.isUpdated: Обновлён
 package.index.selection: 'Подбор'
 package.index.porter_link: 'Отчет портье'
 package.json.reservation_type: Тип брони:
@@ -409,3 +410,5 @@ report.porter.out.table: Выезд
 
 report.porter.note: Комментарий
 
+
+report.work_shift.small_title: 'Рабочие смены'

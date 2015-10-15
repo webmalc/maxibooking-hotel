@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -16,6 +17,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\UserBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -748,5 +750,162 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $result = $generator->setHotel($this->hotel)->generate($begin, $end, $roomTypes);
 
         return $result + ['roomTypes' => $roomTypes];
+    }
+
+    /**
+     * @Route("/work_shift", name="report_work_shift", options={"expose"=true})
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     * @Template()
+     */
+    public function workShiftAction()
+    {
+        $filterForm = $this->getWorkShiftForm();
+        $filterForm->setData(['date' => new \DateTime('yesterday')]);
+
+        return [
+            'form' => $filterForm->createView()
+        ];
+    }
+
+    private function getWorkShiftForm()
+    {
+        return $this->createFormBuilder(null, [
+            'method' => Request::METHOD_GET
+        ])
+            ->add('user', 'document', [
+                'class' => 'MBH\Bundle\UserBundle\Document\User',
+                'query_builder' => function(DocumentRepository $repository) {
+                    $repository->createQueryBuilder()->field('isEnabledWorkShift')->equals(true);
+                }
+            ])
+            ->add('date', 'date', [
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'attr' => ['data-date-format' => 'dd.mm.yyyy'],
+            ])
+            ->getForm()
+        ;
+    }
+
+    /**
+     * @Route("/work_shift_table", name="report_work_shift_table", options={"expose"=true})
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     */
+    public function workShiftTableAction(Request $request)
+    {
+        $id = $request->get('id');
+        $workShiftRepository = $this->dm->getRepository('MBHUserBundle:WorkShift');
+        $workShifts = [];
+        $user = null;
+        if ($id) {
+            $workShift = $workShiftRepository->find($id);
+            if ($workShift) {
+                $workShifts = [$workShift];
+                $user = $workShift->getCreatedBy();
+            } else {
+                throw $this->createNotFoundException();
+            }
+        } else {
+            $filterForm = $this->getWorkShiftForm();
+            $filterForm->handleRequest($request);
+            if (!$filterForm->isValid()) {
+                throw $this->createNotFoundException();
+            };
+
+            $requestDate = $filterForm->getData();
+            /** @var \DateTime $date */
+            $date = $requestDate['date'];
+            $begin = $date->modify('midnight');
+            $end = clone($begin);
+            $end->modify('+1 day');
+            $range = [
+                '$gte' => $begin,
+                '$lte' => $end
+            ];
+            $criteria = [
+                '$or' => [
+                    ['createdAt' => $range],
+                    ['updatedAt' => $range],
+                ],
+                'isOpen' => false
+            ];
+            if($requestDate['user']) {
+                $user = $requestDate['user']->getUsername();
+                $criteria['createdBy'] = $user;
+            }
+            $workShifts = $workShiftRepository->findBy($criteria);
+        }
+        $cashDocuments = [];
+        $packages = [];
+        $arrivalPackages = [];
+        $departurePackages = [];
+
+        if($workShifts) {
+            $range = [
+                '$gte' => $workShifts[0]->getBegin(),
+                '$lte' => $workShifts[0]->getEnd(),
+            ];
+
+            $criteria = [
+                '$or' => [
+                    ['createdAt' => $range],
+                    ['updatedAt' => $range],
+                ],
+                'createdBy' => $user
+            ];
+
+            $cashDocuments = $this->dm->getRepository('MBHCashBundle:CashDocument')->findBy($criteria);
+            $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+            $packages = $packageRepository->findBy($criteria);
+
+            $criteria = ['arrivalTime' => $range];
+            $arrivalPackages = $packageRepository->findBy($criteria);
+            $criteria = ['departureTime' => $range];
+            $departurePackages = $packageRepository->findBy($criteria);
+        }
+
+        $updateCashIDs = [];
+        foreach($cashDocuments as $cashDocument) {
+            foreach($workShifts as $workShift) {
+                if($cashDocument->getUpdatedAt() && $cashDocument->getUpdatedAt() > $workShift->getBegin() && $cashDocument->getUpdatedAt() < $workShift->getEnd()) {
+                    $updateCashIDs[] = $cashDocument->getId();
+                }
+            }
+        }
+
+        $updatePackageIDs = [];
+        foreach($packages as $package) {
+            foreach($workShifts as $workShift) {
+                if($package->getUpdatedAt() && $package->getUpdatedAt() > $workShift->getBegin() && $package->getUpdatedAt() < $workShift->getEnd()) {
+                    $updatePackageIDs[] = $package->getId();
+                }
+            }
+        }
+
+        $jsonResponse = [
+            'result' => $this->renderView('MBHPackageBundle:Report:workShiftTable.html.twig', [
+                'workShifts' => $workShifts,
+                'cashDocuments' => $cashDocuments,
+                'packages' => $packages,
+                'updateCashIDs' => $updateCashIDs,
+                'updatePackageIDs' => $updatePackageIDs,
+                'arrivalPackages' => $arrivalPackages,
+                'departurePackages' => $departurePackages,
+                'statuses' => $this->container->getParameter('mbh.package.statuses'),
+                'methods' => $this->container->getParameter('mbh.cash.methods'),
+                'operations' => $this->container->getParameter('mbh.cash.operations')
+            ]),
+            'actions' => null,
+        ];
+
+        if(count($workShifts) > 1) {
+            $jsonResponse['actions'] = $this->renderView('MBHPackageBundle:Report:workShiftTableActions.html.twig', [
+                'workShifts' => $workShifts,
+            ]);
+        }
+
+        return new JsonResponse($jsonResponse);
     }
 }

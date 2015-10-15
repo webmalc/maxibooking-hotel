@@ -7,11 +7,8 @@ use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
-use MBH\Bundle\CashBundle\Service\OneCExporter;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\CashBundle\Document\CashDocumentRepository;
-use MBH\Bundle\PackageBundle\Document\Organization;
-use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -22,6 +19,10 @@ use MBH\Bundle\CashBundle\Form\CashDocumentType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class CashController
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
 class CashController extends Controller
 {
 

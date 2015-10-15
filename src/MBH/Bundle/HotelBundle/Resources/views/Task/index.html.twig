@@ -8,7 +8,7 @@
     {% if app.security.granted('ROLE_TASK_MANAGER') %}
 
         {% include 'MBHBaseBundle:Partials:filter.html.twig' with {id: 'task-table-filter-widget'} %}
-            <form id="task-table-filter" class="form-inline form-icon-label">
+            <form id="task-table-filter" class="form-inline icon-label-form">
                 <div class="form-group">
                     <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
                     <input type="text" id="task-filter-begin" class="datepicker begin-datepiker form-control input-sm"

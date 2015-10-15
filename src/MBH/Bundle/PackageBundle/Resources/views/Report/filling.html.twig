@@ -8,7 +8,7 @@
 
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {id: 'room-type-table-filter-widget'} %}
         {% block content %}
-        <form id="filling-table-filter" class="form-inline form-icon-label">
+        <form id="filling-table-filter" class="form-inline icon-label-form">
             <div class="form-group">
                 <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
                 <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y') }}">
