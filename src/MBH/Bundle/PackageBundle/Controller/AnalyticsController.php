@@ -30,14 +30,11 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
      */
     public function indexAction()
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
-        $roomTypes = $dm->getRepository('MBHHotelBundle:RoomType')
-                        ->createQueryBuilder('q')
-                        ->sort('hotel.id', 'asc')
-                        ->getQuery()
-                        ->execute()
+        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+            ->createQueryBuilder('q')
+            ->sort('hotel.id', 'asc')
+            ->getQuery()
+            ->execute()
         ;
 
         return [
@@ -447,14 +444,11 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     {
         $request = $this->getRequest();
 
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         $roomTypesIds = [];
         if(!empty($request->get('roomType')) && is_array($request->get('roomType'))) {
             foreach ($request->get('roomType') as $id) {
                 if (mb_stripos($id, 'allrooms_') !== false) {
-                    $hotel = $dm->getRepository('MBHHotelBundle:Hotel')->find(str_replace('allrooms_', '', $id));
+                    $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find(str_replace('allrooms_', '', $id));
 
                     if (!$hotel) {
                         continue;
@@ -472,9 +466,9 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         if ($array) {
             return $roomTypesIds;
         }
-        $qb = $dm->getRepository('MBHHotelBundle:RoomType')
-                 ->createQueryBuilder('q')
-                 ->sort(['hotel.id' => 'asc', 'fullName' => 'desc'])
+        $qb = $this->dm->getRepository('MBHHotelBundle:RoomType')
+             ->createQueryBuilder('q')
+             ->sort(['hotel.id' => 'asc', 'fullName' => 'desc'])
         ;
 
         if (count($roomTypesIds)) {
@@ -603,8 +597,6 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
      */
     private function getPackages()
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $roomTypesIds = $this->getRoomTypes(true);
 
         $period = iterator_to_array($this->getInterval());
@@ -612,7 +604,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         $end = end($period);
         $end->modify('+1 day');
 
-        $qb = $dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('q');
+        $qb = $this->dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('q');
         if (count($roomTypesIds)) {
             $qb->field('roomType.id')->in($roomTypesIds);
         }

@@ -89,9 +89,10 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                 $query->room = $data['room'];
                 $query->accommodations = true;
 
+                $hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
                 foreach ($data['roomType'] as $id) {
                     if (mb_stripos($id, 'allrooms_') !== false) {
-                        $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find(str_replace('allrooms_', '', $id));
+                        $hotel = $hotelRepository->find(str_replace('allrooms_', '', $id));
 
                         if (!$hotel) {
                             continue;

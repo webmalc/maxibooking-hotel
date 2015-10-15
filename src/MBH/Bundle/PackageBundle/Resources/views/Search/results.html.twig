@@ -8,6 +8,7 @@
             <th class="td-xxs"></th>
             <th class="td-md">{{ "search.results.dates"|trans({}, "MBHPackageBundle") }}</th>
             <th>{{ "search.results.tariff"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-xxs">{{ "search.results.quantity"|trans({}, "MBHPackageBundle") }}</th>
             {% if is_granted('ROLE_PACKAGE_ACCOMMODATION') %}
                 <th class="td-sm">{{ "search.results.room"|trans({}, "MBHPackageBundle") }}</th>
             {% endif %}
@@ -39,7 +40,9 @@
                         <span class="package-search-book-count">{{ result.roomsCount }}</span>
                     </small>
                 </td>
-
+                <td class="td-xxs">
+                    <input class="form-control quantity-select" type="number">
+                </td>
                 {% if is_granted('ROLE_PACKAGE_ACCOMMODATION') %}
                     <td>
                         <select class="form-control input-sm search-room-select">

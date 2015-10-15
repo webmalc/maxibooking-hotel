@@ -313,6 +313,7 @@ search.results.hotel: Отель
 search.results.type: Тип
 search.results.room: Номер
 search.results.tariff: Тариф
+search.results.quantity: Количество
 search.results.guests: Гости
 search.results.price: Цена
 search.results.total_beds: Свободно койко-мест

@@ -366,26 +366,40 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function newAction(Request $request)
     {
+        $order = null;
+        if ($request->get('order')) {
+            $order = $this->dm->getRepository('MBHPackageBundle:Order')->find($request->get('order'));
+        }
+        $quantity = (int) $request->get('quantity');
+        $mbhOrder = $this->container->get('mbh.order');
+
+        $package = [
+            'begin' => $request->get('begin'),
+            'end' => $request->get('end'),
+            'adults' => $request->get('adults'),
+            'children' => $request->get('children'),
+            'roomType' => $request->get('roomType'),
+            'tariff' => $request->get('tariff'),
+            'accommodation' => $request->get('accommodation')
+        ];
+
+        if($quantity < 1) {
+            $quantity = 1;
+        }
+
+        $packages = [];
+        for($i = 1; $i <= $quantity; $i++) {
+            $packages[] = $package;
+        }
+
+        $data = [
+            'packages' => $packages,
+            'status' => 'offline',
+            'confirmed' => false,
+            'tourist' => $request->get('tourist'),
+        ];
         try {
-            $order = null;
-            if ($request->get('order')) {
-                $order = $this->dm->getRepository('MBHPackageBundle:Order')->find($request->get('order'));
-            }
-            $order = $this->container->get('mbh.order')->createPackages(['packages' => [
-                    [
-                        'begin' => $request->get('begin'),
-                        'end' => $request->get('end'),
-                        'adults' => $request->get('adults'),
-                        'children' => $request->get('children'),
-                        'roomType' => $request->get('roomType'),
-                        'tariff' => $request->get('tariff'),
-                        'accommodation' => $request->get('accommodation')
-                    ]
-                ],
-                'status' => 'offline',
-                'confirmed' => false,
-                'tourist' => $request->get('tourist'),
-            ], $order, $this->getUser());
+            $order = $mbhOrder->createPackages($data, $order, $this->getUser());
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                 dump($e);
@@ -397,12 +411,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $request->getSession()->getFlashBag()
             ->set('success', $this->get('translator')->trans('controller.packageController.order_created_success'));
 
-        $order->getPayer() ? $route = 'package_order_cash' : $route = 'package_order_tourist_edit';
+        $route = $order->getPayer() ? 'package_order_cash' : 'package_order_tourist_edit';
 
-        return $this->redirect($this->generateUrl($route, [
+        return $this->redirectToRoute($route, [
             'id' => $order->getId(),
             'packageId' => $order->getPackages()[0]->getId()
-        ]));
+        ]);
     }
 
     /**
