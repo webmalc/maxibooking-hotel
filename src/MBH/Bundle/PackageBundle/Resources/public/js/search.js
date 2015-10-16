@@ -159,15 +159,14 @@ $(document).ready(function () {
             alert('Please allow popups for this site.');
         }
 
-        var roomId = null;
         var quantitySelection = this.$quantitySelect.val();
         this.bookCount = this.bookCount - quantitySelection;
         this.updateViewBookCount();
 
-        if (this.$searchRoomsSelect.val()) {
-            roomId = this.$searchRoomsSelect.val();
+        var roomID = this.$searchRoomsSelect.val() || null;
+        if(roomID) {
+            this.$searchRoomsSelect.find('option[value="' + roomID + '"]').attr('disabled', 'disabled');
         }
-        this.$searchRoomsSelect.find('option[value="' + roomId + '"]').attr('disabled', 'disabled');
         this.$searchRoomsSelect.select2({
             placeholder: 'при заезде',
             allowClear: true,
@@ -178,8 +177,6 @@ $(document).ready(function () {
 
     Row.prototype.showAccommodationAlert = function() {
         var date = new Date();
-
-        console.log(1);
 
         date.setHours(0, 0, 0, 0);
         this.$packageSearchBook.addClass('btn-danger');
@@ -216,6 +213,8 @@ $(document).ready(function () {
         }
     }
 
+    var $tariffSelect = $('#s_tariff');
+    var $packageSearchForm = $('form[name="s"]'); //#package-search-form //.search-form
     var successCallback = function (data) {
         searchProcess = false;
         $wrapper.html(data);
@@ -249,16 +248,13 @@ $(document).ready(function () {
             row.init();
         })
 
-        var $links = $('#package-search-tariffs li a'),
-            $select = $('#s_tariff'),
-            form = $('form[name="s"]')
-            ;
+        /*var $links = $('#package-search-tariffs li a');
         $links.on('click', function (e) {
             e.preventDefault();
-            $select.val($(this).attr('data-id'));
-            window.location.hash = form.serialize();
-            form.submit();
-        });
+            $tariffSelect.val($(this).attr('data-id'));
+            window.location.hash = $packageSearchForm.serialize();
+            $packageSearchForm.submit();
+        });*/
     }
 
     var send = function (query) {
@@ -276,16 +272,15 @@ $(document).ready(function () {
         });
     }
 
-    var $form = $('.search-form'),
-        sendForm = function () {
-            if (!$('#s_begin').val() || !$('#s_end').val()) {
-                return;
-            }
-            //var wrapper = $('#package-search-results-wrapper');
-            window.location.hash = $form.serialize();
-            $wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
-            send($form.serialize());
+    var sendForm = function () {
+        if (!$('#s_begin').val() || !$('#s_end').val()) {
+            return;
         }
+        //var wrapper = $('#package-search-results-wrapper');
+        window.location.hash = $packageSearchForm.serialize();
+        $wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+        send($packageSearchForm.serialize());
+    }
 
     if (window.location.hash) {
         var hashes = getHashVars();
@@ -300,9 +295,9 @@ $(document).ready(function () {
 
     sendForm();
 
-    $form.find('input, select').on('change', sendForm);
+    $packageSearchForm.find('input, select').on('change', sendForm);
 
-    $form.on('submit', function (e) {
+    $packageSearchForm.on('submit', function (e) {
         e.preventDefault();
         sendForm()
     });

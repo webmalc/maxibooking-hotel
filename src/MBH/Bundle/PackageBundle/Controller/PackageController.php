@@ -392,6 +392,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $packages[] = $package;
         }
 
+        dump($packages);
+
         $data = [
             'packages' => $packages,
             'status' => 'offline',
