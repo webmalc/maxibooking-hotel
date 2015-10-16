@@ -53,106 +53,128 @@ $(document).ready(function () {
     });
 
     var $wrapper = $('#package-search-results-wrapper');
+    var $warning = $('#accommodation-alert');
+    var searchProcess = false;
+    //ajax request
 
-
-    //accommodation
-    var showAccommodation = function (tr) {
-        var room = tr.find('.search-room-select'),
-            roomId = null,
-            bookText = tr.find('.package-search-book-reservation-text'),
-            accText = tr.find('.package-search-book-accommodation-text'),
-            link = tr.find('.package-search-book'),
-            oldHref = link.prop('href').replace(/&accommodation=.*?(?=(&|$))/, '');
-
-        if (room.val()) {
-            roomId = room.val();
+    var Row = function($row) {
+        this.$row = $row;
+        this.$quantitySelect = this.$row.find('.quantity-select');
+        this.$searchRoomsSelect = this.$row.find('.search-room-select');
+        this.$searchTouristsSelect = this.$row.find('.search-tourists-select');
+        this.$packageSearchBook = this.$row.find('.package-search-book');
+        this.$bookCount = this.$row.find('span.package-search-book-count');
+        this.bookCount = parseInt(this.$bookCount.text());
+        if (this.bookCount < 0) {
+            this.bookCount = 0;
         }
-        if (roomId) {
-            bookText.hide();
-            accText.show();
-            link.removeClass('btn-success btn-danger').addClass('btn-primary');
-            link.prop('href', oldHref + '&accommodation=' + roomId);
-        } else {
-            bookText.show();
-            accText.hide();
-            link.removeClass('btn-primary btn-danger').addClass('btn-success');
-            link.prop('href', oldHref);
+        this.updateViewBookCount();
+    }
+
+    Row.prototype.init = function() {
+        var that = this;
+        this.$searchTouristsSelect.on('change', function () {
+            that.showResultPrices();
+        });
+        this.showResultPrices();
+
+        this.$quantitySelect.on('change', function() {
+            that.showQuality()
+        });
+
+        this.$packageSearchBook.on('click', function(e) {
+            e.preventDefault();
+            that.packageSearchBookClickHandler()
+        });
+
+        var select = $('select.search-room-select');
+
+        this.$searchRoomsSelect.on('change', function () {
+            that.showAccommodation();
+        });
+        this.$searchRoomsSelect.each(function () {
+            that.showAccommodation();
+        });
+
+        this.showAccommodationAlert();
+        this.$searchRoomsSelect.on('change', function(){
+            that.showAccommodationAlert()
+        });
+    }
+
+    Row.prototype.updateViewBookCount = function()
+    {
+        this.$bookCount.text(this.bookCount);
+        var that = this;
+        this.$quantitySelect.mbhSelect2OptionsFilter(function(){
+            return this.value <= that.bookCount;
+        });
+        if(this.bookCount == 0) {
+            this.$packageSearchBook.addClass('disabled');
         }
     }
-    //search result prices
-    var showResultPrices = function (tr) {
-        var tourist = tr.find('.search-tourists-select'),
-            touristVal = tourist.val(),
-            touristArr = touristVal.split('_')
-            ;
-        var ulPrices = tr.find('ul.package-search-prices');
+
+    Row.prototype.showResultPrices = function () {
+        var touristVal = this.$searchTouristsSelect.val(),
+            touristArr = touristVal.split('_');
+
+        var ulPrices = this.$row.find('ul.package-search-prices');
         ulPrices.hide();
         ulPrices.find('li').hide();
         ulPrices.find('li.' + touristVal + '_price').show();
         ulPrices.show();
-        var bookLink = tr.find('a.package-search-book'),
-            oldHref = bookLink.prop('href')
-                .replace(/&adults=.*?(?=(&|$))/, '')
-                .replace(/&children=.*?(?=(&|$))/, '')
-            ;
+        var oldHref = this.$packageSearchBook.prop('href')
+            .replace(/&adults=.*?(?=(&|$))/, '')
+            .replace(/&children=.*?(?=(&|$))/, '')
+        ;
 
-        bookLink.prop('href', oldHref + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
+        this.$packageSearchBook.prop('href', oldHref + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
     };
 
-    var packageSearchBookClickHandler = function (e) {
-        e.preventDefault();
+    Row.prototype.showQuality = function () {
+        var value = this.$quantitySelect.val();
+        var isMoreOne = value > 1;
+        this.$searchRoomsSelect.select2({disabled: isMoreOne, placeholder: 'при заезде'});
+        var oldHref = this.$packageSearchBook.prop('href').replace(/&quantity=.*?(?=(&|$))/, '');
 
+        if (value) {
+            this.$packageSearchBook.prop('href', oldHref + '&quantity=' + value);
+        }
+    };
+
+    Row.prototype.packageSearchBookClickHandler = function () {
         var touristSelect = $('.findGuest'),
-            oldHref = $(this).prop('href').replace(/&tourist=.*?(?=(&|$))/, '');
+            oldHref = this.$packageSearchBook.prop('href').replace(/&tourist=.*?(?=(&|$))/, '');
 
         var href = touristSelect.val() ?
-            oldHref + '&tourist=' + touristSelect.val() :
+        oldHref + '&tourist=' + touristSelect.val() :
             oldHref;
-        $(this).prop('href', href);
+        this.$packageSearchBook.prop('href', href);
 
-        var win = window.open(href, '_blank');
+        /*var win = window.open(href, '_blank');
         if (win) {
             win.focus();
         } else {
             alert('Please allow popups for this site.');
-        }
+        }*/
 
-        var numWrapper = $(this).closest('tr').find('span.package-search-book-count'),
-            roomSelect = $(this).closest('tr').find('.search-room-select'),
-            roomId = null
-            ;
-        var num = parseInt(numWrapper.text()) - 1;
-        (num <= 0) ? num = 0 : num;
-        numWrapper.text(num);
+        var roomId = null;
+        var quantitySelection = this.$quantitySelect.val();
+        this.bookCount = this.bookCount - quantitySelection;
+        this.updateViewBookCount();
 
-        if (roomSelect.val()) {
-            roomId = roomSelect.val();
+        if (this.$searchRoomsSelect.val()) {
+            roomId = this.$searchRoomsSelect.val();
         }
-        roomSelect.find('option[value="' + roomId + '"]').attr('disabled', 'disabled');
-        roomSelect.select2({
+        this.$searchRoomsSelect.find('option[value="' + roomId + '"]').attr('disabled', 'disabled');
+        this.$searchRoomsSelect.select2({
             placeholder: 'при заезде',
             allowClear: true,
             width: 'element',
         });
-        roomSelect.val(null).trigger('change');
+        this.$searchRoomsSelect.val(null).trigger('change');
     }
-
-
-    var showQuality = function ($tr) {
-        var $quantitySelect = $tr.find('.quantity-select');
-        var value = $quantitySelect.val();
-        var isMoreOne = value > 1;
-        $tr.find('.search-room-select').select2({disabled: isMoreOne});
-
-        var link = $tr.find('.package-search-book'),
-            oldHref = link.prop('href').replace(/&quantity=.*?(?=(&|$))/, '');
-
-        if (value) {
-            link.prop('href', oldHref + '&quantity=' + value);
-        }
-    }
-
-    var showAccommodationAlert = function () {
+    Row.prototype.showAccommodationAlert = function() {
         var isAlert = false,
             date = new Date();
 
@@ -176,11 +198,32 @@ $(document).ready(function () {
             //$warning.hide();
             //$warning.addClass('hide');
         }
-    };
+    }
 
-    var $warning = $('#accommodation-alert');
-    var searchProcess = false;
-    //ajax request
+    Row.prototype.showAccommodation = function()
+    {
+        var room = this.$row.find('.search-room-select'),
+            roomId = null,
+            bookText = this.$row.find('.package-search-book-reservation-text'),
+            accText = this.$row.find('.package-search-book-accommodation-text'),
+            oldHref = this.$packageSearchBook.prop('href').replace(/&accommodation=.*?(?=(&|$))/, '');
+
+        if (room.val()) {
+            roomId = room.val();
+        }
+        if (roomId) {
+            bookText.hide();
+            accText.show();
+            this.$packageSearchBook.removeClass('btn-success btn-danger').addClass('btn-primary');
+            this.$packageSearchBook.prop('href', oldHref + '&accommodation=' + roomId);
+        } else {
+            bookText.show();
+            accText.hide();
+            this.$packageSearchBook.removeClass('btn-primary btn-danger').addClass('btn-success');
+            this.$packageSearchBook.prop('href', oldHref);
+        }
+    }
+
     var successCallback = function (data) {
         searchProcess = false;
         $wrapper.html(data);
@@ -192,6 +235,12 @@ $(document).ready(function () {
         $quantitySelect.select2({
             minimumResultsForSearch: -1
         });
+        $searchRoomsSelect.select2({
+            placeholder: 'при заезде',
+            allowClear: true,
+            templateResult: select2TemplateResult.appendIcon,
+            width: 'element'
+        });
         $searchTouristsSelect.select2({
             placeholder: '',
             allowClear: false,
@@ -200,36 +249,14 @@ $(document).ready(function () {
             //templateResult: format,
             //templateSelection: format
         });
-        $searchRoomsSelect.select2({
-            placeholder: 'при заезде',
-            allowClear: true,
-            templateResult: select2TemplateResult.appendIcon,
-            width: 'element'
-        });
         $wrapper.find('[data-toggle="tooltip"]').tooltip();
 
 
-        $searchRoomsSelect.on('change', function () {
-            showAccommodation($(this).closest('tr'));
-        });
-        $searchRoomsSelect.each(function () {
-            showAccommodation($(this).closest('tr'));
-        });
+        $wrapper.find('tbody tr:not(.mbh-grid-header1)').each(function() {
+            var row = new Row($(this));
+            row.init();
+        })
 
-        //accommodation alert
-        var select = $('select.search-room-select');
-
-        showAccommodationAlert();
-        select.on('change', showAccommodationAlert);
-
-        $searchTouristsSelect.on('change', function () {
-            showResultPrices($(this).closest('tr'));
-        });
-        $searchTouristsSelect.each(function () {
-            showResultPrices($(this).closest('tr'));
-        });
-
-        //tariff chooser
         var $links = $('#package-search-tariffs li a'),
             $select = $('#s_tariff'),
             form = $('form[name="s"]')
@@ -239,12 +266,6 @@ $(document).ready(function () {
             $select.val($(this).attr('data-id'));
             window.location.hash = form.serialize();
             form.submit();
-        });
-
-        //book link actions
-        $wrapper.find('.package-search-book').on('click', packageSearchBookClickHandler);
-        $quantitySelect.on('change', function() {
-            showQuality($(this).closest('tr'))
         });
     }
 
