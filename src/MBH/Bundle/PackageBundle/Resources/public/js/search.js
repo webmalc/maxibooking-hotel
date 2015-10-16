@@ -73,13 +73,10 @@ $(document).ready(function () {
 
     Row.prototype.init = function() {
         var that = this;
+
+        this.showResultPrices();
         this.$searchTouristsSelect.on('change', function () {
             that.showResultPrices();
-        });
-        this.showResultPrices();
-
-        this.$quantitySelect.on('change', function() {
-            that.showQuality()
         });
 
         this.$packageSearchBook.on('click', function(e) {
@@ -87,18 +84,18 @@ $(document).ready(function () {
             that.packageSearchBookClickHandler()
         });
 
-        var select = $('select.search-room-select');
-
+        that.showAccommodation();
         this.$searchRoomsSelect.on('change', function () {
-            that.showAccommodation();
-        });
-        this.$searchRoomsSelect.each(function () {
             that.showAccommodation();
         });
 
         this.showAccommodationAlert();
         this.$searchRoomsSelect.on('change', function(){
             that.showAccommodationAlert()
+        });
+
+        this.$quantitySelect.on('change', function() {
+            that.showQuality()
         });
     }
 
@@ -134,7 +131,11 @@ $(document).ready(function () {
     Row.prototype.showQuality = function () {
         var value = this.$quantitySelect.val();
         var isMoreOne = value > 1;
-        this.$searchRoomsSelect.select2({disabled: isMoreOne, placeholder: 'при заезде'});
+        if(isMoreOne) {
+            this.$searchRoomsSelect.attr('disabled', true);
+        } else {
+            this.$searchRoomsSelect.attr('disabled', false);
+        }
         var oldHref = this.$packageSearchBook.prop('href').replace(/&quantity=.*?(?=(&|$))/, '');
 
         if (value) {
@@ -151,12 +152,12 @@ $(document).ready(function () {
             oldHref;
         this.$packageSearchBook.prop('href', href);
 
-        /*var win = window.open(href, '_blank');
+        var win = window.open(href, '_blank');
         if (win) {
             win.focus();
         } else {
             alert('Please allow popups for this site.');
-        }*/
+        }
 
         var roomId = null;
         var quantitySelection = this.$quantitySelect.val();
@@ -174,43 +175,34 @@ $(document).ready(function () {
         });
         this.$searchRoomsSelect.val(null).trigger('change');
     }
+
     Row.prototype.showAccommodationAlert = function() {
-        var isAlert = false,
-            date = new Date();
+        var date = new Date();
+
+        console.log(1);
 
         date.setHours(0, 0, 0, 0);
-        $('select.search-room-select').each(function () {
-            var link = $(this).closest('tr').find('.package-search-book').addClass('btn-danger'),
-                begin = $('#s_begin').datepicker("getDate");
-
-            if ($(this).val() && begin > date) {
-                link.addClass('btn-danger');
-                isAlert = true;
-            } else {
-                link.removeClass('btn-danger');
-            }
-        });
-
-        if (isAlert) {
+        this.$packageSearchBook.addClass('btn-danger');
+        var begin = $('#s_begin').datepicker("getDate");
+        if (this.$searchRoomsSelect.val() && begin > date) {
+            this.$packageSearchBook.addClass('btn-danger');
             //$warning.removeClass('hide');
-            //$warning.show();
+            $warning.show();
         } else {
-            //$warning.hide();
+            this.$packageSearchBook.removeClass('btn-danger');
             //$warning.addClass('hide');
+            $warning.hide();
         }
     }
 
     Row.prototype.showAccommodation = function()
     {
-        var room = this.$row.find('.search-room-select'),
-            roomId = null,
-            bookText = this.$row.find('.package-search-book-reservation-text'),
+        var bookText = this.$row.find('.package-search-book-reservation-text'),
             accText = this.$row.find('.package-search-book-accommodation-text'),
             oldHref = this.$packageSearchBook.prop('href').replace(/&accommodation=.*?(?=(&|$))/, '');
 
-        if (room.val()) {
-            roomId = room.val();
-        }
+        var roomId = this.$searchRoomsSelect.val();
+
         if (roomId) {
             bookText.hide();
             accText.show();
