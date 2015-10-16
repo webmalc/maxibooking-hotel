@@ -52,8 +52,6 @@ $(document).ready(function () {
         });
     });
 
-    var searchProcess = false;
-
     var $wrapper = $('#package-search-results-wrapper');
 
 
@@ -87,10 +85,11 @@ $(document).ready(function () {
             touristVal = tourist.val(),
             touristArr = touristVal.split('_')
             ;
-        tr.find('ul.package-search-prices').hide();
-        tr.find('ul.package-search-prices li').hide();
-        tr.find('ul.package-search-prices li.' + touristVal + '_price').show();
-        tr.find('ul.package-search-prices').show();
+        var ulPrices = tr.find('ul.package-search-prices');
+        ulPrices.hide();
+        ulPrices.find('li').hide();
+        ulPrices.find('li.' + touristVal + '_price').show();
+        ulPrices.show();
         var bookLink = tr.find('a.package-search-book'),
             oldHref = bookLink.prop('href')
                 .replace(/&adults=.*?(?=(&|$))/, '')
@@ -104,20 +103,14 @@ $(document).ready(function () {
         e.preventDefault();
 
         var touristSelect = $('.findGuest'),
-            oldHref = $(this).prop('href').replace(/&tourist=.*?(?=(&|$))/, ''),
-            id = null;
+            oldHref = $(this).prop('href').replace(/&tourist=.*?(?=(&|$))/, '');
 
-        if (touristSelect.val()) {
-            id = touristSelect.val();
-        }
+        var href = touristSelect.val() ?
+            oldHref + '&tourist=' + touristSelect.val() :
+            oldHref;
+        $(this).prop('href', href);
 
-        if (id) {
-            $(this).prop('href', oldHref + '&tourist=' + id);
-        } else {
-            $(this).prop('href', oldHref);
-        }
-
-        var win = window.open($(this).prop('href'), '_blank');
+        var win = window.open(href, '_blank');
         if (win) {
             win.focus();
         } else {
@@ -177,14 +170,16 @@ $(document).ready(function () {
         });
 
         if (isAlert) {
-            $warning.removeClass('hide');
-            $warning.show();
+            //$warning.removeClass('hide');
+            //$warning.show();
         } else {
-            $warning.hide();
+            //$warning.hide();
+            //$warning.addClass('hide');
         }
     };
 
     var $warning = $('#accommodation-alert');
+    var searchProcess = false;
     //ajax request
     var successCallback = function (data) {
         searchProcess = false;
@@ -194,6 +189,9 @@ $(document).ready(function () {
         var $searchRoomsSelect = $wrapper.find('.search-room-select');
         var $searchTouristsSelect = $wrapper.find('.search-tourists-select');
 
+        $quantitySelect.select2({
+            minimumResultsForSearch: -1
+        });
         $searchTouristsSelect.select2({
             placeholder: '',
             allowClear: false,

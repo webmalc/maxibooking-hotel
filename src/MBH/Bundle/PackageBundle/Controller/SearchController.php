@@ -129,6 +129,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         return [
             'results' => $groupedResult,
             'query' => $query,
+            'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons')
         ];
     }
