@@ -34,7 +34,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
 
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight + 10 days');
-        dump($this->get('mbh.channelmanager.myallocator')->updateRestrictions($begin, $end)); exit();
+        dump($this->get('mbh.channelmanager.myallocator')->updatePrices($begin, $end)); exit();
 
         $form = $this->createForm(
             $this->get('mbh.channelmanager.myallocator_type'), $config, ['config' => $config]

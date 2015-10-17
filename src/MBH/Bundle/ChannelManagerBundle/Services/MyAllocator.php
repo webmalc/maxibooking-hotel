@@ -330,6 +330,10 @@ class MyAllocator extends Base
                                 'StartDate' => $day->format('Y-m-d'),
                                 'EndDate' => $day->format('Y-m-d'),
                                 'Price' => $this->currencyConvertFromRub($config, $info->getPrice()),
+                                'PriceSingle' => $info->getSinglePrice() ? $this->currencyConvertFromRub(
+                                    $config,
+                                    $info->getSinglePrice()
+                                ) : false,
                             ];
 
                         } else {
@@ -337,7 +341,7 @@ class MyAllocator extends Base
                                 'RoomId' => $roomType['syncId'],
                                 'StartDate' => $day->format('Y-m-d'),
                                 'EndDate' => $day->format('Y-m-d'),
-                                'Units' => 0
+                                'Closed' => true
                             ];
                         }
                     }
@@ -395,8 +399,8 @@ class MyAllocator extends Base
                                 'MinStay' => (int)$info->getMinStay() < 1 ? 1 : (int)$info->getMinStay(),
                                 'MaxStay' => (int)$info->getMaxStay(),
                                 'Closed' => $info->getClosed(),
-                                'ClosedToArrival' => $info->getClosedOnArrival(),
-                                'ClosedToDeparture' => $info->getClosedOnDeparture(),
+                                'ClosedForArrival' => $info->getClosedOnArrival(),
+                                'ClosedForDeparture' => $info->getClosedOnDeparture(),
                             ];
                         } else {
                             $allocations[] = [
@@ -406,8 +410,8 @@ class MyAllocator extends Base
                                 'MinStay' => 1,
                                 'MaxStay' => 0,
                                 'Closed' => false,
-                                'ClosedToArrival' => false,
-                                'ClosedToDeparture' => false,
+                                'ClosedForArrival' => false,
+                                'ClosedForArrival' => false,
                             ];
                         }
                     }
