@@ -15,6 +15,7 @@ use MyAllocator\phpsdk\src\Api\MaApi;
 use MyAllocator\phpsdk\src\Api\PropertyList;
 use MyAllocator\phpsdk\src\Api\RoomList;
 use MyAllocator\phpsdk\src\Api\ARIUpdate;
+use MyAllocator\phpsdk\src\Api\RoomAvailabilityList;
 
 
 /**
@@ -298,7 +299,63 @@ class MyAllocator extends Base
      */
     public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
+        $result = true;
+        $begin = $this->getDefaultBegin($begin);
+        $end = $this->getDefaultEnd($begin, $end);
 
+        // iterate hotels
+        foreach ($this->getConfig() as $config) {
+            $api = new ARIUpdate();
+            $api->setAuth($this->getAuth($config));
+            $allocations = [];
+            $roomTypes = $this->getRoomTypes($config);
+            $tariffs = $this->getTariffs($config);
+            $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                $begin,
+                $end,
+                $config->getHotel(),
+                $roomType ? [$roomType->getId()] : [],
+                [],
+                true
+            );
+
+            foreach ($roomTypes as $roomTypeId => $roomType) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                    foreach ($tariffs as $tariffId => $tariff) {
+                        if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
+                            $info = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
+
+                            $allocations[] = [
+                                'RoomId' => $roomType['syncId'],
+                                'StartDate' => $day->format('Y-m-d'),
+                                'EndDate' => $day->format('Y-m-d'),
+                                'Price' => $this->currencyConvertFromRub($config, $info->getPrice()),
+                            ];
+
+                        } else {
+                            $allocations[] = [
+                                'RoomId' => $roomType['syncId'],
+                                'StartDate' => $day->format('Y-m-d'),
+                                'EndDate' => $day->format('Y-m-d'),
+                                'Units' => 0
+                            ];
+                        }
+                    }
+                }
+            }
+
+            $api->setParams([
+                'Channels' => ['all'], 'Allocations' => $allocations
+            ]);
+
+            $response = $this->call($api);
+
+            if ($result && empty($response['response']['body']['Success'])) {
+                $result = false;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -306,7 +363,69 @@ class MyAllocator extends Base
      */
     public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
     {
+        $result = true;
+        $begin = $this->getDefaultBegin($begin);
+        $end = $this->getDefaultEnd($begin, $end);
 
+        // iterate hotels
+        foreach ($this->getConfig() as $config) {
+            $api = new ARIUpdate();
+            $api->setAuth($this->getAuth($config));
+            $allocations = [];
+            $roomTypes = $this->getRoomTypes($config);
+            $tariffs = $this->getTariffs($config);
+            $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
+                $begin,
+                $end,
+                $config->getHotel(),
+                $roomType ? [$roomType->getId()] : [],
+                [],
+                true
+            );
+            foreach ($roomTypes as $roomTypeId => $roomType) {
+                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+                    foreach ($tariffs as $tariffId => $tariff) {
+
+                        if (isset($restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
+                            $info = $restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')];
+                            $allocations[] = [
+                                'RoomId' => $roomType['syncId'],
+                                'StartDate' => $day->format('Y-m-d'),
+                                'EndDate' => $day->format('Y-m-d'),
+                                'MinStay' => (int)$info->getMinStay() < 1 ? 1 : (int)$info->getMinStay(),
+                                'MaxStay' => (int)$info->getMaxStay(),
+                                'Closed' => $info->getClosed(),
+                                'ClosedToArrival' => $info->getClosedOnArrival(),
+                                'ClosedToDeparture' => $info->getClosedOnDeparture(),
+                            ];
+                        } else {
+                            $allocations[] = [
+                                'RoomId' => $roomType['syncId'],
+                                'StartDate' => $day->format('Y-m-d'),
+                                'EndDate' => $day->format('Y-m-d'),
+                                'MinStay' => 1,
+                                'MaxStay' => 0,
+                                'Closed' => false,
+                                'ClosedToArrival' => false,
+                                'ClosedToDeparture' => false,
+                            ];
+                        }
+                    }
+                }
+            }
+
+            $api->setParams([
+                'Channels' => ['all'], 'Allocations' => $allocations
+            ]);
+
+            $response = $this->call($api);
+
+            if ($result && empty($response['response']['body']['Success'])) {
+                $result = false;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -325,11 +444,12 @@ class MyAllocator extends Base
 
     }
 
-
     /**
      * @param ChannelManagerConfigInterface $config
      */
-    public function syncServices(ChannelManagerConfigInterface $config){}
+    public function syncServices(ChannelManagerConfigInterface $config)
+    {
+    }
 
     /**
      * {@inheritDoc}

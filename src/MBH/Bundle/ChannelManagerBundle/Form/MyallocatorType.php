@@ -8,6 +8,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use MBH\Bundle\BaseBundle\Service\Currency;
 
 class MyallocatorType extends AbstractType
 {
@@ -17,9 +18,15 @@ class MyallocatorType extends AbstractType
      */
     protected $myallocator;
 
-    public function __construct(MyAllocator $myallocator)
+    /**
+     * @var Currency
+     */
+    protected $currency;
+
+    public function __construct(MyAllocator $myallocator, $currency)
     {
         $this->myallocator = $myallocator;
+        $this->currency = $currency;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -80,7 +87,33 @@ class MyallocatorType extends AbstractType
                     'required' => false,
                     'help' => 'form.myallocatorType.should_we_use_in_channel_manager'
                 ]
-            );
+            )
+            ->add(
+                'currency',
+                'choice',
+                [
+                    'choices' => $this->currency->codes(),
+                    'label' => 'form.bookingType.currency',
+                    'required' => false,
+                    'help' => 'form.bookingType.currency_help',
+                    'attr' => [
+                        'class' => 'currency-input'
+                    ]
+                ]
+            )
+            ->add(
+                'currencyDefaultRatio',
+                'text',
+                [
+                    'label' => 'form.bookingType.currencyDefaultRatio',
+                    'required' => false,
+                    'help' => 'form.bookingType.currencyDefaultRatio_help',
+                    'attr' => [
+                        'class' => 'ratio-spinner currency-default-ratio-input'
+                    ]
+                ]
+            )
+        ;
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
