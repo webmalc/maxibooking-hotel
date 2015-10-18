@@ -323,23 +323,25 @@ $(document).ready(function () {
             }
         };
 
-        icon.popover({
-            html: true,
-            placement: 'top',
-            trigger: 'manual',
-            content: ''
-        });
-        icon.on('shown.bs.popover', function () {
-            $('.children_age').change(sendForm);
-        });
-        icon.on('hidden.bs.popover', function () {
-            sendForm();
-        });
-        childrenInput.change(function (){
+        if (icon.length) {
+            icon.popover({
+                html: true,
+                placement: 'top',
+                trigger: 'manual',
+                content: ''
+            });
+            icon.on('shown.bs.popover', function () {
+                $('.children_age').change(sendForm);
+            });
+            icon.on('hidden.bs.popover', function () {
+                sendForm();
+            });
+            childrenInput.change(function (){
+                changePopover();
+                $('.children_age').change(sendForm);
+            });
             changePopover();
-            $('.children_age').change(sendForm);
-        });
-        changePopover();
+        };
 
     }());
 

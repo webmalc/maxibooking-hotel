@@ -2,8 +2,12 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use MBH\Bundle\CashBundle\Validator\Constraints\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MyAllocator\phpsdk\src\Api\BookingList;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -15,7 +19,6 @@ use MyAllocator\phpsdk\src\Api\MaApi;
 use MyAllocator\phpsdk\src\Api\PropertyList;
 use MyAllocator\phpsdk\src\Api\RoomList;
 use MyAllocator\phpsdk\src\Api\ARIUpdate;
-use MyAllocator\phpsdk\src\Api\RoomAvailabilityList;
 
 
 /**
@@ -39,11 +42,17 @@ class MyAllocator extends Base
      */
     private $today = null;
 
+    /**
+     * @var \DateTime
+     */
+    private $tomorrow = null;
+
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
         $this->params = $container->getParameter('mbh.channelmanager.services')['myallocator'];
         $this->today = new \DateTime('midnight');
+        $this->tomorrow = new \DateTime('midnight +1 day');
     }
 
     /**
@@ -445,7 +454,334 @@ class MyAllocator extends Base
      */
     public function pullOrders()
     {
+        $result = true;
 
+        foreach ($this->getConfig() as $config) {
+            $api = new BookingList();
+            $api->setAuth($this->getAuth($config));
+            $api->setParams([
+                'ModificationStartDate' => $this->today->format('Y-m-d'),
+                'ModificationEndDate' => $this->tomorrow->format('Y-m-d')
+            ]);
+            $response = $response = $this->call($api);
+
+            if (
+                $result &&
+                empty($response['response']['body']['Success']) ||
+                !isset($response['response']['body']['Bookings'])
+            ) {
+                $result = false;
+            }
+
+            $this->log('Reservations count: ' . count($response['response']['body']['Bookings']));
+
+            foreach ($response['response']['body']['Bookings'] as $orderInfo) {
+
+                $creationDateTime = $orderInfo['MyallocatorCreationDate'] . ' ' . $orderInfo['MyallocatorCreationTime'];
+                $editDateTime = $orderInfo['MyallocatorModificationDate'] . ' ' . $orderInfo['MyallocatorModificationTime'];
+                $status = 'new';
+
+                if ($creationDateTime != $editDateTime) {
+                    $status = 'edit';
+                }
+                if (!empty($orderInfo['IsCancellation'])) {
+                    $status = 'delete';
+                }
+                if ($status == 'edit') {
+                    if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                        $this->dm->getFilterCollection()->disable('softdeleteable');
+                    }
+                }
+                //old order
+                $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy(
+                    [
+                        'channelManagerId' => $orderInfo['MyallocatorId'],
+                        'channelManagerType' => 'myallocator'
+                    ]
+                );
+                if ($status == 'edit') {
+                    if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+                        $this->dm->getFilterCollection()->enable('softdeleteable');
+                    }
+                }
+
+                //new
+                if ($status == 'new' && !$order) {
+                    $result = $this->createPackage($orderInfo, $config, $order);
+                    $this->notify($result, 'myallocator', 'new');
+                }
+                //edit
+                if ($status == 'edit' && $order && $order->getChannelManagerEditDateTime() != $editDateTime) {
+                    $result = $this->createPackage($orderInfo, $config, $order);
+                    $this->notify($result, 'myallocator', 'edit');
+                }
+                //delete
+                if ($status == 'delete' && $order) {
+                    $order->setChannelManagerStatus('cancelled');
+                    $this->dm->persist($order);
+                    $this->dm->flush();
+                    $this->notify($order, 'myallocator', 'delete');
+                    $this->dm->remove($order);
+                    $this->dm->flush();
+                    $result = true;
+
+                };
+
+                if ($status == 'edit' && !$order) {
+                    $this->notifyError(
+                        'myallocator',
+                        '#' . $orderInfo['MyallocatorId']
+                    );
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public function createPackage(array $booking, ChannelManagerConfigInterface $config, Order $order = null)
+    {
+        $helper = $this->container->get('mbh.helper');
+        $roomTypes = $this->getRoomTypes($config, true);
+        $tariffs = $this->getTariffs($config, true);
+        $guests = [];
+
+        //tourist
+        if (!empty($booking['Customers'])) {
+            foreach ($booking['Customers'] as $customer) {
+
+                $phone = null;
+                $guestNote = '';
+
+                if (!empty($customer['CustomerPhone'])) {
+                    $phone = $customer['CustomerPhone'];
+                }
+                if (!empty($customer['CustomerPhoneMobile'])) {
+                    $phone = $customer['CustomerPhoneMobile'];
+                }
+                if (!empty($customer['CustomerCompany'])) {
+                    $guestNote .= 'company: ' . $customer['CustomerCompany'] . ";\n";
+                }
+                if (!empty($customer['CustomerCompanyDepartment'])) {
+                    $guestNote .= 'company department: ' . $customer['CustomerCompanyDepartment'] . ";\n";
+                }
+                if (!empty($customer['CustomerState'])) {
+                    $guestNote .= 'state: ' . $customer['CustomerState'] . ";\n";
+                }
+                if (!empty($customer['CustomerPostCode'])) {
+                    $guestNote .= 'post code: ' . $customer['CustomerPostCode'] . ";\n";
+                }
+                if (!empty($customer['CustomerCountry'])) {
+                    $guestNote .= 'country: ' . $customer['CustomerCountry'] . ";\n";
+                }
+                if (!empty($customer['CustomerNationality'])) {
+                    $guestNote .= 'nationality: ' . $customer['CustomerNationality'] . ";\n";
+                }
+                if (!empty($customer['CustomerArrivalTime'])) {
+                    $guestNote .= 'arrival time: ' . $customer['CustomerArrivalTime'] . ";\n";
+                }
+                if (!empty($customer['CustomerNote'])) {
+                    $guestNote .= 'note: ' . $customer['CustomerNote'] . ";\n";
+                }
+
+                $guest = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                    $customer['CustomerLName'],
+                    empty($customer['CustomerFName']) ? 'н/д' : $customer['CustomerFName'],
+                    null,
+                    null,
+                    empty($customer['CustomerEmail']) ? null : $customer['CustomerEmail'],
+                    $phone,
+                    empty($customer['CustomerAddress']) ? null : $customer['CustomerAddress'],
+                    $guestNote
+
+                );
+
+                $guests[] = $guest;
+            }
+        }
+
+        //order
+        if (!$order) {
+            $order = new Order();
+            $order->setChannelManagerStatus('new')
+                ->setChannelManagerHumanId($booking['OrderId'])
+                ->setChannelManagerHumanText($booking['Channel'])
+                ->setChannelManagerId($booking['MyallocatorId'])
+                ->setChannelManagerType('myallocator');
+        } else {
+            foreach ($order->getPackages() as $package) {
+                $this->dm->remove($package);
+                $this->dm->flush();
+            }
+            foreach ($order->getFee() as $cashDoc) {
+                $this->dm->remove($cashDoc);
+                $this->dm->flush();
+            }
+            $order->setChannelManagerStatus('modified');
+            $order->setChannelManagerEditDateTime(
+                $booking['MyallocatorModificationDate'] . ' ' . $booking['MyallocatorModificationTime']
+            );
+            $order->setDeletedAt(null);
+        }
+        $orderNote = '';
+
+        if (!empty($booking['OrderSource'])) {
+            $orderNote .= 'source: ' . $booking['OrderSource'] . ";\n";
+        }
+        if (!empty($booking['OrderDate'])) {
+            $orderNote .= 'date: ' . $booking['OrderDate'] . ";\n";
+        }
+        if (!empty($booking['OrderTime'])) {
+            $orderNote .= 'time: ' . $booking['OrderTime'] . ";\n";
+        }
+        if (!empty($booking['Deposit'])) {
+            $orderNote .= 'deposit: ' . $booking['Deposit'] . ";\n";
+        }
+        if (!empty($booking['DepositCurrency'])) {
+            $orderNote .= 'deposit currency: ' . $booking['DepositCurrency'] . ";\n";
+        }
+        if (!empty($booking['TotalPrice'])) {
+            $orderNote .= 'total price: ' . $booking['TotalPrice'] . ";\n";
+        }
+        if (!empty($booking['TotalCurrency'])) {
+            $orderNote .= 'total currency: ' . $booking['TotalCurrency'] . ";\n";
+        }
+
+        $order
+            ->setMainTourist(empty($guests[0]) ? null : $guests[0])
+            ->setConfirmed(false)
+            ->setStatus('channel_manager')
+            ->setNote($orderNote);
+
+        $this->dm->persist($order);
+        $this->dm->flush();
+
+        //fee
+        if (!empty($booking['Commission'])) {
+
+            $fee = new CashDocument();
+            $fee->setIsConfirmed(false)
+                ->setIsPaid(false)
+                ->setMethod('electronic')
+                ->setOperation('fee')
+                ->setOrder($order)
+                ->setTouristPayer($order->getMainTourist())
+                ->setTotal($this->currencyConvertToRub($config, (float)$booking['Commission']));
+            $this->dm->persist($fee);
+            $this->dm->flush();
+        }
+
+        //packages
+        $orderTotal = 0;
+        foreach ($booking['Rooms'] as $room) {
+            $corrupted = false;
+            $errorMessage = '';
+            $orderTotal += (float)$room['Price'];
+
+            //roomType
+            if (isset($roomTypes[$room['RoomTypeIds'][0]])) {
+                $roomType = $roomTypes[$room['RoomTypeIds'][0]]['doc'];
+            } else {
+                $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->findOneBy(
+                    [
+                        'hotel.id' => $config->getHotel()->getId(),
+                        'isEnabled' => true,
+                        'deletedAt' => null
+                    ]
+                );
+                $corrupted = true;
+                $errorMessage = 'ERROR: invalid roomType #' . $room['RoomTypeIds'][0] . '. ';
+
+                if (!$roomType) {
+                    continue;
+                }
+            }
+
+            //prices
+            $pricesByDate = [];
+            foreach ($room['DayRates'] as $day) {
+
+                $date = $helper->getDateFromString($day['Date'], 'Y-m-d');
+                $pricesByDate[$date->format('d_m_Y')] = $this->currencyConvertToRub($config, (float)$day['Rate']);
+            }
+
+            $packageNote = '';
+
+            if (!empty($room['RateId'])) {
+                $packageNote .= 'rate id: ' . $room['RateId'] . ";\n";
+            }
+            if (!empty($room['RateDesc'])) {
+                $packageNote .= 'rate description: ' . $room['RateDesc'] . ";\n";
+            }
+            if (!empty($room['RoomDesc'])) {
+                $packageNote .= 'room description: ' . $room['RoomDesc'] . ";\n";
+            }
+            if (!empty($room['ChannelRoomType'])) {
+                $packageNote .= 'channel room type: ' . $room['ChannelRoomType'] . ";\n";
+            }
+            if (!empty($room['OccupantNote'])) {
+                $packageNote .= 'note: ' . $room['OccupantNote'] . ";\n";
+            }
+            if (!empty($errorMessage)) {
+                $packageNote .= 'ERROR: ' . $errorMessage . ";\n";
+            }
+
+            $packageTotal = $this->currencyConvertToRub($config, (float)$room['Price']);
+
+            $package = new Package();
+            $package
+                ->setChannelManagerId($booking['MyallocatorId'])
+                ->setChannelManagerType('myallocator')
+                ->setBegin($helper->getDateFromString($room['StartDate'], 'Y-m-d'))
+                ->setEnd($helper->getDateFromString($room['EndDate'], 'Y-m-d'))
+                ->setRoomType($roomType)
+                ->setTariff($tariffs['base']['doc'])
+                ->setAdults((int)$room['Occupancy'])
+                ->setChildren(0)
+                ->setIsSmoking(!empty($room['OccupantSmoker']) ? true : false)
+                ->setPricesByDate($pricesByDate)
+                ->setPrice($packageTotal)
+                ->setOriginalPrice($packageTotal)
+                ->setTotalOverwrite($packageTotal)
+                ->setNote($packageNote)
+                ->setOrder($order)
+                ->setCorrupted($corrupted)
+            ;
+
+            $packageGuest = false;
+            $pGuestFirstName = empty($room['OccupantFName']) ? 'н/д' : $room['OccupantFName'];
+            $pGuestLastName = $room['OccupantLName'];
+            foreach ($guests as $guest) {
+                if ($guest->getFirstName() == $pGuestFirstName && $guest->getLastName() == $pGuestLastName) {
+                    $packageGuest = $guest;
+                }
+            }
+
+            if (!$packageGuest) {
+                $packageGuest = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
+                    $pGuestLastName, $pGuestFirstName
+                );
+            }
+            $package->addTourist($packageGuest);
+
+            $order->addPackage($package);
+            $this->dm->persist($package);
+            $this->dm->persist($order);
+            $this->dm->flush();
+        }
+
+        $orderPrice = $this->currencyConvertToRub($config, $orderTotal);
+
+        $order
+            ->setPrice($orderPrice)
+            ->setOriginalPrice(
+                empty($booking['TotalPrice']) ? $orderPrice : $this->currencyConvertToRub($config, (float)$booking['TotalPrice'])
+            )
+            ->setTotalOverwrite($orderPrice);
+        $this->dm->persist($order);
+        $this->dm->flush();
+
+        return $order;
     }
 
     /**

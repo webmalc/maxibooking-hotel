@@ -60,7 +60,7 @@ class MyallocatorType extends AbstractType
                 );
         }
 
-        if ($config) {
+        if ($config && $config->getToken()) {
             $hotels = $this->myallocator->propertyList($config);
 
             $choices = [];
