@@ -90,9 +90,9 @@ $(document).ready(function () {
     Row.prototype.updateViewBookCount = function () {
         this.$bookCount.text(this.bookCount);
         var that = this;
-        this.$quantitySelect.mbhSelect2OptionsFilter(function () {
+        /*this.$quantitySelect.mbhSelect2OptionsFilter(function () {
             return this.value <= that.bookCount;
-        });
+        });*/
         if (this.bookCount == 0) {
             this.$packageSearchBook.addClass('disabled');
         }
@@ -146,8 +146,8 @@ $(document).ready(function () {
             alert('Please allow popups for this site.');
         }
 
-        var quantitySelection = this.$quantitySelect.val();
-        this.bookCount = this.bookCount - quantitySelection;
+        var selectionQuantity = 1;//parseInt(this.$quantitySelect.val());
+        this.bookCount = this.bookCount - selectionQuantity;
         this.updateViewBookCount();
 
         var roomID = this.$searchRoomsSelect.val() || null;

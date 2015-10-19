@@ -70,7 +70,11 @@
 
             <tr class="{{ style }}">
                 <td class="text-center">
-                    <a target="_blank" href="{{ path('room_edit', {id: room.id}) }}">{{ room.name }}</a>
+                    {% if is_granted('ROLE_ROOM_EDIT')  %}
+                        <a target="_blank" href="{{ path('room_edit', {id: room.id}) }}">{{ room.name }}</a>
+                    {% else %}
+                        {{ room.name }}
+                    {% endif %}
                 </td>
                 <td>
                     {{ room.housing }}
@@ -150,7 +154,7 @@
                     {% endif %}
                 </td>
                 <td class="text-center">
-                    {% if not app.security.granted('ROLE_ROOM_STATUS_EDIT') %}
+                    {% if is_granted('ROLE_ROOM_STATUS_EDIT') %}
                         <select data-room="{{ room.id }}" class="plain-html select-status select2">
                             <option data-icon="fa-lg mbf-keys">.</option>
                             {% for status, icon in roomStatusIcons %}
@@ -209,8 +213,9 @@
                             {% if package.services is not empty %}
                                 <b>Услуги:</b>
                                 {{ package.services|join(', ') }}
+                            {% elseif is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW')) %}
+                                <div class='text-center'><small><a target='_blanck' href='{{ path('package_edit', {'id': package.id}) }}'>перейти к записи</a></small></div>
                             {% endif %}
-                            <div class='text-center'><small><a target='_blanck' href='{{ path('package_edit', {'id': package.id}) }}'>перейти к записи</a></small></div>
                            "
                             {% endif %}
                             >

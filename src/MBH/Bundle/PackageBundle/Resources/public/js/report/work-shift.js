@@ -2,8 +2,12 @@
 $(document).ready(function ($) {
     'use strict';
 
-    var $workShiftReportForm = $('#work-shift-report-form'),
-        $workShiftReportWrapper = $('#work-shift-report-table-wrapper'),
+    var $workShiftReportForm = $('#work-shift-report-form');
+    if($workShiftReportForm.length == 0) {
+        return;
+    }
+
+    var $workShiftReportWrapper = $('#work-shift-report-table-wrapper'),
         $workShiftReportActions = $('#work-shift-report-actions'),
         updateTableUrl = Routing.generate('report_work_shift_table');
 
