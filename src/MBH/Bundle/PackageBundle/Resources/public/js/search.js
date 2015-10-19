@@ -1,6 +1,8 @@
 /*global window, $, Routing, document */
 
 var setSearchDatepickers = function (date) {
+    'use strict';
+
     (date === 'undefined') ? date = new Date() : date = new Date(date);
     $('#s_begin').datepicker('setStartDate', date);
 };
@@ -23,7 +25,10 @@ $(document).ready(function () {
                     if (data.error) {
                         errors.html(data.text).show();
                     } else {
-                        $('.findGuest').append($("<option/>", {value: data.id, text: data.text})).val(data.id).trigger('change');
+                        $('.findGuest').append($("<option/>", {
+                            value: data.id,
+                            text: data.text
+                        })).val(data.id).trigger('change');
                         form.trigger('reset');
                         form.find('select').select2('data', null);
                         guestModal.modal('hide');
@@ -261,7 +266,7 @@ $(document).ready(function () {
                 window.location.hash = form.serialize();
                 wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
                 send(form.serialize());
-            }
+            };
 
         if (window.location.hash) {
             var hashes = getHashVars();
@@ -282,7 +287,64 @@ $(document).ready(function () {
             e.preventDefault();
             sendForm()
         });
+
+
+        //
+        var childrenInput = $('#s_children'),
+            icon = $('#search-children-ages');
+        icon.popover({
+            html: true,
+            placement: 'top',
+            content: ''
+        });
+        var changePopover = function () {
+            var num = parseInt(childrenInput.val(), 10),
+                popoverContent = icon.next('div.popover').children('div.popover-content'),
+                content = ''
+                ;
+            if (num < 1) {
+                icon.hide();
+            } else {
+                icon.show();
+            }
+
+            for (var i = 0; i < num; i++) {
+                content += '<input type="number" id="children_age_' + i + '" name="s[children_age][]" class="children_age input-xxs form-control input-sm" min="0" max="18">'
+            }
+
+            var popover = icon.data('bs.popover');
+            popover.options.content = content;
+
+            if (popoverContent.length && content === '') {
+                icon.trigger('click').hide();
+            }
+            if (popoverContent.length) {
+                popoverContent.html(content);
+            }
+        };
+
+        if (icon.length) {
+            icon.popover({
+                html: true,
+                placement: 'top',
+                trigger: 'manual',
+                content: ''
+            });
+            icon.on('shown.bs.popover', function () {
+                $('.children_age').change(sendForm);
+            });
+            icon.on('hidden.bs.popover', function () {
+                sendForm();
+            });
+            childrenInput.change(function (){
+                changePopover();
+                $('.children_age').change(sendForm);
+            });
+            changePopover();
+        };
+
     }());
+
 
 });
 
