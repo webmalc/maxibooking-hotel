@@ -62,6 +62,17 @@ mbh.alert = {
     }
 }
 
+$('#work-shift-lock').on('click', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var header = 'Блокирование смены';
+    var text = 'Вы уверены, что хотите блокировать текущую смену';
+    var buttonText = 'Блокировать';
+    var buttonIcon = 'danger';
+    var buttonClass = 'info';
+    mbh.alert.show($this.attr('href'), header, text, buttonText, buttonIcon, buttonClass);
+});
+
 
 var deleteLink = function () {
     'use strict';

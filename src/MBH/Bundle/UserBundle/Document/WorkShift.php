@@ -22,12 +22,16 @@ class WorkShift extends Base
     use SoftDeleteableDocument;
     use BlameableDocument;
 
+    const STATUS_OPEN = 'open';
+    const STATUS_LOCKED = 'locked';
+    const STATUS_CLOSED = 'closed';
+
     /**
-     * @var boolean
+     * @var string
      * @Gedmo\Versioned
-     * @ODM\Boolean()
+     * @ODM\String()
      */
-    protected $isOpen;
+    protected $status;
 
     /**
      * @var \DateTime
@@ -44,19 +48,19 @@ class WorkShift extends Base
     protected $end;
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getIsOpen()
+    public function getStatus()
     {
-        return $this->isOpen;
+        return $this->status;
     }
 
     /**
-     * @param mixed $isOpen
+     * @param string $status
      */
-    public function setIsOpen($isOpen)
+    public function setStatus($status)
     {
-        $this->isOpen = $isOpen;
+        $this->status = $status;
     }
 
     /**

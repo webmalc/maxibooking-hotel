@@ -5,6 +5,7 @@ namespace MBH\Bundle\UserBundle\EventListener;
 use FOS\UserBundle\Controller\SecurityController;
 use MBH\Bundle\UserBundle\Controller\WorkShiftController;
 use MBH\Bundle\UserBundle\Document\User;
+use MBH\Bundle\UserBundle\Document\WorkShift;
 use MBH\Bundle\UserBundle\Document\WorkShiftRepository;
 use Symfony\Bundle\AsseticBundle\Controller\AsseticController;
 use Symfony\Bundle\WebProfilerBundle\Controller\ProfilerController;
@@ -76,12 +77,24 @@ class OnController
             /** @var WorkShiftRepository $workShiftRepository */
             $workShiftRepository = $dm->getRepository('MBHUserBundle:WorkShift');
             $workShift = $workShiftRepository->findCurrent($token->getUser());
-            if(!$workShift && (!$this->isExceptController($controller[0]))) {
-                $route = $this->container->get('router');
-                $event->setController(function() use ($route) {
-                   return new RedirectResponse($route->generate('work_shift'));
+            $route = $this->container->get('router');
+
+            $url = null;
+            if($workShift) {
+                if($workShift->getStatus() == WorkShift::STATUS_LOCKED){
+                    $url = $route->generate('work_shift_wait');
+                }
+            } else {
+                $url = $route->generate('work_shift');
+            }
+
+            if($url && !$this->isExceptController($controller[0])) {
+                $event->setController(function() use ($url) {
+                    return new RedirectResponse($url);
                 });
-            }elseif($workShift && $workShift->getPastHours() > 12) {
+            }
+
+            if($workShift && $workShift->getPastHours() > 12) {
                 $message = $this->container->get('translator')->trans('workShift.notification.work_shift_expired');
                 $this->container->get('session')->getFlashBag()->set('info', $message);
             }
