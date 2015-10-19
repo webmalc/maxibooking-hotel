@@ -5,7 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document\Criteria;
 use MBH\Bundle\BaseBundle\Document\AbstractQueryCriteria;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\PackageBundle\Services\Order;
+use MBH\Bundle\PackageBundle\Document\Order;
 
 /**
  * Class PackageQueryCriteria

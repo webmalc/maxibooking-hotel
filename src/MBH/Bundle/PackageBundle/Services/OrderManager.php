@@ -15,9 +15,9 @@ use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
 /**
- *  Order service
+ *  OrderManager service
  */
-class Order
+class OrderManager
 {
 
     /**
@@ -217,7 +217,11 @@ class Order
 
         // create packages
         foreach ($data['packages'] as $packagesData) {
-            $this->createPackage($packagesData, $order, $user);
+            try {
+                $this->createPackage($packagesData, $order, $user);
+            } catch(Exception $e) { //Re-throwing Exceptions
+                throw new PackageCreationException($order, $e);
+            }
         }
 
         //create services
@@ -412,4 +416,22 @@ class Order
 
         return $order;
     }
+}
+
+/**
+ * Class PackageCreationException
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
+class PackageCreationException extends Exception
+{
+    /**
+     * @var OrderDoc
+     */
+    public $order;
+    public function __construct(OrderDoc $order, Exception $previous)
+    {
+        parent::__construct($previous->getMessage(), $previous->getCode(), $previous);
+        $this->order = $order;
+    }
+
 }

@@ -443,7 +443,7 @@ class ApiController extends Controller
             ];
         }
         try {
-            $order = $this->container->get('mbh.order')->createPackages([
+            $order = $this->container->get('mbh.order_manager')->createPackages([
                 'packages' => $packageData,
                 'services' => $servicesData,
                 'tourist' => [

@@ -3,11 +3,14 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Form\OrderTouristType;
 use MBH\Bundle\PackageBundle\Form\PackageServiceType;
+use MBH\Bundle\PackageBundle\Services\OrderManager;
+use MBH\Bundle\PackageBundle\Services\PackageCreationException;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -332,7 +335,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $form->submit($request);
         if ($form->isValid() && !$package->getIsLocked()) {
             //check by search
-            $result = $this->container->get('mbh.order')->updatePackage($oldPackage, $package);
+            $result = $this->container->get('mbh.order_manager')->updatePackage($oldPackage, $package);
             /** @var FlashBagInterface $flashBag */
             $flashBag = $request->getSession()->getFlashBag();
             if ($result instanceof Package) {
@@ -371,7 +374,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $order = $this->dm->getRepository('MBHPackageBundle:Order')->find($request->get('order'));
         }
         $quantity = (int) $request->get('quantity');
-        $mbhOrder = $this->container->get('mbh.order');
+        /** @var OrderManager $orderManager */
+        $orderManager = $this->container->get('mbh.order_manager');
 
         $package = [
             'begin' => $request->get('begin'),
@@ -399,13 +403,24 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'tourist' => $request->get('tourist'),
         ];
         try {
-            $order = $mbhOrder->createPackages($data, $order, $this->getUser());
-        } catch (\Exception $e) {
+            $order = $orderManager->createPackages($data, $order, $this->getUser());
+        }
+        catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                 dump($e);
             };
 
             return [];
+        }
+        catch (PackageCreationException $e) {
+            $createdPackageCount = count($e->order->getPackages());
+            if ($packages > 1 && $createdPackageCount > 0) {
+                $request->getSession()->getFlashBag()
+                    ->set('danger', 'Создано '.$createdPackageCount.' из '.count($packages). ' броней');
+                $order = $e->order;
+            } else {
+                throw $e->getPrevious();
+            }
         }
 
         $request->getSession()->getFlashBag()
