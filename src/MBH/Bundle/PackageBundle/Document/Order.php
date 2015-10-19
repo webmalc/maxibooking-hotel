@@ -148,7 +148,7 @@ class Order extends Base
      * @Gedmo\Versioned
      * @ODM\String(name="channelManagerType")
      * @Assert\Choice(
-     *      choices = {"vashotel", "booking"},
+     *      choices = {"vashotel", "booking", "myallocator"},
      *      message = "validator.document.package.wrong_channel_manager_type"
      * )
      */
@@ -167,6 +167,20 @@ class Order extends Base
      * @ODM\String()
      */
     protected $channelManagerHumanId;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    protected $channelManagerHumanText;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    protected $channelManagerEditDateTime;
 
     /**
      * @var string
@@ -878,4 +892,42 @@ class Order extends Base
     {
         $this->creditCard = $creditCard;
     }
+
+    /**
+     * @return string
+     */
+    public function getChannelManagerHumanText()
+    {
+        return $this->channelManagerHumanText;
+    }
+
+    /**
+     * @param string $channelManagerHumanText
+     * @return Order
+     */
+    public function setChannelManagerHumanText($channelManagerHumanText)
+    {
+        $this->channelManagerHumanText = $channelManagerHumanText;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getChannelManagerEditDateTime()
+    {
+        return $this->channelManagerEditDateTime;
+    }
+
+    /**
+     * @param string $channelManagerEditDateTime
+     * @return Order
+     */
+    public function setChannelManagerEditDateTime($channelManagerEditDateTime)
+    {
+        $this->channelManagerEditDateTime = $channelManagerEditDateTime;
+        return $this;
+    }
+
+
 }

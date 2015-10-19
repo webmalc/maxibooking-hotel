@@ -237,6 +237,25 @@ class Search
                     $min = $tariffMin[$hotelId][$roomTypeId];
                 }
 
+                //filter infants
+                if (!empty($query->childrenAges)) {
+                    foreach ($query->childrenAges as $age) {
+                        if ($age <= $tariff->getInfantAge()) {
+                            $query->children -= 1;
+                        }
+                   }
+                }
+
+                //filter children
+                if (!empty($query->childrenAges)) {
+                    foreach ($query->childrenAges as $age) {
+                        if ($age > $tariff->getChildAge()) {
+                            $query->children -= 1;
+                            $query->adults += 1;
+                        }
+                    }
+                }
+
                 $roomType = $caches[0]->getRoomType();
                 $result = new SearchResult();
                 $tourists = $roomType->getAdultsChildrenCombination($query->adults, $query->children);

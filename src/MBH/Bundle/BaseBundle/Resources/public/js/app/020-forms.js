@@ -38,7 +38,7 @@ var docReadyForms = function () {
 
     //only int
     $('.only-int').change(function () {
-        if (this.value === '') {
+        if (this.value === '' && !$(this).hasClass('not-null')) {
             return;
         }
         var value = parseInt(this.value, 10);

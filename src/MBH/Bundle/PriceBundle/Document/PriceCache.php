@@ -304,7 +304,12 @@ class PriceCache extends Base
      */
     public function setSinglePrice($singlePrice)
     {
-        $this->singlePrice = (float) $singlePrice;
+        if (is_numeric($singlePrice)) {
+            $singlePrice = (float) $singlePrice;
+        }
+
+        $this->singlePrice = $singlePrice;
+
         return $this;
     }
 
