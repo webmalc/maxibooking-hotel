@@ -803,6 +803,8 @@ class MyAllocator extends Base
      */
     public function pushResponse(Request $request)
     {
+        $this->log($request->getContent());
 
+        return new Response('OK');
     }
 }
