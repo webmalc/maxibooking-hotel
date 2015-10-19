@@ -9,4 +9,9 @@
             Акции
         </a>
     </li>
+    <li {{ active == 3 ? 'class="active"' : '' }}>
+        <a href="{{ path('tariff_services_edit', {'id': entity.id}) }}">
+            Услуги
+        </a>
+    </li>
 </ul>

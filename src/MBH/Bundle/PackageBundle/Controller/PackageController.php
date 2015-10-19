@@ -539,7 +539,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->setPackage($package);
 
 
-        $form = $this->createForm(new PackageServiceType(), $packageService, [
+        $formType = new PackageServiceType();
+        $formType->setContainer($this->container);
+        $form = $this->createForm($formType, $packageService, [
             'package' => $package
         ]);
 
@@ -598,7 +600,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $service->setTime($package->getBegin());
         }
 
-        $form = $this->createForm(new PackageServiceType(), $service, ['package' => $package]);
+        $formType = new PackageServiceType();
+        $formType->setContainer($this->container);
+        $form = $this->createForm($formType, $service, ['package' => $package]);
 
         if ($request->getMethod() == Request::METHOD_PUT) {
             $form->submit($request);

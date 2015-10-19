@@ -154,6 +154,12 @@ class Tariff extends Base
      */
     protected $defaultPromotion;
 
+    /**
+     * @var Service[]|ArrayCollection
+     * @ODM\ReferenceMany(targetDocument="Service")
+     */
+    protected $services;
+
     public function __construct()
     {
         $this->promotions = new ArrayCollection();
@@ -409,5 +415,21 @@ class Tariff extends Base
     public function setDefaultPromotion(Promotion $defaultPromotion = null)
     {
         $this->defaultPromotion = $defaultPromotion;
+    }
+
+    /**
+     * @return ArrayCollection|Service[]
+     */
+    public function getServices()
+    {
+        return $this->services;
+    }
+
+    /**
+     * @param ArrayCollection|Service[] $services
+     */
+    public function setServices($services)
+    {
+        $this->services = $services;
     }
 }

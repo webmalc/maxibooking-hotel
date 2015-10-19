@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Form;
 
 use MBH\Bundle\PackageBundle\Document\Package;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -13,21 +14,17 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class PackageServiceType extends AbstractType
 {
+    use ContainerAwareTrait;
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $services = [];
         if (!$options['package'] instanceof Package) {
             throw new \Exception('Package required.');
         }
-        foreach ($options['package']->getTariff()->getHotel()->getServicesCategories() as $cat) {
-            foreach ($cat->getServices() as $service) {
-                if (!$service->getIsEnabled()) {
-                    continue;
-                }
-
-                $services[$cat->getName()][$service->getId()] = $service;
-            }
-        }
+        /** @var Package $package */
+        $package = $options['package'];
+        $services = $this->container->get('doctrine_mongodb')
+            ->getRepository('MBHPriceBundle:Service')->getAvailableServicesForPackage($package);
 
         $builder
             ->add('service', 'document', [

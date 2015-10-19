@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
+use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -538,9 +539,9 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * Add servicesCategory
      *
-     * @param \MBH\Bundle\PriceBundle\Document\ServiceCategory $servicesCategory
+     * @param ServiceCategory $servicesCategory
      */
-    public function addServicesCategory(\MBH\Bundle\PriceBundle\Document\ServiceCategory $servicesCategory)
+    public function addServicesCategory(ServiceCategory $servicesCategory)
     {
         $this->servicesCategories[] = $servicesCategory;
     }
@@ -548,9 +549,9 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * Remove servicesCategory
      *
-     * @param \MBH\Bundle\PriceBundle\Document\ServiceCategory $servicesCategory
+     * @param ServiceCategory $servicesCategory
      */
-    public function removeServicesCategory(\MBH\Bundle\PriceBundle\Document\ServiceCategory $servicesCategory)
+    public function removeServicesCategory(ServiceCategory $servicesCategory)
     {
         $this->servicesCategories->removeElement($servicesCategory);
     }
@@ -558,7 +559,7 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * Get servicesCategories
      *
-     * @return \Doctrine\Common\Collections\Collection $servicesCategories
+     * @return ServiceCategory[]|\Doctrine\Common\Collections\Collection $servicesCategories
      */
     public function getServicesCategories()
     {
