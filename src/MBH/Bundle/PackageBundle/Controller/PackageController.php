@@ -385,7 +385,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'accommodation' => $request->get('accommodation')
         ];
 
-        if ($quantity < 1) {
+        if ($quantity > 20 || $quantity < 1) {
             $quantity = 1;
         }
 
