@@ -253,15 +253,14 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $authorizationChecker = $this->get('security.authorization_checker');
 
         $promotions = [];
-        if($authorizationChecker->isGranted('ROLE_PROMOTION_ADD')) {
+        if ($authorizationChecker->isGranted('ROLE_PROMOTION_ADD')) {
             /** @var Promotion[] $promotions */
             $promotions = $package->getTariff()->getDefaultPromotion() ?
                 [$package->getTariff()->getDefaultPromotion()] :
-                iterator_to_array($package->getTariff()->getPromotions())
-            ;
+                iterator_to_array($package->getTariff()->getPromotions());
 
-            if(!$authorizationChecker->isGranted('ROLE_INDIVIDUAL_PROMOTION_ADD')) {
-                $promotions = array_filter($promotions, function($promotion) {
+            if (!$authorizationChecker->isGranted('ROLE_INDIVIDUAL_PROMOTION_ADD')) {
+                $promotions = array_filter($promotions, function ($promotion) {
                     /** @var Promotion $promotion */
                     return $promotion->getIsIndividual() === false;
                 });
@@ -306,15 +305,14 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $authorizationChecker = $this->get('security.authorization_checker');
 
         $promotions = [];
-        if($authorizationChecker->isGranted('ROLE_PROMOTION_ADD')) {
+        if ($authorizationChecker->isGranted('ROLE_PROMOTION_ADD')) {
             /** @var Promotion[] $promotions */
             $promotions = $package->getTariff()->getDefaultPromotion() ?
                 [$package->getTariff()->getDefaultPromotion()] :
-                iterator_to_array($package->getTariff()->getPromotions())
-            ;
+                iterator_to_array($package->getTariff()->getPromotions());
 
-            if(!$authorizationChecker->isGranted('ROLE_INDIVIDUAL_PROMOTION_ADD')) {
-                $promotions = array_filter($promotions, function($promotion) {
+            if (!$authorizationChecker->isGranted('ROLE_INDIVIDUAL_PROMOTION_ADD')) {
+                $promotions = array_filter($promotions, function ($promotion) {
                     /** @var Promotion $promotion */
                     return $promotion->getIsIndividual() === false;
                 });
@@ -373,7 +371,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($request->get('order')) {
             $order = $this->dm->getRepository('MBHPackageBundle:Order')->find($request->get('order'));
         }
-        $quantity = (int) $request->get('quantity');
+        $quantity = (int)$request->get('quantity');
         /** @var OrderManager $orderManager */
         $orderManager = $this->container->get('mbh.order_manager');
 
@@ -387,12 +385,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'accommodation' => $request->get('accommodation')
         ];
 
-        if($quantity < 1) {
+        if ($quantity < 1) {
             $quantity = 1;
         }
 
         $packages = [];
-        for($i = 1; $i <= $quantity; $i++) {
+        for ($i = 1; $i <= $quantity; $i++) {
             $packages[] = $package;
         }
 
@@ -404,18 +402,16 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         ];
         try {
             $order = $orderManager->createPackages($data, $order, $this->getUser());
-        }
-        catch (PackageCreationException $e) {
+        } catch (PackageCreationException $e) {
             $createdPackageCount = count($e->order->getPackages());
             if ($packages > 1 && $createdPackageCount > 0) {
                 $request->getSession()->getFlashBag()
-                    ->set('danger', 'Создано '.$createdPackageCount.' из '.count($packages). ' броней');
+                    ->set('danger', 'Создано ' . $createdPackageCount . ' из ' . count($packages) . ' броней');
                 $order = $e->order;
             } else {
                 throw $e->getPrevious();
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                 dump($e);
             };
@@ -455,8 +451,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if ($request->getMethod() == 'PUT' &&
             !$package->getIsLocked() &&
             $authorizationChecker->isGranted('ROLE_PACKAGE_GUESTS') && (
-            $authorizationChecker->isGranted('ROLE_PACKAGE_EDIT_ALL') ||
-            $authorizationChecker->isGranted('EDIT', $package)
+                $authorizationChecker->isGranted('ROLE_PACKAGE_EDIT_ALL') ||
+                $authorizationChecker->isGranted('EDIT', $package)
             )
         ) {
             $form->submit($request);
@@ -476,14 +472,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 $flashBag = $request->getSession()->getFlashBag();
                 $flashBag->set('success', $this->get('translator')
                     ->trans('controller.packageController.guest_added_success'));
-                if($tourist->getIsUnwelcome()) {
-                    $flashBag->set('warning', '<i class="fa fa-user-secret"></i> '.$this->get('translator')
-                        ->trans('package.tourist_in_unwelcome'));
+                if ($tourist->getIsUnwelcome()) {
+                    $flashBag->set('warning', '<i class="fa fa-user-secret"></i> ' . $this->get('translator')
+                            ->trans('package.tourist_in_unwelcome'));
                 }
 
                 return $this->afterSaveRedirect('package', $package->getId(), [], '_guest');
             }
         }
+
         return [
             'package' => $package,
             'form' => $form->createView(),
@@ -615,7 +612,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
                 return $request->get('save') !== null ?
                     $this->redirectToRoute('package_service_edit',
-                         ['id' => $package->getId(), 'serviceId' => $service->getId()]) :
+                        ['id' => $package->getId(), 'serviceId' => $service->getId()]) :
                     $this->redirectToRoute('package_service', ['id' => $package->getId()]);
             }
         }
@@ -771,7 +768,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->set('success', $this->get('translator')->trans('controller.packageController.record_deleted_success'));
 
         if (!empty($request->get('order'))) {
-            return $this->redirect($this->generateUrl('package_order_edit', ['id' => $orderId, 'packageId' => $entity->getId()]));
+            return $this->redirect($this->generateUrl('package_order_edit',
+                ['id' => $orderId, 'packageId' => $entity->getId()]));
         }
 
         return $this->redirectToRoute('package');
@@ -788,6 +786,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $package->setIsLocked(false);
         $this->dm->persist($package);
         $this->dm->flush();
+
         return $this->redirectToRoute('package_edit', ['id' => $package->getId()]);
     }
 
@@ -799,11 +798,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function lockAction(Package $package)
     {
-        if($package->getIsCheckOut()) {
+        if ($package->getIsCheckOut()) {
             $package->setIsLocked(true);
             $this->dm->persist($package);
             $this->dm->flush();
         }
+
         return $this->redirectToRoute('package_edit', ['id' => $package->getId()]);
     }
 }
