@@ -2,7 +2,7 @@
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Кассовые документы'} %}
         {% block content %}
             {% if cashDocuments|length > 0 %}
-            <table class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+            <table class="table not-auto-datatable table-striped table-hover table-condensed mbh-grid">
                 <thead>
                 <tr>
                     <th class="td-xxs text-center"></th>
@@ -39,9 +39,9 @@
                 </tbody>
             </table>
             {% else %}
-                <div class="alert alert-info">
+                <div class="alert bg-gray">
                     <p>
-                        <i class="fa fa-exclamation"></i>
+                        <i class="fa fa-exclamation-circle"></i>
                         Не найден ни один кассовый документ
                     </p>
                 </div>
@@ -54,9 +54,9 @@
             {% if packages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' %}
             {% else %}
-                <div class="alert alert-info">
+                <div class="alert bg-gray">
                     <p>
-                        <i class="fa fa-exclamation"></i>
+                        <i class="fa fa-exclamation-circle"></i>
                         Не найдена ни одна бронь
                     </p>
                 </div>
@@ -69,9 +69,9 @@
             {% if arrivalPackages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' with {packages: arrivalPackages} %}
             {% else %}
-                <div class="alert alert-info">
+                <div class="alert bg-gray">
                     <p>
-                        <i class="fa fa-exclamation"></i>
+                        <i class="fa fa-exclamation-circle"></i>
                         Не найдена ни одна бронь
                     </p>
                 </div>
@@ -84,9 +84,9 @@
             {% if departurePackages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' with {packages: departurePackages} %}
             {% else %}
-                <div class="alert alert-info">
+                <div class="alert bg-gray">
                     <p>
-                        <i class="fa fa-exclamation"></i>
+                        <i class="fa fa-exclamation-circle"></i>
                         Не найдена ни одна бронь
                     </p>
                 </div>
@@ -94,9 +94,9 @@
         {% endblock %}
     {% endembed %}
 {% else %}
-    <div class="alert alert-info">
+    <div class="alert bg-gray">
         <p>
-            <i class="fa fa-exclamation"></i>
+            <i class="fa fa-exclamation-circle"></i>
             Не найдена ни одна смена
         </p>
     </div>
