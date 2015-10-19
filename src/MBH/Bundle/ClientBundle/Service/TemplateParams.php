@@ -4,7 +4,6 @@ namespace MBH\Bundle\ClientBundle\Service;
 
 
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\PackageBundle\Services\Order;
 
 class TemplateParams
 {

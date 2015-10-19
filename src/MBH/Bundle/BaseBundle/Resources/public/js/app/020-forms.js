@@ -577,6 +577,21 @@ var select2TemplateResult = {
 })(window.jQuery);
 
 
+/**
+ * @author Alexandr Arofikin <sashaaro@gmail.com>
+ * @param filter function
+ */
+$.fn.mbhSelect2OptionsFilter = function(filter, resetOptionsHtml) {
+    var html = resetOptionsHtml || this.html();
+    html = html.replace('selected="selected"', '');
+    var $selectHtml = $('<select>' + html + '</select>');
+    $selectHtml.html($selectHtml.find('option').filter(filter));
+    var select2Instance = this.data('select2');
+    var resetOptions = select2Instance.options.options;
+    this.select2('destroy').html($selectHtml.html()).select2(resetOptions);
+}
+
+
 var discountInit = function($discountInput, $isPercentDiscountCheckbox) {
     $discountInput.TouchSpin({
         min: 1,

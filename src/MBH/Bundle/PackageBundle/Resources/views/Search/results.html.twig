@@ -8,6 +8,7 @@
             <th class="td-xxs"></th>
             <th class="td-md">{{ "search.results.dates"|trans({}, "MBHPackageBundle") }}</th>
             <th>{{ "search.results.tariff"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-md">{{ "search.results.quantity"|trans({}, "MBHPackageBundle") }}</th>
             {% if is_granted('ROLE_PACKAGE_ACCOMMODATION') %}
                 <th class="td-sm">{{ "search.results.room"|trans({}, "MBHPackageBundle") }}</th>
             {% endif %}
@@ -22,13 +23,26 @@
 
     {% for row in results %}
         <tr class="mbh-grid-header1 info">
-            <td colspan="10"><strong>{{ row.roomType }}</strong> - <small>{{ row.roomType.hotel }}</small></td>
+            <td colspan="10">
+                <strong>{{ row.roomType }}</strong>
+                <small>осн. мест: {{ row.roomType.places }} + доп. мест: {{ row.roomType.additionalPlaces }}</small>&nbsp;
+                {% if row.roomType.facilities %}
+                <small>
+                    {% for facility in row.roomType.facilities %}
+                        <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility] }}" class="fa fa-lg mbf-{{ facility }}"></i>
+                    {% endfor %}
+                </small>
+                {% endif %}
+                - <small>{{ row.roomType.hotel }}</small>
+            </td>
         </tr>
 
         {% for result in row.results %}
             <tr>
                 <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
-                <td>{{ result.begin|mbh_format }} - {{ result.end|mbh_format }}<br>
+                <td>
+                    {{ result.begin|mbh_format }} - {{ result.end|mbh_format }}
+                    <br>
                     <small>{{ result.nights }} {{ 'nights'|transchoice(result.nights) }}</small>
                 </td>
                 <td>
@@ -39,7 +53,13 @@
                         <span class="package-search-book-count">{{ result.roomsCount }}</span>
                     </small>
                 </td>
-
+                <td class="td-xxs">
+                    <select class="form-control quantity-select">
+                        {% for index in 1..result.roomsCount %}
+                            <option value="{{ index }}">{{ index }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
                 {% if is_granted('ROLE_PACKAGE_ACCOMMODATION') %}
                     <td>
                         <select class="form-control input-sm search-room-select">
@@ -97,9 +117,4 @@
                     class="fa fa-search"> </i> {{ "search.results.enter_search_data"|trans({}, "MBHPackageBundle") }}
         </div>
     {% endif %}
-
-<div class="alert alert-danger hide" id="accommodation-alert">
-    <i class="fa fa-exclamation-circle"></i> {{ "accommodation.alert"|trans({}, "MBHPackageBundle") }}
-</div>
-
 </div>

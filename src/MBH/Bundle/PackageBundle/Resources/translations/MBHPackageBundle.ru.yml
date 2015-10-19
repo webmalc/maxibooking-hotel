@@ -197,6 +197,7 @@ package.index.placement: Размещение
 package.index.guests: Гости
 package.index.price: Стоимость
 package.index.created: Создана
+package.index.isUpdated: Обновлён
 package.index.selection: 'Подбор'
 package.index.porter_link: 'Отчет портье'
 package.json.reservation_type: Тип брони:
@@ -312,6 +313,7 @@ search.results.hotel: Отель
 search.results.type: Тип
 search.results.room: Номер
 search.results.tariff: Тариф
+search.results.quantity: Количество
 search.results.guests: Гости
 search.results.price: Цена
 search.results.total_beds: Свободно койко-мест
@@ -409,3 +411,5 @@ report.porter.out.table: Выезд
 
 report.porter.note: Комментарий
 
+
+report.work_shift.small_title: 'Рабочие смены'

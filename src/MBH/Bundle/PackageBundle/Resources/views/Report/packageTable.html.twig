@@ -1,0 +1,55 @@
+<table class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid">
+    <thead>
+    <tr>
+        <th class="td-xxs"></th>
+        <th class="td-xs">#</th>
+        <th class="td-md">{{ 'package.index.dates'|trans({}, 'MBHPackageBundle') }}</th>
+        <th>{{ 'package.index.placement'|trans({}, 'MBHPackageBundle') }}</th>
+        <th class="td-md">{{ 'package.index.guests'|trans({}, 'MBHPackageBundle') }}</th>
+        <th class="td-md">{{ 'package.index.price'|trans({}, 'MBHPackageBundle') }}</th>
+        <th class="td-md">{{ 'package.index.created'|trans({}, 'MBHPackageBundle') }}</th>
+        <th class="td-xs">{{ 'package.index.isUpdated'|trans({}, 'MBHPackageBundle') }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for package in packages %}
+        <tr>
+            <td>
+                <div class='text-center {% if package.deletedAt or package.corrupted %}deleted-entry{% elseif not package.order.confirmed %}not-confirmed-entry{% endif %}'><span data-toggle='tooltip' title='{{ 'package.json.reservation_type'|trans({}, 'MBHPackageBundle') }}  {{ statuses[package.order.status].title }}'><i class='{{ statuses[package.order.status].icon }}'></i></span></div>
+            </td>
+            <td class='text-center'>
+                <a class='btn btn-sm {% if package.deletedAt %}btn-danger{% else %}btn-success{% endif %}' href='{{ path('package_edit', {'id': package.id}) }}' rel='main' title='{{ 'package.json.edit_record'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>{{ package.numberWithPrefix }}</a>
+                {% if package.deletedAt %}<br>
+                    <small><i class='fa fa-trash-o'> </i>
+                        {{ 'package.json.deleted'|trans({}, 'MBHPackageBundle') }}</small>
+                {% endif %}
+                {% if package.corrupted %}<br><small><i class='fa fa-exclamation-circle'> </i>
+                    {{ 'package.json.corrupted'|trans({}, 'MBHPackageBundle') }}</small>
+                {% endif %}
+            </td>
+            <td>
+                {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}<br>
+                <small>{{ package.nights }} {{ 'nights'|transchoice(package.nights) }}</small>
+            </td>
+            <td>
+                {{ package.roomType }}<br>
+                <small><a data-toggle='tooltip' title='{{ "package.json.go_to_placement"|trans({}, "MBHPackageBundle") }}' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'no-accommodation' }}'>{% if package.accommodation and package.accommodation.roomType %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a></small>
+            </td>
+            <td>
+                <a data-toggle='tooltip' href='{{ path('package_order_tourist_edit', {'id': package.order.id, 'packageId': package.id}) }}' title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}' class='{{ package.order.mainTourist ? '' : 'danger' }}'>{% if package.order.mainTourist %}{{ package.order.mainTourist.lastNameWithInitials }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a><small><br>{% if package.adults > 0 %}{{ package.adults }} вз.{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} рб.{% endif %}</small>
+            </td>
+            <td class='text-right'>
+                <a data-toggle='tooltip' title='{{ "package.json.go_to_calculations"|trans({}, "MBHPackageBundle") }}' href='{{ path('package_order_cash', {'id': package.order.id, 'packageId': package.id}) }}' class='text {% if package.order.isPaid %}text-success'{% elseif package.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}>{{ package.price|number_format(2) }}</a><br><small><i class='fa fa-sliders'> </i> {{ package.tariff.name }}</small>
+            </td>
+            <td class='text-right'>
+                {% if 'now'|date('d.m.Y') == package.createdAt|date('d.m.Y') %}{{ "package.json.today"|trans({}, "MBHPackageBundle") }} {{ package.createdAt|date('H:i') }}{% else %}{{ package.createdAt|date('d.m.Y H:i') }}{% endif %}<br><small>{{ package.createdBy|default(package.channelManagerType)|default('online') }}</small>
+            </td>
+            <td class='text-center'>
+                {% if package.id in updatePackageIDs %}
+                    <label class="label label-success">Да</label>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

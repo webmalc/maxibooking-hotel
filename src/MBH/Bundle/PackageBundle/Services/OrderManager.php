@@ -4,20 +4,20 @@ namespace MBH\Bundle\PackageBundle\Services;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use MBH\Bundle\PackageBundle\Document\Order as OrderDoc;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
 /**
- *  Order service
+ *  OrderManager service
  */
-class Order
+class OrderManager
 {
 
     /**
@@ -110,8 +110,7 @@ class Order
             );
 
             $new->setPrice($results[0]->getPrice($results[0]->getAdults(), $results[0]->getChildren()))
-                ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
-            ;
+                ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()));
 
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 
@@ -123,13 +122,13 @@ class Order
 
     /**
      * @param array $data
-     * @param OrderDoc|null $order
+     * @param Order|null $order
      * @param null $user
      * @param null $cash
-     * @return OrderDoc
+     * @return Order
      * @throws Exception
      */
-    public function createPackages(array $data, OrderDoc $order = null, $user = null, $cash = null)
+    public function createPackages(array $data, Order $order = null, $user = null, $cash = null)
     {
         if (empty($data['packages'])) {
             throw new Exception('Create packages error: $data["packages"] is empty.');
@@ -157,14 +156,13 @@ class Order
 
         // create order
         if (!$order) {
-            if  (empty($data['status']) || !isset($data['confirmed'])) {
+            if (empty($data['status']) || !isset($data['confirmed'])) {
                 throw new Exception('Create order error: $data["status"] || $data["confirmed"] is empty.');
             }
-            $order = new OrderDoc();
+            $order = new Order();
             $order->setConfirmed($data['confirmed'])
                 ->setStatus($data['status'])
-                ->setNote(!empty($data['order_note']) ? $data['order_note'] : null)
-            ;
+                ->setNote(!empty($data['order_note']) ? $data['order_note'] : null);
             if (!empty($tourist)) {
                 $order->setMainTourist($tourist);
                 $tourist->addOrder($order);
@@ -202,8 +200,7 @@ class Order
                 ->setOperation(isset($cash['operation']) ? $cash['operation'] : 'in')
                 ->setOrder($order)
                 ->setTouristPayer($order->getMainTourist())
-                ->setTotal(isset($cash['total']) ? (float)$cash['total'] : $order->getPrice())
-            ;
+                ->setTotal(isset($cash['total']) ? (float)$cash['total'] : $order->getPrice());
 
             if (!$this->validator->validate($order)) {
                 throw new Exception('Create cash document error: validation errors.');
@@ -230,12 +227,12 @@ class Order
 
     /**
      * @param array $data
-     * @param OrderDoc $order
+     * @param Order $order
      * @param null $user
      * @return Package
      * @throws Exception
      */
-    public function createPackage(array $data, OrderDoc $order, $user = null)
+    public function createPackage(array $data, Order $order, $user = null)
     {
         if (!$data['begin'] ||
             !$data['end'] ||
@@ -243,16 +240,17 @@ class Order
             !$data['children'] === null ||
             !$data['roomType']
         ) {
-            throw new Exception('Create package error: $data["begin"] || $data["end"] || $data["adults"] || $data["children"] || $data["roomType"] is empty.');
+            throw new PackageCreationException($order,
+                'Create package error: $data["begin"] || $data["end"] || $data["adults"] || $data["children"] || $data["roomType"] is empty.');
         }
 
         //search for packages
         $query = new SearchQuery();
         $query->begin = $this->helper->getDateFromString($data['begin']);
         $query->end = $this->helper->getDateFromString($data['end']);;
-        $query->adults = (int) $data['adults'];
-        $query->children = (int) $data['children'];
-        $query->tariff = !empty($data['tariff'])  ? $data['tariff'] : null;
+        $query->adults = (int)$data['adults'];
+        $query->children = (int)$data['children'];
+        $query->tariff = !empty($data['tariff']) ? $data['tariff'] : null;
         $query->isOnline = !empty($data['isOnline']);
         $query->addRoomType($data['roomType']);
         $query->accommodations = (boolean)$data['accommodation'];
@@ -260,11 +258,12 @@ class Order
         $results = $this->container->get('mbh.package.search')->search($query);
 
         if (count($results) != 1) {
-            throw new Exception('Create package error: invalid search results: ' . count($results));
+            throw new PackageCreationException($order,
+                'Create package error: invalid search results: ' . count($results));
         }
 
         if ($user && !$this->container->get('mbh.hotel.selector')->checkPermissions($results[0]->getRoomType()->getHotel())) {
-            throw new Exception('Acl error: permissions denied');
+            throw new PackageCreationException($order, 'Acl error: permissions denied');
         }
 
         //create package
@@ -275,23 +274,23 @@ class Order
             ->setChildren($results[0]->getChildren())
             ->setTariff($results[0]->getTariff())
             ->setRoomType($results[0]->getRoomType())
-            ->setNote(!empty($data['note'])  ? $data['note'] : null)
-            ->setArrivalTime(!empty($data['arrivalTime'])  ? $data['arrivalTime'] : null)
-            ->setDepartureTime(!empty($data['departureTime'])  ? $data['departureTime'] : null)
-            ->setChannelManagerId(!empty($data['channelManagerId'])  ? $data['channelManagerId'] : null)
-            ->setChannelManagerType(!empty($data['channelManagerType'])  ? $data['channelManagerType'] : null)
+            ->setNote(!empty($data['note']) ? $data['note'] : null)
+            ->setArrivalTime(!empty($data['arrivalTime']) ? $data['arrivalTime'] : null)
+            ->setDepartureTime(!empty($data['departureTime']) ? $data['departureTime'] : null)
+            ->setChannelManagerId(!empty($data['channelManagerId']) ? $data['channelManagerId'] : null)
+            ->setChannelManagerType(!empty($data['channelManagerType']) ? $data['channelManagerType'] : null)
             ->setOrder($order)
             ->setPrice(
-                (isset($data['price'])) ? (int) $data['price'] : $results[0]->getPrice($results[0]->getAdults(), $results[0]->getChildren())
+                (isset($data['price'])) ? (int)$data['price'] : $results[0]->getPrice($results[0]->getAdults(),
+                    $results[0]->getChildren())
             )
-            ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
-        ;
+            ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()));
 
         //accommodation
         if ($query->accommodations) {
             $room = $this->dm->getRepository('MBHHotelBundle:Room')->find($data['accommodation']);
             if (!$room) {
-                throw new Exception('Create package error: accommodation not found.');
+                throw new PackageCreationException($order, 'Create package error: accommodation not found.');
             }
             $package->setAccommodation($room);
         }
@@ -305,7 +304,7 @@ class Order
         }
 
         // add Tourists
-        if(!empty($data['tourists']) && is_array($data['tourists'])) {
+        if (!empty($data['tourists']) && is_array($data['tourists'])) {
             foreach ($data['tourists'] as $info) {
                 $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist')->fetchOrCreate(
                     $info['lastName'],
@@ -322,7 +321,7 @@ class Order
         }
 
         if (!$this->validator->validate($package)) {
-            throw new Exception('Create package error: validation errors.');
+            throw new PackageCreationException($order, 'Create package error: validation errors.');
         }
 
         $order->addPackage($package);
@@ -345,8 +344,7 @@ class Order
                 ->setOperation('in')
                 ->setOrder($order)
                 ->setTotal($package->getPrice())
-                ->setIsConfirmed(true)
-            ;
+                ->setIsConfirmed(true);
             $order->addCashDocument($cashIn);
             $this->dm->persist($order);
             $this->dm->persist($cashIn);
@@ -358,10 +356,9 @@ class Order
             $cashOut->setMethod('electronic')
                 ->setOperation('fee')
                 ->setOrder($order)
-                ->setTotal((int) $data['fee'])
+                ->setTotal((int)$data['fee'])
                 ->setNote('fee')
-                ->setIsConfirmed(true)
-            ;
+                ->setIsConfirmed(true);
             $order->addCashDocument($cashOut);
             $this->dm->persist($order);
             $this->dm->persist($cashOut);
@@ -373,11 +370,11 @@ class Order
 
     /**
      * @param array $data
-     * @param OrderDoc $order
-     * @return OrderDoc
+     * @param Order $order
+     * @return Order
      * @throws Exception
      */
-    public function createServices(array $data, OrderDoc $order)
+    public function createServices(array $data, Order $order)
     {
         foreach ($data as $info) {
             if (empty($info['id']) || empty($info['amount'])) {
@@ -412,4 +409,24 @@ class Order
 
         return $order;
     }
+}
+
+/**
+ * Class PackageCreationException
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
+class PackageCreationException extends Exception
+{
+    /**
+     * @var Order
+     */
+    public $order;
+
+    public function __construct(Order $order, $message = "", $code = 0, \Exception $previous = null)
+    {
+        $this->order = $order;
+        parent::__construct($message, $code, $previous);
+    }
+
+
 }

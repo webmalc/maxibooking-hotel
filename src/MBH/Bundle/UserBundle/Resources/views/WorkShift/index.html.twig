@@ -1,0 +1,27 @@
+{% extends 'MBHBaseBundle::page.html.twig' %}
+
+{% block body %}
+
+    <div class="lockscreen-wrapper">
+        <div class="login-box lockscreen-item" style="width: 380px">
+            {% block messages %}
+                {% include 'MBHBaseBundle::messages.html.twig' %}
+            {% endblock %}
+
+            <div class="login-logo">
+                <a href="{{ path('_welcome') }}"><b>Maxi</b>Booking</a>
+            </div>
+
+            <div class="text-center">
+                <div class="btn-group">
+                    <a href="{{ path('work_shift_new') }}" class="btn btn-success btn-lg"><i class="fa fa-clock-o"> Начать новую смену</i></a>
+                    <a href="{{ path('fos_user_security_logout') }}" class="btn btn-default btn-lg"><i class="fa fa-sign-out"></i> Выйти</a>
+                </div>
+            </div>
+            <div class="login-box-body">
+
+            </div>
+        </div>
+    </div><!-- /.center -->
+
+{% endblock %}

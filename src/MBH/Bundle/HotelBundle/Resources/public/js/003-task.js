@@ -76,31 +76,39 @@ $(document).ready(function () {
     var $housingSelect = $('#mbh_bundle_hotelbundle_task_housing'),
         $floorSelect = $('#mbh_bundle_hotelbundle_task_floor'),
         $roomsSelect = $('#mbh_bundle_hotelbundle_task_rooms'),
-        roomsSelectHtml = $roomsSelect.html();
+        resetRoomsSelectHtml = $roomsSelect.html()
+    ;
 
-    var firstCall = true;
+    //var firstCall = true;
     var changeHousingAndFloor = function (e) {
         if (!$roomsSelect.length) {
             return;
         }
         $roomsSelect.val('');
-        if(!firstCall) {
+        /*if(!firstCall) {
             roomsSelectHtml = roomsSelectHtml.replace('selected="selected"', '');
-        }
+        }*/
         var housing = $housingSelect.val(),
-            floor = $floorSelect.val(),
-            $roomsSelectHtml = $('<select>' + roomsSelectHtml + '</select>');
+            floor = $floorSelect.val()
+            //$roomsSelectHtml = $('<select>' + roomsSelectHtml + '</select>')
+        ;
 
-        $roomsSelectHtml.find('option').map(function() {
+        /*$roomsSelectHtml.find('option').map(function() {
             var isChecked = (!housing|| this.getAttribute("data-housing") == housing)
                 && (!floor || this.getAttribute("data-floor") == floor);
             if(!isChecked)
                 $(this).remove();
         });
-        var newHtml = $roomsSelectHtml.html();
-        $roomsSelect.select2('destroy').html(newHtml).select2();
+        var newHtml = $roomsSelectHtml.html();*/
 
-        firstCall = false;
+        $roomsSelect.mbhSelect2OptionsFilter(function(){
+            return (!housing|| this.getAttribute("data-housing") == housing)
+                && (!floor || this.getAttribute("data-floor") == floor);
+        }, resetRoomsSelectHtml);
+
+        //$roomsSelect.select2('destroy').html(newHtml).select2();
+
+        //firstCall = false;
     };
 
     $housingSelect.on('change', changeHousingAndFloor);

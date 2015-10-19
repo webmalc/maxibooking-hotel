@@ -51,3 +51,8 @@ views.user.tabs.main_info: "Основная информация"
 views.user.tabs.document_relation: "Удостоверение личности"
 views.user.tabs.address: "Адрес"
 views.user.tabs.security: "Безопасность"
+
+
+workShift:
+    notification:
+        work_shift_expired: Смена идет больше 12 часов. Закройте её

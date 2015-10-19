@@ -6,20 +6,23 @@ services:
             - { name: 'monolog.logger', channel: 'security' }
 
     mbh.user.group.type:
-      class: MBH\Bundle\UserBundle\Form\GroupType
-      tags:
-        - { name: form.type, alias: mbh_bundle_userbundle_grouptype }
-      arguments: [%security.role_hierarchy.roles%]
+        class: MBH\Bundle\UserBundle\Form\GroupType
+        tags:
+          - { name: form.type, alias: mbh_bundle_userbundle_grouptype }
+        arguments: [%security.role_hierarchy.roles%]
 
     mbh.user.roles.type:
-            class: MBH\Bundle\UserBundle\Form\Type\RolesType
-            arguments:
-                - %security.role_hierarchy.roles%
-            tags:
-                - { name: form.type, alias: roles }
-
-
+        class: MBH\Bundle\UserBundle\Form\Type\RolesType
+        arguments:
+            - %security.role_hierarchy.roles%
+        tags:
+            - { name: form.type, alias: roles }
     mbh.user.metadata_listener:
-            class: MBH\Bundle\UserBundle\EventListener\ClassMetadataListener
-            tags:
-                -  { name: doctrine_mongodb.odm.event_listener, event: loadClassMetadata }
+        class: MBH\Bundle\UserBundle\EventListener\ClassMetadataListener
+        tags:
+            -  { name: doctrine_mongodb.odm.event_listener, event: loadClassMetadata }
+    mbh.user.on_request_listener:
+        class: MBH\Bundle\UserBundle\EventListener\OnController
+        arguments: [@service_container]
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
