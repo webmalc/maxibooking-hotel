@@ -259,6 +259,8 @@ class Order
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
+        dump($results);
+
         if (count($results) != 1) {
             throw new Exception('Create package error: invalid search results: ' . count($results));
         }

@@ -92,9 +92,10 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                 !empty($request->get('s')['children_age']) ? $childrenAges = $request->get('s')['children_age'] : $childrenAges = [];
                 $query->setChildrenAges($childrenAges);
 
+                $hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
                 foreach ($data['roomType'] as $id) {
                     if (mb_stripos($id, 'allrooms_') !== false) {
-                        $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find(str_replace('allrooms_', '', $id));
+                        $hotel = $hotelRepository->find(str_replace('allrooms_', '', $id));
 
                         if (!$hotel) {
                             continue;
@@ -131,6 +132,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         return [
             'results' => $groupedResult,
             'query' => $query,
+            'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons')
         ];
     }
