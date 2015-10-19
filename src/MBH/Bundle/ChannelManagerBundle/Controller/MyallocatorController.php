@@ -32,8 +32,6 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
     {
         $config = $this->hotel->getMyallocatorConfig();
 
-        $this->get('mbh.channelmanager.myallocator')->pullOrders();
-
         $form = $this->createForm(
             $this->get('mbh.channelmanager.myallocator_type'), $config, ['config' => $config]
         );

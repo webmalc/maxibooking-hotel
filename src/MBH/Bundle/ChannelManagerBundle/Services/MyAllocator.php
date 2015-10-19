@@ -510,6 +510,7 @@ class MyAllocator extends Base
                     $result = $this->createPackage($orderInfo, $config, $order);
                     $this->notify($result, 'myallocator', 'new');
                 }
+
                 //edit
                 if ($status == 'edit' && $order && $order->getChannelManagerEditDateTime() != $editDateTime) {
                     $result = $this->createPackage($orderInfo, $config, $order);
@@ -517,7 +518,13 @@ class MyAllocator extends Base
                 }
                 //delete
                 if ($status == 'delete' && $order) {
-                    $order->setChannelManagerStatus('cancelled');
+
+                    empty($orderInfo['CancellationReason']) ? $reason = '': $reason = $orderInfo['CancellationReason'];
+                    $reason = "\n" . 'cancellation reason' . $reason . "\n";
+
+                    $order->setChannelManagerStatus('cancelled')
+                        ->setNote($order->getNote() . $reason)
+                    ;
                     $this->dm->persist($order);
                     $this->dm->flush();
                     $this->notify($order, 'myallocator', 'delete');

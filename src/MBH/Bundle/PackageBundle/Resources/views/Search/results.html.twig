@@ -73,7 +73,7 @@
                     <small><i class='fa fa-sliders'> </i> {{ result.tariff.name }}</small>
                 </td>
                 <td class="text-center">
-                    <a href="{{ path('package_new', app.request.get('s')|merge({roomType: result.roomType.id })) }}"
+                    <a href="{{ path('package_new', app.request.get('s')|merge({roomType: result.roomType.id, tariff: result.tariff.id  })) }}"
                        target="_blank"
                        class="btn btn-success btn-xs package-search-book {{ is_granted('ROLE_PACKAGE_NEW') is empty ? 'hidden' }}"
                        title="Бронировать номер. Всего номеров: {{ result.roomsCount }}" data-toggle="tooltip">
