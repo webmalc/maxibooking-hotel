@@ -54,8 +54,8 @@
                     </small>
                 </td>
                 <td class="td-xxs">
-                    <select class="form-control quantity-select">
-                        {% for index in 1..result.roomsCount %}
+                    <select class="form-control quantity-select input-xxs">
+                        {% for index in 1..(result.roomsCount <= 20 ? result.roomsCount : 20) %}
                             <option value="{{ index }}">{{ index }}</option>
                         {% endfor %}
                     </select>
