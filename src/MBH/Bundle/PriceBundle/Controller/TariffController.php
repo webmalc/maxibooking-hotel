@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PriceBundle\Form\TariffPromotionsType;
 use MBH\Bundle\PriceBundle\Form\TariffServicesType;
+use MBH\Bundle\PriceBundle\Form\TariffServiceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -195,6 +196,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(new TariffServicesType(), $tariff);
+        $serviceForm = $this->createForm(new TariffServiceType());
 
         $form->handleRequest($request);
         if($form->isValid()) {
@@ -209,6 +211,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         return [
             'tariff' => $tariff,
             'form' => $form->createView(),
+            'serviceForm' => $serviceForm->createView(),
             'logs' => $this->logs($tariff),
         ];
     }

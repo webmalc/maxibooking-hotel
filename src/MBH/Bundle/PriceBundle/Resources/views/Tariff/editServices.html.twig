@@ -13,6 +13,12 @@
             {{ form_widget(form) }}
             {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': tariff, 'delete_route': tariff.isDefault ? null : 'tariff_delete' } %}
             {{ form_end(form) }}
+
+
+            {#{% form_theme serviceForm 'MBHBaseBundle:Form:fields.html.twig' %}
+            {{ form_start(serviceForm, {'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(serviceForm) }}
+            {{ form_end(serviceForm) }}#}
         </div>
         {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': tariff, 'logs': logs, 'delete_route': 'tariff_delete' } %}
     </div>

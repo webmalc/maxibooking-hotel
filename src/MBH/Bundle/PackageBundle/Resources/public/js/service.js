@@ -5,11 +5,11 @@ var docReadyServices = function () {
 
     // package service form
     (function () {
-        if (!$('#mbh_bundle_packagebundle_package_service_type_nights').length) {
+        var nightsInput = $('#mbh_bundle_packagebundle_package_service_type_nights');
+        if (!nightsInput.length) {
             return;
         }
         var priceInput = $('#mbh_bundle_packagebundle_package_service_type_price'),
-            nightsInput = $('#mbh_bundle_packagebundle_package_service_type_nights'),
             nightsDiv = nightsInput.closest('div.form-group'),
             personsInput = $('#mbh_bundle_packagebundle_package_service_type_persons'),
             personsDiv = personsInput.closest('div.form-group'),
