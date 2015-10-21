@@ -41,12 +41,12 @@ var dangerTr = function () {
 
 mbh.alert = {
     $alert: $('#entity-delete-confirmation'),
-    show: function(href, header, text, buttonText, buttonIcon, buttonClass, action)
+    show: function(href, header, text, buttonText, buttonIcon, buttonClass, action, $this)
     {
         $("#entity-delete-button").off('click').on('click', function (e) {
             e.preventDefault();
             if (action) {
-                eval(action + '($this)');
+                eval(action + '($this)'); //todo replace
             } else {
                 window.location.href = href;
             }
@@ -88,7 +88,7 @@ var deleteLink = function () {
         var buttonText = $this.attr('data-button') || $('#entity-delete-button-text').attr('data-default');
         var buttonIcon = $this.attr('data-button-icon') || $('#entity-delete-button-icon').attr('data-default');
         var buttonClass = $this.attr('data-button-class') || $('#entity-delete-button').attr('data-default');
-        mbh.alert.show(href, header, text, buttonText, buttonIcon, buttonClass, action);
+        mbh.alert.show(href, header, text, buttonText, buttonIcon, buttonClass, action, $this);
 
         $('.datepicker').datepicker({
             language: "ru",

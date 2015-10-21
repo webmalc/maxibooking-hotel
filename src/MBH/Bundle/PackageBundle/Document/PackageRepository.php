@@ -333,7 +333,11 @@ class PackageRepository extends DocumentRepository
                         prev.total += obj.servicesPrice
                     }
                     if (obj.discount) {
-                        prev.total -= obj.price * obj.discount/100
+                        var discount = obj.isPercentDiscount ? obj.price * obj.discount/100 : obj.discount;
+                        prev.total -= discount;
+                    }
+                    if(obj.promotion) {
+                        prev.total -= obj.promotionTotal;
                     }
                 }
 

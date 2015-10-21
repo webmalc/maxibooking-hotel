@@ -83,9 +83,6 @@ class PackageSubscriber implements EventSubscriber
 
         foreach ($docs as $doc) {
             if ($doc instanceof PackageService) {
-
-
-
                 try {
                     $package = $doc->getPackage();
 
@@ -232,17 +229,18 @@ class PackageSubscriber implements EventSubscriber
         if (!$entity instanceof Package) {
             return;
         }
+        $package = $entity;
         $dm = $args->getDocumentManager();
         /** @var Package $entity */
-        // Set number
-        if (empty($entity->getNumber())) {
 
+        // Set number
+        if (empty($package->getNumber())) {
             if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $dm->getFilterCollection()->disable('softdeleteable');
             }
             $lastEntity = $dm->getRepository('MBHPackageBundle:Package')
                 ->createQueryBuilder('q')
-                ->field('order.id')->equals($entity->getOrder()->getId())
+                ->field('order.id')->equals($package->getOrder()->getId())
                 ->sort('number', 'desc')
                 ->getQuery()
                 ->getSingleResult()
@@ -252,34 +250,34 @@ class PackageSubscriber implements EventSubscriber
 
             (empty($lastEntity) || empty($lastEntity->getNumber())) ? $number = 1 : $number = $lastEntity->getNumber() + 1;
 
-            if (empty($entity->getNumber())) {
-                $entity->setNumber($number);
+            if (empty($package->getNumber())) {
+                $package->setNumber($number);
             }
 
-            if ($entity->getTariff() && empty($entity->getNumberWithPrefix())) {
-                $entity->setNumberWithPrefix($entity->getTariff()->getHotel()->getPrefix() . $entity->getOrder()->getId(). '/' . $number);
+            if ($package->getTariff() && empty($package->getNumberWithPrefix())) {
+                $package->setNumberWithPrefix($package->getTariff()->getHotel()->getPrefix() . $package->getOrder()->getId(). '/' . $number);
             }
         }
 
-        if($entity->getTariff()->getDefaultPromotion()) {
-            $entity->setPromotion($entity->getTariff()->getDefaultPromotion());
+        if($package->getTariff()->getDefaultPromotion()) {
+            $package->setPromotion($package->getTariff()->getDefaultPromotion());
         }
     }
 
     public function preUpdate(LifecycleEventArgs $args)
     {
-        $entity = $args->getDocument();
+        $package = $args->getDocument();
 
-        if (!$entity instanceof Package) {
+        if (!$package instanceof Package) {
             return;
         }
 
         $dm = $args->getDocumentManager();
-        $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($entity);
+        $changeSet = $dm->getUnitOfWork()->getDocumentChangeSet($package);
         if(isset($changeSet['isCheckOut']) && $changeSet['isCheckOut'][0] === false && $changeSet['isCheckOut'][1] === true) {
-            $entity->setIsLocked(true);
-            $meta = $dm->getClassMetadata(get_class($entity));
-            $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($meta, $entity);
+            $package->setIsLocked(true);
+            $meta = $dm->getClassMetadata(get_class($package));
+            $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($meta, $package);
         }
     }
 
