@@ -11,12 +11,21 @@ class Extension extends \Twig_Extension
      */
     protected $container;
 
+    /**
+     * @var \Symfony\Component\Translation\IdentityTranslator
+     */
     protected $translator;
+
+    /**
+    * @var \Doctrine\ODM\MongoDB\DocumentManager
+    */
+    protected $dm;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->translator = $this->container->get('translator');
+        $this->dm = $this->container->get('doctrine_mongodb')->getManager();
     }
 
     /**
@@ -92,12 +101,6 @@ class Extension extends \Twig_Extension
 
     public function cashDocuments()
     {
-        /*foreach ($this->container->get('mbh.cash')->notConfirmedCashDocuments() as $cashdoc) {
-            dump($cashdoc);
-        }
-
-        exit();*/
-
         return $this->container->get('mbh.cash')->notConfirmedCashDocuments();
     }
 
@@ -107,6 +110,14 @@ class Extension extends \Twig_Extension
     public function currency()
     {
         return $this->container->get('mbh.currency')->info();
+    }
+
+    /**
+     * @return array
+     */
+    public function clientConfig()
+    {
+        return $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
     }
 
     /**
@@ -158,19 +169,10 @@ class Extension extends \Twig_Extension
         return [
             'currency' => new \Twig_Function_Method($this, 'currency', ['is_safe' => ['html']]),
             'user_cash' => new \Twig_Function_Method($this, 'cashDocuments', ['is_safe' => ['html']]),
-            //'clientConfig' => new \Twig_Function_Method($this, 'fetchConfig'),
+            'client_config' => new \Twig_Function_Method($this, 'clientConfig'),
             'currentWorkShift' => new \Twig_Function_Method($this, 'currentWorkShift')
         ];
     }
-
-    /**
-     * @return \MBH\Bundle\ClientBundle\Document\ClientConfig
-     */
-    /*public function fetchConfig()
-    {
-        $clientConfigRepository = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig');
-        return $clientConfigRepository->fetchConfig();
-    }*/
 
     /**
      * @return \MBH\Bundle\UserBundle\Document\WorkShift|null

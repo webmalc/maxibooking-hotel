@@ -174,8 +174,8 @@ $(document).ready(function () {
             return null;
         }
         var h = function () {
-            $('.scrolling').height(function (index, height) {
-                return $(window).height() - $(this).offset().top - 60;
+            $('.scrolling').height(function () {
+                return $(window).height() - $(this).offset().top - 90;
             });
         };
         h();

@@ -278,6 +278,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         return [
             'package' => $package,
+            'status' => $package->getStatus(),
             'form' => $form->createView(),
             'logs' => $this->logs($package),
             'statuses' => $this->container->getParameter('mbh.package.statuses')
