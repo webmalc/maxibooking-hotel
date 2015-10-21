@@ -43,6 +43,12 @@ class HotelType extends AbstractType
                 'attr' => ['placeholder' => 'HTL'],
                 'help' => 'form.hotelType.document_use_name'
             ])
+            ->add('description', 'textarea', [
+                'label' => 'form.hotelType.description',
+                'group' => 'form.hotelType.general_info',
+                'attr' => ['class' => 'tinymce'],
+                'required' => false
+            ])
             ->add('file', 'file', [
                 'label' => 'form.hotelType.logo',
                 'group' => 'form.hotelType.settings',
