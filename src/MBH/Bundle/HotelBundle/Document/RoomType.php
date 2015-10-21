@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -41,6 +42,8 @@ class RoomType extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
+    use RoomTypeTrait;
 
     /**
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="roomTypes")
@@ -140,24 +143,6 @@ class RoomType extends Base
      * )
      */
     protected $additionalPlaces = 0;
-
-    /**
-     * @var boolean
-     * @Gedmo\Versioned
-     * @ODM\Boolean()
-     * @Assert\NotNull()
-     * @Assert\Type(type="boolean")
-     */
-    protected $isChildPrices = false;
-
-    /**
-     * @var boolean
-     * @Gedmo\Versioned
-     * @ODM\Boolean()
-     * @Assert\NotNull()
-     * @Assert\Type(type="boolean")
-     */
-    protected $isIndividualAdditionalPrices = false;
 
     /**
      * @var string
@@ -662,50 +647,6 @@ class RoomType extends Base
     {
         $this->facilities = $facilities;
         return $this;
-    }
-
-    /**
-     * Set isChildPrices
-     *
-     * @param boolean $isChildPrices
-     * @return self
-     */
-    public function setIsChildPrices($isChildPrices)
-    {
-        $this->isChildPrices = $isChildPrices;
-        return $this;
-    }
-
-    /**
-     * Get isChildPrices
-     *
-     * @return boolean $isChildPrices
-     */
-    public function getIsChildPrices()
-    {
-        return $this->isChildPrices;
-    }
-
-    /**
-     * Set isIndividualAdditionalPrices
-     *
-     * @param boolean $isIndividualAdditionalPrices
-     * @return self
-     */
-    public function setIsIndividualAdditionalPrices($isIndividualAdditionalPrices)
-    {
-        $this->isIndividualAdditionalPrices = $isIndividualAdditionalPrices;
-        return $this;
-    }
-
-    /**
-     * Get isIndividualAdditionalPrices
-     *
-     * @return boolean $isIndividualAdditionalPrices
-     */
-    public function getIsIndividualAdditionalPrices()
-    {
-        return $this->isIndividualAdditionalPrices;
     }
 
     /**

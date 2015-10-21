@@ -265,7 +265,7 @@ class Builder extends ContainerAware
                 ->setAttributes(['icon' => 'fa fa-bed']);
 
         $config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
-        if ($config && $config->getIsDisabledRoomTypeCategory()) {
+        if ($config && $config->getUseRoomTypeCategory()) {
             $menu['hotels']->addChild('room_type_category', ['route' => 'room_type_category', 'label' => 'Группы номеров'])
                 ->setAttributes(['icon' => 'fa fa-bed']);
         }

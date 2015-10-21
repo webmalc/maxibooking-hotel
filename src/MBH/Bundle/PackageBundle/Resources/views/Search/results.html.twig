@@ -8,7 +8,7 @@
             <th class="td-xxs"></th>
             <th class="td-md">{{ "search.results.dates"|trans({}, "MBHPackageBundle") }}</th>
             <th>{{ "search.results.tariff"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-md">{{ "search.results.quantity"|trans({}, "MBHPackageBundle") }}</th>
+            <th class="td-sm">{{ "search.results.quantity"|trans({}, "MBHPackageBundle") }}</th>
             {% if is_granted('ROLE_PACKAGE_ACCOMMODATION') %}
                 <th class="td-sm">{{ "search.results.room"|trans({}, "MBHPackageBundle") }}</th>
             {% endif %}
@@ -24,16 +24,20 @@
     {% for row in results %}
         <tr class="mbh-grid-header1 info">
             <td colspan="10">
-                <strong>{{ row.roomType }}</strong>
-                <small>осн. мест: {{ row.roomType.places }} + доп. мест: {{ row.roomType.additionalPlaces }}</small>&nbsp;
-                {% if row.roomType.facilities %}
+                <strong>{{ row.roomType }}</strong> -
                 <small>
-                    {% for facility in row.roomType.facilities %}
-                        <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility] }}" class="fa fa-lg mbf-{{ facility }}"></i>
-                    {% endfor %}
+                    мест: {{ row.roomType.places }}{% if row.roomType.additionalPlaces > 0 %}(+{{ row.roomType.additionalPlaces }}){% endif %}
+                    - {{ row.roomType.hotel }}
                 </small>
+                <div class="pull-right">
+                {% if row.roomType.facilities %}
+                    <small>
+                        {% for facility in row.roomType.facilities %}
+                            <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility] }}" class="fa fa-lg mbf-{{ facility }}"></i>
+                        {% endfor %}
+                    </small>
                 {% endif %}
-                - <small>{{ row.roomType.hotel }}</small>
+                </div>
             </td>
         </tr>
 
@@ -53,7 +57,7 @@
                         <span class="package-search-book-count">{{ result.roomsCount }}</span>
                     </small>
                 </td>
-                <td class="td-xxs">
+                <td>
                     <select class="form-control quantity-select input-xxs">
                         {% for index in 1..(result.roomsCount <= 20 ? result.roomsCount : 20) %}
                             <option value="{{ index }}">{{ index }}</option>
