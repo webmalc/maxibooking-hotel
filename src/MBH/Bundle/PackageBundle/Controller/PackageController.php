@@ -268,7 +268,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         $form = $this->createForm(new PackageMainType(), $package, [
-            'price' => $authorizationChecker->isGranted(['ROLE_ADMIN']),
             'discount' => $authorizationChecker->isGranted('ROLE_DISCOUNT_ADD'),
             'promotion' => $authorizationChecker->isGranted('ROLE_PROMOTION_ADD'),
             'promotions' => $promotions,
@@ -279,6 +278,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         return [
             'package' => $package,
+            'status' => $package->getStatus(),
             'form' => $form->createView(),
             'logs' => $this->logs($package),
             'statuses' => $this->container->getParameter('mbh.package.statuses')
@@ -321,7 +321,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $oldPackage = clone $package;
         $form = $this->createForm(new PackageMainType(), $package, [
-            'price' => $this->get('security.authorization_checker')->isGranted(['ROLE_ADMIN']),
             'discount' => $authorizationChecker->isGranted('ROLE_DISCOUNT_ADD'),
             'promotion' => $authorizationChecker->isGranted('ROLE_PROMOTION_ADD'),
             'promotions' => $promotions,

@@ -3,18 +3,22 @@
 
 {% block content %}
 
-    <table class="table table-striped">
+    <table class="table table-striped table-icons table-actions">
         <thead>
             <tr>
+                <th></th>
                 <th>Название</th>
                 <th>Включена</th>
-                <th>Кол. типов</th>
+                <th>Типы номеров</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             {% for category in categories %}
                 <tr>
+                    <td class="td-xxs">
+                        <i class="fa fa-bed"></i>
+                    </td>
                     <td>
                         <a href="{{ path('room_type_category_edit', { 'id': category.id }) }}" rel="main">{{ category.title }}</a>
                     </td>
@@ -24,7 +28,13 @@
                         {% endif %}
                     </td>
                     <td>
-                        {{ category.types|length }}
+                        {% if category.types|length > 0 %}
+                            {% for roomType in category.types %}
+                                <small>{% if loop.index0 > 0 %}, {% endif %}{{ roomType }}</small>
+                            {% endfor %}
+                        {% else %}
+                            <span class="label label-danger">нет</span>
+                        {% endif %}
                     </td>
                     <td class="table-actions-td text-center">
                         <a href="{{ path('room_type_category_edit', { 'id': category.id }) }}" class="btn btn-success btn-xs"

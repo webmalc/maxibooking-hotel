@@ -123,7 +123,7 @@ class PackageRepository extends DocumentRepository
             $query = trim($criteria->query);
             $tourists = $this->dm->getRepository('MBHPackageBundle:Tourist')
                 ->createQueryBuilder('t')
-                ->field('fullName')->equals(new \MongoRegex('/.*'.$query.'.*/ui'))
+                ->field('fullName')->equals(new \MongoRegex('/.*' . $query . '.*/ui'))
                 ->getQuery()
                 ->execute();
 
@@ -137,7 +137,7 @@ class PackageRepository extends DocumentRepository
                 $queryBuilder->addOr($queryBuilder->expr()->field('mainTourist.id')->in($touristsIds));
             }
 
-            $queryBuilder->addOr($queryBuilder->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*'.$query.'.*/ui')));
+            $queryBuilder->addOr($queryBuilder->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
         }
 
         //isCheckIn
@@ -158,7 +158,7 @@ class PackageRepository extends DocumentRepository
             }
         }
 
-        if($criteria->sort) {
+        if ($criteria->sort) {
             $queryBuilder->sort($criteria->sort);
         }
 
@@ -213,7 +213,8 @@ class PackageRepository extends DocumentRepository
         $rooms = null,
         $excludePackages = null,
         $departure = true
-    ) {
+    )
+    {
         $qb = $this->createQueryBuilder('s');
         $qb->field('accommodation')->exists(true)
             ->field('accommodation')->notEqual(null);
@@ -257,8 +258,7 @@ class PackageRepository extends DocumentRepository
             //->field('arrivalTime')->lte($data)
             ->field('isCheckOut')->equals(false)
             ->sort('arrivalTime', -1)
-            ->limit(1)
-        ;
+            ->limit(1);
 
         return $queryBuilder->getQuery()->getSingleResult();
     }
@@ -333,7 +333,11 @@ class PackageRepository extends DocumentRepository
                         prev.total += obj.servicesPrice
                     }
                     if (obj.discount) {
-                        prev.total -= obj.price * obj.discount/100
+                        var discount = obj.isPercentDiscount ? obj.price * obj.discount/100 : obj.discount;
+                        prev.total -= discount;
+                    }
+                    if(obj.promotion) {
+                        prev.total -= obj.promotionTotal;
                     }
                 }
 
@@ -437,15 +441,15 @@ class PackageRepository extends DocumentRepository
         }
 
         if (isset($data['begin']) && !$data['begin'] instanceof \DateTime) {
-            $data['begin'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['begin'].' 00:00:00');
+            $data['begin'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['begin'] . ' 00:00:00');
         }
 
-        if(isset($data['end']) && !$data['end'] instanceof \DateTime) {
-            $data['end'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['end'].' 00:00:00');
+        if (isset($data['end']) && !$data['end'] instanceof \DateTime) {
+            $data['end'] = \DateTime::createFromFormat('d.m.Y H:i:s', $data['end'] . ' 00:00:00');
         }
 
         if ($dateType == 'accommodation') {
-            if($data['begin'] && $data['end']) {
+            if ($data['begin'] && $data['end']) {
                 $expr = $qb->expr();
                 $expr->addOr($qb->expr()
                     ->field('begin')->gte($data['begin'])->lte($data['end'])
@@ -460,7 +464,7 @@ class PackageRepository extends DocumentRepository
 
                 $qb->addAnd($expr);
             }
-        }else {
+        } else {
             if (isset($data['begin']) && !empty($data['begin'])) {
                 $qb->field($dateType)->gte($data['begin']);
             }
@@ -499,7 +503,7 @@ class PackageRepository extends DocumentRepository
             $query = trim($data['query']);
             $tourists = $dm->getRepository('MBHPackageBundle:Tourist')
                 ->createQueryBuilder('t')
-                ->field('fullName')->equals(new \MongoRegex('/.*'.$query.'.*/ui'))
+                ->field('fullName')->equals(new \MongoRegex('/.*' . $query . '.*/ui'))
                 ->getQuery()
                 ->execute();
 
@@ -513,7 +517,7 @@ class PackageRepository extends DocumentRepository
                 $qb->addOr($qb->expr()->field('mainTourist.id')->in($touristsIds));
             }
 
-            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*'.$query.'.*/ui')));
+            $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $query . '.*/ui')));
         }
 
         //isCheckIn
@@ -552,8 +556,8 @@ class PackageRepository extends DocumentRepository
         if (isset($data['dir']) && in_array($data['dir'], ['asc', 'desc'])) {
             $dir = $data['dir'];
         }
-        if(is_array($order)) {
-            foreach($order as $ord) {
+        if (is_array($order)) {
+            foreach ($order as $ord) {
                 $qb->sort($ord, $dir);
             }
         } else {
@@ -603,7 +607,11 @@ class PackageRepository extends DocumentRepository
     }
 
 
-    protected function getArrivalsQueryBuilder()
+    /**
+     * @param int $limit
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     */
+    protected function getArrivalsQueryBuilder($limit = 14)
     {
         $queryBuilder = $this->createQueryBuilder();
         $queryBuilder
@@ -613,9 +621,9 @@ class PackageRepository extends DocumentRepository
             )
             ->addOr($queryBuilder->expr()
                 ->field('begin')->lte(new \DateTime('midnight'))
+                ->field('begin')->gte(new \DateTime('midnight - ' . (int)$limit . ' days'))
                 ->field('isCheckIn')->equals(false)
-            )
-        ;
+            );
         return $queryBuilder;
     }
 
@@ -626,15 +634,15 @@ class PackageRepository extends DocumentRepository
             ->field('begin')->lte(new \DateTime('midnight'))
             ->field('end')->gte(new \DateTime('midnight'))
             ->field('isCheckIn')->equals(true)
-            ->field('isCheckOut')->equals(false)
-        ;
+            ->field('isCheckOut')->equals(false);
         return $queryBuilder;
     }
 
     /**
+     * @param int $limit
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
-    protected function getOutQueryBuilder()
+    protected function getOutQueryBuilder($limit = 14)
     {
         $queryBuilder = $this->createQueryBuilder();
         $queryBuilder
@@ -645,9 +653,9 @@ class PackageRepository extends DocumentRepository
             )
             ->addOr($queryBuilder->expr()
                 ->field('end')->lte(new \DateTime('midnight'))
+                ->field('end')->gte(new \DateTime('midnight - ' . (int)$limit . ' days'))
                 ->field('isCheckOut')->equals(false)
-            )
-        ;
+            );
         return $queryBuilder;
     }
 
@@ -657,7 +665,7 @@ class PackageRepository extends DocumentRepository
      */
     protected function getQueryBuilderByType($type)
     {
-        return $this->{'get'. ucfirst($type) .'QueryBuilder'}();
+        return $this->{'get' . ucfirst($type) . 'QueryBuilder'}();
     }
 
     /**
@@ -669,21 +677,29 @@ class PackageRepository extends DocumentRepository
     {
         return $this->getQueryBuilderByType($type)->getQuery()->execute();
     }
+
     /**
      * @param $type
      * @param bool $attention
+     * @param int $limit
      * @return int
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function countByType($type, $attention = false)
+    public function countByType($type, $attention = false, $limit = 14)
     {
         $queryBuilder = $this->getQueryBuilderByType($type);
-        if($attention) {
-            if($type == 'arrivals') {
-                $queryBuilder->field('isCheckIn')->equals(false);
+        if ($attention) {
+            if ($type == 'arrivals') {
+                $queryBuilder
+                    ->field('isCheckIn')->equals(false)
+                    ->field('begin')->gte(new \DateTime('midnight - ' . (int)$limit . ' days'))
+                    ->field('begin')->lte(new \DateTime('midnight'));
             }
-            if($type == 'out') {
-                $queryBuilder->field('isCheckOut')->equals(false);
+            if ($type == 'out') {
+                $queryBuilder
+                    ->field('isCheckOut')->equals(false)
+                    ->field('end')->gte(new \DateTime('midnight - ' . (int)$limit . ' days'))
+                    ->field('end')->lte(new \DateTime('midnight'));
             }
         }
         return $queryBuilder->getQuery()->count();

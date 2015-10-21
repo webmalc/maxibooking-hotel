@@ -32,6 +32,7 @@ form.hotelType.international_title: Международное название
 form.hotelType.placeholder_hotel: Отель
 form.hotelType.maxibooking_inner_name: Название для использования внутри MaxiBooking
 form.hotelType.prefix: Префикс
+form.hotelType.description: Описание
 form.hotelType.document_use_name: Название для использования в документах
 form.hotelType.sale_days_amount: Количество дней продажи
 form.hotelType.settings: Настройки

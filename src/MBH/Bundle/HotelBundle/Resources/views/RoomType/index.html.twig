@@ -10,8 +10,13 @@
         {% for entity in entities %}
             <li {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}class="active"{% endif %}>
                 <a href="#{{ entity.id }}" role="tab" data-toggle="tab">
-                    <i class="fa fa-bed" style="color:{{ entity.color }};"></i>&nbsp;{% if not entity.isEnabled %}
-                    <del class="text-danger">{% endif %}{{ entity.name }}{% if not entity.isEnabled %}</del>{% endif %}
+                    <i class="fa fa-bed" style="color:{{ entity.color }};"></i>&nbsp;
+                    {% if not entity.isEnabled %}<del class="text-danger">{% endif %}
+                        {{ entity.name }}
+                        {% if client_config().useRoomTypeCategory %}
+                            <small> - {{ entity.category ? entity.category : 'группа не указана' }}</small>
+                        {% endif %}
+                    {% if not entity.isEnabled %}</del>{% endif %}
                 </a>
             </li>
         {% endfor %}

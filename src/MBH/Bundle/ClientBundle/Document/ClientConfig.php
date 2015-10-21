@@ -53,7 +53,7 @@ class ClientConfig extends Base
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
-    protected $isDisabledRoomTypeCategory = false;
+    protected $useRoomTypeCategory = false;
 
     /**
      * @var string
@@ -112,17 +112,17 @@ class ClientConfig extends Base
     /**
      * @return boolean
      */
-    public function getIsDisabledRoomTypeCategory()
+    public function getUseRoomTypeCategory()
     {
-        return $this->isDisabledRoomTypeCategory;
+        return $this->useRoomTypeCategory;
     }
 
     /**
-     * @param boolean $isDisabledRoomTypeCategory
+     * @param boolean $useRoomTypeCategory
      */
-    public function setIsDisabledRoomTypeCategory($isDisabledRoomTypeCategory)
+    public function setUseRoomTypeCategory($useRoomTypeCategory)
     {
-        $this->isDisabledRoomTypeCategory = $isDisabledRoomTypeCategory;
+        $this->useRoomTypeCategory = $useRoomTypeCategory;
     }
 
     /**

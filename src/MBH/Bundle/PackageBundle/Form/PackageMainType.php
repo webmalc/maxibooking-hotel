@@ -79,19 +79,6 @@ class PackageMainType extends AbstractType
                 'group' => 'Номер',
             ]);
 
-        if ($options['price'] && 0) {
-            $builder->add('price', 'text', [
-                'label' => 'form.packageMainType.price',
-                'required' => true,
-                'group' => 'Цена',
-                'error_bubbling' => true,
-                'property_path' => 'packagePrice',
-                'attr' => [
-                    'class' => 'price-spinner'
-                ],
-            ]);
-        }
-
         if ($options['promotion']) {
             $package = $options['package'];
             /** @var Package $package */
@@ -146,7 +133,6 @@ class PackageMainType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\PackageBundle\Document\Package',
-            'price' => false,
             'discount' => false,
             'hotel' => null,
             'corrupted' => false,

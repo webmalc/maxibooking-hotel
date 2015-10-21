@@ -20,7 +20,7 @@ class ClientConfigType extends AbstractType
                 'required' => false,
                 'help' => 'form.clientConfigType.is_sms_notification_turned_on'
             ])
-            ->add('isDisabledRoomTypeCategory', 'checkbox', [
+            ->add('useRoomTypeCategory', 'checkbox', [
                 'label' => 'form.clientConfigType.is_disabled_room_type_category',
                 //'value' => false,
                 'required' => false,

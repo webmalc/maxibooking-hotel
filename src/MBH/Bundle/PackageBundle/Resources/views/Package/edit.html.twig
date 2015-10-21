@@ -80,7 +80,7 @@
                                         </td>
                                         <td>
                                             <span
-                                        class="text-{{ statuses[package.status].class }}">{{ statuses[package.status].title }} {% if package.status == 'channel_manager' %}({{ package.channelManagerType }}){% endif %}</span>
+                                        class="text-{{ statuses[status].class }}">{{ statuses[status].title }} {% if status == 'channel_manager' %}({{ package.channelManagerType }}){% endif %}</span>
                                         {% if package.deletedAt %} &nbsp;
                                             <small class="text-danger"><i
                                                     class="fa fa-trash-o"> </i> {{ 'package.edit.deleted'|trans({}, 'MBHPackageBundle') }}
@@ -90,7 +90,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <strong>{{ 'package.edit.is_confirmed'|trans({}, 'MBHPackageBundle') }}</strong></div>
+                                            <strong>{{ 'package.edit.is_confirmed'|trans({}, 'MBHPackageBundle') }}</strong>
                                         </td>
                                         <td>
                                             {% if package.confirmed %}

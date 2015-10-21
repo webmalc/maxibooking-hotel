@@ -11,6 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 
 /**
  * @ODM\Document(collection="RoomTypeCategory")
@@ -26,6 +27,7 @@ class RoomTypeCategory extends Base
     use SoftDeleteableDocument;
     use BlameableDocument;
     use HotelableDocument;
+    use RoomTypeTrait;
 
     /**
      * @var string

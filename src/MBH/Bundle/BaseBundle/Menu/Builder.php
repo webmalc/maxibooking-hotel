@@ -46,38 +46,39 @@ class Builder extends ContainerAware
         $menu->addChild('reservations', ['route' => 'package_search', 'label' => 'Подбор'])
             ->setAttributes(['icon' => 'fa fa-search']);
 
+        $arrivals = $dm->getRepository('MBHPackageBundle:Package')->countByType('arrivals', true);
+        $out = $dm->getRepository('MBHPackageBundle:Package')->countByType('out', true);
+
+        $porterBadges = [];
+        if ($arrivals) {
+            $porterBadges += [
+                'badge_left' => true,
+                'badge_class_left' => 'bg-red badge-sidebar-left badge-sidebar-margin',
+                'badge_id_left' => 'arrivals',
+                'badge_value_left' => $arrivals
+            ];
+        }
+        if ($out) {
+            $porterBadges += [
+                'badge_right' => true,
+                'badge_class_right' => 'bg-green badge-sidebar-right badge-sidebar-margin',
+                'badge_id_right' => 'out',
+                'badge_value_right' => $out
+            ];
+        }
+
         //porter
         $menu->addChild('porter_links', ['route' => '_welcome', 'label' => 'Портье'])
-            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bell']);
+            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bell']  + $porterBadges);
 
         $menu['porter_links']->addChild('report_room_types', ['route' => 'report_room_types', 'label' => 'Номерной фонд'])
         ->setAttributes(['icon' => 'fa fa-bed']);
-
-        $arrivals = $dm->getRepository('MBHPackageBundle:Package')->fetch([
-            'begin' => new \DateTime('midnight'),
-            'end' => new \DateTime('midnight'),
-            'dates' => 'begin',
-            'checkIn' => false,
-            'checkOut' => false,
-            'hotel' => $hotel,
-            'count' => true
-        ]);
-
-        $arrivalsData = [];
-        if ($arrivals) {
-            $arrivalsData = [
-                'badge' => true,
-                'badge_class' => 'bg-red',
-                'badge_id' => 'arrivals',
-                'badge_value' => $arrivals
-            ];
-        }
 
         $menu['porter_links']->addChild('report_porter', [
             'route' => 'report_porter',
             'label' => 'Заезд/Выезд',
         ])
-        ->setAttributes(['icon' => 'fa fa-exchange'] + $arrivalsData);
+        ->setAttributes(['icon' => 'fa fa-exchange']);
         $menu['porter_links']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
             ->setAttributes(['icon' => 'fa fa-table']);
 
@@ -265,7 +266,7 @@ class Builder extends ContainerAware
                 ->setAttributes(['icon' => 'fa fa-bed']);
 
         $config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
-        if ($config && $config->getIsDisabledRoomTypeCategory()) {
+        if ($config && $config->getUseRoomTypeCategory()) {
             $menu['hotels']->addChild('room_type_category', ['route' => 'room_type_category', 'label' => 'Группы номеров'])
                 ->setAttributes(['icon' => 'fa fa-bed']);
         }

@@ -110,6 +110,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'groupName' => $this->get('translator')->trans('controller.orderController.add_cash_register_paper'),
             'payer' => $entity->getMainTourist() ? $entity->getMainTourist()->getId() : null,
             'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity),
+            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER')
         ]);
 
         if ($request->isMethod(Request::METHOD_PUT)  &&

@@ -13,6 +13,17 @@ class RoomTypeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        if ($options['useRoomTypeCategory']) {
+            $builder
+                ->add('category', 'document', [
+                    'label' => 'form.roomTypeType.category',
+                    'group' => 'form.roomTypeType.general_info',
+                    'required' => true,
+                    'empty_value' => '',
+                    'class' => 'MBHHotelBundle:RoomTypeCategory'
+                ])
+            ;
+        }
         $builder
             ->add('fullTitle', 'text', [
                 'label' => 'form.roomTypeType.name',
@@ -77,21 +88,28 @@ class RoomTypeType extends AbstractType
                 'required' => true,
                 'attr' => ['placeholder' => 'hotel', 'class' => 'spinner room-type-places'],
                 'help' => 'form.roomTypeType.room_additional_places_amount'
-            ])
-            ->add('isChildPrices', 'checkbox', [
-                'label' => 'form.roomTypeType.isChildPrices',
-                'group' => 'form.roomTypeType.prices',
-                'value' => true,
-                'required' => false,
-                'help' => 'form.roomTypeType.isChildPricesDesc'
-            ])
-            ->add('isIndividualAdditionalPrices', 'checkbox', [
-                'label' => 'form.roomTypeType.isIndividualAdditionalPrices',
-                'group' => 'form.roomTypeType.prices',
-                'value' => true,
-                'required' => false,
-                'help' => 'form.roomTypeType.isIndividualAdditionalPricesDesc'
-            ])
+            ]);
+
+        if (!$options['useRoomTypeCategory']) {
+            $builder
+                ->add('isChildPrices', 'checkbox', [
+                    'label' => 'form.roomTypeType.isChildPrices',
+                    'group' => 'form.roomTypeType.prices',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'form.roomTypeType.isChildPricesDesc'
+                ])
+                ->add('isIndividualAdditionalPrices', 'checkbox', [
+                    'label' => 'form.roomTypeType.isIndividualAdditionalPrices',
+                    'group' => 'form.roomTypeType.prices',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'form.roomTypeType.isIndividualAdditionalPricesDesc'
+                ])
+            ;
+        }
+
+        $builder
             ->add('isEnabled', 'checkbox', [
                 'label' => 'form.roomTypeType.is_included',
                 'group' => 'form.roomTypeType.settings',
@@ -100,17 +118,7 @@ class RoomTypeType extends AbstractType
                 'help' => 'form.roomTypeType.is_room_included_in_search'
             ])
         ;
-        if ($options['disabledRoomTypeCategory']) {
-            $builder
-                ->add('category', 'document', [
-                    'label' => 'form.roomTypeType.category',
-                    'group' => 'form.roomTypeType.settings',
-                    'required' => false,
-                    'empty_data' => null,
-                    'class' => 'MBH\Bundle\HotelBundle\Document\RoomTypeCategory'
-                ])
-            ;
-        }
+
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -120,7 +128,7 @@ class RoomTypeType extends AbstractType
             'imageUrl' => null,
             'deleteImageUrl' => null,
             'facilities' => [],
-            'disabledRoomTypeCategory' => false,
+            'useRoomTypeCategory' => false,
         ]);
     }
 

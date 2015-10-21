@@ -30,13 +30,18 @@
         {% set roomType = data.roomType %}
         <tr class="bg-gray">
             <td colspan="9">
-                <strong>{{ roomType }}</strong>&nbsp;
-                <small>осн. мест: {{ roomType.places }} + доп. мест: {{ roomType.additionalPlaces }}</small>&nbsp;
+                <strong>{{ roomType }}</strong> -
                 <small>
-                    {% for facility in roomType.facilities %}
-                        <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility] }}" class="fa fa-lg mbf-{{ facility }}"></i>
-                    {% endfor %}
+                    мест: {{ roomType.places }}{% if roomType.additionalPlaces > 0 %}(+{{ roomType.additionalPlaces }}){% endif %}
+                    - {{ roomType.hotel }}
                 </small>
+                <div class="pull-right">
+                    <small>
+                        {% for facility in roomType.facilities %}
+                            <i style="margin-left: 3px" data-toggle="tooltip" data-title="{{ facilities[facility] }}" class="fa fa-lg mbf-{{ facility }}"></i>
+                        {% endfor %}
+                    </small>
+                </div>
             </td>
         </tr>
         {% set supposeIncrement = 0 %}

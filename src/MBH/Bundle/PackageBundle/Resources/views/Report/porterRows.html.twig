@@ -31,7 +31,7 @@
         <small>{{ entity.nights }} {{ 'nights'|transchoice(entity.nights) }}</small>
     </td>
     <td>
-        {{ entity.roomType }}<br>
+        {{ entity.roomType.name }}<br>
         <small><a data-toggle='tooltip' title='{{ "package.json.go_to_placement"|trans({}, "MBHPackageBundle") }}'
                   href='{{ path('package_accommodation', {'id': entity.id}) }}'
                   class='{{ entity.accommodation ? '' : 'danger' }}'>{% if entity.accommodation and entity.accommodation.roomType %}{{ entity.accommodation.name(entity.roomType.id == entity.accommodation.roomType.id ? false : true) }}{% else %}&lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a>
