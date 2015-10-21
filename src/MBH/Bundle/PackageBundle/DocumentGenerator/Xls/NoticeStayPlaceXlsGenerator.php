@@ -203,9 +203,9 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         //$this->write('', 'BS93'); //строение
         $this->write($hotel->getFlat(), 'CU93');
 
-        $this->write($package->getBegin()->format('d'), 'AQ95');
-        $this->write($package->getBegin()->format('m'), 'BG95');
-        $this->write($package->getBegin()->format('Y'), 'BS95');
+        $this->write($package->getEnd()->format('d'), 'AQ95');
+        $this->write($package->getEnd()->format('m'), 'BG95');
+        $this->write($package->getEnd()->format('Y'), 'BS95');
 
 
         // two sheet
