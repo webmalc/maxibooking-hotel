@@ -170,12 +170,10 @@ $(document).ready(function () {
         var begin = $('#s_begin').datepicker("getDate");
         if (this.$searchRoomsSelect.val() && begin > date) {
             this.$packageSearchBook.addClass('btn-danger');
-            //$warning.removeClass('hide');
-            $warning.show();
+            $warning.removeClass('hide');
         } else {
             this.$packageSearchBook.removeClass('btn-danger');
-            //$warning.addClass('hide');
-            $warning.hide();
+            $warning.addClass('hide');
         }
     }
 
