@@ -126,8 +126,12 @@
 {% endblock %}
  
 {% block label %}<span>{% if item.label == '&nbsp;' %}&nbsp;{% else %}{{ item.label|trans }}</span>
+    {% if item.attribute('badge_left') is defined %}
+        <small {% if item.attribute('badge_id_left') is defined %}id="{{ item.attribute('badge_id_left') }}"{% endif %}
+               class="label pull-right {% if item.attribute('badge_class_left') is defined %}{{ item.attribute('badge_class_left') }}{% endif %}">{{ item.attribute('badge_value_left') }}</small>
+    {% endif %}
     {% if item.attribute('badge') is defined %}
-        <small {% if item.attribute('badge_id') is defined %}id="{{ item.attribute('badge_id') }}"{% endif %}
-               class="label pull-right {% if item.attribute('badge_class') is defined %}{{ item.attribute('badge_class') }}{% endif %}">{{ item.attribute('badge_value') }}</small>
+        <small {% if item.attribute('badge_id_right') is defined %}id="{{ item.attribute('badge_id_right') }}"{% endif %}
+               class="label pull-right {% if item.attribute('badge_class_right') is defined %}{{ item.attribute('badge_class_right') }}{% endif %}">{{ item.attribute('badge_value_right') }}</small>
     {% endif %}
 {% endif %}{% endblock %}
