@@ -63,7 +63,12 @@ class Search
         if (empty($query->roomTypes)) {
             $query->roomTypes = [];
             $helper = $this->container->get('mbh.helper');
-            foreach( $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
+            $criteria = [];
+            if($query->city) {
+                $criteria['city.id'] = $query->city;
+            }
+
+            foreach($this->dm->getRepository('MBHHotelBundle:Hotel')->findBy($criteria) as $hotel) {
                 $query->roomTypes = array_merge($helper->toIds($hotel->getRoomTypes()), $query->roomTypes);
             }
         }

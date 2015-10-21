@@ -82,7 +82,10 @@ class SearchQuery
      * @var mixed
      */
     public $tariff;
-    
+
+
+    public $city;
+
     public function addExcludeRoomType($id)
     {
         if (!in_array($id, $this->excludeRoomTypes) && !empty($id)) {
