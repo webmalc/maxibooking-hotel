@@ -295,6 +295,11 @@ class OrderManager
             $package->setAccommodation($room);
         }
 
+        //set isCheckIn
+        if ($package->getAccommodation() && $package->getBegin() == new \DateTime('midnight')) {
+            $package->setIsCheckIn(true)->setArrivalTime(new \DateTime());
+        }
+
         // add MainTourist
         $tourist = $order->getMainTourist();
         if ($tourist && empty($data['excludeMainTourist'])) {

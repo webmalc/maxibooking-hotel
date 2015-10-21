@@ -44,40 +44,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      */
     public function porterTableAction(Request $request)
     {
-        /*
-        $helper = $this->container->get('mbh.helper');
-
-        $begin = $helper->getDateFromString($request->get('begin'));
-        $end = $helper->getDateFromString($request->get('end'));
-
-        if (!$end || $end->diff($begin)->format("%a") > 750 || $end < $begin) {
-            return ['error' => true];
-        }
-        $to = clone $end;
-        if ($end != $begin) {
-            $to->modify('-1 day');
-        }
-        $arrivals = $packageRepository->fetch([
-            'begin' => $begin,
-            'end' => $to,
-            'dates' => 'begin',
-            'checkIn' => false,
-            'checkOut' => false,
-            'order' => 3,
-            'dir' => 'asc',
-            'hotel' => $this->hotel
-        ]);
-        $lives = $packageRepository->fetch([
-            'live_begin' => $begin,
-            'live_end' => $end,
-            'filter' => 'live_between',
-            'checkIn' => true,
-            'checkOut' => false,
-            'hotel' => $this->hotel,
-            'order' => 8,
-            'dir' => 'asc'
-        ]);*/
-
         $type = $request->get('type');
 
 
@@ -86,22 +52,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $end->modify('+ 1 day');
 
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
-
-        /*
-        $packageQueryCriteria = new PackageQueryCriteria();
-        if($type == 'lives') {
-            $packageQueryCriteria->filter = 'live_between';
-            $packageQueryCriteria->checkIn = true;
-            $packageQueryCriteria->checkOut = false;
-        } elseif($type == 'arrivals') {
-            $packageQueryCriteria->checkIn = false;
-            $packageQueryCriteria->checkOut = false;
-        } elseif($type == 'out') {
-
-        }
-
-        $packages = $packageRepository->findByQueryCriteria($packageQueryCriteria);
-        */
 
         $packages = $packageRepository->findByType($type);
 
@@ -150,7 +100,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         foreach($menuItem->getChildren() as $child) {
             $count = $packageRepository->countByType($child->getName(), true);
             if($count > 0) {
-                $class = $child->getName() == 'lives' ? 'default' : 'danger';
+                $class = 'default';
+                $class = $child->getName() == 'arrivals' ?  'danger' : $class;
+                $class = $child->getName() == 'out' ?  'success' : $class;
                 $child->setLabel($child->getLabel(). ' <small class="label label-'.$class.' label-as-badge">'.$count.'</small>');
                 $child->setExtras(['safe_label' => true]);
             }
@@ -158,7 +110,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 $child->setCurrent(true);
             }
         }
-
 
         return [
             'type' => $type,

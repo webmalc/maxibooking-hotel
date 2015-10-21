@@ -246,6 +246,7 @@ class CashController extends Controller
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
             'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity->getOrder()),
+            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER')
         ]);
 
         if ($request->isMethod("PUT")) {

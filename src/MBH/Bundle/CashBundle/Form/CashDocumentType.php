@@ -26,10 +26,10 @@ class CashDocumentType extends AbstractType
             $text = $payer->getName();
             if ($payer instanceof Organization) {
                 $prefix = 'org';
-                $text .= ' (ИНН '.$payer->getInn().') '.$payer->getDirectorFio();
+                $text .= ' (ИНН ' . $payer->getInn() . ') ' . $payer->getDirectorFio();
             } elseif ($payer instanceof Tourist) {
                 $prefix = 'tourist';
-                $text .= $payer->getBirthday() ? ' '.$payer->getBirthday()->format('d.m.Y') : '';
+                $text .= $payer->getBirthday() ? ' ' . $payer->getBirthday()->format('d.m.Y') : '';
             } else {
                 throw new \Exception();
             }
@@ -99,7 +99,7 @@ class CashDocumentType extends AbstractType
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
             ])
-            ->add('number', 'text', [
+            ->add('number', $options['number'] ? 'text' : 'hidden', [
                 'label' => 'form.cashDocumentType.number',
                 'group' => $options['groupName'],
                 'required' => true,
@@ -122,7 +122,8 @@ class CashDocumentType extends AbstractType
             'operations' => [],
             'groupName' => null,
             'payer' => null,
-            'payers' => []
+            'payers' => [],
+            'number' => true
         ]);
     }
 
