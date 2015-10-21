@@ -139,6 +139,13 @@ class Package extends Base implements JsonSerializable
     /**
      * @var float
      * @Gedmo\Versioned
+     * @ODM\Float()
+     */
+    protected $promotionTotal = 0;
+
+    /**
+     * @var float
+     * @Gedmo\Versioned
      * @ODM\Float(name="price")
      * @Assert\NotNull(message= "validator.document.package.price_not_specified")
      * @Assert\Type(type="numeric")
@@ -535,6 +542,33 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
+     * @param bool|false $calculate
+     * @return float
+     */
+    public function getPromotionTotal($calculate = false)
+    {
+        if ($calculate) {
+            if($this->getPromotion()) {
+                $promotion = $this->getPromotion();
+                $this->promotionTotal = $promotion->getisPercentDiscount() ?
+                    $this->price * $promotion->getDiscount() / 100 :
+                    $promotion->getDiscount();
+            } else {
+                $this->promotionTotal = 0;
+            }
+        }
+        return $this->promotionTotal;
+    }
+
+    /**
+     * @param float $promotionTotal
+     */
+    public function setPromotionTotal($promotionTotal)
+    {
+        $this->promotionTotal = $promotionTotal;
+    }
+
+    /**
      * Set price
      *
      * @param int $price
@@ -557,20 +591,7 @@ class Package extends Base implements JsonSerializable
             return $this->getTotalOverwrite();
         }
 
-        return $this->price - $this->getPromotionDiscountMoney() - $this->getDiscountMoney() + $this->getServicesPrice();
-    }
-
-    /**
-     * @return float|int
-     */
-    public function getPromotionDiscountMoney()
-    {
-        if ($promotion = $this->getPromotion()) {
-            return $promotion->getisPercentDiscount() ?
-                $this->price * $promotion->getDiscount() / 100 :
-                $promotion->getDiscount();
-        }
-        return 0;
+        return $this->price - $this->getPromotionTotal(true) - $this->getDiscountMoney() + $this->getServicesPrice();
     }
 
     /**
@@ -1208,6 +1229,7 @@ class Package extends Base implements JsonSerializable
     public function prePersist()
     {
         $this->checkCheckInOut();
+        $this->setPromotionTotal($this->getPromotionTotal(true));
     }
 
     /**
@@ -1216,6 +1238,7 @@ class Package extends Base implements JsonSerializable
     public function preUpdate()
     {
         $this->checkCheckInOut();
+        $this->setPromotionTotal($this->getPromotionTotal(true));
     }
 
     public function checkCheckInOut()
