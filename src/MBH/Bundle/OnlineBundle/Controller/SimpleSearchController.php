@@ -3,7 +3,9 @@
 namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -75,27 +77,12 @@ class SimpleSearchController extends Controller
     }
 
     /**
-     * @Route("/detail", name="simple_search_detail")
-     * @Method("GET")
-     * @Template()
-     */
-    public function detailAction()
-    {
-        return [];
-    }
-
-    /**
      * @Route("/index", name="simple_search_index")
      * @Method("GET")
      * @Template()
      */
     public function indexAction(Request $request)
     {
-        $guzzleClient = $this->get('guzzle.client');
-        $formUrl = $this->generateUrl('simple_search_form', $request->query->all(), UrlGenerator::ABSOLUTE_URL);
-        $formRequest = $guzzleClient->get($formUrl);
-        $formResponse = $formRequest->send();
-
         $helper = $this->get('mbh.helper');
 
         $query = new SearchQuery();
@@ -135,19 +122,45 @@ class SimpleSearchController extends Controller
         }
 
         return [
-            'form' => $formResponse->getBody(),
+            'form' => $this->getSearchFormHtml($request),
             'results' => $results
             //'detail' => $detailResponse->getBody()
         ];
     }
 
     /**
-     * @Route("/view", name="simple_search_view")
+     * @param Request $request
+     * @return \Guzzle\Http\EntityBodyInterface|string
+     */
+    private function getSearchFormHtml(Request $request)
+    {
+        $guzzleClient = $this->get('guzzle.client');
+
+        $formUrl = $this->generateUrl('simple_search_form', $request->query->all(), UrlGenerator::ABSOLUTE_URL);
+        $formRequest = $guzzleClient->get($formUrl);
+        $formResponse = $formRequest->send();
+
+        return $formResponse->getBody();
+    }
+
+    /**
+     * @Route("/view/{id}", name="simple_search_view")
      * @Method("GET")
      * @Template()
+     * @ParamConverter(class="MBH\Bundle\HotelBundle\Document\Hotel")
      */
-    public function viewAction()
+    public function viewAction(Hotel $hotel, Request $request)
     {
-        return [];
+        $photos = [];
+        foreach($hotel->getRoomTypes() as $roomType) {
+            foreach($roomType->getImages() as $image) {
+                $photos[] = $image->getPath();
+            }
+        }
+        return [
+            'form' => $this->getSearchFormHtml($request),
+            'hotel' => $hotel,
+            'photos' => $photos
+        ];
     }
 }

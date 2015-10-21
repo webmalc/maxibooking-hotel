@@ -13,7 +13,7 @@
                     <div class="mbh-results-list-rating-sprite"></div>
                 </div>
                 <div class="mbh-results-list-title"><a
-                            href="index.php?q=104&amp;hotel=&amp;begin=21.10.2015&amp;end=22.10.2015&amp;adults=1&amp;children=0"
+                            href="{{ path('simple_search_view', {id: result.hotel.id}) }}"
                             title="Номера и цены в этом отеле">{{ result.hotel.fullTitle }}</a></div>
                 <div class="mbh-results-list-city">
                     {% if result.hotel.city or result.hotel.street %}
