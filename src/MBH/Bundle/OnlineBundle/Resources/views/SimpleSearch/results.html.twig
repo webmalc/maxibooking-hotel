@@ -5,7 +5,7 @@
         <div class="panel-body">
             <div class="mbh-results-list-image">
                 <a href="index.php?q=104&amp;hotel=&amp;begin=21.10.2015&amp;end=22.10.2015&amp;adults=1&amp;children=0"
-                   title=""><img src="{{ result.roomType.mainImage ? asset(result.roomType.mainImage.getPath())|imagine_filter('thumb_300x230')  : 'http://zamkadom24.sites.maxibooking.ru/1.jpg'}}"></a>
+                   title=""><img src="{{ ((result.roomTypes)|first).mainImage ? asset(((result.roomTypes)|first).mainImage.path)|imagine_filter('thumb_300x230')  : 'http://zamkadom24.sites.maxibooking.ru/1.jpg'}}"></a>
             </div>
             <div class="mbh-results-list-info">
                 <div class="mbh-results-list-rating">
@@ -14,39 +14,41 @@
                 </div>
                 <div class="mbh-results-list-title"><a
                             href="index.php?q=104&amp;hotel=&amp;begin=21.10.2015&amp;end=22.10.2015&amp;adults=1&amp;children=0"
-                            title="Номера и цены в этом отеле">{{ result.roomType.hotel.fullTitle }}</a></div>
+                            title="Номера и цены в этом отеле">{{ result.hotel.fullTitle }}</a></div>
                 <div class="mbh-results-list-city">
-                    {% if result.roomType.hotel.city or result.roomType.hotel.street %}
+                    {% if result.hotel.city or result.hotel.street %}
                         <i class="fa fa-map-marker text-warning"></i>
-                        {{ result.roomType.hotel.city }} {{ result.roomType.hotel.street }}
+                        {{ result.hotel.city }} {{ result.hotel.street }}
                     {% endif %}
                 </div>
 
                 <div class="mbh-results-list-rooms">
+                    {% for roomType in result.roomTypes %}
                     <div class="row">
                         <div class="col-xs-6">
-                            {{ result.roomType }}
+                            {{ roomType }}
                         </div>
                         <div class="col-xs-2 text-center">
-                            {% for index in 0..result.roomType.places %}
+                            {% for index in 0..roomType.places %}
                                 <i class="fa fa-male text-warning"></i>
                             {% endfor %}
                         </div>
                         <div class="price col-xs-4">
-                            <div class="pull-right">{{ result.price(result.adults, result.children) }} <i class="fa fa-ruble"></i></div>
+                            <div class="pull-right">{{ result.result.price(result.result.adults, result.result.children) }} <i class="fa fa-ruble"></i></div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
 
                 <div class="row">
                     <div class="col-xs-7">
                         <div class="mbh-results-list-descr">
-                            {{ result.roomType.description|raw }}<a href="#">Подробнее</a>
+                            12312 312 31231<a href="#">Подробнее</a>
                         </div>
                     </div>
                     <div class="col-xs-5">
                         <div class="mbh-results-list-facilities">
-                            {% for facility in result.roomType.facilities %}
+                            {% for facility in result.hotel.facilities %}
                                 <i class="mbf-{{ facility }} available"></i>
                             {% endfor %}
                             {#<i title="Кафе" class="mbf-kitchen available"></i>

@@ -118,7 +118,21 @@ class SimpleSearchController extends Controller
             }
         };
 
-        $results = $this->get('mbh.package.search')->search($query);
+        $searchResults = $this->get('mbh.package.search')->search($query);
+
+        $results = [];
+        foreach($searchResults as $result) {
+            $hotelID = $result->getRoomType()->getHotel()->getId();
+            if (!isset($results[$hotelID])) {
+                $results[$hotelID] = [
+                    'hotel' => $result->getRoomType()->getHotel(),
+                    'roomTypes' => [$result->getRoomType()],
+                    'result' => $result,
+                ];
+            } else {
+                $results[$hotelID]['roomTypes'][] = $result->getRoomType();
+            }
+        }
 
         return [
             'form' => $formResponse->getBody(),
