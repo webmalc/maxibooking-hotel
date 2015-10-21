@@ -5,7 +5,7 @@
         <div class="panel-body">
             <div class="mbh-results-list-image">
                 <a href="index.php?q=104&amp;hotel=&amp;begin=21.10.2015&amp;end=22.10.2015&amp;adults=1&amp;children=0"
-                   title=""><img src="http://zamkadom24.sites.maxibooking.ru/1.jpg"></a>
+                   title=""><img src="{{ result.roomType.mainImage ? asset(result.roomType.mainImage.getPath())|imagine_filter('thumb_300x230')  : 'http://zamkadom24.sites.maxibooking.ru/1.jpg'}}"></a>
             </div>
             <div class="mbh-results-list-info">
                 <div class="mbh-results-list-rating">
@@ -33,7 +33,7 @@
                             {% endfor %}
                         </div>
                         <div class="price col-xs-4">
-                            <div class="pull-right">52 344 <i class="fa fa-ruble"></i></div>
+                            <div class="pull-right">{{ result.price(result.adults, result.children) }} <i class="fa fa-ruble"></i></div>
                         </div>
                     </div>
                 </div>
@@ -41,16 +41,21 @@
                 <div class="row">
                     <div class="col-xs-7">
                         <div class="mbh-results-list-descr">
-                            Прекрасные номера оснащены всем необходимым для комфортного пребывания. К вашим услугам... <a
-                                    href="#">Подробнее</a>
+                            {{ result.roomType.description|raw }}<a href="#">Подробнее</a>
                         </div>
                     </div>
                     <div class="col-xs-5">
                         <div class="mbh-results-list-facilities">
-                            <i title="Кафе" class="mbf-kitchen available"></i><i class="mbf-golf"></i><i title="Телевизор"
-                                                                                                         class="mbf-modern-tv available"></i><i
-                                    class="mbf-free-wifi"></i><i class="mbf-swimming"></i><i
-                                    class="mbf-conditioner available"></i><i class="mbf-safe"></i>
+                            {% for facility in result.roomType.facilities %}
+                                <i class="mbf-{{ facility }} available"></i>
+                            {% endfor %}
+                            {#<i title="Кафе" class="mbf-kitchen available"></i>
+                            <i class="mbf-golf"></i>
+                            <i title="Телевизор"class="mbf-modern-tv available"></i>
+                            <i class="mbf-free-wifi"></i>
+                            <i class="mbf-swimming"></i>
+                            <i class="mbf-conditioner available"></i>
+                            <i class="mbf-safe"></i>#}
                         </div>
                         <div class="clearfix"></div>
                         <a href="index.php?q=104&amp;hotel=&amp;begin=21.10.2015&amp;end=22.10.2015&amp;adults=1&amp;children=0"

@@ -1,4 +1,4 @@
-<form id="mbh-form" method="post" action="{{ path('simple_search_index') }}">
+<form id="mbh-form" method="get" action="{{ path('simple_search_index') }}">
     <h3>Бронирование номеров</h3>
     <div class="mbh-form-row">
         <label for="mbh-form-hotel">Отель</label>
@@ -8,16 +8,16 @@
     <input type="hidden" name="query_id" id="mbh-form-search-query-id-hidden-input" value="{{ app.request.get('query_id') }}">
     <div class="mbh-form-row">
         <label for="mbh-form-begin"> Дата заезда</label>
-        <input type="text" id="mbh-form-begin" name="begin" required="" value="{{ app.request.get('query_type') }}" class="hasDatepicker">
+        <input type="text" id="mbh-form-begin" name="begin" required="required" value="{{ app.request.get('begin') }}" class="hasDatepicker">
     </div>
     <div class="mbh-form-row">
         <label for="mbh-form-end"> Дата выезда</label>
-        <input type="text" id="mbh-form-end" name="end" required="" value="{{ app.request.get('query_type') }}" class="hasDatepicker">
+        <input type="text" id="mbh-form-end" name="end" required="required" value="{{ app.request.get('end') }}" class="hasDatepicker">
     </div>
     <div id="mbh-form-adults-children-wrapper">
         <div class="mbh-form-row">
             <label for="mbh-form-adults"> Взрослые</label>
-            <input type="number" id="mbh-form-adults" name="adults" value="{{ app.request.get('adults') }}">
+            <input type="number" id="mbh-form-adults" name="adults" required="required" value="{{ app.request.get('adults') }}">
         </div>
         <div class="mbh-form-row">
             <label for="mbh-form-children"> Дети</label>

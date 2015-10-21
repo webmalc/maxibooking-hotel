@@ -86,46 +86,39 @@ class SimpleSearchController extends Controller
 
     /**
      * @Route("/index", name="simple_search_index")
-     * @Method({"GET", "POST"})
+     * @Method("GET")
      * @Template()
      */
     public function indexAction(Request $request)
     {
         $guzzleClient = $this->get('guzzle.client');
-        $formUrl = $this->generateUrl('simple_search_form', [], UrlGenerator::ABSOLUTE_URL);
-        $formRequest = $request->isMethod(Request::METHOD_POST) ?
-            $guzzleClient->post($formUrl, [], $request->getContent()) :
-            $guzzleClient->get($formUrl)
-        ;
+        $formUrl = $this->generateUrl('simple_search_form', $request->query->all(), UrlGenerator::ABSOLUTE_URL);
+        $formRequest = $guzzleClient->get($formUrl);
         $formResponse = $formRequest->send();
 
-        $results = [];
+        $helper = $this->get('mbh.helper');
 
-        if($request->isMethod(Request::METHOD_POST)) {
-            $helper = $this->get('mbh.helper');
+        $query = new SearchQuery();
+        $query->isOnline = true;
+        $query->begin = $helper->getDateFromString($request->get('begin'));
+        $query->end = $helper->getDateFromString($request->get('end'));
+        $query->adults = (int)$request->get('adults');
+        $query->children = (int)$request->get('children');
+        $query->tariff = $request->get('tariff');
+        $query->addRoomType($request->get('roomType'));
 
-            $query = new SearchQuery();
-            $query->isOnline = true;
-            $query->begin = $helper->getDateFromString($request->get('begin'));
-            $query->end = $helper->getDateFromString($request->get('end'));
-            $query->adults = (int)$request->get('adults');
-            $query->children = (int)$request->get('children');
-            $query->tariff = $request->get('tariff');
-            $query->addRoomType($request->get('roomType'));
+        $queryID = $request->get('query_id');
 
-            $queryID = $request->get('query_id');
+        if($request->get('query_type') == 'city') {
+            $query->city = $queryID;
+        } else {
+            $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find($queryID);
+            if($hotel) {
+                $query->addHotel($hotel);
+            }
+        };
 
-            if($request->get('query_type') == 'city') {
-                $query->city = $queryID;
-            } else {
-                $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find($queryID);
-                if($hotel) {
-                    $query->addHotel($hotel);
-                }
-            };
-
-            $results = $this->get('mbh.package.search')->search($query);
-        }
+        $results = $this->get('mbh.package.search')->search($query);
 
         return [
             'form' => $formResponse->getBody(),
