@@ -4,6 +4,8 @@ namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PriceBundle\Form\TariffPromotionsType;
+use MBH\Bundle\PriceBundle\Form\TariffServicesType;
+use MBH\Bundle\PriceBundle\Form\TariffServiceType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -178,6 +180,39 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             'entity' => $tariff,
             'form' => $form->createView(),
             'logs' => $this->logs($tariff)
+        ];
+    }
+
+    /**
+     * @Route("/edit/{id}/services", name="tariff_services_edit")
+     * @Method({"GET", "POST"})
+     * @Template()
+     * @ParamConverter(class="MBHPriceBundle:Tariff")
+     */
+    public function editServicesAction(Request $request, Tariff $tariff)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel())) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(new TariffServicesType(), $tariff);
+        $serviceForm = $this->createForm(new TariffServiceType());
+
+        $form->handleRequest($request);
+        if($form->isValid()) {
+            $this->dm->persist($tariff);
+            $this->dm->flush();
+
+            return $this->isSavedRequest() ?
+                $this->redirectToRoute('tariff_services_edit', ['id' => $tariff->getId()]) :
+                $this->redirectToRoute('tariff');
+        }
+
+        return [
+            'tariff' => $tariff,
+            'form' => $form->createView(),
+            'serviceForm' => $serviceForm->createView(),
+            'logs' => $this->logs($tariff),
         ];
     }
 

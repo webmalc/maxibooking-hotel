@@ -1,46 +1,29 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Form;
+namespace MBH\Bundle\PriceBundle\Form;
 
-use MBH\Bundle\PackageBundle\Document\Package;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-/**
- * Class PackageServiceType
- */
-class PackageServiceType extends AbstractType
-{
-    use ContainerAwareTrait;
 
+/**
+ * Class TariffServiceType
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
+class TariffServiceType extends AbstractType
+{
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        if (!$options['package'] instanceof Package) {
-            throw new \Exception('Package required.');
-        }
-        /** @var Package $package */
-        $package = $options['package'];
-        $services = $this->container->get('doctrine_mongodb')
-            ->getRepository('MBHPriceBundle:Service')->getAvailableServicesForPackage($package);
-
         $builder
             ->add('service', 'document', [
                 'label' => 'form.packageServiceType.service',
                 'class' => 'MBHPriceBundle:Service',
-                'choices' => $services,
-                'empty_value' => '',
+                //'empty_value' => '',
                 'group' => 'form.packageServiceType.add_service',
                 'help' => 'form.packageServiceType.reservation_add_service',
-            ])
-            ->add('price', 'text', [
-                'label' => 'form.packageServiceType.price',
-                'required' => true,
-                'group' => 'form.packageServiceType.add_service',
-                'constraints' => new NotBlank(),
-                'attr' => ['class' => 'price-spinner sm']
             ])
             ->add('nights', 'text', [
                 'label' => 'form.packageServiceType.nights_amount',
@@ -90,20 +73,20 @@ class PackageServiceType extends AbstractType
                 'group' => 'form.packageServiceType.add_service',
                 'required' => false,
             ])
-            ;
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'package' => null,
-            'data_class' => 'MBH\Bundle\PackageBundle\Document\PackageService',
+            'data_class' => 'MBH\Bundle\PriceBundle\Document\TariffService'
         ]);
     }
 
+
     public function getName()
     {
-        return 'mbh_bundle_packagebundle_package_service_type';
+        return 'mbh_price_tariff_service';
     }
 
 }

@@ -1,0 +1,26 @@
+{% extends 'MBHPriceBundle:Tariff:layout.html.twig' %}
+
+{% set small_title = "редактирование <" ~ tariff.name ~ "> #" ~ tariff.id %}
+{% set layout = 'tabs' %}
+
+{% block content %}
+
+    {% include 'MBHPriceBundle:Tariff:editTabs.html.twig' with {'active' : 3, 'entity': tariff} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="general_info">
+            {{ form_start(form, {'action': path('tariff_services_edit', {'id': tariff.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': tariff, 'delete_route': tariff.isDefault ? null : 'tariff_delete' } %}
+            {{ form_end(form) }}
+
+
+            {#{% form_theme serviceForm 'MBHBaseBundle:Form:fields.html.twig' %}
+            {{ form_start(serviceForm, {'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(serviceForm) }}
+            {{ form_end(serviceForm) }}#}
+        </div>
+        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': tariff, 'logs': logs, 'delete_route': 'tariff_delete' } %}
+    </div>
+
+{% endblock %}
