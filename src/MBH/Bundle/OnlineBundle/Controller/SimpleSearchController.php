@@ -157,10 +157,14 @@ class SimpleSearchController extends Controller
                 $photos[] = $image->getPath();
             }
         }
+
+        $questions = $this->dm->getRepository('MBHPackageBundle:PollQuestion')->findByHotel($hotel);
+
         return [
             'form' => $this->getSearchFormHtml($request),
             'hotel' => $hotel,
-            'photos' => $photos
+            'photos' => $photos,
+            'questions' => $questions
         ];
     }
 }

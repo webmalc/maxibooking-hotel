@@ -3,6 +3,8 @@
 {% set logo = '/bundles/mbhbase/images/empty_logo.png' %}
 {% set hotelName = 'MaxiBooking' %}
 
+{% set organization = 'Система управления отелем' %}
+
 {% if hotel is defined and hotel %}
     {% set hotelName = hotel.name %}
     {% if hotel.file %}
@@ -11,8 +13,6 @@
     {% if hotel.organization %}
         {% set organization = hotel.organization.name %}
     {% endif %}
-{% else %}
-    {% set organization = 'Система управления отелем' %}
 {% endif %}
 
 <!DOCTYPE html>
