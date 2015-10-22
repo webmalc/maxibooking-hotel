@@ -106,7 +106,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
      * @Route("/save", name="restriction_overview_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_RESTRICTION_EDIT')")
-     * @Template("MBHPriceBundle:PriceCache:index.html.twig")
+     * @Template("MBHPriceBundle:Restriction:index.html.twig")
      * @param Request $request
      * @return array
      */
@@ -228,7 +228,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
      * @Route("/generator/save", name="restriction_generator_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_RESTRICTION_EDIT')")
-     * @Template("MBHPriceBundle:PriceCache:generator.html.twig")
+     * @Template("MBHPriceBundle:Restriction:index.html.twig")
      * @param Request $request
      * @return array
      */

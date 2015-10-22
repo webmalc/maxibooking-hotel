@@ -3,8 +3,9 @@
 namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
 
-class RoomTypeRepository extends DocumentRepository
+class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositoryInterface
 {
     /**
      * Get roomTypes with > 1 package

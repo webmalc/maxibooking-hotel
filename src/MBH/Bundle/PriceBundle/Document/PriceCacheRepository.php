@@ -13,6 +13,7 @@ class PriceCacheRepository extends DocumentRepository
      * @param Hotel $hotel
      * @param array $roomTypes
      * @param array $tariffs
+     * @param boolean $categories
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
     public function fetchQueryBuilder(
@@ -20,9 +21,13 @@ class PriceCacheRepository extends DocumentRepository
         \DateTime $end = null,
         Hotel $hotel = null,
         array $roomTypes = [],
-        array $tariffs = []
+        array $tariffs = [],
+        $categories = false
     ) {
         $qb = $this->createQueryBuilder('q');
+
+        $field = $categories ? 'roomType' : 'roomTypeCategory';
+        $qb->field($field)->equals(null);
 
         // hotel
         if (!empty($hotel)) {
@@ -37,7 +42,8 @@ class PriceCacheRepository extends DocumentRepository
         }
         //roomTypes
         if (!empty($roomTypes)) {
-            $qb->field('roomType.id')->in($roomTypes);
+            $field = $categories ? 'roomTypeCategory' : 'roomType';
+            $qb->field($field . '.id')->in($roomTypes);
         }
         //tariffs
         if (!empty($tariffs)) {
@@ -56,6 +62,7 @@ class PriceCacheRepository extends DocumentRepository
      * @param array $roomTypes
      * @param array $tariffs
      * @param boolean $grouped
+     * @param boolean $categories
      * @return array
      */
     public function fetch(
@@ -64,16 +71,18 @@ class PriceCacheRepository extends DocumentRepository
         Hotel $hotel = null,
         array $roomTypes = [],
         array $tariffs = [],
-        $grouped = false
+        $grouped = false,
+        $categories = false
     ) {
-        $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs)->getQuery()->execute();
+        $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs, $categories)->getQuery()->execute();
 
         if (!$grouped) {
             return $caches;
         }
         $result = [];
+        $method = $categories ? 'getRoomTypeCategory' : 'getRoomType';
         foreach ($caches as $cache) {
-            $result[$cache->getRoomType()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
+            $result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
         }
 
         return $result;

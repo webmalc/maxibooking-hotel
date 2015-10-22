@@ -22,6 +22,11 @@ services:
     mbh.hotel.auto_task_creator:
             class: MBH\Bundle\HotelBundle\Service\AutoTaskCreator
             arguments: [@service_container]
+
+    mbh.hotel.room_type_manager:
+                class: MBH\Bundle\HotelBundle\Service\RoomTypeManager
+                arguments: [@service_container]
+
     mbh.hotel.console_auto_task_creator:
             class: MBH\Bundle\HotelBundle\Service\ConsoleAutoTaskCreator
             arguments: [@service_container]

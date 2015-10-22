@@ -25,15 +25,10 @@ class RoomTypeCategoryController extends BaseController
      * @Security("is_granted('ROLE_ROOM_TYPE_CATEGORY_VIEW')")
      * @Template()
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
-        $repository = $this->dm->getRepository('MBHHotelBundle:RoomTypeCategory');
-        $categories = $repository->findBy([
-            //'hotel' => $this->hotel->getId()
-        ]);
-
         return [
-            'categories' => $categories
+            'categories' => $this->hotel->getRoomTypesCategories()
         ];
     }
 
@@ -46,6 +41,7 @@ class RoomTypeCategoryController extends BaseController
     public function newAction(Request $request)
     {
         $category = new RoomTypeCategory();
+        $category->setHotel($this->hotel);
         $form = $this->createForm(new RoomTypeCategoryType(), $category, [
             'method' => Request::METHOD_PUT
         ]);
@@ -75,7 +71,6 @@ class RoomTypeCategoryController extends BaseController
         $form = $this->createForm(new RoomTypeCategoryType(), $category, [
             'method' => Request::METHOD_POST
         ]);
-
 
         $form->handleRequest($request);
         if ($form->isValid()) {

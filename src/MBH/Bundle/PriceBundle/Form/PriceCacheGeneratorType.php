@@ -29,6 +29,8 @@ class PriceCacheGeneratorType extends AbstractType
             }
         }
 
+        $repo = $options['categories'] ? 'MBHHotelBundle:RoomTypeCategory' : 'MBHHotelBundle:RoomType';
+
         $builder
             ->add('begin', 'date', array(
                 'label' => 'Начало периода',
@@ -63,7 +65,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'required' => true,
                 'group' => 'Настройки',
                 'multiple' => true,
-                'class' => 'MBHHotelBundle:RoomType',
+                'class' => $repo,
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->fetchQueryBuilder($options['hotel']);
                 },
@@ -185,6 +187,7 @@ class PriceCacheGeneratorType extends AbstractType
         $resolver->setDefaults([
             'weekdays' => [],
             'hotel' => null,
+            'categories' => false,
             'constraints' => new Callback([$this, 'checkDates'])
         ]);
     }

@@ -5,29 +5,36 @@ namespace MBH\Bundle\HotelBundle\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
+use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 
 /**
- * @ODM\Document(collection="RoomTypeCategory")
+ * @ODM\Document(collection="RoomTypeCategory", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeCategoryRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  *
  * @ODM\HasLifecycleCallbacks
  */
 
-class RoomTypeCategory extends Base
+class RoomTypeCategory extends Base implements RoomTypeInterface
 {
     use TimestampableDocument;
     use SoftDeleteableDocument;
     use BlameableDocument;
-    use HotelableDocument;
     use RoomTypeTrait;
+
+    /**
+     * @var Hotel
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="roomTypeCategory")
+     * @Assert\NotNull()
+     */
+    protected $hotel;
 
     /**
      * @var string
@@ -65,6 +72,22 @@ class RoomTypeCategory extends Base
     public function __construct()
     {
         $this->types = new ArrayCollection();
+    }
+
+    /**
+     * @return Hotel|null
+     */
+    public function getHotel()
+    {
+        return $this->hotel;
+    }
+
+    /**
+     * @param Hotel $hotel
+     */
+    public function setHotel(Hotel $hotel)
+    {
+        $this->hotel = $hotel;
     }
 
     /**
@@ -126,5 +149,20 @@ class RoomTypeCategory extends Base
     public function setTypes($types)
     {
         $this->types = $types;
+    }
+
+    public function getIsHostel()
+    {
+        return false;
+    }
+
+    public function getAdditionalPlaces()
+    {
+        $places  = 0;
+
+        foreach ($this->types as $roomType) {
+            $places = max($roomType->getAdditionalPlaces(), $places);
+        }
+        return $places;
     }
 }

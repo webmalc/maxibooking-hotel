@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Service\Helper;
@@ -13,6 +12,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 
 /**
  * @ODM\Document(collection="RoomTypes", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeRepository")
@@ -22,7 +22,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  *
  * @ODM\HasLifecycleCallbacks
  */
-class RoomType extends Base
+class RoomType extends Base implements RoomTypeInterface
 {
 
     /**
@@ -669,9 +669,12 @@ class RoomType extends Base
 
     /**
      * @param RoomTypeCategory|null $category
+     * @return $this
      */
     public function setCategory(RoomTypeCategory $category = null)
     {
         $this->category = $category;
+
+        return $this;
     }
 }

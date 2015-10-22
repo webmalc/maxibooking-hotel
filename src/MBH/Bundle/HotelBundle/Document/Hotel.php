@@ -171,6 +171,9 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceMany(targetDocument="RoomType", mappedBy="hotel") */
     protected $roomTypes;
 
+    /** @ODM\ReferenceMany(targetDocument="RoomTypeCategory", mappedBy="hotel") */
+    protected $roomTypesCategories;
+
     /** @ODM\ReferenceMany(targetDocument="Room", mappedBy="hotel") */
     protected $rooms;
 
@@ -1163,6 +1166,22 @@ class Hotel extends Base implements \JsonSerializable
     {
         $this->myallocatorConfig = $myallocatorConfig;
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRoomTypesCategories()
+    {
+        return $this->roomTypesCategories;
+    }
+
+    /**
+     * @param mixed $roomTypesCategories
+     */
+    public function setRoomTypesCategories(RoomTypeCategory $roomTypesCategories = null)
+    {
+        $this->roomTypesCategories = $roomTypesCategories;
     }
 
 

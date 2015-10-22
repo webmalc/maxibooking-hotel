@@ -4,6 +4,8 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
+use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
@@ -13,6 +15,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
  * @ODM\HasLifecycleCallbacks
  * @Gedmo\Loggable
  * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="PriceCache already exist.")
+ * @MongoDBUnique(fields={"roomTypeCategory", "date", "tariff"}, message="PriceCache already exist.")
  * @ODM\HasLifecycleCallbacks
  */
 class PriceCache extends Base
@@ -27,9 +30,14 @@ class PriceCache extends Base
     /**
      * @var \MBH\Bundle\HotelBundle\Document\RoomType
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
-     * @Assert\NotNull()
      */
     protected $roomType;
+
+    /**
+     * @var \MBH\Bundle\HotelBundle\Document\RoomTypeCategory
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomTypeCategory")
+     */
+    protected $roomTypeCategory;
 
     /**
      * @var \MBH\Bundle\PriceBundle\Document\Tariff
@@ -138,7 +146,7 @@ class PriceCache extends Base
      * @param \MBH\Bundle\HotelBundle\Document\RoomType $roomType
      * @return self
      */
-    public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType)
+    public function setRoomType(\MBH\Bundle\HotelBundle\Document\RoomType $roomType = null)
     {
         $this->roomType = $roomType;
         return $this;
@@ -443,4 +451,50 @@ class PriceCache extends Base
 
         throw new \BadMethodCallException('Method not implemented.');
     }
+
+    /**
+     * @return \MBH\Bundle\HotelBundle\Document\RoomTypeCategory
+     */
+    public function getRoomTypeCategory()
+    {
+        return $this->roomTypeCategory;
+    }
+
+    /**
+     * @param RoomTypeCategory|null $roomTypeCategory
+     *
+     * @return $this
+     */
+    public function setRoomTypeCategory(RoomTypeCategory $roomTypeCategory = null)
+    {
+        $this->roomTypeCategory = $roomTypeCategory;
+
+        return $this;
+    }
+
+    /**
+     * @param RoomTypeInterface $room
+     * @param bool|false $category
+     * @return $this
+     */
+    public function setCategoryOrRoomType(RoomTypeInterface $room, $category = false)
+    {
+        if ($category) {
+            $this->setRoomTypeCategory($room);
+        } else {
+            $this->setRoomType($room);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param bool|false $category
+     * @return RoomTypeInterface|null
+     */
+    public function getCategoryOrRoomType($category = false)
+    {
+        return $category ? $this->getRoomTypeCategory() : $this->getRoomType();
+    }
+
 }
