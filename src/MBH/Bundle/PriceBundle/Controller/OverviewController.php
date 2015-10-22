@@ -10,13 +10,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\PriceBundle\Form\PriceCacheGeneratorType;
 
 /**
  * @Route("overview")
  */
 class OverviewController extends Controller implements CheckHotelControllerInterface
 {
+
     /**
      * @Route("/", name="room_overview")
      * @Method("GET")
@@ -25,11 +25,9 @@ class OverviewController extends Controller implements CheckHotelControllerInter
      */
     public function indexAction()
     {
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
-
         return [
-            'roomTypes' => $hotel->getRoomTypes(),
-            'tariffs' => $hotel->getTariffs(),
+            'roomTypes' => $this->hotel->getRoomTypes(),
+            'tariffs' => $this->hotel->getTariffs(),
         ];
     }
 
@@ -47,6 +45,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
         $dm = $this->get('doctrine_mongodb')->getManager();
         $helper = $this->container->get('mbh.helper');
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
+        $manager = $this->get('mbh.hotel.room_type_manager');
 
         //dates
         $begin = $helper->getDateFromString($request->get('begin'));
@@ -75,6 +74,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
         $roomTypes = $dm->getRepository('MBHHotelBundle:RoomType')
             ->fetch($hotel, $request->get('roomTypes'))
         ;
+
         if (!count($roomTypes)) {
             return array_merge($response, ['error' => 'Типы номеров не найдены']);
         }
@@ -107,7 +107,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
                 $begin, $end, $hotel,
                 $request->get('roomTypes') ? $request->get('roomTypes') : [],
                 $request->get('tariffs') ? $request->get('tariffs') : [],
-                true)
+                true, $manager->useCategories)
         ;
         //get restrictions
         $restrictions = $dm->getRepository('MBHPriceBundle:Restriction')

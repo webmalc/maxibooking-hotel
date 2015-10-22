@@ -53,8 +53,18 @@
                             {% if tariffRoomCaches[roomType.id][tariff.id][date|date('d.m.Y')] is defined %}
                                 {% set tariffRoomCache = tariffRoomCaches[roomType.id][tariff.id][date|date('d.m.Y')] %}
                             {% endif %}
-                            {% if priceCaches[roomType.id][tariff.id][date|date('d.m.Y')] is defined %}
-                                {% set priceCache = priceCaches[roomType.id][tariff.id][date|date('d.m.Y')] %}
+
+                            {% set roomTypeId = roomType.id %}
+                            {% if client_config().useRoomTypeCategory %}
+                                {% if roomType.category %}
+                                    {% set roomTypeId = roomType.category.id %}
+                                {% else %}
+                                    {% set roomTypeId = 0 %}
+                                {% endif %}
+                            {% endif %}
+
+                            {% if priceCaches[roomTypeId][tariff.id][date|date('d.m.Y')] is defined %}
+                                {% set priceCache = priceCaches[roomTypeId][tariff.id][date|date('d.m.Y')] %}
                             {% endif %}
                             {% if restrictions[roomType.id][tariff.id][date|date('d.m.Y')] is defined %}
                                 {% set restriction = restrictions[roomType.id][tariff.id][date|date('d.m.Y')] %}
