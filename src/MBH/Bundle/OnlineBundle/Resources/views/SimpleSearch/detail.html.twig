@@ -1,5 +1,8 @@
 <h2>
     {{ hotel.fullTitle }}
+</h2>
+<h3>{{ rate|number_format(2) }}</h3>
+<h2>
     {% if hotel.city or hotel.street %}
         <small>
             <i class="fa fa-map-marker text-warning"></i>
@@ -104,7 +107,14 @@
     <div id="services" class="tab-pane">
         <div class="panel panel-warning">
             <div class="panel-body">
-                Услуги
+                <div>
+                    {% for facility in hotel.facilities %}
+                        <div>
+                            <i class="mbf-{{ facility }} available"></i>
+                            {{ facilities[facility] }}
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
@@ -118,17 +128,33 @@
     <div id="testimonials" class="tab-pane">
         <div class="panel panel-warning">
             <div class="panel-body">
-                <div class="row">
-                    {% for question in questions %}
-                        {% if question.isQuestion %}
-                            <div class="well">
-                                {{ ('poll.question.' ~ question.code)|trans({}, 'MBHPackageBundle') }} - {{ question.value }}
+                <div>
+                    {% for order in orders %}
+                        <div style="border: dashed 2px #666666; padding: 5px">
+                            <div class="row">
+                                {% for question in order.pollQuestions %}
+                                    {% if question.isQuestion %}
+                                        <div class="col-sm-6">
+                                            {{ ('poll.question.' ~ question.code)|trans({}, 'MBHPackageBundle') }} - <strong>{{ question.value }}</strong>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
                             </div>
-                        {% else %}
                             <div class="well">
-                                {{ question.value }}
+                                {% for question in order.pollQuestions %}
+                                    {% if not question.isQuestion %}
+                                        <div>
+                                            <i class="fa fa-quote-left fa-lg" style="opacity: 0.7"></i> &nbsp;
+                                            {{ question.value }}
+                                            &nbsp; <i class="fa fa-quote-right fa-lg" style="opacity: 0.7"></i>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                <div class="pull-right">
+                                    <i>{{ order.payer ? order.payer.name : '' }}</i>
+                                </div>
                             </div>
-                        {% endif %}
+                        </div>
                     {% endfor %}
                 </div>
             </div>

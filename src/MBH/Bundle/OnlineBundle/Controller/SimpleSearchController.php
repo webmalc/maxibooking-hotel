@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -158,13 +159,21 @@ class SimpleSearchController extends Controller
             }
         }
 
-        $questions = $this->dm->getRepository('MBHPackageBundle:PollQuestion')->findByHotel($hotel);
+        $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
+        $orders = $orderRepository->findByHotel($hotel);
+
+        /** @var Order[] $orders */
+        $orders = array_filter(iterator_to_array($orders),  function($order){ return count($order->getPollQuestions()) > 0; });
+
+        $rate = $orderRepository->getRateByOrders($orders);
 
         return [
             'form' => $this->getSearchFormHtml($request),
             'hotel' => $hotel,
             'photos' => $photos,
-            'questions' => $questions
+            'facilities' => $this->get('mbh.facility_repository')->getAll(),
+            'rate' => $rate,
+            'orders' => $orders
         ];
     }
 }

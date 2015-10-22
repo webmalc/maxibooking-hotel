@@ -823,7 +823,7 @@ class Order extends Base
     /**
      * Get pollQuestions
      * @param boolean $grouped
-     * @return \Doctrine\Common\Collections\Collection $pollQuestions
+     * @return \Doctrine\Common\Collections\Collection|OrderPollQuestion[] $pollQuestions
      */
     public function getPollQuestions($grouped = false)
     {

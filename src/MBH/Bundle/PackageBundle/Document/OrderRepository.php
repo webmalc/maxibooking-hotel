@@ -3,7 +3,11 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 
+/**
+ * Class OrderRepository
+ */
 class OrderRepository extends DocumentRepository
 {
     /**
@@ -131,4 +135,58 @@ class OrderRepository extends DocumentRepository
         return $docs;
     }
 
+
+    /**
+     * @param $orders
+     * @return float|int
+     */
+    public function getRateByOrders($orders)
+    {
+        $rate = 0;
+        $divider = 0;
+        foreach($orders as $order) {
+            foreach($order->getPollQuestions() as $question) {
+                if ($question->getIsQuestion()) {
+                    $rate += (int)$question->getValue();
+                    ++$divider;
+                }
+            }
+        }
+        if($divider) {
+            $rate = $rate / $divider;
+        }
+
+        return $rate;
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return array|Order[]
+     */
+    public function findByHotel(Hotel $hotel)
+    {
+        $roomTypes = $hotel->getRoomTypes();
+        $roomTypeIDs = [];
+        foreach($roomTypes as $roomType) {
+            $roomTypeIDs[] = $roomType->getId();
+        }
+
+        if(!$roomTypeIDs) {
+            return [];
+        }
+
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+        $packages = $packageRepository->createQueryBuilder()->hydrate(false)
+            ->select('order')->field('roomType.id')->in($roomTypeIDs)->getQuery()->toArray();
+        $ids = array_column(array_column($packages, 'order'), '$id');
+        if(!$ids) {
+            return [];
+        }
+
+        $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
+        /** @var Order[] $orders */
+        $orders = $orderRepository->createQueryBuilder()->field('id')->in($ids)->getQuery()->execute();
+
+        return $orders;
+    }
 }
