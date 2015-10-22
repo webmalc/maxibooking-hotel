@@ -177,4 +177,22 @@ class SimpleSearchController extends Controller
             'orders' => $orders
         ];
     }
+
+    /**
+     * @Route("/map", name="simple_search_map")
+     * @Method("GET")
+     * @Template()
+     */
+    public function mapAction(Request $request)
+    {
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findBy([
+            'latitude' => ['$exists' => 1],
+            'longitude' => ['$exists' => 1]
+        ]);
+
+        return [
+            'form' => $this->getSearchFormHtml($request),
+            'hotels' => $hotels
+        ];
+    }
 }
