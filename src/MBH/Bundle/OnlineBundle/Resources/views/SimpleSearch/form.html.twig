@@ -26,7 +26,7 @@
     </div>
     <div class="mbh-form-row">
         <label for="mbh-form-end"> Не более км. от МКАД</label>
-        <input type="number" id="mbh-form-end" name="distance">
+        <input type="number" id="mbh-form-end" name="distance" value="{{ app.request.get('distance') }}">
     </div>
     <div id="mbh-form-adults-children-clear"></div>
     <div class="mbh-form-row" id="mbh-form-submit-wrapper">

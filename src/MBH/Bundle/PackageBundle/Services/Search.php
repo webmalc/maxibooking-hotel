@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
@@ -63,11 +64,18 @@ class Search
         if (empty($query->roomTypes)) {
             $query->roomTypes = [];
             $helper = $this->container->get('mbh.helper');
-            $criteria = [];
+            /** @var DocumentRepository $hotelRepository */
+            $hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
+
+            $qb = $hotelRepository->createQueryBuilder();
             if($query->city) {
-                $criteria['city.id'] = $query->city;
+                $qb->field('city.id')->equals($query->city);
             }
-            $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findBy($criteria);
+            if ($query->distance) {
+                $qb->field('MKADdistance')->lte($query->distance);
+            }
+
+            $hotels = $qb->getQuery()->execute();
 
             foreach($hotels as $hotel) {
                 $query->roomTypes = array_merge($helper->toIds($hotel->getRoomTypes()), $query->roomTypes);

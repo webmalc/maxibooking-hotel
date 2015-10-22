@@ -93,6 +93,7 @@ class SimpleSearchController extends Controller
         $query->adults = (int)$request->get('adults');
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
+        $query->distance = (float)$request->get('distance');
         $query->addRoomType($request->get('roomType'));
 
         $queryID = $request->get('query_id');

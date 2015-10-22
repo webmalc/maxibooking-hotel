@@ -49,6 +49,11 @@ class HotelType extends AbstractType
                 'attr' => ['class' => 'tinymce'],
                 'required' => false
             ])
+            ->add('MKADdistance', 'number', [
+                'label' => 'form.hotelType.MKADdistance',
+                'group' => 'form.hotelType.general_info',
+                'required' => false
+            ])
             ->add('file', 'file', [
                 'label' => 'form.hotelType.logo',
                 'group' => 'form.hotelType.settings',

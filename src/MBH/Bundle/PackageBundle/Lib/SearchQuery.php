@@ -83,6 +83,11 @@ class SearchQuery
      */
     public $tariff;
 
+    /**
+     * @var float
+     */
+    public $distance;
+
 
     public $city;
 
