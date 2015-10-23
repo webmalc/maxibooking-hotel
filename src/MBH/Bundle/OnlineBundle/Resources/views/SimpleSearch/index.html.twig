@@ -1,4 +1,5 @@
 {% extends 'MBHOnlineBundle:SimpleSearch:layout.html.twig' %}
 {% block content %}
-    {% include 'MBHOnlineBundle:SimpleSearch:results.html.twig' %}
+    {{ content|raw }}
+    {#% include 'MBHOnlineBundle:SimpleSearch:results.html.twig' %#}
 {% endblock content %}

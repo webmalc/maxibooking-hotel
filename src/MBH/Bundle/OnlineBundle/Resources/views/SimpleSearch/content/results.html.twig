@@ -13,7 +13,7 @@
                     <div class="mbh-results-list-rating-sprite"></div>
                 </div>
                 <div class="mbh-results-list-title"><a
-                            href="{{ path('simple_search_view', {id: result.hotel.id}) }}?{% for name, value in app.request.query.all %}{{ name }}={{ value }}&{% endfor %}"
+                            href="{{ path('simple_search_view', {id: result.hotel.id}) }}?hotel={{ result.hotel.id }}&{% for name, value in app.request.query.all %}{{ name }}={{ value }}&{% endfor %}"
                             title="Номера и цены в этом отеле">{{ result.hotel.fullTitle }}</a></div>
                 <div class="mbh-results-list-city">
                     {% if result.hotel.city or result.hotel.street %}
@@ -43,7 +43,7 @@
                 <div class="row">
                     <div class="col-xs-7">
                         <div class="mbh-results-list-descr">
-                            {{ result.hotel.description }}<a href="#">Подробнее</a>
+                            {{ result.hotel.description|raw }}<a href="#">Подробнее</a>
                         </div>
                     </div>
                     <div class="col-xs-5">
@@ -60,7 +60,7 @@
                             <i class="mbf-safe"></i>#}
                         </div>
                         <div class="clearfix"></div>
-                        <a href="{{ path('simple_search_view', {id: result.hotel.id}) }}?{% for name, value in app.request.query.all %}{{ name }}={{ value }}&{% endfor %}"
+                        <a href="{{ path('simple_search_view', {id: result.hotel.id}) }}?hotel={{ result.hotel.id }}&{% for name, value in app.request.query.all %}{{ name }}={{ value }}&{% endfor %}"
                            title="Номера и цены в этом отеле" class="btn btn-primary btn-book">Выбрать номер</a>
 
                     </div>

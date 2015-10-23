@@ -20,19 +20,113 @@ use Symfony\Component\Routing\Generator\UrlGenerator;
 class SimpleSearchController extends Controller
 {
     /**
-     * @Route("/form", name="simple_search_form")
+     * @Route("/ajax/form", name="simple_search_ajax_form")
      * @Method({"GET", "POST"})
-     * @Template()
+     * @Template(template="MBHOnlineBundle:SimpleSearch/content:form.html.twig")
      */
-    public function formAction()
+    public function ajaxFormAction()
     {
-        /*$formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]);
-        if (!$formConfig || !$formConfig->getEnabled()) {
-            throw $this->createNotFoundException();
-        }*/
+        return [];
+    }
+
+
+    /**
+     * @Route("/ajax/results", name="simple_search_ajax_results")
+     * @Method("GET")
+     * @Template(template="MBHOnlineBundle:SimpleSearch/content:results.html.twig")
+     */
+    public function ajaxResultsAction(Request $request)
+    {
+        $helper = $this->get('mbh.helper');
+
+        $query = new SearchQuery();
+        $query->isOnline = true;
+        $query->begin = $helper->getDateFromString($request->get('begin'));
+        $query->end = $helper->getDateFromString($request->get('end'));
+        $query->adults = (int)$request->get('adults');
+        $query->children = (int)$request->get('children');
+        $query->tariff = $request->get('tariff');
+        $query->distance = (float)$request->get('distance');
+        $query->addRoomType($request->get('roomType'));
+
+        $queryID = $request->get('query_id');
+
+        if($request->get('query_type') == 'city') {
+            $query->city = $queryID;
+        } else {
+            $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find($queryID);
+            if($hotel) {
+                $query->addHotel($hotel);
+            }
+        };
+
+        $searchResults = $this->get('mbh.package.search')->search($query);
+
+        $results = [];
+        foreach($searchResults as $result) {
+            $hotelID = $result->getRoomType()->getHotel()->getId();
+            if (!isset($results[$hotelID])) {
+                $results[$hotelID] = [
+                    'hotel' => $result->getRoomType()->getHotel(),
+                    'roomTypes' => [$result->getRoomType()],
+                    'result' => $result,
+                ];
+            } else {
+                $results[$hotelID]['roomTypes'][] = $result->getRoomType();
+            }
+        }
 
         return [
-            //'formConfig' => $formConfig
+            'results' => $results
+        ];
+    }
+
+    /**
+     * @Route("/ajax/detail/{id}", name="simple_search_ajax_detail")
+     * @Method("GET")
+     * @Template(template="MBHOnlineBundle:SimpleSearch/content:detail.html.twig")
+     * @ParamConverter(class="MBH\Bundle\HotelBundle\Document\Hotel")
+     */
+    public function ajaxDetailAction(Hotel $hotel, Request $request)
+    {
+        $photos = [];
+        foreach($hotel->getRoomTypes() as $roomType) {
+            foreach($roomType->getImages() as $image) {
+                $photos[] = $image->getPath();
+            }
+        }
+
+        $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
+        $orders = $orderRepository->findByHotel($hotel);
+
+        /** @var Order[] $orders */
+        $orders = array_filter(iterator_to_array($orders),  function($order){ return count($order->getPollQuestions()) > 0; });
+
+        $rate = $orderRepository->getRateByOrders($orders);
+
+        return [
+            'hotel' => $hotel,
+            'photos' => $photos,
+            'facilities' => $this->get('mbh.facility_repository')->getAll(),
+            'rate' => $rate,
+            'orders' => $orders
+        ];
+    }
+
+    /**
+     * @Route("/ajax/map", name="simple_search_ajax_map")
+     * @Method("GET")
+     * @Template(template="MBHOnlineBundle:SimpleSearch/content:map.html.twig")
+     */
+    public function ajaxMapAction(Request $request)
+    {
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findBy([
+            'latitude' => ['$exists' => 1],
+            'longitude' => ['$exists' => 1]
+        ]);
+
+        return [
+            'hotels' => $hotels
         ];
     }
 
@@ -77,58 +171,6 @@ class SimpleSearchController extends Controller
         return new JsonResponse($response);
     }
 
-    /**
-     * @Route("/index", name="simple_search_index")
-     * @Method("GET")
-     * @Template()
-     */
-    public function indexAction(Request $request)
-    {
-        $helper = $this->get('mbh.helper');
-
-        $query = new SearchQuery();
-        $query->isOnline = true;
-        $query->begin = $helper->getDateFromString($request->get('begin'));
-        $query->end = $helper->getDateFromString($request->get('end'));
-        $query->adults = (int)$request->get('adults');
-        $query->children = (int)$request->get('children');
-        $query->tariff = $request->get('tariff');
-        $query->distance = (float)$request->get('distance');
-        $query->addRoomType($request->get('roomType'));
-
-        $queryID = $request->get('query_id');
-
-        if($request->get('query_type') == 'city') {
-            $query->city = $queryID;
-        } else {
-            $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find($queryID);
-            if($hotel) {
-                $query->addHotel($hotel);
-            }
-        };
-
-        $searchResults = $this->get('mbh.package.search')->search($query);
-
-        $results = [];
-        foreach($searchResults as $result) {
-            $hotelID = $result->getRoomType()->getHotel()->getId();
-            if (!isset($results[$hotelID])) {
-                $results[$hotelID] = [
-                    'hotel' => $result->getRoomType()->getHotel(),
-                    'roomTypes' => [$result->getRoomType()],
-                    'result' => $result,
-                ];
-            } else {
-                $results[$hotelID]['roomTypes'][] = $result->getRoomType();
-            }
-        }
-
-        return [
-            'form' => $this->getSearchFormHtml($request),
-            'results' => $results
-            //'detail' => $detailResponse->getBody()
-        ];
-    }
 
     /**
      * @param Request $request
@@ -138,11 +180,66 @@ class SimpleSearchController extends Controller
     {
         $guzzleClient = $this->get('guzzle.client');
 
-        $formUrl = $this->generateUrl('simple_search_form', $request->query->all(), UrlGenerator::ABSOLUTE_URL);
+        $formUrl = $this->generateUrl('simple_search_ajax_form', $request->query->all(), UrlGenerator::ABSOLUTE_URL);
         $formRequest = $guzzleClient->get($formUrl);
         $formResponse = $formRequest->send();
 
         return $formResponse->getBody();
+    }
+
+    /**
+     * @param Request $request
+     * @param Hotel $hotel
+     * @return \Guzzle\Http\EntityBodyInterface|string
+     */
+    private function getDetailContent(Request $request, Hotel $hotel)
+    {
+        $guzzleClient = $this->get('guzzle.client');
+
+        $parameters = $request->query->all();
+        $parameters['id'] = $hotel->getId();
+        $formUrl = $this->generateUrl('simple_search_ajax_detail', $parameters, UrlGenerator::ABSOLUTE_URL);
+        $formRequest = $guzzleClient->get($formUrl);
+        $formResponse = $formRequest->send();
+
+        return $formResponse->getBody();
+    }
+
+    private function getResultsContent(Request $request)
+    {
+        $guzzleClient = $this->get('guzzle.client');
+
+        $parameters = $request->query->all();
+        $formUrl = $this->generateUrl('simple_search_ajax_results', $parameters, UrlGenerator::ABSOLUTE_URL);
+        $formRequest = $guzzleClient->get($formUrl);
+        $formResponse = $formRequest->send();
+
+        return $formResponse->getBody();
+    }
+
+    private function getMapContent(Request $request)
+    {
+        $guzzleClient = $this->get('guzzle.client');
+
+        $parameters = $request->query->all();
+        $formUrl = $this->generateUrl('simple_search_ajax_map', $parameters, UrlGenerator::ABSOLUTE_URL);
+        $formRequest = $guzzleClient->get($formUrl);
+        $formResponse = $formRequest->send();
+
+        return $formResponse->getBody();
+    }
+
+    /**
+     * @Route("/index", name="simple_search_index")
+     * @Method("GET")
+     * @Template()
+     */
+    public function indexAction(Request $request)
+    {
+        return [
+            'form' => $this->getSearchFormHtml($request),
+            'content' => $this->getResultsContent($request)
+        ];
     }
 
     /**
@@ -153,28 +250,9 @@ class SimpleSearchController extends Controller
      */
     public function viewAction(Hotel $hotel, Request $request)
     {
-        $photos = [];
-        foreach($hotel->getRoomTypes() as $roomType) {
-            foreach($roomType->getImages() as $image) {
-                $photos[] = $image->getPath();
-            }
-        }
-
-        $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
-        $orders = $orderRepository->findByHotel($hotel);
-
-        /** @var Order[] $orders */
-        $orders = array_filter(iterator_to_array($orders),  function($order){ return count($order->getPollQuestions()) > 0; });
-
-        $rate = $orderRepository->getRateByOrders($orders);
-
         return [
             'form' => $this->getSearchFormHtml($request),
-            'hotel' => $hotel,
-            'photos' => $photos,
-            'facilities' => $this->get('mbh.facility_repository')->getAll(),
-            'rate' => $rate,
-            'orders' => $orders
+            'content' => $this->getDetailContent($request, $hotel)
         ];
     }
 
@@ -185,14 +263,9 @@ class SimpleSearchController extends Controller
      */
     public function mapAction(Request $request)
     {
-        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findBy([
-            'latitude' => ['$exists' => 1],
-            'longitude' => ['$exists' => 1]
-        ]);
-
         return [
             'form' => $this->getSearchFormHtml($request),
-            'hotels' => $hotels
+            'content' => $this->getMapContent($request)
         ];
     }
 }
