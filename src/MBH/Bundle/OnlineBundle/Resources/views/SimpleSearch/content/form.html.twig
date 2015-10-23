@@ -1,16 +1,16 @@
 <form id="mbh-form" method="get" action="{{ path('simple_search_index') }}">
     <h3>Бронирование номеров</h3>
-    <div class="mbh-form-row">
-        <label for="mbh-form-hotel">Отель</label>
+    <div class="mbh-form-row" id="mbh-form-hotel-wrapper">
+        <label for="mbh-form-hotel">Место/название отель</label>
         <input name="search" type="search" id="mbh-form-hotel" value="{{ app.request.get('search') }}">
     </div>
     <input type="hidden" name="query_type" id="mbh-form-search-query-type-hidden-input" value="{{ app.request.get('query_type') }}">
     <input type="hidden" name="query_id" id="mbh-form-search-query-id-hidden-input" value="{{ app.request.get('query_id') }}">
-    <div class="mbh-form-row">
+    <div class="mbh-form-row" id="mbh-form-begin-wrapper">
         <label for="mbh-form-begin"> Дата заезда</label>
         <input type="text" id="mbh-form-begin" name="begin" required="required" value="{{ app.request.get('begin') }}" class="hasDatepicker">
     </div>
-    <div class="mbh-form-row">
+    <div class="mbh-form-row" id="mbh-form-end-wrapper">
         <label for="mbh-form-end"> Дата выезда</label>
         <input type="text" id="mbh-form-end" name="end" required="required" value="{{ app.request.get('end') }}" class="hasDatepicker">
     </div>
@@ -24,9 +24,9 @@
             <input type="number" id="mbh-form-children" name="children" value="{{ app.request.get('children') }}">
         </div>
     </div>
-    <div class="mbh-form-row">
-        <label for="mbh-form-end"> Не более км. от МКАД</label>
-        <input type="number" id="mbh-form-end" name="distance" value="{{ app.request.get('distance') }}">
+    <div class="mbh-form-row" id="mbh-form-distance-wrapper">
+        <label for="mbh-form-distance"> Не более км. от МКАД</label>
+        <input type="number" id="mbh-form-distance" name="distance" value="{{ app.request.get('distance') }}">
     </div>
     <div id="mbh-form-adults-children-clear"></div>
     <div class="mbh-form-row" id="mbh-form-submit-wrapper">

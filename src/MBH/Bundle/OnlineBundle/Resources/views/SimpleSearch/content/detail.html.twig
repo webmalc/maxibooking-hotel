@@ -1,7 +1,7 @@
 <h2>
     {{ hotel.fullTitle }}
 </h2>
-<h3>{{ rate|number_format(2) }}</h3>
+<div class="mbh-hotel-rating">{{ rate|number_format(2) }}</div>
 <h2>
     {% if hotel.city or hotel.street %}
         <small>
@@ -86,13 +86,6 @@
                 {{ hotel.description|raw }}
             </div>
         </div>
-
-        <div class="panel panel-warning">
-            <div class="panel-body">
-                <h4>Цены и наличие мест</h4>
-                <div id="mbh-results-wrapper" style="overflow: hidden; width: auto; height: auto;"></div>
-            </div>
-        </div>
     </div>
 
     {% if hotel.latitude and hotel.longitude %}
@@ -159,6 +152,13 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="panel panel-warning">
+    <div class="panel-body">
+        <h4>Цены и наличие мест</h4>
+        <div id="mbh-results-wrapper" style="overflow: hidden; width: auto; height: auto;"></div>
     </div>
 </div>
 
