@@ -107,12 +107,39 @@ class SimpleSearchController extends Controller
 
         $rate = $orderRepository->getRateByOrders($orders);
 
+        $path = $this->get('file_locator')->locate('@MBHOnlineBundle/Resources/fixture/Autotravel_waypoints.gpx.txt');
+        $simpleXmlElement = simplexml_load_string(file_get_contents($path));
+        $sights = [];
+
+        $leftBorder = [55.752757, 37.583895];
+        $rightBorder = [55.750938, 37.655320];
+
+        $topBorder = [55.773327, 37.620738];
+        $bottomBorder = [55.730658, 37.621779];
+
+        foreach($simpleXmlElement->children() as $child) {
+            $showPlace = [
+                'name' => (string) $child->name,
+                'desc' => (string) '',//$child->desc,
+                'lon' => (float) $child->attributes()->lon,
+                'lat' => (float) $child->attributes()->lat
+            ];
+
+            if(
+                ($showPlace['lon'] < $leftBorder[1] || $showPlace['lon'] > $rightBorder[1]) &&
+                ($showPlace['lat'] > $topBorder[0] || $showPlace['lat'] < $bottomBorder[0])
+            ) {
+                $sights[] = $showPlace;
+            }
+        };
+
         return [
             'hotel' => $hotel,
             'photos' => $photos,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'rate' => $rate,
-            'orders' => $orders
+            'orders' => $orders,
+            'sights' => $sights,
         ];
     }
 
@@ -128,21 +155,8 @@ class SimpleSearchController extends Controller
             'longitude' => ['$exists' => 1]
         ]);
 
-        $path = $this->get('file_locator')->locate('@MBHOnlineBundle/Resources/fixture/Autotravel_waypoints.gpx.txt');
-        $simpleXmlElement = simplexml_load_string(file_get_contents($path));
-        $sights = [];
-        foreach($simpleXmlElement->children() as $child) {
-            $sights[] = [
-                'name' => (string) $child->name,
-                'desc' => (string) $child->desc,
-                'lon' => (string) $child->attributes()->lon,
-                'lat' => (string) $child->attributes()->lat
-            ];
-        };
-
         return [
-            'hotels' => $hotels,
-            'sights' => $sights
+            'hotels' => $hotels
         ];
     }
 

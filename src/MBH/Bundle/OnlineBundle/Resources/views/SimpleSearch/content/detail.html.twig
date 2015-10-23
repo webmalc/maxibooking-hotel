@@ -188,6 +188,26 @@
             map: map,
             title: 'Hello World!'
         });
+        {% for key, sight in sights %}
+        position = {lat: {{ sight.lat }}, lng: {{ sight.lon }}};
+        var pinShadow = new google.maps.MarkerImage("http://www.armeniapedia.org/images/f/f1/Marker-museum.png",//"http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
+                new google.maps.Size(40, 37),
+                new google.maps.Point(0, 0),
+                new google.maps.Point(12, 35)
+        );
+        marker{{ key }} = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: '{{ sight.name }}',
+            icon: pinShadow
+        });
+        var infowindow{{ key }} = new google.maps.InfoWindow({
+            content: '<strong>{{ sight.name }}</strong> {#{ sight.desc }#}'
+        });
+        marker{{ key }}.addListener('click', function() {
+            infowindow{{ key }}.open(map, marker{{ key }});
+        });
+        {% endfor %}
     }
 </script>
 <style>

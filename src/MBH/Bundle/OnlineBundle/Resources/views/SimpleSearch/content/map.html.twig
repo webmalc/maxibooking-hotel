@@ -30,21 +30,6 @@
                 infowindow{{ hotel.id }}.open(map, marker{{ hotel.id }});
             });
         {% endfor %}
-
-        {% for key, sight in sights %}
-        position = {lat: {{ sight.lat }}, lng: {{ sight.lon }}};
-        marker{{ key }} = new google.maps.Marker({
-            position: position,
-            map: map,
-            title: '{{ sight.name }}'
-        });
-        var infowindow{{ key }} = new google.maps.InfoWindow({
-            content: '<strong>{{ sight.name }}</strong> {{ sight.desc }}'
-        });
-        marker{{ key }}.addListener('click', function() {
-            infowindow{{ key }}.open(map, marker{{ key }});
-        });
-        {% endfor %}
     }
 </script>
 <style>
