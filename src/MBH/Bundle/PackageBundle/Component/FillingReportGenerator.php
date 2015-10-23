@@ -39,6 +39,7 @@ class FillingReportGenerator
     public function generate(\DateTime $begin, \DateTime $end, array $roomTypes)
     {
         $dm = $this->container->get('doctrine_mongodb')->getManager();
+        $manager = $this->container->get('mbh.hotel.room_type_manager');
 
         $rangeDateList = [$begin];
         $cloneBegin = clone($begin);
@@ -48,12 +49,31 @@ class FillingReportGenerator
 
         $priceCacheRepository = $dm->getRepository('MBHPriceBundle:PriceCache');
 
+        if ($manager->useCategories) {
+            $catsIds = [];
+            foreach ($roomTypes as $roomType) {
+
+                $cat = $roomType->getCategory();
+                if (!$cat) {
+                    continue;
+                }
+                $catsIds[$cat->getId()] = $cat->getId();
+            }
+        }
+
         $roomTypeIDs = $this->container->get('mbh.helper')->toIds($roomTypes);
 
-        $priceCaches = $priceCacheRepository->findBy([
-            'date' => ['$gte' => reset($rangeDateList), '$lte' => end($rangeDateList)],
-            'roomType.id' => ['$in' => $roomTypeIDs]
-        ]);
+        if ($manager->useCategories) {
+            $priceCaches = $priceCacheRepository->findBy([
+                'date' => ['$gte' => reset($rangeDateList), '$lte' => end($rangeDateList)],
+                'roomTypeCategory.id' => ['$in' => isset($catsIds) && count($catsIds) ? $catsIds : []]
+            ]);
+        } else {
+            $priceCaches = $priceCacheRepository->findBy([
+                'date' => ['$gte' => reset($rangeDateList), '$lte' => end($rangeDateList)],
+                'roomType.id' => ['$in' => isset($roomTypeIDs) && count($roomTypeIDs) ? $roomTypeIDs : []]
+            ]);
+        }
 
         $allPackages = $dm->getRepository('MBHPackageBundle:Package')->findBy([
             'end' => ['$gte' => reset($rangeDateList)],
@@ -154,13 +174,23 @@ class FillingReportGenerator
                 $packageRowData = $emptyPackageRowData;
 
                 foreach($priceCaches as $priceCache) {
-                    if($priceCache->getRoomType()->getId() == $roomTypeID && $priceCache->getDate()->getTimestamp() == $date->getTimestamp()) {
+                    if ($manager->useCategories) {
+                        $cat = $priceCache->getRoomTypeCategory();
+                        $pcRoomTypeId = $cat ? $cat->getId() : 0;
+                        $cat = $roomType->getCategory();
+                        $rtRoomTypeId = $cat ? $cat->getId() : -1;
+                    } else {
+                        $pcRoomTypeId = $priceCache->getRoomType()->getId();
+                        $rtRoomTypeId = $roomType->getId();
+                    }
+
+                    if($pcRoomTypeId == $rtRoomTypeId && $priceCache->getDate()->getTimestamp() == $date->getTimestamp()) {
                         $totalRooms = 0;
                         if(isset($roomCachesByRoomTypeAndDate[$roomTypeID][$date->format('d.m.Y')])) {
                             $totalRooms = $roomCachesByRoomTypeAndDate[$roomTypeID][$date->format('d.m.Y')]->getTotalRooms();
                         }
 
-                        $packageRowData['maxIncome'] += $priceCache->getMaxIncome() * $totalRooms;
+                        $packageRowData['maxIncome'] += $priceCache->getMaxIncome($roomType->getPlaces(), $roomType->getAdditionalPlaces()) * $totalRooms;
                         break;
                     }
                 }

@@ -15,12 +15,25 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\PackageBundle\Form\SearchType;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 
 /**
  * @Route("/search")
  */
 class SearchController extends Controller implements CheckHotelControllerInterface
 {
+
+    /**
+     * @var RoomTypeManager
+     */
+    private $manager;
+
+    public function setContainer(ContainerInterface $container = null)
+    {
+        parent::setContainer($container);
+        $this->manager = $this->get('mbh.hotel.room_type_manager');
+    }
 
     /**
      * Search action
@@ -36,7 +49,8 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,
             'hotel' => $this->hotel,
-            'orderId' => $request->get('order')
+            'orderId' => $request->get('order'),
+            'roomManager' => $this->manager
         ]);
 
         $tourist = new Tourist();
@@ -70,7 +84,8 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
         $form = $this->createForm(new SearchType(), [], [
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,
-            'hotel' => $this->get('mbh.hotel.selector')->getSelected()
+            'hotel' => $this->hotel,
+            'roomManager' => $this->manager
         ]);
 
         // Validate form
@@ -100,7 +115,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                         if (!$hotel) {
                             continue;
                         }
-                        foreach ($hotel->getRoomTypes() as $roomType) {
+                        foreach ($this->manager->getRooms($hotel) as $roomType) {
                             $query->addRoomType($roomType->getId());
                         }
                     } else {
@@ -110,7 +125,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
 
                 $results = $groupedResult = [];
                 $tariffs = $this->get('mbh.package.search')->searchTariffs($query);
-
                 foreach ($tariffs as $tariff) {
                     $query->tariff = $tariff;
                     $results = array_merge($results, $this->get('mbh.package.search')->search($query));

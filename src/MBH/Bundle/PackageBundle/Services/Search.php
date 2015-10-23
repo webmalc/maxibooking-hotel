@@ -6,6 +6,7 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
+use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 
 /**
  *  Search service
@@ -28,11 +29,17 @@ class Search
      */
     public $now;
 
+    /**
+     * @var RoomTypeManager
+     */
+    private $manager;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->now = new \DateTime('midnight');
+        $this->manager = $container->get('mbh.hotel.room_type_manager');
     }
 
     /**
@@ -58,14 +65,23 @@ class Search
         $duration = $query->end->diff($query->begin)->format('%a');
         $today = new \DateTime('midnight');
         $beforeArrival = $today->diff($query->begin)->format('%a');
+        $helper = $this->container->get('mbh.helper');
 
         //roomTypes
         if (empty($query->roomTypes)) {
             $query->roomTypes = [];
-            $helper = $this->container->get('mbh.helper');
             foreach( $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
                 $query->roomTypes = array_merge($helper->toIds($hotel->getRoomTypes()), $query->roomTypes);
             }
+        } elseif ($this->manager->useCategories) {
+            $roomTypes = [];
+            foreach ($query->roomTypes as $catId) {
+                $cat = $this->dm->getRepository('MBHHotelBundle:RoomTypeCategory')->find($catId);
+                if ($cat) {
+                    $roomTypes = array_merge($helper->toIds($cat->getTypes()), $roomTypes);
+                }
+            }
+            $query->roomTypes = count($roomTypes) ? $roomTypes : [0];
         }
 
         //roomCache with tariffs
@@ -89,8 +105,6 @@ class Search
                 if ($skip || ($roomCache->getLeftRooms() > 0 && $roomCache->getRoomType()->getTotalPlaces() >= $query->getTotalPlaces() && !$roomCache->getIsClosed())) {
                     $groupedCaches['room'][$roomCache->getHotel()->getId()][$roomCache->getRoomType()->getId()][] = $roomCache;
                 }
-
-
             }
         }
         if (!isset($groupedCaches['room'])) {
@@ -309,7 +323,7 @@ class Search
     {
         $tariffs = $results = [];
         if (!empty($query->roomTypes)) {
-            $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->fetch(null, $query->roomTypes);
+            $roomTypes = $this->manager->getRooms(null, $query->roomTypes);
             foreach ($roomTypes as $roomType) {
                 $tariffs = array_merge($tariffs, $this->dm->getRepository('MBHPriceBundle:Tariff')->fetch($roomType->getHotel())->toArray());
             }

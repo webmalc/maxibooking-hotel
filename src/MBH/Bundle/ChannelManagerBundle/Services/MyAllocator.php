@@ -323,12 +323,16 @@ class MyAllocator extends Base
                 $begin,
                 $end,
                 $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
+                $this->getRoomTypeArray($roomType),
                 [],
-                true
+                true,
+                $this->roomManager->useCategories
             );
 
             foreach ($roomTypes as $roomTypeId => $roomType) {
+
+                $roomTypeId = $this->getRoomTypeArray($roomType['doc'])[0];
+
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
                         if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {

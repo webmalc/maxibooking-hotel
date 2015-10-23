@@ -3,7 +3,14 @@
     {% for roomType in roomTypes %}
         <tr class="mbh-grid-header1 info">
             <td colspan=" {{ rangeDateList|length + 2 }}  ">
-                <strong>{{ roomType.fullTitle }}</strong>
+                <strong>{{ roomType.name }}</strong> -
+                <small>
+                    {% if client_config().useRoomTypeCategory() and roomType.category %}
+                        {{ roomType.category }} -
+                    {% endif %}
+                    мест: {{ roomType.places }}{% if roomType.additionalPlaces > 0 %}(+{{ roomType.additionalPlaces }}){% endif %}
+                    - {{ roomType.hotel }}
+                </small>
             </td>
         </tr>
 

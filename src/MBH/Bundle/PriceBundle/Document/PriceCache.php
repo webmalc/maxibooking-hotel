@@ -332,16 +332,25 @@ class PriceCache extends Base
     }
 
     /**
+     * @param int $places
+     * @param int $additionalPlaces
      * @return float|int
      */
-    public function getMaxIncome()
+    public function getMaxIncome($places = null, $additionalPlaces = null)
     {
+        if (!$places) {
+            $places = $this->getRoomType()->getPlaces();
+        }
+        if (!$additionalPlaces) {
+            $additionalPlaces = $this->getRoomType()->getAdditionalPlaces();
+        }
+
         if ($this->getIsPersonPrice()) {
-            $commonPlace = $this->getRoomType()->getPlaces() * $this->getPrice();
+            $commonPlace = $places * $this->getPrice();
         } else {
             $commonPlace = $this->getPrice();
         }
-        $additionalPlace = $this->getRoomType()->getAdditionalPlaces() * $this->getAdditionalPrice();
+        $additionalPlace = $additionalPlaces * $this->getAdditionalPrice();
         return $commonPlace + $additionalPlace;
     }
 

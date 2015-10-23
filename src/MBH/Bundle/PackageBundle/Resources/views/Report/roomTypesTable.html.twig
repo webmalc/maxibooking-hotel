@@ -32,6 +32,9 @@
             <td colspan="9">
                 <strong>{{ roomType }}</strong> -
                 <small>
+                    {% if client_config().useRoomTypeCategory() and roomType.category %}
+                        {{ roomType.category }} -
+                    {% endif %}
                     мест: {{ roomType.places }}{% if roomType.additionalPlaces > 0 %}(+{{ roomType.additionalPlaces }}){% endif %}
                     - {{ roomType.hotel }}
                 </small>

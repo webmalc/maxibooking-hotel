@@ -57,7 +57,7 @@ class RoomTypeManager
      * @param array $rooms
      * @return mixed
      */
-    public function getRooms(Hotel $hotel, $rooms = null)
+    public function getRooms(Hotel $hotel = null, $rooms = null)
     {
         $repo = $this->getRepository();
 

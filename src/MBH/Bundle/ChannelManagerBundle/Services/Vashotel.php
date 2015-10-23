@@ -902,9 +902,10 @@ class Vashotel extends Base
                 $begin,
                 $end,
                 $config->getHotel(),
-                $filterRoomType ? [$filterRoomType->getId()] : [],
+                $this->getRoomTypeArray($filterRoomType),
                 [],
-                true
+                true,
+                $this->roomManager->useCategories
             );
 
             //iterate tariffs
@@ -917,6 +918,8 @@ class Vashotel extends Base
                 $tariffDoc = $configTariffs[$tariffId]['doc'];
 
                 foreach ($roomTypes as $roomTypeId => $roomType) {
+
+                    $roomTypeId = $this->getRoomTypeArray($roomType['doc'])[0];
 
                     $data['rate'] = $tariffId;
 

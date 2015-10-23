@@ -73,6 +73,27 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $this->helper = $container->get('mbh.helper');
         $this->logger = $container->get('mbh.channelmanager.logger');
         $this->currency = $container->get('mbh.currency');
+        $this->roomManager = $container->get('mbh.hotel.room_type_manager');
+    }
+
+    /**
+     * @param RoomType $roomType
+     * @return array
+     */
+    public function getRoomTypeArray(RoomType $roomType = null)
+    {
+        if (!$roomType) {
+            return [];
+        }
+        if (!$this->roomManager->useCategories) {
+            return [$roomType->getId()];
+        }
+        if ($this->roomManager->useCategories) {
+            if (!$roomType->getCategory()) {
+                return [0];
+            }
+            return [$roomType->getCategory()->getId()];
+        }
     }
 
     /**

@@ -10,6 +10,7 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 
 /**
  *  Calculation service
@@ -28,14 +29,15 @@ class Calculation
     protected $dm;
 
     /**
-     * @var string 
+     * @var RoomTypeManager
      */
-    protected $console;
+    private $manager;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
+        $this->manager = $container->get('mbh.hotel.room_type_manager');
     }
 
     /**
@@ -120,10 +122,20 @@ class Calculation
         $prices = [];
         $places = $roomType->getPlaces();
         $hotel = $roomType->getHotel();
-        $roomTypeId = $roomType->getId();
+
+        if ($this->manager->useCategories) {
+            if (!$roomType->getCategory()) {
+                return false;
+            }
+            $roomTypeId = $roomType->getCategory()->getId();
+        } else {
+            $roomTypeId = $roomType->getId();
+        }
+
         $tariffId = $tariff->getId();
         $duration = $end->diff($begin)->format('%a') + 1;
-        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true);
+        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
+            ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true, $this->manager->useCategories);
 
         if (!isset($priceCaches[$roomTypeId][$tariffId]) || count($priceCaches[$roomTypeId][$tariffId]) != $duration) {
             return false;
@@ -168,7 +180,10 @@ class Calculation
             foreach ($priceCaches[$roomTypeId][$tariffId] as $day => $cache) {
                 $dayPrice = 0;
 
-                if ($cache->getSinglePrice() !== null && $all == 1 && !$cache->getRoomType()->getIsHostel()) {
+                if ($cache->getSinglePrice() !== null &&
+                    $all == 1 &&
+                    !$cache->getCategoryOrRoomType($this->manager->useCategories)->getIsHostel()
+                ) {
                     $dayPrice += $cache->getSinglePrice();
                 } elseif ($cache->getIsPersonPrice()) {
                     if ($roomType->getIsChildPrices() && $cache->getChildPrice() !== null) {

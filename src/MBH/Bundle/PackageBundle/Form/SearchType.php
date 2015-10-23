@@ -37,7 +37,7 @@ class SearchType extends AbstractType
             }
 
             $roomTypes[$hotel->getName()]['allrooms_' . $hotel->getId()] = 'form.searchType.all_rooms';
-            foreach ($hotel->getRoomTypes() as $roomType) {
+            foreach ($options['roomManager']->getRooms($hotel) as $roomType) {
                 $roomTypes[$hotel->getName()][$roomType->getId()] = $roomType->getName();
             }
         }
@@ -131,6 +131,7 @@ class SearchType extends AbstractType
             'security' => null,
             'hotel' => null,
             'orderId' => null,
+            'roomManager' => null
         ]);
     }
 
