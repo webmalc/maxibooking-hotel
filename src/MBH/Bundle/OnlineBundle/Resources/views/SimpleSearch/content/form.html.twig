@@ -28,6 +28,15 @@
         <label for="mbh-form-distance"> Не более км. от МКАД</label>
         <input type="number" id="mbh-form-distance" name="distance" value="{{ app.request.get('distance') }}">
     </div>
+    <div class="mbh-form-row" id="mbh-form-highway-wrapper">
+        <label for="mbh-form-highway"> Шоссе</label>
+        <select id="mbh-form-highway" name="highway">
+            <option></option>
+            {% for highway in highwayList %}
+            <option {% if app.request.get('highway') == highway %}selected="selected" {% endif %}value="{{ highway }}">{{ highway }}</option>
+            {% endfor %}
+        </select>
+    </div>
     <div id="mbh-form-adults-children-clear"></div>
     <div class="mbh-form-row" id="mbh-form-submit-wrapper">
         <button type="submit" class="btn btn-success" id="mbh-form-submit">Найти номер</button>

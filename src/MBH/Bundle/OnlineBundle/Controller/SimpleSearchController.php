@@ -26,7 +26,9 @@ class SimpleSearchController extends Controller
      */
     public function ajaxFormAction()
     {
-        return [];
+        return [
+            'highwayList' => $this->get('mbh.online.highwa_repository')->getList()
+        ];
     }
 
 
@@ -47,6 +49,7 @@ class SimpleSearchController extends Controller
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
         $query->distance = (float)$request->get('distance');
+        $query->highway = $request->get('highway');
         $query->addRoomType($request->get('roomType'));
 
         $queryID = $request->get('query_id');
@@ -125,8 +128,21 @@ class SimpleSearchController extends Controller
             'longitude' => ['$exists' => 1]
         ]);
 
+        $path = $this->get('file_locator')->locate('@MBHOnlineBundle/Resources/fixture/Autotravel_waypoints.gpx.txt');
+        $simpleXmlElement = simplexml_load_string(file_get_contents($path));
+        $sights = [];
+        foreach($simpleXmlElement->children() as $child) {
+            $sights[] = [
+                'name' => (string) $child->name,
+                'desc' => (string) $child->desc,
+                'lon' => (string) $child->attributes()->lon,
+                'lat' => (string) $child->attributes()->lat
+            ];
+        };
+
         return [
-            'hotels' => $hotels
+            'hotels' => $hotels,
+            'sights' => $sights
         ];
     }
 

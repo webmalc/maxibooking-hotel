@@ -87,6 +87,10 @@ class SearchQuery
      * @var float
      */
     public $distance;
+    /**
+     * @var string
+     */
+    public $highway;
 
 
     public $city;

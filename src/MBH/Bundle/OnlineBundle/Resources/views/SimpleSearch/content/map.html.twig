@@ -18,17 +18,32 @@
         })
         {% for hotel in hotels %}
             position = {lat: {{ hotel.latitude }}, lng: {{ hotel.longitude }}};
-            marker = new google.maps.Marker({
+            marker{{ hotel.id }} = new google.maps.Marker({
                 position: position,
                 map: map,
                 title: '{{ hotel.fullTitle }}'
             });
-            var infowindow = new google.maps.InfoWindow({
+            var infowindow{{ hotel.id }} = new google.maps.InfoWindow({
                 content: '<a href="{{ path('simple_search_view', {id: hotel.id}) }}">{{ hotel.fullTitle }}</a>'
             });
-            marker.addListener('click', function() {
-                infowindow.open(map, marker);
+            marker{{ hotel.id }}.addListener('click', function() {
+                infowindow{{ hotel.id }}.open(map, marker{{ hotel.id }});
             });
+        {% endfor %}
+
+        {% for key, sight in sights %}
+        position = {lat: {{ sight.lat }}, lng: {{ sight.lon }}};
+        marker{{ key }} = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: '{{ sight.name }}'
+        });
+        var infowindow{{ key }} = new google.maps.InfoWindow({
+            content: '<strong>{{ sight.name }}</strong> {{ sight.desc }}'
+        });
+        marker{{ key }}.addListener('click', function() {
+            infowindow{{ key }}.open(map, marker{{ key }});
+        });
         {% endfor %}
     }
 </script>

@@ -34,6 +34,7 @@ form.hotelType.maxibooking_inner_name: Название для использо�
 form.hotelType.prefix: Префикс
 form.hotelType.description: Описание
 form.hotelType.MKADdistance: Расстояние до МКАД
+form.hotelType.highway: Шоссе
 form.hotelType.document_use_name: Название для использования в документах
 form.hotelType.sale_days_amount: Количество дней продажи
 form.hotelType.settings: Настройки

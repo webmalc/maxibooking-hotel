@@ -74,6 +74,9 @@ class Search
             if ($query->distance) {
                 $qb->field('MKADdistance')->lte($query->distance);
             }
+            if($query->highway) {
+                $qb->field('highway')->equals($query->highway);
+            }
 
             $hotels = $qb->getQuery()->execute();
 
