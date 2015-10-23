@@ -303,6 +303,12 @@ class Hotel extends Base implements \JsonSerializable
      */
     protected $highway;
 
+    /**
+     * @var float
+     * @ODM\Float()
+     */
+    protected $rate = 0.0;
+
     public function __construct()
     {
         $this->roomTypes = new \Doctrine\Common\Collections\ArrayCollection();
@@ -1229,5 +1235,21 @@ class Hotel extends Base implements \JsonSerializable
     public function setHighway($highway)
     {
         $this->highway = $highway;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRate()
+    {
+        return $this->rate;
+    }
+
+    /**
+     * @param float $rate
+     */
+    public function setRate($rate)
+    {
+        $this->rate = $rate;
     }
 }

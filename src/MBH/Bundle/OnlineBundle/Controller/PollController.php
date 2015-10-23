@@ -58,6 +58,24 @@ class PollController extends Controller
             }
 
             $this->dm->persist($order);
+
+            $hotels = [];
+            foreach($order->getPackages() as $package) {
+                $hotel = $package->getRoomType()->getHotel();
+                $hotels[$hotel->getId()] = $hotel;
+            }
+            $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
+
+            foreach($hotels as $hotel) {
+                $orders = $orderRepository->findByHotel($hotel);
+                /** @var Order[] $orders */
+                $orders = array_filter(iterator_to_array($orders),  function($order){ return count($order->getPollQuestions()) > 0; });
+
+                $hotel->setRate($orderRepository->getRateByOrders($orders));
+
+                $this->dm->persist($hotel);
+            }
+
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()->set(

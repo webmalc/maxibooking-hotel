@@ -105,7 +105,10 @@ class SimpleSearchController extends Controller
         /** @var Order[] $orders */
         $orders = array_filter(iterator_to_array($orders),  function($order){ return count($order->getPollQuestions()) > 0; });
 
-        $rate = $orderRepository->getRateByOrders($orders);
+        $hotel->setRate($orderRepository->getRateByOrders($orders));
+
+        $this->dm->persist($hotel);
+        $this->dm->flush();
 
         $path = $this->get('file_locator')->locate('@MBHOnlineBundle/Resources/fixture/Autotravel_waypoints.gpx.txt');
         $simpleXmlElement = simplexml_load_string(file_get_contents($path));
@@ -137,7 +140,6 @@ class SimpleSearchController extends Controller
             'hotel' => $hotel,
             'photos' => $photos,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
-            'rate' => $rate,
             'orders' => $orders,
             'sights' => $sights,
         ];
