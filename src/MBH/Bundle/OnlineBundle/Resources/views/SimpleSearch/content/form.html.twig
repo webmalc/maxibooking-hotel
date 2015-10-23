@@ -75,6 +75,11 @@
     })
 </script>
 
+{#<script type="text/javascript" src="http://zamkadom24.maxibooking.ru/management/online/api/form"></script>#}
+{% javascripts '@MBHOnlineBundle/Resources/public/simpleSearch/form.js' %}
+    <script src="{{ asset_url }}"></script>
+{% endjavascripts %}
+
 <style>
     .has-warning .twitter-typeahead .tt-input,
     .has-warning .twitter-typeahead .tt-hint {
