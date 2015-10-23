@@ -288,6 +288,12 @@ class Hotel extends Base implements \JsonSerializable
      */
     protected $vegaAddressId;
 
+    /**
+     * @ODM\String
+     * @var string
+     */
+    protected $description;
+
     public function __construct()
     {
         $this->roomTypes = new \Doctrine\Common\Collections\ArrayCollection();
@@ -1184,5 +1190,19 @@ class Hotel extends Base implements \JsonSerializable
         $this->roomTypesCategories = $roomTypesCategories;
     }
 
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
 
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
 }
