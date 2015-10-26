@@ -79,7 +79,7 @@ class Search
             }
 
             if($query->sort) {
-                $qb->sort($query->sort, 1);
+                $qb->sort($query->sort, -1);
             }
 
             if($query->skip) {

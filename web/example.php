@@ -177,11 +177,17 @@
                 $url = 'http://mbh.h/app_dev.php/simplesearch/ajax/detail?'. http_build_query($_GET);
             }elseif($_GET['page'] == 'map'){
                 $url = 'http://mbh.h/app_dev.php/simplesearch/ajax/map';
+            }elseif(empty($_GET)){
+                $url = 'http://mbh.h/app_dev.php/simplesearch/ajax/popular';
             }else{
                 $url = 'http://mbh.h/app_dev.php/simplesearch/ajax/results?'. http_build_query($_GET);
             }
             $content =  file_get_contents($url);
             ?>
+
+            <?php if(empty($_GET['page'])){ ?>
+                <h2>Популярные отели</h2>
+            <?php } ?>
 
             <?php if(!$_GET['page'] && $content){ ?>
 
@@ -204,7 +210,12 @@
                 <div class="clearfix"></div>
                 <div id="mbh-results-list">
             <?php } ?>
-                <?= $content ?>
+
+            <?= $content ?>
+
+            <?php if(empty($_GET['page'])){ ?>
+                </div>
+            <?php } ?>
 
             <?php if(!$_GET['page'] && $content){ ?>
                 </div>

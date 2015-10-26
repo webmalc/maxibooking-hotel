@@ -180,6 +180,29 @@ class SimpleSearchController extends Controller
     }
 
     /**
+     * @Route("/ajax/popular", name="simple_search_ajax_popular")
+     * @Method("GET")
+     * @Template(template="MBHOnlineBundle:SimpleSearch/content:results.html.twig")
+     */
+    public function ajaxPopularAction()
+    {
+        $query = new SearchQuery();
+        $query->begin = new \DateTime('- 1 month');
+        $query->end = new \DateTime('+ 1 month');
+        $query->sort = 'rate';
+        $hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
+        ;//5626328f7d3d648d248b4568
+        foreach($hotelRepository->findAll() as $hotel) {
+            $query->addHotel($hotel);
+        }
+        $results = $this->get('mbh.package.search')->searchGroupByHotel($query);
+
+        return [
+            'results' => $results
+        ];
+    }
+
+    /**
      * @Route("/search/{query}", name="simple_search", defaults={"query"=""})
      * @Method("GET")
      * @Template()
