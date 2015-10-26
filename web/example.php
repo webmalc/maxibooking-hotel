@@ -165,7 +165,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="mbh-wigdet-map">
-                        <a href="/example.php?page=map&<?= http_build_query($_GET) ?>" class="btn btn-primary" type="submit">Смотреть</a>
+                        <a href="/example.php?<?= http_build_query(['page' => 'map'] + $_GET) ?>" class="btn btn-primary" type="submit">Смотреть</a>
                     </div>
                 </div>
             </div>

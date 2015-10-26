@@ -6,7 +6,7 @@
     </div>
     <div class="mbh-form-row" id="mbh-form-distance-wrapper">
         <label for="mbh-form-distance"> Не более км. от МКАД</label>
-        <input type="number" id="mbh-form-distance" name="distance" value="{{ app.request.get('distance') }}">
+        <input type="number" id="mbh-form-distance" name="distance" value="{{ app.request.get('distance') }}" placeholder="Не важно" min="10" max="350" step="10">
     </div>
     <input type="hidden" name="query_type" id="mbh-form-search-query-type-hidden-input" value="{{ app.request.get('query_type') }}">
     <input type="hidden" name="query_id" id="mbh-form-search-query-id-hidden-input" value="{{ app.request.get('query_id') }}">

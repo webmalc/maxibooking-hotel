@@ -2,7 +2,7 @@
     {{ hotel.fullTitle }}
 </h2>
 <div class="mbh-hotel-rating">{{ hotel.rate|number_format(2) }}</div>
-<h2>
+<div class="mbh-hotel-address">
     {% if hotel.city or hotel.street %}
         <small>
             <i class="fa fa-map-marker text-warning"></i>
@@ -10,7 +10,7 @@
             {% if hotel.MKADdistance %}({{ hotel.MKADdistance }} км. от МКАД){% endif %}
         </small>
     {% endif %}
-</h2>
+</div>
 
 <div class="clearfix"></div>
 
