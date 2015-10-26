@@ -92,6 +92,7 @@ class SimpleSearchController extends Controller
             'results' => $results,
             'currentPage' => $currentPage,
             'facilities' => $facilitiesRepository->getAll(),
+            'adults' => $query->adults,
         ];
     }
 
@@ -198,6 +199,8 @@ class SimpleSearchController extends Controller
             ->createQueryBuilder()
             ->field('title')
             ->equals(new \MongoRegex($regexQuery))
+            ->field('region.id')
+            ->equals('5626328f7d3d648d248b4568')//Московская область
             ->limit(10)
             ->getQuery()->execute()
         ;

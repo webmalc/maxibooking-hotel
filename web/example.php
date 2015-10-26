@@ -192,6 +192,7 @@
                 ] ?>
 
                 <h2>Поиск и бронирование отелей</h2>
+                <div class="clearfix"></div>
                 <div class="mbh-results-sort-wrapper" style="margin-bottom: 10px">
                     Сортировка по:
                     <div class="btn-group" role="group" aria-label="Default button group">
@@ -200,6 +201,7 @@
                         <?php } ?>
                     </div>
                 </div>
+                <div class="clearfix"></div>
                 <div id="mbh-results-list">
             <?php } ?>
                 <?= $content ?>

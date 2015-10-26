@@ -2,8 +2,8 @@
     <div class="mbh-results-list-wrapper panel panel-warning">
         <div class="panel-body">
             <div class="mbh-results-list-image">
-                <a href="index.php?q=104&amp;hotel=&amp;begin=21.10.2015&amp;end=22.10.2015&amp;adults=1&amp;children=0"
-                   title=""><img src="{{ ((result.roomTypes)|first).mainImage ? asset(((result.roomTypes)|first).mainImage.path)|imagine_filter('thumb_300x230')  : 'http://zamkadom24.sites.maxibooking.ru/1.jpg'}}"></a>
+                <a href="{{ path('simple_search_view', {id: result.hotel.id}) }}?hotel={{ result.hotel.id }}&{% for name, value in app.request.query.all %}{{ name }}={{ value }}&{% endfor %}"
+                   title="{{ result.hotel.fullTitle }}"><img src="{{ ((result.roomTypes)|first).mainImage ? asset(((result.roomTypes)|first).mainImage.path)|imagine_filter('thumb_300x230')  : 'http://zamkadom24.sites.maxibooking.ru/1.jpg'}}"></a>
             </div>
             <div class="mbh-results-list-info">
                 <div class="mbh-results-list-rating" title="{{ result.hotel.rate|number_format(2) }}">
@@ -16,18 +16,19 @@
                 <div class="mbh-results-list-city">
                     {% if result.hotel.city or result.hotel.street %}
                         <i class="fa fa-map-marker text-warning"></i>
-                        {{ result.hotel.city }} {{ result.hotel.street }}
+                        {{ result.hotel.city }} {{ result.hotel.street }}{% if result.hotel.highway %}, {{ result.hotel.highway }}{% endif %}
+                        {% if result.hotel.MKADdistance %}({{ result.hotel.MKADdistance }} км. от МКАД){% endif %}
                     {% endif %}
                 </div>
 
                 <div class="mbh-results-list-rooms">
-                    {% for roomType in result.roomTypes %}
+                    {% for roomType in result.roomTypes|slice(0, 2) %}
                     <div class="row">
                         <div class="col-xs-6">
                             {{ roomType }}
                         </div>
                         <div class="col-xs-2 text-center">
-                            {% for index in 0..roomType.places %}
+                            {% for index in 1..adults %}
                                 <i class="fa fa-male text-warning"></i>
                             {% endfor %}
                         </div>
@@ -36,12 +37,16 @@
                         </div>
                     </div>
                     {% endfor %}
+                    {% if result.roomTypes|length > 2 %}
+                        <a href="{{ path('simple_search_view', {id: result.hotel.id}) }}?hotel={{ result.hotel.id }}&{% for name, value in app.request.query.all %}{{ name }}={{ value }}&{% endfor %}">Просмотреть все типы номеров</a>
+                    {% endif %}
                 </div>
 
                 <div class="row">
                     <div class="col-xs-7">
                         <div class="mbh-results-list-descr">
-                            {{ result.hotel.description|raw }}<a href="#">Подробнее</a>
+                            {{ result.hotel.description|truncate(500)|raw }}
+                            <a href="{{ path('simple_search_view', {id: result.hotel.id}) }}?hotel={{ result.hotel.id }}&{% for name, value in app.request.query.all %}{{ name }}={{ value }}&{% endfor %}">Подробнее</a>
                         </div>
                     </div>
                     <div class="col-xs-5">
