@@ -14,10 +14,13 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\UserBundle\Validator\Constraints as MBHValidator;
+
 
 /**
  * @ODM\Document(collection="Users")
  * @Gedmo\Loggable
+ * @MBHValidator\User
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="email", message="Такой e-mail уже зарегистрирован")
  * @MongoDBUnique(fields="username", message="Такой логин уже зарегистрирован")
@@ -130,6 +133,14 @@ class User extends BaseUser implements RecipientInterface
      * @ODM\ReferenceMany(targetDocument="Group")
      */
     protected $groups;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $defaultNoticeDoc = false;
 
     /**
      * @var boolean
@@ -445,4 +456,22 @@ class User extends BaseUser implements RecipientInterface
     {
         $this->isEnabledWorkShift = $isEnabledWorkShift;
     }
+
+    /**
+     * @return boolean
+     */
+    public function getDefaultNoticeDoc()
+    {
+        return $this->defaultNoticeDoc;
+    }
+
+    /**
+     * @param boolean $defaultNoticeDoc
+     */
+    public function setDefaultNoticeDoc($defaultNoticeDoc)
+    {
+        $this->defaultNoticeDoc = $defaultNoticeDoc;
+    }
+
+
 }

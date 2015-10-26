@@ -96,7 +96,9 @@ class GeneratedDocumentController extends Controller implements CheckHotelContro
         } else {
             $form = $generatorFactory->createFormByType($type, $options);
             if($type == XlsGeneratorFactory::TYPE_NOTICE) {
-                $form->setData(['user' => $this->getUser()]);
+                $defaultUser = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['defaultNoticeDoc' => true]);
+
+                $form->setData(['user' => $defaultUser ? $defaultUser : $this->getUser()]);
             }
             $html = $this->renderView('MBHPackageBundle:Documents:documentModalForm.html.twig', [
                 'form' => $form->createView(),

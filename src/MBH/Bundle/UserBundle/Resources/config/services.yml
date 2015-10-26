@@ -26,3 +26,9 @@ services:
         arguments: [@service_container]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+
+    mbh.user.validator:
+        class: MBH\Bundle\UserBundle\Validator\Constraints\UserValidator
+        arguments: [@service_container]
+        tags:
+            - { name: validator.constraint_validator, alias: mbh.user.validator }

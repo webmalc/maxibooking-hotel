@@ -70,6 +70,7 @@ class UserType extends AbstractType
                 'label' => 'form.userType.hotels',
                 'multiple' => true,
                 'mapped' => false,
+                'required' => false,
                 'data' => $options['hotels'],
                 'class' => 'MBHHotelBundle:Hotel',
                 'property' => 'name',
@@ -79,7 +80,12 @@ class UserType extends AbstractType
             ->add('isEnabledWorkShift', 'checkbox', [
                 'label' => 'form.clientConfigType.is_enabled_work_shift',
                 'group' => 'form.userType.settings',
-                //'value' => false,
+                'required' => false,
+            ])
+            ->add('defaultNoticeDoc', 'checkbox', [
+                'label' => 'form.clientConfigType.default_notice_doc',
+                'help' => 'form.clientConfigType.default_notice_doc_desc',
+                'group' => 'form.userType.settings',
                 'required' => false,
             ])
         ;
