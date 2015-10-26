@@ -12,7 +12,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGenerator;
+use Zend\Json\Json;
 
 /**
  * @Route("/simplesearch")
@@ -66,10 +68,7 @@ class SimpleSearchController extends Controller
         } elseif($request->get('query_type') == 'highway') {
             $query->highway = $queryID;
         } else {
-            $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find($queryID);
-            if($hotel) {
-                $query->addHotel($hotel);
-            }
+            $query->hotel = $queryID;
         };
 
         //pagination
@@ -81,25 +80,18 @@ class SimpleSearchController extends Controller
         $query->skip = ($currentPage - 1) * $pageTotalCount;
         $query->limit = $pageTotalCount;
 
+        $results = $this->get('mbh.package.search')->searchGroupByHotel($query);
 
-        $searchResults = $this->get('mbh.package.search')->search($query);
-
-        $results = [];
-        foreach($searchResults as $result) {
-            $hotelID = $result->getRoomType()->getHotel()->getId();
-            if (!isset($results[$hotelID])) {
-                $results[$hotelID] = [
-                    'hotel' => $result->getRoomType()->getHotel(),
-                    'roomTypes' => [$result->getRoomType()],
-                    'result' => $result,
-                ];
-            } else {
-                $results[$hotelID]['roomTypes'][] = $result->getRoomType();
-            }
+        if(!$results) {
+            return new Response('');
         }
 
+        $facilitiesRepository = $this->get('mbh.facility_repository');
+
         return [
-            'results' => $results
+            'results' => $results,
+            'currentPage' => $currentPage,
+            'facilities' => $facilitiesRepository->getAll(),
         ];
     }
 

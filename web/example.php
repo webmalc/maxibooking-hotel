@@ -180,8 +180,60 @@
             }else{
                 $url = 'http://mbh.h/app_dev.php/simplesearch/ajax/results?'. http_build_query($_GET);
             }
-            echo file_get_contents($url);
+            $content =  file_get_contents($url);
             ?>
+
+            <?php if(!$_GET['page'] && $content){ ?>
+
+                <?php $sortList = [
+                    'rate' => 'Рейтинг',
+                    'MKADdistance' => 'Удаленность от МКАД',
+                    'fullTitle' => 'Название',
+                ] ?>
+
+                <h2>Поиск и бронирование отелей</h2>
+                <div class="mbh-results-sort-wrapper" style="margin-bottom: 10px">
+                    Сортировка по:
+                    <div class="btn-group" role="group" aria-label="Default button group">
+                        <?php foreach($sortList as $key => $sort) { ?>
+                            <a href="/example.php?<?= http_build_query(['sort' => $key] + $_GET) ?>" class="btn btn-default <?= $_GET['sort'] == $key ? 'active' : '' ?>"><?= $sort ?></a>
+                        <?php } ?>
+                    </div>
+                </div>
+                <div id="mbh-results-list">
+            <?php } ?>
+                <?= $content ?>
+
+            <?php if(!$_GET['page'] && $content){ ?>
+                </div>
+                <a class="btn btn-default" id="more" style="width: 100%">
+                    <i class="fa fa-arrow-down"></i> Ещё
+                </a>
+
+                <script>
+                    var url = '<?= $url = 'http://mbh.h/app_dev.php/simplesearch/ajax/results?'. http_build_query(['page' => 'pageTotal'] + $_GET); ?>'
+                    var currentPage = 1;
+                    var $more = $('#more');
+                    var $list = $('#mbh-results-list');
+                    $more.on('click', function(e) {
+                        $more.addClass('disabled');
+                        ++currentPage
+                        console.log(url.replace('pageTotal', currentPage));
+                        e.preventDefault();
+                        $.ajax(url.replace('pageTotal', currentPage), {
+                          success: function(resposne) {
+                              console.log(resposne);
+                              if(resposne) {
+                                  $list.append(resposne);
+                                  $more.removeClass('disabled');
+                              } else {
+                                  $more.hide();
+                              }
+                          }
+                        })
+                    });
+                </script>
+            <?php } ?>
         </div>
 
     </div>

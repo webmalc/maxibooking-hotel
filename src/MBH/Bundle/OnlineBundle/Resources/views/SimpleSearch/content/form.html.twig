@@ -1,41 +1,32 @@
 <form id="mbh-form" method="get" {#action="{{ path('simple_search_index') }}"#}>
     <h3>Бронирование номеров</h3>
     <div class="mbh-form-row" id="mbh-form-hotel-wrapper">
-        <label for="mbh-form-hotel">Место/шоссе/название отель</label>
+        <label for="mbh-form-hotel">Место/шоссе/отель</label>
         <input name="search" type="search" id="mbh-form-hotel" value="{{ app.request.get('search') }}">
-    </div>
-    <input type="hidden" name="query_type" id="mbh-form-search-query-type-hidden-input" value="{{ app.request.get('query_type') }}">
-    <input type="hidden" name="query_id" id="mbh-form-search-query-id-hidden-input" value="{{ app.request.get('query_id') }}">
-    <div class="mbh-form-row" id="mbh-form-begin-wrapper">
-        <label for="mbh-form-begin"> Дата заезда</label>
-        <input type="text" id="mbh-form-begin" name="begin" required="required" value="{{ app.request.get('begin') }}" class="hasDatepicker">
-    </div>
-    <div class="mbh-form-row" id="mbh-form-end-wrapper">
-        <label for="mbh-form-end"> Дата выезда</label>
-        <input type="text" id="mbh-form-end" name="end" required="required" value="{{ app.request.get('end') }}" class="hasDatepicker">
-    </div>
-    <div id="mbh-form-adults-children-wrapper">
-        <div class="mbh-form-row">
-            <label for="mbh-form-adults"> Взрослые</label>
-            <input type="number" id="mbh-form-adults" name="adults" required="required" value="{{ app.request.get('adults') }}">
-        </div>
-        <div class="mbh-form-row">
-            <label for="mbh-form-children"> Дети</label>
-            <input type="number" id="mbh-form-children" name="children" value="{{ app.request.get('children') }}">
-        </div>
     </div>
     <div class="mbh-form-row" id="mbh-form-distance-wrapper">
         <label for="mbh-form-distance"> Не более км. от МКАД</label>
         <input type="number" id="mbh-form-distance" name="distance" value="{{ app.request.get('distance') }}">
     </div>
-    <div class="mbh-form-row" id="mbh-form-sort-wrapper">
-        <label for="mbh-form-sort"> Сортировка</label>
-        <select id="mbh-form-sort" name="sort">
-            <option></option>
-            {% for value, sort in sortList %}
-                <option {% if app.request.get('sort') == value %}selected="selected" {% endif %}value="{{ value }}">{{ sort }}</option>
-            {% endfor %}
-        </select>
+    <input type="hidden" name="query_type" id="mbh-form-search-query-type-hidden-input" value="{{ app.request.get('query_type') }}">
+    <input type="hidden" name="query_id" id="mbh-form-search-query-id-hidden-input" value="{{ app.request.get('query_id') }}">
+    <div class="mbh-form-row" id="mbh-form-begin-wrapper">
+        <label for="mbh-form-begin"> Дата заезда</label>
+        <input type="text" id="mbh-form-begin" name="begin" required="required" value="{{ app.request.get('begin') }}">
+    </div>
+    <div class="mbh-form-row" id="mbh-form-end-wrapper">
+        <label for="mbh-form-end"> Дата выезда</label>
+        <input type="text" id="mbh-form-end" name="end" required="required" value="{{ app.request.get('end') }}">
+    </div>
+    <div id="mbh-form-adults-children-wrapper">
+        <div class="mbh-form-row">
+            <label for="mbh-form-adults"> Взрослые</label>
+            <input type="number" min="1" max="10" id="mbh-form-adults" name="adults" required="required" value="{{ app.request.get('adults')|default(2) }}">
+        </div>
+        <div class="mbh-form-row">
+            <label for="mbh-form-children"> Дети</label>
+            <input type="number" min="0" max="10" id="mbh-form-children" name="children" value="{{ app.request.get('children')|default(0) }}">
+        </div>
     </div>
     <div id="mbh-form-adults-children-clear"></div>
     <div class="mbh-form-row" id="mbh-form-submit-wrapper">
@@ -69,6 +60,7 @@
             items: 'all',
             name: 'name'
         }, {
+            limit: 20,
             source: source,
             display: function (item) {
                 if (item.name === undefined) {

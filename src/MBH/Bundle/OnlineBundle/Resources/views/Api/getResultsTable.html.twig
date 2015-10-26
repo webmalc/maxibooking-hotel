@@ -17,7 +17,7 @@
         {% endif %}
 
        <div id="mbh-results-table-wrapper">
-        <table id="mbh-results-table">
+        <table id="mbh-results-table" class="table table-striped">
             <thead>
             <tr>
                 <th id="mbh-results-table-th-roomType">{{ 'views.api.getResultsTable.room_type'|trans({}, 'MBHOnlineBundle') }}</th>
@@ -92,7 +92,7 @@
                 {% if result.roomType.description is not empty%}
                 <tr class="mbh-left mbh-results-roomType-description-tr">
                     <td class="mbh-left mbh-results-roomType-description" colspan="5" >
-                        {{ result.roomType.description|nl2br }}
+                        {{ result.roomType.description|raw }}
                     </td>
                 </tr>
                 {% endif %}
@@ -105,7 +105,7 @@
             <span id="mbh-results-packages-total"> {{ 'views.api.getResultsTable.rooms'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
             <span id="mbh-results-services-total"> {{ 'views.api.getResultsTable.services'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-services-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
             <span id="mbh-results-total">{{ 'views.api.getResultsTable.result'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span>
-            <button id="mbh-results-next" class="button"> {{ 'views.api.getResultsTable.continue'|trans({}, 'MBHOnlineBundle') }}
+            <button id="mbh-results-next" class="btn btn-primary"> {{ 'views.api.getResultsTable.continue'|trans({}, 'MBHOnlineBundle') }}
                 <small><i class="fa fa-chevron-right "></i></small>
             </button>
         </div>

@@ -89,6 +89,10 @@ class Search
                 $qb->limit($query->limit);
             }
 
+            if($query->hotel) {
+                $qb->field('id')->equals($query->hotel);
+            }
+
             $hotels = $qb->getQuery()->execute();
 
             foreach($hotels as $hotel) {
@@ -330,6 +334,25 @@ class Search
             }
         }
         //sort($results);
+        return $results;
+    }
+
+    public function searchGroupByHotel(SearchQuery $query)
+    {
+        $results = [];
+        foreach($this->search($query) as $result) {
+            $hotelID = $result->getRoomType()->getHotel()->getId();
+            if (!isset($results[$hotelID])) {
+                $results[$hotelID] = [
+                    'hotel' => $result->getRoomType()->getHotel(),
+                    'roomTypes' => [$result->getRoomType()],
+                    'result' => $result,
+                ];
+            } else {
+                $results[$hotelID]['roomTypes'][] = $result->getRoomType();
+            }
+        }
+
         return $results;
     }
 
