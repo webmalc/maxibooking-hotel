@@ -7,7 +7,7 @@
         <small>
             <i class="fa fa-map-marker text-warning"></i>
             {{ hotel.city }} {{ hotel.street }}{% if hotel.highway %}, {{ hotel.highway }}{% endif %}
-            {% if result.hotel.MKADdistance %}({{ result.hotel.MKADdistance }} км. от МКАД){% endif %}
+            {% if hotel.MKADdistance %}({{ hotel.MKADdistance }} км. от МКАД){% endif %}
         </small>
     {% endif %}
 </h2>
@@ -38,46 +38,11 @@
     <div id="main-tab" class="tab-pane active">
         <div class="panel panel-warning">
             <div class="panel-body">
-                <div id="my_carousel_ct" class="carousel-container">
-                    <div id="my_carousel_1" class="carousel slide">
-                        <!-- Carousel items -->
-                        <div id="my_carousel_2" class="carousel-inner rs-slider">
-                            <div class="item active">
-                                <div class="ts_border">
-                                    <img src="{{ photos ? asset(photos[0]) : '' }}">
-                                    {#<div class="carousel-caption">
-                                        <h4>Lorem ipsum</h4>
-                                        <p class="ts_txt"></p>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor</p>
-                                        <p></p>
-                                    </div>#}
-                                </div>
-                            </div>
-                            {#<div class="item ">
-                                <div class="ts_border">
-                                    <img src="http://zamkadom24.sites.maxibooking.ru/002.jpg">
-                                    <div class="carousel-caption">
-                                        <h4>Lorem ipsum 2</h4>
-                                        <p class="ts_txt"></p>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor ,</p>
-                                        <p></p>
-                                    </div>
-                                </div>
-                            </div>#}
-                        </div>
-                        <!-- Carousel nav -->
-                        <a class="carousel-custom" href="#my_carousel_1" data-slide="prev">‹</a>
-                        <a class="arousel-custom" href="#my_carousel_1" data-slide="next">›</a>
-                        <div id="ts_scrol_1" class="ts_sld_scroller ts_scr_right">
-                            <ul>
-                                {% for photo in photos %}
-                                    <li>
-                                        <a href="#" class="ts_refine_st" data-to="1" data-slideindex="0"><img src="{{ asset(photo) }}" height="60" width="100"></a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
+
+                <div class="galleria" style="height:600px;">
+                    {% for photo in photos %}
+                        <a href="{{ asset(photo) }}"><img src="{{ asset(photo) }}" data-big="{{ asset(photo) }}" data-title="My title" data-description="My description"></a>
+                    {% endfor %}
                 </div>
             </div>
         </div>

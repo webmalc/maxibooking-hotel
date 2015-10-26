@@ -260,13 +260,10 @@
 
 
 <script src="http://zamkadom24.sites.maxibooking.ru/assets/js/bootstrap.min.js"></script>
-<script src="http://zamkadom24.sites.maxibooking.ru/assets/plugins/slider_multiple/js/jquery.refineslide.js"></script>
-<script src="http://zamkadom24.sites.maxibooking.ru/assets/plugins/slider_multiple/js/wpts_slider_multiple.js"></script>
-<link rel="stylesheet"
-      href="http://zamkadom24.sites.maxibooking.ru/assets/plugins/slider_multiple/css/slider_multiple.css"/>
-
+<script src="http://zamkadom24.sites.maxibooking.ru/assets/plugins/galleria/galleria-1.4.2.min.js"></script>
 
 <script src="http://zamkadom24.sites.maxibooking.ru/assets/js/scripts.js"></script>
+
 
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css"/>
