@@ -164,6 +164,7 @@ ROLE_PACKAGE_EDIT_ALL: Редактирование любой брони
 ROLE_PACKAGE_DELETE_ALL: Удаление любой брони
 ROLE_PACKAGE_DOCS: Документы заказа
 ROLE_ORDER_AUTO_CONFIRMATION: Автоподтверждение заказа
+ROLE_PACKAGE_PRICE_EDIT: Редактирование цены брони
 
 ROLE_TOURIST: Клиенты
 ROLE_PORTER_REPORT: Отчет портье

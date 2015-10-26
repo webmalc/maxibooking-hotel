@@ -270,6 +270,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $form = $this->createForm(new PackageMainType(), $package, [
             'discount' => $authorizationChecker->isGranted('ROLE_DISCOUNT_ADD'),
             'promotion' => $authorizationChecker->isGranted('ROLE_PROMOTION_ADD'),
+            'price' => $authorizationChecker->isGranted('ROLE_PACKAGE_PRICE_EDIT'),
             'promotions' => $promotions,
             'package' => $package,
             'hotel' => $package->getRoomType()->getHotel(),
@@ -323,6 +324,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         $form = $this->createForm(new PackageMainType(), $package, [
             'discount' => $authorizationChecker->isGranted('ROLE_DISCOUNT_ADD'),
             'promotion' => $authorizationChecker->isGranted('ROLE_PROMOTION_ADD'),
+            'price' => $authorizationChecker->isGranted('ROLE_PACKAGE_PRICE_EDIT'),
             'promotions' => $promotions,
             'package' => $package,
             'hotel' => $package->getRoomType()->getHotel(),

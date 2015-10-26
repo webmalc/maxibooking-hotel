@@ -19,6 +19,9 @@ class PackageMainType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var Package $package */
+        $package = $options['package'];
+
         $builder
             ->add('begin', 'date', [
                 'label' => 'Заезд',
@@ -80,22 +83,31 @@ class PackageMainType extends AbstractType
             ]);
 
         if ($options['promotion']) {
-            $package = $options['package'];
-            /** @var Package $package */
             if($package && $package->getPromotion() && !in_array($package->getPromotion(), $options['promotions'])) {
                 $options['promotions'][] = $package->getPromotion();
             }
-            $builder
-                ->add('promotion', 'document', [
-                    'label' => 'form.packageMainType.promotion',
-                    'class' => 'MBH\Bundle\PriceBundle\Document\Promotion',
-                    'required' => false,
-                    'group' => 'Акция',
-                    'choices' => $options['promotions']
-                    /*'query_builder' => function (DocumentRepository $repository) {
-                        return $repository->createQueryBuilder()->field('_id')
-                    }*/
-                ]);
+            if (count($options['promotions'])) {
+                $builder
+                    ->add('promotion', 'document', [
+                        'label' => 'form.packageMainType.promotion',
+                        'class' => 'MBH\Bundle\PriceBundle\Document\Promotion',
+                        'required' => false,
+                        'group' => 'Акция',
+                        'choices' => $options['promotions']
+                    ]);
+            }
+        }
+        if (!$package->getTotalOverwrite() && $options['price']) {
+            $builder->add('price', 'text', [
+                'label' => 'form.packageMainType.price',
+                'required' => true,
+                'group' => 'Цена',
+                'error_bubbling' => true,
+                'property_path' => 'packagePrice',
+                'attr' => [
+                    'class' => 'price-spinner'
+                ],
+            ]);
         }
 
         if($options['discount']) {
@@ -138,8 +150,9 @@ class PackageMainType extends AbstractType
             'corrupted' => false,
             'promotion' => false,
             'promotions' => [],
-            'package' => null
-        ]);
+            'package' => null,
+            'price' => false
+         ]);
     }
 
     public function getName()

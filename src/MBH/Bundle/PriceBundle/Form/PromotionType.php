@@ -16,11 +16,12 @@ class PromotionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('title', 'text', [
-                'label' => 'form.promotionType.label.title',
-            ])
             ->add('fullTitle', 'text', [
                 'label' => 'form.promotionType.label.fullTitle',
+            ])
+            ->add('title', 'text', [
+                'label' => 'form.promotionType.label.title',
+                'required' => false
             ])
             ->add('isIndividual', 'checkbox', [
                 'label' => 'form.promotionType.label.isIndividual',
