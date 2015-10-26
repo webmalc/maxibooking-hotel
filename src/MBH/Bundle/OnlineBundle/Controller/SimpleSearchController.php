@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 
 /**
- * @Route("/simple/search")
+ * @Route("/simplesearch")
  */
 class SimpleSearchController extends Controller
 {
@@ -27,10 +27,18 @@ class SimpleSearchController extends Controller
     public function ajaxFormAction()
     {
         return [
-            'highwayList' => $this->get('mbh.online.highwa_repository')->getList()
+            'sortList' => $this->getSortList()
         ];
     }
 
+    private function getSortList()
+    {
+        return [
+            'rate' => 'Рейтинг',
+            'MKADdistance' => 'Удаленность от МКАД',
+            'fullTitle' => 'Название',
+        ];
+    }
 
     /**
      * @Route("/ajax/results", name="simple_search_ajax_results")
@@ -49,19 +57,30 @@ class SimpleSearchController extends Controller
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
         $query->distance = (float)$request->get('distance');
-        $query->highway = $request->get('highway');
+        $query->sort = $request->get('sort');
         $query->addRoomType($request->get('roomType'));
 
         $queryID = $request->get('query_id');
-
         if($request->get('query_type') == 'city') {
             $query->city = $queryID;
+        } elseif($request->get('query_type') == 'highway') {
+            $query->highway = $queryID;
         } else {
             $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find($queryID);
             if($hotel) {
                 $query->addHotel($hotel);
             }
         };
+
+        //pagination
+        $pageTotalCount = 10;
+        $currentPage = (int) $request->get('page');
+        if(!$currentPage) {
+            $currentPage = 1;
+        }
+        $query->skip = ($currentPage - 1) * $pageTotalCount;
+        $query->limit = $pageTotalCount;
+
 
         $searchResults = $this->get('mbh.package.search')->search($query);
 
@@ -85,13 +104,18 @@ class SimpleSearchController extends Controller
     }
 
     /**
-     * @Route("/ajax/detail/{id}", name="simple_search_ajax_detail")
+     * @Route("/ajax/detail", name="simple_search_ajax_detail")
      * @Method("GET")
      * @Template(template="MBHOnlineBundle:SimpleSearch/content:detail.html.twig")
-     * @ParamConverter(class="MBH\Bundle\HotelBundle\Document\Hotel")
      */
-    public function ajaxDetailAction(Hotel $hotel, Request $request)
+    public function ajaxDetailAction(Request $request)
     {
+        $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find($request->get('hotel'));
+
+        if(!$hotel) {
+            throw $this->createNotFoundException();
+        }
+
         $photos = [];
         foreach($hotel->getRoomTypes() as $roomType) {
             foreach($roomType->getImages() as $image) {
@@ -169,17 +193,20 @@ class SimpleSearchController extends Controller
      */
     public function searchAction($query)
     {
+        $regexQuery = '/.*'.$query.'.*/i';
         $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')
             ->createQueryBuilder()
             ->field('fullTitle')
-            ->equals(new \MongoRegex('/.*'.$query.'.*/i'))
+            ->equals(new \MongoRegex($regexQuery))
+            ->limit(10)
             ->getQuery()->execute()
         ;
 
         $cities = $this->dm->getRepository('MBHHotelBundle:City')
             ->createQueryBuilder()
             ->field('title')
-            ->equals(new \MongoRegex('/.*'.$query.'.*/i'))
+            ->equals(new \MongoRegex($regexQuery))
+            ->limit(10)
             ->getQuery()->execute()
         ;
 
@@ -197,6 +224,14 @@ class SimpleSearchController extends Controller
                 'id' => $city->getId(),
                 'name' => $city->getTitle(),
                 'type' => 'city'
+            ];
+        }
+
+        foreach($this->get('mbh.online.highway_repository')->search($regexQuery) as $highway) {
+            $response[] = [
+                'id' => $highway,
+                'name' => $highway,
+                'type' => 'highway'
             ];
         }
 

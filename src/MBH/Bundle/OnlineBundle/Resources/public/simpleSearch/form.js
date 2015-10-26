@@ -26,15 +26,12 @@ jQuery(document).ready(function () {
             for (var i = 0; i < hashes.length; i++) {
                 hash = hashes[i].split('=');
                 vars.push(hash[0]);
-                vars[hash[0]] = hash[1];
+                vars[hash[0]] = decodeURIComponent(hash[1]);
             }
             return vars;
         },
         query = getUrlVars()
         ;
-    if (!begin.val() || !end.val()) {
-        button.prop('disabled', true);
-    }
     begin.datepicker(options);
     end.datepicker(options);
 
@@ -49,7 +46,12 @@ jQuery(document).ready(function () {
         });
 
     }
-
+    var urlVars = getUrlVars();
+    for(var key in urlVars) {
+        var value = urlVars[key];
+        wrapper.find('input[name="' + key + '"]').val(value);
+        wrapper.find('select[name="' + key + '"]').val(value);
+    }
     /*setValue(begin, query.begin);
     setValue(end, query.end);
     setValue(jQuery('#mbh-form-roomType'), query.roomType);
@@ -120,5 +122,9 @@ jQuery(document).ready(function () {
             button.prop('disabled', true);
         }
     });
+
+    if (!begin.val() || !end.val()) {
+        button.prop('disabled', true);
+    }
 })
 

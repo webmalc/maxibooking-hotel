@@ -92,8 +92,25 @@ class SearchQuery
      */
     public $highway;
 
-
+    /**
+     * @var string
+     */
     public $city;
+
+    /**
+     * @var string
+     */
+    public $sort;
+
+    /**
+     * @var int
+     */
+    public $skip;
+
+    /**
+     * @var int
+     */
+    public $limit;
 
     public function addExcludeRoomType($id)
     {

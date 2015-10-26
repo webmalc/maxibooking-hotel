@@ -70,12 +70,23 @@ class Search
             $qb = $hotelRepository->createQueryBuilder();
             if($query->city) {
                 $qb->field('city.id')->equals($query->city);
+            } elseif($query->highway) {
+                $qb->field('highway')->equals($query->highway);
             }
+
             if ($query->distance) {
                 $qb->field('MKADdistance')->lte($query->distance);
             }
-            if($query->highway) {
-                $qb->field('highway')->equals($query->highway);
+
+            if($query->sort) {
+                $qb->sort($query->sort, 1);
+            }
+
+            if($query->skip) {
+                $qb->skip($query->skip);
+            }
+            if($query->limit) {
+                $qb->limit($query->limit);
             }
 
             $hotels = $qb->getQuery()->execute();

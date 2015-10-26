@@ -13,6 +13,11 @@ mbh_online:
     type:     annotation
     prefix:   /management/online
 
+mbh_online_simple_search:
+    resource: "@MBHOnlineBundle/Controller/SimpleSearchController.php"
+    type:     annotation
+    prefix:   /
+
 mbh_channel_manager:
     resource: "@MBHChannelManagerBundle/Controller/"
     type:     annotation
