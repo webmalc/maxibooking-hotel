@@ -187,18 +187,21 @@ class SimpleSearchController extends Controller
     public function ajaxPopularAction()
     {
         $query = new SearchQuery();
-        $query->begin = new \DateTime('- 1 month');
-        $query->end = new \DateTime('+ 1 month');
+        $query->isOnline = true;
+        $query->begin = new \DateTime('midnight + 1 day');
+        $query->end = new \DateTime('midnight + 2 days');
+        //$query->adults = 2;
+        //$query->children = 0;
         $query->sort = 'rate';
-        $hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
-        ;//5626328f7d3d648d248b4568
-        foreach($hotelRepository->findAll() as $hotel) {
-            $query->addHotel($hotel);
-        }
+        //$hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
         $results = $this->get('mbh.package.search')->searchGroupByHotel($query);
+        //$hotels = $hotelRepository->findBy([], ['rate' => -1], 15);//5626328f7d3d648d248b4568
 
         return [
-            'results' => $results
+            'results' => $results,
+            'adults' => '2',
+            //'hotels' => $hotels,
+            'facilities' => $this->get('mbh.facility_repository')->getAll(),
         ];
     }
 

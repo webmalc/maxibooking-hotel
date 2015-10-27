@@ -75,3 +75,9 @@
         <div class="clearfix"></div>
     </div>
 {% endfor %}
+
+{% if results|length == 0 %}
+    <div class="alert alert-warning">
+        <i class="fa fa-exclamation-circle"></i> Не найдено ни одного отеля
+    </div>
+{% endif %}

@@ -185,12 +185,10 @@
             $content =  file_get_contents($url);
             ?>
 
-            <?php if(empty($_GET['page'])){ ?>
+            <?php if(empty($_GET)){ ?>
                 <h2>Популярные отели</h2>
-            <?php } ?>
-
-            <?php if(!$_GET['page'] && $content){ ?>
-
+                <div class="clearfix"></div>
+            <?php } elseif(!$_GET['page'] && $content){ ?>
                 <?php $sortList = [
                     'rate' => 'Рейтинг',
                     'MKADdistance' => 'Удаленность от МКАД',
@@ -213,11 +211,9 @@
 
             <?= $content ?>
 
-            <?php if(empty($_GET['page'])){ ?>
+            <?php if(empty($_GET)){ ?>
                 </div>
-            <?php } ?>
-
-            <?php if(!$_GET['page'] && $content){ ?>
+            <?php } elseif(!$_GET['page'] && $content){ ?>
                 </div>
                 <a class="btn btn-default" id="more" style="width: 100%">
                     <i class="fa fa-arrow-down"></i> Ещё
