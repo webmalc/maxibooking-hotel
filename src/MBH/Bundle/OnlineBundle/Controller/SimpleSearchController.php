@@ -3,6 +3,7 @@
 namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
@@ -221,12 +222,18 @@ class SimpleSearchController extends Controller
             ->getQuery()->execute()
         ;
 
+        $region = $this->dm->getRepository('MBHHotelBundle:Region')->findOneBy(['title' => 'Московская область']);
+
+        if(!$region) {
+            throw new Exception();
+        }
+
         $cities = $this->dm->getRepository('MBHHotelBundle:City')
             ->createQueryBuilder()
             ->field('title')
             ->equals(new \MongoRegex($regexQuery))
             ->field('region.id')
-            ->equals('5626328f7d3d648d248b4568')//Московская область
+            ->equals($region->getId())
             ->limit(10)
             ->getQuery()->execute()
         ;
