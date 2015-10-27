@@ -82,7 +82,41 @@ class SearchQuery
      * @var mixed
      */
     public $tariff;
-    
+
+    /**
+     * @var float
+     */
+    public $distance;
+    /**
+     * @var string
+     */
+    public $highway;
+
+    /**
+     * @var string
+     */
+    public $city;
+
+    /**
+     * @var string
+     */
+    public $sort;
+
+    /**
+     * @var int
+     */
+    public $skip;
+
+    /**
+     * @var int
+     */
+    public $limit;
+
+    /**
+     * @var string Hotel ID
+     */
+    public $hotel;
+
     public function addExcludeRoomType($id)
     {
         if (!in_array($id, $this->excludeRoomTypes) && !empty($id)) {

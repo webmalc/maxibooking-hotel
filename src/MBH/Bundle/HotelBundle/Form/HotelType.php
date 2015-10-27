@@ -2,13 +2,23 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use MBH\Bundle\OnlineBundle\Document\HighwayRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class HotelType extends AbstractType
 {
+    /**
+     * @var HighwayRepository
+     */
+    protected $highwayRepository;
+
+    public function __construct(HighwayRepository $highwayRepository)
+    {
+        $this->highwayRepository = $highwayRepository;
+    }
+
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -49,6 +59,20 @@ class HotelType extends AbstractType
                 'attr' => ['class' => 'tinymce'],
                 'required' => false
             ])
+            ->add('MKADdistance', 'number', [
+                'label' => 'form.hotelType.MKADdistance',
+                'group' => 'form.hotelType.general_info',
+                'required' => false
+            ]);
+        $highwayList = $this->highwayRepository->getList();
+        $builder
+            ->add('highway', 'choice', [
+                'label' => 'form.hotelType.highway',
+                'group' => 'form.hotelType.general_info',
+                'required' => false,
+                'choices' => array_combine($highwayList, $highwayList)
+            ]);
+        $builder
             ->add('file', 'file', [
                 'label' => 'form.hotelType.logo',
                 'group' => 'form.hotelType.settings',

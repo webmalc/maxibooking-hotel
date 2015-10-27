@@ -1,0 +1,46 @@
+<h2>Все объекты на карте</h2>
+
+<div class="panel panel-warning">
+    <div class="panel-body">
+        <div id="map"></div>
+    </div>
+</div>
+
+<script src="http://zamkadom24.sites.maxibooking.ru/assets/js/jquery-1.11.3.min.js"></script>
+<script>
+    var map;
+    var marker;
+
+    function initMap() {
+        var position;
+        {% if hotels %}
+            position = new google.maps.LatLng({{ (hotels|first).latitude }}, {{ (hotels|first).longitude }});
+        {% endif %}
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: position,
+            zoom: 9
+        })
+        {% for hotel in hotels %}
+            position = {lat: {{ hotel.latitude }}, lng: {{ hotel.longitude }}};
+            marker{{ hotel.id }} = new google.maps.Marker({
+                position: position,
+                map: map,
+                title: '{{ hotel.fullTitle }}'
+            });
+            var infowindow{{ hotel.id }} = new google.maps.InfoWindow({
+                content: '<a href="{{ path('simple_search_view', {id: hotel.id}) }}">{{ hotel.fullTitle }}</a>'
+            });
+            marker{{ hotel.id }}.addListener('click', function() {
+                infowindow{{ hotel.id }}.open(map, marker{{ hotel.id }});
+            });
+        {% endfor %}
+    }
+</script>
+<style>
+    #map {
+        width: 100%;
+        height: 700px;
+    }
+</style>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCfKBAVL-KTZM53CNZsmx-xsusJe21fkfE&callback=initMap"></script>

@@ -294,6 +294,24 @@ class Hotel extends Base implements \JsonSerializable
      */
     protected $description;
 
+    /**
+     * @ODM\Float()
+     * @var float
+     */
+    protected $MKADdistance;
+
+    /**
+     * @ODM\String()
+     * @var string
+     */
+    protected $highway;
+
+    /**
+     * @var float
+     * @ODM\Float()
+     */
+    protected $rate = 0.0;
+
     public function __construct()
     {
         $this->roomTypes = new \Doctrine\Common\Collections\ArrayCollection();
@@ -1204,5 +1222,53 @@ class Hotel extends Base implements \JsonSerializable
     public function setDescription($description)
     {
         $this->description = $description;
+    }
+
+    /**
+     * @return float
+     */
+    public function getMKADdistance()
+    {
+        return $this->MKADdistance;
+    }
+
+    /**
+     * @param float $MKADdistance
+     */
+    public function setMKADdistance($MKADdistance)
+    {
+        $this->MKADdistance = $MKADdistance;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHighway()
+    {
+        return $this->highway;
+    }
+
+    /**
+     * @param string $highway
+     */
+    public function setHighway($highway)
+    {
+        $this->highway = $highway;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRate()
+    {
+        return $this->rate;
+    }
+
+    /**
+     * @param float $rate
+     */
+    public function setRate($rate)
+    {
+        $this->rate = $rate;
     }
 }

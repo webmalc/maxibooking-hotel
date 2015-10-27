@@ -1,0 +1,193 @@
+<h2>
+    {{ hotel.fullTitle }}
+</h2>
+<div class="mbh-hotel-rating">{{ hotel.rate|number_format(2) }}</div>
+<div class="mbh-hotel-address">
+    {% if hotel.city or hotel.street %}
+        <small>
+            <i class="fa fa-map-marker text-warning"></i>
+            {{ hotel.city }} {{ hotel.street }}{% if hotel.highway %}, {{ hotel.highway }}{% endif %}
+            {% if hotel.MKADdistance %}({{ hotel.MKADdistance }} км. от МКАД){% endif %}
+        </small>
+    {% endif %}
+</div>
+
+<div class="clearfix"></div>
+
+<ul class="nav nav-pills nav-justified">
+    <li role="presentation" class="active">
+        <a href="#main-tab" aria-controls="main-tab" role="tab" data-toggle="tab">Основная информация</a>
+    </li>
+    {% if hotel.latitude and hotel.longitude %}
+        <li role="presentation">
+            <a href="#map-tab" aria-controls="map-tab" role="tab" data-toggle="tab">Объект на карте</a>
+        </li>
+    {% endif %}
+    <li role="presentation">
+        <a href="#services" aria-controls="services" role="tab" data-toggle="tab">Услуги</a>
+    </li>
+    <li role="presentation">
+        <a href="#panorama" aria-controls="panorama" role="tab" data-toggle="tab">Панорама объекта</a>
+    </li>
+    <li role="presentation">
+        <a href="#testimonials" aria-controls="testimonials" role="tab" data-toggle="tab">Отзывы</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div id="main-tab" class="tab-pane active">
+        <div class="panel panel-warning">
+            <div class="panel-body">
+
+                <div class="galleria" style="height:600px;">
+                    {% for photo in photos %}
+                        <a href="{{ asset(photo) }}"><img src="{{ asset(photo) }}" data-big="{{ asset(photo) }}" data-title="My title" data-description="My description"></a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-warning">
+            <div class="panel-body">
+                {{ hotel.description|raw }}
+            </div>
+        </div>
+    </div>
+
+    {% if hotel.latitude and hotel.longitude %}
+        <div id="map-tab" class="tab-pane">
+            <div class="panel panel-warning">
+                <div class="panel-body">
+                    <div id="map"></div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div id="services" class="tab-pane">
+        <div class="panel panel-warning">
+            <div class="panel-body">
+                <div>
+                    {% for facility in hotel.facilities %}
+                        <div>
+                            <i class="mbf-{{ facility }} available"></i>
+                            {{ facilities[facility] }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="panorama" class="tab-pane">
+        <div class="panel panel-warning">
+            <div class="panel-body">
+                Панорама
+            </div>
+        </div>
+    </div>
+    <div id="testimonials" class="tab-pane">
+        <div class="panel panel-warning">
+            <div class="panel-body">
+                <div>
+                    {% for order in orders %}
+                        <div style="border: dashed 2px #666666; padding: 5px">
+                            <div class="row">
+                                {% for question in order.pollQuestions %}
+                                    {% if question.isQuestion %}
+                                        <div class="col-sm-6">
+                                            {{ ('poll.question.' ~ question.code)|trans({}, 'MBHPackageBundle') }} - <strong>{{ question.value }}</strong>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="well">
+                                {% for question in order.pollQuestions %}
+                                    {% if not question.isQuestion %}
+                                        <div>
+                                            <i class="fa fa-quote-left fa-lg" style="opacity: 0.7"></i> &nbsp;
+                                            {{ question.value }}
+                                            &nbsp; <i class="fa fa-quote-right fa-lg" style="opacity: 0.7"></i>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                <div class="pull-right">
+                                    <i>{{ order.payer ? order.payer.name : '' }}</i>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-warning">
+    <div class="panel-body">
+        <h4>Цены и наличие мест</h4>
+        <div id="mbh-results-wrapper" style="overflow: hidden; width: auto; height: auto;"></div>
+    </div>
+</div>
+
+<div class="mbh-results-sort-wrapper">
+
+</div>
+{% if hotel.latitude and hotel.longitude %}
+<script src="http://zamkadom24.sites.maxibooking.ru/assets/js/jquery-1.11.3.min.js"></script>
+<script>
+    var map;
+    var marker;
+
+    $(document).on('ready', function() {
+        $('a[href="#map-tab"]').on('shown.bs.tab', function (e) {
+            google.maps.event.trigger(map, 'resize');
+            map.setCenter(marker.getPosition());
+        });
+    });
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: new google.maps.LatLng({{ hotel.latitude }}, {{ hotel.longitude }}),
+            zoom: 12
+        })
+        var position = {lat: {{ hotel.latitude }}, lng: {{ hotel.longitude }}};
+        marker = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: 'Hello World!'
+        });
+        {% for key, sight in sights %}
+        position = {lat: {{ sight.lat }}, lng: {{ sight.lon }}};
+        var pinShadow = new google.maps.MarkerImage("http://www.armeniapedia.org/images/f/f1/Marker-museum.png",//"http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
+                new google.maps.Size(40, 37),
+                new google.maps.Point(0, 0),
+                new google.maps.Point(12, 35)
+        );
+        marker{{ key }} = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: '{{ sight.name }}',
+            icon: pinShadow
+        });
+        var infowindow{{ key }} = new google.maps.InfoWindow({
+            content: '<strong>{{ sight.name }}</strong> {#{ sight.desc }#}'
+        });
+        marker{{ key }}.addListener('click', function() {
+            infowindow{{ key }}.open(map, marker{{ key }});
+        });
+        {% endfor %}
+    }
+</script>
+<style>
+    #map {
+        width: 100%;
+        height: 600px;
+    }
+</style>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCfKBAVL-KTZM53CNZsmx-xsusJe21fkfE&callback=initMap"></script>
+{% endif %}
+
+<script>window.jQuery || document.write('<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"><\/script>')</script>
+<script>$.isFunction($().select2) || document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.min.js"><\/script><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.css"/>')</script>
+<script>$.isFunction($().mask) || document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.3.1/jquery.maskedinput.min.js"><\/script>')</script>
+<script>$.isFunction($().cookie) || document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"><\/script>')</script>
+<script type="text/javascript" src="http://mbh.h/app_dev.php/management/online/api/results"></script>
