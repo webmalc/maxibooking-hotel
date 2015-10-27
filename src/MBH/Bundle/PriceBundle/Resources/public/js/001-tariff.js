@@ -93,4 +93,25 @@ $(document).ready(function () {
     }
 
     switchPromotions();
+
+
+    // tariff service
+    var $addServiceButton = $('.default-service a');
+    var prototype = $addServiceButton.data('prototype');
+    var $servicesList = $('.default-service ul');
+    var serviceIndex = $servicesList.find('li').length;
+    prototype = '<li>'+prototype+'</li>';
+
+    $servicesList.on('click', '.fa-times', function () {
+        $(this).closest('li').remove();
+    });
+
+    $addServiceButton.on('click', function(e){
+        var newPrototype = prototype.replace(/__name__/g, serviceIndex);
+        e.preventDefault();
+        var $prototype = $(newPrototype);
+        $servicesList.append($prototype);
+        $prototype.find('select').select2();
+        ++serviceIndex;
+    });
 });
