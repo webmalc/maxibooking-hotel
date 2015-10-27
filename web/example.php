@@ -197,13 +197,17 @@
 
                 <h2>Поиск и бронирование отелей</h2>
                 <div class="clearfix"></div>
-                <div class="mbh-results-sort-wrapper" style="margin-bottom: 10px">
-                    Сортировка по:
-                    <div class="btn-group" role="group" aria-label="Default button group">
-                        <?php foreach($sortList as $key => $sort) { ?>
-                            <a href="/example.php?<?= http_build_query(['sort' => $key] + $_GET) ?>" class="btn btn-default <?= $_GET['sort'] == $key ? 'active' : '' ?>"><?= $sort ?></a>
-                        <?php } ?>
+                <div class="panel">
+                <div class="panel-body">
+                    <div class="mbh-results-sort-wrapper">
+                        <span>Сортировка по</span>:
+                        <div class="btn-group" role="group" aria-label="Default button group">
+                            <?php foreach($sortList as $key => $sort) { ?>
+                                <a href="/example.php?<?= http_build_query(['sort' => $key] + $_GET) ?>" class="btn btn-default <?= $_GET['sort'] == $key ? 'btn-warning' : '' ?>"><?= $sort ?></a>
+                            <?php } ?>
+                        </div>
                     </div>
+                </div>
                 </div>
                 <div class="clearfix"></div>
                 <div id="mbh-results-list">
