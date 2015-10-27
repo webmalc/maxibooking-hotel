@@ -106,12 +106,55 @@ $(document).ready(function () {
         $(this).closest('li').remove();
     });
 
+    var ViewService = function($liContainer, index) {
+        this.$liContainer = $liContainer;
+        this.index = index;
+        this.$serviceSelect = this.$liContainer.find('#mbh_price_tariff_promotions_defaultServices_'+index+'_service');
+        this.$personsInput = this.$liContainer.find('#mbh_price_tariff_promotions_defaultServices_'+index+'_persons');
+        this.$nightsInput = this.$liContainer.find('#mbh_price_tariff_promotions_defaultServices_'+index+'_nights');
+        this.$amountInput = this.$liContainer.find('#mbh_price_tariff_promotions_defaultServices_'+index+'_amount');
+        this.service = null;
+        this.calcType = null;
+    }
+
+    ViewService.prototype.init = function() {
+        this.update();
+        var that = this;
+        this.$serviceSelect.on('change', function() {
+            var value = that.$serviceSelect.val();
+            var $selectedOption = that.$serviceSelect.find('option[value=' + value + ']');
+            that.service = value;
+            that.calcType = $selectedOption.data('type');
+            that.update();
+        });
+    }
+
+    ViewService.prototype.update = function() {
+        this.$personsInput.hide();
+        this.$nightsInput.hide();
+        if(this.calcType == 'per_stay') { //за весь срок
+            //this.$personsInput.val(this.$personsInput.val());// || services.package_guests);
+            this.$personsInput.show();
+        }
+        if (this.calcType == 'per_night') { //за cутки
+            //this.$nightsInput.val(this.$nightsInput.val());// || services.package_guests);
+            this.$nightsInput.show();
+            this.$personsInput.show();
+        }
+        if (this.calcType == 'day_percent') { // за услугу (% от цены за сутки)
+        }
+        if (this.calcType == 'not_applicable') { //за услугу
+        }
+    }
+
     $addServiceButton.on('click', function(e){
         var newPrototype = prototype.replace(/__name__/g, serviceIndex);
         e.preventDefault();
         var $prototype = $(newPrototype);
         $servicesList.append($prototype);
         $prototype.find('select').select2();
+        var viewService = new ViewService($prototype, serviceIndex);
+        viewService.init();
         ++serviceIndex;
     });
 });

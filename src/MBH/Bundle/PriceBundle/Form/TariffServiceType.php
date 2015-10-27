@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\PriceBundle\Document\Service;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,6 +28,9 @@ class TariffServiceType extends AbstractType
                     'style' => 'width:250px',
                     'placeholder' => 'Выберите услугу',
                 ],
+                'choice_attr' => function(Service $service) {
+                    return ['data-type' => $service->getCalcType()];
+                },
                 'group' => 'form.packageServiceType.add_service',
                 'help' => 'form.packageServiceType.reservation_add_service',
             ])
@@ -70,7 +74,7 @@ class TariffServiceType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            //'data_class' => 'MBH\Bundle\PriceBundle\Document\TariffService'
+            'data_class' => 'MBH\Bundle\PriceBundle\Document\TariffService'
         ]);
     }
 
