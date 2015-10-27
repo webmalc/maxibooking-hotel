@@ -18,7 +18,7 @@ class TariffService extends Base
      * @var \MBH\Bundle\PriceBundle\Document\Service
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Service")
-     * @Assert\NotNull(message= "validator.document.packageService.no_service_selected")
+     * @Assert\NotNull(message="validator.document.packageService.no_service_selected")
      */
     protected $service;
 

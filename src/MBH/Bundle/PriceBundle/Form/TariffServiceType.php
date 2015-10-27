@@ -32,11 +32,11 @@ class TariffServiceType extends AbstractType
                     return ['data-type' => $service->getCalcType()];
                 },
                 'group' => 'form.packageServiceType.add_service',
-                'help' => 'form.packageServiceType.reservation_add_service',
+                'help' => 'form.packageServiceType.reservation_add_service'
             ])
             ->add('nights', 'text', [
                 'label' => 'form.packageServiceType.nights_amount',
-                'required' => true,
+                'required' => false,
                 'attr' => [
                     'style' => 'width:80px',
                     'placeholder' => 'Кол. ночей',
@@ -47,7 +47,7 @@ class TariffServiceType extends AbstractType
             ])
             ->add('persons', 'text', [
                 'label' => 'form.packageServiceType.guests_amount',
-                'required' => true,
+                'required' => false,
                 'attr' => [
                     'style' => 'width:80px',
                     'placeholder' => 'Кол. персон',

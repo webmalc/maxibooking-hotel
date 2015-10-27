@@ -16,15 +16,22 @@
                 <div class="col-sm-6">
                     <ul>
                         {% for defaultService in form.defaultServices %}
-                            <li>{{ form_row(defaultService) }}</li>
+                            <li>
+                                {{ form_widget(defaultService.service) }}
+                                {{ form_widget(defaultService.nights) }}
+                                {{ form_widget(defaultService.persons) }}
+                                {{ form_widget(defaultService.amount) }}
+                                <i class="fa fa-times"></i>
+                            </li>
                         {% endfor %}
                     </ul>
                     <a data-prototype="
-                {{ form_widget(form.defaultServices.vars.prototype.service) |e }}
-                {{ form_widget(form.defaultServices.vars.prototype.nights)|e }}
-                {{ form_widget(form.defaultServices.vars.prototype.persons)|e }}
-                {{ form_widget(form.defaultServices.vars.prototype.amount)|e }}
-                {{ '<i class="fa fa-times"></i> '|e }}
+                {{ (
+                    form_widget(form.defaultServices.vars.prototype.service) ~
+                    form_widget(form.defaultServices.vars.prototype.nights) ~
+                    form_widget(form.defaultServices.vars.prototype.persons) ~
+                    form_widget(form.defaultServices.vars.prototype.amount)
+                )|e }}{{ '<i class="fa fa-times"></i> '|e }}
                 " class="btn btn-xs btn-success"><i class="fa fa-plus"></i> Добавить</a>
                 </div>
             </div>

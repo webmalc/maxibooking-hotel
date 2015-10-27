@@ -102,19 +102,14 @@ $(document).ready(function () {
     var serviceIndex = $servicesList.find('li').length;
     prototype = '<li>'+prototype+'</li>';
 
-    $servicesList.on('click', '.fa-times', function () {
-        $(this).closest('li').remove();
-    });
-
     var ViewService = function($liContainer, index) {
         this.$liContainer = $liContainer;
         this.index = index;
         this.$serviceSelect = this.$liContainer.find('#mbh_price_tariff_promotions_defaultServices_'+index+'_service');
         this.$personsInput = this.$liContainer.find('#mbh_price_tariff_promotions_defaultServices_'+index+'_persons');
         this.$nightsInput = this.$liContainer.find('#mbh_price_tariff_promotions_defaultServices_'+index+'_nights');
-        this.$amountInput = this.$liContainer.find('#mbh_price_tariff_promotions_defaultServices_'+index+'_amount');
-        this.service = null;
-        this.calcType = null;
+        //this.$amountInput = this.$liContainer.find('#mbh_price_tariff_promotions_defaultServices_'+index+'_amount');
+        this.calcType = this.$serviceSelect.find('option[value=' + this.$serviceSelect.val() + ']').data('type');
     }
 
     ViewService.prototype.init = function() {
@@ -123,7 +118,6 @@ $(document).ready(function () {
         this.$serviceSelect.on('change', function() {
             var value = that.$serviceSelect.val();
             var $selectedOption = that.$serviceSelect.find('option[value=' + value + ']');
-            that.service = value;
             that.calcType = $selectedOption.data('type');
             that.update();
         });
@@ -146,6 +140,16 @@ $(document).ready(function () {
         if (this.calcType == 'not_applicable') { //за услугу
         }
     }
+
+    $servicesList.find('li').each(function(index, value){
+        var $li = $(this);
+        var viewService = new ViewService($li, index);
+        viewService.init();
+    });
+
+    $servicesList.on('click', '.fa-times', function () {
+        $(this).closest('li').remove();
+    });
 
     $addServiceButton.on('click', function(e){
         var newPrototype = prototype.replace(/__name__/g, serviceIndex);
