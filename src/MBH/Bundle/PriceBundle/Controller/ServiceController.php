@@ -112,9 +112,9 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      * @Method("POST")
      * @Security("is_granted('ROLE_SERVICE_NEW')")
      * @Template("MBHPriceBundle:Service:newEntry.html.twig")
-     * @ParamConverter(class="MBHPriceBundle:Service")
+     * @ParamConverter(class="MBHPriceBundle:ServiceCategory")
      */
-    public function createEntryAction(Request $request, Service $entity)
+    public function createEntryAction(Request $request, ServiceCategory $entity)
     {
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
@@ -130,7 +130,7 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
         $form->submit($request);
 
         if ($form->isValid()) {
-            if ($request->get("mbh_bundle_pricebundle_service_type")["time"]) {
+            if (!empty($request->get("mbh_bundle_pricebundle_service_type")["time"])) {
                 $date = date_create();
                 $entry->setDate(date_format($date, 'U = H:i:s'));
             }
