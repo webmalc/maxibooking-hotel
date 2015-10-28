@@ -10,6 +10,7 @@ use MBH\Bundle\VegaBundle\Service\DictionaryProvider;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Type;
 
 /**
  * Class DocumentRelationType
@@ -82,13 +83,34 @@ class DocumentRelationType extends AbstractType
                 'required' => false,
                 'label' => 'form.DocumentRelation.number',
                 'property_path' => 'documentRelation.number',
+                'constraints' => [
+                    new Type(['type' => 'numeric'])
+                ]
             ])
+        ;
+        $builder
             ->add('authorityOrgan', 'text', [
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.authority',
                 'required' => false,
                 'property_path' => 'documentRelation.authorityOrgan'
             ])
+        ;
+        $builder->get('authorityOrgan')
+            ->addModelTransformer(new EntityToIdTransformer($this->managerRegistry->getManager(), 'MBH\Bundle\VegaBundle\Document\VegaFMS'));
+
+        /*$builder
+            ->add('authorityOrgan', 'document', [
+                'group' => 'form.DocumentRelation.main',
+                'label' => 'form.DocumentRelation.authority',
+                'required' => false,
+                'property_path' => 'documentRelation.authorityOrgan',
+                'class' => 'MBH\Bundle\VegaBundle\Document\VegaFMS',
+                'choices' => [],
+            ])
+        ;*/
+
+        $builder
             ->add('issued', 'date', [
                 'group' => 'form.DocumentRelation.main',
                 'label' => 'form.DocumentRelation.issued',
@@ -114,9 +136,6 @@ class DocumentRelationType extends AbstractType
                 'expanded' => true,
                 'property_path' => 'documentRelation.relation'
             ]);
-
-        $builder->get('authorityOrgan')
-            ->addModelTransformer(new EntityToIdTransformer($this->managerRegistry->getManager(), 'MBH\Bundle\VegaBundle\Document\VegaFMS'));
 
         //birthplace
         if($options['birthplace']) {

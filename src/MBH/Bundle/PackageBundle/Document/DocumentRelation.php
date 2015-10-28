@@ -34,8 +34,9 @@ class DocumentRelation implements \JsonSerializable
      */
     protected $series;
     /**
-     * @var Integer
-     * @ODM\Int
+     * @var String
+     * @ODM\String()
+     * @Assert\Type(type="numeric")
      */
     protected $number;
     /**
@@ -127,7 +128,7 @@ class DocumentRelation implements \JsonSerializable
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getNumber()
     {
@@ -135,7 +136,7 @@ class DocumentRelation implements \JsonSerializable
     }
 
     /**
-     * @param int $number
+     * @param string $number
      */
     public function setNumber($number)
     {

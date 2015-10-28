@@ -12,7 +12,8 @@ $(document).ready(function () {
         }
     });
 
-    $('#mbh_document_relation_authorityOrgan').select2({
+    var $authorityOrgan = $('#mbh_document_relation_authorityOrgan');
+    select2Text($authorityOrgan).select2({
         minimumInputLength: 3,
         placeholder: "Сделайте выбор",
         allowClear: true,
