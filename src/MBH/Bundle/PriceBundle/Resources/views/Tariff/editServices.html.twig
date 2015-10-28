@@ -18,9 +18,9 @@
                         {% for defaultService in form.defaultServices %}
                             <li>
                                 {{ form_widget(defaultService.service) }}
+                                {{ form_widget(defaultService.amount) }}
                                 {{ form_widget(defaultService.nights) }}
                                 {{ form_widget(defaultService.persons) }}
-                                {{ form_widget(defaultService.amount) }}
                                 <i class="fa fa-times"></i>
                             </li>
                         {% endfor %}
@@ -28,14 +28,15 @@
                     <a data-prototype="
                 {{ (
                     form_widget(form.defaultServices.vars.prototype.service) ~
+                    form_widget(form.defaultServices.vars.prototype.amount) ~
                     form_widget(form.defaultServices.vars.prototype.nights) ~
-                    form_widget(form.defaultServices.vars.prototype.persons) ~
-                    form_widget(form.defaultServices.vars.prototype.amount)
+                    form_widget(form.defaultServices.vars.prototype.persons)
                 )|e }}{{ '<i class="fa fa-times"></i> '|e }}
                 " class="btn btn-xs btn-success"><i class="fa fa-plus"></i> Добавить</a>
                 </div>
             </div>
             {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': tariff, 'delete_route': tariff.isDefault ? null : 'tariff_delete' } %}
+            {{ form_widget(form._token) }}
             {{ form_end(form, {render_rest: false}) }}
         </div>
         {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': tariff, 'logs': logs, 'delete_route': 'tariff_delete' } %}

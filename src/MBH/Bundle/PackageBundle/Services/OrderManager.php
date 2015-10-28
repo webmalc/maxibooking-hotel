@@ -333,12 +333,18 @@ class OrderManager
         {
             //transform TariffService to PackageService
             $packageService = new PackageService();
-            $packageService->setService($tariffService->getService());
-            $packageService->setAmount($tariffService->getAmount());
-            $packageService->setPersons($tariffService->getPersons());
-            $packageService->setNights($tariffService->getNights());
+            $packageService
+                ->setService($tariffService->getService())
+                ->setAmount($tariffService->getAmount())
+                ->setPersons($tariffService->getPersons())
+                ->setNights($tariffService->getNights())
+                ->setPrice(0)
+                //->setPrice($packageService->getService()->getPrice())
+                ->setPackage($package)
+                ->setNote('Услуга по умолчанию')
+            ;
+
             $package->addService($packageService);
-            $packageService->setPackage($package);
             $this->dm->persist($packageService);
         }
 

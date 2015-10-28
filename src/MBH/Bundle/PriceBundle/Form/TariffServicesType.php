@@ -33,7 +33,7 @@ class TariffServicesType extends AbstractType
                 'group' => 'Общая информация',
                 'required' => false,
                 'type' => new TariffServiceType(),
-                'by_reference' => true,
+                //'by_reference' => true,
                 //'prototype' => true,
                 'allow_add' => true,
                 'allow_delete' => true,

@@ -441,6 +441,16 @@ class Tariff extends Base
     }
 
     /**
+     * @param TariffService $defaultService
+     * @return $this
+     */
+    public function addDefaultService(TariffService $defaultService)
+    {
+        $this->defaultServices[] = $defaultService;
+        return $this;
+    }
+
+    /**
      * @return TariffService[]
      */
     public function getDefaultServices()
