@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\PackageBundle\Services;
+namespace MBH\Bundle\PackageBundle\Services\Search;
 
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -11,7 +11,7 @@ use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 /**
  *  Search service
  */
-class Search
+class Search implements SearchInterface
 {
 
     /**

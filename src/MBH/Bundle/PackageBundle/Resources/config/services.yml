@@ -1,7 +1,11 @@
 services:
     mbh.package.search:
-            class: MBH\Bundle\PackageBundle\Services\Search
+            class: MBH\Bundle\PackageBundle\Services\Search\SearchFactory
             arguments: [@service_container]
+
+    mbh.package.search_simple:
+                class: MBH\Bundle\PackageBundle\Services\Search\Search
+                arguments: [@service_container]
 
     mbh.tourists.messenger:
             class: MBH\Bundle\PackageBundle\Services\TouristsMessenger
