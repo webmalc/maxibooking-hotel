@@ -36,7 +36,7 @@ class TariffServiceType extends AbstractType
             ])
             ->add('nights', 'text', [
                 'label' => 'form.packageServiceType.nights_amount',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'style' => 'width:80px',
                     'placeholder' => 'Кол. ночей',
@@ -47,7 +47,7 @@ class TariffServiceType extends AbstractType
             ])
             ->add('persons', 'text', [
                 'label' => 'form.packageServiceType.guests_amount',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'style' => 'width:80px',
                     'placeholder' => 'Кол. персон',

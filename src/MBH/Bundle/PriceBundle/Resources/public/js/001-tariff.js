@@ -114,6 +114,28 @@ $(document).ready(function () {
 
     ViewService.prototype.init = function() {
         this.update();
+        this.bindEventHandlers();
+    }
+
+    ViewService.prototype.update = function() {
+        this.$personsInput.addClass('hide').attr('required', false);
+        this.$nightsInput.addClass('hide').attr('required', false);
+        if(this.calcType == 'per_stay') { //за весь срок
+            //this.$personsInput.val(this.$personsInput.val());// || services.package_guests);
+            this.$personsInput.removeClass('hide').attr('required', true);
+        }
+        if (this.calcType == 'per_night') { //за cутки
+            //this.$nightsInput.val(this.$nightsInput.val());// || services.package_guests);
+            this.$nightsInput.removeClass('hide').attr('required', true);
+            this.$personsInput.removeClass('hide').attr('required', true);
+        }
+        if (this.calcType == 'day_percent') { // за услугу (% от цены за сутки)
+        }
+        if (this.calcType == 'not_applicable') { //за услугу
+        }
+    }
+
+    ViewService.prototype.bindEventHandlers = function() {
         var that = this;
         this.$serviceSelect.on('change', function() {
             var value = that.$serviceSelect.val();
@@ -121,24 +143,6 @@ $(document).ready(function () {
             that.calcType = $selectedOption.data('type');
             that.update();
         });
-    }
-
-    ViewService.prototype.update = function() {
-        this.$personsInput.hide();
-        this.$nightsInput.hide();
-        if(this.calcType == 'per_stay') { //за весь срок
-            //this.$personsInput.val(this.$personsInput.val());// || services.package_guests);
-            this.$personsInput.show();
-        }
-        if (this.calcType == 'per_night') { //за cутки
-            //this.$nightsInput.val(this.$nightsInput.val());// || services.package_guests);
-            this.$nightsInput.show();
-            this.$personsInput.show();
-        }
-        if (this.calcType == 'day_percent') { // за услугу (% от цены за сутки)
-        }
-        if (this.calcType == 'not_applicable') { //за услугу
-        }
     }
 
     $servicesList.find('li').each(function(index, value){
