@@ -160,9 +160,16 @@ class Tariff extends Base
      */
     protected $services;
 
+    /**
+     * @var TariffService[]
+     * @ODM\EmbedMany(targetDocument="TariffService")
+     */
+    protected $defaultServices;
+
     public function __construct()
     {
         $this->promotions = new ArrayCollection();
+        $this->defaultServices = new ArrayCollection();
     }
 
     /**
@@ -431,5 +438,31 @@ class Tariff extends Base
     public function setServices($services)
     {
         $this->services = $services;
+    }
+
+    /**
+     * @param TariffService $defaultService
+     * @return $this
+     */
+    public function addDefaultService(TariffService $defaultService)
+    {
+        $this->defaultServices[] = $defaultService;
+        return $this;
+    }
+
+    /**
+     * @return TariffService[]
+     */
+    public function getDefaultServices()
+    {
+        return $this->defaultServices;
+    }
+
+    /**
+     * @param TariffService[] $defaultServices
+     */
+    public function setDefaultServices($defaultServices)
+    {
+        $this->defaultServices = $defaultServices;
     }
 }

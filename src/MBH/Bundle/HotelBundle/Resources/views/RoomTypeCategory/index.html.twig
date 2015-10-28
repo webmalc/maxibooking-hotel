@@ -37,22 +37,13 @@
                         {% endif %}
                     </td>
                     <td class="table-actions-td text-center">
-                        <a href="{{ path('room_type_category_edit', { 'id': category.id }) }}" class="btn btn-success btn-xs"
-                           title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
-                            <i class="fa fa-pencil-square-o"></i>
-                        </a>
-                        {% if category.types|length == 0 %}
-                            <a href="{{ path('room_type_category_delete', { 'id': category.id }) }}" class="btn btn-danger btn-xs delete-link "
-                               title="{{ "source.index.delete_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">
-                                <i class="fa fa-trash-o"></i>
-                            </a>
-                        {% endif %}
+                        {% include 'MBHBaseBundle:Actions:entry_actions.html.twig' with {entity: category, role: 'TYPE_CATEGORY', route: 'room_type_category', deleted_link: category.types|length == 0}  %}
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'room_type_category_new', 'role': 'HOTEL'} %}
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'room_type_category_new', 'role': 'ROOM_TYPE_CATEGORY'} %}
 
 {% endblock content %}

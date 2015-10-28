@@ -6,12 +6,12 @@
 {% block content %}
     {{ form_start(form, {'action': path('package_service_edit', {'id': package.id, 'serviceId': service.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
     {{ form_widget(form) }}
-    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'package': package, 'role': 'ROLE_PACKAGE_SERVICES'} %}
+    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_SERVICES'} %}
     {{ form_end(form) }}
 {% endblock %}
 
 {% block scripts %}
     {{ parent() }}
 
-    {% include 'MBHPackageBundle:Package:serviceScripts.html.twig' with {'package': package} %}
+    {% include 'MBHPackageBundle:Package:serviceScripts.html.twig' with {'entity': package} %}
 {% endblock %}

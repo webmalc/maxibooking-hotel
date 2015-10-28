@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
+
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,6 +27,16 @@ class TariffServicesType extends AbstractType
                     return $servicesRepository->createQueryBuilder()->field('enabled')->equals(true);
                 },*/
                 'multiple' => true
+            ])
+            ->add('defaultServices', 'collection', [
+                'label' => 'Услуги по умолчанию',
+                'group' => 'Общая информация',
+                'required' => false,
+                'type' => new TariffServiceType(),
+                //'by_reference' => true,
+                //'prototype' => true,
+                'allow_add' => true,
+                'allow_delete' => true,
             ])
         ;
     }

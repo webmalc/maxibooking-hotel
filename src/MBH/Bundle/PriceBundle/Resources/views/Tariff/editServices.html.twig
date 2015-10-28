@@ -10,15 +10,34 @@
     <div class="tab-content">
         <div class="tab-pane active" id="general_info">
             {{ form_start(form, {'action': path('tariff_services_edit', {'id': tariff.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
-            {{ form_widget(form) }}
+            {{ form_row(form.services) }}
+            <div class="default-service form-group form-inline">
+                {{ form_label(form.defaultServices) }}
+                <div class="col-sm-6">
+                    <ul>
+                        {% for defaultService in form.defaultServices %}
+                            <li>
+                                {{ form_widget(defaultService.service) }}
+                                {{ form_widget(defaultService.amount) }}
+                                {{ form_widget(defaultService.nights) }}
+                                {{ form_widget(defaultService.persons) }}
+                                <i class="fa fa-times"></i>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <a data-prototype="
+                {{ (
+                    form_widget(form.defaultServices.vars.prototype.service) ~
+                    form_widget(form.defaultServices.vars.prototype.amount) ~
+                    form_widget(form.defaultServices.vars.prototype.nights) ~
+                    form_widget(form.defaultServices.vars.prototype.persons)
+                )|e }}{{ '<i class="fa fa-times"></i> '|e }}
+                " class="btn btn-xs btn-success"><i class="fa fa-plus"></i> Добавить</a>
+                </div>
+            </div>
             {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': tariff, 'delete_route': tariff.isDefault ? null : 'tariff_delete' } %}
-            {{ form_end(form) }}
-
-
-            {#{% form_theme serviceForm 'MBHBaseBundle:Form:fields.html.twig' %}
-            {{ form_start(serviceForm, {'attr': {'class': 'form-horizontal'}}) }}
-            {{ form_widget(serviceForm) }}
-            {{ form_end(serviceForm) }}#}
+            {{ form_widget(form._token) }}
+            {{ form_end(form, {render_rest: false}) }}
         </div>
         {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': tariff, 'logs': logs, 'delete_route': 'tariff_delete' } %}
     </div>

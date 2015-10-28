@@ -14,6 +14,9 @@
     {% set delete_role = 'ROLE_' ~route|upper ~ '_DELETE' %}
 {% endif %}
 
+{% if deleted_link is not defined %}
+    {% set deleted_link = true %}
+{% endif %}
 
 {% block edit_entry %}
     {% if is_granted(edit_role) %}
@@ -22,7 +25,7 @@
 {% endblock %}
 
 {% block delete_entry %}
-    {% if is_granted(delete_role) %}
+    {% if deleted_link and is_granted(delete_role) %}
     <a href='{{ path(delete_route, { 'id': entity.id }) }}' class='btn btn-danger btn-xs delete-link' data-text='{{ 'entry.actions.delete.confirmation'|trans({'%doc%': entity}) }}' title={{ 'entry.actions.delete'|trans() }} data-toggle='tooltip'><i class='fa fa-trash-o'></i></a>
     {% endif %}
 {% endblock %}

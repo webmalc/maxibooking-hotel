@@ -329,6 +329,25 @@ class OrderManager
             throw new PackageCreationException($order, 'Create package error: validation errors.');
         }
 
+        foreach($package->getTariff()->getDefaultServices() as $tariffService)
+        {
+            //transform TariffService to PackageService
+            $packageService = new PackageService();
+            $packageService
+                ->setService($tariffService->getService())
+                ->setAmount($tariffService->getAmount())
+                ->setPersons($tariffService->getPersons())
+                ->setNights($tariffService->getNights())
+                ->setPrice(0)
+                //->setPrice($packageService->getService()->getPrice())
+                ->setPackage($package)
+                ->setNote('Услуга по умолчанию')
+            ;
+
+            $package->addService($packageService);
+            $this->dm->persist($packageService);
+        }
+
         $order->addPackage($package);
         $this->dm->persist($order);
         $this->dm->persist($package);

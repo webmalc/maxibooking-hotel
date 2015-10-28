@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PriceBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\PriceBundle\Document\Service;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -21,57 +22,51 @@ class TariffServiceType extends AbstractType
             ->add('service', 'document', [
                 'label' => 'form.packageServiceType.service',
                 'class' => 'MBHPriceBundle:Service',
-                //'empty_value' => '',
+                'empty_value' => '',
+                'group_by' => 'category',
+                'attr' => [
+                    'style' => 'width:250px',
+                    'placeholder' => 'Выберите услугу',
+                ],
+                'choice_attr' => function(Service $service) {
+                    return ['data-type' => $service->getCalcType()];
+                },
                 'group' => 'form.packageServiceType.add_service',
-                'help' => 'form.packageServiceType.reservation_add_service',
+                'help' => 'form.packageServiceType.reservation_add_service'
             ])
             ->add('nights', 'text', [
                 'label' => 'form.packageServiceType.nights_amount',
                 'required' => true,
-                //'data' => 1,
+                'attr' => [
+                    'style' => 'width:80px',
+                    'placeholder' => 'Кол. ночей',
+                ],
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
-                'constraints' => new NotBlank(),
-                'attr' => ['class' => 'spinner sm']
+                'constraints' => new NotBlank()
             ])
             ->add('persons', 'text', [
                 'label' => 'form.packageServiceType.guests_amount',
                 'required' => true,
-                //'data' => 1,
+                'attr' => [
+                    'style' => 'width:80px',
+                    'placeholder' => 'Кол. персон',
+                ],
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
                 'constraints' => new NotBlank(),
-                'attr' => ['class' => 'spinner sm']
-            ])
-            ->add('begin', 'date', [
-                'label' => 'Дата',
-                'group' => 'form.packageServiceType.add_service',
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'attr' => array('class' => 'datepicker sm', 'data-date-format' => 'dd.mm.yyyy'),
-            ])
-            ->add('time', 'time', [
-                'label' => 'form.packageServiceType.time',
-                'required' => false,
-                'group' => 'form.packageServiceType.add_service',
-                'attr' => ['class' => 'sm'],
-                'widget' => 'single_text',
-                'html5' => false
             ])
             ->add('amount', 'text', [
                 'label' => 'form.packageServiceType.amount',
                 'required' => true,
-                //'data' => 1,
+                'attr' => [
+                    'style' => 'width:80px',
+                    'placeholder' => 'Кол.',
+                ],
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
                 'constraints' => new NotBlank(),
-                'attr' => ['class' => 'spinner sm'],
                 'help' => '-'
-            ])
-            ->add('note', 'textarea', [
-                'label' => 'form.packageServiceType.comment',
-                'group' => 'form.packageServiceType.add_service',
-                'required' => false,
             ])
         ;
     }

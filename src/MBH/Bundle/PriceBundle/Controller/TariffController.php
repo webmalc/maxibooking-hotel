@@ -196,7 +196,6 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(new TariffServicesType(), $tariff);
-        $serviceForm = $this->createForm(new TariffServiceType());
 
         $form->handleRequest($request);
         if($form->isValid()) {
@@ -211,7 +210,6 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         return [
             'tariff' => $tariff,
             'form' => $form->createView(),
-            'serviceForm' => $serviceForm->createView(),
             'logs' => $this->logs($tariff),
         ];
     }
