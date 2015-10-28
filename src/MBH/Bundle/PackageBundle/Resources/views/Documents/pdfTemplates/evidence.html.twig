@@ -82,7 +82,7 @@
         </div>
         <div style="margin-left: 202px;">
             <div class="area">
-                &nbsp{% if tourist and tourist.documentRelation %}{{ tourist.documentRelation.authorityOrgan.name }}{% endif %}
+                &nbsp{% if tourist and tourist.documentRelation and tourist.documentRelation.authorityOrgan %}{{ tourist.documentRelation.authorityOrgan.name }}{% endif %}
             </div>
             <div style="display: block; font-size: 12px; font-weight: normal;">(наименование органа, учреждения, выдавшего документ)</div>
         </div>

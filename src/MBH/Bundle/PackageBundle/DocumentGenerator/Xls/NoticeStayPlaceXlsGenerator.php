@@ -73,7 +73,10 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
             $this->write($birthday->format('m'), 'AU21');
             $this->write($birthday->format('Y'), 'BG21');
         }
-        $this->phpExcelObject->getActiveSheet()->setCellValue('CY21', 'X');
+        $sexList = ['male' => 'CY21', 'female' => 'DS21'];
+        if (array_key_exists($tourist->getSex(), $sexList)) {
+            $this->phpExcelObject->getActiveSheet()->setCellValue($sexList[$tourist->getSex()], 'X');
+        }
 
         if ($birthplace = $tourist->getBirthplace()) {
             if ($birthplace->getCountry() && $birthplace->getMainRegion()) {
