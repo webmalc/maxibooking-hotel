@@ -361,7 +361,9 @@ var docReadyForms = function () {
         topLinks.each(function () {
             disable($(this));
         });
-        topLinks.on('ifToggled', function () {disable($(this))});
+        topLinks.on('ifToggled', function () {
+            disable($(this))
+        });
     }());
 
     $('.tags-select-widget').tagsSelectWidget();
@@ -369,30 +371,30 @@ var docReadyForms = function () {
 
 
 var select2TemplateResult = {
-    _iconHtml: function(state) {
+    _iconHtml: function (state) {
         if (!state.id) {
             return state.text;
         }
         var icon = state.element.getAttribute('data-icon');
         return icon ? '<i class="fa ' + icon + '"></i>' : null;
     },
-    appendIcon: function(state) {
+    appendIcon: function (state) {
         var iconHtml = select2TemplateResult._iconHtml(state);
         var html = iconHtml ?
-            state.text + ' ' + iconHtml :
+        state.text + ' ' + iconHtml :
             state.text;
 
         return $('<div>' + html + '</div>');
     },
-    prependIcon: function(state) {
+    prependIcon: function (state) {
         var iconHtml = select2TemplateResult._iconHtml(state);
         var html = iconHtml ?
-            iconHtml + ' ' + state.text :
+        iconHtml + ' ' + state.text :
             state.text;
 
         return $('<div>' + html + '</div>');
     },
-    icon: function(state) {
+    icon: function (state) {
         var iconHtml = select2TemplateResult._iconHtml(state);
         return $('<div>' + iconHtml + '</div>');
     }
@@ -413,8 +415,8 @@ var select2TemplateResult = {
             templateResult: select2TemplateResult.prependIcon
         }
     };
-    function tagsSelectWidget($wrapper, options)
-    {
+
+    function tagsSelectWidget($wrapper, options) {
         var that = this,
             $select = $wrapper.find('select'),
             $list = $wrapper.find('.list'),
@@ -430,54 +432,46 @@ var select2TemplateResult = {
                 var item = '<div class="btn btn-xs btn-default" data-toggle="tooltip" data-original-title="' + title + '">' + text + input + '<div>';
                 $list.append(item);
             },
-            addIcon: function (value, title, icon)
-            {
+            addIcon: function (value, title, icon) {
                 var text = '<i class="fa fa-2x ' + icon + '"></i>';// + text;
                 this.add(value, text, title);
             },
-            clear: function()
-            {
+            clear: function () {
                 $list.find('.btn').remove();
             },
-            isEmpty: function()
-            {
+            isEmpty: function () {
                 return $list.find('.btn').length == 0;
             }
         }
 
         this.help = {
             inited: false,
-            init:function()
-            {
+            init: function () {
                 this.text = options.emptyHelp;
                 this.$help = $('<small class="hide">' + this.text + '</small>');
                 $list.append(this.$help);
                 this.inited = true;
             },
-            show: function()
-            {
-                if(this.inited) {
+            show: function () {
+                if (this.inited) {
                     this.$help.removeClass('hide');
                 }
             },
-            hide: function()
-            {
-                if(this.inited) {
+            hide: function () {
+                if (this.inited) {
                     this.$help.addClass('hide');
                 }
             },
-            update: function()
-            {
-                if(this.inited) {
+            update: function () {
+                if (this.inited) {
                     that.items.isEmpty() ? this.show() : this.hide();
                 }
             }
         }
 
-        this.init = function ()
-        {
+        this.init = function () {
             if (isMultiple) {
-                if($select.val() && options.value === false) {
+                if ($select.val() && options.value === false) {
                     value = $select.val();
                 }
                 $select.removeAttr('multiple');
@@ -521,7 +515,7 @@ var select2TemplateResult = {
                 that.help.update();
             });
 
-            if(options.emptyHelp) {
+            if (options.emptyHelp) {
                 this.help.init();
             }
 
@@ -530,7 +524,7 @@ var select2TemplateResult = {
     }
 
     var methods = {
-        init : function (options) {
+        init: function (options) {
             options = $.extend({}, defaultOption, options);
             return this.each(function () {
                 var $this = $(this);
@@ -539,7 +533,7 @@ var select2TemplateResult = {
                 if ($this.is("select")) {
                     $wrapper = $this.wrap('<div class="' + mainClass + '"></div>').closest('.' + mainClass);
                     $wrapper.prepend('<div class="list"></div>');
-                } else if($this.hasClass(mainClass)) {
+                } else if ($this.hasClass(mainClass)) {
                     $wrapper = $this;
                 } else {
                     throw new Error();
@@ -550,13 +544,13 @@ var select2TemplateResult = {
                 $wrapper.data('tagsSelectWidget', widget);
             });
         },
-        clear : function () {
+        clear: function () {
             return this.each(function () {
                 var widget = $(this).data('tagsSelectWidget');
                 widget.items.clear();
             });
         },
-        update : function (values) {
+        update: function (values) {
             return this.each(function () {
                 //todo
                 //var widget = $(this).data('tagsSelectWidget');
@@ -571,7 +565,7 @@ var select2TemplateResult = {
         } else if (typeof method === 'object' || !method) {
             return methods.init.apply(this, arguments);
         } else {
-            $.error('Метод с именем ' +  method + ' не существует');
+            $.error('Метод с именем ' + method + ' не существует');
         }
     };
 })(window.jQuery);
@@ -581,7 +575,7 @@ var select2TemplateResult = {
  * @author Alexandr Arofikin <sashaaro@gmail.com>
  * @param filter function
  */
-$.fn.mbhSelect2OptionsFilter = function(filter, resetOptionsHtml) {
+$.fn.mbhSelect2OptionsFilter = function (filter, resetOptionsHtml) {
     var html = resetOptionsHtml || this.html();
     html = html.replace('selected="selected"', '');
     var $selectHtml = $('<select>' + html + '</select>');
@@ -592,7 +586,7 @@ $.fn.mbhSelect2OptionsFilter = function(filter, resetOptionsHtml) {
 }
 
 
-var discountInit = function($discountInput, $isPercentDiscountCheckbox) {
+var discountInit = function ($discountInput, $isPercentDiscountCheckbox) {
     $discountInput.TouchSpin({
         min: 1,
         max: 100000000,
@@ -601,11 +595,11 @@ var discountInit = function($discountInput, $isPercentDiscountCheckbox) {
     });
     var $discountTypeInputPostfix = $discountInput.siblings('span.bootstrap-touchspin-postfix');
 
-    var discountInputUpdate = function(state) {
-        if(state) { //$isPercentDiscountCheckbox.is(':checked')
+    var discountInputUpdate = function (state) {
+        if (state) { //$isPercentDiscountCheckbox.is(':checked')
             $discountInput.trigger("touchspin.updatesettings", {max: 100});
             $discountTypeInputPostfix.html('%');
-        }else {
+        } else {
             $discountInput.trigger("touchspin.updatesettings", {max: 100000000});
             $discountTypeInputPostfix.html('<i class="fa fa-money"></i>')
         }
@@ -617,8 +611,6 @@ var discountInit = function($discountInput, $isPercentDiscountCheckbox) {
 
     discountInputUpdate($isPercentDiscountCheckbox.is(':checked'));
 }
-
-
 
 
 $(document).ready(function () {

@@ -18,6 +18,8 @@
         {% form_theme form 'MBHBaseBundle:Form:fields.html.twig' %}
     {% endif %}
 
+    {% include 'MBHBaseBundle::sidebar.html.twig' %}
+
     <div class="content-wrapper main-container">
 
         {% block print_hotel_logo %}
@@ -47,8 +49,6 @@
                 {% endif %}
             </ol>
         </section>
-
-        {% include 'MBHBaseBundle::sidebar.html.twig' %}
 
         <section class="content">
             {% block messages %}
