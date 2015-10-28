@@ -172,7 +172,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         $this->write($package->getEnd()->format('Y'), 'EQ47');
 
         $this->write($tourist->getLastName(), 'W69');
-        $this->write(mb_substr($tourist->getFirstName() . ' ' . $tourist->getPatronymic(), 0, 65), 'W71');
+        $this->write(mb_substr($tourist->getFirstName() . ' ' . $tourist->getLastName(), 0, 65), 'W71');
+        $this->write($tourist->getPatronymic(), 'W73');
 
         //$this->write('', 'W71');
         $this->write($tourist->getCitizenship(), 'AA74');
@@ -221,10 +222,13 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         if ($hotel->getRegion()) {
             $this->write($hotel->getRegion()->getTitle(), 'AE14');
         }
+
+        //Район
+        //$this->write($hotel->getSettlement(), 'W17');
+
         if ($hotel->getCity()) {
-            $this->write($hotel->getCity()->getTitle(), 'W17'); //Район Город или другой
+            $this->write($hotel->getCity()->getTitle(), 'AE19');  // Город или другой населенный пункт
         }
-        $this->write($hotel->getSettlement(), 'AE19'); //Населенный пункт
         $this->write($hotel->getStreet(), 'W22');
         $this->write($hotel->getHouse(), 'S24');
         $this->write($hotel->getCorpus(), 'AQ24');
@@ -265,11 +269,15 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
                 $this->write($region->getName(), 'AE39');
             }
 
-            if($district = $addressObjectDecomposed->getDistrict()) {
+            if($district = $addressObjectDecomposed->getDistrict()) { //Район
                 $this->write($district, 'W42');
             }
-            if($settlement = $addressObjectDecomposed->getSettlement()) {
-                $this->write($settlement, 'AE44');
+            $city = $addressObjectDecomposed->getSettlement();
+            if(!$city) {
+                $city = $addressObjectDecomposed->getCity();
+            }
+            if($city) { //Город или другой населенный пункт
+                $this->write($city, 'AE44');
             }
 
             if($street = $addressObjectDecomposed->getStreet()) {
@@ -287,11 +295,37 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         if ($organization = $hotel->getOrganization()) {
             $this->write($organization->getName(), 'AA51');
             $this->write($organization->getInn(), 'S60');
+
+        }
+
+        if($hotel) {
+            $address = [];
+            $city = $hotel->getCity();
+            if($city) {
+                $address[] = $city->getTitle();
+
+                if($hotel->getStreet()) {
+                    $address[] = 'ул '. $hotel->getStreet();
+
+                    if($hotel->getHouse()) {
+                        $address[] = 'д '. $hotel->getHouse();
+                    }
+                }
+            }
+
+            if($address) {
+                $this->write(array_shift($address), 'AA56');
+                $text = implode(' ', $address);
+                $this->write($text, 'K58');
+            }
         }
 
         $this->write($package->getEnd()->format('d'), 'DO69');
         $this->write($package->getEnd()->format('m'), 'EE69');
         $this->write($package->getEnd()->format('Y'), 'EQ69');
+
+        $this->write($user->getLastName(), 'W71');
+        $this->write($user->getFirstName().' '.$user->getPatronymic(), 'W73');
 
         $this->phpExcelObject->setActiveSheetIndex(0);
         $this->setSquaresOnActiveSheet();
