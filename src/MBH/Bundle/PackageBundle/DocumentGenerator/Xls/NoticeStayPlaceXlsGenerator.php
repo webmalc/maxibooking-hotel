@@ -113,11 +113,15 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         //$this->write($tourist->getVisa()->getNumber(), 'DW37');
 
         $purposeList = [
-            'study' => 'CA43',
-            'tourism' => 'AY43',
-            'work' => 'CM43',
-            //'residence' => 'CY43',
-            'other' => 'EQ43',
+            'service' => 'AM43',//'Служебная',
+            'tourism' => 'AY43',//'Туризм',
+            'business' => 'BO43',//'Деловая',
+            'study' => 'CA43',//'Учеба',
+            'work' => 'CM43', //'Работа',
+            'private' => 'CY43',//'Частная',
+            'residence' => 'DK43',//'Транзит',
+            'humanitarian' => 'EE43', //'Гуманитарная',
+            'other' => 'EQ43' //'Другая'
         ];
         if ($package->getPurposeOfArrival() && array_key_exists($package->getPurposeOfArrival(), $purposeList)) {
             $purposeCell = $purposeList[$package->getPurposeOfArrival()];

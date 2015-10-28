@@ -206,13 +206,13 @@ class Package extends Base implements JsonSerializable
      * @ODM\String(name="note")
      */
     protected $note;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\String(name="purposeOfArrival")
      * @Assert\Choice(
-     *      choices = {"tourism", "work", "study", "residence", "other"}, 
+     *      choices = {"service", "tourism", "business", "study", "work", "private", "residence", "humanitarian", "other"},
      *      message = "validator.document.package.wrong_arrival_purpose"
      * )
      */
