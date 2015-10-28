@@ -314,9 +314,10 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
             }
 
             if($address) {
-                $this->write(array_shift($address), 'AA56');
+                /*$this->write(array_shift($address), 'AA56');
                 $text = implode(' ', $address);
-                $this->write($text, 'K58');
+                $this->write($text, 'K58');*/
+                $this->write(implode(' ', $address), 'AA56', 24, ['K58']);
             }
         }
 
@@ -397,10 +398,11 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
      * @param $word
      * @param string $startCell
      * @param null|int $breakLineLength
+     * @param array $nextCells
      * @param int $range
      * @throws \PHPExcel_Exception
      */
-    protected function write($word, $startCell = 'A0', $breakLineLength = null, $range = self::DEFAULT_LETTER_RANGE)
+    protected function write($word, $startCell = 'A0', $breakLineLength = null, $nextCells = [], $range = self::DEFAULT_LETTER_RANGE)
     {
         $word = mb_strtoupper($word, 'UTF-8');
         $word = preg_replace('~[^A-ZА-Я 0-9]+~', '', $word);
@@ -418,10 +420,16 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
             $rowLetterIndex += $range;
             $activeRowLetter = \PHPExcel_Cell::stringFromColumnIndex($rowLetterIndex);
 
-            if($breakLineLength && ($i + 1)%$breakLineLength == 0) {
-                $lineNumber = $lineNumber + 2;
-                $activeRowLetter = $rowLetter;
-                if(trim($letters[$i+1]) == ''){
+            if($breakLineLength && ($i + 1)%$breakLineLength == 0) { //enter to new line
+                if($nextCells) {
+                    list($activeRowLetter, $lineNumber) = $this->explodeCell(array_shift($nextCells));
+                } else {
+                    $lineNumber = $lineNumber + 2;
+                    $activeRowLetter = $rowLetter;
+
+                }
+
+                if(isset($letters[$i+1]) && trim($letters[$i+1]) == ''){
                     unset($letters[$i+1]);
                 }
             }
