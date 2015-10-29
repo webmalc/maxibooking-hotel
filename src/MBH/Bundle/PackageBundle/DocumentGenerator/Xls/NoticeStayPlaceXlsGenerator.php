@@ -43,9 +43,12 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         $this->phpExcelObject = $this->phpExcel->createPHPExcelObject($this->getXlsPath());
     }
 
+    /**
+     * @return array|string
+     */
     private function getXlsPath()
     {
-        return realpath(__DIR__ . '/../../Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija.XLS');
+        return $this->container->get('file_locator')->locate('@MBHPackageBundle/Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija.XLS');
     }
 
 
@@ -172,8 +175,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         $this->write($package->getEnd()->format('Y'), 'EQ47');
 
         $this->write($tourist->getLastName(), 'W69');
-        $this->write(mb_substr($tourist->getFirstName() . ' ' . $tourist->getLastName(), 0, 65), 'W71');
-        $this->write($tourist->getPatronymic(), 'W73');
+        $this->write(mb_substr($tourist->getFirstName() . ' ' . $tourist->getPatronymic(), 0, 65), 'W71');
+        //$this->write($tourist->getPatronymic(), 'W73');
 
         //$this->write('', 'W71');
         $this->write($tourist->getCitizenship(), 'AA74');
