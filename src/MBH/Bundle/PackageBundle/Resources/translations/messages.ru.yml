@@ -297,7 +297,7 @@ report.roomType.settle: Поселить
 
 report.roomType.statuses.open: Свободно
 report.roomType.statuses.wait: Не заехал
-report.roomType.statuses.wait_today: Заезжет сегодня
+report.roomType.statuses.wait_today: Заезд сегодня
 report.roomType.statuses.in_today: Заехал сегодня
 report.roomType.statuses.will_out: Выезд
 report.roomType.statuses.out_today: Выезд сегодня

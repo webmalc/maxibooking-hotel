@@ -1,4 +1,4 @@
-<table class="table table-bordered not-auto-datatable table-hover table-condensed mbh-grid room-types-table">
+<table class="table not-auto-datatable table-hover table-condensed mbh-grid room-types-table">
     <thead>
     <tr>
         <th class="td-md text-center">#</th>
@@ -14,7 +14,7 @@
         <th>Гости</th>
         <th class="td-md">Даты</th>
         <th class="td-md hidden-xs hidden-sm">Оплата</th>
-        <th class="td-xs">
+        <th class="td-md">
             Статус
         </th>
     </tr>
@@ -53,10 +53,11 @@
             {% set supposeAccommodation = null %}
             {% set roomTypeSupposeAccommodation = result.supposeAccommodations[room.roomType.id] is defined ? result.supposeAccommodations[room.roomType.id] : null %}
             {% set package = result.packages[room.id] is defined ? result.packages[room.id] : null %}
-            {% set style = '' %}
+            {% set style = 'default' %}
+            {% set rowClass = null %}
 
             {% if room.status %}
-                {% set style = 'bg-gray-lite' %}
+                {% set rowClass = 'bg-gray-lite' %}
             {% endif %}
 
             {% if package and package.order %}
@@ -69,10 +70,11 @@
                 {% elseif package.order.isPaid == false and  package.order.paid < package.order.price %}
                     {% set style = 'warning' %}
                 {% endif %}
+                {% set rowClass = style %}
             {% elseif roomTypeSupposeAccommodation and roomTypeSupposeAccommodation[supposeIncrement] is defined %}
                 {% set supposeAccommodation =  roomTypeSupposeAccommodation[supposeIncrement] %}
                 {% set supposeIncrement = supposeIncrement + 1 %}
-                {% set style = 'wait-accommodation' %}
+                {% set rowClass = 'wait-accommodation' %}
 
                 {% set package = supposeAccommodation %}
             {% endif %}
@@ -92,7 +94,7 @@
 
             {% set settle = status == 'open' %}
 
-            <tr class="{{ style }}">
+            <tr class="{{ rowClass }}">
                 <td class="text-center">
                     {% if is_granted('ROLE_ROOM_EDIT')  %}
                         <a target="_blank" href="{{ path('room_edit', {id: room.id}) }}">{{ room.name }}</a>
@@ -200,28 +202,57 @@
                         <small>{{ package.nights }} {{ 'nights'|transchoice(package.nights) }}</small>
                     {% endif %}
                 </td>
-                <td class="text-right td-md hidden-xs hidden-sm">
-                    {% if package %}
-                        <a data-toggle='tooltip' title='{{ "package.json.go_to_calculations"|trans({}, "MBHPackageBundle") }}'
-                           href='{{ path('package_order_cash', {'id': package.order.id, 'packageId': package.id}) }}'
-                           class='text text-{% if package.order.isPaid %}success{% elseif package.order.paid > 0 %}warning{% else %}danger{% endif %}'>
-                            {% if package.paidStatus == 'success' %}
-                                {% if package.order.paid > package.order.price %}
-                                    {{ 'overpaid'|trans }}
-                                {% else %}
-                                    {{ 'paid'|trans }}
-                                {% endif %}
-                            {% elseif package.paidStatus == 'warning' or package.paidStatus == 'danger' %}
-                                {{ 'debt'|trans }}
+                <td class="text-left td-md hidden-xs hidden-sm">
+                {% if package %}
+                    <a data-toggle='tooltip' title='{{ "package.json.go_to_calculations"|trans({}, "MBHPackageBundle") }}'
+                       href='{{ path('package_order_cash', {'id': package.order.id, 'packageId': package.id}) }}'
+                       class='text text-{% if package.order.isPaid %}success{% elseif package.order.paid > 0 %}warning{% else %}danger{% endif %}'>
+                        {% if package.paidStatus == 'success' %}
+                            {% if package.order.paid > package.order.price %}
+                                {{ 'overpaid'|trans }}
+                            {% else %}
+                                {{ 'paid'|trans }}
                             {% endif %}
-                        </a>
-                        <br>
-                        <small>
-                            {{ (package.debt * -1)|number_format(2) }}
-                        </small>
-                    {% endif %}
+                        {% elseif package.paidStatus == 'warning' %}
+                            {{ 'partially_paid'|trans }}
+                        {% elseif package.paidStatus == 'danger' %}
+                            {{ 'no_paid'|trans }}
+                        {% endif %}
+                    </a>
+                    <br>
+                    <small>
+                        {% if package.paidStatus == 'success' %}
+                            {{ (package.order.paid)|number_format(2) }}
+                        {% elseif package.paidStatus == 'warning' %}
+                            {{ (package.order.paid)|number_format(2) }} / {{ (package.debt)|number_format(2) }}
+                        {% elseif package.paidStatus == 'danger' %}
+                        0 / {{ (package.debt)|number_format(2) }}
+                        {% endif %}
+                    </small>
+                {% endif %}
                 </td>
                 <td>
+                    {% if status != constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_OPEN') %}
+                        {% set statusClass = null %}
+                        {% if status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_IN_TODAY') %}
+                            {% set statusClass = 'text-default' %}
+                        {% elseif status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_WAIT_TODAY') %}
+                            {% set statusClass = 'text-info bold' %}
+                        {% elseif status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_WAIT') %}
+                            {% set statusClass = 'text-warning bold' %}
+                        {% elseif status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_OUT_TODAY') %}
+                            {% set statusClass = style ~ ' bold' %}
+                        {% elseif status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_OUT_TOMORROW') %}
+                            {% set statusClass = style %}
+                        {% elseif status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_WILL_OUT') %}
+                            {% set statusClass = 'text-default' %}
+                        {% endif %}
+
+                        <div class="{{ statusClass }}">
+                            {{ ('report.roomType.statuses.' ~ status)|trans }}
+                            {{ status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_WILL_OUT') ? package.begin|date('d.m.Y') : '' }}
+                        </div>
+                    {% endif %}
                     {% if settle %}
                         {% set buttonClass = 'default' %}
                         {#% if status == 'wait' or supposeAccommodation %}
@@ -238,19 +269,6 @@
                            href="{{ settle_link }}" class="btn btn-xs btn-default">
                             {{ 'report.roomType.settle'|trans }}
                         </a>
-                    {% else %}
-                        {% set statusClass = null %}
-                        {% if status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_WAIT') %}
-                            {% set statusClass = 'text-default' %}
-                        {% elseif status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_WAIT_TODAY') %}
-                            {% set statusClass = 'text-info' %}
-                        {% elseif status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_OUT_TODAY') %}
-                            {% set statusClass = 'text-success' %}
-                        {% endif %}
-                        <div class="{{ statusClass }}">
-                            {{ ('report.roomType.statuses.' ~ status)|trans }}
-                            {{ status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_WILL_OUT') ? package.begin|date('d.m.Y') : '' }}
-                        </div>
                     {% endif %}
                 </td>
             </tr>

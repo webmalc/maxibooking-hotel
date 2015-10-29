@@ -119,7 +119,9 @@ mailer.base.rate.good: Хорошо
 mailer.base.rate.perfect: Отлично
 
 debt: Долг
+partially_paid: Частично
 paid: Оплачено
+no_paid: Не оплачено
 overpaid: Переплачено
 
 confirmed: 'подтвержден'
