@@ -7,13 +7,13 @@
         <th class="td-xs text-center">
             <i class="fa fa-bed"></i>
         </th>
+        <th class="td-xs text-center">
+            <i class="fa fa-tasks" title="Статус комнаты" data-toggle="tooltip"></i>
+        </th>
         <th class="td-xs text-center">#</th>
         <th>Гости</th>
         <th class="td-md">Даты</th>
         <th class="td-md hidden-xs hidden-sm">Оплата</th>
-        <th class="td-xs text-center">
-            <i class="fa fa-tasks" title="Статус комнаты" data-toggle="tooltip"></i>
-        </th>
         <th class="td-xs">
             Статус
         </th>
@@ -128,7 +128,50 @@
                         </span>
                     {% endif %}
                 </td>
-                <td>{% if package %}{{ package.numberWithPrefix }}{% endif %}</td>
+                <td class="text-center">
+                    {% if is_granted('ROLE_ROOM_STATUS_EDIT') %}
+                        <select data-room="{{ room.id }}" class="plain-html select-status select2">
+                            <option data-icon="fa-lg fa-check">.</option>
+                            {% for status, icon in roomStatusIcons %}
+                                <option value="{{ status }}" {{ room.status and room.status.code == status ? 'selected="selected"' : '' }} data-icon="fa-lg mbf-{{ icon }}">
+                                    {{ status }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    {% elseif room.status %}
+                        <i class="fa fa-lg mbf-{{ roomStatusIcons[room.status.code] }}" data-toggle='tooltip' data-title='{{ room.status.title }}'></i>
+                    {% else %}
+                        <i class="fa fa-lg mbf-keys" data-toggle='tooltip'></i>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if package and not settle %}
+                        <a data-id="{{ package.id }}" href="javascript:void(0)" class="btn btn-xs btn-{{ style }}"
+                            style="cursor: pointer;" data-html="true" data-container="body" data-toggle="popover" data-placement="top" data-content="
+                            <b>Заказ:</b> #12
+                           {% if package.isPaid %}
+                                <small class='text-success'><i class='fa fa-check'></i> {{ 'order.edit.paid'|trans({}, 'MBHPackageBundle') }}</small>
+                            {% else %}
+                                <small class='text-danger'><i class='fa fa-times'></i> {{ 'order.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>
+                            {% endif %}
+                            </small><br>
+                            <b>Даты:</b> {{ package.begin|date('d.m.Y') }} - {{ package.end|date('d.m.Y') }}<br>
+                            <b>Заехали:</b> {{ package.isCheckIn ? 'да' : 'нет' }}<br>
+                            <b>Выехали:</b> {{ package.isCheckOut ? 'да' : 'нет' }}<br>
+                            <b>Гости:</b> {{ package.adults }}+{{ package.children }}<br>
+                            <b>Стоимость:</b> {{ package.order.price }} {{ currency().text }}<br>
+                            <b>Долг:</b> {{ package.order.debt }} {{ currency().text }}<br>
+                            {% if package.services is not empty %}
+                                <b>Услуги:</b>
+                                {{ package.services|join(', ') }}
+                            {% elseif is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW')) %}
+                                <div class='text-center'><small><a target='_blanck' href='{{ path('package_edit', {'id': package.id}) }}'>перейти к записи</a></small></div>
+                            {% endif %}
+                            ">
+                            {{ package.numberWithPrefix }}
+                        </a>
+                    {% endif %}
+                </td>
                 <td>
                     {% if package %}
                         <a data-toggle='tooltip'
@@ -168,9 +211,8 @@
                 <td class="text-right td-md hidden-xs hidden-sm">
                     {% if package %}
                         <a data-toggle='tooltip' title='{{ "package.json.go_to_calculations"|trans({}, "MBHPackageBundle") }}'
-                           href='{{ path('package_order_cash', {'id': package.order.id, 'packageId': package.id}) }}' class='text {% if package.order.isPaid %}text-success'
-                           {% elseif package.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}
-                        >
+                           href='{{ path('package_order_cash', {'id': package.order.id, 'packageId': package.id}) }}'
+                           class='text text-{% if package.order.isPaid %}success{% elseif package.order.paid > 0 %}warning{% else %}danger{% endif %}'>
                             {% if package.paidStatus == 'success' %}
                                 {% if package.order.paid > package.order.price %}
                                     {{ 'overpaid'|trans }}
@@ -187,61 +229,19 @@
                         </small>
                     {% endif %}
                 </td>
-                <td class="text-center">
-                    {% if is_granted('ROLE_ROOM_STATUS_EDIT') %}
-                        <select data-room="{{ room.id }}" class="plain-html select-status select2">
-                            <option data-icon="fa-lg mbf-keys">.</option>
-                            {% for status, icon in roomStatusIcons %}
-                                <option value="{{ status }}" {{ room.status and room.status.code == status ? 'selected="selected"' : '' }} data-icon="fa-lg mbf-{{ icon }}">
-                                    {{ status }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    {% elseif room.status %}
-                        <i class="fa fa-lg mbf-{{ roomStatusIcons[room.status.code] }}" data-toggle='tooltip' data-title='{{ room.status.title }}'></i>
-                    {% else %}
-                        <i class="fa fa-lg mbf-keys" data-toggle='tooltip'></i>
-                    {% endif %}
-                </td>
                 <td>
-                    <a data-id="{% if package %}{{ package.id }}{% endif %}" {% if settle %} target="_blank" {% endif %}
-                       href="{{ settle ? settle_link : 'javascript:void(0)' }}" class="btn btn-xs btn-{{ style }}"
-                            {% if not settle %}
-                                style="cursor: pointer;"
-                                data-html="true"
-                                data-container="body"
-                                data-toggle="popover"
-                                data-placement="top"
-                                data-content="
-                                <b>Заказ:</b> #12
-                                   {% if package.isPaid %}
-                                        <small class='text-success'><i class='fa fa-check'></i> {{ 'order.edit.paid'|trans({}, 'MBHPackageBundle') }}</small>
-                                    {% else %}
-                                        <small class='text-danger'><i class='fa fa-times'></i> {{ 'order.edit.not_paid'|trans({}, 'MBHPackageBundle') }}</small>
-                                    {% endif %}
-                                </small><br>
-                                <b>Даты:</b> {{ package.begin|date('d.m.Y') }} - {{ package.end|date('d.m.Y') }}<br>
-                                <b>Заехали:</b> {{ package.isCheckIn ? 'да' : 'нет' }}<br>
-                                <b>Выехали:</b> {{ package.isCheckOut ? 'да' : 'нет' }}<br>
-                                <b>Гости:</b> {{ package.adults }}+{{ package.children }}<br>
-                                <b>Стоимость:</b> {{ package.order.price }} {{ currency().text }}<br>
-                                <b>Долг:</b> {{ package.order.debt }} {{ currency().text }}<br>
-                                    {% if package.services is not empty %}
-                                        <b>Услуги:</b>
-                                        {{ package.services|join(', ') }}
-                                    {% elseif is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW')) %}
-                                        <div class='text-center'><small><a target='_blanck' href='{{ path('package_edit', {'id': package.id}) }}'>перейти к записи</a></small></div>
-                                    {% endif %}
-                            "
-                            {% endif %}
-                    >
-                        {{ settle ? 'report.roomType.settle'|trans : ('report.roomType.statuses.' ~ status)|trans }}
-                    </a>
-                    {% if not settle and supposeAccommodation %}
+                    {% if settle %}
+                        <a data-id="{% if package %}{{ package.id }}{% endif %}" target="_blank"
+                           href="{{ settle ? settle_link : 'javascript:void(0)' }}" class="btn btn-xs btn-{{ style }}">
+                            {{ 'report.roomType.settle'|trans }}
+                        </a>
+                    {% elseif supposeAccommodation %}
                         <a style="margin-top: 3px" data-id="{% if package %}{{ package.id }}{% endif %}" target="_blank"
                            href="{{ settle_link }}" class="btn btn-xs btn-default">
                             {{ 'report.roomType.settle'|trans }}
                         </a>
+                    {% else %}
+                            <div>{{ ('report.roomType.statuses.' ~ status)|trans }}</div>
                     {% endif %}
                 </td>
             </tr>
