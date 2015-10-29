@@ -178,6 +178,9 @@
                            class='{{ package.order.mainTourist ? '' : 'no-payer' }}'>
                             {% if package.order.mainTourist %}
                                 {{ package.order.mainTourist.lastNameWithInitials }}
+                                {% if package.order.mainTourist.citizenship %}
+                                    <small>({{ package.order.mainTourist.citizenship }})</small>
+                                {% endif %}
                             {% else %}
                                 &lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;
                             {% endif %}
