@@ -27,14 +27,10 @@ class Package extends Base implements JsonSerializable
     use SoftDeleteableDocument;
     use BlameableDocument;
 
-    const ROOM_STATUS_DEPT = 'dept';
-    const ROOM_STATUS_PAID = 'paid';
-    const ROOM_STATUS_NOT_OUT = 'not_out';
-    const ROOM_STATUS_OUT_NOW = 'out_now';
-
     const ROOM_STATUS_OPEN = 'open';
     const ROOM_STATUS_WAIT = 'wait'; //Не заехал
-    const ROOM_STATUS_WAIT_TODAY = 'wait_today'; // Заедет сегодня
+    const ROOM_STATUS_WAIT_TODAY = 'wait_today'; // Заезжет сегодня
+    const ROOM_STATUS_IN_TODAY = 'in_today'; // Заехал сегодня
     const ROOM_STATUS_WILL_OUT = 'will_out'; // Выезд
     const ROOM_STATUS_OUT_TODAY = 'out_today'; // Выезд сегодня
     const ROOM_STATUS_OUT_TOMORROW = 'out_tomorrow'; // Выезд завтра
@@ -1348,7 +1344,9 @@ class Package extends Base implements JsonSerializable
             if ($this->getIsCheckOut()) {
                 return self::ROOM_STATUS_OPEN;
             } else {
-                if($this->getEnd() == $today) {
+                if ($this->getBegin() == $today) {
+                    return self::ROOM_STATUS_IN_TODAY;
+                } elseif ($this->getEnd() == $today) {
                     return self::ROOM_STATUS_OUT_TODAY;
                 } elseif($this->getEnd() == $tomorrow) {
                     return self::ROOM_STATUS_OUT_TOMORROW;
@@ -1370,11 +1368,11 @@ class Package extends Base implements JsonSerializable
     {
         return [
             self::ROOM_STATUS_OPEN,
-            self::ROOM_STATUS_DEPT,
-            self::ROOM_STATUS_PAID,
-            self::ROOM_STATUS_NOT_OUT,
-            self::ROOM_STATUS_OUT_NOW,
             self::ROOM_STATUS_WAIT,
+            self::ROOM_STATUS_WAIT_TODAY,
+            self::ROOM_STATUS_WILL_OUT,
+            self::ROOM_STATUS_OUT_TODAY,
+            self::ROOM_STATUS_OUT_TOMORROW
         ];
     }
 

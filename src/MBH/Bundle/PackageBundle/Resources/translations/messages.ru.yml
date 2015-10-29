@@ -296,11 +296,12 @@ security.not_access_create_cash_document: Нет прав доступа для 
 report.roomType.settle: Поселить
 
 report.roomType.statuses.open: Свободно
-report.roomType.statuses.dept: Долг
-report.roomType.statuses.paid: Оплачен
-report.roomType.statuses.not_out: Не выехал
-report.roomType.statuses.out_now: Выезжает
-report.roomType.statuses.wait: Ожидается
+report.roomType.statuses.wait: Не заехал
+report.roomType.statuses.wait_today: Заезжет сегодня
+report.roomType.statuses.in_today: Заехал сегодня
+report.roomType.statuses.will_out: Выезд
+report.roomType.statuses.out_today: Выезд сегодня
+report.roomType.statuses.out_tomorrow: Выезд завтра
 
 form.unwelcomeType.group.common: Внести в черный список
 

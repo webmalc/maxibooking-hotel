@@ -85,16 +85,9 @@
 
 
             {% set status = 'open' %}
-            {% set style = 'default' %}
 
             {% if package %}
                 {% set status = package.roomStatus %}
-            {% endif %}
-
-            {% if status == 'wait' or supposeAccommodation %}
-                {% set style = 'info' %}
-            {% elseif package and package.order %}
-                {% set style = package.order.paidStatus %}
             {% endif %}
 
             {% set settle = status == 'open' %}
@@ -230,8 +223,14 @@
                 </td>
                 <td>
                     {% if settle %}
+                        {% set buttonClass = 'default' %}
+                        {#% if status == 'wait' or supposeAccommodation %}
+                            {% set buttonClass = 'info' %}
+                        {% elseif package and package.order %}
+                            {% set buttonClass = package.order.paidStatus %}
+                        {% endif %#}
                         <a data-id="{% if package %}{{ package.id }}{% endif %}" target="_blank"
-                           href="{{ settle ? settle_link : 'javascript:void(0)' }}" class="btn btn-xs btn-{{ style }}">
+                           href="{{ settle ? settle_link : 'javascript:void(0)' }}" class="btn btn-xs btn-{{ buttonClass }}">
                             {{ 'report.roomType.settle'|trans }}
                         </a>
                     {% elseif supposeAccommodation %}
@@ -240,7 +239,18 @@
                             {{ 'report.roomType.settle'|trans }}
                         </a>
                     {% else %}
-                        <div>{{ ('report.roomType.statuses.' ~ status)|trans }}</div>
+                        {% set statusClass = null %}
+                        {% if status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_WAIT') %}
+                            {% set statusClass = 'text-default' %}
+                        {% elseif status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_WAIT_TODAY') %}
+                            {% set statusClass = 'text-info' %}
+                        {% elseif status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_OUT_TODAY') %}
+                            {% set statusClass = 'text-success' %}
+                        {% endif %}
+                        <div class="{{ statusClass }}">
+                            {{ ('report.roomType.statuses.' ~ status)|trans }}
+                            {{ status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_WILL_OUT') ? package.begin|date('d.m.Y') : '' }}
+                        </div>
                     {% endif %}
                 </td>
             </tr>

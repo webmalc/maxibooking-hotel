@@ -52,6 +52,13 @@ class RoomTypeReportTest extends WebTestCase
         $this->assertEquals(Package::ROOM_STATUS_WAIT_TODAY, $package->getRoomStatus());
 
         $package
+            ->setBegin($today)
+            ->setEnd(new \DateTime('+ 6 days'))
+            ->setIsCheckIn(true)
+            ->setIsCheckOut(false)
+        ;
+        $this->assertEquals(Package::ROOM_STATUS_IN_TODAY, $package->getRoomStatus());
+        $package
             ->setBegin($yesterday)
             ->setEnd(new \DateTime('+ 6 days'))
             ->setIsCheckIn(true)
