@@ -48,7 +48,7 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
      */
     private function getXlsPath()
     {
-        return $this->container->get('file_locator')->locate('@MBHPackageBundle/Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija.XLS');
+        return $this->container->get('file_locator')->locate('@MBHPackageBundle/Resources/data/Uvedomlenie_o_pribytii_inostrannogo_grazhdanina_v_mesto_prebyvanija2.XLS');
     }
 
 
