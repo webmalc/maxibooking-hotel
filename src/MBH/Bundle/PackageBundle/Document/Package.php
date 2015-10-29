@@ -34,6 +34,7 @@ class Package extends Base implements JsonSerializable
     const ROOM_STATUS_WILL_OUT = 'will_out'; // Выезд
     const ROOM_STATUS_OUT_TODAY = 'out_today'; // Выезд сегодня
     const ROOM_STATUS_OUT_TOMORROW = 'out_tomorrow'; // Выезд завтра
+    const ROOM_STATUS_NOT_OUT = 'not_out'; // Не выехал
 
     /**
      * @var Order
@@ -1350,6 +1351,8 @@ class Package extends Base implements JsonSerializable
                     return self::ROOM_STATUS_OUT_TODAY;
                 } elseif($this->getEnd() == $tomorrow) {
                     return self::ROOM_STATUS_OUT_TOMORROW;
+                } elseif($this->getEnd() <= new \DateTime('midnight +1 day')) {
+                    return self::ROOM_STATUS_NOT_OUT;
                 } else {
                     return self::ROOM_STATUS_WILL_OUT;
                 }
@@ -1372,7 +1375,8 @@ class Package extends Base implements JsonSerializable
             self::ROOM_STATUS_WAIT_TODAY,
             self::ROOM_STATUS_WILL_OUT,
             self::ROOM_STATUS_OUT_TODAY,
-            self::ROOM_STATUS_OUT_TOMORROW
+            self::ROOM_STATUS_OUT_TOMORROW,
+            self::ROOM_STATUS_NOT_OUT,
         ];
     }
 

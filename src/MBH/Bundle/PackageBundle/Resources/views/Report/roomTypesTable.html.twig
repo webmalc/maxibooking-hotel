@@ -248,6 +248,8 @@
                             {% set statusClass = style %}
                         {% elseif status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_WILL_OUT') %}
                             {% set statusClass = 'text-default' %}
+                        {% elseif status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_NOT_OUT') %}
+                            {% set statusClass = 'text-danger bold' %}
                         {% endif %}
 
                         <div class="{{ statusClass }}">

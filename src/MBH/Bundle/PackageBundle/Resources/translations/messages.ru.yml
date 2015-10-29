@@ -302,6 +302,7 @@ report.roomType.statuses.in_today: Заехал сегодня
 report.roomType.statuses.will_out: Выезд
 report.roomType.statuses.out_today: Выезд сегодня
 report.roomType.statuses.out_tomorrow: Выезд завтра
+report.roomType.statuses.not_out: Не выехал
 
 form.unwelcomeType.group.common: Внести в черный список
 

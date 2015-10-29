@@ -7,6 +7,7 @@ use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * Class ReportRoomTypeStatusTest
@@ -29,7 +30,7 @@ class RoomTypeReportTest extends WebTestCase
 
     public function testGetStatusByPackage()
     {
-        $yesterday = new \DateTime('yesterday');
+        $yesterday = new \DateTime('yesterday midnight');
         $today = new \DateTime('midnight');
         $tomorrow = new \DateTime('tomorrow');
 
@@ -81,5 +82,13 @@ class RoomTypeReportTest extends WebTestCase
             ->setIsCheckOut(false)
         ;
         $this->assertEquals(Package::ROOM_STATUS_OUT_TODAY, $package->getRoomStatus());
+
+        $package
+            ->setBegin(new \DateTime('-5 days'))
+            ->setEnd(new \DateTime('-1 days'))
+            ->setIsCheckIn(true)
+            ->setIsCheckOut(false)
+        ;
+        $this->assertEquals(Package::ROOM_STATUS_NOT_OUT, $package->getRoomStatus());
     }
 }
