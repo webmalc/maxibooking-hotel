@@ -1,12 +1,13 @@
 <table class="table table-bordered not-auto-datatable table-hover table-condensed mbh-grid room-types-table">
     <thead>
     <tr>
-        <th class="td-md">#</th>
+        <th class="td-md text-center">#</th>
         <th class="td-md">Корпус</th>
         <th class="td-xs">Этаж</th>
         <th class="td-xs text-center">
             <i class="fa fa-bed"></i>
         </th>
+        <th class="td-xs text-center">#</th>
         <th>Гости</th>
         <th class="td-md">Даты</th>
         <th class="td-md hidden-xs hidden-sm">Оплата</th>
@@ -29,7 +30,7 @@
     {% for data in result.dataTable %}
         {% set roomType = data.roomType %}
         <tr class="bg-gray">
-            <td colspan="9">
+            <td colspan="10">
                 <strong>{{ roomType }}</strong> -
                 <small>
                     {% if client_config().useRoomTypeCategory() and roomType.category %}
@@ -104,6 +105,7 @@
                         </span>
                     {% endif %}
                 </td>
+                <td>{% if package %}{{ package.numberWithPrefix }}{% endif %}</td>
                 <td>
                     {% if package %}
                         <a data-toggle='tooltip'
@@ -130,6 +132,7 @@
                             {% if package.children > 0 %}
                                 {{ package.children }} рб.
                             {% endif %}
+                            / оформлено: {{ package.tourists|length }}
                         </small>
                     {% endif %}
                 </td>
@@ -248,5 +251,6 @@
     <span class="package-summary-row"><b>Номеров: </b><span>{{ result.total.rooms }}</span></span>
     <span class="package-summary-row"><b>Свободно: </b><span>{{ result.total.open }}</span></span>
     <span class="package-summary-row"><b>Занято: </b><span>{{ result.total.reserve }}</span></span>
-    <span class="package-summary-row"><b>Проживают: </b><span>{{ result.total.guests }}</span></span>
+    <span class="package-summary-row"><b>Гостей в брони: </b><span>{{ result.total.guests }}</span></span>
+    <span class="package-summary-row"><b>Гостей оформлено: </b><span>{{ result.total.tourists }}</span></span>
 </div>
