@@ -24,6 +24,7 @@
                 <td class="text-center">{{ entity.city }}</td>
                 <td class="text-center">{{ entity.address }}</td>
                 <td class="table-actions-td text-center">
+                    {#% include 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'route': 'housings', 'entity': entity} %#}
                     <a href="{{ path('housings_edit', { 'id': entity.id }) }}" class="btn btn-success btn-xs" title={{ 'views.hotel.index.edit_record'|trans({}, 'MBHHotelBundle') }} data-toggle="tooltip">
                         <i class="fa fa-pencil-square-o"></i>
                     </a>
@@ -36,6 +37,6 @@
         </tbody>
     </table>
 
-    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'housing_new'} %}
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'housing_new', 'role' : 'HOUSING'} %}
 
 {% endblock %}

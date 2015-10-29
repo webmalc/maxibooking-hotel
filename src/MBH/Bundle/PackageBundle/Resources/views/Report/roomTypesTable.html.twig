@@ -2,8 +2,6 @@
     <thead>
     <tr>
         <th class="td-md text-center">#</th>
-        <th class="td-md">Корпус</th>
-        <th class="td-xs">Этаж</th>
         <th class="td-xs text-center">
             <i class="fa fa-bed"></i>
         </th>
@@ -22,7 +20,7 @@
     <tbody>
     {% if result.dataTable is empty %}
         <tr class="danger text-cente">
-            <td colspan="9">
+            <td colspan="7">
                 Ничего не найдено
             </td>
         </tr>
@@ -98,19 +96,19 @@
                 <td class="text-center">
                     <a {% if not (settle or supposeAccommodation) %}disabled="disabled"{% endif %} data-id="{% if package %}{{ package.id }}{% endif %}" target="_blank"
                        href="{{ settle_link }}" class="btn btn-xs btn-default {% if not (settle or supposeAccommodation) %}disabled{% endif %}">
-                        <i class="fa fa-search"></i> {{ room.name }}{#{ 'report.roomType.settle'|trans }#}
+                        {% if settle or supposeAccommodation %}<i class="fa fa-search"></i> {% endif %}{{ room.name }}{#{ 'report.roomType.settle'|trans }#}
                     </a>
                     {#% if is_granted('ROLE_ROOM_EDIT')  %}
                         <a target="_blank" href="{{ path('room_edit', {id: room.id}) }}">{{ room.name }}</a>
                     {% else %}
                         {{ room.name }}
                     {% endif %#}
-                </td>
-                <td>
-                    {{ room.housing }}
-                </td>
-                <td class="text-center">
-                    {{ room.floor }}
+                    <div class="text-center">
+                        <small>
+                            {{ room.housing }}{% if room.housing and room.floor %},{% endif %}
+                            {{ room.floor }}
+                        </small>
+                    </div>
                 </td>
                 <td>
                     {% if not room.facilities is empty or not room.allFacilities is empty %}
@@ -131,7 +129,7 @@
                         <select data-room="{{ room.id }}" class="plain-html select-status select2">
                             <option data-icon="fa-lg fa-check">.</option>
                             {% for status, icon in roomStatusIcons %}
-                                <option value="{{ status }}" {{ room.status and room.status.code == status ? 'selected="selected"' : '' }} data-icon="fa-lg mbf-{{ icon }}">
+                                <option value="{{ status }}" {{ room.status and room.status.code == status ? 'selected="selected"' : '' }} data-icon="mbf-{{ icon }}">
                                     {{ status }}
                                 </option>
                             {% endfor %}
@@ -178,9 +176,6 @@
                            class='{{ package.order.mainTourist ? '' : 'no-payer' }}'>
                             {% if package.order.mainTourist %}
                                 {{ package.order.mainTourist.lastNameWithInitials }}
-                                {% if package.order.mainTourist.citizenship %}
-                                    <small>({{ package.order.mainTourist.citizenship }})</small>
-                                {% endif %}
                             {% else %}
                                 &lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;
                             {% endif %}
