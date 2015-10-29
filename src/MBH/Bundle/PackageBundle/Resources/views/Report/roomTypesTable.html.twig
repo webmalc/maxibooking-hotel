@@ -77,25 +77,24 @@
                 {% set package = supposeAccommodation %}
             {% endif %}
 
-
-            {% set style = 'default' %}
-            {% set status = 'open' %}
             {% set settle_link = path('package_search') ~ '#' ~ {'s': {
                 'begin' : 'today'|date('d.m.Y'), 'end' : 'tomorrow'|date('d.m.Y'),
                 'roomType': (room.roomType ? [room.roomType.id] : null), 'room': room.id
                 }}|url_encode
             %}
 
-            {% if package and package.order %}
-                {% set status = package.roomStatus %}
 
-                {% if status == 'open' %}
-                    {% set style = 'default' %}
-                {% elseif status == 'wait' or supposeAccommodation %}
-                    {% set style = 'info' %}
-                {% else %}
-                    {% set style = package.order.paidStatus %}
-                {% endif %}
+            {% set status = 'open' %}
+            {% set style = 'default' %}
+
+            {% if package %}
+                {% set status = package.roomStatus %}
+            {% endif %}
+
+            {% if status == 'wait' or supposeAccommodation %}
+                {% set style = 'info' %}
+            {% elseif package and package.order %}
+                {% set style = package.order.paidStatus %}
             {% endif %}
 
             {% set settle = status == 'open' %}
@@ -124,7 +123,7 @@
                                data-toggle="popover"
                                data-placement="top"
                                data-content="{% for facility in (room.facilities is not empty ? room.facilities : room.allFacilities) %}<i style='margin-left: 3px' data-toggle='tooltip' data-title='{{ facilities[facility] }}' class='fa fa-lg mbf-{{ facility }}'></i>{% endfor %}"
-                                    ></i>
+                            ></i>
                         </span>
                     {% endif %}
                 </td>
@@ -241,7 +240,7 @@
                             {{ 'report.roomType.settle'|trans }}
                         </a>
                     {% else %}
-                            <div>{{ ('report.roomType.statuses.' ~ status)|trans }}</div>
+                        <div>{{ ('report.roomType.statuses.' ~ status)|trans }}</div>
                     {% endif %}
                 </td>
             </tr>
