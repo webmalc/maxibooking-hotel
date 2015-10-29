@@ -96,11 +96,15 @@
 
             <tr class="{{ rowClass }}">
                 <td class="text-center">
-                    {% if is_granted('ROLE_ROOM_EDIT')  %}
+                    <a {% if not (settle or supposeAccommodation) %}disabled="disabled"{% endif %} data-id="{% if package %}{{ package.id }}{% endif %}" target="_blank"
+                       href="{{ settle_link }}" class="btn btn-xs btn-default {% if not (settle or supposeAccommodation) %}disabled{% endif %}">
+                        <i class="fa fa-search"></i> {{ room.name }}{#{ 'report.roomType.settle'|trans }#}
+                    </a>
+                    {#% if is_granted('ROLE_ROOM_EDIT')  %}
                         <a target="_blank" href="{{ path('room_edit', {id: room.id}) }}">{{ room.name }}</a>
                     {% else %}
                         {{ room.name }}
-                    {% endif %}
+                    {% endif %#}
                 </td>
                 <td>
                     {{ room.housing }}
@@ -249,26 +253,15 @@
                         {% endif %}
 
                         <div class="{{ statusClass }}">
-                            {{ ('report.roomType.statuses.' ~ status)|trans }}
-                            {{ status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_WILL_OUT') ? package.begin|date('d.m.Y') : '' }}
+                            <div>{{ ('report.roomType.statuses.' ~ status)|trans }}</div>
+                            <div>
+                                {% if status == constant('MBH\\Bundle\\PackageBundle\\Document\\Package::ROOM_STATUS_WILL_OUT') %}
+                                    <small>{{ package.begin|date('d.m.Y') }}</small>
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
+                            </div>
                         </div>
-                    {% endif %}
-                    {% if settle %}
-                        {% set buttonClass = 'default' %}
-                        {#% if status == 'wait' or supposeAccommodation %}
-                            {% set buttonClass = 'info' %}
-                        {% elseif package and package.order %}
-                            {% set buttonClass = package.order.paidStatus %}
-                        {% endif %#}
-                        <a data-id="{% if package %}{{ package.id }}{% endif %}" target="_blank"
-                           href="{{ settle ? settle_link : 'javascript:void(0)' }}" class="btn btn-xs btn-{{ buttonClass }}">
-                            {{ 'report.roomType.settle'|trans }}
-                        </a>
-                    {% elseif supposeAccommodation %}
-                        <a style="margin-top: 3px" data-id="{% if package %}{{ package.id }}{% endif %}" target="_blank"
-                           href="{{ settle_link }}" class="btn btn-xs btn-default">
-                            {{ 'report.roomType.settle'|trans }}
-                        </a>
                     {% endif %}
                 </td>
             </tr>
