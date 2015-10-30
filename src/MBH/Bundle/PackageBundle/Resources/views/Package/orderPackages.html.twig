@@ -39,7 +39,7 @@
                             <a class='btn btn-sm {% if package.deletedAt %}btn-danger{% else %}btn-default{% endif %}' href='{{ path('package_edit', {'id': package.id}) }}' rel='main' title='{{ 'order.packages.record_edit'|trans({}, 'MBHPackageBundle') }}' data-toggle='tooltip'>{{ package.numberWithPrefix }}</a>{% if package.deletedAt %}<br><small><i class='fa fa-trash-o'> </i> {{ 'order.packages.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
                         </td>
                         <td>
-                            {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}<br><small>{{ plural(package.nights, 'order.packages.noch'|trans({}, 'MBHPackageBundle') ,  'order.packages.nochi'|trans({}, 'MBHPackageBundle') ,  'order.packages.nochei'|trans({}, 'MBHPackageBundle') ) }}</small>
+                            {{ package.begin|mbh_format }} - {{ package.end|mbh_format }}<br><small>{{ package.nights }} {{ 'nights'|transchoice(package.nights) }}</small>
                         </td>
                         <td>
                             {{ package.roomType.hotel }} - {{ package.roomType }}<br><small><a data-toggle='tooltip' title='{{ 'order.packages.go_to_placement'|trans({}, 'MBHPackageBundle') }}' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'danger' }}'>{% if package.accommodation %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;не размещено&gt;{% endif %}</a></small>
