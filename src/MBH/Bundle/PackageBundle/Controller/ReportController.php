@@ -586,7 +586,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $roomStatusRepository = $this->dm->getRepository('MBHHotelBundle:RoomStatus');
         $room = $roomRepository->find($roomID);
         $roomStatus = $roomStatusRepository->findOneBy(['code' => $code]);
-        if(!$room || !$roomStatus) {
+        if(!$room) {
             throw $this->createNotFoundException();
         }
         $room->setStatus($roomStatus);

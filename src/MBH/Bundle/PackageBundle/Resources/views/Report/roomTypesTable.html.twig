@@ -1,4 +1,4 @@
-<table class="table not-auto-datatable table-hover table-condensed mbh-grid room-types-table">
+<table class="table not-auto-datatable table-hover table-condensed mbh-grid room-types-table table-striped">
     <thead>
     <tr>
         <th class="td-md text-center">#</th>
@@ -55,7 +55,7 @@
             {% set rowClass = null %}
 
             {% if room.status %}
-                {% set rowClass = 'bg-gray-lite' %}
+                {#% set rowClass = 'bg-gray-lite' %#}
             {% endif %}
 
             {% if package and package.order %}
@@ -68,7 +68,7 @@
                 {% elseif package.order.isPaid == false and  package.order.paid < package.order.price %}
                     {% set style = 'warning' %}
                 {% endif %}
-                {% set rowClass = style %}
+                {#% set rowClass = style %#}
             {% elseif roomTypeSupposeAccommodation and roomTypeSupposeAccommodation[supposeIncrement] is defined %}
                 {% set supposeAccommodation =  roomTypeSupposeAccommodation[supposeIncrement] %}
                 {% set supposeIncrement = supposeIncrement + 1 %}
@@ -106,7 +106,7 @@
                     <div class="text-center">
                         <small>
                             {{ room.housing }}{% if room.housing and room.floor %},{% endif %}
-                            {{ room.floor }}
+                            {% if room.floor %} эт. {{ room.floor }} {% endif %}
                         </small>
                     </div>
                 </td>

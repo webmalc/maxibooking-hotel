@@ -264,22 +264,22 @@ class OrganizationType extends AbstractType
                 'required' => false,
                 'constraints' => [new Length(['min' => 2, 'max' => 300])]
             ]);
-        }
 
-        $builder->add('stamp', 'file', [
-            'group' => $additionalGroup,
-            'label' => 'form.organizationType.stamp',
-            'required' => false,
-            'constraints' => [
-                new \Symfony\Component\Validator\Constraints\Image([
-                    /*'minWidth' => 400,
-                    'maxWidth' => 400,
-                    'maxHeight' => 200,
-                    'minHeight' => 200,*/
-                ])
-            ],
-            'help' => 'Скан печати для генерации документов (400x200 пикселей)'
-        ]);
+            $builder->add('stamp', 'file', [
+                'group' => $additionalGroup,
+                'label' => 'form.organizationType.stamp',
+                'required' => false,
+                'constraints' => [
+                    new \Symfony\Component\Validator\Constraints\Image([
+                        /*'minWidth' => 400,
+                        'maxWidth' => 400,
+                        'maxHeight' => 200,
+                        'minHeight' => 200,*/
+                    ])
+                ],
+                'help' => 'Скан печати для генерации документов (400x200 пикселей)'
+            ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)
