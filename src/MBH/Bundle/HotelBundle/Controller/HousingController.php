@@ -82,7 +82,7 @@ class HousingController extends BaseController
     }
 
     /**
-     * @Route("/edit/{id}", name="housings_edit")
+     * @Route("/edit/{id}", name="housing_edit")
      * @Method("GET")
      * @Template()
      * @Security("is_granted('ROLE_HOUSING_EDIT')")
