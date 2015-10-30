@@ -19,20 +19,34 @@ var docReadyTourists = function () {
         startView: 2
     });
 
-    $('.findGuest').change(function () {
+    var $guestForm = $('form[name=mbh_bundle_packagebundle_package_order_tourist_type');
+    var fillGuestForm = function (data) {
+        $guestForm.find('.guestLastName').val(data.lastName);
+        $guestForm.find('.guestFirstName').val(data.firstName);
+        $guestForm.find('.guestPatronymic').val(data.patronymic);
+        $guestForm.find('.guestBirthday').val(data.birthday);
+        $guestForm.find('.guestPhone').val(data.phone);
+        $guestForm.find('.guestEmail').val(data.email);
+        $guestForm.find('select.guestCommunicationLanguage').select2('val', data.communicationLanguage);
+    }
+    var $guestSelect = $guestForm.find('.findGuest');
+    $guestSelect.change(function () {
         if (!$(this).val()) {
             return null;
         }
-        $.getJSON(Routing.generate('json_tourist', {'id': $(this).val()}), function (data) {
-            $('.guestLastName').val(data.lastName);
-            $('.guestFirstName').val(data.firstName);
-            $('.guestPatronymic').val(data.patronymic);
-            $('.guestBirthday').val(data.birthday);
-            $('.guestPhone').val(data.phone);
-            $('.guestEmail').val(data.email);
-            $('select.guestCommunicationLanguage').select2('val', data.communicationLanguage);
-        });
+        $.getJSON(Routing.generate('json_tourist', {'id': $(this).val()}), fillGuestForm);
     });
+
+    $guestSelect.mbhGuestSelectPlugin();
+
+    var $guestOverflowAlert = $('#guest-overflow-alert');
+    if ($guestOverflowAlert.length == 1) {
+        $guestOverflowAlert.children('.btn').on('click', function(){
+            $guestForm.removeClass('hide');
+            $(this).addClass('hide');
+            $guestSelect.mbhGuestSelectPlugin();
+        });
+    }
 
     var details = {};
     var array_values = function (input) {

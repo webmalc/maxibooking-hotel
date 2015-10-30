@@ -281,14 +281,11 @@ var docReadyForms = function () {
             });
     }());
 
-    //payer select2
-    (function () {
-        var findGuest = $('.findGuest');
-        if (findGuest.length !== 1) {
-            return;
+    $.fn.mbhGuestSelectPlugin = function() {
+        if(this.is('input')) {
+            select2Text(this);
         }
-
-        select2Text(findGuest).select2({
+        this.select2({
             minimumInputLength: 3,
             allowClear: true,
             placeholder: 'Выберите гостя',
@@ -306,7 +303,10 @@ var docReadyForms = function () {
             },
             dropdownCssClass: "bigdrop"
         });
-    }());
+    }
+
+    //payer select2
+    $('.findGuest').mbhGuestSelectPlugin();
 
     //remember inputs
     (function () {
