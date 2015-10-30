@@ -53,7 +53,7 @@
         'append': entity.begin|date('now'|date('Y') == entity.begin|date('Y') ? 'd.m' : 'd.m.Y') ~ '-' ~ entity.end|date('now'|date('Y') == entity.end|date('Y') ? 'd.m' : 'd.m.Y') ~ ', ' ~ entity.roomType
     },
     {
-        'route': 'package_order_tourist_edit',
+        'route': entity.order.organization ? 'package_order_organization_edit' : 'package_order_tourist_edit',
         'order': true,
         'title': '<i class="fa fa-users"></i> ' ~ 'order.tabs.payer'|trans({}, 'MBHPackageBundle'),
         'append': entity.order.payer ? entity.order.payer.shortName|default(entity.order.payer.name) : 'dash'
