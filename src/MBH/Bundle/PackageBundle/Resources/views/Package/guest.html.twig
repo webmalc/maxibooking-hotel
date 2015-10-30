@@ -50,6 +50,7 @@
                             <td>
                                 <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}" rel="main"
                                    title=" {{ 'package.guest.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">{{ tourist.fullName }}</a>
+                                &nbsp;
                                 {% if tourist.isUnwelcome %}
                                     <a href='{{ path('tourist_edit_unwelcome', {id: tourist.id}) }}'>
                                         <i data-toggle='tooltip' data-original-title='Клиент в черном списке' class='fa fa-user-secret unwelcome-icon'></i>

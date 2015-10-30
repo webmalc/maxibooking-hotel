@@ -20,7 +20,7 @@
     <tbody>
     {% if result.dataTable is empty %}
         <tr class="danger text-cente">
-            <td colspan="7">
+            <td colspan="8">
                 Ничего не найдено
             </td>
         </tr>
@@ -173,9 +173,9 @@
                         <a data-toggle='tooltip'
                            href='{{ path('package_order_tourist_edit', {'id': package.order.id, 'packageId': package.id}) }}'
                            title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}'
-                           class='{{ package.order.mainTourist ? '' : 'no-payer' }}'>
-                            {% if package.order.mainTourist %}
-                                {{ package.order.mainTourist.lastNameWithInitials }}
+                           class='{{ package.order.payer ? '' : 'no-payer' }}'>
+                            {% if package.order.payer %}
+                                {{ package.order.payer.shortName }}
                             {% else %}
                                 &lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;
                             {% endif %}

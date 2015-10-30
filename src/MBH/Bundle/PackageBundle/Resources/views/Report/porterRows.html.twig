@@ -1,6 +1,7 @@
 {% if entity.isCheckIn and entity.accommodation %}{% set checkIn = true %}{% else %}{% set checkIn = false %}{% endif %}
 {% if entity.isCheckOut and entity.accommodation %}{% set checkOut = true %}{% else %}{% set checkOut = false %}{% endif %}
-<tr {% if (type == 'arrivals' and entity.isCheckIn) or type == ('out' and entity.isCheckOut) %}style="opacity: 0.4"{% endif %} class="{{ entity.roomStatus == 'open' ? 'default' : (entity.roomStatus == 'wait' ? 'info' : entity.order.paidStatus) }}">
+<tr {% if (type == 'arrivals' and entity.isCheckIn) or type == ('out' and entity.isCheckOut) %}style="opacity: 0.4"{% endif %}
+    class="{{ entity.roomStatus == 'open' ? 'default' : (entity.roomStatus == 'wait' ? 'info' : entity.order.paidStatus) }}">
     <td class="text-center">
         <span data-toggle='tooltip'
               title='{{ 'package.json.reservation_type'|trans({}, 'MBHPackageBundle') }}  {{ statuses[entity.order.status].title }}'>
@@ -41,7 +42,7 @@
         <a data-toggle='tooltip'
            href='{{ path('package_order_tourist_edit', {'id': entity.order.id, 'packageId': entity.id}) }}'
            title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}'
-           class='{{ entity.order.mainTourist ? '' : 'danger' }}'>{% if entity.order.mainTourist %}{{ entity.order.mainTourist.lastNameWithInitials }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a>
+           class='{{ entity.order.payer ? '' : 'danger' }}'>{% if entity.order.payer %}{{ entity.order.payer.shortName }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a>
         <small>
             <br>{% if entity.adults > 0 %}{{ entity.adults }} вз.{% endif %}{% if entity.adults > 0 and entity.children > 0 %}+{% endif %}{% if entity.children > 0 %}{{ entity.children }} рб.{% endif %}
         </small>
@@ -54,46 +55,46 @@
         >{{ entity.price|number_format(2) }}</a><br>
         <small><i class='fa fa-sliders'> </i> {{ entity.tariff.name }}</small>
     </td>
-        <td class="text-right">
-            <a data-toggle='tooltip' title='{{ "package.json.go_to_calculations"|trans({}, "MBHPackageBundle") }}'
-               href='{{ path('package_order_cash', {'id': entity.order.id, 'packageId': entity.id}) }}'
-               class='text {% if entity.order.isPaid %}text-success'
-               {% elseif entity.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}
-            >
-            {% if entity.paidStatus == 'success' %}
-                {% if entity.order.paid > entity.order.price %}
-                    {{ 'overpaid'|trans }}
-                {% else %}
-                    {{ 'paid'|trans }}
-                {% endif %}
-            {% elseif entity.paidStatus == 'warning' or entity.paidStatus == 'danger' %}
-                {{ 'debt'|trans }}
+    <td class="text-right">
+        <a data-toggle='tooltip' title='{{ "package.json.go_to_calculations"|trans({}, "MBHPackageBundle") }}'
+           href='{{ path('package_order_cash', {'id': entity.order.id, 'packageId': entity.id}) }}'
+           class='text {% if entity.order.isPaid %}text-success'
+           {% elseif entity.order.paid > 0 %}text-warning'{% else %}text-danger'{% endif %}
+        >
+        {% if entity.paidStatus == 'success' %}
+            {% if entity.order.paid > entity.order.price %}
+                {{ 'overpaid'|trans }}
+            {% else %}
+                {{ 'paid'|trans }}
             {% endif %}
-            </a>
-            <br>
-            <small>
-                {{ (entity.debt * -1)|number_format(2) }}
+        {% elseif entity.paidStatus == 'warning' or entity.paidStatus == 'danger' %}
+            {{ 'debt'|trans }}
+        {% endif %}
+        </a>
+        <br>
+        <small>
+            {{ (entity.debt * -1)|number_format(2) }}
 
-            </small>
-        </td>
+        </small>
+    </td>
 
     {% if type == 'arrivals' %}
         <td class="text-right">
-        {% if entity.isCheckIn %}
-            {{ entity.arrivalTime|mbh_format }} {{  entity.arrivalTime|date('H:i') }}<br>
-            <small>&nbsp;Заехал</small>
-        {% else %}
-            {{ entity.begin|mbh_format }}
-        {% endif %}
+            {% if entity.isCheckIn %}
+                {{ entity.arrivalTime|mbh_format }} {{ entity.arrivalTime|date('H:i') }}<br>
+                <small>&nbsp;Заехал</small>
+            {% else %}
+                {{ entity.begin|mbh_format }}
+            {% endif %}
         </td>
     {% else %}{#if type == 'out'#}
         <td class="text-right">
-        {% if entity.isCheckOut %}
-            {{ entity.departureTime|mbh_format }} {{  entity.arrivalTime|date('H:i') }}<br>
-            <small>&nbsp;Выехал</small>
-        {% else %}
-            {{ entity.end|mbh_format }}<br>
-        {% endif %}
+            {% if entity.isCheckOut %}
+                {{ entity.departureTime|mbh_format }} {{ entity.arrivalTime|date('H:i') }}<br>
+                <small>&nbsp;Выехал</small>
+            {% else %}
+                {{ entity.end|mbh_format }}<br>
+            {% endif %}
         </td>
     {% endif %}
     {% set note = entity.order.note ~ " " ~ entity.note %}

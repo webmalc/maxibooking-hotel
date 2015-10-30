@@ -35,36 +35,6 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class ReportController extends Controller implements CheckHotelControllerInterface
 {
     /**
-     * Porter report table.
-     *
-     * @Route("/porter/table", name="report_porter_table", options={"expose"=true})
-     * @Method("GET")
-     * @Security("is_granted('ROLE_PORTER_REPORT')")
-     * @Template()
-     */
-    public function porterTableAction(Request $request)
-    {
-        $type = $request->get('type');
-
-
-        $begin = new \DateTime('midnight');
-        $end = new \DateTime('midnight');
-        $end->modify('+ 1 day');
-
-        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
-
-        $packages = $packageRepository->findByType($type);
-
-        return [
-            'begin' => $begin,
-            'end' => $end,
-            'packages' => $packages,
-            'type' => $type,
-            'statuses' => $this->container->getParameter('mbh.package.statuses'),
-        ];
-    }
-
-    /**
      * Porter report.
      *
      * @Route("/porter/{type}", name="report_porter", defaults={"type"="lives"}, requirements={
@@ -118,6 +88,36 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
+     * Porter report table.
+     *
+     * @Route("/porter/table", name="report_porter_table", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_PORTER_REPORT')")
+     * @Template()
+     */
+    public function porterTableAction(Request $request)
+    {
+        $type = $request->get('type');
+
+
+        $begin = new \DateTime('midnight');
+        $end = new \DateTime('midnight');
+        $end->modify('+ 1 day');
+
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+
+        $packages = $packageRepository->findByType($type);
+
+        return [
+            'begin' => $begin,
+            'end' => $end,
+            'packages' => $packages,
+            'type' => $type,
+            'statuses' => $this->container->getParameter('mbh.package.statuses'),
+        ];
+    }
+
+    /**
      * Packages by users report.
      *
      * @Route("/users/index", name="report_users")
@@ -125,7 +125,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @Security("is_granted('ROLE_MANAGERS_REPORT')")
      * @Template()
      */
-    public function  userAction()
+    public function userAction()
     {
         $roomTypes = $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
             ->getWithPackages();
@@ -151,7 +151,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @Security("is_granted('ROLE_MANAGERS_REPORT')")
      * @Template()
      */
-    public function  userTableAction(Request $request)
+    public function userTableAction(Request $request)
     {
         $helper = $this->container->get('mbh.helper');
 
