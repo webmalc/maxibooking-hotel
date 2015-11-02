@@ -53,9 +53,6 @@ order.packages.created: Создана
 order.packages.reservation_type: Тип брони:
 order.packages.deleted: удалена
 order.packages.record_edit: Редактирование записи
-order.packages.noch: 'ночь'
-order.packages.nochi: 'ночи'
-order.packages.nochei: 'ночей'
 order.packages.go_to_placement: Перейти к размещению
 order.packages.edit_reservation: Редактирование брони
 order.packages.delete_reservation: Удаление брони
@@ -235,7 +232,7 @@ package.pdf.unit: Ед.
 package.pdf.price: Цена
 package.pdf.sum: Сумма
 package.pdf.hotel_accommodation: Проживание в отеле
-package.pdf.noch: ночь
+package.pdf.night: ночь
 package.pdf.conditions: Вышеперечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.
 package.pdf.executor_caps: ИСПОЛНИТЕЛЬ
 package.pdf.customer_caps: ЗАКАЗЧИК

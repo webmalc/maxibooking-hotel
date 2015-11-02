@@ -52,7 +52,7 @@ class FormType extends AbstractType
                 'nights',
                 'checkbox',
                 [
-                    'label' => 'form.formType.should_we_use_nochi_field',
+                    'label' => 'form.formType.should_we_use_nights_field',
                     'group' => 'form.formType.parameters',
                     'value' => true,
                     'required' => false,

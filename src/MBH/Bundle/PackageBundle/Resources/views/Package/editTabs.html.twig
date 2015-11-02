@@ -53,7 +53,7 @@
         'append': entity.begin|date('now'|date('Y') == entity.begin|date('Y') ? 'd.m' : 'd.m.Y') ~ '-' ~ entity.end|date('now'|date('Y') == entity.end|date('Y') ? 'd.m' : 'd.m.Y') ~ ', ' ~ entity.roomType
     },
     {
-        'route': 'package_order_tourist_edit',
+        'route': entity.order.organization ? 'package_order_organization_edit' : 'package_order_tourist_edit',
         'order': true,
         'title': '<i class="fa fa-users"></i> ' ~ 'order.tabs.payer'|trans({}, 'MBHPackageBundle'),
         'append': entity.order.payer ? entity.order.payer.shortName|default(entity.order.payer.name) : 'dash'
@@ -68,7 +68,7 @@
         'route': 'package_service',
         'order': false,
         'title': '<i class="fa fa-plug"></i> '~'package.editTabs.services'|trans({}, 'MBHPackageBundle')~' <small class="badge">' ~ services ~ '</small>',
-        'append': entity.services|length > 0 ? plural(entity.services|length, 'service', 'services1', 'services2') ~ ', ' ~ entity.servicesPrice|number_format(2) : 'dash',
+        'append': entity.services|length > 0 ? entity.services|length ~ ' ' ~ ('services')|transchoice(entity.services|length) ~ ', ' ~ entity.servicesPrice|number_format(2) : 'dash',
     },
     {
         'route': 'package_accommodation',

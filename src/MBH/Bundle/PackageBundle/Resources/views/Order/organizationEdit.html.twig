@@ -1,4 +1,4 @@
-{% extends 'MBHPackageBundle:Package:layout.html.twig' %}
+{% extends app.request.isxmlhttprequest ? "MBHBaseBundle::ajax.html.twig": 'MBHPackageBundle:Package:layout.html.twig' %}
 
 {% set small_title =  'package.edit.edit_reservation'|trans({}, 'MBHPackageBundle') ~ package.numberWithPrefix %}
 {% set layout =  'tabs' %}
@@ -18,8 +18,9 @@
 {% endblock %}
 {% block content %}
 
-    {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 3 , 'entity': package} %}
-
+    {% if app.request.isxmlhttprequest is empty %}
+        {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 3 , 'entity': package} %}
+    {% endif %}
     <div class="tab-content">
         <div class="tab-pane active" id="home">
             {% include 'MBHPackageBundle:Order:tabs.html.twig' with {'active': 2, 'entity': entity, 'package': package} %}

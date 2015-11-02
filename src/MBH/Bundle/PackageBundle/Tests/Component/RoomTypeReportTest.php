@@ -7,6 +7,7 @@ use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * Class ReportRoomTypeStatusTest
@@ -29,59 +30,65 @@ class RoomTypeReportTest extends WebTestCase
 
     public function testGetStatusByPackage()
     {
-        $yesterday = new \DateTime('yesterday');
-        $now = new \DateTime('midnight');
+        $yesterday = new \DateTime('yesterday midnight');
+        $today = new \DateTime('midnight');
         $tomorrow = new \DateTime('tomorrow');
 
-
-        $package = $this->getPackage();
-        $package->expects($this->any())->method('getBegin')->willReturn($now);
-        $package->expects($this->any())->method('getEnd')->willReturn($tomorrow);
         $package = new Package();
         $package
-            ->setOrder(new Order())
-            ->setBegin($now)
+            ->setBegin($tomorrow)
             ->setEnd($tomorrow)
-        ;
+            ->setIsCheckIn(false)
+            ->setIsCheckOut(false);
         $this->assertEquals(Package::ROOM_STATUS_OPEN, $package->getRoomStatus());
 
-        $package = $this->getPackage();
-        $package->expects($this->any())->method('getBegin')->willReturn($now);
-        $package->expects($this->any())->method('getEnd')->willReturn($now);
-        $package->expects($this->any())->method('getIsCheckIn')->willReturn(true);
-        $package->expects($this->any())->method('getIsPaid')->willReturn(true);
-        $this->assertEquals(Package::ROOM_STATUS_OUT_NOW, $package->getRoomStatus());
+        $package->setOrder(new Order());
+        $this->assertEquals(Package::ROOM_STATUS_WAIT, $package->getRoomStatus());
 
-        $package = $this->getPackage();
-        $package->expects($this->any())->method('getBegin')->willReturn($yesterday);
-        $package->expects($this->any())->method('getEnd')->willReturn($tomorrow);
-        $package->expects($this->any())->method('getIsCheckIn')->willReturn(true);
-        $package->expects($this->any())->method('getIsPaid')->willReturn(true);
-        $this->assertEquals(Package::ROOM_STATUS_PAID, $package->getRoomStatus());
+        $package
+            ->setBegin($today)
+            ->setEnd($tomorrow)
+            ->setIsCheckIn(false)
+            ->setIsCheckOut(false);
+        $this->assertEquals(Package::ROOM_STATUS_WAIT_TODAY, $package->getRoomStatus());
 
-        $package = $this->getPackage();
-        $package->expects($this->any())->method('getBegin')->willReturn($yesterday);
-        $package->expects($this->any())->method('getEnd')->willReturn($tomorrow);
-        $package->expects($this->any())->method('getIsCheckIn')->willReturn(true);
-        $package->expects($this->any())->method('getIsPaid')->willReturn(false);
-        $this->assertEquals(Package::ROOM_STATUS_DEPT, $package->getRoomStatus());
+        $package
+            ->setBegin($today)
+            ->setEnd(new \DateTime('+ 6 days'))
+            ->setIsCheckIn(true)
+            ->setIsCheckOut(false)
+        ;
+        $this->assertEquals(Package::ROOM_STATUS_IN_TODAY, $package->getRoomStatus());
+        $package
+            ->setBegin($yesterday)
+            ->setEnd(new \DateTime('+ 6 days'))
+            ->setIsCheckIn(true)
+            ->setIsCheckOut(false)
+        ;
+        $this->assertEquals(Package::ROOM_STATUS_WILL_OUT, $package->getRoomStatus());
 
-        $package = $this->getPackage();
-        $package->expects($this->any())->method('getBegin')->willReturn($yesterday);
-        $package->expects($this->any())->method('getEnd')->willReturn($yesterday);
-        $package->expects($this->any())->method('getIsCheckIn')->willReturn(true);
-        $package->expects($this->any())->method('getIsCheckOut')->willReturn(false);
+        $package
+            ->setBegin($yesterday)
+            ->setEnd($tomorrow)
+            ->setIsCheckIn(true)
+            ->setIsCheckOut(false)
+        ;
+        $this->assertEquals(Package::ROOM_STATUS_OUT_TOMORROW, $package->getRoomStatus());
+
+        $package
+            ->setBegin($yesterday)
+            ->setEnd($today)
+            ->setIsCheckIn(true)
+            ->setIsCheckOut(false)
+        ;
+        $this->assertEquals(Package::ROOM_STATUS_OUT_TODAY, $package->getRoomStatus());
+
+        $package
+            ->setBegin(new \DateTime('-5 days'))
+            ->setEnd(new \DateTime('-1 days'))
+            ->setIsCheckIn(true)
+            ->setIsCheckOut(false)
+        ;
         $this->assertEquals(Package::ROOM_STATUS_NOT_OUT, $package->getRoomStatus());
-    }
-
-    /**
-     * @return Package
-     */
-    private function getPackage()
-    {
-        $package = $this->getMock(Package::class);
-        $package->expects($this->any())->method('getOrder')->willReturn(new Order());
-
-        return clone($package);
     }
 }

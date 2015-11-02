@@ -308,8 +308,8 @@ class TouristController extends Controller
         $entity->getVisa()->getType() ?: $entity->getVisa()->setType('visa');
 
         $form = $this->createFormBuilder($entity)
-            ->add('migration', new TouristMigrationType())
             ->add('visa', new TouristVisaType())
+            ->add('migration', new TouristMigrationType())
             ->getForm();
 
         if ($request->isMethod(Request::METHOD_PUT)) {

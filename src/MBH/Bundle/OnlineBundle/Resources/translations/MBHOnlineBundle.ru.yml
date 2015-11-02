@@ -25,9 +25,6 @@ views.api.getPaymentType.choose_other_rooms: Выбрать другие ном�
 views.api.getPaymentType.reservate: Бронировать
 views.api.getPaymentType.reservation_error_try_again: Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.
 views.api.getResultsTable.hotel_rooms_for: Номера в отеле на
-views.api.getResultsTable.noch: 'ночь'
-views.api.getResultsTable.nochi: 'ночи'
-views.api.getResultsTable.nochei: 'ночей'
 views.api.getResultsTable.room_type: Тип номера
 views.api.getResultsTable.guests: Гости
 views.api.getResultsTable.price: Цена

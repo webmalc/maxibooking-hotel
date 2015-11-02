@@ -166,6 +166,8 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         }
 
         $form = $this->createForm(new OrderTouristType(), ['addToPackage' => true]);
+
+
         return [
             'order' => $order,
             'logs' => $this->logs($order),

@@ -76,6 +76,7 @@ class RoomTypeReport
             'rooms' => count($rooms),
             'open' => 0,
             'reserve' => 0,
+            'tourists' => 0,
             'guests' => 0,
         ];
 
@@ -105,6 +106,7 @@ class RoomTypeReport
 
                 if($package) {
                     $result->packages[$room->getId()] = $package;
+                    $result->total['tourists'] += count($package->getTourists());
                     $result->total['guests'] += $package->getAdults() + $package->getChildren();
 
                     if($roomStatus == Package::ROOM_STATUS_OPEN) {

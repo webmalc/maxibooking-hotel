@@ -281,14 +281,11 @@ var docReadyForms = function () {
             });
     }());
 
-    //payer select2
-    (function () {
-        var findGuest = $('.findGuest');
-        if (findGuest.length !== 1) {
-            return;
+    $.fn.mbhGuestSelectPlugin = function() {
+        if(this.is('input')) {
+            select2Text(this);
         }
-
-        select2Text(findGuest).select2({
+        this.select2({
             minimumInputLength: 3,
             allowClear: true,
             placeholder: 'Выберите гостя',
@@ -306,7 +303,10 @@ var docReadyForms = function () {
             },
             dropdownCssClass: "bigdrop"
         });
-    }());
+    }
+
+    //payer select2
+    $('.findGuest').mbhGuestSelectPlugin();
 
     //remember inputs
     (function () {
@@ -416,7 +416,7 @@ var select2TemplateResult = {
         }
     };
 
-    function tagsSelectWidget($wrapper, options) {
+    function TagsSelectWidget($wrapper, options) {
         var that = this,
             $select = $wrapper.find('select'),
             $list = $wrapper.find('.list'),
@@ -509,7 +509,7 @@ var select2TemplateResult = {
                 event.preventDefault();
             });
 
-            $list.on('click', '.btn', function () {
+            $list.on('click.tagsSelectWidget', '.btn', function () {
                 $list.find('[data-toggle=tooltip]').tooltip('hide');
                 $(this).remove();
                 that.help.update();
@@ -535,11 +535,14 @@ var select2TemplateResult = {
                     $wrapper.prepend('<div class="list"></div>');
                 } else if ($this.hasClass(mainClass)) {
                     $wrapper = $this;
+                    if ($wrapper.data('tagsSelectWidget')) {
+                        return; //plugin is already init for this element
+                    }
                 } else {
                     throw new Error();
                 }
 
-                var widget = new tagsSelectWidget($wrapper, options);
+                var widget = new TagsSelectWidget($wrapper, options);
                 widget.init();
                 $wrapper.data('tagsSelectWidget', widget);
             });

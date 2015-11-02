@@ -327,7 +327,10 @@ class PackageRepository extends DocumentRepository
                 if(obj.totalOverwrite) {
                     prev.total += obj.totalOverwrite;
                 } else {
-                    prev.total += obj.price;
+                    var price = parseFloat(obj.price, 10);
+                    if (price) {
+                        prev.total += price;
+                    }
 
                     if (obj.servicesPrice) {
                         prev.total += obj.servicesPrice

@@ -1,3 +1,4 @@
+services: 'услуга|услуги|услуг'
 nights: "ночь|ночи|ночей"
 
 twig.extension.jan: 'янв'
@@ -119,17 +120,15 @@ mailer.base.rate.good: Хорошо
 mailer.base.rate.perfect: Отлично
 
 debt: Долг
+partially_paid: Частично
 paid: Оплачено
+no_paid: Не оплачено
 overpaid: Переплачено
 
 confirmed: 'подтвержден'
 not.confirmed: 'не подтвержден'
 no: 'нет'
 dash: '-'
-
-service: 'услуга'
-services1: 'услуги'
-services2: 'услуг'
 
 not.stopped: 'не заехали'
 stopped: 'заехали'

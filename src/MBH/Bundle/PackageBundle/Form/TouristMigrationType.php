@@ -26,11 +26,6 @@ class TouristMigrationType extends AbstractType
                 'group' => 'migration.card',
                 'required' => false,
             ])
-            ->add('profession', 'text', [
-                'label' => 'tourist.migration.type_profession',
-                'group' => 'migration.card',
-                'required' => false,
-            ])
             ->add('representative', 'textarea', [
                 'label' => 'tourist.migration.type_representative',
                 'group' => 'migration.card',

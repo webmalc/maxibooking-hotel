@@ -50,6 +50,7 @@
                             <td>
                                 <a target="_blank" href="{{ path('tourist_edit', { 'id': tourist.id }) }}" rel="main"
                                    title=" {{ 'package.guest.edit_record'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">{{ tourist.fullName }}</a>
+                                &nbsp;
                                 {% if tourist.isUnwelcome %}
                                     <a href='{{ path('tourist_edit_unwelcome', {id: tourist.id}) }}'>
                                         <i data-toggle='tooltip' data-original-title='Клиент в черном списке' class='fa fa-user-secret unwelcome-icon'></i>
@@ -100,15 +101,24 @@
                 </table>
             {% endif %}
 
+            {% if not package.tourists|length < totalGuests %}
+                <div class="bg-gray color-palette alert" id="guest-overflow-alert">
+                    <i class="fa fa-info-circle"></i> Добавлено максимальное количество гостей.
+                    &nbsp;
+                    <div class="btn btn-default btn-xs">
+                        <i class="fa fa-plus"></i> Добавить ещё
+                    </div>
+                </div>
+            {% endif %}
 
-                {% if is_granted('ROLE_PACKAGE_GUESTS') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
-                    {{ form_start(form, {'action': path('package_guest', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' }}) }}
-                    {{ form_widget(form) }}
-                {% endif %}
-                    {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_GUESTS'} %}
-                {% if is_granted('ROLE_PACKAGE_GUESTS') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
-                    {{ form_end(form) }}
-                {% endif %}
+            {% if is_granted('ROLE_PACKAGE_GUESTS') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                {{ form_start(form, {'action': path('package_guest', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal' ~ (not package.tourists|length < totalGuests ? ' hide': '') }}) }}
+                {{ form_widget(form) }}
+            {% endif %}
+                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_GUESTS'} %}
+            {% if is_granted('ROLE_PACKAGE_GUESTS') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+                {{ form_end(form) }}
+            {% endif %}
 
             {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': package, 'logs': logs, 'delete_route': 'package_delete' } %}
 

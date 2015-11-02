@@ -28,11 +28,13 @@ class Package extends Base implements JsonSerializable
     use BlameableDocument;
 
     const ROOM_STATUS_OPEN = 'open';
-    const ROOM_STATUS_DEPT = 'dept';
-    const ROOM_STATUS_PAID = 'paid';
-    const ROOM_STATUS_NOT_OUT = 'not_out';
-    const ROOM_STATUS_OUT_NOW = 'out_now';
-    const ROOM_STATUS_WAIT = 'wait';
+    const ROOM_STATUS_WAIT = 'wait'; //Не заехал
+    const ROOM_STATUS_WAIT_TODAY = 'wait_today'; // Заезжет сегодня
+    const ROOM_STATUS_IN_TODAY = 'in_today'; // Заехал сегодня
+    const ROOM_STATUS_WILL_OUT = 'will_out'; // Выезд
+    const ROOM_STATUS_OUT_TODAY = 'out_today'; // Выезд сегодня
+    const ROOM_STATUS_OUT_TOMORROW = 'out_tomorrow'; // Выезд завтра
+    const ROOM_STATUS_NOT_OUT = 'not_out'; // Не выехал
 
     /**
      * @var Order
@@ -186,7 +188,7 @@ class Package extends Base implements JsonSerializable
      * @ODM\Hash()
      * @Assert\Type(type="array")
      */
-    protected $pricesByDate;
+    protected $pricesByDate = [];
 
     /**
      * @var int
@@ -1336,22 +1338,29 @@ class Package extends Base implements JsonSerializable
         if (!$this->getOrder()) {
             return self::ROOM_STATUS_OPEN;
         }
+        $today = new \DateTime('midnight');
+        $tomorrow = new \DateTime('tomorrow');
 
-        if(!$this->getIsCheckIn()) {
-            return self::ROOM_STATUS_WAIT;
-        }
-
-        $now = new \DateTime('midnight');
-        if (!$this->getIsCheckOut() && $now->format('Ymd') > $this->getEnd()->format('Ymd')) {
-            return self::ROOM_STATUS_NOT_OUT;
-        }
-
-        if ($this->getIsPaid()) {
-            return $now->format('d.m.Y') == $this->getEnd()->format('d.m.Y') ?
-                self::ROOM_STATUS_OUT_NOW :
-                self::ROOM_STATUS_PAID;
+        if ($this->getIsCheckIn()) {
+            if ($this->getIsCheckOut()) {
+                return self::ROOM_STATUS_OPEN;
+            } else {
+                if ($this->getBegin() == $today) {
+                    return self::ROOM_STATUS_IN_TODAY;
+                } elseif ($this->getEnd() == $today) {
+                    return self::ROOM_STATUS_OUT_TODAY;
+                } elseif($this->getEnd() == $tomorrow) {
+                    return self::ROOM_STATUS_OUT_TOMORROW;
+                } elseif($this->getEnd() <= new \DateTime('midnight +1 day')) {
+                    return self::ROOM_STATUS_NOT_OUT;
+                } else {
+                    return self::ROOM_STATUS_WILL_OUT;
+                }
+            }
         } else {
-            return self::ROOM_STATUS_DEPT;
+            return $this->getBegin() == $today ?
+                self::ROOM_STATUS_WAIT_TODAY :
+                self::ROOM_STATUS_WAIT;
         }
     }
 
@@ -1362,11 +1371,12 @@ class Package extends Base implements JsonSerializable
     {
         return [
             self::ROOM_STATUS_OPEN,
-            self::ROOM_STATUS_DEPT,
-            self::ROOM_STATUS_PAID,
-            self::ROOM_STATUS_NOT_OUT,
-            self::ROOM_STATUS_OUT_NOW,
             self::ROOM_STATUS_WAIT,
+            self::ROOM_STATUS_WAIT_TODAY,
+            self::ROOM_STATUS_WILL_OUT,
+            self::ROOM_STATUS_OUT_TODAY,
+            self::ROOM_STATUS_OUT_TOMORROW,
+            self::ROOM_STATUS_NOT_OUT,
         ];
     }
 

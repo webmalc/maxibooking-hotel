@@ -182,7 +182,7 @@
                             {% endif %}
                         </td>
                         <td align="center">{{ data.nights }}</td>
-                        <td align="center">{{ "package.pdf.noch"|trans({}, "MBHPackageBundle") }}</td>
+                        <td align="center">{{ "package.pdf.night"|trans({}, "MBHPackageBundle") }}</td>
                         <td align="right">{{ data.price|number_format(2) }}</td>
                         <td align="right">{{ (data.nights * data.price)|number_format(2) }}</td>
                     </tr>

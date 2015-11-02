@@ -751,6 +751,9 @@ class Organization implements PayerInterface, RecipientInterface
     public function prePersist()
     {
         $this->fillLocationByCity();
+        if(!$this->getShortName()) {
+            $this->setShortName($this->getName());
+        }
     }
 
     /**
@@ -759,6 +762,9 @@ class Organization implements PayerInterface, RecipientInterface
     public function preUpdate()
     {
         $this->fillLocationByCity();
+        if(!$this->getShortName()) {
+            $this->setShortName($this->getName());
+        }
     }
 
     private function fillLocationByCity()

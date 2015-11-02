@@ -35,12 +35,6 @@ services:
         tags:
             - { name: twig.extension }
 
-    mbh.twig.plural_extension:
-        class: MBH\Bundle\BaseBundle\Twig\PluralExtension
-        arguments: [@service_container]
-        tags:
-            - { name: twig.extension }
-
     mbh.twig.extension:
         class: MBH\Bundle\BaseBundle\Twig\Extension
         arguments: [@service_container]
