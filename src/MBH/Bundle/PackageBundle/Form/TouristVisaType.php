@@ -16,11 +16,6 @@ class TouristVisaType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('profession', 'text', [
-                'label' => 'tourist.migration.type_profession',
-                'group' => 'visa',
-                'required' => false,
-            ])
             ->add('type', 'choice', [
                 'label' => 'tourist.visa.type_type',
                 'group' => 'visa',
@@ -57,12 +52,34 @@ class TouristVisaType extends AbstractType
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'),
-            ]);
+            ])
+            ->add('profession', 'text', [
+                'label' => 'tourist.visa.type_profession',
+                'group' => 'visa',
+                'required' => false,
+            ])
+            ->add('arrivalTime', 'date', [
+                'group' => 'visa',
+                'label' => 'tourist.visa.arrival_time',
+                'required' => false,
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'),
+            ])
+            ->add('departureTime', 'date', [
+                'group' => 'visa',
+                'label' => 'tourist.visa.departure_time',
+                'required' => false,
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker'),
+            ])
+        ;
     }
 
     public function getName()
     {
-        return 'visa';
+        return 'mbh_package_tourist_visa';
     }
 
     public function configureOptions(OptionsResolver $resolver)

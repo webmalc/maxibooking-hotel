@@ -53,6 +53,6 @@ class TouristMigrationType extends AbstractType
 
     public function getName()
     {
-        return 'migration';
+        return 'mbh_package_tourist_migration';
     }
 }

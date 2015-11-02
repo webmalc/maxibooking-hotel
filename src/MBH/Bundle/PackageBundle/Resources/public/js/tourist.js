@@ -19,7 +19,7 @@ var docReadyTourists = function () {
         startView: 2
     });
 
-    var $guestForm = $('form[name=mbh_bundle_packagebundle_package_order_tourist_type');
+    var $guestForm = $('form[name=mbh_bundle_packagebundle_package_order_tourist_type]');
     var fillGuestForm = function (data) {
         $guestForm.find('.guestLastName').val(data.lastName);
         $guestForm.find('.guestFirstName').val(data.firstName);
@@ -108,8 +108,8 @@ var docReadyTourists = function () {
         });
     }());
 
-
-
+    var $authorityOrganTextInput = $('#mbh_document_relation_authorityOrganText');
+    var $authorityOrganCodeInput = $('#mbh_document_relation_authorityOrganCode');
     select2Text($('#mbh_document_relation_authorityOrgan')).select2({
         minimumInputLength: 3,
         placeholder: "Сделайте выбор",
@@ -122,26 +122,58 @@ var docReadyTourists = function () {
                     query: term // search term
                 };
             },
-            results: function (data) {
-                var results = [];
-                $.each(data, function (k, v) {
-                    results.push({id: k, text: v});
-                });
-                return {results: results};
+            processResults: function (data, request) {
+                if(data.results.length == 0) {
+                    data.results.push({
+                        id: request.term,
+                        text: request.term
+                    });
+                }
+                //console.log(data.results);
+                return data;
             }
         },
         initSelection: function (element, callback) {
             var id = $(element).val();
-            if (id !== "") {
+            if (id.length == 24) { //mongoID
                 $.ajax(Routing.generate('ajax_authority_organ', {id: id}), {
                     dataType: "json"
                 }).done(function (data) {
                     callback(data);
+                    $authorityOrganTextInput.val('');
+
+                    $authorityOrganCodeInput.val(data.code);
+                    $authorityOrganCodeInput.attr('disabled', true);
                 });
+            } else if($authorityOrganTextInput.val()) {
+                callback({
+                    id: $authorityOrganTextInput.val(),
+                    text: $authorityOrganTextInput.val()
+                });
+                $authorityOrganCodeInput.attr('disabled', false);
+            } else {
+                $authorityOrganCodeInput.attr('disabled', false);
             }
+
         },
         dropdownCssClass: "bigdrop"
+    }).on('change', function(name, evt) {
+        var $this = $(this);
+        var value = $this.select2('val');
+        if (value && value.length == 24) { //mongoID
+            $authorityOrganCodeInput.attr('disabled', true);
+            $.ajax(Routing.generate('ajax_authority_organ', {id: value}), {
+                dataType: "json"
+            }).done(function(data){
+                $authorityOrganCodeInput.val(data.code);
+            });
+        } else {
+            $authorityOrganCodeInput.attr('disabled', false);
+        }
     })
+
+    new RangeInputs($('#form_visa_issued'), $('#form_visa_expiry'));
+    new RangeInputs($('#form_visa_arrivalTime'), $('#form_visa_departureTime'));
 }
 
 /*global document, window, Routing, $ */

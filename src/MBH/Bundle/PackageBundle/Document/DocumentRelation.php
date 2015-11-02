@@ -10,6 +10,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Class DocumentRelation
  * @ODM\EmbeddedDocument
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ *
+ * @ODM\HasLifecycleCallbacks()
  */
 class DocumentRelation implements \JsonSerializable
 {
@@ -23,6 +25,16 @@ class DocumentRelation implements \JsonSerializable
      * @ODM\ReferenceOne(name="authority_organ", targetDocument="MBH\Bundle\VegaBundle\Document\VegaFMS")
      */
     protected $authorityOrgan;
+    /**
+     * @var String
+     * @ODM\String
+     */
+    protected $authorityOrganText;
+    /**
+     * @var String
+     * @ODM\String
+     */
+    protected $authorityOrganCode;
     /**
      * @var String
      * @ODM\String
@@ -97,6 +109,41 @@ class DocumentRelation implements \JsonSerializable
     public function getAuthority()
     {
         return $this->authority;
+    }
+
+    /**
+     * @return String
+     */
+    public function getAuthorityOrganText()
+    {
+        return $this->authorityOrganText;
+    }
+
+    /**
+     * @param String $authorityOrganText
+     * @return DocumentRelation
+     */
+    public function setAuthorityOrganText($authorityOrganText)
+    {
+        $this->authorityOrganText = $authorityOrganText;
+
+        return $this;
+    }
+
+    /**
+     * @return String
+     */
+    public function getAuthorityOrganCode()
+    {
+        return $this->authorityOrganCode;
+    }
+
+    /**
+     * @param String $authorityOrganCode
+     */
+    public function setAuthorityOrganCode($authorityOrganCode)
+    {
+        $this->authorityOrganCode = $authorityOrganCode;
     }
 
     /**
@@ -202,6 +249,16 @@ class DocumentRelation implements \JsonSerializable
     public function __toString()
     {
         return $this->getAuthority() . ' ' . ($this->getIssued() ? $this->getIssued()->format('d.m.Y') : '');
+    }
+
+    /**
+     * @ODM\PrePersist()
+     */
+    public function prePersist()
+    {
+        if($this->getAuthorityOrgan()) {
+            $this->setAuthorityOrganCode($this->getAuthorityOrgan()->getCode());
+        }
     }
 
     /**

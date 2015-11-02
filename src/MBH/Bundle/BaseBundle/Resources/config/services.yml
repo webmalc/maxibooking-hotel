@@ -148,6 +148,11 @@ services:
         tags:
             - { name: serializer.normalizer }
 
+    mbh.validator.range:
+        class: MBH\Bundle\BaseBundle\Validator\Constraints\RangeValidator
+        tags:
+            - { name: validator.constraint_validator, alias: mbh_range }
+
     #mbh.menu.voter.request:
     #    class: MBH\Bundle\BaseBundle\Menu\RequestContentIdentityVoter
     #    arguments:

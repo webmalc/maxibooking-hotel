@@ -476,13 +476,14 @@ class TouristController extends Controller
      * @Route("/authority_organ/{id}", name="ajax_authority_organ", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_TOURIST_EDIT')")
-     * @ParamConverter("entity", class="MBHVegaBundle:VegaFMS")
+     * @ParamConverter("vegaFMS", class="MBHVegaBundle:VegaFMS")
      */
-    public function authorityOrganAction(VegaFMS $entity)
+    public function authorityOrganAction(VegaFMS $vegaFMS)
     {
         return new JsonResponse([
-            'id' => $entity->getId(),
-            'text' => $entity->getName()
+            'id' => $vegaFMS->getId(),
+            'text' => $vegaFMS->getName(),
+            'code' => $vegaFMS->getCode()
         ]);
     }
 

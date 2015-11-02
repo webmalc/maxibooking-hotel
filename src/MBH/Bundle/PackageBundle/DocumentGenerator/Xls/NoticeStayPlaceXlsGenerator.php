@@ -156,6 +156,18 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
                 $this->write($expiry->format('m'), 'DC40');
                 $this->write($expiry->format('Y'), 'DO40');
             }
+
+            if ($visa->getArrivalTime()) {
+                $this->write($visa->getArrivalTime()->format('d'), 'AI47');
+                $this->write($visa->getArrivalTime()->format('m'), 'AY47');
+                $this->write($visa->getArrivalTime()->format('Y'), 'BK47');
+            }
+
+            if ($visa->getDepartureTime()) {
+                $this->write($visa->getDepartureTime()->format('d'), 'DO47');
+                $this->write($visa->getDepartureTime()->format('m'), 'EE47');
+                $this->write($visa->getDepartureTime()->format('Y'), 'EQ47');
+            }
         }
 
         if($migration = $tourist->getMigration()) {
@@ -165,14 +177,6 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
             $this->write($migration->getRepresentative(), 'AA51', 19);
             $this->write($migration->getAddress(), 'AA57', 19);
         }
-
-        $this->write($package->getBegin()->format('d'), 'AI47');
-        $this->write($package->getBegin()->format('m'), 'AY47');
-        $this->write($package->getBegin()->format('Y'), 'BK47');
-
-        $this->write($package->getEnd()->format('d'), 'DO47');
-        $this->write($package->getEnd()->format('m'), 'EE47');
-        $this->write($package->getEnd()->format('Y'), 'EQ47');
 
         $this->write($tourist->getLastName(), 'W69');
         $this->write(mb_substr($tourist->getFirstName() . ' ' . $tourist->getPatronymic(), 0, 65), 'W71');

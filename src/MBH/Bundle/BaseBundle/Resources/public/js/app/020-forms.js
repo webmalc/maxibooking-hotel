@@ -10,6 +10,45 @@ var select2Text = function (el) {
     return $('#' + el.prop('id'));
 };
 
+/**
+ * @author Arofikin Aleksandr
+ * @param $begin
+ * @param $end
+ */
+var RangeInputs = function($begin, $end) {
+    this.$begin = $begin;
+    this.$end = $end;
+
+    this.updateValue();
+    this.bindEventListeners();
+}
+
+RangeInputs.prototype.updateValue = function()
+{
+    if (!this.$begin.hasClass('not-set-date')) {
+        this.$begin.datepicker('setEndDate', this.$end.datepicker('getDate'));
+    }
+    if (!this.$end.hasClass('not-set-date')) {
+        this.$end.datepicker('setStartDate', this.$begin.datepicker('getDate'));
+    }
+}
+RangeInputs.prototype.bindEventListeners = function()
+{
+    var that = this;
+    this.$begin.change(function () {
+        that.updateValue();
+        if (!that.$end.val()) {
+            that.$end.focus();
+        }
+    });
+    this.$end.change(function () {
+        that.updateValue();
+        if (!that.$begin.val()) {
+            that.$begin.focus();
+        }
+    });
+}
+
 $.fn.serializeObject = function () {
     'use strict';
     var o = {},
@@ -93,7 +132,7 @@ var docReadyForms = function () {
     $('.checkbox-mini').bootstrapSwitch(bootstrapSwitchConfig);
 
     //Select2 configuration
-    $('select').not('.plain-html').addClass('select2').select2({
+    $('select:not(.plain-html)').addClass('select2').select2({
         placeholder: "Сделайте выбор",
         allowClear: true,
         width: 'resolve',
@@ -168,31 +207,7 @@ var docReadyForms = function () {
         setDates();
     }());
 
-    (function () {
-        var begin = $('.begin-datepiker'),
-            end = $('.end-datepiker'),
-            set = function () {
-                if (!begin.hasClass('not-set-date')) {
-                    begin.datepicker('setEndDate', end.datepicker('getDate'));
-                }
-                if (!end.hasClass('not-set-date')) {
-                    end.datepicker('setStartDate', begin.datepicker('getDate'));
-                }
-            };
-        set();
-        begin.change(function () {
-            set();
-            if (!end.val()) {
-                end.focus();
-            }
-        });
-        end.change(function () {
-            set();
-            if (!begin.val()) {
-                begin.focus();
-            }
-        });
-    }());
+    new RangeInputs($('.begin-datepiker'), $('.end-datepiker'));
 
     //form group collapse
     (function () {
