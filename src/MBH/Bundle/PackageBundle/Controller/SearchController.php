@@ -123,24 +123,8 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                     }
                 }
 
-                $results = $groupedResult = [];
-                $tariffs = $this->get('mbh.package.search')->searchTariffs($query);
-                foreach ($tariffs as $tariff) {
-                    $query->tariff = $tariff;
-                    $results = array_merge($results, $this->get('mbh.package.search')->search($query));
-                }
-
-                // Group results by roomTypes
-                foreach($results as $row) {
-                    if (!isset($groupedResult[$row->getRoomType()->getId()])) {
-                        $groupedResult[$row->getRoomType()->getId()] = [
-                            'roomType' => $row->getRoomType(),
-                            'results' => []
-                        ];
-                    }
-                    $groupedResult[$row->getRoomType()->getId()]['results'][] = $row;
-                }
-            }
+                $groupedResult = $this->get('mbh.package.search')->setWithTariffs()->search($query);
+            };
         }
 
         return [

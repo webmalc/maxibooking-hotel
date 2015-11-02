@@ -25,6 +25,11 @@ class ClientConfigType extends AbstractType
                 //'value' => false,
                 'required' => false,
             ])
+            ->add('searchDates', 'text', [
+                'label' => 'form.clientConfigType.search_dates',
+                'help' => 'form.clientConfigType.search_dates_desc',
+                'required' => false,
+            ])
         ;
     }
 

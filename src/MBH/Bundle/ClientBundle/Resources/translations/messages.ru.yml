@@ -1,4 +1,6 @@
 form.clientConfigType.sms_notification: Смс оповещение?
+form.clientConfigType.search_dates: Дополнительные даты поиска
+form.clientConfigType.search_dates_desc: Количество дополнительных дат для подбора броней. Используются при отсутствии результатов поиска на конкретные даты.
 form.clientConfigType.is_disabled_room_type_category: Группы для типов номеров
 form.clientConfigType.is_enabled_work_shift: Рабочие смены
 form.clientConfigType.default_notice_doc: Принимающая сторона
