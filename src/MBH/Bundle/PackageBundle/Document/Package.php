@@ -188,7 +188,7 @@ class Package extends Base implements JsonSerializable
      * @ODM\Hash()
      * @Assert\Type(type="array")
      */
-    protected $pricesByDate;
+    protected $pricesByDate = [];
 
     /**
      * @var int

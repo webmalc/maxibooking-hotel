@@ -42,6 +42,11 @@ class Visa extends Base
      * @ODM\Date()
      */
     protected $expiry;
+    /**
+     * @var string
+     * @ODM\String
+     */
+    protected $profession;
 
     /**
      * @return string
@@ -130,6 +135,24 @@ class Visa extends Base
     public function setExpiry($expiry)
     {
         $this->expiry = $expiry;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProfession()
+    {
+        return $this->profession;
+    }
+
+    /**
+     * @param $profession
+     * @return $this
+     */
+    public function setProfession($profession)
+    {
+        $this->profession = $profession;
         return $this;
     }
 }

@@ -16,6 +16,11 @@ class TouristVisaType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('profession', 'text', [
+                'label' => 'tourist.migration.type_profession',
+                'group' => 'visa',
+                'required' => false,
+            ])
             ->add('type', 'choice', [
                 'label' => 'tourist.visa.type_type',
                 'group' => 'visa',

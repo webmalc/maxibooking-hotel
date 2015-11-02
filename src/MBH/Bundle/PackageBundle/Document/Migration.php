@@ -25,11 +25,7 @@ class Migration extends Base
      * @ODM\Int()
      */
     protected $number;
-    /**
-     * @var string
-     * @ODM\String
-     */
-    protected $profession;
+
     /**
      * @var string
      * @ODM\String
@@ -75,22 +71,6 @@ class Migration extends Base
     {
         $this->number = $number;
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getProfession()
-    {
-        return $this->profession;
-    }
-
-    /**
-     * @param string $profession
-     */
-    public function setProfession($profession)
-    {
-        $this->profession = $profession;
     }
 
     /**

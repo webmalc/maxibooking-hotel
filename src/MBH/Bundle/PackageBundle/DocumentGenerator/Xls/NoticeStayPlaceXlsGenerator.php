@@ -140,6 +140,8 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
             if(array_key_exists($visa->getType(), $types)) {
                 $this->write('X', $types[$visa->getType()]);
             }
+
+            $this->write($visa->getProfession(), 'W45');
             $this->write($visa->getSeries(), 'DC37');
             $this->write($visa->getNumber(), 'DW37');
 
@@ -157,8 +159,6 @@ class NoticeStayPlaceXlsGenerator implements ContainerAwareInterface, DocumentRe
         }
 
         if($migration = $tourist->getMigration()) {
-            $this->write($migration->getProfession(), 'W45');
-
             $this->write($migration->getSeries(), 'AQ49');
             $this->write($migration->getNumber(), 'BK49');
 
