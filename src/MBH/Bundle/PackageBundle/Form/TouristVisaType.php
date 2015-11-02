@@ -7,6 +7,10 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class TouristVisaType
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
 class TouristVisaType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -15,11 +19,13 @@ class TouristVisaType extends AbstractType
             ->add('type', 'choice', [
                 'label' => 'tourist.visa.type_type',
                 'group' => 'visa',
+                'empty_value' => '',
                 'choices' => [
                     'visa' => 'Виза',
                     'residence' => 'Вид на жительство',
                     'temporary_residence_permit' => 'Разрешение на временное проживание'
-                ]
+                ],
+                'required' => false,
             ])
             ->add('series', 'text', [
                 'group' => 'visa',

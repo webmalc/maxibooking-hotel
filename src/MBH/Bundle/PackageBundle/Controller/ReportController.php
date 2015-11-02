@@ -540,6 +540,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'result' => $result,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'statuses' => Package::getRoomStatuses(),
+            'roomStatuses' => $this->dm->getRepository('MBHHotelBundle:RoomStatus')->findAll(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
         ];
     }
@@ -568,7 +569,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         return [
             'result' => $result,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
-            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
+            'roomStatuses' => $this->dm->getRepository('MBHHotelBundle:RoomStatus')->findAll(),
+            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons')
         ];
     }
 

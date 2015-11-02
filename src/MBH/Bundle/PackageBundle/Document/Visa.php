@@ -22,13 +22,14 @@ class Visa extends Base
      */
     protected $type;
     /**
-     * @var int
-     * @ODM\Int()
+     * @var string
+     * @ODM\String()
      */
     protected $series;
     /**
-     * @var int
-     * @ODM\Int()
+     * @var string
+     * @ODM\String()
+     * @Assert\Type(type="numeric")
      */
     protected $number;
     /**
@@ -61,7 +62,7 @@ class Visa extends Base
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getSeries()
     {
@@ -69,7 +70,7 @@ class Visa extends Base
     }
 
     /**
-     * @param int $series
+     * @param string $series
      * @return self
      */
     public function setSeries($series)
@@ -79,7 +80,7 @@ class Visa extends Base
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getNumber()
     {
@@ -87,7 +88,7 @@ class Visa extends Base
     }
 
     /**
-     * @param int $number
+     * @param string $number
      * @return self
      */
     public function setNumber($number)
