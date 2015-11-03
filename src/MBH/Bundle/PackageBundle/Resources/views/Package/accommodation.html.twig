@@ -43,4 +43,27 @@
         </div>
     </div>
 
+    <script>
+        packageBeginTime = new Date({{ package.begin.timestamp }} * 1000);
+        packageEndTime = new Date({{ package.end.timestamp }} * 1000);
+    </script>
+    <div class="modal fade" id="late-early-check" data-arrival-hours="{{ arrivalTime }}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Добавить новую услугу?</h4>
+                </div>
+                <div class="modal-body">
+                    <p></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban"></i> Отмена</button>
+                    <button type="button" id="late-early-check-no" class="btn btn-default">Нет</button>
+                    <button type="button" id="late-early-check-yes" class="btn btn-primary">Да</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
 {% endblock %}

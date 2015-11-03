@@ -701,17 +701,24 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'debt' => $package->getPaidStatus() != 'success' && !$package->getIsCheckOut()
         ]);
 
-        if ($request->getMethod() == 'PUT' &&
-            !$package->getIsLocked() &&
-            $this->container->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_ACCOMMODATION') && (
-                $this->container->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_EDIT_ALL') ||
-                $this->container->get('security.authorization_checker')->isGranted('EDIT', $package)
+        $authorizationChecker = $this->container->get('security.authorization_checker');
+        if ($request->getMethod() == 'PUT' && !$package->getIsLocked() && $authorizationChecker->isGranted('ROLE_PACKAGE_ACCOMMODATION') && (
+                $authorizationChecker->isGranted('ROLE_PACKAGE_EDIT_ALL') ||
+                $authorizationChecker->isGranted('EDIT', $package)
             )
         ) {
             $form->submit($request);
 
             if ($form->isValid()) {
                 $this->dm->persist($package);
+
+                if($form->get('earlyCheckIn')->getData()) {
+                    //..todo
+                }
+                if($form->get('lateCheckOut')->getData()) {
+                    //..todo
+                }
+
                 $this->dm->flush();
 
                 $request->getSession()->getFlashBag()->set('success',
@@ -721,8 +728,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             }
         }
 
+        $arrivalTime = $this->getParameter('mbh_package_arrival_time');
+
         return [
             'package' => $package,
+            'arrivalTime' => $arrivalTime,
             'form' => $form->createView(),
             'logs' => $this->logs($package)
         ];
