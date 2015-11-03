@@ -410,7 +410,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     ->set('danger', 'Создано ' . $createdPackageCount . ' из ' . count($packages) . ' броней');
                 $order = $e->order;
             } else {
-                throw $e->getPrevious();
+                throw $e;
             }
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
@@ -712,11 +712,30 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             if ($form->isValid()) {
                 $this->dm->persist($package);
 
-                if($form->get('earlyCheckIn')->getData()) {
-                    //..todo
+                $serviceRepository = $this->dm->getRepository('MBHPriceBundle:Service');
+                if($amount = $form->get('earlyCheckInAmount')->getData()) {
+                    $earlyCheckInService = $serviceRepository->findOneBy(['code' => 'Early check-in']);
+                    if ($earlyCheckInService) {
+                        $packageService = new PackageService();
+                        $packageService->setService($earlyCheckInService);
+                        $packageService->setPrice(reset($package->getPricesByDate()));
+                        $packageService->setAmount($amount);
+                        $package->addService($packageService);
+                        $packageService->setPackage($package);
+                        $this->dm->persist($packageService);
+                    }
                 }
-                if($form->get('lateCheckOut')->getData()) {
-                    //..todo
+                if($amount = $form->get('lateCheckOutAmount')->getData()) {
+                    $lateCheckOutService = $serviceRepository->findOneBy(['code' => 'Late check-out']);
+                    if ($lateCheckOutService) {
+                        $packageService = new PackageService();
+                        $packageService->setService($lateCheckOutService);
+                        $packageService->setPrice(end($package->getPricesByDate()));
+                        $packageService->setAmount($amount);
+                        $package->addService($packageService);
+                        $packageService->setPackage($package);
+                        $this->dm->persist($packageService);
+                    }
                 }
 
                 $this->dm->flush();

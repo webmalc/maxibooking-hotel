@@ -100,11 +100,11 @@ class PackageAccommodationType extends AbstractType
             ));
 
         $builder
-            ->add('earlyCheckIn', 'hidden', [
+            ->add('earlyCheckInAmount', 'hidden', [
                 'required' => false,
                 'mapped' => false,
             ])
-            ->add('lateCheckOut', 'hidden', [
+            ->add('lateCheckOutAmount', 'hidden', [
                 'required' => false,
                 'mapped' => false,
             ])
