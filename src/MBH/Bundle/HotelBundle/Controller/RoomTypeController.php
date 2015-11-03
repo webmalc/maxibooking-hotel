@@ -60,7 +60,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $entity = new RoomType();
         $entity->setIsHostel($this->hotel->getIsHostel());
         $form = $this->createForm(new RoomTypeType(), $entity, [
-            'facilities' => $this->getParameter('mbh.hotel')['facilities']
+            'facilities' => $this->getParameter('mbh.hotel')['facilities'],
+            'useRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getUseRoomTypeCategory()
         ]);
 
         return array(
@@ -86,11 +87,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         if ($form->isValid()) {
             $this->dm->persist($entity);
             $this->dm->flush();
-
-
-//            $entity->uploadImage($form['imageFile']->getData());
-//            $dm->persist($entity);
-//            $dm->flush();
 
             $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
 

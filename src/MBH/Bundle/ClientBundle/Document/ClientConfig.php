@@ -66,6 +66,15 @@ class ClientConfig extends Base
     protected $searchDates = 0;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $searchWindows = false;
+
+    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
@@ -298,6 +307,22 @@ class ClientConfig extends Base
     {
         $this->searchDates = $searchDates;
         return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSearchWindows()
+    {
+        return $this->searchWindows;
+    }
+
+    /**
+     * @param boolean $searchWindows
+     */
+    public function setSearchWindows($searchWindows)
+    {
+        $this->searchWindows = $searchWindows;
     }
 
 
