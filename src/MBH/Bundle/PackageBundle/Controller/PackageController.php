@@ -410,7 +410,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     ->set('danger', 'Создано ' . $createdPackageCount . ' из ' . count($packages) . ' броней');
                 $order = $e->order;
             } else {
-                throw $e->getPrevious();
+                throw $e;
             }
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {

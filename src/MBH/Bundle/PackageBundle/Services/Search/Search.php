@@ -73,7 +73,7 @@ class Search implements SearchInterface
             foreach( $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
                 $query->roomTypes = array_merge($helper->toIds($hotel->getRoomTypes()), $query->roomTypes);
             }
-        } elseif ($this->manager->useCategories) {
+        } elseif ($this->manager->useCategories && !$query->forceRoomTypes) {
             $roomTypes = [];
             foreach ($query->roomTypes as $catId) {
                 $cat = $this->dm->getRepository('MBHHotelBundle:RoomTypeCategory')->find($catId);

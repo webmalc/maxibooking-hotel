@@ -54,6 +54,11 @@ class SearchQuery
     public $roomTypes = [];
 
     /**
+     * @var boolean
+     */
+    public $forceRoomTypes = false;
+
+    /**
      * ExcludeRoomTypes ids
      *
      * @var []
