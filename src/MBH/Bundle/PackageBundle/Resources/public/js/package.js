@@ -5,26 +5,27 @@ var initAccommodationTab = function() {
     var userConfirmation = false;
     var lateEarlyDateChecker = new LateEarlyDateChecker(
         function(){
-            this.$modal.modal('hide');
-            earlyCheckInAmountInput.val('');
+            $earlyCheckInAmountInput.val('');
             $lateCheckOutAmountInput.val('');
+            console.log(this.formData);
             if(this.status == LateEarlyDateChecker.STATUS_ARRIVAL) {
-                earlyCheckInAmountInput.val(1);
+                $earlyCheckInAmountInput.val(this.formData.amount);
             } else if(this.status == LateEarlyDateChecker.STATUS_DEPARTURE) {
-                $lateCheckOutAmountInput.val(1);
+                $lateCheckOutAmountInput.val(this.formData.amount);
             } else if(this.status == LateEarlyDateChecker.STATUS_BOTH) {
-                earlyCheckInAmountInput.val(1);
-                $lateCheckOutAmountInput.val(1);
+                $earlyCheckInAmountInput.val(this.formData.amount);
+                $lateCheckOutAmountInput.val(this.formData.amount);
             }
             userConfirmation = true;
-            $form.trigger('submit');
+            //$form.trigger('submit');
+            $('button[type=submit][name=save]').trigger('click');
         },
         function(){
-            this.$modal.modal('hide');
-            earlyCheckInAmountInput.val('');
+            $earlyCheckInAmountInput.val('');
             $lateCheckOutAmountInput.val('');
             userConfirmation = true;
-            $form.trigger('submit');
+            //$form.trigger('submit');
+            $('button[type=submit][name=save]').trigger('click');
         }
     );
 
@@ -34,7 +35,7 @@ var initAccommodationTab = function() {
         $departureDate = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_date'),
         $arrival = $('#mbh_bundle_packagebundle_package_accommodation_type_arrivalTime_time'),
         $departure = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_time'),
-        earlyCheckInAmountInput = $('#mbh_bundle_packagebundle_package_accommodation_type_earlyCheckInAmount'),
+        $earlyCheckInAmountInput = $('#mbh_bundle_packagebundle_package_accommodation_type_earlyCheckInAmount'),
         $lateCheckOutAmountInput = $('#mbh_bundle_packagebundle_package_accommodation_type_lateCheckOutAmount'),
         datepickerOptions = {
             language: "ru",
@@ -87,30 +88,29 @@ var initAccommodationTab = function() {
 
         var arrivalDate = $arrivalDate.val();
         var arrivalTime = $arrival.val();
-        var arrivalDate = new Date(arrivalDate.replace(pattern,'$3-$2-$1') + 'T' + arrivalTime);
+        var arrivalDate = new Date(arrivalDate.replace(pattern,'$3-$2-$1') + 'T' + arrivalTime + ':00');
+        arrivalDate.setHours(arrivalDate.getHours() - 3);
         var isSuitArrival = !$checkIn.is(':checked') || arrivalDate && arrivalTime && lateEarlyDateChecker.checkLateArrival(packageBeginTime, arrivalDate);
 
         var departureDate = $departureDate.val();
         var departureTime = $departure.val();
-        var departureDate = new Date(departureDate.replace(pattern,'$3-$2-$1') + 'T' + departureTime);
+        var departureDate = new Date(departureDate.replace(pattern,'$3-$2-$1') + 'T' + departureTime + ':00');
+        departureDate.setHours(departureDate.getHours() - 3);
         var isSuitDeparture = !$checkOut.is(':checked') || departureDate && departureTime && lateEarlyDateChecker.checkEarlyDeparture(packageEndTime, departureDate);
 
         lateEarlyDateChecker.status = null;
-        if (!isSuitArrival && !isSuitDeparture) {
+        if (earlyCheckInServiceIsEnabled && lateCheckOutServiceIsEnabled && !isSuitArrival && !isSuitDeparture) {
             lateEarlyDateChecker.status = LateEarlyDateChecker.STATUS_BOTH;
-        } else if (!isSuitArrival) {
+        } else if (earlyCheckInServiceIsEnabled && !isSuitArrival) {
             lateEarlyDateChecker.status = LateEarlyDateChecker.STATUS_ARRIVAL;
-        } else if (!isSuitDeparture) {
+        } else if (lateCheckOutServiceIsEnabled && !isSuitDeparture) {
             lateEarlyDateChecker.status = LateEarlyDateChecker.STATUS_DEPARTURE;
         }
 
         if (!userConfirmation && lateEarlyDateChecker.status) {
-            console.log(lateEarlyDateChecker.status);
-            lateEarlyDateChecker.update();
             lateEarlyDateChecker.show();
             e.preventDefault();
         }
-        //e.preventDefault();
     });
 }
 

@@ -702,6 +702,14 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         ]);
 
         $authorizationChecker = $this->container->get('security.authorization_checker');
+
+        $serviceRepository = $this->dm->getRepository('MBHPriceBundle:Service');
+        $lateCheckOutService = $serviceRepository->findOneBy(['code' => 'Late check-out']);
+        $earlyCheckInService = $serviceRepository->findOneBy(['code' => 'Early check-in']);
+
+        $earlyCheckInServiceIsEnabled = $earlyCheckInService && $lateCheckOutService->getIsEnabled();
+        $lateCheckOutServiceIsEnabled = $lateCheckOutService && $earlyCheckInService->getIsEnabled();
+
         if ($request->getMethod() == 'PUT' && !$package->getIsLocked() && $authorizationChecker->isGranted('ROLE_PACKAGE_ACCOMMODATION') && (
                 $authorizationChecker->isGranted('ROLE_PACKAGE_EDIT_ALL') ||
                 $authorizationChecker->isGranted('EDIT', $package)
@@ -712,32 +720,31 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             if ($form->isValid()) {
                 $this->dm->persist($package);
 
-                $serviceRepository = $this->dm->getRepository('MBHPriceBundle:Service');
+                $pricesByDate = $package->getPricesByDate();
                 if($amount = $form->get('earlyCheckInAmount')->getData()) {
-                    $earlyCheckInService = $serviceRepository->findOneBy(['code' => 'Early check-in']);
-                    if ($earlyCheckInService) {
+                    if ($earlyCheckInServiceIsEnabled) {
                         $packageService = new PackageService();
                         $packageService->setService($earlyCheckInService);
-                        $packageService->setPrice(reset($package->getPricesByDate()));
+                        $packageService->setPrice(reset($pricesByDate));
                         $packageService->setAmount($amount);
+                        $packageService->setNights(1);
                         $package->addService($packageService);
                         $packageService->setPackage($package);
                         $this->dm->persist($packageService);
                     }
                 }
                 if($amount = $form->get('lateCheckOutAmount')->getData()) {
-                    $lateCheckOutService = $serviceRepository->findOneBy(['code' => 'Late check-out']);
-                    if ($lateCheckOutService) {
+                    if ($lateCheckOutServiceIsEnabled) {
                         $packageService = new PackageService();
                         $packageService->setService($lateCheckOutService);
-                        $packageService->setPrice(end($package->getPricesByDate()));
+                        $packageService->setPrice(end($pricesByDate));
                         $packageService->setAmount($amount);
+                        $packageService->setNights(1);
                         $package->addService($packageService);
                         $packageService->setPackage($package);
                         $this->dm->persist($packageService);
                     }
                 }
-
                 $this->dm->flush();
 
                 $request->getSession()->getFlashBag()->set('success',
@@ -752,6 +759,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         return [
             'package' => $package,
             'arrivalTime' => $arrivalTime,
+            'earlyCheckInServiceIsEnabled' => $earlyCheckInServiceIsEnabled,
+            'lateCheckOutServiceIsEnabled' => $lateCheckOutServiceIsEnabled,
             'form' => $form->createView(),
             'logs' => $this->logs($package)
         ];
