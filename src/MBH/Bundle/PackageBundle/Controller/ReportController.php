@@ -18,6 +18,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\UserBundle\Document\User;
+use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -782,7 +783,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                     ['createdAt' => $range],
                     ['updatedAt' => $range],
                 ],
-                'isOpen' => false
+                'status' => WorkShift::STATUS_LOCKED//STATUS_CLOSED
             ];
             if($requestDate['user']) {
                 $user = $requestDate['user']->getUsername();

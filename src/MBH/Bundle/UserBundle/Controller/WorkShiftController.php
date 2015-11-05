@@ -2,7 +2,10 @@
 
 namespace MBH\Bundle\UserBundle\Controller;
 
+use Gedmo\Loggable\Document\LogEntry;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -73,8 +76,25 @@ class WorkShiftController extends Controller
     public function newAction()
     {
         $workShift = new WorkShift();
-        $workShift->setBegin(new \DateTime());
-        $workShift->setStatus(WorkShift::STATUS_OPEN);
+
+        /** @var PackageRepository $packageRepository */
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+        /** @var Package[] $packages */
+        $packages = $packageRepository->findBy(['checkIn' => false, 'begin' => ['$gte' => new \DateTime()]]);//todo aggregation
+        $beginGuestTotal = 0;
+        $beginTouristTotal = 0;
+        foreach($packages as $package) {
+            $beginGuestTotal += $package->getAdults() + $package->getChildren();
+            $beginTouristTotal += count($package->getTourists());
+        }
+
+        $workShift
+            ->setBegin(new \DateTime())
+            ->setStatus(WorkShift::STATUS_OPEN)
+            ->setBeginGuestTotal($beginGuestTotal)
+            ->setBeginTouristTotal($beginTouristTotal)
+        ;
+
 
         $this->dm->persist($workShift);
         $this->dm->flush();
@@ -91,8 +111,125 @@ class WorkShiftController extends Controller
     {
         $workShiftRepository = $this->dm->getRepository('MBHUserBundle:WorkShift');
         $workShift = $workShiftRepository->findCurrent($this->getUser());
-        $workShift->setEnd(new \DateTime());
-        $workShift->setStatus(WorkShift::STATUS_LOCKED);
+
+        $workShift
+            ->setEnd(new \DateTime())
+        ;
+
+        /** @var PackageRepository $packageRepository */
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+
+        //todo move to special service object
+        $arrivalTouristTotal = 0;
+        /** @var Package[] $packages */
+        $packages = $packageRepository->findBy(['arrivalTime' => ['$gte' => $workShift->getBegin(), '$lte' => new \DateTime()]]);//todo aggregation
+        foreach($packages as $package) {
+            $arrivalTouristTotal += count($package->getTourists());
+        }
+        $noArrivalTouristTotal = 0;
+        /** @var Package[] $packages */
+        $packages = $packageRepository->findBy(['begin' => ['$gte' => $workShift->getBegin(), '$lte' => new \DateTime()], 'checkIn' => false]);//todo aggregation
+        foreach($packages as $package) {
+            $noArrivalTouristTotal += count($package->getTourists());
+        }
+
+        /*$this->dm->getRepository('Gedmo\Loggable\Document\LogEntry')
+            ->createQueryBuilder()
+            ->field('objectClass')->equals(Package::class)
+            ->field('loggedAt')->gte($workShift->getBegin())->lte(new \DateTime())
+        ;*/
+        $begin = $workShift->getBegin();
+        $end = $workShift->getEnd();
+        $packages = $packageRepository->findBy([
+            '$or' => [
+                [
+                    'begin' => ['$lte' => $begin],
+                    'end' => ['$gte' => $begin]
+                ],
+                [
+                    'begin' => ['$lte' => $end],
+                    'end' => ['$gte' => $end]
+                ],
+                [
+                    'begin' => ['$gte' => $begin],
+                    'end' => ['$lte' => $end]
+                ]
+            ],
+        ]);
+
+        $continuePackageTotal = 0;
+        foreach($packages as $package) {
+            /** @var LogEntry[] $logEntries */
+            $logEntries = $this->dm->getRepository(LogEntry::class)->createQueryBuilder()
+                ->field('objectClass')->equals(Package::class)
+                ->field('objectId')->equals($package->getId())
+                ->getQuery()->execute()
+            ;
+            foreach($logEntries as $logEntry) {
+                $data = $logEntry->getData();
+                if(isset($data['end']) && $data['end'] < $package->getEnd()) {
+                    $continuePackageTotal++;
+                }
+            }
+        }
+
+        $departureTouristTotal = 0;
+        /** @var Package[] $packages */
+        $packages = $packageRepository->findBy(['departureTime' => ['$gte' => $workShift->getBegin(), '$lte' => new \DateTime()]]);//todo aggregation
+        foreach($packages as $package) {
+            $departureTouristTotal += count($package->getTourists());
+        }
+        $noDepartureTouristTotal = 0;
+        /** @var Package[] $packages */
+        $packages = $packageRepository->findBy(['end' => ['$gte' => $workShift->getBegin(), '$lte' => new \DateTime()], 'checkOut' => false]);//todo aggregation
+        foreach($packages as $package) {
+            $noDepartureTouristTotal += count($package->getTourists());
+        }
+
+        $cashIncomeTotal = 0;
+        $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
+        $cashDocuments = $cashDocumentRepository->createQueryBuilder() // todo aggregation
+            ->field('createdAt')->gte($workShift->getBegin())->lte($workShift->getEnd())
+            ->field('createdBy.id')->equals($workShift->getId())
+            ->field('method')->equals('cash')
+            ->field('operation')->equals('in')
+        ;
+        foreach($cashDocuments as $cashDocument) {
+            $cashIncomeTotal += $cashDocument->getTotal();
+        }
+
+        $electronicCashIncomeTotal = 0;
+        $cashDocuments = $cashDocumentRepository->createQueryBuilder() // todo aggregation
+            ->field('createdAt')->gte($workShift->getBegin())->lte($workShift->getEnd())
+                ->field('createdBy.id')->equals($workShift->getId())
+                ->field('method')->equals('electronic')
+                ->field('operation')->equals('in')
+            ;
+        foreach($cashDocuments as $cashDocument) {
+            $electronicCashIncomeTotal += $cashDocument->getTotal();
+        }
+
+        $cashExpenseTotal = 0;
+        $cashDocuments = $cashDocumentRepository->createQueryBuilder() // todo aggregation
+        ->field('createdAt')->gte($workShift->getBegin())->lte($workShift->getEnd())
+            ->field('createdBy.id')->equals($workShift->getId())
+            ->field('operation')->equals('out')
+        ;
+        foreach($cashDocuments as $cashDocument) {
+            $cashExpenseTotal += $cashDocument->getTotal();
+        }
+
+        $workShift
+            ->setStatus(WorkShift::STATUS_LOCKED)
+            ->setArrivalTouristTotal($arrivalTouristTotal)
+            ->setNoArrivalTouristTotal($noArrivalTouristTotal)
+            ->setContinuePackageTotal($continuePackageTotal)
+            ->setDepartureTouristTotal($departureTouristTotal)
+            ->setNoDepartureTouristTotal($noDepartureTouristTotal)
+            ->setCashIncomeTotal($cashIncomeTotal)
+            ->setElectronicCashIncomeTotal($electronicCashIncomeTotal)
+            ->setCashExpenseTotal($cashExpenseTotal)
+        ;
 
         $this->dm->persist($workShift);
         $this->dm->flush();

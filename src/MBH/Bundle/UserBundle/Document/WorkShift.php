@@ -48,6 +48,75 @@ class WorkShift extends Base
     protected $end;
 
     /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     */
+    protected $beginGuestTotal;
+
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     */
+    protected $beginTouristTotal;
+
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     */
+    protected $arrivalTouristTotal;
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     */
+    protected $noArrivalTouristTotal;
+
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     */
+    protected $continuePackageTotal;
+
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     */
+    protected $departureTouristTotal;
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     */
+    protected $noDepartureTouristTotal;
+
+    /**
+     * Созданные этим пользователем за его смену
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     */
+    protected $cashIncomeTotal;
+
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     */
+    protected $electronicCashIncomeTotal;
+
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     */
+    protected $cashExpenseTotal;
+
+    /**
      * @return string
      */
     public function getStatus()
@@ -57,10 +126,12 @@ class WorkShift extends Base
 
     /**
      * @param string $status
+     * @return WorkShift
      */
     public function setStatus($status)
     {
         $this->status = $status;
+        return $this;
     }
 
     /**
@@ -73,10 +144,12 @@ class WorkShift extends Base
 
     /**
      * @param mixed $begin
+     * @return WorkShift
      */
     public function setBegin($begin)
     {
         $this->begin = $begin;
+        return $this;
     }
 
     /**
@@ -89,10 +162,12 @@ class WorkShift extends Base
 
     /**
      * @param \DateTime $end
+     * @return WorkShift
      */
     public function setEnd($end)
     {
         $this->end = $end;
+        return $this;
     }
 
     /**
@@ -110,4 +185,197 @@ class WorkShift extends Base
     {
         return $this->begin->diff($this->end)->h;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getBeginGuestTotal()
+    {
+        return $this->beginGuestTotal;
+    }
+
+    /**
+     * @param mixed $beginGuestTotal
+     * @return WorkShift
+     */
+    public function setBeginGuestTotal($beginGuestTotal)
+    {
+        $this->beginGuestTotal = $beginGuestTotal;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getBeginTouristTotal()
+    {
+        return $this->beginTouristTotal;
+    }
+
+    /**
+     * @param int $beginTouristTotal
+     * @return WorkShift
+     */
+    public function setBeginTouristTotal($beginTouristTotal)
+    {
+        $this->beginTouristTotal = $beginTouristTotal;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getArrivalTouristTotal()
+    {
+        return $this->arrivalTouristTotal;
+    }
+
+    /**
+     * @param int $arrivalTouristTotal
+     * @return WorkShift
+     */
+    public function setArrivalTouristTotal($arrivalTouristTotal)
+    {
+        $this->arrivalTouristTotal = $arrivalTouristTotal;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNoArrivalTouristTotal()
+    {
+        return $this->noArrivalTouristTotal;
+    }
+
+    /**
+     * @param int $noArrivalTouristTotal
+     * @return WorkShift
+     */
+    public function setNoArrivalTouristTotal($noArrivalTouristTotal)
+    {
+        $this->noArrivalTouristTotal = $noArrivalTouristTotal;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getContinuePackageTotal()
+    {
+        return $this->continuePackageTotal;
+    }
+
+    /**
+     * @param int $continuePackageTotal
+     * @return WorkShift
+     */
+    public function setContinuePackageTotal($continuePackageTotal)
+    {
+        $this->continuePackageTotal = $continuePackageTotal;
+
+        return $this;
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getDepartureTouristTotal()
+    {
+        return $this->departureTouristTotal;
+    }
+
+    /**
+     * @param int $departureTouristTotal
+     * @return WorkShift
+     */
+    public function setDepartureTouristTotal($departureTouristTotal)
+    {
+        $this->departureTouristTotal = $departureTouristTotal;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNoDepartureTouristTotal()
+    {
+        return $this->noDepartureTouristTotal;
+    }
+
+    /**
+     * @param int $noDepartureTouristTotal
+     * @return WorkShift
+     */
+    public function setNoDepartureTouristTotal($noDepartureTouristTotal)
+    {
+        $this->noDepartureTouristTotal = $noDepartureTouristTotal;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCashIncomeTotal()
+    {
+        return $this->cashIncomeTotal;
+    }
+
+    /**
+     * @param mixed $cashIncomeTotal
+     * @return WorkShift
+     */
+    public function setCashIncomeTotal($cashIncomeTotal)
+    {
+        $this->cashIncomeTotal = $cashIncomeTotal;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getElectronicCashIncomeTotal()
+    {
+        return $this->electronicCashIncomeTotal;
+    }
+
+    /**
+     * @param mixed $electronicCashIncomeTotal
+     * @return WorkShift
+     */
+    public function setElectronicCashIncomeTotal($electronicCashIncomeTotal)
+    {
+        $this->electronicCashIncomeTotal = $electronicCashIncomeTotal;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCashExpenseTotal()
+    {
+        return $this->cashExpenseTotal;
+    }
+
+    /**
+     * @param mixed $cashExpenseTotal
+     * @return WorkShift
+     */
+    public function setCashExpenseTotal($cashExpenseTotal)
+    {
+        $this->cashExpenseTotal = $cashExpenseTotal;
+
+        return $this;
+    }
+
+
 }
