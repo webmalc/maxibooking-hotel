@@ -21,9 +21,17 @@ class PriceCacheGeneratorType extends AbstractType
 
         if ($options['hotel']) {
             foreach ($options['hotel']->getRoomTypes() as $roomType) {
-                if ($roomType->getIsIndividualAdditionalPrices()) {
-                    if ($roomType->getAdditionalPlaces() > $isIndividualAdditionalPrices) {
-                        $isIndividualAdditionalPrices = $roomType->getAdditionalPlaces();
+                if ($options['categories']) {
+                    if ($roomType->getCategory()->getIsIndividualAdditionalPrices()) {
+                        if ($roomType->getAdditionalPlaces() > $isIndividualAdditionalPrices) {
+                            $isIndividualAdditionalPrices = $roomType->getAdditionalPlaces();
+                        }
+                    }
+                } else {
+                    if ($roomType->getIsIndividualAdditionalPrices()) {
+                        if ($roomType->getAdditionalPlaces() > $isIndividualAdditionalPrices) {
+                            $isIndividualAdditionalPrices = $roomType->getAdditionalPlaces();
+                        }
                     }
                 }
             }
