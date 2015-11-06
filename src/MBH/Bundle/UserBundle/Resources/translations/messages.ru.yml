@@ -54,5 +54,9 @@ views.user.tabs.security: "Безопасность"
 
 
 workShift:
+    statuses:
+        open: Открыта
+        locked: Заблокирована
+        closed: Закрыта
     notification:
         work_shift_expired: Смена идет больше 12 часов. Закройте её

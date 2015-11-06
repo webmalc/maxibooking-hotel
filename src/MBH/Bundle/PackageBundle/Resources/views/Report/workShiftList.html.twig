@@ -1,22 +1,45 @@
-<table class="table table-strip" id="work-shift-list-table">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Время</th>
-        <th>Гостей</th>
-        <th>Касса</th>
-        <th>Статус</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for workShift in workShifts %}
-        <tr data-id="{{ workShift.id }}">
-            <td>{{ workShift.id }}</td>
-            <td>{{ workShift.begin|date('H:i') }} - {{ workShift.end|date('H:i') }}</td>
-            <td>{{ workShift.beginGuestTotal }}</td>
-            <td>{{ workShift.cashIncomeTotal }}</td>
-            <td>{{ workShift.status }}</td>
+{% if workShifts %}
+    <table class="table table-strip" id="work-shift-list-table">
+        <thead>
+        <tr>
+            <th class="td-xs">ID</th>
+            <th class="td-md">Начало</th>
+            <th class="td-md">Конец</th>
+            <th class="td-xs">Гостей</th>
+            <th class="td-sm">Доход</th>
+            <th class="td-sm">Электронные</th>
+            <th class="td-md">Статус</th>
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        {% for workShift in workShifts %}
+            <tr data-id="{{ workShift.id }}">
+                <td>{{ workShift.id }}</td>
+                <td>
+                    {{ workShift.begin|mbh_format }}
+                    <small>{{ workShift.begin|date('H:i') }}</small>
+                </td>
+                <td>
+                    {% if workShift.end %}
+                        {{ workShift.end|mbh_format }}
+                        <small>{{ workShift.end|date('H:i') }}</small>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ workShift.beginGuestTotal }}</td>
+                <td>{{ workShift.cashIncomeTotal }}</td>
+                <td>{{ workShift.electronicCashIncomeTotal }}</td>
+                <td>{{ ('workShift.statuses.' ~ workShift.status)|trans }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert bg-gray">
+        <p>
+            <i class="fa fa-exclamation-circle"></i>
+            Не найдено ни одной рабочей смены
+        </p>
+    </div>
+{% endif %}

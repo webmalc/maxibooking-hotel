@@ -746,6 +746,13 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy'],
             ])
+            ->add('status', 'choice', [
+                'empty_value' => '',
+                'choices' => array_combine(WorkShift::getAvailableStatuses(), WorkShift::getAvailableStatuses()),
+                'choice_label' => function($label) {
+                    return 'workShift.statuses.'.$label;
+                },
+            ])
             ->getForm()
         ;
     }
@@ -768,7 +775,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         $requestDate = $filterForm->getData();
 
-        $criteria = ['status' => WorkShift::STATUS_LOCKED];//STATUS_CLOSED
+        if ($requestDate['status']) {
+            $criteria['status'] = $requestDate['status'];
+        }
         $range = [];
         if($requestDate['begin']) {
             $range['$gte'] = $requestDate['begin'];
@@ -783,11 +792,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 ['updatedAt' => $range],
             ];
         }
-
         if($requestDate['user']) {
-            $user = $requestDate['user']->getUsername();
-            $criteria['createdBy'] = $user;
+            $criteria['createdBy'] = $requestDate['user']->getUsername();
         }
+
         $workShifts = $workShiftRepository->findBy($criteria);
 
         return [

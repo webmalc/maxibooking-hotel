@@ -19,6 +19,7 @@ $(document).on('ready', function () {
             data: requestData,
             success: function(response) {
                 $workShiftTableWrapper.html(response);
+                $workShiftReportWrapper.empty();
             }
         });
     };
@@ -33,7 +34,7 @@ $(document).on('ready', function () {
     }
 
     $workShiftReportForm.find('#form_begin,#form_end').on('changeDate', updateTable);
-    $workShiftReportForm.find('#form_user').on('change', updateTable);
+    $workShiftReportForm.find('#form_user,#form_status').on('change', updateTable);
 
     updateTable();
 

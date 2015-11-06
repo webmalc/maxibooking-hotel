@@ -18,12 +18,27 @@
                 <label><i class="fa fa-user" title='Пользователь' data-toggle='tooltip'></i></label>
                 {{ form_widget(form.user) }}
             </div>
+            <div class="form-group">
+                <label><i class="fa fa-star-o" title='Статус' data-toggle='tooltip'></i></label>
+                {{ form_widget(form.status) }}
+            </div>
             {{ form_end(form) }}
         {% endblock %}
     {% endembed %}
 
-    <div id="work-shift-table-wrapper">
 
+    {#todo remove. use embed_filter.html.twig#}
+    <div class="box box-default box-solid">
+        <div class="box-header">
+            <h3 class="box-title">
+                Рабочие смены
+            </h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool form-group-collapse" id="work-shift-table-wrapper-collapse" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            </div>
+        </div>
+        <div class="color-palette box-body" id="work-shift-table-wrapper">
+        </div>
     </div>
 
     <div id="work-shift-report-table-wrapper">

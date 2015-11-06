@@ -31,69 +31,69 @@ class WorkShift extends Base
      * @ODM\Id(strategy="INCREMENT")
      */
     protected $id;
-
     /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
+     * @Assert\Choice(callback="getAvailableStatuses")
      */
     protected $status;
-
     /**
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date()
      */
     protected $begin;
-
     /**
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date()
      */
     protected $end;
-
     /**
+     * Количество гостей на начало
      * @var integer
      * @Gedmo\Versioned
      * @ODM\Integer()
      */
     protected $beginGuestTotal;
-
     /**
+     * Количество оформленных туристов на начало
      * @var integer
      * @Gedmo\Versioned
      * @ODM\Integer()
      */
     protected $beginTouristTotal;
-
     /**
+     * Количетво заехавших туриство за смену
      * @var integer
      * @Gedmo\Versioned
      * @ODM\Integer()
      */
     protected $arrivalTouristTotal;
     /**
+     * Количетво не заехавших туриство за смену
      * @var integer
      * @Gedmo\Versioned
      * @ODM\Integer()
      */
     protected $noArrivalTouristTotal;
-
     /**
+     * Продлились
      * @var integer
      * @Gedmo\Versioned
      * @ODM\Integer()
      */
     protected $continuePackageTotal;
-
     /**
+     * Выехавших туристов
      * @var integer
      * @Gedmo\Versioned
      * @ODM\Integer()
      */
     protected $departureTouristTotal;
     /**
+     * Не выехавших туристов
      * @var integer
      * @Gedmo\Versioned
      * @ODM\Integer()
@@ -121,6 +121,14 @@ class WorkShift extends Base
      * @ODM\Integer()
      */
     protected $cashExpenseTotal;
+
+    /**
+     * @return array
+     */
+    public static function getAvailableStatuses()
+    {
+        return [self::STATUS_OPEN, self::STATUS_LOCKED, self::STATUS_CLOSED];
+    }
 
     /**
      * @return string
