@@ -123,7 +123,10 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                     }
                 }
 
-                $groupedResult = $this->get('mbh.package.search')->setWithTariffs()->search($query);
+                $groupedResult = $this->get('mbh.package.search')
+                    ->setAdditionalDates()
+                    ->setWithTariffs()
+                    ->search($query);
             };
         }
 

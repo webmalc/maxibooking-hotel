@@ -40,12 +40,7 @@ class SearchFactory implements SearchInterface
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
         $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
-
-        if ($this->config && $this->config->getSearchDates()) {
-            $this->search = $this->container->get('mbh.package.search_multiple_dates');
-        } else {
-            $this->search = $this->container->get('mbh.package.search_simple');
-        }
+        $this->search = $this->container->get('mbh.package.search_simple');
     }
 
     /**
@@ -54,6 +49,18 @@ class SearchFactory implements SearchInterface
     public function setWithTariffs()
     {
         $this->search = $this->container->get('mbh.package.search_with_tariffs')->setSearch($this->search);
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setAdditionalDates()
+    {
+        if ($this->config && $this->config->getSearchDates()) {
+            $this->search = $this->container->get('mbh.package.search_multiple_dates')->setSearch($this->search);
+        }
 
         return $this;
     }

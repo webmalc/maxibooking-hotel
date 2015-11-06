@@ -47,16 +47,32 @@ class SearchMultipleDates implements SearchInterface
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
         $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
-        $this->search = $this->container->get('mbh.package.search_simple');
         $this->dates = $this->config && $this->config->getSearchDates() ? $this->config->getSearchDates() : 0;
     }
 
     /**
-     * @param \MBH\Bundle\PackageBundle\Lib\SearchQuery $query
+     * @param SearchInterface $search
+     * @return $this
+     */
+    public function setSearch(SearchInterface $search)
+    {
+        $this->search = $search;
+
+        return $this;
+    }
+
+    /**
+     * @param SearchQuery $query
      * @return array
+     * @throws Exception
+     * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function search(SearchQuery $query)
     {
+        if (!$this->search) {
+            throw new Exception('SearchInterface $search is null.');
+        }
+
         if (!$query->roomTypes) {
             foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
                 $query->roomTypes = array_merge(

@@ -98,7 +98,7 @@ class OrderManager
         $query->excludeEnd = $oldEnd->modify('-1 day');
         $query->forceRoomTypes = true;
 
-        $results = $this->container->get('mbh.package.search_simple')->search($query);
+        $results = $this->container->get('mbh.package.search')->search($query);
 
         if (count($results) == 1) {
             //recalculate cache
@@ -257,7 +257,7 @@ class OrderManager
         $query->accommodations = (boolean)$data['accommodation'];
         $query->forceRoomTypes = true;
 
-        $results = $this->container->get('mbh.package.search_simple')->search($query);
+        $results = $this->container->get('mbh.package.search')->search($query);
 
         if (count($results) != 1) {
             throw new PackageCreationException($order,
