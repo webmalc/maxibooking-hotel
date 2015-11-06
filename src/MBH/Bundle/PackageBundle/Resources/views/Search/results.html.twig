@@ -46,7 +46,7 @@
 
         {% for result in row.results %}
 
-            <tr {% if query.begin == result.begin and query.end == result.end and client_config().searchDates is not empty %}class="success"{% endif %}>
+            <tr {% if query.begin == result.begin and query.end == result.end and client_config() and client_config().searchDates %}class="success"{% endif %}>
                 <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
                 <td>
                     {{ result.begin|mbh_format }} - {{ result.end|mbh_format }}

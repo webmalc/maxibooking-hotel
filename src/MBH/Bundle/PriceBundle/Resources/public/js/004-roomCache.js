@@ -74,8 +74,8 @@ $(document).ready(function () {
             showMessage = function () {
                 rooms.each(function () {
                     var text = parseInt($(this).val(), 10) === -1 ? 'Дни будет удалены' : '';
-                    $(this).closest('.col-md-4').
-                        next('.col-md-6').
+                    $(this).closest('.col-sm-6').
+                        next('.col-sm-4').
                         html('<span class="text-danger text-left input-errors">' + text +  '</span>');
                 });
             },

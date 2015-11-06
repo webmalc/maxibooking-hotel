@@ -103,7 +103,10 @@ class RoomCache
             $updateCaches[$oldRoomCache->getTariff() ? $oldRoomCache->getTariff()->getId() : 0][$oldRoomCache->getDate()->format('d.m.Y')][$oldRoomCache->getRoomType()->getId()] = $oldRoomCache;
 
             if ($rooms == -1) {
-                $remove['_id']['$in'][] = new \MongoId($oldRoomCache->getId());
+                if ($oldRoomCache->getPackagesCount() <= 0) {
+                    $remove['_id']['$in'][] = new \MongoId($oldRoomCache->getId());
+                }
+                continue;
             }
 
             $updates[] = [

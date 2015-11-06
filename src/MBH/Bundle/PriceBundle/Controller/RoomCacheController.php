@@ -167,7 +167,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
             //delete
             if (isset($val['rooms']) && (trim($val['rooms']) === '' || $val['rooms'] === null)) {
-                $this->dm->remove($roomCache);
+                if ($roomCache->getPackagesCount() <= 0) {
+                    $this->dm->remove($roomCache);
+                }
                 continue;
             }
 
