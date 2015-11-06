@@ -27,7 +27,6 @@ class MailerCommand extends ContainerAwareCommand
         $start = new \DateTime();
         $this->dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         $helper = $this->getContainer()->get('mbh.helper');
-        $tr = $this->getContainer()->get('translator');
         $notifier = $this->getContainer()->get('mbh.notifier.mailer');
         $router = $this->getContainer()->get('router');
         $linksParams = $this->getContainer()->getParameter('mailer_user_arrival_links');

@@ -7,7 +7,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
+use Symfony\Component\Process\Process;
 
 /**
  *  RoomCache service
@@ -61,6 +61,78 @@ class RoomCache
             }
         }
         $this->dm->flush();
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param array $roomTypes array of ids
+     */
+    public function recalculateByPackagesBackground(\DateTime $begin, \DateTime $end, array $roomTypes)
+    {
+        if ($this->container->get('kernel')->getEnvironment() == 'prod') {
+            $env = '--env=prod ';
+        } else {
+            $env = '';
+        }
+
+        $roomTypes = ' --roomTypes=' . implode(',', $roomTypes);
+        $begin = ' --begin=' . $begin->format('d.m.Y');
+        $end = ' --end=' . $end->format('d.m.Y');
+        $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
+
+        $process = new Process(
+            'nohup php ' . $console . 'mbh:cache:recalculate --no-debug ' . $env . $begin . $end . $roomTypes .  ' > /dev/null 2>&1 &'
+        );
+
+        $process->run();
+    }
+
+    /**
+     * @param \DateTime $begin|null
+     * @param \DateTime $end|null
+     * @param array $roomTypes array of ids
+     * @return int
+     */
+    public function recalculateByPackages(\DateTime $begin = null, \DateTime $end = null, array $roomTypes = [])
+    {
+
+        $begin = $begin ?: new \DateTime('midnight');
+        $end = $end ?: new \DateTime('midnight +365 days');
+
+        /** @var \MBH\Bundle\PriceBundle\Document\RoomCache[] $caches */
+        $caches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
+            $begin, $end, null, $roomTypes
+        );
+        $num = 0;
+        $batchSize = 3;
+
+        foreach ($caches as $cache) {
+
+            $qb = $this->dm->getRepository('MBHPackageBundle:Package')
+                ->createQueryBuilder()
+                ->field('begin')->lte($cache->getDate())
+                ->field('end')->gt($cache->getDate())
+                ->field('deletedAt')->equals(null)
+                ->field('roomType.id')->equals($cache->getRoomType()->getId())
+            ;
+            if ($cache->getTariff()) {
+                $qb->field('tariff.id')->equals($cache->getTariff()->getId());
+            }
+            $total = $qb->getQuery()->count();
+            if ($total != $cache->getPackagesCount()) {
+                $cache->setPackagesCount($total);
+                $this->dm->persist($cache);
+                $num += 1;
+            }
+            if (($num % $batchSize) === 0) {
+                $this->dm->flush();
+                $this->dm->clear();
+            }
+        }
+        $this->dm->flush();
+
+        return $num;
     }
 
 
@@ -155,6 +227,7 @@ class RoomCache
         } else {
             $this->container->get('mbh.mongo')->batchInsert('RoomCache', $roomCaches);
             $this->container->get('mbh.mongo')->update('RoomCache', $updates);
+            $this->recalculateByPackagesBackground($begin, $end, $this->helper->toIds($roomTypes));
         }
     }
 }
