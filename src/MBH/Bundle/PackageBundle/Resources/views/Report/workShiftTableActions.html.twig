@@ -1,11 +1,16 @@
-<div class="no box-body" id="work-shifts-actions">
-    <ul id="package-table-quick-links">
-        {% for workShift in workShifts %}
-            <li>
-                <a data-id="{{ workShift.id }}" class="btn btn-xs btn-default {% if loop.index == 1 %}active{% endif %}" data-value="begin-today" href="#">
-                    {{ workShift.begin|date('H:i') }} - {{ workShift.end|date('H:i') }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
-</div>
+<table class="table table-strip">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Время</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for workShift in workShifts %}
+        <tr>
+            <td>{{ workShift.id }}</td>
+            <td>{{ workShift.begin|date('H:i') }} - {{ workShift.end|date('H:i') }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

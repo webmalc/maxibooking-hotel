@@ -92,7 +92,7 @@ services:
 
     mbh.package.unwelcome_repository:
             class: MBH\Bundle\PackageBundle\Document\UnwelcomeRepository
-            arguments: [@mbh.mbhs,@serializer]
+            arguments: [@mbh.mbhs]
 
     mbh.package.report.filling_report_generator:
             class: MBH\Bundle\PackageBundle\Component\FillingReportGenerator

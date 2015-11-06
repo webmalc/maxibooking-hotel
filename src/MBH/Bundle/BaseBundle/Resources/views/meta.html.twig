@@ -51,7 +51,8 @@
                     currency: {
                         icon: "{{ currency().icon }}",
                         text: "{{ currency().text }}"
-                    }
+                    },
+                    UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }}
                 }
             </script>
 

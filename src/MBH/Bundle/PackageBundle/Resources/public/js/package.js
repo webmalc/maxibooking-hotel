@@ -1,4 +1,120 @@
 /*global window, $, services, document, datepicker, deleteLink, Routing, mbh */
+var initAccommodationTab = function() {
+    var $form = $('form[name=mbh_bundle_packagebundle_package_accommodation_type]');
+
+    var userConfirmation = false;
+    var lateEarlyDateChecker = new LateEarlyDateChecker(
+        function(){
+            $earlyCheckInAmountInput.val('');
+            $lateCheckOutAmountInput.val('');
+            console.log(this.formData);
+            if(this.status == LateEarlyDateChecker.STATUS_ARRIVAL) {
+                $earlyCheckInAmountInput.val(this.formData.amount);
+            } else if(this.status == LateEarlyDateChecker.STATUS_DEPARTURE) {
+                $lateCheckOutAmountInput.val(this.formData.amount);
+            } else if(this.status == LateEarlyDateChecker.STATUS_BOTH) {
+                $earlyCheckInAmountInput.val(this.formData.amount);
+                $lateCheckOutAmountInput.val(this.formData.amount);
+            }
+            userConfirmation = true;
+            //$form.trigger('submit');
+            $('button[type=submit][name=save]').trigger('click');
+        },
+        function(){
+            $earlyCheckInAmountInput.val('');
+            $lateCheckOutAmountInput.val('');
+            userConfirmation = true;
+            //$form.trigger('submit');
+            $('button[type=submit][name=save]').trigger('click');
+        }
+    );
+
+    var $checkIn = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckIn'),
+        $checkOut = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckOut'),
+        $arrivalDate = $('#mbh_bundle_packagebundle_package_accommodation_type_arrivalTime_date'),
+        $departureDate = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_date'),
+        $arrival = $('#mbh_bundle_packagebundle_package_accommodation_type_arrivalTime_time'),
+        $departure = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_time'),
+        $earlyCheckInAmountInput = $('#mbh_bundle_packagebundle_package_accommodation_type_earlyCheckInAmount'),
+        $lateCheckOutAmountInput = $('#mbh_bundle_packagebundle_package_accommodation_type_lateCheckOutAmount'),
+        datepickerOptions = {
+            language: "ru",
+            autoclose: true,
+            format: 'dd.mm.yyyy'
+        };
+
+    $arrivalDate.on('change', function(){userConfirmation = false});
+    $arrival.on('change', function(){userConfirmation = false});
+
+    $departureDate.on('change', function(){userConfirmation = false});
+    $departure.on('change', function(){userConfirmation = false});
+
+    var show = function () {
+        if ($checkIn.is(':checked')) {
+            $arrival.closest('.form-group ').show();
+        } else {
+            $arrival.closest('.form-group ').hide();
+        }
+        if ($checkOut.is(':checked')) {
+            $departure.closest('.form-group').show();
+        } else {
+            $departure.closest('.form-group').hide();
+        }
+    }
+    var showOut = function () {
+        if ($checkIn.is(':checked')) {
+            $checkOut.closest('.form-group ').show();
+        } else {
+            $checkOut.prop('checked', false);
+            $checkOut.closest('.form-group ').hide();
+        }
+    };
+
+    if (!$checkIn.length) {
+        return;
+    }
+    $arrival.timepicker({showMeridian: false});
+    $departure.timepicker({showMeridian: false});
+    $arrivalDate.datepicker(datepickerOptions);
+    $departureDate.datepicker(datepickerOptions);
+    show();
+    showOut();
+    $checkIn.on('switchChange.bootstrapSwitch', show);
+    $checkIn.on('switchChange.bootstrapSwitch', showOut);
+    $checkOut.on('switchChange.bootstrapSwitch', show);
+
+    $form.on('submit', function(e) {
+        var pattern = /(\d{2})\.(\d{2})\.(\d{4})/;
+
+        var arrivalDate = $arrivalDate.val();
+        var arrivalTime = $arrival.val();
+        var arrivalDate = new Date(arrivalDate.replace(pattern,'$3-$2-$1') + 'T' + arrivalTime + ':00');
+        arrivalDate.setHours(arrivalDate.getHours() - mbh.UTCHoursOffset);
+        var isSuitArrival = !$checkIn.is(':checked') || arrivalDate && arrivalTime && lateEarlyDateChecker.checkLateArrival(packageBeginTime, arrivalDate);
+
+        var departureDate = $departureDate.val();
+        var departureTime = $departure.val();
+        var departureDate = new Date(departureDate.replace(pattern,'$3-$2-$1') + 'T' + departureTime + ':00');
+        departureDate.setHours(departureDate.getHours() - mbh.UTCHoursOffset);
+        var isSuitDeparture = !$checkOut.is(':checked') || departureDate && departureTime && lateEarlyDateChecker.checkEarlyDeparture(packageEndTime, departureDate);
+
+        lateEarlyDateChecker.status = null;
+        if (earlyCheckInServiceIsEnabled && lateCheckOutServiceIsEnabled && !isSuitArrival && !isSuitDeparture) {
+            lateEarlyDateChecker.status = LateEarlyDateChecker.STATUS_BOTH;
+        } else if (earlyCheckInServiceIsEnabled && !isSuitArrival) {
+            lateEarlyDateChecker.status = LateEarlyDateChecker.STATUS_ARRIVAL;
+        } else if (lateCheckOutServiceIsEnabled && !isSuitDeparture) {
+            lateEarlyDateChecker.status = LateEarlyDateChecker.STATUS_DEPARTURE;
+        }
+
+        if (!userConfirmation && lateEarlyDateChecker.status) {
+            lateEarlyDateChecker.show();
+            e.preventDefault();
+        }
+    });
+}
+
+
 
 var docReadyPackages = function () {
     'use strict';
@@ -195,54 +311,7 @@ var docReadyPackages = function () {
 
     }());
 
-    //accommodation tab
-    (function () {
-        var checkIn = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckIn'),
-            checkOut = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckOut'),
-            arrivalDate = $('#mbh_bundle_packagebundle_package_accommodation_type_arrivalTime_date'),
-            departureDate = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_date'),
-            arrival = $('#mbh_bundle_packagebundle_package_accommodation_type_arrivalTime_time'),
-            departure = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_time'),
-            datepickerOptions = {
-                language: "ru",
-                autoclose: true,
-                format: 'dd.mm.yyyy'
-            },
-            show = function () {
-                if (checkIn.is(':checked')) {
-                    arrival.closest('.form-group ').show();
-                } else {
-                    arrival.closest('.form-group ').hide();
-                }
-                if (checkOut.is(':checked')) {
-                    departure.closest('.form-group').show();
-                } else {
-                    departure.closest('.form-group').hide();
-                }
-            },
-            showOut = function () {
-                if (checkIn.is(':checked')) {
-                    checkOut.closest('.form-group ').show();
-                } else {
-                    checkOut.prop('checked', false);
-                    checkOut.closest('.form-group ').hide();
-                }
-            };
-
-        if (!checkIn.length) {
-            return;
-        }
-        arrival.timepicker({showMeridian: false});
-        departure.timepicker({showMeridian: false});
-        arrivalDate.datepicker(datepickerOptions);
-        departureDate.datepicker(datepickerOptions);
-        show();
-        showOut();
-        checkIn.on('switchChange.bootstrapSwitch', show);
-        checkIn.on('switchChange.bootstrapSwitch', showOut);
-        checkOut.on('switchChange.bootstrapSwitch', show);
-    }());
-
+    initAccommodationTab();
 
 
     // Template Document form modal

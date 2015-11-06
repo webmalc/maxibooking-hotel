@@ -9,6 +9,8 @@ use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\VegaBundle\Service\DictionaryProvider;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Type;
 
@@ -95,9 +97,38 @@ class DocumentRelationType extends AbstractType
                 'required' => false,
                 'property_path' => 'documentRelation.authorityOrgan'
             ])
+            ->add('authorityOrganText', 'hidden', [
+                'required' => false,
+                'property_path' => 'documentRelation.authorityOrganText'
+            ])
         ;
-        $builder->get('authorityOrgan')
-            ->addModelTransformer(new EntityToIdTransformer($this->managerRegistry->getManager(), 'MBH\Bundle\VegaBundle\Document\VegaFMS'));
+        $builder->get('authorityOrgan')->addModelTransformer(
+            new EntityToIdTransformer($this->managerRegistry->getManager(), 'MBH\Bundle\VegaBundle\Document\VegaFMS')
+        );
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function(FormEvent $event) {
+            $data = $event->getData();
+            $authorityOrgan = $data['authorityOrgan'];
+            if($authorityOrgan) {
+                if(\MongoId::isValid($authorityOrgan)) {
+                    $data['authorityOrganText'] = null;
+                } else {
+                    $data['authorityOrgan'] = null;
+                    $data['authorityOrganText'] = $authorityOrgan;
+                }
+                $event->setData($data);
+            }
+        });
+
+        $builder
+            ->add('authorityOrganCode', 'text', [
+                'group' => 'form.DocumentRelation.main',
+                'label' => 'form.DocumentRelation.authorityOrganCode',
+                'required' => false,
+                'property_path' => 'documentRelation.authorityOrganCode',
+                'attr' => [
+                    'style' =>  'width: 100px'
+                ]
+            ]);
 
         /*$builder
             ->add('authorityOrgan', 'document', [

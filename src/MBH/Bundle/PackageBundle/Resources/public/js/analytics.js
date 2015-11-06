@@ -2,6 +2,10 @@
 $(document).ready(function () {
     'use strict';
 
+    if(!window['Highcharts']) {
+        return;
+    }
+
     Highcharts.setOptions({
         lang: {
             shortMonths: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],

@@ -170,7 +170,8 @@ class Extension extends \Twig_Extension
             'currency' => new \Twig_Function_Method($this, 'currency', ['is_safe' => ['html']]),
             'user_cash' => new \Twig_Function_Method($this, 'cashDocuments', ['is_safe' => ['html']]),
             'client_config' => new \Twig_Function_Method($this, 'clientConfig'),
-            'currentWorkShift' => new \Twig_Function_Method($this, 'currentWorkShift')
+            'currentWorkShift' => new \Twig_Function_Method($this, 'currentWorkShift'),
+            'mbh_timezone_offset_get' => new \Twig_Filter_Method($this, 'timezoneOffsetGet', ['is_safe' => ['html']]),
         ];
     }
 
@@ -182,5 +183,13 @@ class Extension extends \Twig_Extension
         $repository = $this->container->get('doctrine_mongodb')->getRepository('MBHUserBundle:WorkShift');
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
         return $repository->findCurrent($user);
+    }
+
+    /**
+     * @return int
+     */
+    public function timezoneOffsetGet()
+    {
+        return (new \DateTime())->getOffset();
     }
 }

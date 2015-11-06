@@ -29,10 +29,10 @@ $(document).ready(function () {
                         text: data.text
                     })).val(data.id).trigger('change');
                     form.trigger('reset');
-                    form.find('select').select2('data', null);
+                    //form.find('select').select2('data', null);
                     guestModal.modal('hide');
                     form.find('select').select2('data', null);
-                    form.find('input').select2('data', null);
+                    //form.find('input').select2('data', null);
                     return 1;
                 }
             });

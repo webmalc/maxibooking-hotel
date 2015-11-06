@@ -7,7 +7,6 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Service\Mbhs;
 use MBH\Bundle\HotelBundle\Document\City;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * Class UnwelcomeHistoryRepository
@@ -20,15 +19,9 @@ class UnwelcomeRepository
      */
     protected $mbhs;
 
-    /**
-     * @var Serializer
-     */
-    protected $serializer;
-
-    public function __construct(Mbhs $mbhs, Serializer $serializer)
+    public function __construct(Mbhs $mbhs)
     {
         $this->mbhs = $mbhs;
-        $this->serializer = $serializer;
     }
 
     /**

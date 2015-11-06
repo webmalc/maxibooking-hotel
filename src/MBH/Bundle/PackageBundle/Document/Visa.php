@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Validator\Constraints as MBHAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -12,6 +13,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * Class Migration
  * @ODM\EmbeddedDocument
  * @Gedmo\Loggable
+ * @MBHAssert\Range(firstProperty="arrivalTime", secondProperty="departureTime")
+ *
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class Visa extends Base
@@ -47,6 +50,16 @@ class Visa extends Base
      * @ODM\String
      */
     protected $profession;
+    /**
+     * @var \DateTime
+     * @ODM\Date()
+     */
+    protected $arrivalTime;
+    /**
+     * @var \DateTime
+     * @ODM\Date()
+     */
+    protected $departureTime;
 
     /**
      * @return string
@@ -153,6 +166,44 @@ class Visa extends Base
     public function setProfession($profession)
     {
         $this->profession = $profession;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getArrivalTime()
+    {
+        return $this->arrivalTime;
+    }
+
+    /**
+     * @param \DateTime $arrivalTime
+     * @return Visa
+     */
+    public function setArrivalTime($arrivalTime)
+    {
+        $this->arrivalTime = $arrivalTime;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDepartureTime()
+    {
+        return $this->departureTime;
+    }
+
+    /**
+     * @param \DateTime $departureTime
+     * @return Visa
+     */
+    public function setDepartureTime($departureTime)
+    {
+        $this->departureTime = $departureTime;
+
         return $this;
     }
 }

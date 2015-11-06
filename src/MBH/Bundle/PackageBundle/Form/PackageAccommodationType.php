@@ -98,6 +98,17 @@ class PackageAccommodationType extends AbstractType
                 'date_widget' => 'single_text',
                 'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),
             ));
+
+        $builder
+            ->add('earlyCheckInAmount', 'hidden', [
+                'required' => false,
+                'mapped' => false,
+            ])
+            ->add('lateCheckOutAmount', 'hidden', [
+                'required' => false,
+                'mapped' => false,
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

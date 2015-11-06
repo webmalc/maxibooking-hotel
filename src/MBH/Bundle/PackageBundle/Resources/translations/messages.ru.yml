@@ -267,6 +267,7 @@ form.BirthplaceType.settlement: Населенный пункт
 form.DocumentRelation.type: Тип документа
 form.DocumentRelation.authority_organ: Код подразделения ФМС
 form.DocumentRelation.authority: Орган выдачи документа
+form.DocumentRelation.authorityOrganCode: Код подразделения
 form.DocumentRelation.series: Серия
 form.DocumentRelation.number: Номер
 form.DocumentRelation.issued: Дата выдачи
@@ -320,13 +321,15 @@ form.unwelcomeType.add: Добавить в черный список
 
 tourist.migration.type_series: 'Серия'
 tourist.migration.type_number: 'Номер'
-tourist.migration.type_profession: 'Профессия'
 tourist.migration.type_representative: 'Сведения о законных представителях'
 tourist.migration.type_address: 'Адрес прежнего места пребывания'
 
 tourist.visa.type_type: 'Тип'
 tourist.visa.type_series: 'Серия'
 tourist.visa.type_number: 'Номер'
+tourist.visa.type_profession: 'Профессия'
+tourist.visa.arrival_time: 'Дата въезда'
+tourist.visa.departure_time: 'Дата выезда'
 tourist.visa.type_issued: 'Дата выдачи'
 tourist.visa.type_expiry: 'Срок действия'
 

@@ -10,6 +10,45 @@ var select2Text = function (el) {
     return $('#' + el.prop('id'));
 };
 
+/**
+ * @author Arofikin Aleksandr
+ * @param $begin
+ * @param $end
+ */
+var RangeInputs = function($begin, $end) {
+    this.$begin = $begin;
+    this.$end = $end;
+
+    this.updateValue();
+    this.bindEventListeners();
+}
+
+RangeInputs.prototype.updateValue = function()
+{
+    if (!this.$begin.hasClass('not-set-date')) {
+        this.$begin.datepicker('setEndDate', this.$end.datepicker('getDate'));
+    }
+    if (!this.$end.hasClass('not-set-date')) {
+        this.$end.datepicker('setStartDate', this.$begin.datepicker('getDate'));
+    }
+}
+RangeInputs.prototype.bindEventListeners = function()
+{
+    var that = this;
+    this.$begin.change(function () {
+        that.updateValue();
+        if (!that.$end.val()) {
+            that.$end.focus();
+        }
+    });
+    this.$end.change(function () {
+        that.updateValue();
+        if (!that.$begin.val()) {
+            that.$begin.focus();
+        }
+    });
+}
+
 $.fn.serializeObject = function () {
     'use strict';
     var o = {},
@@ -26,6 +65,36 @@ $.fn.serializeObject = function () {
     });
     return o;
 };
+
+$.fn.mbhGuestSelectPlugin = function() {
+    this.each(function(){
+        var $this = $(this);
+        if($this.is('input')) {
+            $this = select2Text($this);
+        }
+        $this.select2({
+            minimumInputLength: 3,
+            allowClear: true,
+            placeholder: 'Выберите гостя',
+            ajax: {
+                url: Routing.generate('ajax_tourists'),
+                dataType: 'json',
+                data: function (params) {
+                    return {
+                        query: params.term // search term
+                    };
+                },
+                results: function (data) {
+                    return {results: data};
+                },
+                /*processResults: function(data) {
+                 console.log(data);
+                 }*/
+            },
+            dropdownCssClass: "bigdrop"
+        });
+    })
+}
 
 var docReadyForms = function () {
     'use strict';
@@ -93,7 +162,7 @@ var docReadyForms = function () {
     $('.checkbox-mini').bootstrapSwitch(bootstrapSwitchConfig);
 
     //Select2 configuration
-    $('select').not('.plain-html').addClass('select2').select2({
+    $('select:not(.plain-html)').addClass('select2').select2({
         placeholder: "Сделайте выбор",
         allowClear: true,
         width: 'resolve',
@@ -168,31 +237,7 @@ var docReadyForms = function () {
         setDates();
     }());
 
-    (function () {
-        var begin = $('.begin-datepiker'),
-            end = $('.end-datepiker'),
-            set = function () {
-                if (!begin.hasClass('not-set-date')) {
-                    begin.datepicker('setEndDate', end.datepicker('getDate'));
-                }
-                if (!end.hasClass('not-set-date')) {
-                    end.datepicker('setStartDate', begin.datepicker('getDate'));
-                }
-            };
-        set();
-        begin.change(function () {
-            set();
-            if (!end.val()) {
-                end.focus();
-            }
-        });
-        end.change(function () {
-            set();
-            if (!begin.val()) {
-                begin.focus();
-            }
-        });
-    }());
+    new RangeInputs($('.begin-datepiker'), $('.end-datepiker'));
 
     //form group collapse
     (function () {
@@ -281,33 +326,6 @@ var docReadyForms = function () {
             });
     }());
 
-    $.fn.mbhGuestSelectPlugin = function() {
-        if(this.is('input')) {
-            select2Text(this);
-        }
-        this.select2({
-            minimumInputLength: 3,
-            allowClear: true,
-            placeholder: 'Выберите гостя',
-            ajax: {
-                url: Routing.generate('ajax_tourists'),
-                dataType: 'json',
-                data: function (params) {
-                    return {
-                        query: params.term // search term
-                    };
-                },
-                results: function (data) {
-                    return {results: data};
-                }
-            },
-            dropdownCssClass: "bigdrop"
-        });
-    }
-
-    //payer select2
-    $('.findGuest').mbhGuestSelectPlugin();
-
     //remember inputs
     (function () {
         var inputs = $('.input-remember'),
@@ -367,6 +385,9 @@ var docReadyForms = function () {
     }());
 
     $('.tags-select-widget').tagsSelectWidget();
+
+    //payer select2
+    $('.findGuest').mbhGuestSelectPlugin();
 };
 
 

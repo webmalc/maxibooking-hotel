@@ -18,6 +18,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\UserBundle\Document\User;
+use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -732,7 +733,12 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                     $repository->createQueryBuilder()->field('isEnabledWorkShift')->equals(true);
                 }
             ])
-            ->add('date', 'date', [
+            ->add('begin', 'date', [
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'attr' => ['data-date-format' => 'dd.mm.yyyy'],
+            ])
+            ->add('end', 'date', [
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['data-date-format' => 'dd.mm.yyyy'],
@@ -742,11 +748,11 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
-     * @Route("/work_shift_table", name="report_work_shift_table", options={"expose"=true})
+     * @Route("/work_shift_table", name="report_work_shift_list", options={"expose"=true})
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ROOMS_REPORT')")
      */
-    public function workShiftTableAction(Request $request)
+    public function workShiftListAction(Request $request)
     {
         $id = $request->get('id');
         $workShiftRepository = $this->dm->getRepository('MBHUserBundle:WorkShift');
@@ -769,10 +775,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
             $requestDate = $filterForm->getData();
             /** @var \DateTime $date */
-            $date = $requestDate['date'];
-            $begin = $date->modify('midnight');
-            $end = clone($begin);
-            $end->modify('+1 day');
+            $begin = $requestDate['begin'];
+            $end = $requestDate['end'];
+            ///$end->modify('+1 day');
             $range = [
                 '$gte' => $begin,
                 '$lte' => $end
@@ -782,7 +787,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                     ['createdAt' => $range],
                     ['updatedAt' => $range],
                 ],
-                'isOpen' => false
+                'status' => WorkShift::STATUS_LOCKED//STATUS_CLOSED
             ];
             if($requestDate['user']) {
                 $user = $requestDate['user']->getUsername();
@@ -790,75 +795,74 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             }
             $workShifts = $workShiftRepository->findBy($criteria);
         }
-        $cashDocuments = [];
-        $packages = [];
-        $arrivalPackages = [];
-        $departurePackages = [];
 
-        if($workShifts) {
-            $range = [
-                '$gte' => $workShifts[0]->getBegin(),
-                '$lte' => $workShifts[0]->getEnd(),
-            ];
+        return $this->render('MBHPackageBundle:Report:workShiftTableActions.html.twig', [
+            'workShifts' => $workShifts,
+        ]);
+    }
 
-            $criteria = [
-                '$or' => [
-                    ['createdAt' => $range],
-                    ['updatedAt' => $range],
-                ],
-                'createdBy' => $user
-            ];
-
-            $cashDocuments = $this->dm->getRepository('MBHCashBundle:CashDocument')->findBy($criteria);
-            $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
-            $packages = $packageRepository->findBy($criteria);
-
-            $criteria = ['arrivalTime' => $range];
-            $arrivalPackages = $packageRepository->findBy($criteria);
-            $criteria = ['departureTime' => $range];
-            $departurePackages = $packageRepository->findBy($criteria);
+    /**
+     * @Route("/get_work_shift", name="report_work_shift_table", options={"expose"=true})
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     */
+    public function workShiftTableAction(Request $request)
+    {
+        $id = $request->get('id');
+        $workShiftRepository = $this->dm->getRepository('MBHUserBundle:WorkShift');
+        $user = null;
+        $workShift = $workShiftRepository->find($id);
+        if(!$workShift) {
+            throw $this->createNotFoundException();
         }
+
+        $range = [
+            '$gte' => $workShift->getBegin(),
+            '$lte' => $workShift->getEnd(),
+        ];
+
+        $criteria = [
+            '$or' => [
+                ['createdAt' => $range],
+                ['updatedAt' => $range],
+            ],
+            'createdBy' => $user
+        ];
+
+        $cashDocuments = $this->dm->getRepository('MBHCashBundle:CashDocument')->findBy($criteria);
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+        $packages = $packageRepository->findBy($criteria);
+
+        $criteria = ['arrivalTime' => $range];
+        $arrivalPackages = $packageRepository->findBy($criteria);
+        $criteria = ['departureTime' => $range];
+        $departurePackages = $packageRepository->findBy($criteria);
 
         $updateCashIDs = [];
         foreach($cashDocuments as $cashDocument) {
-            foreach($workShifts as $workShift) {
-                if($cashDocument->getUpdatedAt() && $cashDocument->getUpdatedAt() > $workShift->getBegin() && $cashDocument->getUpdatedAt() < $workShift->getEnd()) {
-                    $updateCashIDs[] = $cashDocument->getId();
-                }
+            if($cashDocument->getUpdatedAt() && $cashDocument->getUpdatedAt() > $workShift->getBegin() && $cashDocument->getUpdatedAt() < $workShift->getEnd()) {
+                $updateCashIDs[] = $cashDocument->getId();
             }
         }
 
         $updatePackageIDs = [];
         foreach($packages as $package) {
-            foreach($workShifts as $workShift) {
-                if($package->getUpdatedAt() && $package->getUpdatedAt() > $workShift->getBegin() && $package->getUpdatedAt() < $workShift->getEnd()) {
-                    $updatePackageIDs[] = $package->getId();
-                }
+            if($package->getUpdatedAt() && $package->getUpdatedAt() > $workShift->getBegin() && $package->getUpdatedAt() < $workShift->getEnd()) {
+                $updatePackageIDs[] = $package->getId();
             }
         }
 
-        $jsonResponse = [
-            'result' => $this->renderView('MBHPackageBundle:Report:workShiftTable.html.twig', [
-                'workShifts' => $workShifts,
-                'cashDocuments' => $cashDocuments,
-                'packages' => $packages,
-                'updateCashIDs' => $updateCashIDs,
-                'updatePackageIDs' => $updatePackageIDs,
-                'arrivalPackages' => $arrivalPackages,
-                'departurePackages' => $departurePackages,
-                'statuses' => $this->container->getParameter('mbh.package.statuses'),
-                'methods' => $this->container->getParameter('mbh.cash.methods'),
-                'operations' => $this->container->getParameter('mbh.cash.operations')
-            ]),
-            'actions' => null,
-        ];
-
-        if(count($workShifts) > 1) {
-            $jsonResponse['actions'] = $this->renderView('MBHPackageBundle:Report:workShiftTableActions.html.twig', [
-                'workShifts' => $workShifts,
-            ]);
-        }
-
-        return new JsonResponse($jsonResponse);
+        return $this->render('MBHPackageBundle:Report:workShiftTable.html.twig', [
+            'workShifts' => [$workShift],
+            'cashDocuments' => $cashDocuments,
+            'packages' => $packages,
+            'updateCashIDs' => $updateCashIDs,
+            'updatePackageIDs' => $updatePackageIDs,
+            'arrivalPackages' => $arrivalPackages,
+            'departurePackages' => $departurePackages,
+            'statuses' => $this->container->getParameter('mbh.package.statuses'),
+            'methods' => $this->container->getParameter('mbh.cash.methods'),
+            'operations' => $this->container->getParameter('mbh.cash.operations')
+        ]);
     }
 }

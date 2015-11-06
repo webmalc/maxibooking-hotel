@@ -43,4 +43,12 @@
         </div>
     </div>
 
+    <script>
+        var packageBeginTime = new Date({{ package.begin.timestamp }} * 1000);
+        var packageEndTime = new Date({{ package.end.timestamp }} * 1000);
+        var earlyCheckInServiceIsEnabled = {{ earlyCheckInServiceIsEnabled|json_encode }};
+        var lateCheckOutServiceIsEnabled = {{ lateCheckOutServiceIsEnabled|json_encode }};
+    </script>
+
+    {% include 'MBHPackageBundle:Package:late-early-check-modal.html.twig' %}
 {% endblock %}
