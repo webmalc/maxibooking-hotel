@@ -27,7 +27,7 @@ $(document).on('ready', function () {
         $.ajax(workShiftTableUrl, {
             data: {id: id},
             success: function(response){
-                $workShiftReportWrapper.html(response.result)
+                $workShiftReportWrapper.html(response)
             }
         });
     }
@@ -37,13 +37,13 @@ $(document).on('ready', function () {
 
     updateTable();
 
-    $workShiftTableWrapper.on('click', 'a', function(e) {
+    $workShiftTableWrapper.on('click', 'table tr', function(e) {
         e.preventDefault();
         var $this = $(this);
         if ($this.hasClass('active')) {
             return;
         }
-        $workShiftTableWrapper.find('a').removeClass('active');
+        $workShiftTableWrapper.find('table tr').removeClass('active');
         $this.addClass('active');
         var id = $this.data('id');
         updateTableById(id);

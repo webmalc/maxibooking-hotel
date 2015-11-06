@@ -1,0 +1,22 @@
+<table class="table table-strip" id="work-shift-list-table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Время</th>
+        <th>Гостей</th>
+        <th>Касса</th>
+        <th>Статус</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for workShift in workShifts %}
+        <tr data-id="{{ workShift.id }}">
+            <td>{{ workShift.id }}</td>
+            <td>{{ workShift.begin|date('H:i') }} - {{ workShift.end|date('H:i') }}</td>
+            <td>{{ workShift.beginGuestTotal }}</td>
+            <td>{{ workShift.cashIncomeTotal }}</td>
+            <td>{{ workShift.status }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

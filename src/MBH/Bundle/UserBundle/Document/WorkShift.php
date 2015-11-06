@@ -28,6 +28,12 @@ class WorkShift extends Base
 
     /**
      * @var string
+     * @ODM\Id(strategy="INCREMENT")
+     */
+    protected $id;
+
+    /**
+     * @var string
      * @Gedmo\Versioned
      * @ODM\String()
      */

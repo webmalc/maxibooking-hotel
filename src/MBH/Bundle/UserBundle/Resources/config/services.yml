@@ -32,3 +32,7 @@ services:
         arguments: [@service_container]
         tags:
             - { name: validator.constraint_validator, alias: mbh.user.validator }
+
+    mbh.user.work_shift_manager:
+        class: MBH\Bundle\UserBundle\Service\WorkShiftManager
+        arguments: [@doctrine_mongodb.odm.default_document_manager]

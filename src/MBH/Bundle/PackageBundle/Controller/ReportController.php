@@ -722,6 +722,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         ];
     }
 
+    /**
+     * @return \Symfony\Component\Form\Form
+     */
     private function getWorkShiftForm()
     {
         return $this->createFormBuilder(null, [
@@ -751,54 +754,45 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
      * @Route("/work_shift_table", name="report_work_shift_list", options={"expose"=true})
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     * @Template()
      */
     public function workShiftListAction(Request $request)
     {
-        $id = $request->get('id');
         $workShiftRepository = $this->dm->getRepository('MBHUserBundle:WorkShift');
-        $workShifts = [];
-        $user = null;
-        if ($id) {
-            $workShift = $workShiftRepository->find($id);
-            if ($workShift) {
-                $workShifts = [$workShift];
-                $user = $workShift->getCreatedBy();
-            } else {
-                throw $this->createNotFoundException();
-            }
-        } else {
-            $filterForm = $this->getWorkShiftForm();
-            $filterForm->handleRequest($request);
-            if (!$filterForm->isValid()) {
-                throw $this->createNotFoundException();
-            };
 
-            $requestDate = $filterForm->getData();
-            /** @var \DateTime $date */
-            $begin = $requestDate['begin'];
-            $end = $requestDate['end'];
+        $filterForm = $this->getWorkShiftForm();
+        $filterForm->handleRequest($request);
+        if (!$filterForm->isValid()) {
+            throw $this->createNotFoundException();
+        };
+
+        $requestDate = $filterForm->getData();
+
+        $criteria = ['status' => WorkShift::STATUS_LOCKED];//STATUS_CLOSED
+        $range = [];
+        if($requestDate['begin']) {
+            $range['$gte'] = $requestDate['begin'];
+        }
+        if($requestDate['end']) {
             ///$end->modify('+1 day');
-            $range = [
-                '$gte' => $begin,
-                '$lte' => $end
+            $range['$lte'] = $requestDate['end'];
+        }
+        if($range) {
+            $criteria['$or'] = [
+                ['createdAt' => $range],
+                ['updatedAt' => $range],
             ];
-            $criteria = [
-                '$or' => [
-                    ['createdAt' => $range],
-                    ['updatedAt' => $range],
-                ],
-                'status' => WorkShift::STATUS_LOCKED//STATUS_CLOSED
-            ];
-            if($requestDate['user']) {
-                $user = $requestDate['user']->getUsername();
-                $criteria['createdBy'] = $user;
-            }
-            $workShifts = $workShiftRepository->findBy($criteria);
         }
 
-        return $this->render('MBHPackageBundle:Report:workShiftTableActions.html.twig', [
+        if($requestDate['user']) {
+            $user = $requestDate['user']->getUsername();
+            $criteria['createdBy'] = $user;
+        }
+        $workShifts = $workShiftRepository->findBy($criteria);
+
+        return [
             'workShifts' => $workShifts,
-        ]);
+        ];
     }
 
     /**
@@ -810,7 +804,6 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     {
         $id = $request->get('id');
         $workShiftRepository = $this->dm->getRepository('MBHUserBundle:WorkShift');
-        $user = null;
         $workShift = $workShiftRepository->find($id);
         if(!$workShift) {
             throw $this->createNotFoundException();
@@ -826,7 +819,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 ['createdAt' => $range],
                 ['updatedAt' => $range],
             ],
-            'createdBy' => $user
+            'createdBy' => $workShift->getCreatedBy()
         ];
 
         $cashDocuments = $this->dm->getRepository('MBHCashBundle:CashDocument')->findBy($criteria);
