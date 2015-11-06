@@ -97,7 +97,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
         $tariffRoomCaches = $dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch(
                 $begin, $end, $hotel,
-                $request->get('roomTypes') ? $request->get('roomTypes') : [],
+                $request->get('roomTypes') && !$manager->useCategories ? $request->get('roomTypes') : [],
                 $request->get('tariffs') ? $request->get('tariffs') : [],
                 true)
         ;

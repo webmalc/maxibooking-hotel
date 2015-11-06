@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 
 class RestrictionRepository extends DocumentRepository
 {
@@ -48,6 +49,24 @@ class RestrictionRepository extends DocumentRepository
         $qb->sort('date')->sort('hotel.id')->sort('roomType.id')->sort('tariff.id');
 
         return $qb;
+    }
+
+    /**
+     * @param \DateTime $date
+     * @param RoomType $roomType
+     * @param Tariff $tariff
+     * @return null|object
+     */
+    public function findOneByDate(\DateTime $date, RoomType $roomType, Tariff $tariff)
+    {
+        $qb = $this->createQueryBuilder('q');
+        $qb
+            ->field('date')->equals($date)
+            ->field('tariff.id')->equals($tariff->getId())
+            ->field('roomType.id')->equals($roomType->getId());
+        ;
+
+        return $qb->getQuery()->getSingleResult();
     }
 
     /**

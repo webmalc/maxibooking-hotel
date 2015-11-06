@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Services\Search;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 
 /**
  *  Search service
@@ -22,12 +23,46 @@ class SearchFactory implements SearchInterface
     protected $search;
 
     /**
+     * @var \Doctrine\ODM\MongoDB\DocumentManager
+     */
+    protected $dm;
+
+    /**
+     * @var ClientConfig;
+     */
+    private $config;
+
+    /**
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->dm = $this->container->get('doctrine_mongodb')->getManager();
+        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
         $this->search = $this->container->get('mbh.package.search_simple');
+    }
+
+    /**
+     * @return $this
+     */
+    public function setWithTariffs()
+    {
+        $this->search = $this->container->get('mbh.package.search_with_tariffs')->setSearch($this->search);
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setAdditionalDates()
+    {
+        if ($this->config && $this->config->getSearchDates()) {
+            $this->search = $this->container->get('mbh.package.search_multiple_dates')->setSearch($this->search);
+        }
+
+        return $this;
     }
 
     /**

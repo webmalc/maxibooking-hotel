@@ -219,7 +219,6 @@ $(document).ready(function () {
 
 var $taskCounter = $('#task-counter');
 var updateTaskCounter = function () {
-    console.log('update task counter');
     $.ajax({
         url: Routing.generate('task_ajax_total_my_open'),
         dataType: 'json',

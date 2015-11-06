@@ -1,11 +1,21 @@
 services:
+
+    #begin: search
     mbh.package.search:
             class: MBH\Bundle\PackageBundle\Services\Search\SearchFactory
             arguments: [@service_container]
 
     mbh.package.search_simple:
-                class: MBH\Bundle\PackageBundle\Services\Search\Search
-                arguments: [@service_container]
+            class: MBH\Bundle\PackageBundle\Services\Search\Search
+            arguments: [@service_container]
+
+    mbh.package.search_with_tariffs:
+            class: MBH\Bundle\PackageBundle\Services\Search\SearchWithTariffs
+
+    mbh.package.search_multiple_dates:
+            class: MBH\Bundle\PackageBundle\Services\Search\SearchMultipleDates
+            arguments: [@service_container]
+    #end: search
 
     mbh.tourists.messenger:
             class: MBH\Bundle\PackageBundle\Services\TouristsMessenger

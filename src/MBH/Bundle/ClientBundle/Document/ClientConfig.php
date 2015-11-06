@@ -56,6 +56,25 @@ class ClientConfig extends Base
     protected $useRoomTypeCategory = false;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Int()
+     * @Assert\NotNull()
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=0, max=20)
+     */
+    protected $searchDates = 0;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $searchWindows = false;
+
+    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
@@ -271,4 +290,40 @@ class ClientConfig extends Base
 
         return $doc->checkRequest($request);
     }
+
+    /**
+     * @return boolean
+     */
+    public function getSearchDates()
+    {
+        return $this->searchDates;
+    }
+
+    /**
+     * @param boolean $searchDates
+     * @return ClientConfig
+     */
+    public function setSearchDates($searchDates)
+    {
+        $this->searchDates = $searchDates;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSearchWindows()
+    {
+        return $this->searchWindows;
+    }
+
+    /**
+     * @param boolean $searchWindows
+     */
+    public function setSearchWindows($searchWindows)
+    {
+        $this->searchWindows = $searchWindows;
+    }
+
+
 }
