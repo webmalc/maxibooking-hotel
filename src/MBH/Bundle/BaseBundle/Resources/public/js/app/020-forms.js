@@ -66,6 +66,36 @@ $.fn.serializeObject = function () {
     return o;
 };
 
+$.fn.mbhGuestSelectPlugin = function() {
+    this.each(function(){
+        var $this = $(this);
+        if($this.is('input')) {
+            $this = select2Text($this);
+        }
+        $this.select2({
+            minimumInputLength: 3,
+            allowClear: true,
+            placeholder: 'Выберите гостя',
+            ajax: {
+                url: Routing.generate('ajax_tourists'),
+                dataType: 'json',
+                data: function (params) {
+                    return {
+                        query: params.term // search term
+                    };
+                },
+                results: function (data) {
+                    return {results: data};
+                },
+                /*processResults: function(data) {
+                 console.log(data);
+                 }*/
+            },
+            dropdownCssClass: "bigdrop"
+        });
+    })
+}
+
 var docReadyForms = function () {
     'use strict';
 
@@ -296,33 +326,6 @@ var docReadyForms = function () {
             });
     }());
 
-    $.fn.mbhGuestSelectPlugin = function() {
-        if(this.is('input')) {
-            select2Text(this);
-        }
-        this.select2({
-            minimumInputLength: 3,
-            allowClear: true,
-            placeholder: 'Выберите гостя',
-            ajax: {
-                url: Routing.generate('ajax_tourists'),
-                dataType: 'json',
-                data: function (params) {
-                    return {
-                        query: params.term // search term
-                    };
-                },
-                results: function (data) {
-                    return {results: data};
-                }
-            },
-            dropdownCssClass: "bigdrop"
-        });
-    }
-
-    //payer select2
-    $('.findGuest').mbhGuestSelectPlugin();
-
     //remember inputs
     (function () {
         var inputs = $('.input-remember'),
@@ -382,6 +385,9 @@ var docReadyForms = function () {
     }());
 
     $('.tags-select-widget').tagsSelectWidget();
+
+    //payer select2
+    $('.findGuest').mbhGuestSelectPlugin();
 };
 
 
