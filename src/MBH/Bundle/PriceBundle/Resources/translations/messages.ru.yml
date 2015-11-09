@@ -7,3 +7,13 @@ form:
             isPercentDiscount: В процентах
             discount: Скидка
             comment: Комментарий
+            freeChildrenQuantity: Количество детей бесплатно
+            freeAdultsQuantity: Количество взрослых бесплатно
+            condition: Условие
+            condition_quantity: Количество
+        choice_label:
+            condition:
+                min_accommodation: Минимальная длина брони
+                max_accommodation: Максимальная длина брони
+                min_tourists: Минимальное количество гостей
+                max_tourists: Максимальное количество гостей

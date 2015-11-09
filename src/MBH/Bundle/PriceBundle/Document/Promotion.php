@@ -92,6 +92,36 @@ class Promotion extends Base
     protected $comment;
 
     /**
+     * @ODM\Integer()
+     * @var integer
+     * @Assert\Type(type="numeric")
+     * @Assert\Length(min="0", max="10")
+     */
+    protected $freeChildrenQuantity;
+
+    /**
+     * @ODM\Integer()
+     * @var integer
+     * @Assert\Type(type="numeric")
+     * @Assert\Length(min="0", max="10")
+     */
+    protected $freeAdultsQuantity;
+
+    /**
+     * @ODM\String()
+     * @var string
+     * @Assert\Choice(callback={"MBH\Bundle\PriceBundle\Services\PromotionConditionFactory", "getAvailableConditions"})
+     */
+    protected $condition;
+
+    /**
+     * @ODM\Integer()
+     * @var integer
+     * @Assert\Type(type="numeric")
+     */
+    protected $conditionQuantity;
+
+    /**
      * @return string
      */
     public function getFullTitle()
@@ -186,4 +216,78 @@ class Promotion extends Base
     {
         $this->comment = $comment;
     }
+
+    /**
+     * @return int
+     */
+    public function getFreeChildrenQuantity()
+    {
+        return $this->freeChildrenQuantity;
+    }
+
+    /**
+     * @param int $freeChildrenQuantity
+     */
+    public function setFreeChildrenQuantity($freeChildrenQuantity)
+    {
+        $this->freeChildrenQuantity = $freeChildrenQuantity;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFreeAdultsQuantity()
+    {
+        return $this->freeAdultsQuantity;
+    }
+
+    /**
+     * @param int $freeAdultsQuantity
+     */
+    public function setFreeAdultsQuantity($freeAdultsQuantity)
+    {
+        $this->freeAdultsQuantity = $freeAdultsQuantity;
+    }
+
+
+
+    /**
+     * @return mixed
+     */
+    public function getCondition()
+    {
+        return $this->condition;
+    }
+
+    /**
+     * @param mixed $condition
+     * @return Promotion
+     */
+    public function setCondition($condition)
+    {
+        $this->condition = $condition;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getConditionQuantity()
+    {
+        return $this->conditionQuantity;
+    }
+
+    /**
+     * @param int $conditionQuantity
+     * @return Promotion
+     */
+    public function setConditionQuantity($conditionQuantity)
+    {
+        $this->conditionQuantity = $conditionQuantity;
+
+        return $this;
+    }
+
+
 }
