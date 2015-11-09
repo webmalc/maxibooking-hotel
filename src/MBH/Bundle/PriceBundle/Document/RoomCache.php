@@ -204,7 +204,7 @@ class RoomCache extends Base
      */
     public function packagesCountPercent()
     {
-        return round(($this->packagesCount * 100)/ $this->totalRooms, 2);
+        return $this->totalRooms > 0 ? round(($this->packagesCount * 100)/ $this->totalRooms, 2) : 0;
     }
 
     /**

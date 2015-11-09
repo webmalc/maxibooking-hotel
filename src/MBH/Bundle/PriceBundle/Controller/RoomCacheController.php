@@ -116,7 +116,6 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         (empty($request->get('updateRoomCaches'))) ? $updateData = [] : $updateData = $request->get('updateRoomCaches');
         (empty($request->get('newRoomCaches'))) ? $newData = [] : $newData = $request->get('newRoomCaches');
 
-
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
 
@@ -167,7 +166,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
             //delete
             if (isset($val['rooms']) && (trim($val['rooms']) === '' || $val['rooms'] === null)) {
-                $this->dm->remove($roomCache);
+                if ($roomCache->getPackagesCount() <= 0) {
+                    $this->dm->remove($roomCache);
+                }
                 continue;
             }
 

@@ -5,6 +5,12 @@ services:
     tags:
       - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
+  mbh.room_cache.subscriber:
+      class: MBH\Bundle\PriceBundle\EventListener\RoomCacheSubscriber
+      arguments: [@service_container]
+      tags:
+        - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
   mbh.room.cache:
           class: MBH\Bundle\PriceBundle\Services\RoomCache
           arguments: [@service_container]

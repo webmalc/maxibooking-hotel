@@ -8,11 +8,11 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 class RoomCacheRepository extends DocumentRepository
 {
     /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param Hotel $hotel
+     * @param \DateTime|null $begin
+     * @param \DateTime|null $end
+     * @param Hotel|null $hotel
      * @param array $roomTypes
-     * @param mixed $tariffs
+     * @param bool|false $tariffs
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
     public function fetchQueryBuilder(
