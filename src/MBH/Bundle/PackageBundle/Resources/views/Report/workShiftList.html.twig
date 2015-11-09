@@ -6,6 +6,10 @@
             <th class="td-md">Начало</th>
             <th class="td-md">Конец</th>
             <th class="td-xs">Гостей</th>
+            <th class="td-xs">Заехавших</th>
+            <th class="td-xs">Не заехавших</th>
+            <th class="td-xs">Выехавших</th>
+            <th class="td-xs">Не выехавших</th>
             <th class="td-sm">Доход</th>
             <th class="td-sm">Электронные</th>
             <th class="td-md">Статус</th>
@@ -28,6 +32,10 @@
                     {% endif %}
                 </td>
                 <td>{{ workShift.beginGuestTotal }}</td>
+                <td>{{ workShift.arrivalTouristTotal }}</td>
+                <td>{{ workShift.noArrivalTouristTotal }}</td>
+                <td>{{ workShift.departureTouristTotal }}</td>
+                <td>{{ workShift.noDepartureTouristTotal }}</td>
                 <td>{{ workShift.cashIncomeTotal }}</td>
                 <td>{{ workShift.electronicCashIncomeTotal }}</td>
                 <td>{{ ('workShift.statuses.' ~ workShift.status)|trans }}</td>

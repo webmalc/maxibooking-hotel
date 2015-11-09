@@ -796,7 +796,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             $criteria['createdBy'] = $requestDate['user']->getUsername();
         }
 
-        $workShifts = $workShiftRepository->findBy($criteria);
+        $workShifts = $workShiftRepository->findBy($criteria, ['id' => 1]);
 
         return [
             'workShifts' => $workShifts,
