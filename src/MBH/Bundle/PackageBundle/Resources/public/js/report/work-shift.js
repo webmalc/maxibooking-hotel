@@ -49,4 +49,12 @@ $(document).on('ready', function () {
         var id = $this.data('id');
         updateTableById(id);
     })
+
+    $workShiftTableWrapper.on('click', '.work-shift-confirm' , function(e) {
+        e.preventDefault()
+        var $this = $(this);
+        var id = $this.data('id');
+        console.log(id);
+        mbh.alert.show('', 'Завершить смену?', 'Завершить смену и подтвердить N платежей на сумму K?', 'Подтвердить', 'fa fa-check', 'success');
+    })
 });

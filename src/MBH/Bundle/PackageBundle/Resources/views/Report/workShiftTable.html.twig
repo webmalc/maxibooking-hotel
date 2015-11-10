@@ -49,7 +49,7 @@
         {% endblock %}
     {% endembed %}
 
-    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Брони'} %}
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Созданные брони'} %}
         {% block content %}
             {% if packages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' %}

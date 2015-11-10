@@ -70,6 +70,15 @@ class WorkShiftManager
 
         /** @var PackageRepository $packageRepository */
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+
+
+        /** @var Package[] $packages */
+        $packages = $packageRepository->findBy(['checkIn' => false, 'begin' => ['$gte' => new \DateTime()]]);//todo aggregation
+        $endGuestTotal = 0;
+        foreach($packages as $package) {
+            $endGuestTotal += $package->getAdults() + $package->getChildren();
+        }
+
         $arrivalTouristTotal = 0;
         /** @var Package[] $packages */
         $packages = $packageRepository->findBy(['arrivalTime' => ['$gte' => $workShift->getBegin(), '$lte' => $workShift->getEnd()]]);//todo aggregation
@@ -175,6 +184,7 @@ class WorkShiftManager
 
         $workShift
             ->setStatus(WorkShift::STATUS_LOCKED)
+            ->setEndGuestTotal($endGuestTotal)
             ->setArrivalTouristTotal($arrivalTouristTotal)
             ->setNoArrivalTouristTotal($noArrivalTouristTotal)
             ->setContinuePackageTotal($continuePackageTotal)

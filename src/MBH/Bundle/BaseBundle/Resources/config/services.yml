@@ -7,6 +7,11 @@ services:
         tags:
             - name: twig.extension
 
+    #twig.date_extension:
+    #    class: Twig_Extensions_Extension_Date
+    #    tags:
+    #        - name: twig.extension
+
     doctrine_odm.mongodb.validator.unique:
       class: MBH\Bundle\BaseBundle\Validator\Constraints\UniqueEntityValidator
       arguments:

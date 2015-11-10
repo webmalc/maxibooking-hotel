@@ -58,6 +58,13 @@ class WorkShift extends Base
      */
     protected $beginGuestTotal;
     /**
+     * Количество гостей на конец
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     */
+    protected $endGuestTotal;
+    /**
      * Количество оформленных туристов на начало
      * @var integer
      * @Gedmo\Versioned
@@ -218,6 +225,27 @@ class WorkShift extends Base
 
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getEndGuestTotal()
+    {
+        return $this->endGuestTotal;
+    }
+
+    /**
+     * @param int $endGuestTotal
+     * @return WorkShift
+     */
+    public function setEndGuestTotal($endGuestTotal)
+    {
+        $this->endGuestTotal = $endGuestTotal;
+
+        return $this;
+    }
+
+
 
     /**
      * @return int
