@@ -36,14 +36,15 @@ abstract class AbstractFileRepository
     }
 
     /**
-     * @param $regexQuery
+     * @param $query
      * @return array
      */
-    public function search($regexQuery)
+    public function search($query)
     {
         $list = $this->getList();
-        return array_filter($list, function($highway) use ($regexQuery) {
-            return preg_match($regexQuery, $highway) > 0;
+        $query = mb_strtolower($query);
+        return array_filter($list, function($item) use ($query) {
+            return mb_strpos(mb_strtolower($item), $query) !== false;
         });
     }
 

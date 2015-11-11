@@ -259,7 +259,7 @@ class SimpleSearchController extends Controller
             ];
         }
 
-        foreach($this->get('mbh.online.district_repository')->search($regexQuery) as $district) {
+        foreach($this->get('mbh.online.district_repository')->search($query) as $district) {
             $response[] = [
                 'id' => $district,
                 'name' => $district,
