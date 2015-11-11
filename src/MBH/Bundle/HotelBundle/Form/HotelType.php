@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use MBH\Bundle\OnlineBundle\Document\DistrictRepository;
 use MBH\Bundle\OnlineBundle\Document\HighwayRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -13,10 +14,15 @@ class HotelType extends AbstractType
      * @var HighwayRepository
      */
     protected $highwayRepository;
+    /**
+     * @var DistrictRepository
+     */
+    protected $districtRepository;
 
-    public function __construct(HighwayRepository $highwayRepository)
+    public function __construct(HighwayRepository $highwayRepository, DistrictRepository $districtRepository)
     {
         $this->highwayRepository = $highwayRepository;
+        $this->districtRepository = $districtRepository;
     }
 
 
@@ -71,6 +77,14 @@ class HotelType extends AbstractType
                 'group' => 'form.hotelType.general_info',
                 'required' => false,
                 'choices' => array_combine($highwayList, $highwayList)
+            ]);
+        $districtList = $this->districtRepository->getList();
+        $builder
+            ->add('district', 'choice', [
+                'label' => 'form.hotelType.district',
+                'group' => 'form.hotelType.general_info',
+                'required' => false,
+                'choices' => array_combine($districtList, $districtList)
             ]);
         $builder
             ->add('file', 'file', [

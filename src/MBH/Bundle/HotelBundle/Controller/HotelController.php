@@ -79,11 +79,19 @@ class HotelController extends Controller
     public function newAction()
     {
         $entity = new Hotel();
-        $form = $this->createForm(new HotelType($this->get('mbh.online.highway_repository')), $entity);
+        $form = $this->createForm($this->getHotelType(), $entity);
 
         return array(
             'form' => $form->createView(),
         );
+    }
+
+    /**
+     * @return HotelType
+     */
+    public function getHotelType()
+    {
+        return new HotelType($this->get('mbh.online.highway_repository'), $this->get('mbh.online.district_repository'));
     }
 
     /**
@@ -97,7 +105,7 @@ class HotelController extends Controller
     public function createAction(Request $request)
     {
         $entity = new Hotel();
-        $form = $this->createForm(new HotelType($this->get('mbh.online.highway_repository')), $entity);
+        $form = $this->createForm($this->getHotelType(), $entity);
         $form->submit($request);
 
         if ($form->isValid()) {
@@ -135,7 +143,7 @@ class HotelController extends Controller
      */
     public function updateAction(Request $request, Hotel $entity)
     {
-        $form = $this->createForm(new HotelType($this->get('mbh.online.highway_repository')), $entity);
+        $form = $this->createForm($this->getHotelType(), $entity);
         $form->submit($request);
 
         if ($form->isValid()) {
@@ -169,7 +177,7 @@ class HotelController extends Controller
      */
     public function editAction(Hotel $entity)
     {
-        $form = $this->createForm(new HotelType($this->get('mbh.online.highway_repository')), $entity, [
+        $form = $this->createForm($this->getHotelType(), $entity, [
             'imageUrl' => $entity->getLogoUrl(),
             'removeImageUrl' => $this->generateUrl('hotel_delete_logo', ['id' => $entity->getId()])
         ]);

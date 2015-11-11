@@ -310,6 +310,7 @@ class Hotel extends Base implements \JsonSerializable
     protected $rate = 0.0;
 
     /**
+     * @ODM\String()
      * @var String
      */
     protected $district;
