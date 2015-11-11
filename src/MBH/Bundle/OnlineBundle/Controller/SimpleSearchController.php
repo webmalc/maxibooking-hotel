@@ -29,8 +29,10 @@ class SimpleSearchController extends Controller
      */
     public function ajaxFormAction()
     {
+        $highwayList = $this->get('mbh.online.highway_repository')->getList();
         return [
-            'sortList' => $this->getSortList()
+            'sortList' => $this->getSortList(),
+            'highwayList' => array_combine($highwayList, $highwayList)
         ];
     }
 
@@ -62,12 +64,13 @@ class SimpleSearchController extends Controller
         $query->distance = (float)$request->get('distance');
         $query->sort = $request->get('sort');
         $query->addRoomType($request->get('roomType'));
+        $query->highway = $request->get('highway');
 
         $queryID = $request->get('query_id');
         if($request->get('query_type') == 'city') {
             $query->city = $queryID;
-        } elseif($request->get('query_type') == 'highway') {
-            $query->highway = $queryID;
+        } elseif($request->get('query_type') == 'district') {
+            $query->district = $queryID;
         } else {
             $query->hotel = $queryID;
         };
@@ -191,8 +194,8 @@ class SimpleSearchController extends Controller
         $query->isOnline = true;
         $query->begin = new \DateTime('midnight + 1 day');
         $query->end = new \DateTime('midnight + 2 days');
-        //$query->adults = 2;
-        //$query->children = 0;
+        $query->adults = 2;
+        $query->children = 0;
         $query->sort = 'rate';
         //$hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
         $results = $this->get('mbh.package.search')->searchGroupByHotel($query);
@@ -203,6 +206,7 @@ class SimpleSearchController extends Controller
             'adults' => '2',
             //'hotels' => $hotels,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
+            'popular' => true
         ];
     }
 
@@ -222,7 +226,7 @@ class SimpleSearchController extends Controller
             ->getQuery()->execute()
         ;
 
-        $region = $this->dm->getRepository('MBHHotelBundle:Region')->findOneBy(['title' => 'Московская область']);
+        $region = $this->dm->getRepository('MBHHotelBundle:Region')->findOneBy(['title' => ['$in' => ['Москва и Московская обл.', 'Московская область']]]);
 
         if(!$region) {
             throw new Exception();
@@ -255,11 +259,11 @@ class SimpleSearchController extends Controller
             ];
         }
 
-        foreach($this->get('mbh.online.highway_repository')->search($regexQuery) as $highway) {
+        foreach($this->get('mbh.online.district_repository')->search($regexQuery) as $district) {
             $response[] = [
-                'id' => $highway,
-                'name' => $highway,
-                'type' => 'highway'
+                'id' => $district,
+                'name' => $district,
+                'type' => 'district'
             ];
         }
 

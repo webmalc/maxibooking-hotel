@@ -11,3 +11,6 @@ services:
     mbh.online.highway_repository:
         class:     MBH\Bundle\OnlineBundle\Document\HighwayRepository
         arguments: [@file_locator]
+    mbh.online.district_repository:
+        class:     MBH\Bundle\OnlineBundle\Document\DistrictRepository
+        arguments: [@file_locator]

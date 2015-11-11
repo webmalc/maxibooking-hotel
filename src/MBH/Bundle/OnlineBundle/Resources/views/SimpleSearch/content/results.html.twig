@@ -33,7 +33,11 @@
                             {% endfor %}
                         </div>
                         <div class="price col-xs-4">
-                            <div class="pull-right">{{ result.result.price(result.result.adults, result.result.children) }} <i class="fa fa-ruble"></i></div>
+                            <div class="pull-right">
+                                {% if popular is defined %}от{% endif %}
+                                {{ result.result.price(result.result.adults, result.result.children) }}
+                                <i class="fa fa-ruble"></i>
+                            </div>
                         </div>
                     </div>
                     {% endfor %}

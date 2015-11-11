@@ -154,7 +154,7 @@
                 </div>
                 <div class="panel-body">
                     <div id="mbh-form-wrapper" style="overflow: hidden; height: auto;">
-                        <?php echo file_get_contents('http://mbh.h/app_dev.php/simplesearch/ajax/form') ?>
+                        <?php echo file_get_contents('http://mbh.h/app_dev.php/simplesearch/ajax/form?'. http_build_query($_GET)) ?>
                     </div>
                 </div>
             </div>

@@ -117,6 +117,11 @@ class SearchQuery
      */
     public $hotel;
 
+    /**
+     * @var String
+     */
+    public $district;
+
     public function addExcludeRoomType($id)
     {
         if (!in_array($id, $this->excludeRoomTypes) && !empty($id)) {

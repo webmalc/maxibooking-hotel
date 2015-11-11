@@ -73,6 +73,9 @@ class Search
             } elseif($query->highway) {
                 $qb->field('highway')->equals($query->highway);
             }
+            if($query->district) {
+                $qb->field('district')->equals($query->district);
+            }
 
             if ($query->distance) {
                 $qb->field('MKADdistance')->lte($query->distance);

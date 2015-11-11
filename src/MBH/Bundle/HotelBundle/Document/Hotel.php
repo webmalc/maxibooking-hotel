@@ -309,6 +309,11 @@ class Hotel extends Base implements \JsonSerializable
      */
     protected $rate = 0.0;
 
+    /**
+     * @var String
+     */
+    protected $district;
+
     public function __construct()
     {
         $this->roomTypes = new \Doctrine\Common\Collections\ArrayCollection();
@@ -1251,5 +1256,21 @@ class Hotel extends Base implements \JsonSerializable
     public function setRate($rate)
     {
         $this->rate = $rate;
+    }
+
+    /**
+     * @return String
+     */
+    public function getDistrict()
+    {
+        return $this->district;
+    }
+
+    /**
+     * @param String $district
+     */
+    public function setDistrict($district)
+    {
+        $this->district = $district;
     }
 }
