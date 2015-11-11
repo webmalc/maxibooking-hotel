@@ -218,6 +218,7 @@ class SimpleSearchController extends Controller
     public function searchAction($query)
     {
         $regexQuery = '/.*'.$query.'.*/i';
+        /** @var Hotel[] $hotels */
         $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')
             ->createQueryBuilder()
             ->field('fullTitle')
@@ -244,17 +245,27 @@ class SimpleSearchController extends Controller
 
         $response = [];
 
+        $typeParams = $this->getParameter('mbh.hotel')['types'];
+
         foreach($hotels as $hotel) {
+            $type = null;
+            $types = $hotel->getType();
+            if($types) {
+                $type = reset($types);
+                $type = $typeParams[$type];
+            } else {
+                $type = 'Отель';
+            }
             $response[] = [
                 'id' => $hotel->getId(),
-                'name' => $hotel->getFullTitle(),
+                'name' => $hotel->getFullTitle().', '.mb_strtolower($type),
                 'type' => 'hotel'
             ];
         }
         foreach($cities as $city) {
             $response[] = [
                 'id' => $city->getId(),
-                'name' => $city->getTitle(),
+                'name' => $city->getTitle().', г.',
                 'type' => 'city'
             ];
         }

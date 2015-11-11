@@ -91,7 +91,15 @@ class HotelController extends Controller
      */
     public function getHotelType()
     {
-        return new HotelType($this->get('mbh.online.highway_repository'), $this->get('mbh.online.district_repository'));
+        return new HotelType();
+    }
+
+    /**
+     * @return HotelExtendedType
+     */
+    public function getHotelExtendedType()
+    {
+        return new HotelExtendedType($this->dm, $this->get('mbh.online.highway_repository'), $this->get('mbh.online.district_repository'));
     }
 
     /**
@@ -221,7 +229,7 @@ class HotelController extends Controller
      */
     public function extendedAction(Hotel $entity)
     {
-        $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
+        $form = $this->createForm($this->getHotelExtendedType(), $entity, [
             'city' => $entity->getCity(),
             'config' => $this->container->getParameter('mbh.hotel')
         ]);
@@ -245,7 +253,7 @@ class HotelController extends Controller
      */
     public function extendedUpdateAction(Request $request, Hotel $entity)
     {
-        $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
+        $form = $this->createForm($this->getHotelExtendedType(), $entity, [
             'city' => $entity->getCity(),
             'config' => $this->container->getParameter('mbh.hotel'),
             'method' => Request::METHOD_PUT
