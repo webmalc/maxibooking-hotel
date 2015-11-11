@@ -13,7 +13,7 @@
         </thead>
         <tbody>
         {% for workShift in workShifts %}
-            <tr data-id="{{ workShift.id }}">
+            <tr data-id="{{ workShift.id }}" data-electronicCashIncomeTotal="{{ workShift.electronicCashIncomeTotal }}">
                 <td>{{ workShift.id }}</td>
                 <td class="text-center">
                     {{ workShift.begin|mbh_format }} {{ workShift.begin|date('H:i') }}
@@ -45,7 +45,9 @@
                 </td>
                 <td>{{ ('workShift.statuses.' ~ workShift.status)|trans }}</td>
                 <th class="td-md" style="vertical-align: middle">
-                    <a href="#" title="Подтвердить" class="btn btn-info work-shift-confirm" data-id="{{ workShift.id }}"><i class="fa fa-check"></i></a>
+                    {% if workShift.status == 'locked' %}
+                        <a href="#" title="Подтвердить" class="btn btn-info work-shift-confirm"><i class="fa fa-check"></i></a>
+                    {% endif %}
                 </th>
             </tr>
         {% endfor %}

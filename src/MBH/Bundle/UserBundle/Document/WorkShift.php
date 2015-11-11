@@ -382,7 +382,7 @@ class WorkShift extends Base
     }
 
     /**
-     * @return mixed
+     * @return integer
      */
     public function getElectronicCashIncomeTotal()
     {
@@ -390,7 +390,7 @@ class WorkShift extends Base
     }
 
     /**
-     * @param mixed $electronicCashIncomeTotal
+     * @param integer $electronicCashIncomeTotal
      * @return WorkShift
      */
     public function setElectronicCashIncomeTotal($electronicCashIncomeTotal)

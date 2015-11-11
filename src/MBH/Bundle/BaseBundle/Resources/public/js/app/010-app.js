@@ -39,6 +39,16 @@ var dangerTr = function () {
     $('span.danger-tr').closest('tr').addClass('danger');
 }
 
+mbh.utils.executeFunctionByName = function(functionName, context /*, args */) {
+    var args = [].slice.call(arguments).splice(2);
+    var namespaces = functionName.split(".");
+    var func = namespaces.pop();
+    for(var i = 0; i < namespaces.length; i++) {
+        context = context[namespaces[i]];
+    }
+    return context[func].apply(this, args);
+}
+
 mbh.alert = {
     $alert: $('#entity-delete-confirmation'),
     show: function(href, header, text, buttonText, buttonIcon, buttonClass, action, $this)
@@ -46,9 +56,19 @@ mbh.alert = {
         $("#entity-delete-button").off('click').on('click', function (e) {
             e.preventDefault();
             if (action) {
-                eval(action + '($this)'); //todo replace
-            } else {
+                var actionType = typeof action;
+                switch (actionType) {
+                    case 'function':
+                        action.call($this);
+                        break;
+                    case 'string':
+                        mbh.utils.executeFunctionByName(action, window, $this); //eval(action + '($this)');
+                        break;
+                }
+            } else if(href) {
                 window.location.href = href;
+            } else {
+                throw new Error('...');
             }
         });
 

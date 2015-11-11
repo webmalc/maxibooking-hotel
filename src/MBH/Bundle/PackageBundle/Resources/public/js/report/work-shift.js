@@ -51,10 +51,14 @@ $(document).on('ready', function () {
     })
 
     $workShiftTableWrapper.on('click', '.work-shift-confirm' , function(e) {
-        e.preventDefault()
+        e.preventDefault();
         var $this = $(this);
-        var id = $this.data('id');
-        console.log(id);
-        mbh.alert.show('', 'Завершить смену?', 'Завершить смену и подтвердить N платежей на сумму K?', 'Подтвердить', 'fa fa-check', 'success');
+        var $row = $this.closest('tr');
+        var id = $row.data('id');
+        var electronicCashIncomeTotal = $row.data('electronicCashIncomeTotal');
+        var confirmText = 'Завершить смену' + (electronicCashIncomeTotal ? ' и подтвердить N платежей на сумму '+electronicCashIncomeTotal : '') + '?';
+        mbh.alert.show(null, 'Завершить смену?', confirmText, 'Подтвердить', 'fa fa-check', 'success', function() {
+            console.log('work shift confirmation ' + id);
+        });
     })
 });
