@@ -716,7 +716,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     public function workShiftAction()
     {
         $filterForm = $this->getWorkShiftForm();
-        $filterForm->setData(['date' => new \DateTime('yesterday')]);
+        $filterForm->setData([
+            'begin' => new \DateTime(),
+            'status' => WorkShift::STATUS_OPEN
+        ]);
 
         return [
             'form' => $filterForm->createView()
@@ -732,6 +735,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             'method' => Request::METHOD_GET
         ])
             ->add('user', 'document', [
+                'empty_value' => '',
                 'class' => 'MBH\Bundle\UserBundle\Document\User',
                 'query_builder' => function(DocumentRepository $repository) {
                     $repository->createQueryBuilder()->field('isEnabledWorkShift')->equals(true);

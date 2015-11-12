@@ -15,6 +15,8 @@ $(document).on('ready', function () {
         $workShiftDetailHeader = $('#work-shift-detail-header')
         ;
 
+    new RangeInputs($('#form_begin'), $('#form_end'));
+
     var updateTable = function() {
         var requestData = $workShiftReportForm.serializeObject();
         mbh.loader.acceptTo($workShiftTableWrapper);
