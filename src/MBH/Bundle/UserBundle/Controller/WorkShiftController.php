@@ -109,7 +109,10 @@ class WorkShiftController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $workShift->setStatus(WorkShift::STATUS_CLOSED);
+        $workShift
+            ->setStatus(WorkShift::STATUS_CLOSED)
+            ->setClosedBy($this->getUser())
+        ;
         $this->dm->persist($workShift);
         $this->dm->flush($workShift);
 

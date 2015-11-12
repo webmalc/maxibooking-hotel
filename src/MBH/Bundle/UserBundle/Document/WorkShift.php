@@ -130,6 +130,12 @@ class WorkShift extends Base
     protected $cashExpenseTotal;
 
     /**
+     * @var User
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\UserBundle\Document\User")
+     */
+    protected $closedBy;
+
+    /**
      * @return array
      */
     public static function getAvailableStatuses()
@@ -419,5 +425,22 @@ class WorkShift extends Base
         return $this;
     }
 
+    /**
+     * @return User
+     */
+    public function getClosedBy()
+    {
+        return $this->closedBy;
+    }
 
+    /**
+     * @param User $closedBy
+     * @return WorkShift
+     */
+    public function setClosedBy(User $closedBy)
+    {
+        $this->closedBy = $closedBy;
+
+        return $this;
+    }
 }
