@@ -1,4 +1,4 @@
-/*global window, document, $, Routing, console */
+/*global window, document, $, Routing, console, mbh */
 $(document).on('ready', function () {
     'use strict';
 
@@ -10,11 +10,14 @@ $(document).on('ready', function () {
     var $workShiftReportWrapper = $('#work-shift-report-table-wrapper'),
         $workShiftTableWrapper = $('#work-shift-table-wrapper'),
         workShiftListUrl = Routing.generate('report_work_shift_list'),
-        workShiftTableUrl = Routing.generate('report_work_shift_table')
+        workShiftTableUrl = Routing.generate('report_work_shift_table'),
+        $comeBackToListButton = $('#come-back-to-list'),
+        $workShiftDetailHeader = $('#work-shift-detail-header')
         ;
 
     var updateTable = function() {
         var requestData = $workShiftReportForm.serializeObject();
+        mbh.loader.acceptTo($workShiftTableWrapper);
         $.ajax(workShiftListUrl, {
             data: requestData,
             success: function(response) {
@@ -25,6 +28,7 @@ $(document).on('ready', function () {
     };
 
     var updateTableById = function(id) {
+        mbh.loader.acceptTo($workShiftReportWrapper);
         $.ajax(workShiftTableUrl, {
             data: {id: id},
             success: function(response){
@@ -36,6 +40,8 @@ $(document).on('ready', function () {
     $workShiftReportForm.find('#form_begin,#form_end').on('changeDate', updateTable);
     $workShiftReportForm.find('#form_user,#form_status').on('change', updateTable);
 
+    $workShiftDetailHeader.hide();
+
     updateTable();
 
     $workShiftTableWrapper.on('click', 'table tr', function(e) {
@@ -44,11 +50,29 @@ $(document).on('ready', function () {
         if ($this.hasClass('active')) {
             return;
         }
-        $workShiftTableWrapper.find('table tr').removeClass('active');
-        $this.addClass('active');
+
         var id = $this.data('id');
         updateTableById(id);
-    })
+
+        $workShiftReportForm.closest('.box').hide();
+
+        var header = $this.data('detail-header');
+        $workShiftDetailHeader.find('.header').html(header);
+        $workShiftDetailHeader.show();
+
+        $workShiftTableWrapper.find('table tr').hide().removeClass('active');
+        $this.show().addClass('active');
+    });
+
+    $comeBackToListButton.on('click', function(e) {
+        e.preventDefault();
+
+        $workShiftTableWrapper.removeClass('active');
+        $workShiftTableWrapper.find('table tr').show();
+        $workShiftReportWrapper.empty();
+        $workShiftReportForm.closest('.box').show();
+        $workShiftDetailHeader.hide();
+    });
 
     $workShiftTableWrapper.on('click', '.work-shift-confirm' , function(e) {
         e.preventDefault();
@@ -66,5 +90,5 @@ $(document).on('ready', function () {
                 }
             })
         });
-    })
+    });
 });

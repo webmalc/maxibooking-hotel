@@ -13,7 +13,11 @@
         </thead>
         <tbody>
         {% for workShift in workShifts %}
-            <tr data-id="{{ workShift.id }}" data-electronicCashIncomeTotal="{{ workShift.electronicCashIncomeTotal }}">
+            <tr
+                data-id="{{ workShift.id }}"
+                data-electronicCashIncomeTotal="{{ workShift.electronicCashIncomeTotal }}"
+                data-detail-header="Рабочая смена {{ workShift.begin|mbh_format }} {{ workShift.begin|date('H:i') }} {% if workShift.end %} - {{ workShift.end|mbh_format }} {{ workShift.end|date('H:i') }}{% endif %}"
+            >
                 <td>{{ workShift.id }}</td>
                 <td class="text-center">
                     {{ workShift.begin|mbh_format }} {{ workShift.begin|date('H:i') }}

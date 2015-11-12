@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -832,31 +833,57 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         $cashDocuments = $this->dm->getRepository('MBHCashBundle:CashDocument')->findBy($criteria);
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
-        $packages = $packageRepository->findBy($criteria);
 
         $criteria = ['arrivalTime' => $range];
         $arrivalPackages = $packageRepository->findBy($criteria);
         $criteria = ['departureTime' => $range];
         $departurePackages = $packageRepository->findBy($criteria);
 
+        $income = 0;
+        $expenses = 0;
         $updateCashIDs = [];
         foreach($cashDocuments as $cashDocument) {
             if($cashDocument->getUpdatedAt() && $cashDocument->getUpdatedAt() > $workShift->getBegin() && $cashDocument->getUpdatedAt() < $workShift->getEnd()) {
                 $updateCashIDs[] = $cashDocument->getId();
             }
-        }
-
-        $updatePackageIDs = [];
-        foreach($packages as $package) {
-            if($package->getUpdatedAt() && $package->getUpdatedAt() > $workShift->getBegin() && $package->getUpdatedAt() < $workShift->getEnd()) {
-                $updatePackageIDs[] = $package->getId();
+            if($cashDocument->getOperation() == 'in') {
+                $income += $cashDocument->getTotal();
+            } elseif($cashDocument->getOperation() == 'out') {
+                $expenses += $cashDocument->getTotal();
             }
         }
+
+        $packages = [];
+        $updatePackages = [];
+        $updatePackageIDs = [];
+        foreach($packageRepository->findBy($criteria) as $package) {
+            if($package->getUpdatedAt() && $package->getUpdatedAt() > $workShift->getBegin() && $package->getUpdatedAt() < $workShift->getEnd()) {
+                $updatePackages[] = $package->getId();
+            } else {
+                $packages[] = $package;
+            }
+        }
+
+        /** @var FilterCollection $collection */
+        $collection = $this->container->get('doctrine_mongodb')->getManager()->getFilterCollection();
+        //remove deletable filter
+        if ($collection->isEnabled('softdeleteable')) {
+            $collection->disable('softdeleteable');
+        }
+
+        $criteria['deletedAt'] = ['$type' => 9];
+        $deletedPackages = $packageRepository->findBy($criteria);
+
+        $collection->enable('softdeleteable');
 
         return $this->render('MBHPackageBundle:Report:workShiftTable.html.twig', [
             'workShifts' => [$workShift],
             'cashDocuments' => $cashDocuments,
+            'income' => $income,
+            'expenses' => $expenses,
             'packages' => $packages,
+            'deletedPackages' => $deletedPackages,
+            'updatePackages' => $updatePackages,
             'updateCashIDs' => $updateCashIDs,
             'updatePackageIDs' => $updatePackageIDs,
             'arrivalPackages' => $arrivalPackages,

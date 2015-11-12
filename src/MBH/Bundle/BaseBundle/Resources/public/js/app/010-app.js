@@ -48,6 +48,12 @@ mbh.utils.executeFunctionByName = function(functionName, context /*, args */) {
     }
     return context[func].apply(this, args);
 }
+mbh.loader = {
+    html: '<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>',
+    acceptTo: function($container) {
+        $container.html(this.html);
+    }
+}
 
 mbh.alert = {
     $alert: $('#entity-delete-confirmation'),

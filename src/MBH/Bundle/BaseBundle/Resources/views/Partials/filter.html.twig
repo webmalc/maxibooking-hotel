@@ -1,5 +1,5 @@
 {#todo remove. use embed_filter.html.twig#}
-<div class="box box-default box-solid">
+<div class="box box-default box-solid" {% if id is defined %}id="{{ id }}"{% endif %}>
     <div class="box-header">
         <h3 class="box-title">{{ header|default('form.filter')|trans|raw }}
             {% if smallHeader is defined and smallHeader is not empty %}
@@ -7,7 +7,7 @@
             {% endif %}
         </h3>
         <div class="box-tools pull-right">
-            <button class="btn btn-box-tool form-group-collapse" {% if id is defined %}id="{{ id }}"{% endif %} data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button class="btn btn-box-tool form-group-collapse" {% if id is defined %}id="{{ id }}-collapse"{% endif %} data-widget="collapse"><i class="fa fa-minus"></i></button>
         </div>
     </div>
     <div class="{{ class|default('bg-gray-disabled color-palette')}} box-body">

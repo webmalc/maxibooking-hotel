@@ -4,10 +4,9 @@ $(document).ready(function ($) {
     var $fillingForm = $('#filling-table-filter'),
         $fillingTableWrapper = $('#filling-table-wrapper');
 
-    var loadHtml = '<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>';
     $fillingForm.find('input, select').on('change', function () {
         if(!inProcess) {
-            $fillingTableWrapper.html(loadHtml);
+            $fillingTableWrapper.html(mbh.loader.html);
             updateRoomTypesForm($fillingForm.serializeObject());
         }
     });

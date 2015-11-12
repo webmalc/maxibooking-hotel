@@ -8,7 +8,6 @@
         <th class="td-md">{{ 'package.index.guests'|trans({}, 'MBHPackageBundle') }}</th>
         <th class="td-md">{{ 'package.index.price'|trans({}, 'MBHPackageBundle') }}</th>
         <th class="td-md">{{ 'package.index.created'|trans({}, 'MBHPackageBundle') }}</th>
-        <th class="td-xs">{{ 'package.index.isUpdated'|trans({}, 'MBHPackageBundle') }}</th>
     </tr>
     </thead>
     <tbody>
@@ -43,11 +42,6 @@
             </td>
             <td class='text-right'>
                 {% if 'now'|date('d.m.Y') == package.createdAt|date('d.m.Y') %}{{ "package.json.today"|trans({}, "MBHPackageBundle") }} {{ package.createdAt|date('H:i') }}{% else %}{{ package.createdAt|date('d.m.Y H:i') }}{% endif %}<br><small>{{ package.createdBy|default(package.channelManagerType)|default('online') }}</small>
-            </td>
-            <td class='text-center'>
-                {% if package.id in updatePackageIDs %}
-                    <label class="label label-success">Да</label>
-                {% endif %}
             </td>
         </tr>
     {% endfor %}

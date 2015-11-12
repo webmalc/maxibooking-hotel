@@ -49,10 +49,47 @@
         {% endblock %}
     {% endembed %}
 
+    {% if cashDocuments %}
+        <div class="text-center bg-gray color-palette alert">
+            <span class="package-summary-row"><b>Приход: </b><span>{{ income|number_format(2) }}</span></span>
+            <span class="package-summary-row"><b>Расход: </b><span>{{ expenses|number_format(2) }}</span></span>
+        </div>
+    {% endif %}
+
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Созданные брони'} %}
         {% block content %}
             {% if packages|length > 0 %}
                 {% include 'MBHPackageBundle:Report:packageTable.html.twig' %}
+            {% else %}
+                <div class="alert bg-gray">
+                    <p>
+                        <i class="fa fa-exclamation-circle"></i>
+                        Не найдена ни одна бронь
+                    </p>
+                </div>
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Измененные брони'} %}
+        {% block content %}
+            {% if packages|length > 0 %}
+                {% include 'MBHPackageBundle:Report:packageTable.html.twig' with {packages: updatePackages} %}
+            {% else %}
+                <div class="alert bg-gray">
+                    <p>
+                        <i class="fa fa-exclamation-circle"></i>
+                        Не найдена ни одна бронь
+                    </p>
+                </div>
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'class': 'default', 'header': 'Удаленные брони'} %}
+        {% block content %}
+            {% if packages|length > 0 %}
+                {% include 'MBHPackageBundle:Report:packageTable.html.twig' with {packages: deletedPackages} %}
             {% else %}
                 <div class="alert bg-gray">
                     <p>
