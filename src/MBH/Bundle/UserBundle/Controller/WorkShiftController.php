@@ -9,6 +9,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/work-shift")
@@ -92,5 +94,27 @@ class WorkShiftController extends Controller
         //return new \Symfony\Component\HttpFoundation\Response('<body></body>');
 
         return $this->redirectToRoute('work_shift_wait');
+    }
+
+    /**
+     * @Route("/close", name="work_shift_ajax_close", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_BASE_USER')")
+     */
+    public function ajaxCloseAction(Request $request)
+    {
+        $id = $request->get('id');
+        $workShift = $this->dm->getRepository('MBHUserBundle:WorkShift')->find($id);
+        if(!$workShift) {
+            throw $this->createNotFoundException();
+        }
+
+        $workShift->setStatus(WorkShift::STATUS_CLOSED);
+        $this->dm->persist($workShift);
+        $this->dm->flush($workShift);
+
+        return new JsonResponse([
+            'success' => true
+        ]);
     }
 }

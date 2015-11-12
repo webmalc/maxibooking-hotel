@@ -58,7 +58,13 @@ $(document).on('ready', function () {
         var electronicCashIncomeTotal = $row.data('electronicCashIncomeTotal');
         var confirmText = 'Завершить смену' + (electronicCashIncomeTotal ? ' и подтвердить N платежей на сумму '+electronicCashIncomeTotal : '') + '?';
         mbh.alert.show(null, 'Завершить смену?', confirmText, 'Подтвердить', 'fa fa-check', 'success', function() {
-            console.log('work shift confirmation ' + id);
+            $.ajax(Routing.generate('work_shift_ajax_close'), {
+                data: {id: id},
+                success: function(response) {
+                    mbh.alert.hide();
+                    updateTable();
+                }
+            })
         });
     })
 });

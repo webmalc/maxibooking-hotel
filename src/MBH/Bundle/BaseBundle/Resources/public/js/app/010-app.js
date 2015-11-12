@@ -78,7 +78,10 @@ mbh.alert = {
         $('#entity-delete-button-icon').attr('class', 'fa ' + buttonIcon);
         $('#entity-delete-button').attr('class', 'btn btn-' + buttonClass);
 
-        this.$alert.modal();
+        this.$alert.modal('show');
+    },
+    hide: function() {
+        this.$alert.modal('hide');
     }
 }
 
