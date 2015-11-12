@@ -47,7 +47,12 @@
                         Разнесено б/н: {{ workShift.electronicCashIncomeTotal }}
                     </small>
                 </td>
-                <td>{{ ('workShift.statuses.' ~ workShift.status)|trans }}</td>
+                <td>
+                    {{ ('workShift.statuses.' ~ workShift.status)|trans }}
+                    {% if workShift.status == 'closed' and workShift.closedBy %}
+                        <br><small>{{ workShift.closedBy.name }}</small>
+                    {% endif %}
+                </td>
                 <th class="td-md" style="vertical-align: middle">
                     {% if workShift.status == 'locked' %}
                         <a href="#" title="Подтвердить" class="btn btn-info work-shift-confirm"><i class="fa fa-check"></i></a>

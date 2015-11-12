@@ -112,6 +112,7 @@ class WorkShiftController extends Controller
         $workShift
             ->setStatus(WorkShift::STATUS_CLOSED)
             ->setClosedBy($this->getUser())
+            ->setClosedAt(new \DateTime())
         ;
         $this->dm->persist($workShift);
         $this->dm->flush($workShift);

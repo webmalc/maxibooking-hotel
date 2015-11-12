@@ -134,6 +134,11 @@ class WorkShift extends Base
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\UserBundle\Document\User")
      */
     protected $closedBy;
+    /**
+     * @var \DateTime
+     * @ODM\Date()
+     */
+    protected $closedAt;
 
     /**
      * @return array
@@ -440,6 +445,25 @@ class WorkShift extends Base
     public function setClosedBy(User $closedBy)
     {
         $this->closedBy = $closedBy;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getClosedAt()
+    {
+        return $this->closedAt;
+    }
+
+    /**
+     * @param \DateTime $closedAt
+     * @return WorkShift
+     */
+    public function setClosedAt(\DateTime $closedAt = null)
+    {
+        $this->closedAt = $closedAt;
 
         return $this;
     }
