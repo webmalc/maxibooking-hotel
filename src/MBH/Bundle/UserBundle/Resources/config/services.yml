@@ -36,7 +36,7 @@ services:
 
     mbh.user.work_shift_manager:
         class: MBH\Bundle\UserBundle\Service\WorkShiftManager
-        arguments: [@doctrine_mongodb.odm.default_document_manager]
+        arguments: [@doctrine_mongodb.odm.default_document_manager, @mbh.hotel.selector]
 
     mbh.user.work_shift_listener:
         class: MBH\Bundle\UserBundle\EventListener\WorkShiftListener

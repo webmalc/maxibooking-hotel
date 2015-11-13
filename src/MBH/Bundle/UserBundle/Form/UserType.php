@@ -2,11 +2,17 @@
 
 namespace MBH\Bundle\UserBundle\Form;
 
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Context\ExecutionContext;
 
 class UserType extends AbstractType
 {
@@ -142,6 +148,17 @@ class UserType extends AbstractType
                 'attr' => array('data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year'),
             ))
         ;
+
+        $myExtraFieldValidator = function(FormEvent $event){
+            $form = $event->getForm();
+            $hotelsFiled = $form->get('hotels');
+            if ($form->get('isEnabledWorkShift')->getData() && count($hotelsFiled->getData()) != 1) {
+                $hotelsFiled->addError(new FormError('Для включения рабочих смен должен быть выбран один отель'));
+            }
+        };
+
+        // adding the validator to the FormBuilderInterface
+        $builder->addEventListener(FormEvents::POST_SUBMIT, $myExtraFieldValidator);
     }
 
     /**

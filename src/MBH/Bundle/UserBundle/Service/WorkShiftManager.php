@@ -4,6 +4,7 @@ namespace MBH\Bundle\UserBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Gedmo\Loggable\Document\LogEntry;
+use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\UserBundle\Document\WorkShift;
@@ -19,9 +20,15 @@ class WorkShiftManager
      */
     protected $dm;
 
-    public function __construct(DocumentManager $dm)
+    /**
+     * @var HotelSelector
+     */
+    protected $hotelSelector;
+
+    public function __construct(DocumentManager $dm, HotelSelector $hotelSelector)
     {
         $this->dm = $dm;
+        $this->hotelSelector = $hotelSelector;
     }
 
     /**
@@ -31,8 +38,18 @@ class WorkShiftManager
     {
         /** @var PackageRepository $packageRepository */
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+
+        $hotel = $this->hotelSelector->getSelected();
+
+        $roomTypeIDs = [];
+        foreach($hotel->getRoomTypes() as $roomType) {
+            $roomTypeIDs[] = $roomType->getId();
+        };
         /** @var Package[] $packages */
-        $packages = $packageRepository->findBy(['checkIn' => false, 'begin' => ['$gte' => new \DateTime()]]);//todo aggregation
+        $packages = $packageRepository->findBy([
+            'isCheckIn' => true, 'isCheckOut' => false, 'arrivalTime' => ['$lte' => new \DateTime()],
+            'roomType.id' => ['$in' => $roomTypeIDs]
+        ]);//todo aggregation
         $beginGuestTotal = 0;
         $beginTouristTotal = 0;
         foreach($packages as $package) {

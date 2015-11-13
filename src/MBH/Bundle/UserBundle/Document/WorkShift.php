@@ -5,6 +5,7 @@ namespace MBH\Bundle\UserBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -21,6 +22,7 @@ class WorkShift extends Base
     use TimestampableDocument;
     use SoftDeleteableDocument;
     use BlameableDocument;
+    use HotelableDocument;
 
     const STATUS_OPEN = 'open';
     const STATUS_LOCKED = 'locked';
@@ -216,6 +218,16 @@ class WorkShift extends Base
     public function getHours()
     {
         return $this->begin->diff($this->end)->h;
+    }
+
+    /**
+     * Продолжительность
+     * @return \DateInterval
+     */
+    public function getDuration()
+    {
+        $end = $this->end ? $this->end : new \DateTime();
+        return $this->begin->diff($end);
     }
 
     /**

@@ -673,24 +673,45 @@ class PackageRepository extends DocumentRepository
 
     /**
      * @param $type
+     * @raram Hotel $hotel
      * @return Package[]
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function findByType($type)
+    public function findByType($type, Hotel $hotel = null)
     {
-        return $this->getQueryBuilderByType($type)->getQuery()->execute();
+        $queryBuilder = $this->getQueryBuilderByType($type);
+
+        if($hotel) {
+            $roomTypes = [];
+            foreach($hotel->getRoomTypes() as $roomType) {
+                $roomTypes[] = $roomType->getId();
+            }
+            $queryBuilder->field('roomType.id')->in($roomTypes);
+        }
+
+        return $queryBuilder->getQuery()->execute();
     }
 
     /**
      * @param $type
      * @param bool $attention
+     * @param Hotel $hotel
      * @param int $limit
      * @return int
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function countByType($type, $attention = false, $limit = 14)
+    public function countByType($type, $attention = false, Hotel $hotel = null, $limit = 14)
     {
         $queryBuilder = $this->getQueryBuilderByType($type);
+
+        if($hotel) {
+            $roomTypes = [];
+            foreach($hotel->getRoomTypes() as $roomType) {
+                $roomTypes[] = $roomType->getId();
+            }
+            $queryBuilder->field('roomType.id')->in($roomTypes);
+        }
+
         if ($attention) {
             if ($type == 'arrivals') {
                 $queryBuilder

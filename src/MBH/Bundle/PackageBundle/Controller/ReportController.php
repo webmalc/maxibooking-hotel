@@ -70,7 +70,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
         foreach($menuItem->getChildren() as $child) {
-            $count = $packageRepository->countByType($child->getName(), true);
+            $count = $packageRepository->countByType($child->getName(), true, $this->hotel);
             if($count > 0) {
                 $class = 'default';
                 $class = $child->getName() == 'arrivals' ?  'danger' : $class;
@@ -108,7 +108,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
-        $packages = $packageRepository->findByType($type);
+        $packages = $packageRepository->findByType($type, $this->hotel);
 
         return [
             'begin' => $begin,
@@ -780,7 +780,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         $requestDate = $filterForm->getData();
 
-        $criteria = [];
+        $criteria = [
+            'hotel.id' => $this->hotel->getId()
+        ];
         if ($requestDate['status']) {
             $criteria['status'] = $requestDate['status'];
         }
@@ -833,7 +835,8 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
                 ['createdAt' => $range],
                 ['updatedAt' => $range],
             ],
-            'createdBy' => $workShift->getCreatedBy()
+            'createdBy' => $workShift->getCreatedBy(),
+            'hotel.id' => $this->hotel->getId()
         ];
 
         $cashDocuments = $this->dm->getRepository('MBHCashBundle:CashDocument')->findBy($criteria);

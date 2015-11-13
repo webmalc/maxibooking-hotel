@@ -3,15 +3,23 @@
 {% block body %}
 
     <div class="lockscreen-wrapper">
+
+        <div class="alert alert-primary text-center">
+            <div>
+                <i class="fa fa-spinner fa-spin"></i> Ваша смена заблокирована и ожидает сдачи.
+            </div>
+            <div>
+                Длительность: {{ workShift.duration.format('%h ч. %i мин.') }}
+            </div>
+            <div>
+                Касса: {{ workShift.cashIncomeTotal|number_format(2) }} руб.
+            </div>
+        </div>
+
         <div class="login-box lockscreen-item" style="width: 380px">
             {% block messages %}
                 {% include 'MBHBaseBundle::messages.html.twig' %}
             {% endblock %}
-
-            <div class="alert alert-primary text-center">
-                <i class="fa fa-lock"></i> Ваша смена заблокирована и ожидает закрытия.
-            </div>
-
             <div class="login-logo">
                 <a href="{{ path('_welcome') }}"><b>Maxi</b>Booking</a>
             </div>
