@@ -106,8 +106,6 @@ class WorkShiftListener
      */
     public function onKernelController(FilterControllerEvent $event)
     {
-        $controller = $event->getController();
-
         if ($this->getUser()  && $this->getUser()->getIsEnabledWorkShift()) {
             $workShift = $this->repository->findCurrentByUser($this->getUser());
             $redirectUrl = null;
@@ -120,7 +118,7 @@ class WorkShiftListener
                 $redirectUrl = $this->router->generate('work_shift');
             }
 
-            if($redirectUrl && !$this->isExceptController($controller[0])) {
+            if($redirectUrl && !$this->isExceptController($event->getController()[0])) {
                 $this->session->getFlashBag()->set('info', null);
                 $event->setController(function() use ($redirectUrl) {
                     return new RedirectResponse($redirectUrl);

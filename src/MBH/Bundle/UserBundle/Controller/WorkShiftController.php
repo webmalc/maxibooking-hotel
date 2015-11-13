@@ -39,7 +39,8 @@ class WorkShiftController extends Controller
         $workShift = $this->dm->getRepository('MBHUserBundle:WorkShift')->findCurrentByUser($this->getUser());
 
         if(!$workShift || $workShift->getStatus() != WorkShift::STATUS_LOCKED) {
-            throw $this->createNotFoundException();
+            return $this->redirectToRoute('work_shift');
+            //throw $this->createNotFoundException();
         }
 
         return [
@@ -56,7 +57,8 @@ class WorkShiftController extends Controller
     public function startAction(WorkShift $workShift)
     {
         if($workShift->getStatus() != WorkShift::STATUS_LOCKED) {
-            throw $this->createNotFoundException();
+            return $this->redirectToRoute('work_shift');
+            //throw $this->createNotFoundException();
         }
         $workShift->setStatus(WorkShift::STATUS_OPEN);
         $this->dm->persist($workShift);
@@ -99,7 +101,7 @@ class WorkShiftController extends Controller
     /**
      * @Route("/close", name="work_shift_ajax_close", options={"expose"=true})
      * @Method("GET")
-     * @Security("is_granted('ROLE_BASE_USER')")
+     * @Security("is_granted('ROLE_WORK_SHIFT_CLOSE')")
      */
     public function ajaxCloseAction(Request $request)
     {

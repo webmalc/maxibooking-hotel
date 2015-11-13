@@ -61,7 +61,7 @@
                     {% endif %}
                 </td>
                 <th class="td-md" style="vertical-align: middle">
-                    {% if workShift.status == 'locked' %}
+                    {% if workShift.status == 'locked' and is_granted('ROLE_WORK_SHIFT_CLOSE') %}
                         <a href="#" title="Подтвердить" class="btn btn-info work-shift-confirm"><i class="fa fa-check"></i></a>
                     {% endif %}
                 </th>

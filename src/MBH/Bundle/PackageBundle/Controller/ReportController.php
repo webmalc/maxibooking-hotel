@@ -710,7 +710,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     /**
      * @Route("/work_shift", name="report_work_shift", options={"expose"=true})
      * @Method({"GET"})
-     * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     * @Security("is_granted('ROLE_WORK_SHIFT_VIEW')")
      * @Template()
      */
     public function workShiftAction()
@@ -765,7 +765,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     /**
      * @Route("/work_shift_table", name="report_work_shift_list", options={"expose"=true})
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     * @Security("is_granted('ROLE_WORK_SHIFT_VIEW')")
      * @Template()
      */
     public function workShiftListAction(Request $request)
@@ -780,6 +780,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         $requestDate = $filterForm->getData();
 
+        $criteria = [];
         if ($requestDate['status']) {
             $criteria['status'] = $requestDate['status'];
         }
@@ -811,7 +812,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
     /**
      * @Route("/get_work_shift", name="report_work_shift_table", options={"expose"=true})
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_ROOMS_REPORT')")
+     * @Security("is_granted('ROLE_WORK_SHIFT_VIEW')")
      */
     public function workShiftTableAction(Request $request)
     {
