@@ -21,18 +21,25 @@ services:
         class: MBH\Bundle\UserBundle\EventListener\ClassMetadataListener
         tags:
             -  { name: doctrine_mongodb.odm.event_listener, event: loadClassMetadata }
-    mbh.user.on_request_listener:
-        class: MBH\Bundle\UserBundle\EventListener\OnController
-        arguments: [@service_container]
-        tags:
-            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
-
     mbh.user.validator:
         class: MBH\Bundle\UserBundle\Validator\Constraints\UserValidator
         arguments: [@service_container]
         tags:
             - { name: validator.constraint_validator, alias: mbh.user.validator }
 
+    mbh.user.work_shift_repository:
+        class: Doctrine\ORM\DocumentRepository
+        factory_service: doctrine_mongodb.odm.default_document_manager
+        factory_method: getRepository
+        arguments:
+            - MBH\Bundle\UserBundle\Document\WorkShift
+
     mbh.user.work_shift_manager:
         class: MBH\Bundle\UserBundle\Service\WorkShiftManager
         arguments: [@doctrine_mongodb.odm.default_document_manager]
+
+    mbh.user.work_shift_listener:
+        class: MBH\Bundle\UserBundle\EventListener\WorkShiftListener
+        arguments: [@security.token_storage, @session, @router, @mbh.user.work_shift_repository, @translator.default]
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }

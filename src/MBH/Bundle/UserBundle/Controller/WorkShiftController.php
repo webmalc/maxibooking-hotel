@@ -36,15 +36,15 @@ class WorkShiftController extends Controller
      */
     public function waitAction()
     {
-        $workShift = $this->dm->getRepository('MBHUserBundle:WorkShift')->findCurrent($this->getUser());
+        $workShift = $this->dm->getRepository('MBHUserBundle:WorkShift')->findCurrentByUser($this->getUser());
 
-        if($workShift && $workShift->getStatus() == WorkShift::STATUS_LOCKED) {
-            return [
-                'workShift' => $workShift
-            ];
+        if(!$workShift || $workShift->getStatus() != WorkShift::STATUS_LOCKED) {
+            throw $this->createNotFoundException();
         }
 
-        throw $this->createNotFoundException();
+        return [
+            'workShift' => $workShift
+        ];
     }
 
     /**
@@ -85,7 +85,7 @@ class WorkShiftController extends Controller
     public function lockAction()
     {
         $workShiftRepository = $this->dm->getRepository('MBHUserBundle:WorkShift');
-        $workShift = $workShiftRepository->findCurrent($this->getUser());
+        $workShift = $workShiftRepository->findCurrentByUser($this->getUser());
         if (!$workShift) {
             throw $this->createNotFoundException();
         }

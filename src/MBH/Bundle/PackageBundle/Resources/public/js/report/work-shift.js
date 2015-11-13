@@ -46,13 +46,9 @@ $(document).on('ready', function () {
 
     updateTable();
 
-    $workShiftTableWrapper.on('click', 'table tr', function(e) {
+    $workShiftTableWrapper.on('click', 'table tbody tr', function(e) {
         e.preventDefault();
         var $this = $(this);
-        if ($this.hasClass('active')) {
-            return;
-        }
-
         var id = $this.data('id');
         updateTableById(id);
 
@@ -62,18 +58,23 @@ $(document).on('ready', function () {
         $workShiftDetailHeader.find('.header').html(header);
         $workShiftDetailHeader.show();
 
-        $workShiftTableWrapper.find('table tr').hide().removeClass('active');
-        $this.show().addClass('active');
+        $workShiftTableWrapper.find('table tr').hide();
+        $this.show();
+
+        return false;
     });
 
-    $comeBackToListButton.on('click', function(e) {
-        e.preventDefault();
-
+    var comeBackToList = function() {
         $workShiftTableWrapper.removeClass('active');
         $workShiftTableWrapper.find('table tr').show();
         $workShiftReportWrapper.empty();
         $workShiftReportForm.closest('.box').show();
         $workShiftDetailHeader.hide();
+    }
+
+    $comeBackToListButton.on('click', function(e) {
+        e.preventDefault();
+        comeBackToList();
     });
 
     $workShiftTableWrapper.on('click', '.work-shift-confirm' , function(e) {
@@ -88,6 +89,7 @@ $(document).on('ready', function () {
             $.ajax(Routing.generate('work_shift_ajax_close'), {
                 data: {id: id},
                 success: function(response) {
+                    comeBackToList();
                     updateTable();
                 }
             })

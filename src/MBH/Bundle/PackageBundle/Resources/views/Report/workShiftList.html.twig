@@ -21,10 +21,13 @@
                 <td>{{ workShift.id }}</td>
                 <td class="text-center">
                     {{ workShift.begin|mbh_format }} {{ workShift.begin|date('H:i') }}
+                    -
                     {% if workShift.end %}
-                        - {{ workShift.end|mbh_format }} {{ workShift.end|date('H:i') }}
+                        {{ workShift.end|mbh_format }} {{ workShift.end|date('H:i') }}
                         <br>
                         <small>{{ workShift.begin.diff(workShift.end).format('%h ч. %i мин.') }}</small>
+                    {% else %}
+                        в процессе
                     {% endif %}
                 </td>
                 <td>
@@ -33,19 +36,23 @@
                 <td>
                     <small>
                         На начало смены: {{ workShift.beginGuestTotal }}<br>
+                    {% if workShift.status != 'open' %}
                         На конец смены: {{ workShift.endGuestTotal }}<br>
                         Заехавших: {{ workShift.arrivalTouristTotal }}<br>
                         Не заехавших: {{ workShift.noArrivalTouristTotal }}<br>
                         Выехавших: {{ workShift.departureTouristTotal }}<br>
                         Не выехавших: {{ workShift.noDepartureTouristTotal }}
+                    {% endif %}
                     </small>
                 </td>
                 <td>
+                {% if workShift.status != 'open' %}
                     <small>
                         Принято: {{ workShift.cashIncomeTotal }}<br>
                         Выдано: {{ workShift.cashExpenseTotal }}<br>
                         Разнесено б/н: {{ workShift.electronicCashIncomeTotal }}
                     </small>
+                {% endif %}
                 </td>
                 <td>
                     {{ ('workShift.statuses.' ~ workShift.status)|trans }}

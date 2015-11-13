@@ -182,7 +182,7 @@ class Extension extends \Twig_Extension
     {
         $repository = $this->container->get('doctrine_mongodb')->getRepository('MBHUserBundle:WorkShift');
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
-        return $repository->findCurrent($user);
+        return $repository->findCurrentByUser($user);
     }
 
     /**

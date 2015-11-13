@@ -15,18 +15,11 @@ class WorkShiftRepository extends DocumentRepository
      * @param User $user
      * @return WorkShift|null
      */
-    public function findCurrent(User $user)
+    public function findCurrentByUser(User $user)
     {
         return $this->findOneBy([
-            'status' => ['$in' => [WorkShift::STATUS_OPEN, WorkShift::STATUS_CLOSED]],
+            'status' => ['$in' => [WorkShift::STATUS_OPEN, WorkShift::STATUS_LOCKED]],
             'createdBy' => $user->getUsername()
         ]);
-        /*$queryBuilder = $this->createQueryBuilder();
-        $queryBuilder
-            ->field('isOpen')->equals(true)
-            ->sort('createdAt', -1)
-        ;
-
-        return $queryBuilder->getQuery()->execute();*/
     }
 }
