@@ -39,15 +39,6 @@ var dangerTr = function () {
     $('span.danger-tr').closest('tr').addClass('danger');
 }
 
-mbh.utils.executeFunctionByName = function(functionName, context /*, args */) {
-    var args = [].slice.call(arguments).splice(2);
-    var namespaces = functionName.split(".");
-    var func = namespaces.pop();
-    for(var i = 0; i < namespaces.length; i++) {
-        context = context[namespaces[i]];
-    }
-    return context[func].apply(this, args);
-}
 mbh.loader = {
     html: '<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>',
     acceptTo: function($container) {
