@@ -118,14 +118,19 @@ class WorkShiftListener
                 $redirectUrl = $this->router->generate('work_shift');
             }
 
-            if($redirectUrl && !$this->isExceptController($event->getController()[0])) {
-                $this->session->getFlashBag()->set('info', null);
-                $event->setController(function() use ($redirectUrl) {
-                    return new RedirectResponse($redirectUrl);
-                });
-            } elseif($workShift && $workShift->getStatus() == WorkShift::STATUS_OPEN && $workShift->getPastHours() > 12) {
-                $message = $this->translator->trans('workShift.notification.work_shift_expired');
-                $this->session->getFlashBag()->set('info', $message);
+            $flashBag = $this->session->getFlashBag();
+            $flashBag->set('info', null);
+
+            $isExceptController = $this->isExceptController($event->getController()[0]);
+            if(!$isExceptController) {
+                if($redirectUrl) {
+                    $event->setController(function() use ($redirectUrl) {
+                        return new RedirectResponse($redirectUrl);
+                    });
+                } elseif($workShift && $workShift->getStatus() == WorkShift::STATUS_OPEN && $workShift->getPastHours() > 12) {
+                    $message = $this->translator->trans('workShift.notification.work_shift_expired');
+                    $flashBag->set('info', $message);
+                }
             }
         }
     }
