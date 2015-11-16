@@ -97,7 +97,7 @@ class WorkShiftManager
         $criteria = ['roomType.id' => ['$in' => $roomTypeIDs]];
 
         /** @var Package[] $packages */
-        $packages = $packageRepository->findBy($criteria + ['checkIn' => false, 'begin' => ['$gte' => new \DateTime()]]);//todo aggregation
+        $packages = $packageRepository->findBy($criteria + ['isCheckIn' => false, 'begin' => ['$gte' => new \DateTime()]]);//todo aggregation
         $endGuestTotal = 0;
         foreach($packages as $package) {
             $endGuestTotal += $package->getAdults() + $package->getChildren();
@@ -111,7 +111,7 @@ class WorkShiftManager
         }
         $noArrivalTouristTotal = 0;
         /** @var Package[] $packages */
-        $packages = $packageRepository->findBy($criteria + ['begin' => ['$gte' => $workShift->getBegin(), '$lte' => $workShift->getEnd()], 'checkIn' => false]);//todo aggregation
+        $packages = $packageRepository->findBy($criteria + ['begin' => ['$gte' => $workShift->getBegin(), '$lte' => $workShift->getEnd()], 'isCheckIn' => false]);//todo aggregation
         foreach($packages as $package) {
             $noArrivalTouristTotal += count($package->getTourists());
         }
@@ -165,7 +165,7 @@ class WorkShiftManager
         }
         $noDepartureTouristTotal = 0;
         /** @var Package[] $packages */
-        $packages = $packageRepository->findBy($criteria + ['end' => ['$gte' => $workShift->getBegin(), '$lte' => $workShift->getEnd()], 'checkOut' => false]);//todo aggregation
+        $packages = $packageRepository->findBy($criteria + ['end' => ['$gte' => $workShift->getBegin(), '$lte' => $workShift->getEnd()], 'isCheckOut' => false]);//todo aggregation
         foreach($packages as $package) {
             $noDepartureTouristTotal += count($package->getTourists());
         }
