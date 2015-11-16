@@ -46,7 +46,7 @@ $(document).on('ready', function () {
 
     updateTable();
 
-    $workShiftTableWrapper.on('click', 'table tbody tr', function(e) {
+    $workShiftTableWrapper.on('dblclick', 'table tbody tr', function(e) {
         e.preventDefault();
         var $this = $(this);
         var id = $this.data('id');
@@ -84,7 +84,7 @@ $(document).on('ready', function () {
         var id = $row.data('id');
         var electronicCashIncomeTotal = $row.data('electronicCashIncomeTotal');
         var confirmText = 'Завершить смену' + (electronicCashIncomeTotal ? ' и подтвердить N платежей на сумму '+electronicCashIncomeTotal : '') + '?';
-        mbh.alert.show(null, 'Завершить смену?', confirmText, 'Подтвердить', 'fa fa-check', 'success', function() {
+        mbh.alert.show(null, 'Завершить смену?', confirmText, 'Принять смену', 'fa fa-check', 'success', function() {
             mbh.alert.hide();
             $.ajax(Routing.generate('work_shift_ajax_close'), {
                 data: {id: id},
