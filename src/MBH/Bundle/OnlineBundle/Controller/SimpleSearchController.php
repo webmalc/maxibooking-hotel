@@ -378,4 +378,20 @@ class SimpleSearchController extends Controller
             'content' => $this->getMapContent($request)
         ];
     }
+
+    /**
+     * @Route("/table/{id}", name="simple_search_table")
+     * @Method("GET")
+     * @Template()
+     */
+    public function tableAction($id)
+    {
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+        $this->dm->getFilterCollection()->disable('softdeleteable');
+        $packages = $packageRepository->findBy(['frontUser' => intval($id)]);
+
+        return [
+            'packages' => $packages,
+        ];
+    }
 }

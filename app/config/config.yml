@@ -37,7 +37,7 @@ twig:
     base_template_class: MBH\Bundle\BaseBundle\Twig\Template
     globals:
         meta_title: 'Система бронирования "MaxiBooking".'
-        project_title: 'MaxiBooking'
+        project_title: 'Zamkadom24'
         months:
           1: 'Январь'
           2: 'Февраль'

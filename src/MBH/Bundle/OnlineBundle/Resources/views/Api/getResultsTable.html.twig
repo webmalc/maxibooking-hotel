@@ -102,12 +102,20 @@
        </div>
                         
         <div id="mbh-results-actions">
-            <span id="mbh-results-packages-total"> {{ 'views.api.getResultsTable.rooms'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
-            <span id="mbh-results-services-total"> {{ 'views.api.getResultsTable.services'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-services-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
-            <span id="mbh-results-total">{{ 'views.api.getResultsTable.result'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span>
-            <button id="mbh-results-next" class="btn btn-primary"> {{ 'views.api.getResultsTable.continue'|trans({}, 'MBHOnlineBundle') }}
-                <small><i class="fa fa-chevron-right "></i></small>
-            </button>
+            {% if userID %}
+                {#
+                <span id="mbh-results-packages-total"> {{ 'views.api.getResultsTable.rooms'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
+                <span id="mbh-results-services-total"> {{ 'views.api.getResultsTable.services'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-services-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
+                #}
+                <span id="mbh-results-total">{{ 'views.api.getResultsTable.result'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span>
+                <button id="mbh-results-next" class="btn btn-primary"> {{ 'views.api.getResultsTable.continue'|trans({}, 'MBHOnlineBundle') }}
+                    <small><i class="fa fa-chevron-right "></i></small>
+                </button>
+            {% else %}
+                <div class="alert alert-danger">
+                    <strong><a href="/enter.html">Войдите в систему</a>, чтобы произвести бронирование</strong>
+                </div>
+            {% endif %}
         </div>
     {% else %}
         {% if tariffResults|length > 0 %}

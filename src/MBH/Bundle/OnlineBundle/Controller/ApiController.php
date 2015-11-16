@@ -9,6 +9,7 @@ use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\UserBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -228,13 +229,14 @@ class ApiController extends Controller
 
         $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
 
-
+        $userID = $request->get('userID');
 
         return [
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
             'hotels' => $hotels,
-            'tariffResults' => $tariffResults
+            'tariffResults' => $tariffResults,
+            'userID' => $userID
         ];
     }
 
@@ -246,12 +248,23 @@ class ApiController extends Controller
      */
     public function getUserFormAction(Request $request)
     {
-        $request = json_decode($request->getContent());
+        $requestContent = json_decode($request->getContent());
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
+
+        $firstName = $requestContent->firstName;
+        $lastName = $requestContent->lastName;
+        $phone = $requestContent->phone;
+        $email = $requestContent->email;
+        $userID = $requestContent->userID;;
 
         return [
             'arrival' => $this->container->getParameter('mbh.package.arrival.time'),
-            'request' => $request
+            'request' => $requestContent,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'phone' => $phone,
+            'email' => $email,
+            'userID' => $userID,
         ];
     }
 
@@ -285,8 +298,6 @@ class ApiController extends Controller
      */
     public function createPackagesAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $request = json_decode($request->getContent());
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
@@ -302,18 +313,25 @@ class ApiController extends Controller
         $packages = iterator_to_array($order->getPackages());
         $this->sendNotifications($order, $request->arrival . ':00', $request->departure . ':00');
 
+        $translator = $this->get('translator');
         if (count($packages) > 1) {
-            $roomStr = $this->get('translator')->trans('controller.apiController.reservations_made_success');
-            $packageStr = $this->get('translator')->trans('controller.apiController.your_reservations_numbers');
+            $roomStr = $translator->trans('controller.apiController.reservations_made_success');
+            $packageStr = $translator->trans('controller.apiController.your_reservations_numbers');
         } else {
-            $roomStr = $this->get('translator')->trans('controller.apiController.room_reservation_made_success');
-            $packageStr = $this->get('translator')->trans('controller.apiController.your_reservation_number');
+            $roomStr = $translator->trans('controller.apiController.room_reservation_made_success');
+            $packageStr = $translator->trans('controller.apiController.your_reservation_number');
         }
-        $message = $this->get('translator')->trans('controller.apiController.thank_you').$roomStr.$this->get('translator')->trans('controller.apiController.we_will_call_you_back_soon');
-        $message .= $this->get('translator')->trans('controller.apiController.your_order_number').$order->getId().'. ';
+        $message =
+            $translator->trans('controller.apiController.thank_you')
+            .$roomStr
+            //.$translator->trans('controller.apiController.we_will_call_you_back_soon')
+        ;
+        $message .= $translator->trans('controller.apiController.your_order_number').$order->getId().'. ';
         $message .= $packageStr.': '.implode(', ', $packages).'.';
 
-        $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $message .= '<br><br><a href="" onclick="window.document.location.reload()">Выбрать ещё номер</a><br> <a href="/lk.html">Личный кабинет.</a>';
+
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
         if ($request->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
             $form = false;
@@ -321,7 +339,7 @@ class ApiController extends Controller
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig', [
                     'data' => array_merge(['test' => false,
-                        'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
+                        'buttonText' => $translator->trans('views.api.make_payment_for_order_id',
                             ['%total%' => number_format($request->total, 2), '%order_id%' => $order->getId()],
                             'MBHOnlineBundle')
                     ], $clientConfig->getFormData($order->getCashDocuments()[0],
@@ -433,6 +451,7 @@ class ApiController extends Controller
                 'children' => $info->children,
                 'roomType' => $info->roomType->id,
                 'tariff' => $info->tariff->id,
+                'frontUser' => $request->userID,
                 'isOnline' => true
             ];
         }

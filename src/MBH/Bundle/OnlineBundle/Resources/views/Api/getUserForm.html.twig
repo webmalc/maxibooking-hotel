@@ -5,27 +5,29 @@
             <h4>{{ 'views.api.getUserForm.enter_data_to_continue'|trans({}, 'MBHOnlineBundle') }}</h4>
             <form id="mbh-user-form-form">
 
+                <input type="hidden" id="mbh-user-id" name="userID" value="{{ userID }}">
+
                 <div class="mbh-user-form-row">
                     <label for="mbh-user-form-lastName">{{ 'views.api.getUserForm.surname'|trans({}, 'MBHOnlineBundle') }}<sup>*</sup></label>
-                    <input type="text" id="mbh-user-form-lastName" name="lastName" required value=""
+                    <input type="text" id="mbh-user-form-lastName" name="lastName" required value="{{ lastName }}"
                            placeholder= {{ 'views.api.getUserForm.placeholder_surname'|trans({}, 'MBHOnlineBundle') }}>
                 </div>
 
                 <div class="mbh-user-form-row">
                     <label for="mbh-user-form-firstName">{{ 'views.api.getUserForm.name'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
-                    <input type="text" id="mbh-user-form-firstName" name="firstName" required value=""
+                    <input type="text" id="mbh-user-form-firstName" name="firstName" required value="{{ firstName }}"
                            placeholder="Иван">
                 </div>
 
                 <div class="mbh-user-form-row">
                     <label for="mbh-user-form-phone">{{ 'views.api.getUserForm.phone'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
-                    <input type="tel" id="mbh-user-form-phone" name="phone" required value=""
+                    <input type="tel" id="mbh-user-form-phone" name="phone" required value="{{ phone }}"
                            placeholder="7(925)3456512">
                 </div>
 
                 <div class="mbh-user-form-row">
                     <label for="mbh-user-form-email">{{ 'views.api.getUserForm.email'|trans({}, 'MBHOnlineBundle') }}</label>
-                    <input type="email" id="mbh-user-form-email" name="email" value="" placeholder= {{ 'views.api.getUserForm.placeholder_email'|trans({}, 'MBHOnlineBundle') }} >
+                    <input type="email" id="mbh-user-form-email" name="email" value="{{ email }}" placeholder= {{ 'views.api.getUserForm.placeholder_email'|trans({}, 'MBHOnlineBundle') }} >
                 </div>
 
                 <div class="mbh-user-form-row">
@@ -70,11 +72,11 @@
         </div>
 
         <div id="mbh-results-actions">
-            <button id="mbh-user-form-previous" class="button">
+            <button id="mbh-user-form-previous" class="btn btn-primary">
                 <small><i class="fa fa-chevron-left"></i></small>
                 {{ 'views.api.getUserForm.choose_other_rooms'|trans({}, 'MBHOnlineBundle') }}
             </button>
-            <button id="mbh-user-form-next" class="button">{{ 'views.api.getUserForm.continue'|trans({}, 'MBHOnlineBundle') }}
+            <button id="mbh-user-form-next" class="btn btn-primary">{{ 'views.api.getUserForm.continue'|trans({}, 'MBHOnlineBundle') }}
                 <small><i class="fa fa-chevron-right "></i></small>
             </button>
         </div>

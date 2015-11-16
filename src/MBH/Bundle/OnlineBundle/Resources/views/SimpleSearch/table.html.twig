@@ -1,0 +1,29 @@
+<table>
+    {% for entity in packages %}
+    <tr>
+        <td>
+            {{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}<br><small>{{ entity.nights }} {{ 'nights'|transchoice(entity.nights) }}</small>
+        </td>
+        <td>
+            {{ entity.roomType }}<br>
+            <small>
+                {% if entity.accommodation and entity.accommodation.roomType %}
+                        {{ entity.accommodation.name(entity.roomType.id == entity.accommodation.roomType.id ? false : true) }}
+                    {% else %}
+                        &lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;
+                {% endif %}
+            </small>
+        </td>
+        <td>
+            {% if entity.order.mainTourist %}{{ entity.order.mainTourist.lastNameWithInitials }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}
+            <small>><br>{% if entity.adults > 0 %}{{ entity.adults }} вз.{% endif %}{% if entity.adults > 0 and entity.children > 0 %}+{% endif %}{% if entity.children > 0 %}{{ entity.children }} рб.{% endif %}</small>
+        </td>
+        <td>
+            {{ entity.price|number_format(2) }}
+        </td>
+        <td>
+            {% if 'now'|date('d.m.Y') == entity.createdAt|date('d.m.Y') %}{{ "package.json.today"|trans({}, "MBHPackageBundle") }} {{ entity.createdAt|date('H:i') }}{% else %}{{ entity.createdAt|date('d.m.Y H:i') }}{% endif %}<br><small>{{ entity.createdBy|default(entity.channelManagerType)|default('online') }}</small>
+        </td>
+    </tr>
+    {% endfor %}
+</table>

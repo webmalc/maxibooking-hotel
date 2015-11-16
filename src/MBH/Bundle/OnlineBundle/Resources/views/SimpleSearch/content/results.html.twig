@@ -3,7 +3,7 @@
         <div class="panel-body">
             <div class="mbh-results-list-image">
                 <a href="{{ path('simple_search_view', {id: result.hotel.id}) }}?hotel={{ result.hotel.id }}&{% for name, value in app.request.query.all %}{{ name }}={{ value }}&{% endfor %}"
-                   title="{{ result.hotel.fullTitle }}"><img src="{{ ((result.roomTypes)|first).mainImage ? ((result.roomTypes)|first).mainImage.path|imagine_filter('thumb_300x230')  : 'http://zamkadom24.sites.maxibooking.ru/1.jpg'}}"></a>
+                   title="{{ result.hotel.fullTitle }}"><img src="{{ ((result.roomTypes)|first).mainImage ? ((result.roomTypes)|first).mainImage.path|imagine_filter('thumb_300x230')  : 'http://zamkadom24.ru/1.jpg'}}"></a>
             </div>
             <div class="mbh-results-list-info">
                 <div class="mbh-results-list-rating" title="{{ result.hotel.rate|number_format(2) }}">
