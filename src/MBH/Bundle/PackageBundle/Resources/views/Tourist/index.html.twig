@@ -5,12 +5,32 @@
 
 {% block content %}
 
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'tourist-filter-widget'} %}
+        {% block content %}
+            {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'tourist-form'}}) }}
+            <div class="form-group">
+                <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                {{ form_widget(form.begin, {attr: {class: 'datepicker'}}) }} -
+                {{ form_widget(form.end, {attr: {class: 'datepicker'}}) }}
+            </div>
+            <div class="form-group">
+                <label><i class="fa fa-star-o" title="Иностранные граждане" data-toggle="tooltip"></i></label>
+                {{ form_widget(form.foreign) }}
+                {{ form_widget(form._token) }}
+                {{ form_rest(form.search) }}
+            </div>
+            {{ form_end(form, {render_rest: false}) }}
+        {% endblock %}
+    {% endembed %}
+
     <table id="tourist-table"
            class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
         <thead>
         <tr>
             <th class="td-xs"></th>
             <th>ФИО</th>
+            <th class="td-md">Гражданство</th>
+            <th class="td-md">Номер паспорта</th>
             <th class="td-sm">Брони</th>
             <th class="td-md">Дата рождения</th>
             <th class="td-sm">Возраст</th>

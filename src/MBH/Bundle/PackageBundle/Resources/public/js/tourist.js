@@ -3,14 +3,31 @@
 var docReadyTourists = function () {
     'use strict';
 
+    var $touristForm = $('#tourist-form');
     //roomType rooms datatables
-    $('#tourist-table').each(function () {
-        $(this).dataTable({
-            "processing": true,
-            "serverSide": true,
-            "ordering": false,
-            "ajax": Routing.generate('tourist_json')
-        });
+    var $touristTable = $('#tourist-table');
+    $touristTable.dataTable({
+        "processing": true,
+        "serverSide": true,
+        "ordering": false,
+        "ajax": {
+            "method": "POST",
+            "url": Routing.generate('tourist_json'),
+            "data": function (requestData) {
+                requestData.form = {
+                    begin: $touristForm.find('#form_begin').val(),
+                    end: $touristForm.find('#form_end').val(),
+                    foreign: $touristForm.find('#form_foreign').is(':checked'),
+                    _token: $touristForm.find('#form__token').val()
+                };
+                return requestData;
+            }
+        }
+    });
+    $touristTable.dataTable().fnSetFilteringDelay();
+
+    $touristForm.find('input, checkbox').on('change switchChange.bootstrapSwitch', function() {
+        $touristTable.dataTable().fnDraw();
     });
 
     $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday, .guestBirthday').datepicker({

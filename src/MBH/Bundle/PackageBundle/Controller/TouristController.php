@@ -3,9 +3,13 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
+use MBH\Bundle\PackageBundle\Document\Criteria\TouristQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Migration;
+use MBH\Bundle\PackageBundle\Document\PackageRepository;
+use MBH\Bundle\PackageBundle\Document\TouristRepository;
 use MBH\Bundle\PackageBundle\Document\Unwelcome;
 use MBH\Bundle\PackageBundle\Document\UnwelcomeRepository;
 use MBH\Bundle\PackageBundle\Document\Visa;
@@ -16,6 +20,7 @@ use MBH\Bundle\VegaBundle\Document\VegaFMS;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -38,36 +43,76 @@ class TouristController extends Controller
      */
     public function indexAction()
     {
-        return [];
+        $form =  $this->getTouristFilterForm();
+
+        return [
+            'form' => $form->createView()
+        ];
+    }
+
+    public function getTouristFilterForm()
+    {
+        $form = $this->createFormBuilder(null, [
+            'data_class' => TouristQueryCriteria::class
+        ])
+            ->add('begin', new DateType(), [
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'required' => false
+            ])
+            ->add('end', new DateType(), [
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'required' => false
+            ])
+            ->add('foreign', 'checkbox', [
+                'required' => false
+            ])
+            ->add('search', 'text', [
+                'required' => false
+            ])
+            ->getForm()
+        ;
+        return $form;
     }
 
     /**
      * Lists all entities as json.
      *
      * @Route("/json", name="tourist_json", defaults={"_format"="json"}, options={"expose"=true})
-     * @Method("GET")
+     * @Method("POST")
      * @Security("is_granted('ROLE_TOURIST_VIEW')")
      * @Template()
      */
     public function jsonAction(Request $request)
     {
-        $qb = $this->dm->getRepository('MBHPackageBundle:Tourist')
-            ->createQueryBuilder('r')
-            ->skip($request->get('start'))
-            ->limit($request->get('length'))
-            ->field('deletedAt')->equals(null)
-            ->sort('fullName', 'asc');
+        $tableParams = ClientDataTableParams::createFromRequest($request);
+        $formData = (array) $request->get('form');
+        $form = $this->getTouristFilterForm();
+        $formData['search'] = $tableParams->getSearch();
 
-        $search = $request->get('search')['value'];
-        if (!empty($search)) {
-            $qb->addOr($qb->expr()->field('fullName')->equals(new \MongoRegex('/.*' . $search . '.*/ui')));
+        if($formData['foreign'] === 'false') { //todo remove
+            $formData['foreign'] = false;
         }
 
-        $entities = $qb->getQuery()->execute();
+        $form->submit($formData);
+        if(!$form->isValid()) {
+            return new JsonResponse(['errors' => $form->getErrors()[0]->getMessage()]);
+        }
+
+        /** @var TouristQueryCriteria $criteria */
+        $criteria = $form->getData();
+
+        /** @var TouristRepository $touristRepository */
+        $touristRepository = $this->dm->getRepository('MBHPackageBundle:Tourist');
+        $packages = $touristRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
+
+        /** @var PackageRepository $packageRepository */
+        //$packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
         return [
-            'entities' => $entities,
-            'total' => $entities->count(),
+            'packages' => $packages,
+            'total' => count($packages),
             'draw' => $request->get('draw')
         ];
     }

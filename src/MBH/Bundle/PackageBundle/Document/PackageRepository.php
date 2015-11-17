@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 
+use Doctrine\DBAL\Query\QueryBuilder;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -186,11 +187,13 @@ class PackageRepository extends DocumentRepository
 
     /**
      * @param Tourist $tourist
+     * @param PackageQueryCriteria|null $criteria
      * @return null|Package
      */
-    public function getPackageByTourist(Tourist $tourist)
+    public function getPackageByTourist(Tourist $tourist, PackageQueryCriteria $criteria = null)
     {
-        $queryBuilder = $this->createQueryBuilder();
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $criteria ? $this->queryCriteriaToBuilder($criteria) : $this->createQueryBuilder();
         $package = $queryBuilder
             ->field('tourists.id')->equals($tourist->getId())
             ->limit(1)
@@ -727,5 +730,32 @@ class PackageRepository extends DocumentRepository
             }
         }
         return $queryBuilder->getQuery()->count();
+    }
+
+    /**
+     * @param PackageQueryCriteria $criteria
+     * @return string[]
+     */
+    public function findTouristIDsByCriteria(PackageQueryCriteria $criteria)
+    {
+        $queryBuilder = $this->queryCriteriaToBuilder($criteria);
+        $query = $queryBuilder->getQuery()->getQuery()['query'];
+
+        $aggregate = [];
+        if($query) {
+            $aggregate[] = ['$match' => $query];
+        }
+        $aggregate[] = ['$project' => ['tourists' => 1]];
+        $aggregate[] = ['$unwind' => '$tourists'];
+        $aggregate[] = ['$group' => ['_id' => '$tourists']];
+
+        $result = $this->dm->getDocumentCollection(Package::class)->aggregate($aggregate);
+
+        $IDs = [];
+        foreach($result as $tourist) {
+            $IDs[] = strval($tourist['_id']['$id']);
+        }
+
+        return $IDs;
     }
 }

@@ -3,6 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
+use MBH\Bundle\PackageBundle\Document\Criteria\TouristQueryCriteria;
 
 class TouristRepository extends DocumentRepository
 {
@@ -35,10 +37,11 @@ class TouristRepository extends DocumentRepository
 
         $foreignTourists = [];
         /** @var Tourist $tourist */
+        $nativeCitizenship = $this->getNativeCitizenship();
         foreach($tourists as $tourist) {
             if($tourist) {
                 $citizenship = $tourist->getCitizenship();
-                if($citizenship === null || ($citizenship && $citizenship->getName() != "Россия")) {
+                if(!$citizenship || !$nativeCitizenship || ($citizenship && $citizenship !== $nativeCitizenship)) {
                     $foreignTourists[] = $tourist;
                 }
             }
@@ -46,6 +49,65 @@ class TouristRepository extends DocumentRepository
 
         return $foreignTourists;
     }
+
+
+    /**
+     * @return null|\MBH\Bundle\VegaBundle\Document\VegaState
+     */
+    public function getNativeCitizenship()
+    {
+        return $this->dm->getRepository('MBHVegaBundle:VegaState')->findOneBy(['name' => "Россия"]);
+    }
+
+    /**
+     * @param TouristQueryCriteria $criteria
+     * @return \Doctrine\ODM\MongoDB\Query\Builder
+     */
+    private function queryCriteriaToBuilder(TouristQueryCriteria $criteria)
+    {
+        $queryBuilder = $this->createQueryBuilder();
+
+        if ($criteria->search) {
+            $fullNameRegex = new \MongoRegex('/.*' . $criteria->search . '.*/ui');
+            $queryBuilder->field('fullName')->equals($fullNameRegex);
+        }
+
+        if($criteria->foreign && $nativeCitizenship = $this->getNativeCitizenship()) {
+            $queryBuilder->field('citizenship.id')->notEqual($nativeCitizenship->getId());
+        }
+
+        if($criteria->begin || $criteria->end) {
+            $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+            $packageCriteria = new PackageQueryCriteria();
+            $packageCriteria->begin = $criteria->begin;
+            $packageCriteria->end = $criteria->end;
+            $touristIDs = $packageRepository->findTouristIDsByCriteria($packageCriteria);
+            $queryBuilder->field('id')->in($touristIDs);
+        }
+
+        return $queryBuilder;
+    }
+
+    /**
+     * @param TouristQueryCriteria $criteria
+     * @param int $offset
+     * @param int $limit
+     * @return Tourist[]
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function findByQueryCriteria(TouristQueryCriteria $criteria, $offset = 0, $limit = 10)
+    {
+        $queryBuilder = $this->queryCriteriaToBuilder($criteria);
+        $queryBuilder
+            ->skip($offset)
+            ->limit($limit)
+            ->sort('fullName', 'asc')
+        ;
+        $tourists = $queryBuilder->getQuery()->execute();
+
+        return $tourists;
+    }
+
 
     /**
      * @param string $lastName
