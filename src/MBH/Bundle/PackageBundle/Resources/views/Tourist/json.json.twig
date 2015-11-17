@@ -8,12 +8,11 @@
             [
                 "<div class='text-center'><i class='fa fa-male'></i></div>",
                 "{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': tourist, 'route': 'tourist'} %}{% endembed %} {% if tourist.isUnwelcome %}<a href='{{ path('tourist_edit_unwelcome', {id: tourist.id}) }}'><i data-toggle='tooltip' data-original-title='Клиент в черном списке' class='fa fa-user-secret unwelcome-icon'></i></a>{% else %}<i style='opacity:0.4' data-toggle='tooltip' data-original-title='Клиент не в черном списке' class='fa fa-check-circle'></i>{% endif %}",
-                "<div class='text-center'>{{ tourist.citizenship.name|default('') }}</div>",
-                "<div class='text-center'>{% if tourist.documentRelation %}{{ tourist.documentRelation.number|default('') }}{% if tourist.documentRelation.issued %} до {{ tourist.documentRelation.issued|date('d.m.Y') }}{% endif %}{% endif %}</div>",
-                "<div class='text-center'>{{ package and package.accommodation ? package.accommodation : '' }}</div>",
-                "<div class='text-center'>{{ tourist.packages.count + tourist.orders.count }}</div>",
-                "<div class='text-center'>{% if tourist.birthday %}{{ tourist.birthday|date('d.m.Y')}}{% endif %}</div>",
-                "<div class='text-center'>{{ tourist.age }}</div>",
+                "{{ tourist.citizenship.name|default('') }}",
+                "{% if tourist.documentRelation %}{{ tourist.documentRelation.number|default('') }}{% if tourist.documentRelation.issued %}<br><small> до {{ tourist.documentRelation.issued|date('d.m.Y') }}</small>{% endif %}{% endif %}",
+                "{% if package and package.begin %}{{ (package.begin|mbh_format ~ ' - ' ~ package.end|mbh_format)|raw }}{% endif %}<br><small>{{ package and package.accommodation ? 'Номер: ' ~ package.accommodation : '' }}</small>",
+                "{{ tourist.packages.count + tourist.orders.count }}",
+                "{% if tourist.birthday %}{{ tourist.birthday|date('d.m.Y')}}{% if tourist.age %}<br><small>{{ tourist.age }}</small>{% endif %}{% endif %}",
                 "{{ tourist.phone }}",
                 "{% if tourist.email %}<a href='mailto:{{ tourist.email }}'>{{ tourist.email }}</a>{% endif %}",
                 "<div class='btn-list'>{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': tourist, 'route': 'tourist'} %}{% endembed %}</div>"
