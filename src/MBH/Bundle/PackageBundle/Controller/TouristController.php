@@ -105,15 +105,16 @@ class TouristController extends Controller
 
         /** @var TouristRepository $touristRepository */
         $touristRepository = $this->dm->getRepository('MBHPackageBundle:Tourist');
-        $packages = $touristRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
+        $tourists = $touristRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
 
         /** @var PackageRepository $packageRepository */
-        //$packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
         return [
-            'packages' => $packages,
-            'total' => count($packages),
-            'draw' => $request->get('draw')
+            'tourists' => $tourists,
+            'total' => count($tourists),
+            'draw' => $request->get('draw'),
+            'packageRepository' => $packageRepository
         ];
     }
 
@@ -430,7 +431,7 @@ class TouristController extends Controller
                 if($unwelcome->getIsMy()) {
                     $unwelcomeRepository->update($unwelcome, $tourist);
                 } else {
-                    $package = $this->dm->getRepository('MBHPackageBundle:Package')->getPackageByTourist($tourist);
+                    $package = $this->dm->getRepository('MBHPackageBundle:Package')->findOneByTourist($tourist);
                     if($package) {
                         $unwelcome->setArrivalTime($package->getArrivalTime());
                         $unwelcome->setDepartureTime($package->getDepartureTime());

@@ -190,7 +190,7 @@ class PackageRepository extends DocumentRepository
      * @param PackageQueryCriteria|null $criteria
      * @return null|Package
      */
-    public function getPackageByTourist(Tourist $tourist, PackageQueryCriteria $criteria = null)
+    public function findOneByTourist(Tourist $tourist, PackageQueryCriteria $criteria = null)
     {
         /** @var QueryBuilder $queryBuilder */
         $queryBuilder = $criteria ? $this->queryCriteriaToBuilder($criteria) : $this->createQueryBuilder();
