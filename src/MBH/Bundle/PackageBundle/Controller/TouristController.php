@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Criteria\TouristQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Migration;
@@ -110,11 +111,21 @@ class TouristController extends Controller
         /** @var PackageRepository $packageRepository */
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
+        $packageCriteria = new PackageQueryCriteria();
+        $packageCriteria->begin = $criteria->begin;
+        $packageCriteria->end = $criteria->end;
+        $touristPackages = [];
+        foreach($tourists as $tourist) {
+            $touristPackages[$tourist->getId()] = $packageRepository->findOneByTourist($tourist, $packageCriteria);
+        }
+
+        dump($touristPackages);
+
         return [
             'tourists' => $tourists,
             'total' => count($tourists),
             'draw' => $request->get('draw'),
-            'packageRepository' => $packageRepository
+            'touristPackages' => $touristPackages
         ];
     }
 
