@@ -10,6 +10,7 @@
                 "{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': tourist, 'route': 'tourist'} %}{% endembed %} {% if tourist.isUnwelcome %}<a href='{{ path('tourist_edit_unwelcome', {id: tourist.id}) }}'><i data-toggle='tooltip' data-original-title='Клиент в черном списке' class='fa fa-user-secret unwelcome-icon'></i></a>{% else %}<i style='opacity:0.4' data-toggle='tooltip' data-original-title='Клиент не в черном списке' class='fa fa-check-circle'></i>{% endif %}",
                 "{{ tourist.citizenship.name|default('') }}",
                 "{% if tourist.documentRelation %}{{ tourist.documentRelation.number|default('') }}{% if tourist.documentRelation.issued %}<br><small> до {{ tourist.documentRelation.issued|date('d.m.Y') }}</small>{% endif %}{% endif %}",
+                "{% if tourist.visa %}{{ tourist.visa.number }} {{ tourist.visa.expiry ? ('<br><small>до ' ~ tourist.visa.expiry|date('d.m.Y') ~ '</small>')|raw : '' }}{% endif %}",
                 "{% if package and package.begin %}{{ (package.begin|mbh_format ~ ' - ' ~ package.end|mbh_format)|raw }}{% endif %}<br><small>{{ package and package.accommodation ? 'Номер: ' ~ package.accommodation : '' }}</small>",
                 "{{ tourist.packages.count + tourist.orders.count }}",
                 "{% if tourist.birthday %}{{ tourist.birthday|date('d.m.Y')}}{% if tourist.age %}<br><small>{{ tourist.age }}</small>{% endif %}{% endif %}",
