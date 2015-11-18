@@ -22,6 +22,10 @@ var docReadyTourists = function () {
                 };
                 return requestData;
             }
+        },
+        "drawCallback": function( settings ) {
+            var $popover = $touristTable.find('[data-toggle="popover"]');
+            $popover.popover({ html : true });
         }
     });
     $touristTable.dataTable().fnSetFilteringDelay();

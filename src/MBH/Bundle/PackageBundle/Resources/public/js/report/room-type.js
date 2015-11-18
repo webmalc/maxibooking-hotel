@@ -4,10 +4,9 @@ $(document).ready(function ($) {
     var $roomTypesForm = $('#room-types-table-filter'),
         $roomTypes = $('#room-types-table');
 
-    var loadHtml = '<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>';
     $roomTypesForm.find('input, select').on('change', function () {
         if(!inProcess) {
-            $roomTypes.html(loadHtml);
+            mbh.loader.acceptTo($roomTypes);
             updateRoomTypesForm($roomTypesForm.serializeObject());
         }
     });
@@ -29,9 +28,9 @@ $(document).ready(function ($) {
             success: function (response) {
                 $roomTypes.html(response);
                 $roomTypes.find('select.plain-html.select-status').select2(selectStatusOptions);
-                //$roomTypes.find('[data-toggle=popover]').popover();
+                $roomTypes.find('[data-toggle=popover]').popover();
                 inProcess = false;
-            }
+            },
         });
     }
 

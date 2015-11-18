@@ -106,8 +106,16 @@ class TouristController extends Controller
 
         /** @var TouristRepository $touristRepository */
         $touristRepository = $this->dm->getRepository('MBHPackageBundle:Tourist');
-        $tourists = $touristRepository->findByQueryCriteria($criteria, $tableParams->getStart(),
-            $tableParams->getLength());
+
+        if($criteria->begin && $criteria->end) {
+            $diff = $criteria->begin->diff($criteria->end);
+            if($diff->y == 1 && $diff->m > 0 || $diff->y > 1) {
+                $begin = clone($criteria->begin);
+                $criteria->end = $begin->modify('+ 1 year');
+            }
+        }
+
+        $tourists = $touristRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
 
         /** @var PackageRepository $packageRepository */
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
@@ -115,16 +123,20 @@ class TouristController extends Controller
         $packageCriteria = new PackageQueryCriteria();
         $packageCriteria->begin = $criteria->begin;
         $packageCriteria->end = $criteria->end;
+
         $touristPackages = [];
         foreach ($tourists as $tourist) {
             $touristPackages[$tourist->getId()] = $packageRepository->findOneByTourist($tourist, $packageCriteria);
         }
 
+        $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
+
         return [
             'tourists' => $tourists,
             'total' => count($tourists),
             'draw' => $request->get('draw'),
-            'touristPackages' => $touristPackages
+            'touristPackages' => $touristPackages,
+            'vegaDocumentTypes' => $vegaDocumentTypes
         ];
     }
 

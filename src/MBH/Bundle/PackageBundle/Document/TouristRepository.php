@@ -69,14 +69,19 @@ class TouristRepository extends DocumentRepository
 
         if ($criteria->search) {
             $fullNameRegex = new \MongoRegex('/.*' . $criteria->search . '.*/ui');
-            $queryBuilder->field('fullName')->equals($fullNameRegex);
+            if(is_numeric($criteria->search)) {
+                $queryBuilder->field('documentRelation.number')->equals($fullNameRegex);
+            } else {
+                $queryBuilder->field('fullName')->equals($fullNameRegex);
+            }
         }
 
         if ($criteria->citizenship && $nativeCitizenship = $this->getNativeCitizenship()) {
             if ($criteria->citizenship == TouristQueryCriteria::CITIZENSHIP_NATIVE) {
-                $queryBuilder->field('citizenship.id')->equals($nativeCitizenship->getId());
+                $queryBuilder->addOr($queryBuilder->expr()->field('citizenship.id')->equals(null));
+                $queryBuilder->addOr($queryBuilder->expr()->field('citizenship.id')->equals($nativeCitizenship->getId()));
             } elseif ($criteria->citizenship == TouristQueryCriteria::CITIZENSHIP_FOREIGN) {
-                $queryBuilder->field('citizenship.id')->notEqual($nativeCitizenship->getId());
+                $queryBuilder->field('citizenship.id')->notEqual($nativeCitizenship->getId())->exists(true);
             }
         }
 
