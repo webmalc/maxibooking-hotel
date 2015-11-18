@@ -31,7 +31,7 @@ LateEarlyDateChecker.STATUS_BOTH = 'both';
 LateEarlyDateChecker.prototype.statusTexts = {};
 LateEarlyDateChecker.prototype.statusTexts[LateEarlyDateChecker.STATUS_ARRIVAL] = 'Гость заехал раньше назначенного времени. Добавить дополельную услугу "Ранний заезд" ?';
 LateEarlyDateChecker.prototype.statusTexts[LateEarlyDateChecker.STATUS_DEPARTURE] = 'Гость выехал позже назначенного времени. Добавить дополельную услугу "Поздний выезд" ?';
-LateEarlyDateChecker.prototype.statusTexts[LateEarlyDateChecker.STATUS_BOTH] = 'Гость заехал раньше и выехал позже назначенного времени. Добавить дополельную услугу "Ранний заезд" и "Поздний выезд" ?';
+LateEarlyDateChecker.prototype.statusTexts[LateEarlyDateChecker.STATUS_BOTH] = 'Гость заехал раньше и выехал позже назначенного времени. Добавить дополнительную услугу "Ранний заезд" и "Поздний выезд" ?';
 
 LateEarlyDateChecker.prototype.bindEventListeners = function() {
     var that = this;

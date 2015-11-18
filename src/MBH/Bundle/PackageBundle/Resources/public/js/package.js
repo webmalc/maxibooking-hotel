@@ -7,7 +7,6 @@ var initAccommodationTab = function() {
         function(){
             $earlyCheckInAmountInput.val('');
             $lateCheckOutAmountInput.val('');
-            console.log(this.formData);
             if(this.status == LateEarlyDateChecker.STATUS_ARRIVAL) {
                 $earlyCheckInAmountInput.val(this.formData.amount);
             } else if(this.status == LateEarlyDateChecker.STATUS_DEPARTURE) {
@@ -83,20 +82,22 @@ var initAccommodationTab = function() {
     $checkIn.on('switchChange.bootstrapSwitch', showOut);
     $checkOut.on('switchChange.bootstrapSwitch', show);
 
-    $form.on('submit', function(e) {
+
+
+    var accommodationSubmitFormHandler = function(e) {
         var pattern = /(\d{2})\.(\d{2})\.(\d{4})/;
 
         var arrivalDate = $arrivalDate.val();
         var arrivalTime = $arrival.val();
         var arrivalDate = new Date(arrivalDate.replace(pattern,'$3-$2-$1') + 'T' + arrivalTime + ':00');
         arrivalDate.setHours(arrivalDate.getHours() - mbh.UTCHoursOffset);
-        var isSuitArrival = !$checkIn.is(':checked') || arrivalDate && arrivalTime && lateEarlyDateChecker.checkLateArrival(packageBeginTime, arrivalDate);
+        var isSuitArrival = !$checkIn.is(':checked') || arrivalDate && arrivalTime && lateEarlyDateChecker.checkLateArrival(Package.begin, arrivalDate);
 
         var departureDate = $departureDate.val();
         var departureTime = $departure.val();
         var departureDate = new Date(departureDate.replace(pattern,'$3-$2-$1') + 'T' + departureTime + ':00');
         departureDate.setHours(departureDate.getHours() - mbh.UTCHoursOffset);
-        var isSuitDeparture = !$checkOut.is(':checked') || departureDate && departureTime && lateEarlyDateChecker.checkEarlyDeparture(packageEndTime, departureDate);
+        var isSuitDeparture = !$checkOut.is(':checked') || departureDate && departureTime && lateEarlyDateChecker.checkEarlyDeparture(Package.end, departureDate);
 
         lateEarlyDateChecker.status = null;
         if (earlyCheckInServiceIsEnabled && lateCheckOutServiceIsEnabled && !isSuitArrival && !isSuitDeparture) {
@@ -110,6 +111,25 @@ var initAccommodationTab = function() {
         if (!userConfirmation && lateEarlyDateChecker.status) {
             lateEarlyDateChecker.show();
             e.preventDefault();
+        }
+    }
+
+    var debtConfirmed = false;
+    var debtSubmitFormHandler = function(e) {
+        if ($checkOut.is(':checked') && Package.debt > 0 && !debtConfirmed) {
+            e.preventDefault();
+            mbh.alert.show(null, 'В заказе есть долг', 'В заказе есть долг', 'Продолжить', null, 'success', function(){
+                mbh.alert.hide();
+                debtConfirmed = true;
+                $('button[type=submit][name=save]').trigger('click');
+            })
+        }
+    }
+
+    $form.on('submit', function(e){
+        debtSubmitFormHandler(e);
+        if(!e.isDefaultPrevented()) {
+            accommodationSubmitFormHandler(e);
         }
     });
 }

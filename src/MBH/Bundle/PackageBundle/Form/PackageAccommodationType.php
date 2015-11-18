@@ -80,11 +80,11 @@ class PackageAccommodationType extends AbstractType
             'help' => 'form.packageAccommodationType.are_guests_checked_out_help'
         ];
         if ($options['debt']) {
-            $isCheckOutOptions['attr'] = ['disabled' => 'disabled'];
+            //$isCheckOutOptions['attr'] = ['disabled' => 'disabled'];
             $isCheckOutOptions['help'] = 'form.packageAccommodationType.can_not_checkout_with_debt';
-            $isCheckOutOptions['constraints'] = [
+            /*$isCheckOutOptions['constraints'] = [
                 new EqualTo(['value' => false])
-            ];
+            ];*/
         }
         $builder
             ->add('isCheckOut', 'checkbox', $isCheckOutOptions);

@@ -44,8 +44,11 @@
     </div>
 
     <script>
-        var packageBeginTime = new Date({{ package.begin.timestamp }} * 1000);
-        var packageEndTime = new Date({{ package.end.timestamp }} * 1000);
+        var Package = {
+            begin: new Date({{ package.begin.timestamp }} * 1000),
+            end: new Date({{ package.end.timestamp }} * 1000),
+            debt: {{ package.debt }}
+        };
         var earlyCheckInServiceIsEnabled = {{ earlyCheckInServiceIsEnabled|json_encode }};
         var lateCheckOutServiceIsEnabled = {{ lateCheckOutServiceIsEnabled|json_encode }};
     </script>

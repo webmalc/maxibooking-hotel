@@ -70,16 +70,6 @@ var docReadyTourists = function () {
     }
 
     var details = {};
-    var array_values = function (input) {
-        var tmp_arr = new Array(), cnt = 0;
-        for (var key in input) {
-            tmp_arr[cnt] = input[key];
-            cnt++;
-        }
-
-        return tmp_arr;
-    }
-
         //payer select2
     (function () {
         var org = $('#organization_organization');
