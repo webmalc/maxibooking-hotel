@@ -17,7 +17,7 @@ var docReadyTourists = function () {
                 requestData.form = {
                     begin: $touristForm.find('#form_begin').val(),
                     end: $touristForm.find('#form_end').val(),
-                    foreign: $touristForm.find('#form_foreign').is(':checked'),
+                    citizenship: $touristForm.find('#form_citizenship').val(),
                     _token: $touristForm.find('#form__token').val()
                 };
                 return requestData;
@@ -26,7 +26,7 @@ var docReadyTourists = function () {
     });
     $touristTable.dataTable().fnSetFilteringDelay();
 
-    $touristForm.find('input, checkbox').on('change switchChange.bootstrapSwitch', function() {
+    $touristForm.find('input, select').on('change', function () {
         $touristTable.dataTable().fnDraw();
     });
 
@@ -58,7 +58,7 @@ var docReadyTourists = function () {
 
     var $guestOverflowAlert = $('#guest-overflow-alert');
     if ($guestOverflowAlert.length == 1) {
-        $guestOverflowAlert.children('.btn').on('click', function(){
+        $guestOverflowAlert.children('.btn').on('click', function () {
             $guestForm.removeClass('hide');
             $(this).addClass('hide');
             $guestSelect.mbhGuestSelectPlugin();
@@ -104,15 +104,15 @@ var docReadyTourists = function () {
                 }
             },
             /*initSelection: function (element, callback) {
-                var id = $(element).val();
-                if (id !== "") {
-                    $.ajax(Routing.generate('organization_json_list') + '/' + id, {
-                        dataType: "json"
-                    }).done(function (data) {
-                        callback(data);
-                    });
-                }
-            },*/
+             var id = $(element).val();
+             if (id !== "") {
+             $.ajax(Routing.generate('organization_json_list') + '/' + id, {
+             dataType: "json"
+             }).done(function (data) {
+             callback(data);
+             });
+             }
+             },*/
             dropdownCssClass: "bigdrop"
         }).on('change', function () {
             var value = $(this).val();
@@ -121,7 +121,7 @@ var docReadyTourists = function () {
                 $('#organization_' + key).val(value);
             });
             $('#organization_city').select2("val", detail.city)
-            $('#organization_city').append('<option value="'+ detail.city +'">' + detail.city_name+ '</option>').val(detail.city).trigger('change');
+            $('#organization_city').append('<option value="' + detail.city + '">' + detail.city_name + '</option>').val(detail.city).trigger('change');
         });
     }());
 
@@ -140,7 +140,7 @@ var docReadyTourists = function () {
                 };
             },
             processResults: function (data, request) {
-                if(data.results.length == 0) {
+                if (data.results.length == 0) {
                     data.results.push({
                         id: request.term,
                         text: request.term
@@ -162,7 +162,7 @@ var docReadyTourists = function () {
                     $authorityOrganCodeInput.val(data.code);
                     $authorityOrganCodeInput.attr('disabled', true);
                 });
-            } else if($authorityOrganTextInput.val()) {
+            } else if ($authorityOrganTextInput.val()) {
                 callback({
                     id: $authorityOrganTextInput.val(),
                     text: $authorityOrganTextInput.val()
@@ -174,14 +174,14 @@ var docReadyTourists = function () {
 
         },
         dropdownCssClass: "bigdrop"
-    }).on('change', function(name, evt) {
+    }).on('change', function (name, evt) {
         var $this = $(this);
         var value = $this.select2('val');
         if (value && value.length == 24) { //mongoID
             $authorityOrganCodeInput.attr('disabled', true);
             $.ajax(Routing.generate('ajax_authority_organ', {id: value}), {
                 dataType: "json"
-            }).done(function(data){
+            }).done(function (data) {
                 $authorityOrganCodeInput.val(data.code);
             });
         } else {

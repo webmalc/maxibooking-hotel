@@ -44,7 +44,7 @@ class TouristController extends Controller
      */
     public function indexAction()
     {
-        $form =  $this->getTouristFilterForm();
+        $form = $this->getTouristFilterForm();
 
         return [
             'form' => $form->createView()
@@ -66,14 +66,18 @@ class TouristController extends Controller
                 'format' => 'dd.MM.yyyy',
                 'required' => false
             ])
-            ->add('foreign', 'checkbox', [
-                'required' => false
+            ->add('citizenship', 'choice', [
+                'required' => false,
+                'choices' => [
+                    TouristQueryCriteria::CITIZENSHIP_NATIVE => 'Граждане РФ',
+                    TouristQueryCriteria::CITIZENSHIP_FOREIGN => 'Иностранные граждане'
+                ]
             ])
             ->add('search', 'text', [
                 'required' => false
             ])
-            ->getForm()
-        ;
+            ->getForm();
+
         return $form;
     }
 
@@ -88,17 +92,13 @@ class TouristController extends Controller
     public function jsonAction(Request $request)
     {
         $tableParams = ClientDataTableParams::createFromRequest($request);
-        $formData = (array) $request->get('form');
+        $formData = (array)$request->get('form');
         $form = $this->getTouristFilterForm();
         $formData['search'] = $tableParams->getSearch();
 
-        if($formData['foreign'] === 'false') { //todo remove
-            $formData['foreign'] = false;
-        }
-
         $form->submit($formData);
-        if(!$form->isValid()) {
-            return new JsonResponse(['errors' => $form->getErrors()[0]->getMessage()]);
+        if (!$form->isValid()) {
+            return new JsonResponse(['error' => $form->getErrors()[0]->getMessage()]);
         }
 
         /** @var TouristQueryCriteria $criteria */
@@ -106,7 +106,8 @@ class TouristController extends Controller
 
         /** @var TouristRepository $touristRepository */
         $touristRepository = $this->dm->getRepository('MBHPackageBundle:Tourist');
-        $tourists = $touristRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
+        $tourists = $touristRepository->findByQueryCriteria($criteria, $tableParams->getStart(),
+            $tableParams->getLength());
 
         /** @var PackageRepository $packageRepository */
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
@@ -115,11 +116,9 @@ class TouristController extends Controller
         $packageCriteria->begin = $criteria->begin;
         $packageCriteria->end = $criteria->end;
         $touristPackages = [];
-        foreach($tourists as $tourist) {
+        foreach ($tourists as $tourist) {
             $touristPackages[$tourist->getId()] = $packageRepository->findOneByTourist($tourist, $packageCriteria);
         }
-
-        dump($touristPackages);
 
         return [
             'tourists' => $tourists,
@@ -229,9 +228,9 @@ class TouristController extends Controller
             $this->dm->flush();
 
             $flashBag = $request->getSession()->getFlashBag();
-            if($notUnwelcome && $tourist->getIsUnwelcome()) {
-                $flashBag->set('warning', '<i class="fa fa-user-secret"></i> '.$this->get('translator')
-                    ->trans('controller.touristController.tourist_was_found_in_unwelcome'));
+            if ($notUnwelcome && $tourist->getIsUnwelcome()) {
+                $flashBag->set('warning', '<i class="fa fa-user-secret"></i> ' . $this->get('translator')
+                        ->trans('controller.touristController.tourist_was_found_in_unwelcome'));
             }
 
             $flashBag->set('success', $this->get('translator')
@@ -270,9 +269,9 @@ class TouristController extends Controller
             $flashBag = $request->getSession()->getFlashBag();
             $flashBag->set('success', $this->get('translator')
                 ->trans('controller.touristController.record_edited_success'));
-            if($notUnwelcome && $tourist->getIsUnwelcome()) {
-                $flashBag->set('warning', '<i class="fa fa-user-secret"></i> '.$this->get('translator')
-                    ->trans('controller.touristController.tourist_was_found_in_unwelcome'));
+            if ($notUnwelcome && $tourist->getIsUnwelcome()) {
+                $flashBag->set('warning', '<i class="fa fa-user-secret"></i> ' . $this->get('translator')
+                        ->trans('controller.touristController.tourist_was_found_in_unwelcome'));
             }
 
             return $this->afterSaveRedirect('tourist', $tourist->getId());
@@ -409,9 +408,9 @@ class TouristController extends Controller
         $unwelcomeRepository = $this->get('mbh.package.unwelcome_repository');
         /** @var Unwelcome[] $unwelcomeList */
         $unwelcomeList = $unwelcomeRepository->findByTourist($tourist);
-        if($unwelcomeList) {
-            foreach($unwelcomeList as $unwelcome) {
-                if($unwelcome->getIsMy()) {
+        if ($unwelcomeList) {
+            foreach ($unwelcomeList as $unwelcome) {
+                if ($unwelcome->getIsMy()) {
                     $form->setData($unwelcome);
                 } else {
                     $unwelcomeList[] = $unwelcome;
@@ -419,7 +418,7 @@ class TouristController extends Controller
             }
         }
 
-        if(!$form->getData()) {
+        if (!$form->getData()) {
             $unwelcome = new Unwelcome();
             $unwelcome
                 ->setAggression(0)
@@ -435,15 +434,15 @@ class TouristController extends Controller
         }
 
         $isTouristValid = $unwelcomeRepository->isInsertedTouristValid($tourist);
-        if($isTouristValid) {
+        if ($isTouristValid) {
             $form->handleRequest($request);
-            if($form->isValid()) {
+            if ($form->isValid()) {
                 $unwelcome = $form->getData();
-                if($unwelcome->getIsMy()) {
+                if ($unwelcome->getIsMy()) {
                     $unwelcomeRepository->update($unwelcome, $tourist);
                 } else {
                     $package = $this->dm->getRepository('MBHPackageBundle:Package')->findOneByTourist($tourist);
-                    if($package) {
+                    if ($package) {
                         $unwelcome->setArrivalTime($package->getArrivalTime());
                         $unwelcome->setDepartureTime($package->getDepartureTime());
                     }
@@ -452,6 +451,7 @@ class TouristController extends Controller
                 $tourist->setIsUnwelcome(true);
                 $this->dm->persist($tourist);
                 $this->dm->flush($tourist);
+
                 return $this->redirectToRoute('tourist_edit_unwelcome', ['id' => $tourist->getId()]);
             }
         }
@@ -495,7 +495,7 @@ class TouristController extends Controller
     {
         $list = [];
         $criteria = [];
-        if($value = $request->get('value')) {
+        if ($value = $request->get('value')) {
             $criteria = ['title' => new \MongoRegex('/.*' . $value . '.*/ui')];
         }
 
@@ -503,8 +503,10 @@ class TouristController extends Controller
         foreach ($entities as $entity) {
             $list[$entity->getId()] = $entity->getTitle();
         }
+
         return new JsonResponse(['data' => $list]);
     }
+
     /**
      * @Route("/authority_organ_json_list", name="authority_organ_json_list", options={"expose"=true})
      * @Method("GET")
@@ -513,12 +515,13 @@ class TouristController extends Controller
     public function authorityOrganListAction(Request $request)
     {
         $list = [];
-        if($query = $request->get('query')['term']) {
+        if ($query = $request->get('query')['term']) {
             $repository = $this->dm->getRepository('MBHVegaBundle:VegaFMS');
             $entities = $repository->findBy(['name' => new \MongoRegex('/.*' . $query . '.*/ui')], ['name' => 1], 50);
             foreach ($entities as $entity) {
 
-                $list[] = ['id' => $entity->getId(),
+                $list[] = [
+                    'id' => $entity->getId(),
                     'text' => $entity->getName()
                 ];
 
@@ -641,8 +644,7 @@ class TouristController extends Controller
 
         $regex = new \MongoRegex('/.*' . $request->get('query') . '.*/i');
         $qb = $this->dm->getRepository('MBHPackageBundle:Tourist')->createQueryBuilder('q')
-            ->sort(['fullName' => 'asc', 'birthday' => 'desc'])
-        ;
+            ->sort(['fullName' => 'asc', 'birthday' => 'desc']);
         $qb->addOr($qb->expr()->field('fullName')->equals($regex));
         $qb->addOr($qb->expr()->field('email')->equals($regex));
         $qb->addOr($qb->expr()->field('phone')->equals($regex));

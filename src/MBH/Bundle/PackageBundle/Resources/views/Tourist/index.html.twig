@@ -10,12 +10,15 @@
             {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'tourist-form'}}) }}
             <div class="form-group">
                 <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
-                {{ form_widget(form.begin, {attr: {class: 'datepicker'}}) }} -
-                {{ form_widget(form.end, {attr: {class: 'datepicker'}}) }}
+                {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepiker'}}) }} -
+                {{ form_widget(form.end, {attr: {class: 'datepicker end-datepiker'}}) }}
             </div>
             <div class="form-group">
-                <label><i class="fa fa-star-o" title="Иностранные граждане" data-toggle="tooltip"></i></label>
-                {{ form_widget(form.foreign) }}
+                {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
+            </div>
+            <div class="form-group">
+                <label><i class="fa fa-male" title="Иностранные граждане" data-toggle="tooltip"></i></label>
+                {{ form_widget(form.citizenship) }}
                 {{ form_widget(form._token) }}
                 {{ form_rest(form.search) }}
             </div>

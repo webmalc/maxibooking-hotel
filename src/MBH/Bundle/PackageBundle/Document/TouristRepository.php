@@ -72,8 +72,12 @@ class TouristRepository extends DocumentRepository
             $queryBuilder->field('fullName')->equals($fullNameRegex);
         }
 
-        if($criteria->foreign && $nativeCitizenship = $this->getNativeCitizenship()) {
-            $queryBuilder->field('citizenship.id')->notEqual($nativeCitizenship->getId());
+        if ($criteria->citizenship && $nativeCitizenship = $this->getNativeCitizenship()) {
+            if ($criteria->citizenship == TouristQueryCriteria::CITIZENSHIP_NATIVE) {
+                $queryBuilder->field('citizenship.id')->equals($nativeCitizenship->getId());
+            } elseif ($criteria->citizenship == TouristQueryCriteria::CITIZENSHIP_FOREIGN) {
+                $queryBuilder->field('citizenship.id')->notEqual($nativeCitizenship->getId());
+            }
         }
 
         if($criteria->begin || $criteria->end) {

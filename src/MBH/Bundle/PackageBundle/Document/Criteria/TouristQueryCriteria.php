@@ -10,6 +10,9 @@ namespace MBH\Bundle\PackageBundle\Document\Criteria;
  */
 class TouristQueryCriteria
 {
+    const CITIZENSHIP_FOREIGN = 'foreign';
+    const CITIZENSHIP_NATIVE = 'native';
+
     /**
      * @var \DateTime
      */
@@ -21,10 +24,9 @@ class TouristQueryCriteria
     public $end;
 
     /**
-     * Foreign tourist only
-     * @var bool
+     * @var string
      */
-    public $foreign = false;
+    public $citizenship;
 
     /**
      * @var string
