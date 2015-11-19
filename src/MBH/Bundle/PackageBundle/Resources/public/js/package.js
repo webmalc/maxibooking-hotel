@@ -3,30 +3,7 @@ var initAccommodationTab = function() {
     var $form = $('form[name=mbh_bundle_packagebundle_package_accommodation_type]');
 
     var userConfirmation = false;
-    var lateEarlyDateChecker = new LateEarlyDateChecker(
-        function(){
-            $earlyCheckInAmountInput.val('');
-            $lateCheckOutAmountInput.val('');
-            if(this.status == LateEarlyDateChecker.STATUS_ARRIVAL) {
-                $earlyCheckInAmountInput.val(this.formData.amount);
-            } else if(this.status == LateEarlyDateChecker.STATUS_DEPARTURE) {
-                $lateCheckOutAmountInput.val(this.formData.amount);
-            } else if(this.status == LateEarlyDateChecker.STATUS_BOTH) {
-                $earlyCheckInAmountInput.val(this.formData.amount);
-                $lateCheckOutAmountInput.val(this.formData.amount);
-            }
-            userConfirmation = true;
-            //$form.trigger('submit');
-            $('button[type=submit][name=save]').trigger('click');
-        },
-        function(){
-            $earlyCheckInAmountInput.val('');
-            $lateCheckOutAmountInput.val('');
-            userConfirmation = true;
-            //$form.trigger('submit');
-            $('button[type=submit][name=save]').trigger('click');
-        }
-    );
+    var lateEarlyDateChecker = new LateEarlyDateChecker(function(){}, function(){});
 
     var $checkIn = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckIn'),
         $checkOut = $('#mbh_bundle_packagebundle_package_accommodation_type_isCheckOut'),
@@ -34,8 +11,6 @@ var initAccommodationTab = function() {
         $departureDate = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_date'),
         $arrival = $('#mbh_bundle_packagebundle_package_accommodation_type_arrivalTime_time'),
         $departure = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_time'),
-        $earlyCheckInAmountInput = $('#mbh_bundle_packagebundle_package_accommodation_type_earlyCheckInAmount'),
-        $lateCheckOutAmountInput = $('#mbh_bundle_packagebundle_package_accommodation_type_lateCheckOutAmount'),
         datepickerOptions = {
             language: "ru",
             autoclose: true,
@@ -84,7 +59,7 @@ var initAccommodationTab = function() {
 
 
 
-    var accommodationSubmitFormHandler = function(e) {
+    var getConfirmText = function() {
         var pattern = /(\d{2})\.(\d{2})\.(\d{4})/;
 
         var arrivalDate = $arrivalDate.val();
@@ -108,29 +83,36 @@ var initAccommodationTab = function() {
             lateEarlyDateChecker.status = LateEarlyDateChecker.STATUS_DEPARTURE;
         }
 
-        if (!userConfirmation && lateEarlyDateChecker.status) {
-            lateEarlyDateChecker.show();
-            e.preventDefault();
+        if (lateEarlyDateChecker.status) {
+            return lateEarlyDateChecker.statusTexts[lateEarlyDateChecker.status];
         }
+        return null;
     }
 
-    var debtConfirmed = false;
-    var debtSubmitFormHandler = function(e) {
-        if ($checkOut.is(':checked') && Package.debt > 0 && !debtConfirmed) {
-            e.preventDefault();
-            mbh.alert.show(null, 'В заказе есть долг', 'В заказе есть долг', 'Продолжить', null, 'success', function(){
-                mbh.alert.hide();
-                debtConfirmed = true;
-                $('button[type=submit][name=save]').trigger('click');
-            })
+    var confirmed = false;
+    var formHandler = function(e) {
+        if (!confirmed) {
+            var text = [];
+            if ($checkOut.is(':checked') && Package.debt > 0) {
+                text.push('Заказ не оплачен');
+            }
+            var confirmText = getConfirmText();
+            if (confirmText) {
+                text.push(confirmText);
+            }
+            if(text.length > 0) {
+                e.preventDefault();
+                mbh.alert.show(null, 'Подтверждение', text.join('<br>'), 'Продолжить', null, 'danger', function(){
+                    mbh.alert.hide();
+                    confirmed = true;
+                    $('button[type=submit][name=save]').trigger('click');
+                })
+            }
         }
     }
 
     $form.on('submit', function(e){
-        debtSubmitFormHandler(e);
-        if(!e.isDefaultPrevented()) {
-            accommodationSubmitFormHandler(e);
-        }
+        formHandler(e);
     });
 }
 

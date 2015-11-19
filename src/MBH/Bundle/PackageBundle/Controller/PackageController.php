@@ -693,12 +693,25 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $package->setDepartureTime(new \DateTime());
         }
 
+        $hasEarlyCheckIn = false;
+        $hasLateCheckOut = false;
+        foreach($package->getServices() as $service) {
+            $code = $service->getService()->getCode();
+            if($code == 'Early check-in') {
+                $hasEarlyCheckIn = true;
+            } elseif ($code == 'Late check-out') {
+                $hasLateCheckOut = true;
+            }
+        }
+
         $form = $this->createForm(new PackageAccommodationType(), $package, [
             'optGroupRooms' => $optGroupRooms,
             'roomType' => $package->getRoomType(),
             'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
             'roomStatusIcons' => $this->container->getParameter('mbh.room_status_icons'),
-            'debt' => $package->getPaidStatus() != 'success' && !$package->getIsCheckOut()
+            'debt' => $package->getPaidStatus() != 'success' && !$package->getIsCheckOut(),
+            'hasEarlyCheckIn' => $hasEarlyCheckIn,
+            'hasLateCheckOut' => $hasLateCheckOut
         ]);
 
         $authorizationChecker = $this->container->get('security.authorization_checker');
@@ -719,32 +732,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
             if ($form->isValid()) {
                 $this->dm->persist($package);
-
-                $pricesByDate = $package->getPricesByDate();
-                if($amount = $form->get('earlyCheckInAmount')->getData()) {
-                    if ($earlyCheckInServiceIsEnabled) {
-                        $packageService = new PackageService();
-                        $packageService->setService($earlyCheckInService);
-                        $packageService->setPrice(reset($pricesByDate));
-                        $packageService->setAmount($amount);
-                        $packageService->setNights(1);
-                        $package->addService($packageService);
-                        $packageService->setPackage($package);
-                        $this->dm->persist($packageService);
-                    }
-                }
-                if($amount = $form->get('lateCheckOutAmount')->getData()) {
-                    if ($lateCheckOutServiceIsEnabled) {
-                        $packageService = new PackageService();
-                        $packageService->setService($lateCheckOutService);
-                        $packageService->setPrice(end($pricesByDate));
-                        $packageService->setAmount($amount);
-                        $packageService->setNights(1);
-                        $package->addService($packageService);
-                        $packageService->setPackage($package);
-                        $this->dm->persist($packageService);
-                    }
-                }
                 $this->dm->flush();
 
                 $request->getSession()->getFlashBag()->set('success',

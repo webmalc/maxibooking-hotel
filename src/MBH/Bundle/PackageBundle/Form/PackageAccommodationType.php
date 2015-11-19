@@ -55,7 +55,7 @@ class PackageAccommodationType extends AbstractType
                 'group' => 'form.packageAccommodationType.choose_placement',
                 'multiple' => false,
                 'choices' => $options['arrivals'],
-                ])
+            ])
             ->add('isCheckIn', 'checkbox', [
                 'label' => 'form.packageAccommodationType.are_guests_checked_in',
                 'value' => true,
@@ -63,15 +63,24 @@ class PackageAccommodationType extends AbstractType
                 'required' => false,
                 'help' => 'form.packageAccommodationType.are_guests_checked_in_help'
             ])
-            ->add('arrivalTime', 'datetime', array(
-                'label' => 'form.packageMainType.check_in_time',
-                'html5' => false,
-                'group' => 'form.packageAccommodationType.check_in_group',
-                'required' => false,
-                'time_widget' => 'single_text',
-                'date_widget' => 'single_text',
-                'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),
-            ));
+        ;
+
+        $arrivalTimeOptions = [
+            'label' => 'form.packageMainType.check_in_time',
+            'html5' => false,
+            'group' => 'form.packageAccommodationType.check_in_group',
+            'required' => false,
+            'time_widget' => 'single_text',
+            'date_widget' => 'single_text',
+            'attr' => ['placeholder' => '12:00', 'class' => 'input-time'],
+        ];
+
+        if ($options['hasEarlyCheckIn']) {
+           $arrivalTimeOptions['help'] = 'form.packageAccommodationType.hasEarlyCheckIn';
+        }
+
+        $builder->add('arrivalTime', 'datetime', $arrivalTimeOptions);
+
         $isCheckOutOptions = [
             'label' => 'form.packageAccommodationType.are_guests_checked_out',
             'value' => true,
@@ -86,29 +95,23 @@ class PackageAccommodationType extends AbstractType
                 new EqualTo(['value' => false])
             ];*/
         }
-        $builder
-            ->add('isCheckOut', 'checkbox', $isCheckOutOptions);
-        $builder
-            ->add('departureTime', 'datetime', array(
-                'label' => 'form.packageMainType.check_out_time',
-                'html5' => false,
-                'group' => 'form.packageAccommodationType.check_in_group',
-                'required' => false,
-                'time_widget' => 'single_text',
-                'date_widget' => 'single_text',
-                'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),
-            ));
+        $builder->add('isCheckOut', 'checkbox', $isCheckOutOptions);
 
-        $builder
-            ->add('earlyCheckInAmount', 'hidden', [
-                'required' => false,
-                'mapped' => false,
-            ])
-            ->add('lateCheckOutAmount', 'hidden', [
-                'required' => false,
-                'mapped' => false,
-            ])
-        ;
+        $departureTimeOptions = [
+            'label' => 'form.packageMainType.check_out_time',
+            'html5' => false,
+            'group' => 'form.packageAccommodationType.check_in_group',
+            'required' => false,
+            'time_widget' => 'single_text',
+            'date_widget' => 'single_text',
+            'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),
+        ];
+
+        if ($options['hasLateCheckOut']) {
+            $departureTimeOptions['help'] = 'form.packageAccommodationType.hasLateCheckOut';
+        }
+
+        $builder->add('departureTime', 'datetime', $departureTimeOptions);
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -119,7 +122,9 @@ class PackageAccommodationType extends AbstractType
             'arrivals' => [],
             'roomType' => null,
             'debt' => false,
-            'roomStatusIcons' => []
+            'roomStatusIcons' => [],
+            'hasEarlyCheckIn' => false,
+            'hasLateCheckOut' => false,
         ]);
     }
 
