@@ -2,19 +2,22 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
+/**
+ * Class PriceCacheGeneratorType
+ */
 class PriceCacheGeneratorType extends AbstractType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $isIndividualAdditionalPrices = 0;
@@ -96,7 +99,6 @@ class PriceCacheGeneratorType extends AbstractType
                 'label' => 'Цена',
                 'group' => 'Цены',
                 'required' => true,
-                'data' => null,
                 'attr' => ['class' => 'spinner--1f delete-prices'],
                 'constraints' => [
                     new Range(['min' => -1, 'minMessage' => 'Цена не может быть меньше минус одного']),
@@ -110,74 +112,117 @@ class PriceCacheGeneratorType extends AbstractType
                 'required' => false,
                 'help' => 'Цена за человека или за номер?'
             ])
-            ->add('singlePrice', 'text', [
-                'label' => 'Цена 1-местного размещения',
-                'group' => 'Цены',
+            ->add('singlePrice', 'hidden', [
                 'required' => false,
-                'data' => null,
-                'attr' => ['class' => 'spinner-0f', 'placeholder' => 'данные будут удалены'],
-                'help' => 'Цена при бронировании номера на одного человека.',
+                'attr' => ['class' => 'hidden-price'],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                 ],
             ])
-            ->add('childPrice', 'text', [
-                'label' => 'Цена за детское осн. место',
+            ->add('singlePriceFake', 'text', [
+                'label' => 'Цена 1-местного размещения',
                 'group' => 'Цены',
+                'attr' => ['class' => 'text-price'],
                 'required' => false,
-                'data' => null,
-                'attr' => ['class' => 'spinner-0f'],
+                'help' => 'Цена при бронировании номера на одного человека.'
+            ])
+            ->add('additionalPrice', 'hidden', [
+                'required' => false,
+                'attr' => ['class' => 'hidden-price'],
+                'constraints' => [
+                    new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
+                ],
+            ])
+            ->add('additionalPriceFake', 'text', [
+                'label' => 'Цена 1-местного размещения',
+                'group' => 'Цены',
+                'attr' => ['class' => 'text-price'],
+                'required' => false,
+                'help' => 'Цена при бронировании номера на одного человека.'
+            ])
+            ->add('childPrice', 'hidden', [
+                'required' => false,
+                'attr' => ['class' => 'hidden-price'],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше минус одного']),
                 ],
             ])
-            ->add('additionalPrice', 'text', [
-                'label' => 'Цена взрослого доп. места',
+            ->add('childPriceFake', 'text', [
+                'label' => 'Цена за детское осн. место',
+                'attr' => ['class' => 'text-price'],
                 'group' => 'Цены',
                 'required' => false,
-                'data' => null,
-                'attr' => ['class' => 'spinner-0f delete-prices', 'placeholder' => 'данные будут удалены'],
+            ])
+            ->add('additionalPrice', 'hidden', [
+                'required' => false,
+                'attr' => ['class' => 'hidden-price'],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                 ],
             ])
-            ->add('additionalChildrenPrice', 'text', [
-                'label' => 'Цена детского доп. места',
+            ->add('additionalPriceFake', 'text', [
+                'label' => 'Цена взрослого доп. места',
+                'attr' => ['class' => 'text-price'],
                 'group' => 'Цены',
                 'required' => false,
-                'data' => null,
-                'attr' => ['class' => 'spinner-0f', 'placeholder' => 'данные будут удалены'],
+            ])
+            ->add('additionalChildrenPrice', 'hidden', [
+                'required' => false,
+                'attr' => ['class' => 'hidden-price'],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                 ],
-            ]);
+            ])
+            ->add('additionalChildrenPriceFake', 'text', [
+                'label' => 'Цена детского доп. места',
+                'attr' => ['class' => 'text-price'],
+                'group' => 'Цены',
+                'required' => false,
+            ])
+        ;
 
         if ($isIndividualAdditionalPrices) {
             for ($i = 1; $i < $isIndividualAdditionalPrices; $i++) {
                 $builder
-                    ->add('additionalPrice' . $i, 'text', [
-                        'label' => 'Цена взрослого доп. места #' . ($i + 1),
-                        'group' => 'Цены',
+                    ->add('additionalPrice' . $i, 'hidden', [
                         'required' => false,
-                        'data' => null,
-                        'attr' => ['class' => 'spinner-0f delete-prices', 'placeholder' => 'данные будут удалены'],
-                        'constraints' => [
-                            new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
-                        ],
-                    ])
-                    ->add('additionalChildrenPrice' . $i, 'text', [
-                        'label' => 'Цена детского доп. места #' . ($i + 1),
-                        'group' => 'Цены',
-                        'required' => false,
-                        'data' => null,
-                        'attr' => ['class' => 'spinner-0f delete-prices', 'placeholder' => 'данные будут удалены'],
+                        'attr' => ['class' => 'hidden-price'],
                         'constraints' => [
                             new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
                         ],
                     ]);
+                $builder
+                    ->add('additionalPriceFake' . $i, 'text', [
+                        'label' => 'Цена взрослого доп. места #' . ($i + 1),
+                        'attr' => ['class' => 'text-price'],
+                        'group' => 'Цены',
+                        'required' => false
+                    ])
+                ;
+                $builder
+                    ->add('additionalChildrenPrice' . $i, 'hidden', [
+                        'required' => false,
+                        'attr' => ['class' => 'hidden-price'],
+                        'constraints' => [
+                            new Range(['min' => 0, 'minMessage' => 'Цена не может быть меньше нуля'])
+                        ],
+                    ]);
+                $builder
+                    ->add('additionalChildrenPriceFake' . $i, 'text', [
+                        'label' => 'Цена детского доп. места #' . ($i + 1),
+                        'attr' => ['class' => 'text-price'],
+                        'group' => 'Цены',
+                        'required' => false
+                    ]);
             }
             $builder->add('additionalPricesCount', 'hidden', ['data' => $isIndividualAdditionalPrices]);
         }
+
+        $builder->add('saveForm', 'checkbox', [
+            'label' => 'Запомнить?',
+            'group' => 'Запомнить для повторного использования',
+            'required' => false
+        ]);
     }
 
     public function checkDates($data, ExecutionContextInterface $context)
@@ -190,7 +235,7 @@ class PriceCacheGeneratorType extends AbstractType
         }
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'weekdays' => [],
@@ -202,7 +247,7 @@ class PriceCacheGeneratorType extends AbstractType
 
     public function getName()
     {
-        return 'mbh_bundle_pricebundle_price_cache_generator_type';
+        return 'mbh_price_bundle_price_cache_generator';
     }
 
 }
