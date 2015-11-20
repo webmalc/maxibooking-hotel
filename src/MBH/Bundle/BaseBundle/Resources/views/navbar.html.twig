@@ -43,7 +43,7 @@
             {% endif %}
 
 
-            {% if app.user and app.user.isEnabledWorkShift %}
+            {% if app.user and app.user.isEnabledWorkShift and currentWorkShift() %}
                 <li class="dropdown notifications-menu" id="work-shift-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
                         <i class="fa fa-clock-o"></i>&nbsp;Смена <span class="label label-info">{{ currentWorkShift().getPastHours }} ч.</span>
