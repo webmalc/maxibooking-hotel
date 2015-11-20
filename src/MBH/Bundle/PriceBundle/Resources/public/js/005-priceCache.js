@@ -134,7 +134,7 @@ $(document).ready(function () {
                     percent = parseFloat(percent);
                     price = getPrice() * percent / 100;
                     $input.val(price);
-                } else if (value && /^\d$/i.test(value)) {
+                } else if (value && /^\d+$/i.test(value)) {
                     $input.val(parseInt(value));
                 } else {
                     $fakeInput.val('');
