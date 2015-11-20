@@ -17,7 +17,7 @@
                 <div class="mbh-results-list-city">
                     {% if result.hotel.city or result.hotel.street %}
                         <i class="fa fa-map-marker text-warning"></i>
-                        {{ result.hotel.city }} {{ result.hotel.street }}{% if result.hotel.highway %}, {{ result.hotel.highway }}{% endif %}
+                        {{ result.hotel.city }} {{ result.hotel.street }}{% if result.hotel.highway %}, {{ result.hotel.highway|join(', ') }}{% endif %}
                         {% if result.hotel.MKADdistance %}({{ result.hotel.MKADdistance }} км. от МКАД){% endif %}
                     {% endif %}
                 </div>

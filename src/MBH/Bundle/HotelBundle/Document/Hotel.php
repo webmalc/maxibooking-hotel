@@ -304,7 +304,6 @@ class Hotel extends Base implements \JsonSerializable
     protected $highway;
 
     /**
-     * @Assert\Url()
      * @ODM\String()
      * @var string
      */

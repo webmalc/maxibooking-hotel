@@ -7,7 +7,7 @@
     {% if hotel.city or hotel.street %}
         <small>
             <i class="fa fa-map-marker text-warning"></i>
-            {{ hotel.city }} {{ hotel.street }}{% if hotel.highway %}, {{ hotel.highway }}{% endif %}
+            {{ hotel.city }}{% if hotel.street %} {{ hotel.street }}{% endif %}{% if hotel.highway %}, {{ hotel.highway|join(', ') }}{% endif %}
             {% if hotel.MKADdistance %}({{ hotel.MKADdistance }} км. от МКАД){% endif %}
         </small>
     {% endif %}
