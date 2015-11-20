@@ -123,8 +123,14 @@ class SimpleSearchController extends Controller
         $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
         $orders = $orderRepository->findByHotel($hotel);
 
+        if(is_object($orders)){
+            $orders = iterator_to_array($orders);
+        }
+
         /** @var Order[] $orders */
-        $orders = array_filter(iterator_to_array($orders),  function($order){ return count($order->getPollQuestions()) > 0; });
+        $orders = array_filter($orders, function($order){
+            return count($order->getPollQuestions()) > 0;
+        });
 
         $hotel->setRate($orderRepository->getRateByOrders($orders));
 
@@ -148,6 +154,10 @@ class SimpleSearchController extends Controller
                 'lon' => (float) $child->attributes()->lon,
                 'lat' => (float) $child->attributes()->lat
             ];
+
+            if(preg_match('/(гостиница|отель|ресторан|пансионат)/ui', $showPlace['name'].' '.$showPlace['name'])) {
+                continue;
+            }
 
             if(
                 ($showPlace['lon'] < $leftBorder[1] || $showPlace['lon'] > $rightBorder[1]) &&

@@ -68,10 +68,10 @@ class Search
             $hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
 
             $qb = $hotelRepository->createQueryBuilder();
-            if($query->city) {
-                $qb->field('city.id')->equals($query->city);
-            } elseif($query->highway) {
+            if($query->highway) {
                 $qb->field('highway')->equals($query->highway);
+            } elseif($query->city) {
+                $qb->field('city.id')->equals($query->city);
             }
             if($query->district) {
                 $qb->field('district')->equals($query->district);

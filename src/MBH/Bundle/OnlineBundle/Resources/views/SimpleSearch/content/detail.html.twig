@@ -1,6 +1,7 @@
 <h2>
     {{ hotel.fullTitle }}
 </h2>
+<input type="hidden" id="hotel-panorama" value="{{ hotel.panorama }}">
 <div class="mbh-hotel-rating">{{ hotel.rate|number_format(2) }}</div>
 <div class="mbh-hotel-address">
     {% if hotel.city or hotel.street %}
@@ -26,9 +27,11 @@
     <li role="presentation">
         <a href="#services" aria-controls="services" role="tab" data-toggle="tab">Услуги</a>
     </li>
+    {% if hotel.panorama %}
     <li role="presentation">
         <a href="#panorama" aria-controls="panorama" role="tab" data-toggle="tab">Панорама объекта</a>
     </li>
+    {% endif %}
     <li role="presentation">
         <a href="#testimonials" aria-controls="testimonials" role="tab" data-toggle="tab">Отзывы</a>
     </li>

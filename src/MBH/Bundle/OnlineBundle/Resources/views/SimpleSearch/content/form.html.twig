@@ -7,7 +7,7 @@
     <div class="mbh-form-row" id="mbh-form-highway-wrapper">
         <label for="mbh-form-highway">Шоссе</label>
         <select name="highway">
-            <option></option>
+            <option value="">Все</option>
         {% for value, highway in highwayList%}
             <option {% if value == app.request.get('highway') %}selected{% endif %} value="{{ value }}">{{ highway }}</option>
         {% endfor %}

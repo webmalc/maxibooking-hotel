@@ -298,10 +298,17 @@ class Hotel extends Base implements \JsonSerializable
     protected $MKADdistance;
 
     /**
+     * @ODM\Collection()
+     * @var string[]
+     */
+    protected $highway;
+
+    /**
+     * @Assert\Url()
      * @ODM\String()
      * @var string
      */
-    protected $highway;
+    protected $panorama;
 
     /**
      * @var float
@@ -1242,6 +1249,24 @@ class Hotel extends Base implements \JsonSerializable
     {
         $this->highway = $highway;
     }
+
+    /**
+     * @return string
+     */
+    public function getPanorama()
+    {
+        return $this->panorama;
+    }
+
+    /**
+     * @param string $panorama
+     */
+    public function setPanorama($panorama)
+    {
+        $this->panorama = $panorama;
+    }
+
+
 
     /**
      * @return float

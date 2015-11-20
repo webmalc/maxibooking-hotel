@@ -59,7 +59,8 @@ class HotelExtendedType extends AbstractType
                 'label' => 'form.hotelType.highway',
                 'group' => 'form.hotelExtendedType.address',
                 'required' => false,
-                'choices' => array_combine($highwayList, $highwayList)
+                'choices' => array_combine($highwayList, $highwayList),
+                'multiple' => true,
             ]);
         $builder
             ->add('MKADdistance', 'number', [
@@ -134,7 +135,13 @@ class HotelExtendedType extends AbstractType
                 'label' => 'form.hotelExtendedType.hotel_amenities',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
-            ]);
+            ])
+            ->add('panorama', 'text', [
+                'label' => 'form.hotelExtendedType.panorama',
+                'group' => 'form.hotelExtendedType.parameters',
+                'required' => false,
+            ])
+    ;
 
         $builder->add('vega_address_id', 'number', [
             'label' => 'form.hotelExtendedType.vega_address_id',
