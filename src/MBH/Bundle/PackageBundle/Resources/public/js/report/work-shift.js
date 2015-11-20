@@ -39,11 +39,20 @@ $(document).on('ready', function () {
         });
     }
 
+    var comeBackToList = function() {
+        $workShiftTableWrapper.removeClass('active');
+        $workShiftTableWrapper.find('table tr').show();
+        $workShiftReportWrapper.empty();
+        $workShiftReportForm.closest('.box').show();
+        $workShiftDetailHeader.hide();
+    }
+
     $workShiftReportForm.find('#form_begin,#form_end').on('changeDate', updateTable);
     $workShiftReportForm.find('#form_user,#form_status').on('change', updateTable);
 
     $workShiftDetailHeader.hide();
 
+    //comeBackToList();
     updateTable();
 
     $workShiftTableWrapper.on('dblclick', 'table tbody tr', function(e) {
@@ -63,14 +72,6 @@ $(document).on('ready', function () {
 
         return false;
     });
-
-    var comeBackToList = function() {
-        $workShiftTableWrapper.removeClass('active');
-        $workShiftTableWrapper.find('table tr').show();
-        $workShiftReportWrapper.empty();
-        $workShiftReportForm.closest('.box').show();
-        $workShiftDetailHeader.hide();
-    }
 
     $comeBackToListButton.on('click', function(e) {
         e.preventDefault();

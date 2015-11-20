@@ -42,6 +42,8 @@ class PriceCacheGeneratorType extends AbstractType
 
         $repo = $options['categories'] ? 'MBHHotelBundle:RoomTypeCategory' : 'MBHHotelBundle:RoomType';
 
+        $pricePlaceHolder = 'Укажите сумму или процент (15%) от цены';
+
         $builder
             ->add('begin', 'date', array(
                 'label' => 'Начало периода',
@@ -50,7 +52,10 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'Настройки',
                 'data' => new \DateTime('midnight'),
                 'required' => true,
-                'attr' => array('class' => 'datepicker begin-datepiker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
+                'attr' => [
+                    'class' => 'datepicker begin-datepiker input-remember',
+                    'data-date-format' => 'dd.mm.yyyy'
+                ],
                 'constraints' => [new NotBlank(), new Date()],
             ))
             ->add('end', 'date', array(
@@ -59,7 +64,10 @@ class PriceCacheGeneratorType extends AbstractType
                 'format' => 'dd.MM.yyyy',
                 'group' => 'Настройки',
                 'required' => true,
-                'attr' => array('class' => 'datepicker end-datepiker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
+                'attr' => [
+                    'class' => 'datepicker end-datepiker input-remember',
+                    'data-date-format' => 'dd.mm.yyyy'
+                ],
                 'constraints' => [new NotBlank(), new Date()],
             ))
             ->add('weekdays', 'choice', [
@@ -99,7 +107,10 @@ class PriceCacheGeneratorType extends AbstractType
                 'label' => 'Цена',
                 'group' => 'Цены',
                 'required' => true,
-                'attr' => ['class' => 'spinner--1f delete-prices'],
+                'attr' => [
+                    'class' => 'spinner--1f delete-prices',
+                    'placeholder' => $pricePlaceHolder
+                ],
                 'constraints' => [
                     new Range(['min' => -1, 'minMessage' => 'Цена не может быть меньше минус одного']),
                     new NotBlank()
@@ -122,7 +133,10 @@ class PriceCacheGeneratorType extends AbstractType
             ->add('singlePriceFake', 'text', [
                 'label' => 'Цена 1-местного размещения',
                 'group' => 'Цены',
-                'attr' => ['class' => 'text-price'],
+                'attr' => [
+                    'class' => 'text-price',
+                    'placeholder' => $pricePlaceHolder
+                ],
                 'required' => false,
                 'help' => 'Цена при бронировании номера на одного человека.'
             ])
@@ -136,7 +150,10 @@ class PriceCacheGeneratorType extends AbstractType
             ->add('additionalPriceFake', 'text', [
                 'label' => 'Цена 1-местного размещения',
                 'group' => 'Цены',
-                'attr' => ['class' => 'text-price'],
+                'attr' => [
+                    'class' => 'text-price',
+                    'placeholder' => $pricePlaceHolder
+                ],
                 'required' => false,
                 'help' => 'Цена при бронировании номера на одного человека.'
             ])
@@ -149,7 +166,10 @@ class PriceCacheGeneratorType extends AbstractType
             ])
             ->add('childPriceFake', 'text', [
                 'label' => 'Цена за детское осн. место',
-                'attr' => ['class' => 'text-price'],
+                'attr' => [
+                    'class' => 'text-price',
+                    'placeholder' => $pricePlaceHolder
+                ],
                 'group' => 'Цены',
                 'required' => false,
             ])
@@ -162,7 +182,10 @@ class PriceCacheGeneratorType extends AbstractType
             ])
             ->add('additionalPriceFake', 'text', [
                 'label' => 'Цена взрослого доп. места',
-                'attr' => ['class' => 'text-price'],
+                'attr' => [
+                    'class' => 'text-price',
+                    'placeholder' => $pricePlaceHolder
+                ],
                 'group' => 'Цены',
                 'required' => false,
             ])
@@ -175,7 +198,10 @@ class PriceCacheGeneratorType extends AbstractType
             ])
             ->add('additionalChildrenPriceFake', 'text', [
                 'label' => 'Цена детского доп. места',
-                'attr' => ['class' => 'text-price'],
+                'attr' => [
+                    'class' => 'text-price',
+                    'placeholder' => $pricePlaceHolder
+                ],
                 'group' => 'Цены',
                 'required' => false,
             ])
@@ -194,7 +220,10 @@ class PriceCacheGeneratorType extends AbstractType
                 $builder
                     ->add('additionalPriceFake' . $i, 'text', [
                         'label' => 'Цена взрослого доп. места #' . ($i + 1),
-                        'attr' => ['class' => 'text-price'],
+                        'attr' => [
+                            'class' => 'text-price',
+                            'placeholder' => $pricePlaceHolder
+                        ],
                         'group' => 'Цены',
                         'required' => false
                     ])
@@ -210,7 +239,10 @@ class PriceCacheGeneratorType extends AbstractType
                 $builder
                     ->add('additionalChildrenPriceFake' . $i, 'text', [
                         'label' => 'Цена детского доп. места #' . ($i + 1),
-                        'attr' => ['class' => 'text-price'],
+                        'attr' => [
+                            'class' => 'text-price',
+                            'placeholder' => $pricePlaceHolder
+                        ],
                         'group' => 'Цены',
                         'required' => false
                     ]);

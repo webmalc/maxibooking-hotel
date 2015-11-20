@@ -112,6 +112,7 @@ $(document).ready(function () {
             },
             updatePriceView = function ($fakeInput, $input) {
                 var $formGroup = $fakeInput.closest('.form-group');
+                $formGroup.find('.help-block.dynamic').remove();
                 $formGroup.find('.price').remove();
                 if ($fakeInput.val() == $input.val()) {
                     //$formGroup.removeClass('has-error');
@@ -119,10 +120,10 @@ $(document).ready(function () {
                 } else if ($fakeInput.val()) {
                     var $helpBlock = $fakeInput.siblings('.help-block');
                     if($helpBlock.length == 0) {
-                        $helpBlock = $('<div class="help-block"></div>');
+                        $helpBlock = $('<div class="help-block dynamic"></div>');
                         $fakeInput.after($helpBlock);
                     }
-                    $helpBlock.append('<small class="price"> ' + (parseFloat($input.val())).toFixed(2) + '</small>');
+                    $helpBlock.append('<small class="price"> ' + (parseFloat($input.val())).toFixed(2) + ' <i class="' + mbh.currency.icon + '"></i> </small>');
                 }
             },
             updatePrice = function ($fakeInput, $input) {
