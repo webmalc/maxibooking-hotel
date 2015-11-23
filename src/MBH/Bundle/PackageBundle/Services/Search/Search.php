@@ -2,11 +2,13 @@
 
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 
 /**
  *  Search service
@@ -34,12 +36,18 @@ class Search implements SearchInterface
      */
     private $manager;
 
+    /**
+     * @var ClientConfig;
+     */
+    private $config;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->now = new \DateTime('midnight');
         $this->manager = $container->get('mbh.hotel.room_type_manager');
+        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
     }
 
     /**
@@ -308,11 +316,114 @@ class Search implements SearchInterface
                     continue;
                 }
 
+                //check windows
+                if (!$this->checkWindows($result)) {
+                    continue;
+                }
+
                 $results[] = $result;
             }
         }
         //sort($results);
         return $results;
+    }
+
+    public function checkWindows(SearchResult $result)
+    {
+        if (!$this->config || !$this->config->getSearchWindows()) {
+            return true;
+        }
+
+        $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
+            $result->getBegin(),
+            $result->getBegin(),
+            null,
+            [$result->getRoomType()->getId()],
+            [$result->getTariff()->getId()]
+        )->toArray();
+
+        if (!count($restrictions)) {
+            return true;
+        }
+
+        $restriction = array_values($restrictions)[0];
+
+        if ($restriction->getDate() != $result->getBegin() || !$restriction->getMinStayArrival()) {
+            return true;
+        }
+
+        $endWindow = clone $result->getEnd();
+        $endWindow->modify('+' . $restriction->getMinStayArrival() . ' days');
+
+        //check right window
+        if (!$this->checkWindow($result->getEnd(), $endWindow, $result, $restriction->getMinStayArrival())) {
+            return false;
+        }
+
+        //check left window
+        if ($result->getBegin() != new \DateTime('midnight')) {
+            $beginWindow = clone $result->getBegin();
+            $beginWindow->modify('-' . $restriction->getMinStayArrival() . ' days');
+            if (!$this->checkWindow(
+                $beginWindow, $result->getBegin(), $result, $restriction->getMinStayArrival(), false
+            )) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function checkWindow(\DateTime $begin, \DateTime $end, SearchResult $result, $len,  $right = true)
+    {
+        $roomTypeId = $result->getRoomType()->getId();
+        $tariffId = $result->getTariff()->getId();
+
+        $caches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
+            $begin, $end, null, [$roomTypeId], null
+        );
+        $tariffCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
+            $begin, $end, null, [$roomTypeId], [$tariffId], true
+        );
+
+        if (count($caches) < $len + 1) {
+            return true;
+        }
+
+        $switchCount = $ascCount = $descCount = 0;
+        $prevNum = $switchDir = null;
+        foreach ($caches as $cache) {
+            $strDate = $cache->getDate()->format('d.m.Y');
+            if (isset($tariffCaches[$roomTypeId][$tariffId][$strDate])) {
+                $cache = $tariffCaches[$roomTypeId][$tariffId][$strDate];
+            }
+
+            $num = $cache->getLeftRooms();
+
+            if ($right && $cache->getDate() == $begin) {
+                $num--;
+            }
+            if (!$right && $cache->getDate() == $end) {
+                $num--;
+            }
+            if ($prevNum !== null && $num != $prevNum) {
+
+                $switchCount++;
+
+                if ($num > $prevNum) {
+                    $ascCount++;
+                }
+                if ($num < $prevNum) {
+                    $descCount++;
+                }
+            }
+            $prevNum = $num;
+        }
+        if ($switchCount > 1 && $descCount > 0 && $ascCount > 0) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

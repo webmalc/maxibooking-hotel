@@ -312,7 +312,7 @@ class ClientConfig extends Base
     /**
      * @return boolean
      */
-    public function isSearchWindows()
+    public function getSearchWindows()
     {
         return $this->searchWindows;
     }
