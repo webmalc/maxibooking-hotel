@@ -16,6 +16,7 @@ class ClientPaymentSystemType extends AbstractType
         $payanywayMntId = $payanywayKey = null;
         $moneymailShopIDP = $moneymailKey = null;
         $unitellerShopIDP = $unitellerPassword = null;
+        $rbkEshopId = $rbkSecretKey = null;
         $default = $options['default'];
 
         if ($entity) {
@@ -28,6 +29,8 @@ class ClientPaymentSystemType extends AbstractType
             $moneymailKey = $entity->getMoneymail() ? $entity->getMoneymail()->getMoneymailKey() : '';
             $unitellerShopIDP = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerShopIDP() : '';
             $unitellerPassword = $entity->getUniteller() ? $entity->getUniteller()->getUnitellerPassword() : '';
+            $rbkEshopId = $entity->getRbk() ? $entity->getRbk()->getRbkEshopId() : '';
+            $rbkSecretKey = $entity->getRbk() ? $entity->getRbk()->getRbkSecretKey() : '';
 
             if ($entity->getPaymentSystem()) {
                 $default = $entity->getPaymentSystem();
@@ -155,6 +158,28 @@ class ClientPaymentSystemType extends AbstractType
                     'attr' => ['class' => 'payment-system-params uniteller'],
                     'mapped' => false,
                     'data' => $unitellerPassword
+                ]
+            )
+            ->add(
+                'rbkEshopId',
+                'text',
+                [
+                    'label' => 'form.clientPaymentSystemType.rbk_eshop_id',
+                    'required' => false,
+                    'attr' => ['class' => 'payment-system-params rbk'],
+                    'mapped' => false,
+                    'data' => $rbkEshopId
+                ]
+            )
+            ->add(
+                'rbkSecretKey',
+                'text',
+                [
+                    'label' => 'form.clientPaymentSystemType.rbk_secret_key',
+                    'required' => false,
+                    'attr' => ['class' => 'payment-system-params rbk'],
+                    'mapped' => false,
+                    'data' => $rbkSecretKey
                 ]
             );
 

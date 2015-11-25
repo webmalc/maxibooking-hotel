@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\Moneymail;
 use MBH\Bundle\ClientBundle\Document\Payanyway;
+use MBH\Bundle\ClientBundle\Document\Rbk;
 use MBH\Bundle\ClientBundle\Document\Robokassa;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
@@ -152,6 +153,12 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     $uniteller->setUnitellerShopIDP($form->get('unitellerShopIDP')->getData())
                         ->setUnitellerPassword($form->get('unitellerPassword')->getData());
                     $entity->setUniteller($uniteller);
+                    break;
+                case 'rbk':
+                    $rbk = new Rbk();
+                    $rbk->setRbkEshopId($form->get('rbkEshopId')->getData())
+                        ->setRbkSecretKey($form->get('rbkSecretKey')->getData());
+                    $entity->setRbk($rbk);
                     break;
                 default:
                     break;

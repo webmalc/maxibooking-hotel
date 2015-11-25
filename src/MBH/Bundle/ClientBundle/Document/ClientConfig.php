@@ -78,7 +78,7 @@ class ClientConfig extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller"})
+     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "rbk"})
      */
     protected $paymentSystem;
 
@@ -105,6 +105,12 @@ class ClientConfig extends Base
      * @ODM\EmbedOne(targetDocument="Uniteller")
      */
     protected $uniteller;
+
+    /**
+     * @var Uniteller
+     * @ODM\EmbedOne(targetDocument="Rbk")
+     */
+    protected $rbk;
 
     /**
      * Set sendSms
@@ -233,6 +239,23 @@ class ClientConfig extends Base
     }
 
     /**
+     * @return Uniteller
+     */
+    public function getRbk()
+    {
+        return $this->rbk;
+    }
+
+    /**
+     * @param Uniteller $rbk
+     */
+    public function setRbk($rbk)
+    {
+        $this->rbk = $rbk;
+    }
+
+
+    /**
      * @param boolean $paymentSystem
      * @return self
      */
@@ -256,6 +279,7 @@ class ClientConfig extends Base
     public function getPaymentSystemDoc()
     {
         $paymentSystem = $this->getPaymentSystem();
+        dump($paymentSystem);
         if (!empty($paymentSystem) && !empty($this->$paymentSystem)) {
             return $this->$paymentSystem;
         }

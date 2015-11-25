@@ -198,6 +198,7 @@ parameters:
       robokassa: 'Robokassa'
       payanyway: 'PayAnyWay'
       uniteller: 'Uniteller'
+      rbk: 'Rbk'
     mbh.payment_systems.default: uniteller
     mbh.payment_systems.change: %mbh_payment_systems_change%
 
