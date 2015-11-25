@@ -1,0 +1,19 @@
+#search-form {
+    width: 600px
+}
+
+#children-icon {
+    position: relative;
+    bottom: 15px;
+}
+
+#search-form .popover {
+    max-width: 350px;
+}
+#search-form .popover-content input {
+    width: 55px;
+    margin-right: 5px;
+}
+#search-form .popover-content input:last-child {
+    margin-right: 0px;
+}

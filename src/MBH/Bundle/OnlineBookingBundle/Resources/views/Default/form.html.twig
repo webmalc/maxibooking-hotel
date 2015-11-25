@@ -1,0 +1,40 @@
+<form id="search-form">
+    <div class="form-group">
+        <label>Все пансионаты</label>
+        <select name="hotel" class="form-control" id="hotel" placeholder="Все пансионаты">
+            <option value="">Все пансионаты</option>
+            {% for hotel in hotels %}
+                <option value="{{ hotel.id }}">{{ hotel }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Все типы номеров</label>
+        <select name="roomType" class="form-control" id="roomType" placeholder="Все типы номеров">
+            <option value=""></option>
+            {% for roomType in roomTypes %}
+                <option data-hotel="{{ roomType.hotel.id }}" value="{{ roomType.id }}">{{ roomType }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <input type="text" required="required" name="begin" class="form-control" id="dateBegin" value="23.04.2016">
+    </div>
+    <div class="form-group">
+        <input type="text" required="required" name="end" class="form-control" id="dateEnd" value="23.04.2016">
+    </div>
+    <div class="form-group">
+        <label>Взрослых: </label>
+        <input type="number" min="0" max="6" step="1" required="required" name="adults" id="adults" value="2" maxlength="1" class="form-control">
+    </div>
+
+    <div class="form-group">
+        <label>Детей: </label>
+        <input type="number" min="0" max="5" step="1" name="children" id="children" value="0" maxlength="1" class="form-control">
+        <div id="children-icon" style="visibility: hidden"></div>
+    </div>
+
+    <a href="#" class="btn btn-info" id="btn-search"><i class="glyphicon glyphicon-search"></i> Найти</a>
+</form>
+<script src="{{ asset('bundles/mbhonlinebooking/js/form.js') }}"></script>
+<link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/form.css') }}">
