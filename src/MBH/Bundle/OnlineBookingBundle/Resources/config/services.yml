@@ -2,3 +2,7 @@ services:
 #    mbh_online_booking.example:
 #        class: MBH\Bundle\OnlineBookingBundle\Example
 #        arguments: [@service_id, "plain_value", %parameter%]
+
+parameters:
+    online_booking:
+          request_search_url: http://azovsky.local/result.php

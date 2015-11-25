@@ -1,4 +1,4 @@
-<form id="search-form">
+<form id="search-form" method="get" action="{{ requestSearchUrl }}">
     <div class="form-group">
         <label>Все пансионаты</label>
         <select name="hotel" class="form-control" id="hotel" placeholder="Все пансионаты">
@@ -34,7 +34,7 @@
         <div id="children-icon" style="visibility: hidden"></div>
     </div>
 
-    <a href="#" class="btn btn-info" id="btn-search"><i class="glyphicon glyphicon-search"></i> Найти</a>
+    <button type="submit" class="btn btn-info" id="btn-search"><i class="glyphicon glyphicon-search"></i> Найти</button>
 </form>
-<script src="{{ asset('bundles/mbhonlinebooking/js/form.js') }}"></script>
-<link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/form.css') }}">
+<script src="{{ asset('bundles/mbhonlinebooking/js/form.js', null, true) }}"></script>
+<link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/form.css', null, true) }}">
