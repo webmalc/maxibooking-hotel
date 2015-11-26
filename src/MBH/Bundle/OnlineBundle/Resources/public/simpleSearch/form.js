@@ -128,5 +128,13 @@ jQuery(document).ready(function () {
     if (!begin.val() || !end.val()) {
         button.prop('disabled', true);
     }
+
+    if (jQuery.fn.readmore) {
+        jQuery('.mbh-results-list-descr').readmore({
+            collapsedHeight: 80,
+            moreLink: '<a href="#">Подробнее</a>',
+            lessLink: '<a href="#">Скрыть</a>'
+        });
+    }
 })
 

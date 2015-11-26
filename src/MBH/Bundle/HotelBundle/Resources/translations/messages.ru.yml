@@ -44,6 +44,7 @@ form.hotelType.how_long_sale_opened_since_today: На сколько дней о
 form.hotelType.hostel: Хостел?
 form.hotelType.hostel_hotel_or_not: Хостел или нет?
 form.hotelType.is_default: Выбран по умолчанию?
+form.hotelType.is_recommend: Рекомендуемый отель
 form.hotelType.logo: Логотип
 form.hotelType.is_default_maxibooking: Выбран по умолчанию при входе в MaxiBooking
 form.roomType.name: Название

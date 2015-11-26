@@ -44,7 +44,7 @@ class HotelType extends AbstractType
             ->add('description', 'textarea', [
                 'label' => 'form.hotelType.description',
                 'group' => 'form.hotelType.general_info',
-                'attr' => ['class' => 'tinymce'],
+                //'attr' => ['class' => 'tinymce'],
                 'required' => false
             ])
         ;
@@ -65,12 +65,18 @@ class HotelType extends AbstractType
                 'required' => false,
                 'help' => 'form.hotelType.hostel_hotel_or_not'
             ])
-            ->add('isDefault', 'checkbox', [
-                'label' => 'form.hotelType.is_default',
+            ->add('isHostel', 'checkbox', [
+                'label' => 'form.hotelType.hostel',
                 'group' => 'form.hotelType.settings',
                 'value' => true,
                 'required' => false,
-                'help' => 'form.hotelType.is_default_maxibooking'
+                'help' => 'form.hotelType.hostel_hotel_or_not'
+            ])
+            ->add('isRecommend', 'checkbox', [
+                'label' => 'form.hotelType.is_recommend',
+                'group' => 'form.hotelType.settings',
+                'value' => true,
+                'required' => false
             ]);
     }
 

@@ -321,6 +321,13 @@ class Hotel extends Base implements \JsonSerializable
      */
     protected $district;
 
+    /**
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @var boolean
+     */
+    protected $isRecommend;
+
     public function __construct()
     {
         $this->roomTypes = new \Doctrine\Common\Collections\ArrayCollection();
@@ -1297,5 +1304,21 @@ class Hotel extends Base implements \JsonSerializable
     public function setDistrict($district)
     {
         $this->district = $district;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsRecommend()
+    {
+        return $this->isRecommend;
+    }
+
+    /**
+     * @param mixed $isRecommend
+     */
+    public function setIsRecommend($isRecommend)
+    {
+        $this->isRecommend = $isRecommend;
     }
 }
