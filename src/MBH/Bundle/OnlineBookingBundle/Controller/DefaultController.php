@@ -95,14 +95,64 @@ class DefaultController extends BaseController
     }
 
     /**
+     * @return \Symfony\Component\Form\Form
+     */
+    public function getSignForm()
+    {
+        return $this->createFormBuilder()
+                ->add('firstName', 'text', [
+                    'label' => 'Имя',
+                ])
+                ->add('lastName', 'text', [
+                    'label' => 'Фамилия'
+                ])
+                ->add('patronymic', 'text', [
+                    'label' => 'Отчество'
+                ])
+                ->add('phone', 'text', [
+                    'label' => 'Телефон'
+                ])
+                ->add('email', 'text', [
+                    'label' => 'Email'
+                ])
+            ->getForm()
+            ;
+    }
+
+    /**
      * @Route("/search", name="online_booking_sign")
      */
     public function signAction(Request $request)
     {
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
 
+        $orderManger = $this->get('mbh.order_manager');
+        $packages = [
+            [
+                'begin' => 1,
+                'end' => 2,
+                'adults' => 3,
+                'children' => 4,
+                'roomType' => 5,
+            ]
+        ];
+        $tourist = [
+            'firstName' => 1,
+            'lastName' => 1,
+            'email' => 1,
+            'phone' => 1,
+        ];
+        $data = [
+            'packages' => $packages,
+            'tourist' => $tourist
+        ];
+        //$orderManger->createPackages($data);
+
+        $form = $this->getSignForm();
+
         return $this->render('MBHOnlineBookingBundle:Default:sign.html.twig', [
-            'requestSearchUrl' => $requestSearchUrl
+            'requestSearchUrl' => $requestSearchUrl,
+            'form' => $form->createView()
         ]);
     }
 }
