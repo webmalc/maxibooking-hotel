@@ -1,0 +1,24 @@
+<form id="search-form" method="get" action="{{ requestSearchUrl }}">
+
+    <div class="form-group">
+        <label>Имя</label>
+        <input type="text" required="required" name="firstName" class="form-control" id="firstName" value="{{ app.request.get('firstName') }}">
+    </div>
+    <div class="form-group">
+        <label>Фамилия</label>
+        <input type="text" required="required" name="secondName" class="form-control" id="secondName" value="{{ app.request.get('secondName') }}">
+    </div>
+    <div class="form-group">
+        <label>Отчество</label>
+        <input type="text" required="required" name="patronymic" class="form-control" id="patronymic" value="{{ app.request.get('patronymic') }}">
+    </div>
+    <div class="form-group">
+        <label>Телефон: </label>
+        <input type="number" min="0" max="6" step="1" required="required" name="phone" id="phone" value="{{ app.request.get('phone') }}" maxlength="1" class="form-control">
+    </div>
+    <div class="form-group">
+        <label>Email</label>
+        <input type="text" required="required" name="email" class="form-control" id="email" value="{{ app.request.get('email') }}">
+    </div>
+    <button type="submit" class="btn btn-success" id="btn-search">Забронировать</button>
+</form>

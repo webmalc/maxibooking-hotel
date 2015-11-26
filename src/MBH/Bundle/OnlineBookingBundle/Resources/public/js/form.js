@@ -45,6 +45,10 @@ var updateSelectView = function() {
 updateRoomList();
 updateSelectView();
 
+if ($roomTypeSelect.data('value') && !$roomTypeSelect.val()) {
+    $roomTypeSelect.val($roomTypeSelect.data('value'));
+}
+
 $hotelSelect.on('change', updateSelectView);
 $('#dateBegin,#dateEnd').datepicker({language: 'ru'});
 
@@ -54,7 +58,10 @@ $childrenIcon.popover({
     html: true,
     content: ''
 });
-var childrenValues = [];
+var childrenValues = $childrenIcon.data('value');
+if(!childrenValues) {
+    childrenValues = [];
+}
 
 $childrenIcon.on('shown.bs.popover', function () {
     var popoverContent = $childrenIcon.next('div.popover').children('div.popover-content');
@@ -81,7 +88,7 @@ $children.on('change', function() {
         var content = '';
         for(var i = 0; i < value; i++) {
             var inputValue = childrenValues[i];
-            content = content + '<input name="children['+i+']" type="number" value="'+inputValue+'" min="1" max="18" class="form-control inline-block input-sm">';
+            content = content + '<input name="children_age['+i+']" type="number" value="'+inputValue+'" min="1" max="18" class="form-control inline-block input-sm">';
         }
         if(content) {
             content = '<div class="form-inline">' + content + '</div>';

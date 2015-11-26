@@ -1,16 +1,18 @@
-{{ dump(searchResults) }}
-
 <div class="row marketing">
-    {% for searchResult in searchResults %}
+    {% for result in searchResults %}
     <div class="col-lg-6">
-        <h4>Subheading</h4>
-        <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
+        <h4>{{ result.roomType }}</h4>
+        <p>
+            {% for data in result.results %}
+                Взрослых: {{ data.adults }}<br>
+                Дети: {{ data.children }}<br>
+                Начало: {{ data.begin|date('d.m.Y') }}<br>
+                Конец: {{ data.end|date('d.m.Y') }}<br>
+                Количество комнат: {{ data.roomsCount }}
 
-        <h4>Subheading</h4>
-        <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-        <h4>Subheading</h4>
-        <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+                <a href="{{ requestSearchUrl }}?step=2&adults={{ data.adults }}" class="btn btn-success">Бронировать</a>
+            {% endfor %}
+        </p>
     </div>
     {% endfor %}
 </div>

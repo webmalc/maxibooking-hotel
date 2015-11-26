@@ -35,8 +35,23 @@ class DefaultController extends BaseController
     }
 
     /**
+     * @Route("/", name="online_booking")
+     */
+    public function indexAction(Request $request)
+    {
+        $step = $request->get('step');
+        //$this->get('request_stack')->
+        if($step) {
+            if($step == 2) {
+                return $this->signAction($request);//$this->forward('MBHOnlineBookingBundle:Default:sign');
+            }
+        } else {
+            return $this->searchAction($request);//$this->forward('MBHOnlineBookingBundle:Default:search');
+        }
+    }
+
+    /**
      * @Route("/search", name="online_booking_search")
-     * @Template()
      */
     public function searchAction(Request $request)
     {
@@ -45,19 +60,49 @@ class DefaultController extends BaseController
         if($hotel) {
             $searchQuery->addHotel($hotel);
         }
-        if($request->get('roomType')) {
-            $searchQuery->addRoomType($request->get('roomType'));
+        if($roomType = $request->get('roomType')) {
+            $searchQuery->addRoomType($roomType);
+            $category = $this->dm->getRepository('MBHHotelBundle:RoomTypeCategory')->find($roomType);
+            if($category) {
+                foreach($category->getRoomTypes() as $roomType) {
+                    $searchQuery->addRoomType($roomType->getId());
+                }
+            }
         }
         $helper = $this->get('mbh.helper');
         $searchQuery->begin = $helper->getDateFromString($request->get('begin'));
         $searchQuery->end = $helper->getDateFromString($request->get('end'));
-        $searchQuery->adults = $request->get('adults');
-        $searchQuery->children = $request->get('children');
+        $searchQuery->adults = (int)$request->get('adults');
+        $searchQuery->children = (int)$request->get('children');
+        $searchQuery->accommodations = true;
+        $searchQuery->isOnline = true;
+        if($request->get('children_age')) {
+            $searchQuery->setChildrenAges($request->get('children_age'));
+        };
 
-        $searchResults = $this->get('mbh.package.search')->search($searchQuery);
+        $searchResults = $this->get('mbh.package.search')
+            ->setAdditionalDates()
+            ->setWithTariffs()
+            ->search($searchQuery)
+        ;
 
-        return [
-            'searchResults' => $searchResults
-        ];
+        $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
+
+        return $this->render('MBHOnlineBookingBundle:Default:search.html.twig', [
+            'searchResults' => $searchResults,
+            'requestSearchUrl' => $requestSearchUrl
+        ]);
+    }
+
+    /**
+     * @Route("/search", name="online_booking_sign")
+     */
+    public function signAction(Request $request)
+    {
+        $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
+
+        return $this->render('MBHOnlineBookingBundle:Default:sign.html.twig', [
+            'requestSearchUrl' => $requestSearchUrl
+        ]);
     }
 }
