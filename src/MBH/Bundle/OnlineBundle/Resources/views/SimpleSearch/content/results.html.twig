@@ -74,7 +74,7 @@
                         <div class="clearfix"></div>
                         <a href="{{ path('simple_search_view', {id: result.hotel.id}) }}?hotel={{ result.hotel.id }}&{% for name, value in app.request.query.all %}{{ name }}={{ value }}&{% endfor %}"
                            title="Номера и цены в этом отеле" class="btn btn-primary btn-book">Выбрать номер</a>
-                        <small>Сейчас {{ random(1..10) }} человек просматривают этот отель</small>
+                        <small class="total-hotel-view">Сейчас {{ random(1..10) }} человек просматривают этот отель</small>
                     </div>
                 </div>
             </div>
