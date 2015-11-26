@@ -77,7 +77,8 @@ class ApiController extends Controller
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $logger = $this->get('mbh.online.logger');
         $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP'.$request->getClientIp().'. Post data: '.implode('; ',
-                $request->request->all()).' Get data: '.implode('; ', $_POST) . '. Keys: ' .implode('; ', array_keys($_POST));
+                $_POST).' . Keys: ' .implode('; ', array_keys($_POST));
+
 
         if (!$clientConfig) {
             $logger->info('FAIL. '.$logText. ' .Not found config');

@@ -129,9 +129,9 @@ class Rbk implements PaymentSystemInterface
         $serviceName = $request->get('serviceName');
         $eshopAccount = $request->get('eshopAccount');
         $recipientAmount = $request->get('recipientAmount');
-        $paymentAmount = $request->get('paymentAmount');
+        //$paymentAmount = $request->get('paymentAmount');
         $recipientCurrency  = $request->get('recipientCurrency');
-        $paymentCurrency = $request->get('paymentCurrency');
+        //$paymentCurrency = $request->get('paymentCurrency');
         $paymentStatus = $request->get('paymentStatus');
         $userName = $request->get('userName');
         $userEmail = $request->get('userEmail');
@@ -148,13 +148,14 @@ class Rbk implements PaymentSystemInterface
             $serviceName,
             $eshopAccount,
             $recipientAmount,
-            $paymentAmount,
+            //$paymentAmount,
             $recipientCurrency,
-            $paymentCurrency,
+            //$paymentCurrency,
             $paymentStatus,
             $userName,
             $userEmail,
             $paymentData,
+            $this->getRbkSecretKey()
         ]);
 
         if ($signature != $requestSignature) {
