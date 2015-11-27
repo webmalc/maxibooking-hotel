@@ -45,9 +45,9 @@
             <div class="panel-body">
 
                 <div class="galleria" style="height:600px;">
-                    {% for roomType in hotel.roomTypes %}
+                {% for roomType in hotel.roomTypes %}
                     {% for photo in roomType.images %}
-                        <a href="{{ asset(photo.path) }}"><img src="{{ asset(photo.path) }}" data-big="{{ asset(photo.path) }}" data-title="{{ roomType }}" data-description="My description"></a>
+                        <a class="fancybox" rel="group_{{ roomType.id }}" href="{{ asset(photo.path) }}"><img src="{{ asset(photo.path) }}" data-big="{{ asset(photo.path) }}" data-title="{{ roomType }}" title="{{ roomType }}" alt="{{ roomType }}"></a>
                     {% endfor %}
                 {% endfor %}
                 </div>
