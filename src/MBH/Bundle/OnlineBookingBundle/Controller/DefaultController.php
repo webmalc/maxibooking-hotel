@@ -8,6 +8,7 @@ use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 
 /**
@@ -40,7 +41,6 @@ class DefaultController extends BaseController
     public function indexAction(Request $request)
     {
         $step = $request->get('step');
-        //$this->get('request_stack')->
         if($step) {
             if($step == 2) {
                 return $this->signAction($request);//$this->forward('MBHOnlineBookingBundle:Default:sign');
@@ -99,24 +99,28 @@ class DefaultController extends BaseController
      */
     public function getSignForm()
     {
-        return $this->createFormBuilder()
-                ->add('firstName', 'text', [
-                    'label' => 'Имя',
-                ])
-                ->add('lastName', 'text', [
-                    'label' => 'Фамилия'
-                ])
-                ->add('patronymic', 'text', [
-                    'label' => 'Отчество'
-                ])
-                ->add('phone', 'text', [
-                    'label' => 'Телефон'
-                ])
-                ->add('email', 'text', [
-                    'label' => 'Email'
-                ])
+        return $this->createFormBuilder(null, [
+            'method' => Request::METHOD_GET,
+            'csrf_protection' => false
+        ])
+            ->add('firstName', 'text', [
+                'label' => 'Имя',
+            ])
+            ->add('lastName', 'text', [
+                'label' => 'Фамилия'
+            ])
+            ->add('patronymic', 'text', [
+                'label' => 'Отчество'
+            ])
+            ->add('phone', 'text', [
+                'label' => 'Телефон'
+            ])
+            ->add('email', 'text', [
+                'label' => 'Email'
+            ])
+            //todo hidden fields
             ->getForm()
-            ;
+        ;
     }
 
     /**
@@ -125,34 +129,37 @@ class DefaultController extends BaseController
     public function signAction(Request $request)
     {
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
-
-        $orderManger = $this->get('mbh.order_manager');
-        $packages = [
-            [
-                'begin' => 1,
-                'end' => 2,
-                'adults' => 3,
-                'children' => 4,
-                'roomType' => 5,
-            ]
-        ];
-        $tourist = [
-            'firstName' => 1,
-            'lastName' => 1,
-            'email' => 1,
-            'phone' => 1,
-        ];
-        $data = [
-            'packages' => $packages,
-            'tourist' => $tourist
-        ];
-        //$orderManger->createPackages($data);
-
         $form = $this->getSignForm();
+        $form->handleRequest($request);
 
-        return $this->render('MBHOnlineBookingBundle:Default:sign.html.twig', [
-            'requestSearchUrl' => $requestSearchUrl,
-            'form' => $form->createView()
-        ]);
+        if ($form->isValid()) {
+            $orderManger = $this->get('mbh.order_manager');
+            $packages = [
+                [
+                    'begin' => 1,
+                    'end' => 2,
+                    'adults' => 3,
+                    'children' => 4,
+                    'roomType' => 5,
+                ]
+            ];
+            $tourist = [
+                'firstName' => 1,
+                'lastName' => 1,
+                'email' => 1,
+                'phone' => 1,
+            ];
+            $data = [
+                'packages' => $packages,
+                'tourist' => $tourist
+            ];
+            //$orderManger->createPackages($data);
+            return new Response('Success');
+        } else {
+            return $this->render('MBHOnlineBookingBundle:Default:sign.html.twig', [
+                'requestSearchUrl' => $requestSearchUrl,
+                'form' => $form->createView()
+            ]);
+        }
     }
 }

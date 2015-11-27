@@ -8,9 +8,10 @@
                 Дети: {{ data.children }}<br>
                 Начало: {{ data.begin|date('d.m.Y') }}<br>
                 Конец: {{ data.end|date('d.m.Y') }}<br>
-                Количество комнат: {{ data.roomsCount }}
+                Количество комнат: {{ data.roomsCount }}<br>
+                Цена: {{ data.roomsCount }}
 
-                <a href="{{ requestSearchUrl }}?step=2&adults={{ data.adults }}" class="btn btn-success">Бронировать</a>
+                <a href="{{ requestSearchUrl }}?step=2&adults={{ data.adults }}&children={{ data.children }}&begin={{ data.begin|date('d.m.Y') }}&end={{ data.end|date('d.m.Y') }}&roomType={{ data.roomType.id }}&tariff={{ data.tariff.id }}" class="btn btn-success">Бронировать</a>
             {% endfor %}
         </p>
     </div>

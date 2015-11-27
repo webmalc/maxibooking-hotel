@@ -1,6 +1,13 @@
 {% form_theme form 'bootstrap_3_layout.html.twig' %}
 
-{{ form_start(form, {attr: {id: 'search-fomr', action: requestSearchUrl ~ 'step=2' }}) }}
+{{ form_start(form, {attr: {id: 'search-fomr', method: 'get' }, action: requestSearchUrl}) }}
     {{ form_widget(form) }}
     <button type="submit" class="btn btn-success" id="btn-search">Забронировать</button>
+    <input type="hidden" name="step" value="2">
+    <input type="hidden" name="adults" value="{{ app.request.get('adults') }}">
+    <input type="hidden" name="children" value="{{ app.request.get('children') }}">
+    <input type="hidden" name="begin" value="{{ app.request.get('begin') }}">
+    <input type="hidden" name="end" value="{{ app.request.get('end') }}">
+    <input type="hidden" name="roomType" value="{{ app.request.get('roomType') }}">
+    <input type="hidden" name="tariff" value="{{ app.request.get('tariff') }}">
 {{ form_end(form) }}
