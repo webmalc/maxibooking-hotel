@@ -2,7 +2,29 @@
   display: none;
 }
 
+.show-on-print {
+  display: none;
+}
+
+.hide-on-print {
+
+}
+
 @media print {
+  .show-on-print {
+    display: block;
+  }
+
+  td.show-on-print {
+    display: table-cell;
+  }
+  th.show-on-print {
+    display: table-cell;
+  }
+
+  .hide-on-print {
+    display: none;
+  }
 
   .scrolling {
     overflow-y: auto !important;
@@ -129,7 +151,7 @@
   #room-overview-table-wrapper,
   #price-cache-overview-table-wrapper,
   #restriction-overview-table-wrapper,
-  #room-cache-overview-table-wrapper, {
+  #room-cache-overview-table-wrapper {
     span.date-month {
       display: none;
     }
@@ -142,9 +164,13 @@
       -webkit-box-shadow: none !important;
       -moz-box-shadow: none !important;
       box-shadow: none !important;
-      padding: 0px;
-      margin: 0px;
+      padding: 0;
+      margin: 0;
       width: 30px;
     }
+  }
+
+  #tourist-filter-widget {
+    display: none;
   }
 }
