@@ -113,13 +113,6 @@ class SimpleSearchController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $photos = [];
-        foreach($hotel->getRoomTypes() as $roomType) {
-            foreach($roomType->getImages() as $image) {
-                $photos[] = $image->getPath();
-            }
-        }
-
         $orderRepository = $this->dm->getRepository('MBHPackageBundle:Order');
         $orders = $orderRepository->findByHotel($hotel);
 
@@ -169,7 +162,6 @@ class SimpleSearchController extends Controller
 
         return [
             'hotel' => $hotel,
-            'photos' => $photos,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'orders' => $orders,
             'sights' => $sights,

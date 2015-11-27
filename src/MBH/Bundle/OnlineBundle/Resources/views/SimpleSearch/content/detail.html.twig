@@ -7,8 +7,10 @@
     {% if hotel.city or hotel.street %}
         <small>
             <i class="fa fa-map-marker text-warning"></i>
-            {{ hotel.city }}{% if hotel.street %} {{ hotel.street }}{% endif %}{% if hotel.highway %}, {{ hotel.highway|join(', ') }}{% endif %}
+            {{ hotel.city }}{% if hotel.highway %}, {{ hotel.highway|join(', ') }}{% endif %}
             {% if hotel.MKADdistance %}({{ hotel.MKADdistance }} км. от МКАД){% endif %}
+            <br>
+            {{ hotel.settlement }} {% if hotel.settlement and hotel.street %}, {{ hotel.street }}{% if hotel.house %}, {{ hotel.house }}{% endif %}{% endif %}
         </small>
     {% endif %}
 </div>
@@ -43,9 +45,11 @@
             <div class="panel-body">
 
                 <div class="galleria" style="height:600px;">
-                    {% for photo in photos %}
-                        <a href="{{ asset(photo) }}"><img src="{{ asset(photo) }}" data-big="{{ asset(photo) }}" data-title="My title" data-description="My description"></a>
+                    {% for roomType in hotel.roomTypes %}
+                    {% for photo in roomType.images %}
+                        <a href="{{ asset(photo.path) }}"><img src="{{ asset(photo.path) }}" data-big="{{ asset(photo.path) }}" data-title="{{ roomType }}" data-description="My description"></a>
                     {% endfor %}
+                {% endfor %}
                 </div>
             </div>
         </div>
@@ -159,7 +163,7 @@
         });
         {% for key, sight in sights %}
         position = {lat: {{ sight.lat }}, lng: {{ sight.lon }}};
-        var pinShadow = new google.maps.MarkerImage("/media/icon-sevilla.png",//"http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
+        var pinShadow = new google.maps.MarkerImage("{{ app.request.baseUrl }}/media/icon-sevilla.png",//"http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
                 new google.maps.Size(40, 37),
                 new google.maps.Point(0, 0),
                 new google.maps.Point(12, 35)

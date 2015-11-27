@@ -154,7 +154,6 @@ class Builder extends ContainerAware
                 ['route' => 'report_work_shift', 'label' => 'Рабочие смены'])
                 ->setAttributes(['icon' => 'fa fa-clock-o']);
         //}
-
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
             ->setAttributes(['icon' => 'fa fa-file-archive-o']);*/
 
@@ -195,7 +194,7 @@ class Builder extends ContainerAware
 
         foreach ($menu->getChildren() as $child) {
 
-            if (empty($child->getUri())) {
+            if (empty($child->getUri()) || $child->getUri() == 'http://zamkadom24.ru/hotel-help.html') {
                 continue;
             }
             $metadata = false;
@@ -316,6 +315,9 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-star']);
         $menu['services']->addChild('invite', ['route' => 'invite', 'label' => 'Визовое приглашение'])
             ->setAttributes(['icon' => 'fa fa-star']);
+
+        $menu->addChild('hotel-help', ['uri' => 'http://zamkadom24.ru/hotel-help.html', 'label' => 'Помощь'])
+            ->setAttributes(['icon' => 'fa fa-question']);
 
         return $this->filter($menu, $factory, $options);
     }

@@ -129,12 +129,10 @@ jQuery(document).ready(function () {
         button.prop('disabled', true);
     }
 
-    if (jQuery.fn.readmore) {
-        jQuery('.mbh-results-list-descr').readmore({
-            collapsedHeight: 80,
-            moreLink: '<a href="#">Подробнее</a>',
-            lessLink: '<a href="#">Скрыть</a>'
-        });
-    }
+    jQuery('.mbh-results-list-descr').readmore({
+        collapsedHeight: 80,
+        moreLink: '<a href="#">Подробнее</a>',
+        lessLink: '<a href="#">Скрыть</a>'
+    });
 })
 
