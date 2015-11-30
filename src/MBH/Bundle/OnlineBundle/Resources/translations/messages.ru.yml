@@ -23,3 +23,5 @@ controller.formController.settings_saved_success: 'Настройки успеш
 
 form.inviteType.type.single: 'Однократная (600 руб.)'
 form.inviteType.type.twice: 'Двукратная (900 руб.)'
+
+choice.room_number: 'номер|номера|номеров'

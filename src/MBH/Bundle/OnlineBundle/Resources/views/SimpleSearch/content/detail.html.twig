@@ -6,11 +6,11 @@
 <div class="mbh-hotel-address">
     {% if hotel.city or hotel.street %}
         <small>
-            <i class="fa fa-map-marker text-warning"></i>
-            {{ hotel.city }}{% if hotel.highway %}, {{ hotel.highway|join(', ') }}{% endif %}
-            {% if hotel.MKADdistance %}({{ hotel.MKADdistance }} км. от МКАД){% endif %}
-            <br>
             {{ hotel.settlement }} {% if hotel.settlement and hotel.street %}, {{ hotel.street }}{% if hotel.house %}, {{ hotel.house }}{% endif %}{% endif %}
+            <br>
+            <i class="fa fa-map-marker text-warning"></i>
+            {% if hotel.highway %}{{ hotel.highway|join(', ') }}{% endif %}
+            {% if hotel.MKADdistance %}({{ hotel.MKADdistance }} км. от МКАД){% endif %}
         </small>
     {% endif %}
 </div>
@@ -47,7 +47,7 @@
                 <div class="galleria" style="height:600px;">
                 {% for roomType in hotel.roomTypes %}
                     {% for photo in roomType.images %}
-                        <a class="fancybox" rel="group_{{ roomType.id }}" href="{{ asset(photo.path) }}"><img src="{{ asset(photo.path) }}" data-big="{{ asset(photo.path) }}" data-title="{{ roomType }}" title="{{ roomType }}" alt="{{ roomType }}"></a>
+                        <img src="{{ asset(photo.path) }}" data-big="{{ asset(photo.path) }}" data-title="{{ roomType }}" title="{{ roomType }}" alt="{{ roomType }}">
                     {% endfor %}
                 {% endfor %}
                 </div>

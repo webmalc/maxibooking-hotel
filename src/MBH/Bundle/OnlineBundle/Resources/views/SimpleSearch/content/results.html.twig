@@ -20,11 +20,10 @@
                 <div class="mbh-results-list-city">
                     {% if result.hotel.city or result.hotel.street %}
                         <small>
-                            <i class="fa fa-map-marker text-warning"></i>
-                            {{ result.hotel.city }}{% if result.hotel.highway %}, {{ result.hotel.highway|join(', ') }}{% endif %}
-                            {% if result.hotel.MKADdistance %}({{ result.hotel.MKADdistance }} км. от МКАД){% endif %}
+                            <i class="fa fa-map-marker text-warning"></i> {{ result.hotel.settlement }} {% if result.hotel.settlement and result.hotel.street %}, {{ result.hotel.street }}{% if result.hotel.house %}, {{ result.hotel.house }}{% endif %}{% endif %}
                             <br>
-                            {{ result.hotel.settlement }} {% if result.hotel.settlement and result.hotel.street %}, {{ result.hotel.street }}{% if result.hotel.house %}, {{ result.hotel.house }}{% endif %}{% endif %}
+                            {% if result.hotel.highway %}{{ result.hotel.highway|join(', ') }}{% endif %}
+                            {% if result.hotel.MKADdistance %}({{ result.hotel.MKADdistance }} км. от МКАД){% endif %}
                         </small>
                     {% endif %}
                 </div>
@@ -33,7 +32,7 @@
                     {% for roomType in result.roomTypes|slice(0, 2) %}
                     <div class="row">
                         <div class="col-xs-6">
-                            {{ roomType }}
+                            <i class="fa fa-hotel text-warning"></i> {{ roomType }}
                         </div>
                         <div class="col-xs-2 text-center">
                             {% for index in 1..adults %}
