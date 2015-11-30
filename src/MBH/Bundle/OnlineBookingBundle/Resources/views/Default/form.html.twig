@@ -1,4 +1,4 @@
-<form id="search-form" method="get" action="{{ requestSearchUrl }}">
+{#<form id="search-form" method="get" action="{{ requestSearchUrl }}">
     <div class="form-group">
         <label>Все пансионаты</label>
         <select name="hotel" class="form-control" id="hotel" placeholder="Все пансионаты">
@@ -35,6 +35,27 @@
     </div>
 
     <button type="submit" class="btn btn-info" id="btn-search"><i class="glyphicon glyphicon-search"></i> Найти</button>
-</form>
+</form>#}
+
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+{{ form_start(form, {attr: {id: 'search-form'}, action: requestSearchUrl}) }}
+    {{ form_row(form.hotel) }}
+    <div class="form-group">
+        {{ form_label(form.roomType) }}
+        {{ form_widget(form.roomType, {attr: {'data-value': form.roomType.vars.value}}) }}
+        {{ form_errors(form.roomType) }}
+    </div>
+    {{ form_row(form.begin) }}
+    {{ form_row(form.end) }}
+    {{ form_row(form.adults) }}
+    <div class="form-group">
+        {{ form_label(form.children) }}
+        {{ form_widget(form.children) }}
+        <div id="children-icon" data-value="{{ form.children_age.vars.value|json_encode }}" style="visibility: hidden"></div>
+        {{ form_errors(form.children) }}
+    </div>
+    <button type="submit" class="btn btn-info" id="btn-search"><i class="glyphicon glyphicon-search"></i> Найти</button>
+{{ form_end(form, {render_rest: false}) }}
+
 <script src="{{ asset('bundles/mbhonlinebooking/js/form.js', null, true) }}"></script>
 <link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/form.css', null, true) }}">

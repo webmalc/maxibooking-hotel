@@ -1,5 +1,6 @@
-var $hotelSelect = $('#hotel');
-var $roomTypeSelect = $('#roomType');
+
+var $hotelSelect = $('#form_hotel');
+var $roomTypeSelect = $('#form_roomType');
 
 var roomTypeList = [];
 var updateRoomList = function() {
@@ -50,9 +51,9 @@ if ($roomTypeSelect.data('value') && !$roomTypeSelect.val()) {
 }
 
 $hotelSelect.on('change', updateSelectView);
-$('#dateBegin,#dateEnd').datepicker({language: 'ru'});
+$('#form_begin,#form_end').datepicker({language: 'ru'});
 
-var $children = $('#children');
+var $children = $('#form_children');
 var $childrenIcon = $('#children-icon');
 $childrenIcon.popover({
     html: true,
@@ -88,7 +89,7 @@ $children.on('change', function() {
         var content = '';
         for(var i = 0; i < value; i++) {
             var inputValue = childrenValues[i];
-            content = content + '<input name="children_age['+i+']" type="number" value="'+inputValue+'" min="1" max="18" class="form-control inline-block input-sm">';
+            content = content + '<input name="form[children_age]['+i+']" type="number" value="'+inputValue+'" min="1" max="18" class="form-control inline-block input-sm">';
         }
         if(content) {
             content = '<div class="form-inline">' + content + '</div>';

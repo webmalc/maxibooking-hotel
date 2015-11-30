@@ -3,10 +3,13 @@
 namespace MBH\Bundle\OnlineBookingBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -17,22 +20,72 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class DefaultController extends BaseController
 {
-    /**
-     * @Route("/form", name="online_booking_form")
-     */
-    public function formAction()
+    public function getSearchForm()
     {
-        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         /** @var RoomTypeRepositoryInterface $roomTypeRepository */
         $roomTypeRepository = $this->get('mbh.hotel.room_type_manager')->getRepository();
         $roomTypes = $roomTypeRepository->findAll();
 
+        $roomTypeList = [];
+        $hotelIds = [];
+        foreach($roomTypes as $roomType) {
+            $hotelIds[$roomType->getId()] = $roomType->getHotel()->getId();
+            $roomTypeList[$roomType->getId()] = $roomType->__toString();
+        }
+
+        return $this->createFormBuilder([], [
+            'method' => Request::METHOD_GET,
+            'csrf_protection' => false
+        ])
+            ->add('hotel', 'document', [
+                'empty_value' => '',
+                'class' => Hotel::class
+            ])
+            ->add('roomType', 'choice', [
+                'empty_value' => '',
+                'choices' => $roomTypeList,
+                'choice_attr' => function($roomType) use($hotelIds) {
+                    return ['data-hotel' => $hotelIds[$roomType]];
+                }
+            ])
+            ->add('begin', new DateType(), [
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+            ])
+            ->add('end', new DateType(), [
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+            ])
+            ->add('adults', 'integer', [])
+            ->add('children', 'integer', [
+                'attr' => ['min' => 1, 'max' => 10],
+                'required' => false
+            ])
+            ->add('children_age', 'collection', [
+                'required' => false,
+                'type' => 'integer',
+                'prototype' => true,
+                'allow_add' => true,
+            ])
+            ->getForm()
+        ;
+    }
+
+    /**
+     * @Route("/form", name="online_booking_form")
+     */
+    public function formAction(Request $request)
+    {
+        $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
+
+        $form = $this->getSearchForm();
+        $form->handleRequest($request);
 
         return $this->render('MBHOnlineBookingBundle:Default:form.html.twig', [
             'hotels' => $hotels,
-            'roomTypes' => $roomTypes,
-            'requestSearchUrl' => $requestSearchUrl
+            'requestSearchUrl' => $requestSearchUrl,
+            'form' => $form->createView()
         ]);
     }
 
@@ -57,35 +110,45 @@ class DefaultController extends BaseController
     public function searchAction(Request $request)
     {
         $searchQuery = new SearchQuery();
-        $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->find($request->get('hotel'));
-        if($hotel) {
-            $searchQuery->addHotel($hotel);
-        }
-        if($roomType = $request->get('roomType')) {
-            $searchQuery->addRoomType($roomType);
-            $category = $this->dm->getRepository('MBHHotelBundle:RoomTypeCategory')->find($roomType);
-            if($category) {
-                foreach($category->getRoomTypes() as $roomType) {
+
+        $form = $this->getSearchForm();
+        $form->handleRequest($request);
+
+        $searchResults = [];
+        if($form->isValid()) {
+            $formData = $form->getData();
+            if($formData['hotel']) {
+                $searchQuery->addHotel($formData['hotel']);
+            }
+            if($formData['roomType']) {
+                $searchQuery->addRoomType($formData['roomType']);
+                /*$roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($formData['roomType']);
+                if($roomType) {
                     $searchQuery->addRoomType($roomType->getId());
                 }
+                $category = $this->dm->getRepository('MBHHotelBundle:RoomTypeCategory')->find($formData['roomType']);
+                if($category) {
+                    foreach($category->getRoomTypes() as $roomType) {
+                        $searchQuery->addRoomType($roomType->getId());
+                    }
+                }*/
             }
-        }
-        $helper = $this->get('mbh.helper');
-        $searchQuery->begin = $helper->getDateFromString($request->get('begin'));
-        $searchQuery->end = $helper->getDateFromString($request->get('end'));
-        $searchQuery->adults = (int)$request->get('adults');
-        $searchQuery->children = (int)$request->get('children');
-        $searchQuery->accommodations = true;
-        $searchQuery->isOnline = true;
-        if($request->get('children_age')) {
-            $searchQuery->setChildrenAges($request->get('children_age'));
-        };
+            $searchQuery->begin = $formData['begin'];
+            $searchQuery->end = $formData['end'];
+            $searchQuery->adults = (int)$formData['adults'];
+            $searchQuery->children = (int)$formData['children'];
+            $searchQuery->accommodations = true;
+            $searchQuery->isOnline = true;
+            if($formData['children_age']) {
+                $searchQuery->setChildrenAges($formData['children_age']);
+            };
 
-        $searchResults = $this->get('mbh.package.search')
-            ->setAdditionalDates()
-            ->setWithTariffs()
-            ->search($searchQuery)
-        ;
+            $searchResults = $this->get('mbh.package.search')
+                ->setAdditionalDates()
+                ->setWithTariffs()
+                ->search($searchQuery)
+            ;
+        }
 
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
 
