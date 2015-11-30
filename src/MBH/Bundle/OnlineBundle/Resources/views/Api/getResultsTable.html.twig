@@ -98,9 +98,9 @@
                 <tr class="mbh-left mbh-results-roomType-description-tr">
                     <td class="mbh-left mbh-results-roomType-description" colspan="5" >
                         <div class="room-type-photos">
-                            {% for photo in result.roomType.images %}
+                            {% for photo in result.roomType.images|slice(0, 10) %}
                                 {% if not photo.isMain %}
-                                    <a class="fancybox" title="{{ result.roomType }}" rel="group_{{ result.roomType.id }}" href="{{ asset(photo.path) }}"><img src="{{ asset(photo.path) }}" data-big="{{ asset(photo.path) }}" data-title="{{ result.roomType }}" alt="{{ result.roomType }}"></a>
+                                    <a class="fancybox" title="{{ result.roomType }}" rel="group_{{ result.roomType.id }}" href="{{ asset(photo.path, null, true) }}"><img src="{{ asset(photo.path, null, true) }}" data-big="{{ asset(photo.path, null, true) }}" data-title="{{ result.roomType }}" alt="{{ result.roomType }}"></a>
                                 {% endif %}
                             {% endfor %}
                         </div>
