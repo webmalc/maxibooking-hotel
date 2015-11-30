@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 
 /**
@@ -105,9 +106,15 @@ class DefaultController extends BaseController
         ])
             ->add('firstName', 'text', [
                 'label' => 'Имя',
+                'constraints' => [
+                    new NotBlank()
+                ]
             ])
             ->add('lastName', 'text', [
-                'label' => 'Фамилия'
+                'label' => 'Фамилия',
+                'constraints' => [
+                    new NotBlank()
+                ]
             ])
             ->add('patronymic', 'text', [
                 'label' => 'Отчество'
@@ -118,7 +125,19 @@ class DefaultController extends BaseController
             ->add('email', 'text', [
                 'label' => 'Email'
             ])
-            //todo hidden fields
+            //->add('step', 'hidden', [])
+            ->add('adults' , 'hidden', [])
+            ->add('children', 'hidden', [])
+            ->add('begin', 'hidden', [
+                'constraints' => [
+                    new NotBlank()
+                ]])
+            ->add('end', 'hidden', [
+                'constraints' => [
+                    new NotBlank()
+                ]])
+            ->add('roomType', 'hidden', [])
+            ->add('tariff', 'hidden', [])
             ->getForm()
         ;
     }
@@ -133,28 +152,36 @@ class DefaultController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $helper = $this->get('mbh.helper');
             $orderManger = $this->get('mbh.order_manager');
+            $formData = $form->getData();
             $packages = [
                 [
-                    'begin' => 1,
-                    'end' => 2,
-                    'adults' => 3,
-                    'children' => 4,
-                    'roomType' => 5,
+                    'begin' => $helper->getDateFromString($formData['begin']),
+                    'end' => $helper->getDateFromString($formData['end']),
+                    'adults' => $formData['adults'],
+                    'children' => $formData['children'],
+                    'roomType' => $formData['roomType'],
+                    'tariff' => $formData['tariff'],
+                    'accommodation' => false,
+                    'isOnline' => true
                 ]
             ];
             $tourist = [
-                'firstName' => 1,
-                'lastName' => 1,
-                'email' => 1,
-                'phone' => 1,
+                'firstName' => $formData['firstName'],
+                'lastName' => $formData['lastName'],
+                'email' => $formData['email'],
+                'phone' => $formData['phone'],
+                'birthday' => null,
             ];
             $data = [
                 'packages' => $packages,
-                'tourist' => $tourist
+                'tourist' => $tourist,
+                'status' => 'online',
+                'confirmed' => false
             ];
-            //$orderManger->createPackages($data);
-            return new Response('Success');
+            $order = $orderManger->createPackages($data);
+            return new Response('Заказ успешно создан №'. $order->getId());
         } else {
             return $this->render('MBHOnlineBookingBundle:Default:sign.html.twig', [
                 'requestSearchUrl' => $requestSearchUrl,

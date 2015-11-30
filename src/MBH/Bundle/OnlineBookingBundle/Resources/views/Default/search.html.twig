@@ -11,7 +11,7 @@
                 Количество комнат: {{ data.roomsCount }}<br>
                 Цена: {{ data.roomsCount }}
 
-                <a href="{{ requestSearchUrl }}?step=2&adults={{ data.adults }}&children={{ data.children }}&begin={{ data.begin|date('d.m.Y') }}&end={{ data.end|date('d.m.Y') }}&roomType={{ data.roomType.id }}&tariff={{ data.tariff.id }}" class="btn btn-success">Бронировать</a>
+                <a href="{{ requestSearchUrl }}?step=2&form[adults]={{ data.adults }}&form[children]={{ data.children }}&form[begin]={{ data.begin|date('d.m.Y') }}&form[end]={{ data.end|date('d.m.Y') }}&form[roomType]={{ data.roomType.id }}&form[tariff]={{ data.tariff.id }}" class="btn btn-success">Бронировать</a>
             {% endfor %}
         </p>
     </div>
