@@ -213,7 +213,14 @@ liip_imagine:
             quality: 100
             filters:
               thumbnail: { size: [10, 10], mode: outbound, allow_upscale: true }
-
+        zamkadom_thumb:
+            quality: 75
+            filters:
+                thumbnail: { size: [120, 90], mode: outbound }
+        zamkadom:
+            quality: 75
+            filters:
+                thumbnail: { size: [1200, 900], mode: outbound }
 
         scaler:
             quality: 100

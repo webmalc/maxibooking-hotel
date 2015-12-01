@@ -34,8 +34,8 @@
                         <span class="mbh-results-tariff"
                               data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
                         {% if result.roomType.getMainImage is not empty %}
-                        <a class="fancybox" title="{{ result.roomType }}" rel="group_{{ result.roomType.id }}" href="{{ asset(result.roomType.getMainImage.path) }}">
-                            <img class="mbh-roomType-image" src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}{{ result.roomType.getMainImage.getWebPath }}">
+                        <a class="fancybox" title="{{ result.roomType }}" rel="group_{{ result.roomType.id }}" href="{{ asset(result.roomType.getMainImage.path, null, true) }}">
+                            <img class="mbh-roomType-image" src="{{ asset(result.roomType.getMainImage.path, null, true) }}">
                         </a>
                         {% endif %}
                         <span class="mbh-results-roomType"
@@ -100,7 +100,7 @@
                         <div class="room-type-photos">
                             {% for photo in result.roomType.images|slice(0, 10) %}
                                 {% if not photo.isMain %}
-                                    <a class="fancybox" title="{{ result.roomType }}" rel="group_{{ result.roomType.id }}" href="{{ asset(photo.path, null, true) }}"><img src="{{ asset(photo.path, null, true) }}" data-big="{{ asset(photo.path, null, true) }}" data-title="{{ result.roomType }}" alt="{{ result.roomType }}"></a>
+                                    <a class="fancybox" title="{{ result.roomType }}" rel="group_{{ result.roomType.id }}" href="{{ photo.path|imagine_filter('zamkadom') }}"><img src="{{ photo.path|imagine_filter('zamkadom_thumb') }}" data-title="{{ result.roomType }}" alt="{{ result.roomType }}"></a>
                                 {% endif %}
                             {% endfor %}
                         </div>
