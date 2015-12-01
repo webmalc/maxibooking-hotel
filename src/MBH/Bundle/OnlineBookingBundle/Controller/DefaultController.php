@@ -3,15 +3,18 @@
 namespace MBH\Bundle\OnlineBookingBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 
@@ -163,6 +166,8 @@ class DefaultController extends BaseController
      */
     public function getSignForm()
     {
+        $paymentTypes = $this->getParameter('mbh.online.form')['payment_types'];
+        unset($paymentTypes['online_first_day']);
         return $this->createFormBuilder(null, [
             'method' => Request::METHOD_GET,
             'csrf_protection' => false
@@ -186,7 +191,11 @@ class DefaultController extends BaseController
                 'label' => 'Телефон'
             ])
             ->add('email', 'text', [
-                'label' => 'Email'
+                'label' => 'Email',
+                'constraints' => [
+                    new Email(),
+                    new NotBlank()
+                ]
             ])
             //->add('step', 'hidden', [])
             ->add('adults' , 'hidden', [])
@@ -201,6 +210,11 @@ class DefaultController extends BaseController
                 ]])
             ->add('roomType', 'hidden', [])
             ->add('tariff', 'hidden', [])
+            ->add('payment', 'choice', [
+                'label' => 'Платёж',
+                'choices' => $paymentTypes
+            ])
+            ->add('total', 'hidden')
             ->getForm()
         ;
     }
@@ -243,8 +257,38 @@ class DefaultController extends BaseController
                 'status' => 'online',
                 'confirmed' => false
             ];
-            $order = $orderManger->createPackages($data);
-            return new Response('Заказ успешно создан №'. $order->getId());
+            $payment = $formData['payment'];
+            $cash = [];
+            $total = (int) $formData['total'];
+            if($payment != 'in_hotel') {
+                if($payment == 'online_full') {
+                    $cash['total'] = $total;
+                }
+                if($payment == 'online_half') {
+                    $cash['total'] = $total / 2;
+                }
+            }
+
+            $order = $orderManger->createPackages($data, null, null, $cash);
+            //$order = new Order();
+            //$order->addCashDocument(new CashDocument());
+
+            $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+            if($payment != 'in_hotel' && $clientConfig->getPaymentSystem()) {
+                return $this->render(
+                    'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig', [
+                        'data' => array_merge(['test' => false,
+                            'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
+                                ['%total%' => number_format($cash['total'], 2), '%order_id%' => $order->getId()],
+                                'MBHOnlineBundle')
+                        ], $clientConfig->getFormData($order->getCashDocuments()[0],
+                            $this->container->getParameter('online_form_result_url'),
+                            $this->generateUrl('online_form_check_order', [], true)))
+                    ]
+                );
+            } else {
+                return new Response('Заказ успешно создан №'. $order->getId());
+            }
         } else {
             return $this->render('MBHOnlineBookingBundle:Default:sign.html.twig', [
                 'requestSearchUrl' => $requestSearchUrl,

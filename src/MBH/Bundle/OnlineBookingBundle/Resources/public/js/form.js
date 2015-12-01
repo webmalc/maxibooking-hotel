@@ -107,3 +107,9 @@ $children.on('change', function() {
         $childrenIcon.popover('hide');
     }
 })
+
+if(childrenValues) {
+    setTimeout(function(){
+        $children.trigger('change');
+    }, 1000)
+}

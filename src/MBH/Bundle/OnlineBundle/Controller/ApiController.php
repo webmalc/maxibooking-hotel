@@ -319,6 +319,7 @@ class ApiController extends Controller
         if ($request->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
             $form = false;
         } else {
+
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig', [
                     'data' => array_merge(['test' => false,

@@ -1,19 +1,32 @@
 <div class="row marketing">
     {% for result in searchResults %}
     <div class="col-lg-6">
-        <h4>{{ result.roomType }}</h4>
-        <p>
-            {% for data in result.results %}
-                Взрослых: {{ data.adults }}<br>
-                Дети: {{ data.children }}<br>
-                Начало: {{ data.begin|date('d.m.Y') }}<br>
-                Конец: {{ data.end|date('d.m.Y') }}<br>
-                Количество комнат: {{ data.roomsCount }}<br>
-                Цена: {{ data.roomsCount }}
+        {% for searchResult in result.results %}
+        <div class="well">
+            <h4>{{ result.roomType }}</h4>
+                Взрослых: {{ searchResult.adults }} Дети: {{ searchResult.children }}<br>
+                Даты: {{ searchResult.begin|date('d.m.Y') }} - {{ searchResult.end|date('d.m.Y') }}<br>
+                Количество комнат: {{ searchResult.roomsCount }}<br>
+                Цена: {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}
 
-                <a href="{{ requestSearchUrl }}?step=2&form[adults]={{ data.adults }}&form[children]={{ data.children }}&form[begin]={{ data.begin|date('d.m.Y') }}&form[end]={{ data.end|date('d.m.Y') }}&form[roomType]={{ data.roomType.id }}&form[tariff]={{ data.tariff.id }}" class="btn btn-success">Бронировать</a>
-            {% endfor %}
-        </p>
+                <a class="btn btn-success btn-sm" href="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}">Бронировать</a>
+
+                {% for image in searchResult.roomType.images %}
+                    <a class="fancybox" rel="group" href="{{ asset(image.path, null, true) }}">
+                        <img alt="" src="{{ image.path|imagine_filter('thumb_95x80') }}">
+                    </a>
+                {% endfor %}
+            </div>
+        {% endfor %}
     </div>
     {% endfor %}
 </div>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('.fancybox').fancybox();
+    });
+</script>
