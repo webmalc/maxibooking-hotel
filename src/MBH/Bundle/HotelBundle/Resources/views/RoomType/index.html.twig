@@ -14,7 +14,7 @@
                     {% if not entity.isEnabled %}<del class="text-danger">{% endif %}
                         {{ entity.name }}
                         {% if client_config().useRoomTypeCategory %}
-                            <small> - {{ entity.category ? entity.category : 'группа не указана' }}</small>
+                            <br><small>{{ entity.category ? entity.category : 'группа не указана' }}</small>
                         {% endif %}
                     {% if not entity.isEnabled %}</del>{% endif %}
                 </a>

@@ -18,6 +18,8 @@ form.clientPaymentSystemType.moneymail_shop_id: ID магазина (Shop_IDP)
 form.clientPaymentSystemType.moneymail_key: Ключ магазина (Key)
 form.clientPaymentSystemType.uniteller_shop_id: ID магазина (Shop_IDP)
 form.clientPaymentSystemType.uniteller_password: Пароль магазина (Password)
+form.clientPaymentSystemType.rbk_eshop_id: ID магазина (eshopId)
+form.clientPaymentSystemType.rbk_secret_key: Ключ магазина (secretKey)
 form.clientPaymentSystemType.shop_login: Логин магазина
 form.clientPaymentSystemType.password_one: Пароль 1
 form.clientPaymentSystemType.password_two: Пароль 2

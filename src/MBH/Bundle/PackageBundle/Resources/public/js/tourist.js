@@ -26,7 +26,11 @@ var docReadyTourists = function () {
         "drawCallback": function( settings ) {
             var $popover = $touristTable.find('[data-toggle="popover"]');
             $popover.popover({ html : true });
-        }
+        },
+        "columnDefs": [
+            { className: "hide-on-print", "targets": [ 2 ] },
+            {className: "show-on-print", "targets": [ 4, 5, 6 ] }
+        ]
     });
     $touristTable.dataTable().fnSetFilteringDelay();
 
