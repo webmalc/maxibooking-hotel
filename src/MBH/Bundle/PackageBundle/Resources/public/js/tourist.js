@@ -40,8 +40,8 @@ var docReadyTourists = function () {
             }
         },
         "columnDefs": [
-            { className: "hide-on-print", "targets": [ 2, 9 ] },
-            {className: "show-on-print", "targets": [ 4, 5, 6, 7 ] }
+            { className: "hide-on-print", "targets": [ 6, 11 ] },
+            {className: "show-on-print", "targets": [ 3, 4, 5, 9, 10 ] }
         ]
     });
     $touristTable.dataTable().fnSetFilteringDelay();
