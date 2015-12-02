@@ -301,7 +301,6 @@ class Search implements SearchInterface
                     ->setAdults($tourists['adults'])
                     ->setChildren($tourists['children'])
                     ->setUseCategories($useCategories)
-                    ->setUseCategories(true)
                 ;
 
                 //prices
