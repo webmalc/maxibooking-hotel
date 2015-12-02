@@ -322,7 +322,7 @@ class Search implements SearchInterface
                     continue;
                 }
 
-                $roomTypeObjId = $result->getRoomTypeInterfaceObject()->getId();
+                $roomTypeObjId = $result->getRoomTypeInterfaceObject()->getId() . '_' . $result->getTariff()->getId();
 
                 if (isset($results[$roomTypeObjId])) {
                     $totalRooms = $result->getRoomsCount() + $results[$roomTypeObjId]->getRoomsCount();
@@ -337,9 +337,10 @@ class Search implements SearchInterface
                 ) {
                     $results[$roomTypeObjId] = $result;
                 }
+
             }
         }
-        sort($results);
+        //sort($results);
         return $results;
     }
 

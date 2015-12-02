@@ -44,8 +44,9 @@ class SearchWithTariffs implements SearchInterface
         $tariffs = $this->searchTariffs($query);
 
         foreach ($tariffs as $tariff) {
-            $query->tariff = $tariff;
-            $results = array_merge($results, $this->search->search($query));
+            $q = clone $query;
+            $q->tariff = $tariff;
+            $results = array_merge($results, $this->search->search($q));
         }
 
         // Group results by roomTypes

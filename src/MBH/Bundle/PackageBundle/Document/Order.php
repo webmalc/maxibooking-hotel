@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -146,6 +147,17 @@ class Order extends Base
     /**
      * @var string
      * @Gedmo\Versioned
+     * @ODM\String(name="onlinePaymentType")
+     * @Assert\Choice(
+     *      callback = "getOnlinePaymentTypesList",
+     *      message = "validator.document.package.wrong_online_payment_type"
+     * )
+     */
+    protected $onlinePaymentType;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
      * @ODM\String(name="channelManagerType")
      * @Assert\Choice(
      *      choices = {"vashotel", "booking", "myallocator"},
@@ -225,6 +237,11 @@ class Order extends Base
     {
         $this->packages = new \Doctrine\Common\Collections\ArrayCollection();
         $this->documents = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    public static function getOnlinePaymentTypesList()
+    {
+        return FormConfig::paymentTypesList;
     }
 
     /**
@@ -929,5 +946,21 @@ class Order extends Base
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function getOnlinePaymentType()
+    {
+        return $this->onlinePaymentType;
+    }
 
+    /**
+     * @param string $onlinePaymentType
+     * @return Order
+     */
+    public function setOnlinePaymentType($onlinePaymentType)
+    {
+        $this->onlinePaymentType = $onlinePaymentType;
+        return $this;
+    }
 }
