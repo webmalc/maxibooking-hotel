@@ -438,6 +438,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
             'entity' => $entity,
             'logs' => $this->logs($entity),
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
+            'online_payments' => $this->container->getParameter('mbh.online.form')['payment_types'],
             'form' => $form->createView(),
             'package' => $package
         ];

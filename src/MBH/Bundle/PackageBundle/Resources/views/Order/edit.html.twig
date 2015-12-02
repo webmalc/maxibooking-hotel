@@ -48,7 +48,12 @@
                                 <strong>{{ 'order.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong>
                             </td>
                             <td>
-                                <span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }} <small>{{ entity.channelManagerType ? '(' ~ entity.channelManagerType ~ ' #' ~ entity.channelManagerId    ~ ' - ' ~ entity.channelManagerStatus ~')' }}</small></span>
+                                <span class="text-{{ statuses[entity.status].class }}">{{ statuses[entity.status].title }}
+                                    <small>
+                                        {{ entity.channelManagerType ? '(' ~ entity.channelManagerType ~ ' #' ~ entity.channelManagerId    ~ ' - ' ~ entity.channelManagerStatus ~')' }}
+                                        {{ entity.onlinePaymentType ? '(' ~ online_payments[entity.onlinePaymentType] ~')' }}
+                                    </small>
+                                </span>
                                 {% if entity.deletedAt %} &nbsp; <small class="text-danger"><i class="fa fa-trash-o"> </i> {{ 'order.edit.deleted'|trans({}, 'MBHPackageBundle') }}</small>{% endif %}
                             </td>
                         </tr>

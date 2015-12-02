@@ -17,6 +17,10 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  */
 class FormConfig extends Base
 {
+    const paymentTypesList = [
+        "in_hotel", "online_full", "online_first_day", "online_half"
+    ];
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -76,9 +80,17 @@ class FormConfig extends Base
      * @Gedmo\Versioned
      * @ODM\Collection
      * @Assert\NotNull()
-     * @Assert\Choice(choices = {"in_hotel", "online_full", "online_first_day", "online_half"}, multiple = true)
+     * @Assert\Choice(callback = "getPaymentTypesList", multiple = true)
      */
     protected $paymentTypes = [];
+
+    /**
+     * @return array
+     */
+    public static function getPaymentTypesList()
+    {
+        return self::paymentTypesList;
+    }
 
     /**
      * Set enabled

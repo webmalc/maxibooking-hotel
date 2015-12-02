@@ -81,7 +81,10 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     {
         $entity = new RoomType();
         $entity->setHotel($this->hotel);
-        $form = $this->createForm(new RoomTypeType(), $entity);
+        $form = $this->createForm(new RoomTypeType(), $entity, [
+            'facilities' => $this->getParameter('mbh.hotel')['facilities'],
+            'useRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getUseRoomTypeCategory()
+        ]);
 
         $form->submit($request);
         if ($form->isValid()) {

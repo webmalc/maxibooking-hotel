@@ -163,6 +163,7 @@ class OrderManager
             $order = new Order();
             $order->setConfirmed($data['confirmed'])
                 ->setStatus($data['status'])
+                ->setOnlinePaymentType(!empty($data['onlinePaymentType']) ? $data['onlinePaymentType'] : null)
                 ->setNote(!empty($data['order_note']) ? $data['order_note'] : null);
             if (!empty($tourist)) {
                 $order->setMainTourist($tourist);
