@@ -1,6 +1,6 @@
 <div class="row" id="online-booking-search">
     {% for result in searchResults %}
-    <div class="well col-lg-12">
+    <div class="well col-lg-12 room-type-row">
         <h4>{{ result.roomType }}</h4>
         <div class="row">
             <div class="photos col-md-2">
@@ -17,7 +17,7 @@
             </div>
             <div class="col-md-10">
                 {% for searchResult in result.results %}
-                <div class="row">
+                <div class="row tariff-row" data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}">
                     {#{% for image in searchResult.roomType.images %}
                         <a class="fancybox" rel="group" href="{{ asset(image.path, null, true) }}">
                             <img alt="" src="{{ image.path|imagine_filter('thumb_95x80') }}">
@@ -31,7 +31,7 @@
                         Цена: {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}
                     </div>
                     <div class="col-md-2">
-                        <input type="radio" name="booking" data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}">
+                        <input type="radio" name="booking">
                         <br>
                         {% if searchResult.tariff.promotions|length %}
                         <select>
@@ -58,25 +58,109 @@
 
 <script>
     var $onlineBookingSearch = $('#online-booking-search');
+
+    var RoomTypeRow = function($row) {
+        this.$row = $row;
+        this.$bookingButton = $row.find('.btn-success');
+        this.tariffRows = [];
+        this.selectedTariffRow = null;
+    }
+
+    RoomTypeRow.prototype.init = function()
+    {
+        this.bindEventHandlers();
+        this.initTariff();
+    }
+
+    RoomTypeRow.prototype.bindEventHandlers = function()
+    {
+
+    }
+
+    RoomTypeRow.prototype.initTariff = function()
+    {
+        var that = this;
+        this.$row.find('.tariff-row').each(function() {
+            var tariffRow = new TariffRow($(this), that);
+            tariffRow.init();
+            that.tariffRows.push(tariffRow);
+        })
+    }
+
+    RoomTypeRow.prototype.notAlreadyBooking = function()
+    {
+        this.$bookingButton.addClass('disabled').attr('href', '');
+        /*this.tariffRows.forEach(function(index, t) {
+            tariffRow.notSelected();
+        })*/
+    }
+
+    RoomTypeRow.prototype.alreadyBooking = function(tariffRow)
+    {
+        this.tariffRows.forEach(function(t) {
+            if (t != tariffRow) {
+                t.notSelected()
+            }
+        })
+
+        this.reBuildHref();
+    }
+
+    RoomTypeRow.prototype.reBuildHref = function()
+    {
+        var href = this.selectedTariffRow.bookingHref;
+        if (this.selectedTariffRow.$promotionSelect.val()) {
+            href = href + '&form[promotion]=' + this.selectedTariffRow.$promotionSelect.val();
+        }
+        this.$bookingButton.removeClass('disabled').attr('href', href);
+    }
+
+    var TariffRow = function($row, roomTypeRow) {
+        this.$row = $row;
+        this.$checkbox = this.$row.find('input[type=radio]');
+        this.bookingHref = this.$row.data('url');
+        this.$promotionSelect = $row.find('select');
+        this.roomTypeRow = roomTypeRow;
+    }
+
+    TariffRow.prototype.init = function()
+    {
+        this.bindEventHandlers();
+    }
+
+    TariffRow.prototype.bindEventHandlers = function()
+    {
+        var that = this;
+        this.$checkbox.on('change', function() {
+            that.roomTypeRow.selectedTariffRow = that;
+            that.selected();
+        })
+        this.$promotionSelect.on('change', function() {
+            that.roomTypeRow.selectedTariffRow = that;
+            that.roomTypeRow.reBuildHref();
+        })
+    }
+
+    TariffRow.prototype.selected = function()
+    {
+        this.$promotionSelect.removeClass('hide');
+        this.roomTypeRow.alreadyBooking(this);
+    }
+
+    TariffRow.prototype.notSelected = function()
+    {
+        this.$promotionSelect.addClass('hide');
+        //this.$checkbox.attr('checked', false);
+    }
+
     $onlineBookingSearch.ready(function() {
         $onlineBookingSearch.find('.fancybox').fancybox();
-        var $bookingButton = $onlineBookingSearch.find('.btn-success');
-        var $checkboxes = $onlineBookingSearch.find('input[type=radio]');
-        //var $photos = $onlineBookingSearch.find('.photos');
-        var updateButton = function() {
-            $bookingButton.addClass('disabled').attr('href');
-            $onlineBookingSearch.find('select').addClass('hide');
-            $checkboxes.each(function(){
-                var isChecked = $(this).is(':checked');
-                if(isChecked) {
-                    $bookingButton.removeClass('disabled').attr('href', $(this).data('url'));
-                    $(this).siblings('select').removeClass('hide');
-                }
-            })
-        }
-        $checkboxes.on('change', function(e) {
-            updateButton();
+
+        var $roomTypeRows = $onlineBookingSearch.find('.room-type-row');
+        $roomTypeRows.each(function() {
+            var roomTypeRow = new RoomTypeRow($(this));
+            roomTypeRow.init();
+            roomTypeRow.notAlreadyBooking();
         })
-        updateButton()
     });
 </script>
