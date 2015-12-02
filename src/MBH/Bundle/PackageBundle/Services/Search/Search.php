@@ -78,7 +78,7 @@ class Search implements SearchInterface
         //roomTypes
         if (empty($query->roomTypes)) {
             $query->roomTypes = [];
-            foreach( $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
+            foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
                 $query->roomTypes = array_merge($helper->toIds($hotel->getRoomTypes()), $query->roomTypes);
             }
         } elseif ($this->manager->useCategories && !$query->forceRoomTypes) {
@@ -265,7 +265,7 @@ class Search implements SearchInterface
                         if ($age <= $tariff->getInfantAge()) {
                             $query->children -= 1;
                         }
-                   }
+                    }
                 }
 
                 //filter children
@@ -279,6 +279,7 @@ class Search implements SearchInterface
                 }
 
                 $roomType = $caches[0]->getRoomType();
+                $useCategories = $query->isOnline && $this->config->getUseRoomTypeCategory();
                 $result = new SearchResult();
                 $tourists = $roomType->getAdultsChildrenCombination($query->adults, $query->children);
 
@@ -299,6 +300,7 @@ class Search implements SearchInterface
                     ->setRoomsCount($min)
                     ->setAdults($tourists['adults'])
                     ->setChildren($tourists['children'])
+                    ->setUseCategories($useCategories)
                 ;
 
                 //prices
@@ -309,10 +311,9 @@ class Search implements SearchInterface
                 }
                 foreach ($prices as $price) {
                     $result->addPrice($price['total'], $price['adults'], $price['children'])
-                           ->setPricesByDate($price['prices'], $price['adults'], $price['children'])
-                    ;
+                        ->setPricesByDate($price['prices'], $price['adults'], $price['children']);
                 }
-                if(empty($result->getPrices())) {
+                if (empty($result->getPrices())) {
                     continue;
                 }
 
@@ -321,10 +322,24 @@ class Search implements SearchInterface
                     continue;
                 }
 
-                $results[] = $result;
+                $roomTypeObjId = $result->getRoomTypeInterfaceObject()->getId();
+
+                if (isset($results[$roomTypeObjId])) {
+                    $totalRooms = $result->getRoomsCount() + $results[$roomTypeObjId]->getRoomsCount();
+                    $result->setRoomsCount($totalRooms);
+                    $results[$roomTypeObjId]->setRoomsCount($totalRooms);
+                }
+
+                if (
+                    !$result->isUseCategories() ||
+                    !isset($results[$roomTypeObjId]) ||
+                    $results[$roomTypeObjId]->getRoomType()->getTotalPlaces() > $result->getRoomType()->getTotalPlaces()
+                ) {
+                    $results[$roomTypeObjId] = $result;
+                }
             }
         }
-        //sort($results);
+        sort($results);
         return $results;
     }
 
@@ -366,7 +381,8 @@ class Search implements SearchInterface
             $beginWindow->modify('-' . $restriction->getMinStayArrival() . ' days');
             if (!$this->checkWindow(
                 $beginWindow, $result->getBegin(), $result, $restriction->getMinStayArrival(), false
-            )) {
+            )
+            ) {
                 return false;
             }
         }
@@ -374,7 +390,7 @@ class Search implements SearchInterface
         return true;
     }
 
-    public function checkWindow(\DateTime $begin, \DateTime $end, SearchResult $result, $len,  $right = true)
+    public function checkWindow(\DateTime $begin, \DateTime $end, SearchResult $result, $len, $right = true)
     {
         $roomTypeId = $result->getRoomType()->getId();
         $tariffId = $result->getTariff()->getId();
@@ -442,7 +458,7 @@ class Search implements SearchInterface
             $tariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetch(null, null, true);
         }
 
-        foreach($tariffs as $tariff) {
+        foreach ($tariffs as $tariff) {
 
             if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $this->dm->getFilterCollection()->disable('softdeleteable');

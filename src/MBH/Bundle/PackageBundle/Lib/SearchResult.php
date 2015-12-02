@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Lib;
 
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 
 class SearchResult
 {
@@ -61,6 +62,12 @@ class SearchResult
      * @var array
      */
     protected $rooms = [];
+
+
+    /**
+     * @var bool
+     */
+    protected $useCategories = false;
 
     /**
      * @return \DateTime
@@ -321,4 +328,57 @@ class SearchResult
 
         return $this;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isUseCategories()
+    {
+        return $this->useCategories;
+    }
+
+    /**
+     * @param boolean $useCategories
+     * @return SearchResult
+     */
+    public function setUseCategories($useCategories)
+    {
+        $this->useCategories = $useCategories;
+
+        return $this;
+    }
+
+
+    /**
+     * @param bool $full
+     * @return null|string
+     */
+    public function getRoomTypeTitle($full = false)
+    {
+        $roomType = $this->getRoomTypeInterfaceObject();
+
+        if (!$roomType) {
+            return null;
+        }
+
+        return $full ? $roomType->getFullTitle() : $roomType->getName();
+    }
+
+    /**
+     * @return RoomTypeInterface
+     */
+    public function getRoomTypeInterfaceObject()
+    {
+        $roomType = $this->getRoomType();
+
+        if (!$roomType) {
+            return null;
+        }
+        if ($this->isUseCategories()) {
+            $roomType = $this->getRoomType()->getCategory();
+        }
+
+        return $roomType;
+    }
+
 }
