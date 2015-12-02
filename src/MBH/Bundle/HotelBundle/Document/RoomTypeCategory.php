@@ -187,4 +187,14 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
         }
         return $places;
     }
+
+    public function getMainImage()
+    {
+        foreach($this->getRoomTypes() as $roomType) {
+            if($roomType->getMainImage()) {
+                return $roomType->getMainImage();
+            }
+        }
+        return null;
+    }
 }
