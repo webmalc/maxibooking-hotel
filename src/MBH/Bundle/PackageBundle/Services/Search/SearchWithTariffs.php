@@ -50,13 +50,19 @@ class SearchWithTariffs implements SearchInterface
 
         // Group results by roomTypes
         foreach($results as $row) {
-            if (!isset($groupedResult[$row->getRoomType()->getId()])) {
-                $groupedResult[$row->getRoomType()->getId()] = [
-                    'roomType' => $row->getRoomType(),
+            $roomType = $row->getRoomType();
+
+            if ($row->isUseCategories()) {
+                $roomType = $roomType->getCategory();
+            }
+
+            if (!isset($groupedResult[$roomType->getId()])) {
+                $groupedResult[$roomType->getId()] = [
+                    'roomType' => $roomType,
                     'results' => []
                 ];
             }
-            $groupedResult[$row->getRoomType()->getId()]['results'][] = $row;
+            $groupedResult[$roomType->getId()]['results'][] = $row;
         }
 
 
