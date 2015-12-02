@@ -56,4 +56,9 @@ interface RoomTypeInterface
      * @return int
      */
     public function getAdditionalPlaces();
+
+    /**
+     * @return string
+     */
+    public function getId();
 }
