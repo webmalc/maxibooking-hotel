@@ -1,5 +1,4 @@
 <div class="row" id="online-booking-search">
-    {{ dump(searchResults) }}
     {% for result in searchResults %}
     <div class="well col-lg-12">
         <h4>{{ result.roomType }}</h4>
@@ -24,7 +23,6 @@
                             <img alt="" src="{{ image.path|imagine_filter('thumb_95x80') }}">
                         </a>
                     {% endfor %}#}
-
                     <div class="col-md-4" style="font-weight: bold">Тариф: {{ searchResult.tariff }}</div>
                     <div class="col-md-4">
                         Взрослых: {{ searchResult.adults }} Дети: {{ searchResult.children }}<br>
@@ -34,6 +32,15 @@
                     </div>
                     <div class="col-md-2">
                         <input type="radio" name="booking" data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}">
+                        <br>
+                        {% if searchResult.tariff.promotions|length %}
+                        <select>
+                            <option></option>
+                            {% for promotion in searchResult.tariff.promotions %}
+                                <option value="{{ promotion.id }}">{{ promotion }}</option>
+                            {% endfor %}
+                        </select>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
@@ -58,10 +65,12 @@
         //var $photos = $onlineBookingSearch.find('.photos');
         var updateButton = function() {
             $bookingButton.addClass('disabled').attr('href');
+            $onlineBookingSearch.find('select').addClass('hide');
             $checkboxes.each(function(){
                 var isChecked = $(this).is(':checked');
                 if(isChecked) {
                     $bookingButton.removeClass('disabled').attr('href', $(this).data('url'));
+                    $(this).siblings('select').removeClass('hide');
                 }
             })
         }

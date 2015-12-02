@@ -45,6 +45,7 @@ class DefaultController extends BaseController
                 'class' => Hotel::class
             ])
             ->add('roomType', 'choice', [
+                'required' => false,
                 'empty_value' => '',
                 'choices' => $roomTypeList,
                 'choice_attr' => function($roomType) use($hotelIds) {
@@ -269,6 +270,8 @@ class DefaultController extends BaseController
                 }
             }
 
+            dump($data);
+            $data['onlinePaymentType'] = $payment;
             $order = $orderManger->createPackages($data, null, null, $cash);
             //$order = new Order();
             //$order->addCashDocument(new CashDocument());
