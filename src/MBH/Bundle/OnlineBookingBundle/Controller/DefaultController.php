@@ -3,12 +3,14 @@
 namespace MBH\Bundle\OnlineBookingBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PriceBundle\Document\Promotion;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -169,10 +171,11 @@ class DefaultController extends BaseController
     {
         $paymentTypes = $this->getParameter('mbh.online.form')['payment_types'];
         unset($paymentTypes['online_first_day']);
-        return $this->createFormBuilder(null, [
+        $formBuilder = $this->createFormBuilder(null, [
             'method' => Request::METHOD_GET,
             'csrf_protection' => false
-        ])
+        ]);
+        $formBuilder
             ->add('firstName', 'text', [
                 'label' => 'Имя',
                 'constraints' => [
@@ -216,8 +219,9 @@ class DefaultController extends BaseController
                 'choices' => $paymentTypes
             ])
             ->add('total', 'hidden')
-            ->getForm()
-        ;
+            ->add('promotion', 'hidden');
+        $formBuilder->get('promotion')->addViewTransformer(new EntityToIdTransformer($this->dm, Promotion::class));
+        return $formBuilder->getForm();
     }
 
     /**
@@ -261,6 +265,7 @@ class DefaultController extends BaseController
             $payment = $formData['payment'];
             $cash = [];
             $total = (int) $formData['total'];
+            //todo pass $formData['promotion']
             if($payment != 'in_hotel') {
                 if($payment == 'online_full') {
                     $cash['total'] = $total;
