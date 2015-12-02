@@ -132,13 +132,15 @@ class TouristController extends Controller
         }
 
         $vegaDocumentTypes = $this->container->get('mbh.vega.dictionary_provider')->getDocumentTypes();
+        $arrivals = $this->container->getParameter('mbh.package.arrivals');
 
         return [
             'tourists' => $tourists,
             'total' => count($tourists),
             'draw' => $request->get('draw'),
             'touristPackages' => $touristPackages,
-            'vegaDocumentTypes' => $vegaDocumentTypes
+            'vegaDocumentTypes' => $vegaDocumentTypes,
+            'arrivals' => $arrivals,
         ];
     }
 

@@ -6,6 +6,7 @@ var docReadyTourists = function () {
     var $touristForm = $('#tourist-form');
     //roomType rooms datatables
     var $touristTable = $('#tourist-table');
+    var $citizenshipSelect = $touristForm.find('#form_citizenship');
     $touristTable.dataTable({
         "processing": true,
         "serverSide": true,
@@ -17,7 +18,7 @@ var docReadyTourists = function () {
                 requestData.form = {
                     begin: $touristForm.find('#form_begin').val(),
                     end: $touristForm.find('#form_end').val(),
-                    citizenship: $touristForm.find('#form_citizenship').val(),
+                    citizenship: $citizenshipSelect.val(),
                     _token: $touristForm.find('#form__token').val()
                 };
                 return requestData;
@@ -26,10 +27,21 @@ var docReadyTourists = function () {
         "drawCallback": function( settings ) {
             var $popover = $touristTable.find('[data-toggle="popover"]');
             $popover.popover({ html : true });
+
+            var value = $citizenshipSelect.val();
+            if (value == 'native') {
+                $('#tourist-table').find('.show-on-print').addClass('hide')
+                //$touristTable.find('.show-on-print').addClass('hide');
+                //add print column
+            } else {
+                $('#tourist-table').find('.show-on-print').removeClass('hide')
+                //$touristTable.find('.show-on-print').removeClass('hide');
+                //hide print column
+            }
         },
         "columnDefs": [
-            { className: "hide-on-print", "targets": [ 2 ] },
-            {className: "show-on-print", "targets": [ 4, 5, 6 ] }
+            { className: "hide-on-print", "targets": [ 2, 9 ] },
+            {className: "show-on-print", "targets": [ 4, 5, 6, 7 ] }
         ]
     });
     $touristTable.dataTable().fnSetFilteringDelay();
