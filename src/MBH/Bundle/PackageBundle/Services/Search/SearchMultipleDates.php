@@ -73,10 +73,11 @@ class SearchMultipleDates implements SearchInterface
             throw new Exception('SearchInterface $search is null.');
         }
 
-        if (!$query->roomTypes) {
+        $roomTypes = $query->roomTypes;
+        if (empty($roomTypes)) {
             foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findAll() as $hotel) {
-                $query->roomTypes = array_merge(
-                    $this->container->get('mbh.helper')->toIds($hotel->getRoomTypes()), $query->roomTypes
+                $roomTypes = array_merge(
+                    $this->container->get('mbh.helper')->toIds($hotel->getRoomTypes()), $roomTypes
                 );
             }
         }
@@ -87,7 +88,7 @@ class SearchMultipleDates implements SearchInterface
         }
         $results = [];
 
-        foreach ($query->roomTypes as $roomTypeId) {
+        foreach ($roomTypes as $roomTypeId) {
 
             $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($roomTypeId);
 
@@ -98,10 +99,11 @@ class SearchMultipleDates implements SearchInterface
                 $q->begin = $pair[0];
                 $q->end = $pair[1];
                 $q->roomTypes = [$roomTypeId];
+                $q->forceRoomTypes = true;
                 $row = $this->search->search($q);
                 $results = array_merge($results, $row);
 
-                if ($q->begin == $query->begin && $q->end == $query->end && !empty($row) && $tariff && $tariff->getIsDefault()) {
+                if ($q->begin == $query->begin && $q->end == $query->end && !empty($row[0]) && $tariff && $row[0]->getTariff() == $tariff) {
                     break;
                 }
 
