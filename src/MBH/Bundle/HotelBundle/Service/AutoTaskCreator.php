@@ -84,6 +84,7 @@ class AutoTaskCreator
             $queryBuilder = $packageRepository->createQueryBuilder()
                 ->field('isCheckIn')->equals(true)
                 ->field('isCheckOut')->equals(false)
+                ->field('accommodation')->exists(true)
                 ->field('begin')->lte($now)
                 ->field('end')->gte($now)
                 ->field('roomType.id')->equals($roomType->getId())
@@ -107,7 +108,9 @@ class AutoTaskCreator
                                     ->setUserGroup($taskType->getDefaultUserGroup())
                                     ->setRoom($package->getAccommodation())
                                     ->setStatus(Task::STATUS_OPEN)
-                                    ->setPriority(Task::PRIORITY_AVERAGE);
+                                    ->setPriority(Task::PRIORITY_AVERAGE)
+                                    ->setHotel($package->getAccommodation()->getHotel())
+                                ;
                                 if ($this->getCountSameTasks($task) == 0) {
                                     $this->dm->persist($task);
                                     ++$inc;
