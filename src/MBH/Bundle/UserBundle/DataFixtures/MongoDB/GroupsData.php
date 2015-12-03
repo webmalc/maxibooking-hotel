@@ -102,7 +102,12 @@ class GroupsData implements FixtureInterface, ContainerAwareInterface
                 'ROLE_DOCUMENTS_GENERATOR', 'ROLE_PROMOTION_ADD', 'ROLE_DISCOUNT_ADD', 'ROLE_ROOM_STATUS_EDIT'
             ]
         ],
-
+        'staff' => [
+            'title' => 'Обслуживающий персонал',
+            'roles' => [
+                'ROLE_STAFF'
+            ]
+        ],
     ];
 
     /**

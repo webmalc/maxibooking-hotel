@@ -327,7 +327,7 @@ class TaskController extends Controller
      * @Route("/{id}/ajax", name="ajax_task_details", options={"expose":true})
      * @Method("GET")
      * @ParamConverter("entity", class="MBHHotelBundle:Task")
-     * @Security("is_granted('ROLE_STAFF')")
+     * @Security("is_granted('ROLE_TASK_OWN_VIEW')")
      */
     public function ajaxTaskDerailsAction(Task $entity)
     {
