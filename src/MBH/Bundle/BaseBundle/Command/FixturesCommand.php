@@ -120,8 +120,6 @@ class FixturesCommand extends ContainerAwareCommand
             $this->createCities();
         }
 
-        $this->createTaskTypes();
-
         //PollQuestions
         $this->createPollQuestions($hotel);
         
@@ -256,18 +254,6 @@ class FixturesCommand extends ContainerAwareCommand
     {
         $process = new Process(
             'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console mbh:city:load --no-debug'
-        );
-
-        return $process->run();
-    }
-
-    /**
-     * @return int
-     */
-    private function createTaskTypes()
-    {
-        $process = new Process(
-            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console mbh:task:load --force --no-debug'
         );
 
         return $process->run();

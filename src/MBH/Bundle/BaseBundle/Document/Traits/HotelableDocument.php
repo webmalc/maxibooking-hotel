@@ -27,9 +27,11 @@ trait HotelableDocument
 
     /**
      * @param Hotel|null $hotel
+     * @return self
      */
     public function setHotel(Hotel $hotel = null)
     {
         $this->hotel = $hotel;
+        return $this;
     }
 }

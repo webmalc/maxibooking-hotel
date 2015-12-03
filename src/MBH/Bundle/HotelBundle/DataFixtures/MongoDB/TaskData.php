@@ -1,57 +1,37 @@
 <?php
+namespace MBH\Bundle\HotelBundle\DataFixtures\MongoDB;
 
-namespace MBH\Bundle\HotelBundle\Command;
-
-
-use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Common\DataFixtures\FixtureInterface;
+use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\HotelBundle\Document\RoomStatus;
 use MBH\Bundle\HotelBundle\Document\TaskType;
 use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use MBH\Bundle\UserBundle\Document\Group;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
- * @todo move to DataFixtures class
- * Class TaskLoadCommand
+ * Class TaskData
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
-class TaskLoadCommand extends ContainerAwareCommand
+class TaskData implements FixtureInterface, ContainerAwareInterface
 {
-    protected function configure()
+    use ContainerAwareTrait;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function load(ObjectManager $manager)
     {
-        $this
-            ->setName('mbh:task:load')
-            ->setDescription('Loading system tasks')
-            ->addOption('force');
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        /** @var DocumentManager $dm */
-        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-        $roomStatusRepository = $dm->getRepository('MBHHotelBundle:RoomStatus');
-        $taskTypeCategoryRepository = $dm->getRepository('MBHHotelBundle:TaskTypeCategory');
-        $taskTypeRepository = $dm->getRepository('MBHHotelBundle:TaskType');
-
-
-        if (!$input->getOption('force')) {
-            if ($roomStatusRepository->createQueryBuilder()->getQuery()->count() > 0) {
-                throw new \Exception('RoomStatus Repository has some documents. Use --force');
-            }
-            if ($taskTypeCategoryRepository->createQueryBuilder()->getQuery()->count() > 0) {
-                throw new \Exception('Task Repository has some documents. Use --force');
-            }
-            if ($taskTypeRepository->createQueryBuilder()->getQuery()->count() > 0) {
-                throw new \Exception('TaskType Repository has some documents. Use --force');
-            }
-        }
+        $roomStatusRepository = $manager->getRepository('MBHHotelBundle:RoomStatus');
+        $taskTypeCategoryRepository = $manager->getRepository('MBHHotelBundle:TaskTypeCategory');
+        $taskTypeRepository = $manager->getRepository('MBHHotelBundle:TaskType');
 
         $roomStatusRepository->createQueryBuilder()->remove()->getQuery()->execute();
         $taskTypeCategoryRepository->createQueryBuilder()->remove()->getQuery()->execute();
         $taskTypeRepository->createQueryBuilder()->remove()->getQuery()->execute();
 
-        $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+        $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
         foreach ($hotels as $hotel) {
             $repairStatus = new RoomStatus();
@@ -61,7 +41,7 @@ class TaskLoadCommand extends ContainerAwareCommand
                     ->field('hotel.id')->equals($hotel->getId())
                     ->getQuery()->count() == 0
             ) {
-                $dm->persist($repairStatus);
+                $manager->persist($repairStatus);
             }
 
             $cleaningStatus = new RoomStatus();
@@ -71,7 +51,7 @@ class TaskLoadCommand extends ContainerAwareCommand
                     ->field('hotel.id')->equals($hotel->getId())
                     ->getQuery()->count() == 0
             ) {
-                $dm->persist($cleaningStatus);
+                $manager->persist($cleaningStatus);
             }
 
             $reserveStatus = new RoomStatus();
@@ -81,7 +61,7 @@ class TaskLoadCommand extends ContainerAwareCommand
                     ->field('hotel.id')->equals($hotel->getId())
                     ->getQuery()->count() == 0
             ) {
-                $dm->persist($reserveStatus);
+                $manager->persist($reserveStatus);
             }
 
             $otherStatus = new RoomStatus();
@@ -91,12 +71,13 @@ class TaskLoadCommand extends ContainerAwareCommand
                     ->field('hotel.id')->equals($hotel->getId())
                     ->getQuery()->count() == 0
             ) {
-                $dm->persist($otherStatus);
+                $manager->persist($otherStatus);
             }
 
-            $taskTypeRepository = $dm->getRepository('MBHHotelBundle:TaskType');
+            $taskTypeRepository = $manager->getRepository('MBHHotelBundle:TaskType');
 
             $category = new TaskTypeCategory();
+
             $category->setIsSystem(true)
                 ->setCode('clean')
                 ->setTitle('Уборка')
@@ -104,11 +85,14 @@ class TaskLoadCommand extends ContainerAwareCommand
                 ->setHotel($hotel);
 
             $taskType = new TaskType();
+
+            $staff = $manager->getRepository('MBHUserBundle:Group')->findOneBy(['code' => 'staff']);
             $taskType->setIsSystem(true)
                 ->setCode('clean_room')
                 ->setTitle('Убрать комнату')
                 ->setCategory($category)
                 ->setRoomStatus($cleaningStatus)
+                ->setDefaultUserGroup($staff)
                 ->setHotel($hotel);
 
             if ($taskTypeCategoryRepository->createQueryBuilder()
@@ -116,18 +100,17 @@ class TaskLoadCommand extends ContainerAwareCommand
                     ->field('hotel.id')->equals($hotel->getId())
                     ->getQuery()->count() == 0
             ) {
-                $dm->persist($category);
+                $manager->persist($category);
             }
             if ($taskTypeRepository->createQueryBuilder()
                     ->field('code')->equals($taskType->getCode())
                     ->field('hotel.id')->equals($hotel->getId())
                     ->getQuery()->count() == 0
             ) {
-                $dm->persist($taskType);
+                $manager->persist($taskType);
             }
 
-            $dm->flush();
+            $manager->flush();
         }
-        $output->writeln('Done');
     }
 }
