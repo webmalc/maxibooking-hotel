@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use MBH\Bundle\UserBundle\Document\User;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class TaskRepository
@@ -14,6 +15,8 @@ use MBH\Bundle\UserBundle\Document\User;
  */
 class TaskRepository extends DocumentRepository
 {
+    use ContainerAwareTrait;
+
     /**
      * @param TaskQueryCriteria $queryCriteria
      * @return int
@@ -57,18 +60,18 @@ class TaskRepository extends DocumentRepository
                     ->field('performer.id')->equals($queryCriteria->performer)
             );
 
-            if ($queryCriteria->roles) {
-                $queryBuilder->addOr(
-                    $queryBuilder->expr()
-                        ->field('role')->in($queryCriteria->roles)
+            if ($queryCriteria->userGroups) {
+                $queryBuilder->addOr($queryBuilder->expr()
+                    ->field('userGroup.id')->in($this->container->get('mbh.helper')->toIds($queryCriteria->userGroups))
                 );
             }
         } else {
             if ($queryCriteria->performer) {
                 $queryBuilder->addAnd($queryBuilder->expr()->field('performer.id')->equals($queryCriteria->performer));
             }
-            if ($queryCriteria->roles) {
-                $queryBuilder->addAnd($queryBuilder->expr()->field('role')->in($queryCriteria->roles));
+            if ($queryCriteria->userGroups) {
+                $queryBuilder->addAnd($queryBuilder->expr()->field('userGroup.id')->in($this->container->get('mbh.helper')->toIds($queryCriteria->userGroups))
+                );
             }
         }
 
@@ -88,7 +91,7 @@ class TaskRepository extends DocumentRepository
             $queryBuilder->addAnd($queryBuilder->expr()->field('createdAt')->lte($queryCriteria->end));
         }
 
-        if($queryCriteria->hotel) {
+        if ($queryCriteria->hotel) {
             $queryBuilder->addAnd($queryBuilder->expr()->field('hotel.id')->equals($queryCriteria->hotel->getId()));
         }
 
@@ -106,6 +109,7 @@ class TaskRepository extends DocumentRepository
         if ($task) {
             return $task->getType()->getRoomStatus();
         }
+
         return null;
     }
 
@@ -122,6 +126,7 @@ class TaskRepository extends DocumentRepository
         if ($exceptTask) {
             $qb->field('_id')->notEqual($exceptTask->getId());
         }
+
         return $qb->sort(['createdBy' => -1])->limit(1)
             ->getQuery()->getSingleResult();
     }
@@ -162,8 +167,8 @@ class TaskRepository extends DocumentRepository
      */
     public function isAcceptableTaskForUser(User $user, Task $task)
     {
-        return in_array($task->getRole(),
-            $user->getRoles()) || ($task->getPerformer() && $task->getPerformer()->getId() == $user->getId());
+        return $task->getPerformer() && $task->getPerformer()->getId() == $user->getId() ||
+        in_array($task->getUserGroup(), iterator_to_array($user->getGroups()));
     }
 
     /**

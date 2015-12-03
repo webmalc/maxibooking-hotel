@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
+use MBH\Bundle\UserBundle\Document\Group;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
@@ -59,10 +60,11 @@ class TaskType extends Base
     protected $code;
 
     /**
-     * @var string
-     * @ODM\String()
+     * @var Group
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\UserBundle\Document\Group")
+     * @Assert\NotBlank()
      */
-    protected $defaultRole;
+    protected $defaultUserGroup;
 
     /**
      * Status that set to Room when task change own status to process
@@ -155,20 +157,20 @@ class TaskType extends Base
     }
 
     /**
-     * @return mixed
+     * @return Group|null
      */
-    public function getDefaultRole()
+    public function getDefaultUserGroup()
     {
-        return $this->defaultRole;
+        return $this->defaultUserGroup;
     }
 
     /**
-     * @param mixed $defaultRole
+     * @param Group|null $defaultUserGroup
      * @return self
      */
-    public function setDefaultRole($defaultRole)
+    public function setDefaultUserGroup(Group $defaultUserGroup = null)
     {
-        $this->defaultRole = $defaultRole;
+        $this->defaultUserGroup = $defaultUserGroup;
         return $this;
     }
 

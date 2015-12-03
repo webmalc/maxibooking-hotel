@@ -2,9 +2,11 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
+use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
+use MBH\Bundle\UserBundle\Document\Group;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -84,12 +86,12 @@ class Task extends Base
     protected $description;
 
     /**
-     * @var string Perform role
      * @Gedmo\Versioned
-     * @ODM\String
+     * @var Group Perform group
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\UserBundle\Document\Group")
      * @ Assert\NotNull()
      */
-    protected $role;
+    protected $userGroup;
 
     /**
      * @var \MBH\Bundle\UserBundle\Document\User
@@ -213,30 +215,27 @@ class Task extends Base
     }
 
     /**
-     * Get role
-     *
-     * @return string $role
+     * @return Group|null
      */
-    public function getRole()
+    public function getUserGroup()
     {
-        return $this->role;
+        return $this->userGroup;
     }
 
     /**
-     * Set role
-     *
-     * @param string $role
+     * @param Group $userGroup
      * @return self
      */
-    public function setRole($role)
+    public function setUserGroup(Group $userGroup = null)
     {
-        $this->role = $role;
-
+        $this->userGroup = $userGroup;
         return $this;
     }
 
+
+
     /**
-     * @return \MBH\Bundle\UserBundle\Document\User
+     * @return User
      */
     public function getPerformer()
     {
@@ -244,9 +243,9 @@ class Task extends Base
     }
 
     /**
-     * @param \MBH\Bundle\UserBundle\Document\User $performer
+     * @param User $performer
      */
-    public function setPerformer(\MBH\Bundle\UserBundle\Document\User $performer)
+    public function setPerformer(User $performer = null)
     {
         $this->performer = $performer;
     }
@@ -326,7 +325,7 @@ class Task extends Base
         /*if (!$this->isStatusChainValid()) {
             $context->buildViolation('Settled status is not correct')->atPath('status')->addViolation();
         };*/
-        if(!$this->role && !$this->performer) {
+        if(!$this->userGroup && !$this->performer) {
             $context->buildViolation('validator.task.assignment')->addViolation();
         }
     }

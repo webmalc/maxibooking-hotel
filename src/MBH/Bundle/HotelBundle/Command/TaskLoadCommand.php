@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
+ * @todo move to DataFixtures class
  * Class TaskLoadCommand
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
@@ -23,7 +24,6 @@ class TaskLoadCommand extends ContainerAwareCommand
             ->setName('mbh:task:load')
             ->setDescription('Loading system tasks')
             ->addOption('force');
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -36,13 +36,13 @@ class TaskLoadCommand extends ContainerAwareCommand
 
 
         if (!$input->getOption('force')) {
-            if($roomStatusRepository->createQueryBuilder()->getQuery()->count() > 0) {
+            if ($roomStatusRepository->createQueryBuilder()->getQuery()->count() > 0) {
                 throw new \Exception('RoomStatus Repository has some documents. Use --force');
             }
-            if($taskTypeCategoryRepository->createQueryBuilder()->getQuery()->count() > 0) {
+            if ($taskTypeCategoryRepository->createQueryBuilder()->getQuery()->count() > 0) {
                 throw new \Exception('Task Repository has some documents. Use --force');
             }
-            if($taskTypeRepository->createQueryBuilder()->getQuery()->count() > 0) {
+            if ($taskTypeRepository->createQueryBuilder()->getQuery()->count() > 0) {
                 throw new \Exception('TaskType Repository has some documents. Use --force');
             }
         }
@@ -53,40 +53,44 @@ class TaskLoadCommand extends ContainerAwareCommand
 
         $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->findAll();
 
-        foreach($hotels as $hotel) {
+        foreach ($hotels as $hotel) {
             $repairStatus = new RoomStatus();
             $repairStatus->setTitle('Ремонт')->setCode('repair')->setHotel($hotel);
-            if($roomStatusRepository->createQueryBuilder()
+            if ($roomStatusRepository->createQueryBuilder()
                     ->field('code')->equals($repairStatus->getCode())
                     ->field('hotel.id')->equals($hotel->getId())
-                    ->getQuery()->count() == 0) {
+                    ->getQuery()->count() == 0
+            ) {
                 $dm->persist($repairStatus);
             }
 
             $cleaningStatus = new RoomStatus();
             $cleaningStatus->setTitle('Уборка')->setCode('cleaning')->setHotel($hotel);
-            if($roomStatusRepository->createQueryBuilder()
+            if ($roomStatusRepository->createQueryBuilder()
                     ->field('code')->equals($cleaningStatus->getCode())
                     ->field('hotel.id')->equals($hotel->getId())
-                    ->getQuery()->count() == 0) {
+                    ->getQuery()->count() == 0
+            ) {
                 $dm->persist($cleaningStatus);
             }
 
             $reserveStatus = new RoomStatus();
             $reserveStatus->setTitle('Резерв')->setCode('reserve')->setHotel($hotel);
-            if($roomStatusRepository->createQueryBuilder()
+            if ($roomStatusRepository->createQueryBuilder()
                     ->field('code')->equals($reserveStatus->getCode())
                     ->field('hotel.id')->equals($hotel->getId())
-                    ->getQuery()->count() == 0) {
+                    ->getQuery()->count() == 0
+            ) {
                 $dm->persist($reserveStatus);
             }
 
             $otherStatus = new RoomStatus();
             $otherStatus->setTitle('Другое')->setCode('other')->setHotel($hotel);
-            if($roomStatusRepository->createQueryBuilder()
+            if ($roomStatusRepository->createQueryBuilder()
                     ->field('code')->equals($otherStatus->getCode())
                     ->field('hotel.id')->equals($hotel->getId())
-                    ->getQuery()->count() == 0) {
+                    ->getQuery()->count() == 0
+            ) {
                 $dm->persist($otherStatus);
             }
 
@@ -97,8 +101,7 @@ class TaskLoadCommand extends ContainerAwareCommand
                 ->setCode('clean')
                 ->setTitle('Уборка')
                 ->setFullTitle('Уборка помещений')
-                ->setHotel($hotel)
-            ;
+                ->setHotel($hotel);
 
             $taskType = new TaskType();
             $taskType->setIsSystem(true)
@@ -106,19 +109,20 @@ class TaskLoadCommand extends ContainerAwareCommand
                 ->setTitle('Убрать комнату')
                 ->setCategory($category)
                 ->setRoomStatus($cleaningStatus)
-                ->setHotel($hotel)
-            ;
+                ->setHotel($hotel);
 
-            if($taskTypeCategoryRepository->createQueryBuilder()
+            if ($taskTypeCategoryRepository->createQueryBuilder()
                     ->field('code')->equals($category->getCode())
                     ->field('hotel.id')->equals($hotel->getId())
-                    ->getQuery()->count() == 0){
+                    ->getQuery()->count() == 0
+            ) {
                 $dm->persist($category);
             }
-            if($taskTypeRepository->createQueryBuilder()
+            if ($taskTypeRepository->createQueryBuilder()
                     ->field('code')->equals($taskType->getCode())
                     ->field('hotel.id')->equals($hotel->getId())
-                    ->getQuery()->count() == 0){
+                    ->getQuery()->count() == 0
+            ) {
                 $dm->persist($taskType);
             }
 

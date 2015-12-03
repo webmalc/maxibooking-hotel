@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
+use MBH\Bundle\UserBundle\Document\Group;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -42,7 +43,6 @@ class TaskType extends AbstractType
             $generalGroup = 'form.task.group.general_edit';
         }
 
-        $roles = $options['roles'];
         $statuses = $options['statuses'];
         /** @var Hotel $hotel */
         $hotel = $options['hotel'];
@@ -127,14 +127,14 @@ class TaskType extends AbstractType
             ]);
         }
         $builder
-            ->add('role', 'choice', [
+            ->add('userGroup', 'document', [
                 'label' => 'form.task.roles',
                 'group' => 'form.task.group.assign',
                 //'multiple' => true,
-                'choices' => $roles,
                 'choice_translation_domain' => 'MBHUserBundleRoles',
                 'attr' => array('class' => "chzn-select roles"),
-                'required' => false
+                'required' => false,
+                'class' => Group::class
             ])
             ->add('performer', 'document', [
                 'label' => 'form.userType.users',
@@ -159,14 +159,13 @@ class TaskType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\HotelBundle\Document\Task',
-            'roles' => [],
             'priorities' => [],
             'statuses' => [],
             'scenario' => self::SCENARIO_NEW,
             'hotel' => null
-        ));
+        ]);
     }
 
 

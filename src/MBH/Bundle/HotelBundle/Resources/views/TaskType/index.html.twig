@@ -59,7 +59,7 @@
                                 <a href="{{ path('tasktype_edit', { 'id': entity.id }) }}" rel="main" title="{{ "source.index.edit_record"|trans({}, "MBHPackageBundle") }}" data-toggle="tooltip">{{ entity.title }}</a>
                                 &nbsp{% if entity.isSystem %}<small class="transparent"><i class="fa fa-lock"></i></small>{% endif %}
                             </td>
-                            <td class="td-md">{{ entity.defaultRole|trans({}, "MBHUserBundleRoles") }}</td>
+                            <td class="td-md">{{ entity.defaultUserGroup }}</td>
                             <td>{{ entity.createdAt|date('d.m.Y') }}</td>
                             <td class="table-actions-td text-center">
                                 {% if is_granted('ROLE_TASK_TYPE_EDIT') %}

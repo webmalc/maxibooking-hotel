@@ -93,14 +93,14 @@ class AutoTaskCreator
                 if ($roomType->getTaskSettings() && $roomType->getTaskSettings()->getDaily()) {
                     foreach ($roomType->getTaskSettings()->getDaily() as $dailyTaskSetting) {
                         $taskType = $dailyTaskSetting->getTaskType();
-                        if ($taskType->getDefaultRole()) {
+                        if ($taskType->getDefaultUserGroup()) {
                             $arrival = $package->getArrivalTime()->modify('midnight');
                             $interval = $arrival->diff($midnight)->d;
                             if ($interval % $dailyTaskSetting->getDay() === 0) { //condition
                                 $task = new Task();
                                 $task
                                     ->setType($taskType)
-                                    ->setRole($taskType->getDefaultRole())
+                                    ->setUserGroup($taskType->getDefaultUserGroup())
                                     ->setRoom($package->getAccommodation())
                                     ->setStatus(Task::STATUS_OPEN)
                                     ->setPriority(Task::PRIORITY_AVERAGE);
@@ -170,11 +170,11 @@ class AutoTaskCreator
         /** @var TaskType[] $taskTypes */
         $taskTypes = call_user_func([$settings, 'getCheck'.$check]);
         foreach($taskTypes as $type) {
-            if($type->getDefaultRole()) {
+            if($type->getDefaultUserGroup()) {
                 $task = new Task();
                 $task
                     ->setType($type)
-                    ->setRole($type->getDefaultRole())
+                    ->setUserGroup($type->getDefaultUserGroup())
                     ->setRoom($package->getAccommodation())
                     ->setStatus(Task::STATUS_OPEN)
                     ->setPriority(Task::PRIORITY_AVERAGE);
