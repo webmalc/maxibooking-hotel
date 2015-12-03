@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Command;
 
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\TaskData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\PollQuestion;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
@@ -266,11 +267,9 @@ class FixturesCommand extends ContainerAwareCommand
      */
     private function createTaskTypes()
     {
-        $process = new Process(
-            'nohup php ' . $this->getContainer()->get('kernel')->getRootDir() . '/../bin/console mbh:task:load --force --no-debug'
-        );
-
-        return $process->run();
+        $taskData = new TaskData();
+        $taskData->setContainer($this->getContainer());
+        $taskData->load($this->dm);
     }
 
     private function createPollQuestions()

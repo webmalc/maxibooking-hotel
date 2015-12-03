@@ -3,6 +3,8 @@
 {% set small_title = 'list'|trans %}
 {% set layout = 'box' %}
 
+{% form_theme searchForm 'MBHBaseBundle:Form:fields.html.twig' %}
+
 {% block content %}
 
     {% if app.security.granted('ROLE_TASK_MANAGER') %}
@@ -11,13 +13,11 @@
             <form id="task-table-filter" class="form-inline icon-label-form">
                 <div class="form-group">
                     <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
-                    <input type="text" id="task-filter-begin" class="datepicker begin-datepiker form-control input-sm"
-                           data-date-format="dd.mm.yyyy">
+                    {{ form_widget(searchForm.begin) }}
                 </div>
                 <div class="form-group">
                     <label>-</label>
-                    <input type="text" id="task-filter-end" class="datepicker end-datepiker form-control input-sm"
-                           data-date-format="dd.mm.yyyy">
+                    {{ form_widget(searchForm.end) }}
                 </div>
 
                 <div class="form-group">
@@ -27,56 +27,34 @@
                 <div class="form-group">
                     <label><i class="fa fa-server" title='{{ "task.status"|trans({}, "MBHPackageBundle") }}'
                               data-toggle='tooltip'></i></label>
-                    <select id="task-filter-status"
-                            placeholder="{{ 'views.task.index.status'|trans({}, 'MBHHotelBundle') }}">
-                        <option></option>
-                        {% for key,status in statuses %}
-                            <option value="{{ key }}">{{ status.title }}</option>
-                        {% endfor %}
-                    </select>
+                    {{ form_widget(searchForm.status) }}
                 </div>
 
                 <div class="form-group">
                     <label><i class="fa fa-arrow-up" title='{{ "task.priority"|trans({}, "MBHPackageBundle") }}'
                               data-toggle='tooltip'></i></label>
-                    <select id="task-filter-priority"
-                            placeholder="{{ 'views.task.index.priority'|trans({}, 'MBHHotelBundle') }}">
-                        <option></option>
-                        {% for key,priority in priorities %}
-                            <option value="{{ key }}">{{ ('views.task.priority.' ~ priority)|trans({}, 'MBHHotelBundle') }}</option>
-                        {% endfor %}
-                    </select>
+                    {{ form_widget(searchForm.priority) }}
                 </div>
 
                 <div class="form-group">
                     <label><i class="fa fa-group" title='{{ "task.group"|trans({}, "MBHPackageBundle") }}'
                               data-toggle='tooltip'></i></label>
-                    <select id="task-filter-group"
-                            placeholder="{{ 'views.task.index.group'|trans({}, 'MBHHotelBundle') }}">
-                        <option></option>
-                        {% for key,group in groups %}
-                            <option value="{{ key }}">{{ group|trans({}, 'MBHUserBundleRoles') }}</option>
-                        {% endfor %}
-                    </select>
+                    {{ form_widget(searchForm.userGroups) }}
                 </div>
 
                 <div class="form-group">
                     <label><i class="fa fa-user" title='{{ "task.performer"|trans({}, "MBHPackageBundle") }}'
                               data-toggle='tooltip'></i></label>
-                    <select id="task-filter-performer"
-                            placeholder="{{ 'views.task.index.performer'|trans({}, 'MBHHotelBundle') }}">
-                        <option></option>
-                        {% for key,performer in performers %}
-                            <option value="{{ performer.id }}">{{ performer.fullName(true) }}</option>
-                        {% endfor %}
-                    </select>
+                    {{ form_widget(searchForm.performer) }}
                 </div>
                 <div class="form-group">
-                    <label><i class="fa fa-trash-o"
-                              title="{{ "views.task.index.isDeleted"|trans({}, "MBHHotelBundle") }}"
-                              data-toggle="tooltip"></i></label>
-                    <input id="task-filter-deleted" name="deleted" type="checkbox">
+                    <label><i class="fa fa-trash-o" title="{{ "views.task.index.isDeleted"|trans({}, "MBHHotelBundle") }}"
+                        data-toggle="tooltip"></i>
+                    </label>
+                    {{ form_widget(searchForm.deleted) }}
                 </div>
+
+                {{ form_widget(searchForm._token) }}
             </form>
         </div></div>
     {% endif %}

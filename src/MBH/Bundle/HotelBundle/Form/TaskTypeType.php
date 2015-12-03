@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\UserBundle\Document\Group;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -25,7 +26,6 @@ class TaskTypeType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $roles = $options['roles'];
         $group = $options['scenario'] == self::SCENARIO_NEW ?
             'form.taskType.general_info' :
             'form.taskType.general_info_edit';
@@ -39,12 +39,11 @@ class TaskTypeType extends AbstractType
             ->add('category', 'hidden', [
                 'required' => true
             ])
-            ->add('default_role', 'choice', [
-                'label' => 'form.taskType.default_role',
+            ->add('defaultUserGroup', 'document', [
+                'label' => 'form.taskType.default_user_group',
+                'required' => true,
                 'group' => $group,
-                'choices' => $roles,
-                'required' => false,
-                'choice_translation_domain' => 'MBHUserBundleRoles'
+                'class' => Group::class
             ])
             ->add('roomStatus', 'document', [
                 'label' => 'form.taskType.roomStatus',

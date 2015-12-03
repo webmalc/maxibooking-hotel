@@ -341,7 +341,7 @@ class PriceCache extends Base
         if (!$places) {
             $places = $this->getRoomType()->getPlaces();
         }
-        if (!$additionalPlaces) {
+        if (!$additionalPlaces && $this->getRoomType()) {
             $additionalPlaces = $this->getRoomType()->getAdditionalPlaces();
         }
 

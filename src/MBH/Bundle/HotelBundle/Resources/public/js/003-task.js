@@ -17,17 +17,13 @@ $(document).ready(function () {
         ];
     var ajax = {
         "url": Routing.generate('task_json'),
+        "method": "POST",
         "beforeSend": function () {
             processing = true;
         },
         "data": function (data) {
-            data.begin = $('#task-filter-begin').val();
-            data.end = $('#task-filter-end').val();
-            data.status = $('#task-filter-status').select2('val');
-            data.priority = $('#task-filter-priority').select2('val');
-            data.performer = $('#task-filter-performer').select2('val');
-            data.group = $('#task-filter-group').select2('val');
-            data.deleted = $('#task-filter-deleted').prop('checked');
+            data = $taskTableFilterForm.serializeObject();
+            return data;
         }
     };
     var dataTableOptions = {

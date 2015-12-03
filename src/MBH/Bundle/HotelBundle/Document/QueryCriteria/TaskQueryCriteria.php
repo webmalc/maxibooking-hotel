@@ -4,6 +4,8 @@ namespace MBH\Bundle\HotelBundle\Document\QueryCriteria;
 
 use MBH\Bundle\BaseBundle\Document\AbstractQueryCriteria;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\UserBundle\Document\Group;
+use MBH\Bundle\UserBundle\Document\User;
 
 /**
  * Class TaskQueryCriteria
@@ -35,8 +37,7 @@ class TaskQueryCriteria extends AbstractQueryCriteria
     public $priority;
 
     /**
-     * Performer id
-     * @var string
+     * @var User
      */
     public $performer;
 
@@ -57,9 +58,9 @@ class TaskQueryCriteria extends AbstractQueryCriteria
     public $onlyOwned;
 
     /**
-     * @var string[]
+     * @var Group[]
      */
-    public $roles = [];
+    public $userGroups = [];
 
     /**
      * @var bool

@@ -23,9 +23,15 @@ class AutoTaskCreator
 {
     protected $container;
 
+    /**
+     * @var DocumentManager
+     */
+    protected $dm;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->dm = $this->container->get('doctrine_mongodb')->getManager();
     }
 
     /**
@@ -34,18 +40,16 @@ class AutoTaskCreator
      */
     public function createDailyTasks()
     {
-        /** @var DocumentManager $dm */
-        $dm = $this->container->get('doctrine_mongodb')->getManager();
-        $dm->getConnection()->getConfiguration()->setLoggerCallable(null);
+        $this->dm->getConnection()->getConfiguration()->setLoggerCallable(null);
 
         $now = new \DateTime();
         $midnight = new \DateTime('midnight');
         /** @var DocumentRepository $hotelRepository */
-        $hotelRepository = $dm->getRepository('MBHHotelBundle:Hotel');
+        $hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
         /** @var RoomTypeRepository $roomTypeRepository */
-        $roomTypeRepository = $dm->getRepository('MBHHotelBundle:RoomType');
+        $roomTypeRepository = $this->dm->getRepository('MBHHotelBundle:RoomType');
         /** @var PackageRepository $packageRepository */
-        $packageRepository = $dm->getRepository('MBHPackageBundle:Package');
+        $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
 
         $hotels = $hotelRepository->createQueryBuilder()
             ->field('isEnabled')->equals(true)
@@ -93,42 +97,39 @@ class AutoTaskCreator
                 if ($roomType->getTaskSettings() && $roomType->getTaskSettings()->getDaily()) {
                     foreach ($roomType->getTaskSettings()->getDaily() as $dailyTaskSetting) {
                         $taskType = $dailyTaskSetting->getTaskType();
-                        if ($taskType->getDefaultRole()) {
+                        if ($taskType->getDefaultUserGroup()) {
                             $arrival = $package->getArrivalTime()->modify('midnight');
                             $interval = $arrival->diff($midnight)->d;
                             if ($interval % $dailyTaskSetting->getDay() === 0) { //condition
                                 $task = new Task();
                                 $task
                                     ->setType($taskType)
-                                    ->setRole($taskType->getDefaultRole())
+                                    ->setUserGroup($taskType->getDefaultUserGroup())
                                     ->setRoom($package->getAccommodation())
                                     ->setStatus(Task::STATUS_OPEN)
                                     ->setPriority(Task::PRIORITY_AVERAGE);
-                                if($this->getCountSameTasks($task) == 0) {
-                                    $dm->persist($task);
+                                if ($this->getCountSameTasks($task) == 0) {
+                                    $this->dm->persist($task);
                                     ++$inc;
                                 }
                             };
                         }
                     }
                 }
-                $dm->detach($package);
+                $this->dm->detach($package);
             }
-            $dm->detach($roomType);
+            $this->dm->detach($roomType);
         }
 
-        $dm->flush();
+        $this->dm->flush();
 
         return $inc;
     }
 
     private function getCountSameTasks(Task $task)
     {
-        /** @var DocumentManager $dm */
-        $dm = $this->container->get('doctrine_mongodb')->getManager();
-
         /** @var TaskRepository $taskRepository */
-        $taskRepository = $dm->getRepository('MBHHotelBundle:Task');
+        $taskRepository = $this->dm->getRepository('MBHHotelBundle:Task');
 
         $midnight = new \DateTime('midnight');
         $tomorrow = new \DateTime('+1 day');
@@ -136,15 +137,16 @@ class AutoTaskCreator
         $queryBuilder = $taskRepository->createQueryBuilder();
         $queryBuilder
             ->field('type.id')->equals($task->getType()->getId())
-            ->field('role')->equals($task->getRole())
+            ->field('UserGroup.id')->equals($task->getUserGroup() ? $task->getUserGroup()->getId() : null)
             ->field('room.id')->equals($task->getRoom()->getId())
             //->field('status')->equals(Task::STATUS_OPEN)
             //->field('priority')->equals(Task::PRIORITY_AVERAGE)
             ->field('createdBy')->equals(null)
-            ->field('createdAt')->gte($midnight)->lte($tomorrow)
-        ;
+            ->field('createdAt')->gte($midnight)->lte($tomorrow);
+
         $query = $queryBuilder->getQuery();
         $count = $query->count();
+
         //var_dump($queryBuilder->getQueryArray());
         return $count;
     }
@@ -161,29 +163,34 @@ class AutoTaskCreator
 
     protected function createCheck($check, Package $package)
     {
-        $type = $package->getRoomType();
-        $dm = $this->container->get('doctrine_mongodb')->getManager();
-        $settings = $type->getTaskSettings();
-        if(!$settings) {
+        if (!$package->getAccommodation()) {
             return;
         }
+        $type = $package->getAccommodation()->getRoomType();
+        $settings = $type->getTaskSettings();
+        if (!$settings) {
+            return;
+        }
+
         /** @var TaskType[] $taskTypes */
-        $taskTypes = call_user_func([$settings, 'getCheck'.$check]);
-        foreach($taskTypes as $type) {
-            if($type->getDefaultRole()) {
+        $taskTypes = call_user_func([$settings, 'getCheck' . $check]);
+        foreach ($taskTypes as $type) {
+            if ($type->getDefaultUserGroup()) {
                 $task = new Task();
                 $task
                     ->setType($type)
-                    ->setRole($type->getDefaultRole())
+                    ->setUserGroup($type->getDefaultUserGroup())
                     ->setRoom($package->getAccommodation())
                     ->setStatus(Task::STATUS_OPEN)
-                    ->setPriority(Task::PRIORITY_AVERAGE);
+                    ->setPriority(Task::PRIORITY_AVERAGE)
+                    ->setHotel($package->getRoomType()->getHotel())
+                ;
 
-                if($this->getCountSameTasks($task) == 0) {
-                    $dm->persist($task);
+                if ($this->getCountSameTasks($task) == 0) {
+                    $this->dm->persist($task);
                 }
             }
         }
-        $dm->flush();
+        $this->dm->flush();
     }
 }

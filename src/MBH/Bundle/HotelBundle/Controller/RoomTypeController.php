@@ -210,7 +210,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         if(!$roomType->getTaskSettings()) {
             $roomType->setTaskSettings(new TaskSettings());
         }
-        $form = $this->createForm(new RoomTypeTasksType(), $roomType->getTaskSettings());
+        $form = $this->createForm(new RoomTypeTasksType($roomType->getHotel()), $roomType->getTaskSettings());
 
         if ($request->isMethod(Request::METHOD_POST)) {
             $form->handleRequest($request);
