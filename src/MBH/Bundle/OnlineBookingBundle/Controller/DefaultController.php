@@ -33,7 +33,7 @@ class DefaultController extends BaseController
 
         $roomTypeList = [];
         $hotelIds = [];
-        foreach($roomTypes as $roomType) {
+        foreach ($roomTypes as $roomType) {
             $hotelIds[$roomType->getId()] = $roomType->getHotel()->getId();
             $roomTypeList[$roomType->getId()] = $roomType->__toString();
         }
@@ -50,7 +50,7 @@ class DefaultController extends BaseController
                 'required' => false,
                 'empty_value' => '',
                 'choices' => $roomTypeList,
-                'choice_attr' => function($roomType) use($hotelIds) {
+                'choice_attr' => function ($roomType) use ($hotelIds) {
                     return ['data-hotel' => $hotelIds[$roomType]];
                 }
             ])
@@ -73,8 +73,7 @@ class DefaultController extends BaseController
                 'prototype' => true,
                 'allow_add' => true,
             ])
-            ->getForm()
-        ;
+            ->getForm();
     }
 
     /**
@@ -101,8 +100,8 @@ class DefaultController extends BaseController
     public function indexAction(Request $request)
     {
         $step = $request->get('step');
-        if($step) {
-            if($step == 2) {
+        if ($step) {
+            if ($step == 2) {
                 return $this->signAction($request);//$this->forward('MBHOnlineBookingBundle:Default:sign');
             }
         } else {
@@ -121,12 +120,12 @@ class DefaultController extends BaseController
         $form->handleRequest($request);
 
         $searchResults = [];
-        if($form->isValid()) {
+        if ($form->isValid()) {
             $formData = $form->getData();
-            if($formData['hotel']) {
+            if ($formData['hotel']) {
                 $searchQuery->addHotel($formData['hotel']);
             }
-            if($formData['roomType']) {
+            if ($formData['roomType']) {
                 $searchQuery->addRoomType($formData['roomType']);
                 /*$roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($formData['roomType']);
                 if($roomType) {
@@ -145,15 +144,14 @@ class DefaultController extends BaseController
             $searchQuery->children = (int)$formData['children'];
             $searchQuery->accommodations = true;
             $searchQuery->isOnline = true;
-            if($formData['children_age']) {
+            if ($formData['children_age']) {
                 $searchQuery->setChildrenAges($formData['children_age']);
             };
 
             $searchResults = $this->get('mbh.package.search')
                 ->setAdditionalDates()
                 ->setWithTariffs()
-                ->search($searchQuery)
-            ;
+                ->search($searchQuery);
         }
 
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
@@ -202,16 +200,18 @@ class DefaultController extends BaseController
                 ]
             ])
             //->add('step', 'hidden', [])
-            ->add('adults' , 'hidden', [])
+            ->add('adults', 'hidden', [])
             ->add('children', 'hidden', [])
             ->add('begin', 'hidden', [
                 'constraints' => [
                     new NotBlank()
-                ]])
+                ]
+            ])
             ->add('end', 'hidden', [
                 'constraints' => [
                     new NotBlank()
-                ]])
+                ]
+            ])
             ->add('roomType', 'hidden', [])
             ->add('tariff', 'hidden', [])
             ->add('payment', 'choice', [
@@ -221,6 +221,7 @@ class DefaultController extends BaseController
             ->add('total', 'hidden')
             ->add('promotion', 'hidden');
         $formBuilder->get('promotion')->addViewTransformer(new EntityToIdTransformer($this->dm, Promotion::class));
+
         return $formBuilder->getForm();
     }
 
@@ -264,28 +265,28 @@ class DefaultController extends BaseController
             ];
             $payment = $formData['payment'];
             $cash = [];
-            $total = (int) $formData['total'];
+            $total = (int)$formData['total'];
             //todo pass $formData['promotion']
-            if($payment != 'in_hotel') {
-                if($payment == 'online_full') {
+            if ($payment != 'in_hotel') {
+                if ($payment == 'online_full') {
                     $cash['total'] = $total;
                 }
-                if($payment == 'online_half') {
+                if ($payment == 'online_half') {
                     $cash['total'] = $total / 2;
                 }
             }
 
-            dump($data);
             $data['onlinePaymentType'] = $payment;
             $order = $orderManger->createPackages($data, null, null, $cash);
             //$order = new Order();
             //$order->addCashDocument(new CashDocument());
 
             $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-            if($payment != 'in_hotel' && $clientConfig->getPaymentSystem()) {
+            if ($payment != 'in_hotel' && $clientConfig->getPaymentSystem()) {
                 return $this->render(
-                    'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig', [
-                        'data' => array_merge(['test' => false,
+                    'MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
+                        'data' => array_merge([
+                            'test' => false,
                             'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
                                 ['%total%' => number_format($cash['total'], 2), '%order_id%' => $order->getId()],
                                 'MBHOnlineBundle')
@@ -295,7 +296,7 @@ class DefaultController extends BaseController
                     ]
                 );
             } else {
-                return new Response('Заказ успешно создан №'. $order->getId());
+                return new Response('Заказ успешно создан №' . $order->getId());
             }
         } else {
             return $this->render('MBHOnlineBookingBundle:Default:sign.html.twig', [
