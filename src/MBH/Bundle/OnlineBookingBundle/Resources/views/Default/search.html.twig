@@ -33,14 +33,14 @@
                     <div class="col-md-2">
                         <input type="radio" name="booking">
                         <br>
-                        {% if searchResult.tariff.promotions|length %}
+                        {#% if searchResult.tariff.promotions|length %}
                         <select>
                             <option></option>
                             {% for promotion in searchResult.tariff.promotions %}
                                 <option value="{{ promotion.id }}">{{ promotion }}</option>
                             {% endfor %}
                         </select>
-                        {% endif %}
+                        {% endif %#}
                     </div>
                 </div>
                 {% endfor %}
