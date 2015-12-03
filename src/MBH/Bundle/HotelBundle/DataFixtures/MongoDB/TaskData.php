@@ -3,6 +3,7 @@ namespace MBH\Bundle\HotelBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomStatus;
 use MBH\Bundle\HotelBundle\Document\TaskType;
 use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
@@ -18,99 +19,93 @@ class TaskData implements FixtureInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
+    protected function getRoomStatuses()
+    {
+        return [
+            [
+                'code' => 'repair',
+                'title' => 'Ремонт',
+            ],
+            [
+                'code' => 'cleaning',
+                'title' => 'Уборка',
+            ],
+            [
+                'code' => 'reserve',
+                'title' => 'Резерв',
+            ],
+            [
+                'code' => 'other',
+                'title' => 'Другое',
+            ]
+        ];
+    }
+
     /**
      * {@inheritDoc}
      */
     public function load(ObjectManager $manager)
     {
+        $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
+
+        foreach ($hotels as $hotel) {
+            $this->persistForHotel($manager, $hotel);
+        }
+        $manager->flush();
+    }
+
+    public function persistForHotel(ObjectManager $manager, Hotel $hotel)
+    {
         $roomStatusRepository = $manager->getRepository('MBHHotelBundle:RoomStatus');
         $taskTypeCategoryRepository = $manager->getRepository('MBHHotelBundle:TaskTypeCategory');
         $taskTypeRepository = $manager->getRepository('MBHHotelBundle:TaskType');
 
-        $roomStatusRepository->createQueryBuilder()->remove()->getQuery()->execute();
-        $taskTypeCategoryRepository->createQueryBuilder()->remove()->getQuery()->execute();
-        $taskTypeRepository->createQueryBuilder()->remove()->getQuery()->execute();
-
-        $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
-
-        foreach ($hotels as $hotel) {
+        $repairStatusList = [];
+        foreach($this->getRoomStatuses() as $roomStatus) {
             $repairStatus = new RoomStatus();
-            $repairStatus->setTitle('Ремонт')->setCode('repair')->setHotel($hotel);
-            if ($roomStatusRepository->createQueryBuilder()
+            $repairStatus->setCode($roomStatus['code'])->setTitle($roomStatus['title'])->setHotel($hotel);
+            $isNotExists = $roomStatusRepository->createQueryBuilder()
                     ->field('code')->equals($repairStatus->getCode())
                     ->field('hotel.id')->equals($hotel->getId())
-                    ->getQuery()->count() == 0
-            ) {
+                    ->getQuery()->count() == 0;
+
+            if ($isNotExists) {
                 $manager->persist($repairStatus);
+                $repairStatusList[$repairStatus->getCode()] = $repairStatus;
             }
+        }
 
-            $cleaningStatus = new RoomStatus();
-            $cleaningStatus->setTitle('Уборка')->setCode('cleaning')->setHotel($hotel);
-            if ($roomStatusRepository->createQueryBuilder()
-                    ->field('code')->equals($cleaningStatus->getCode())
-                    ->field('hotel.id')->equals($hotel->getId())
-                    ->getQuery()->count() == 0
-            ) {
-                $manager->persist($cleaningStatus);
-            }
+        $category = new TaskTypeCategory();
 
-            $reserveStatus = new RoomStatus();
-            $reserveStatus->setTitle('Резерв')->setCode('reserve')->setHotel($hotel);
-            if ($roomStatusRepository->createQueryBuilder()
-                    ->field('code')->equals($reserveStatus->getCode())
-                    ->field('hotel.id')->equals($hotel->getId())
-                    ->getQuery()->count() == 0
-            ) {
-                $manager->persist($reserveStatus);
-            }
+        $category->setIsSystem(true)
+            ->setCode('clean')
+            ->setTitle('Уборка')
+            ->setFullTitle('Уборка помещений')
+            ->setHotel($hotel);
 
-            $otherStatus = new RoomStatus();
-            $otherStatus->setTitle('Другое')->setCode('other')->setHotel($hotel);
-            if ($roomStatusRepository->createQueryBuilder()
-                    ->field('code')->equals($otherStatus->getCode())
-                    ->field('hotel.id')->equals($hotel->getId())
-                    ->getQuery()->count() == 0
-            ) {
-                $manager->persist($otherStatus);
-            }
+        $taskType = new TaskType();
+        $staff = $manager->getRepository('MBHUserBundle:Group')->findOneBy(['code' => 'staff']);
+        $taskType->setIsSystem(true)
+            ->setCode('clean_room')
+            ->setTitle('Убрать комнату')
+            ->setCategory($category)
+            ->setRoomStatus($repairStatusList['cleaning'])
+            ->setDefaultUserGroup($staff)
+            ->setHotel($hotel);
 
-            $taskTypeRepository = $manager->getRepository('MBHHotelBundle:TaskType');
-
-            $category = new TaskTypeCategory();
-
-            $category->setIsSystem(true)
-                ->setCode('clean')
-                ->setTitle('Уборка')
-                ->setFullTitle('Уборка помещений')
-                ->setHotel($hotel);
-
-            $taskType = new TaskType();
-
-            $staff = $manager->getRepository('MBHUserBundle:Group')->findOneBy(['code' => 'staff']);
-            $taskType->setIsSystem(true)
-                ->setCode('clean_room')
-                ->setTitle('Убрать комнату')
-                ->setCategory($category)
-                ->setRoomStatus($cleaningStatus)
-                ->setDefaultUserGroup($staff)
-                ->setHotel($hotel);
-
-            if ($taskTypeCategoryRepository->createQueryBuilder()
-                    ->field('code')->equals($category->getCode())
-                    ->field('hotel.id')->equals($hotel->getId())
-                    ->getQuery()->count() == 0
-            ) {
-                $manager->persist($category);
-            }
-            if ($taskTypeRepository->createQueryBuilder()
-                    ->field('code')->equals($taskType->getCode())
-                    ->field('hotel.id')->equals($hotel->getId())
-                    ->getQuery()->count() == 0
-            ) {
-                $manager->persist($taskType);
-            }
-
-            $manager->flush();
+        if ($taskTypeCategoryRepository->createQueryBuilder()
+                ->field('code')->equals($category->getCode())
+                ->field('hotel.id')->equals($hotel->getId())
+                ->getQuery()->count() == 0
+        ) {
+            $manager->persist($category);
+        }
+        if ($taskTypeRepository->createQueryBuilder()
+                ->field('code')->equals($taskType->getCode())
+                ->field('hotel.id')->equals($hotel->getId())
+                ->getQuery()->count() == 0
+        ) {
+            $manager->persist($taskType);
         }
     }
 }

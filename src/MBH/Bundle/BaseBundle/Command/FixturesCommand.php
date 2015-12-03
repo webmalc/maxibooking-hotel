@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Command;
 
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\TaskData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\PollQuestion;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
@@ -119,6 +120,8 @@ class FixturesCommand extends ContainerAwareCommand
         if ($input->getOption('cities')) {
             $this->createCities();
         }
+
+        $this->createTaskTypes();
 
         //PollQuestions
         $this->createPollQuestions($hotel);
@@ -257,6 +260,16 @@ class FixturesCommand extends ContainerAwareCommand
         );
 
         return $process->run();
+    }
+
+    /**
+     * @return int
+     */
+    private function createTaskTypes()
+    {
+        $taskData = new TaskData();
+        $taskData->setContainer($this->getContainer());
+        $taskData->load($this->dm);
     }
 
     private function createPollQuestions()
