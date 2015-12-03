@@ -115,6 +115,7 @@ class Search implements SearchInterface
                 }
             }
         }
+
         if (!isset($groupedCaches['room'])) {
             return $results;
         }
@@ -340,7 +341,7 @@ class Search implements SearchInterface
 
             }
         }
-        //sort($results);
+        sort($results);
         return $results;
     }
 
