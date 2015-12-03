@@ -95,7 +95,7 @@ class Builder extends ContainerAware
         $queryCriteria->status = 'open';
         $queryCriteria->hotel = $hotel;
 
-        $openTaskCount = $dm->getRepository('MBHHotelBundle:Task')->getCountByCriteria($queryCriteria);
+        $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
 
         $taskAttributes = ['icon' => 'fa fa-tasks'];
         if ($openTaskCount > 0) {

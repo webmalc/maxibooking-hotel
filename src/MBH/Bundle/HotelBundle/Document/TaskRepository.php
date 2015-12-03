@@ -51,27 +51,23 @@ class TaskRepository extends DocumentRepository
     {
         $queryBuilder = $this->createQueryBuilder();
 
+        $userGroupIDs = $this->container->get('mbh.helper')->toIds($queryCriteria->userGroups);
+
         if ($queryCriteria->onlyOwned) {
             if (!$queryCriteria->performer) {
                 throw new Exception();
             }
-            $queryBuilder->addOr(
-                $queryBuilder->expr()
-                    ->field('performer.id')->equals($queryCriteria->performer)
-            );
+            $queryBuilder->addOr($queryBuilder->expr()->field('performer.id')->equals($queryCriteria->performer));
 
-            if ($queryCriteria->userGroups) {
-                $queryBuilder->addOr($queryBuilder->expr()
-                    ->field('userGroup.id')->in($this->container->get('mbh.helper')->toIds($queryCriteria->userGroups))
-                );
+            if ($userGroupIDs) {
+                $queryBuilder->addOr($queryBuilder->expr()->field('userGroup.id')->in($userGroupIDs));
             }
         } else {
             if ($queryCriteria->performer) {
-                $queryBuilder->addAnd($queryBuilder->expr()->field('performer.id')->equals($queryCriteria->performer));
+                $queryBuilder->addAnd($queryBuilder->expr()->field('performer.id')->equals($queryCriteria->performer->getId()));
             }
-            if ($queryCriteria->userGroups) {
-                $queryBuilder->addAnd($queryBuilder->expr()->field('userGroup.id')->in($this->container->get('mbh.helper')->toIds($queryCriteria->userGroups))
-                );
+            if ($userGroupIDs) {
+                $queryBuilder->addAnd($queryBuilder->expr()->field('userGroup.id')->in($userGroupIDs));
             }
         }
 

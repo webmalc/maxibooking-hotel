@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\BaseBundle\Service\Messenger\NotifierMessage;
@@ -9,6 +10,7 @@ use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskRepository;
+use MBH\Bundle\UserBundle\Document\Group;
 use MBH\Bundle\UserBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -35,22 +37,17 @@ class TaskController extends Controller
     {
         $authorizationChecker = $this->get('security.authorization_checker');
 
-        $statuses = $this->container->getParameter('mbh.task.statuses');
         $priorities = $this->container->getParameter('mbh.tasktype.priority');
+        $statuses = $this->container->getParameter('mbh.task.statuses');
 
         if ($authorizationChecker->isGranted('ROLE_TASK_VIEW')) {
-            $performers = $this->dm->getRepository('MBHUserBundle:User')->findAll();
-            $key = array_search($this->getUser(), $performers);
-            if ($key !== false) {
-                unset($performers[$key]);
-            }
-            array_unshift($performers, $this->getUser());
+            $searchForm = $this->getSearchForm();
 
             return $this->render('MBHHotelBundle:Task:index.html.twig', [
                 'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
                 'priorities' => $priorities,
-                'performers' => $performers,
                 'statuses' => $statuses,
+                'searchForm' => $searchForm->createView(),
                 'tasks' => []
             ]);
         } elseif ($authorizationChecker->isGranted('ROLE_TASK_OWN_VIEW')) {
@@ -61,7 +58,7 @@ class TaskController extends Controller
             $processTasks = $taskRepository->findBy($criteria + ['status' => Task::STATUS_PROCESS], $sort);
 
             $taskQueryCriteria = new TaskQueryCriteria();
-            $taskQueryCriteria->roles = $this->getUser()->getRoles();
+            $taskQueryCriteria->userGroups = $this->getUser()->getGroups();
             $taskQueryCriteria->performer = $this->getUser()->getId();
             $taskQueryCriteria->onlyOwned = true;
             $taskQueryCriteria->status = Task::STATUS_OPEN;
@@ -82,61 +79,97 @@ class TaskController extends Controller
     }
 
     /**
+     * @return \Symfony\Component\Form\Form
+     */
+    public function getSearchForm()
+    {
+        $user = $this->getUser();
+        $formBuilder = $this->createFormBuilder(null, ['data_class' => TaskQueryCriteria::class]);
+
+        $formBuilder
+            ->add('begin', 'date', [
+                'required' => false,
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year input-sm'],
+            ])
+            ->add('end', 'date', [
+                'required' => false,
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year input-sm'],
+            ])
+            ->add('status', 'choice', [
+                'empty_value' => '',
+                'choices' => $this->container->getParameter('mbh.task.statuses')
+            ])
+            ->add('priority', 'choice', [
+                'empty_value' => '',
+                'choices' => $this->container->getParameter('mbh.tasktype.priority')
+            ])
+            ->add('userGroups', 'document', [
+                'empty_value' => '',
+                'multiple' => true,
+                'class' => Group::class
+            ])
+            ->add('performer', 'document', [
+                'empty_value' => '',
+                'class' => User::class,
+                'query_builder' => function(DocumentRepository $groupRepository) use ($user) {
+                    return $groupRepository->createQueryBuilder()->field('id')->notEqual($user->getId());
+                }
+            ])
+            ->add('deleted', 'checkbox')
+        ;
+
+        return $formBuilder->getForm();
+    }
+
+
+    /**
      * List entities
      *
      * @Route("/json_list", name="task_json", defaults={"_format"="json"}, options={"expose"=true})
-     * @Method("GET")
+     * @Method("POST")
      * @Security("is_granted('ROLE_TASK_MANAGER')")
      * @Template("MBHHotelBundle:Task:list.json.twig")
      */
     public function jsonListAction(Request $request)
     {
-        $queryCriteria = new TaskQueryCriteria();
-        $queryCriteria->onlyOwned = false;
-
-        $tableParams = ClientDataTableParams::createFromRequest($request);
-        $queryCriteria->offset = $tableParams->getStart();
-        $queryCriteria->limit = $tableParams->getLength();
-        $queryCriteria->hotel = $this->hotel;
-        $firstSort = $tableParams->getFirstSort();
         /** @var TaskRepository $taskRepository */
         $taskRepository = $this->getTaskRepository();
 
-        $queryCriteria->sort = $firstSort ? [$firstSort[0] => $firstSort[1]] : ['createdAt' => -1];
-        $helper = $this->get('mbh.helper');
+        $tasks = [];
+        $recordsTotal = 0;
 
-        if ($request->get('status')) {
-            $queryCriteria->status = $request->get('status');
-        }
-        if ($request->get('priority')) {
-            $queryCriteria->priority = $request->get('priority');
-        }
-        if ($request->get('begin')) {
-            $queryCriteria->begin = $helper->getDateFromString($request->get('begin'));
-        }
-        if ($request->get('end')) {
-            $queryCriteria->end = $helper->getDateFromString($request->get('end'));
-            $queryCriteria->end->modify('+ 23 hours 59 minutes');
-        }
-        if ($request->get('userGroup')) {
-            $queryCriteria->userGroups[] = $request->get('userGroup');
-        }
-        if ($request->get('performer')) {
-            $queryCriteria->performer = $request->get('performer');
-        }
-        if ($request->get('deleted') == 'true') {
-            $queryCriteria->deleted = true;
+        $searchForm = $this->getSearchForm();
+        $searchForm->handleRequest($request);
+        if($searchForm->isValid()) {
+            $queryCriteria = $searchForm->getData();
+
+            $tableParams = ClientDataTableParams::createFromRequest($request);
+            $firstSort = $tableParams->getFirstSort();
+            $queryCriteria->onlyOwned = false;
+            $queryCriteria->sort = $firstSort ? [$firstSort[0] => $firstSort[1]] : ['createdAt' => -1];
+            $queryCriteria->offset = $tableParams->getStart();
+            $queryCriteria->limit = $tableParams->getLength();
+            $queryCriteria->hotel = $this->hotel;
+
+            $tasks = $taskRepository->getAcceptableTasks($queryCriteria);
+            if(is_object($tasks)) {
+                $tasks = iterator_to_array($tasks);
+            }
+
+            $recordsTotal = $taskRepository->getCountByCriteria($queryCriteria);
         }
 
-        $tasks = $taskRepository->getAcceptableTasks($queryCriteria);
-        $recordsTotal = $taskRepository->getCountByCriteria($queryCriteria);
 
         return [
             'roomTypes' => $this->hotel->getRoomTypes(),
             'statuses' => $this->container->getParameter('mbh.task.statuses'),
             'priorities' => $this->container->getParameter('mbh.tasktype.priority'),
             'recordsTotal' => $recordsTotal,
-            'tasks' => iterator_to_array($tasks),
+            'tasks' => $tasks,
             'draw' => $request->get('draw'),
             'taskRepository' => $taskRepository
         ];
@@ -355,7 +388,8 @@ class TaskController extends Controller
      */
     private function getTaskRepository()
     {
-        return $this->container->get('mbh.hotel.task_repository');
+        $repository = $this->container->get('mbh.hotel.task_repository');
+        return $repository;
     }
 
     /**
