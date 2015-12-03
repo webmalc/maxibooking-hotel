@@ -5,7 +5,6 @@ namespace MBH\Bundle\HotelBundle\Document;
 use MBH\Bundle\UserBundle\Document\Group;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use MBH\Bundle\BaseBundle\Document\Traits\HotelableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -18,7 +17,6 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @ODM\Document(repositoryClass="MBH\Bundle\HotelBundle\Document\TaskTypeRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="title")
  */
 class TaskType extends Base
 {
@@ -62,7 +60,7 @@ class TaskType extends Base
     /**
      * @var Group
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\UserBundle\Document\Group")
-     * @Assert\NotBlank()
+     * @Assert\NotNull()
      */
     protected $defaultUserGroup;
 

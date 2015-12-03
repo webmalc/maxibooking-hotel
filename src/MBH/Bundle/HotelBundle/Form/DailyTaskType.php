@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\TaskTypeRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -13,8 +15,23 @@ use Symfony\Component\Validator\Constraints\Length;
  */
 class DailyTaskType extends AbstractType
 {
+    /**
+     * @var Hotel
+     */
+    protected $hotel;
+
+    public function __construct(Hotel $hotel)
+    {
+        $this->hotel = $hotel;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $hotel = $this->hotel;
+        $queryBuilderFunction = function(TaskTypeRepository $repository) use($hotel) {
+            return $repository->createQueryBuilder()->field('hotel.id')->equals($hotel->getId());
+        };
+
         $builder
             ->add('day', 'integer', [
                 'required' => true,
@@ -33,7 +50,8 @@ class DailyTaskType extends AbstractType
                     'style' => 'width:250px',
                     'data-placeholder' => 'Выберите услугу'
                 ],
-                'empty_value' => ''
+                'empty_value' => '',
+                'query_builder' => $queryBuilderFunction
             ]);
     }
 

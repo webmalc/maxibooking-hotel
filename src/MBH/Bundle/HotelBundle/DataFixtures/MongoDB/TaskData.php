@@ -89,9 +89,11 @@ class TaskData implements FixtureInterface, ContainerAwareInterface
             ->setCode('clean_room')
             ->setTitle('Убрать комнату')
             ->setCategory($category)
-            ->setRoomStatus($repairStatusList['cleaning'])
             ->setDefaultUserGroup($staff)
             ->setHotel($hotel);
+        if(isset($repairStatusList['cleaning'])) {
+            $taskType->setRoomStatus($repairStatusList['cleaning']);
+        }
 
         if ($taskTypeCategoryRepository->createQueryBuilder()
                 ->field('code')->equals($category->getCode())

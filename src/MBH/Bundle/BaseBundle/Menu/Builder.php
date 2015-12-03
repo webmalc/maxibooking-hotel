@@ -23,7 +23,6 @@ class Builder extends ContainerAware
      */
     public function mainMenu(FactoryInterface $factory, array $options)
     {
-
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         $hotel = $this->container->get('mbh.hotel.selector')->getSelected();
 
@@ -89,8 +88,8 @@ class Builder extends ContainerAware
 
         //Tasks links
         $queryCriteria = new TaskQueryCriteria();
-        $queryCriteria->roles = $user->getRoles();
-        $queryCriteria->performer = $user->getId();
+        $queryCriteria->userGroups = $user->getGroups();
+        $queryCriteria->performer = $user;
         $queryCriteria->onlyOwned = true;
         $queryCriteria->status = 'open';
         $queryCriteria->hotel = $hotel;
@@ -148,7 +147,7 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-area-chart']);
         $menu['reports']->addChild('report_polls', ['route' => 'report_polls', 'label' => 'Оценки'])
             ->setAttributes(['icon' => 'fa fa-star']);
-        $token = $this->container->get('security.token_storage')->getToken();
+        //$token = $this->container->get('security.token_storage')->getToken();
         //if ($token && $token->getUser() instanceof User && $token->getUser()->getIsEnabledWorkShift()) {
             $menu['reports']->addChild('report_work_shift',
                 ['route' => 'report_work_shift', 'label' => 'Рабочие смены'])

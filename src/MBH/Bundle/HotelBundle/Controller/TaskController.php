@@ -159,7 +159,7 @@ class TaskController extends Controller
             if(is_object($tasks)) {
                 $tasks = iterator_to_array($tasks);
             }
-
+            dump($tasks);
             $recordsTotal = $taskRepository->getCountByCriteria($queryCriteria);
         }
 
@@ -276,7 +276,7 @@ class TaskController extends Controller
         if ($task->getRole()) {
             /** @var User[] $recipients */
             $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy([
-                'roles' => $task->getRole(),
+                'userGroup' => $task->getUserGroup(),
                 'taskNotify' => true,
                 'email' => ['$exists' => true],
                 'enabled' => true,
@@ -361,9 +361,7 @@ class TaskController extends Controller
         $priorities = $this->getParameter('mbh.tasktype.priority');
         $data = [
             'id' => $entity->getId(),
-            'role' => $entity->getRole() ?
-                $this->get('translator')->trans($entity->getRole(), [], 'MBHUserBundleRoles') :
-                '',
+            'userGroup' => $entity->getUserGroup(),
             'type' => $entity->getType() ? $entity->getType()->getTitle() : '',
             'performer' => $entity->getPerformer() ? $entity->getPerformer()->getFullName(true) : [],
             'date' => $entity->getDate() ? $entity->getDate()->format('d.m.Y') : '',
@@ -389,6 +387,7 @@ class TaskController extends Controller
     private function getTaskRepository()
     {
         $repository = $this->container->get('mbh.hotel.task_repository');
+        $repository->setContainer($this->container);
         return $repository;
     }
 
