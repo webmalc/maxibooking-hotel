@@ -187,6 +187,7 @@ class DefaultController extends BaseController
                 ]
             ])
             ->add('patronymic', 'text', [
+                'required' => false,
                 'label' => 'Отчество'
             ])
             ->add('phone', 'text', [
@@ -282,6 +283,9 @@ class DefaultController extends BaseController
             //$order->addCashDocument(new CashDocument());
 
             $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
+            $this->sendNotifications($order);
+
             if ($payment != 'in_hotel' && $clientConfig->getPaymentSystem()) {
                 return $this->render(
                     'MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
@@ -303,6 +307,89 @@ class DefaultController extends BaseController
                 'requestSearchUrl' => $requestSearchUrl,
                 'form' => $form->createView()
             ]);
+        }
+    }
+
+
+    /**
+     * @param Order $order
+     * @param string $arrival
+     * @param string $departure
+     * @return bool
+     */
+    private function sendNotifications(Order $order, $arrival = '12:00', $departure = '12:00')
+    {
+        try {
+
+            //backend
+            $notifier = $this->container->get('mbh.notifier');
+            $tr = $this->get('translator');
+            $message = $notifier::createMessage();
+            $hotel = $order->getPackages()[0]->getRoomType()->getHotel();
+            $message
+                ->setText('mailer.online.backend.text')
+                ->setTranslateParams(['%orderID%' => $order->getId()])
+                ->setFrom('online_form')
+                ->setSubject('mailer.online.backend.subject')
+                ->setType('info')
+                ->setCategory('notification')
+                ->setOrder($order)
+                ->setAdditionalData([
+                    'arrivalTime' => $arrival,
+                    'departureTime' => $departure,
+                ])
+                ->setHotel($hotel)
+                ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
+                ->setAutohide(false)
+                ->setEnd(new \DateTime('+1 minute'))
+            ;
+            $notifier
+                ->setMessage($message)
+                ->notify()
+            ;
+
+            //user
+            $payer = $order->getPayer();
+            if ($payer && $payer->getEmail()) {
+                $notifier = $this->container->get('mbh.notifier.mailer');
+                $message = $notifier::createMessage();
+                $message
+                    ->setFrom('online_form')
+                    ->setSubject('mailer.online.user.subject')
+                    ->setType('info')
+                    ->setCategory('notification')
+                    ->setOrder($order)
+                    ->setAdditionalData([
+                        'prependText' => 'mailer.online.user.prepend',
+                        'appendText' => 'mailer.online.user.append',
+                        'fromText' => $hotel->getName()
+                    ])
+                    ->setHotel($hotel)
+                    ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
+                    ->setAutohide(false)
+                    ->setEnd(new \DateTime('+1 minute'))
+                    ->addRecipient($payer)
+                    ->setLink('hide')
+                    ->setSignature('mailer.online.user.signature')
+                ;
+
+                $params = $this->container->getParameter('mailer_user_arrival_links');
+
+                if (!empty($params['map'])) {
+                    $message->setLink($params['map'])
+                        ->setLinkText($tr->trans('mailer.online.user.map'))
+                    ;
+                }
+
+                $notifier
+                    ->setMessage($message)
+                    ->notify()
+                ;
+            }
+
+        } catch (\Exception $e) {
+
+            return false;
         }
     }
 }

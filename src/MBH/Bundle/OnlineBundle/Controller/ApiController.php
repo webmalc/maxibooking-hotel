@@ -338,8 +338,8 @@ class ApiController extends Controller
 
     /**
      * @param Order $order
-     * @param null $arrival
-     * @param null $departure
+     * @param string $arrival
+     * @param string $departure
      * @return bool
      */
     private function sendNotifications(Order $order, $arrival = null, $departure = null)
