@@ -30,6 +30,8 @@ class ApiController extends Controller
      */
     public function getFormAction()
     {
+        $this->setLocalByRequest();
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $config = $this->container->getParameter('mbh.online.form');
@@ -176,6 +178,8 @@ class ApiController extends Controller
      */
     public function getResultsAction()
     {
+        $this->setLocalByRequest();
+
         return [
             'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
             'urls' => [
@@ -195,6 +199,8 @@ class ApiController extends Controller
      */
     public function getResultsTableAction(Request $request)
     {
+        $this->setLocalByRequest();
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 

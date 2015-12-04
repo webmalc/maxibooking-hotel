@@ -1,0 +1,42 @@
+views.api.form.rooms_reservation: rooms_reservation
+views.api.form.hotel: hotel
+views.api.form.check_in_date: check_in_date
+views.api.form.check_out_date: check_out_date
+views.api.form.nights_amount: nights_amount
+views.api.form.room_type: room_type
+views.api.form.adults: adults
+views.api.form.children: children
+views.api.form.find_room: find_room
+views.api.form.online_reservation_system: online_reservation_system
+views.api.getPaymentType.dates: dates:
+views.api.getPaymentType.days_and_nights: days_and_nights:
+views.api.getPaymentType.nomerov: nomerov:
+views.api.getPaymentType.order_result: order_result
+views.api.getPaymentType.nomera: nomera:
+views.api.getPaymentType.services: services:
+views.api.getPaymentType.tariff: tariff:
+views.api.getPaymentType.choose_payment_way: choose_payment_way
+views.api.getPaymentType.payment_fine: payment_fine
+views.api.getPaymentType.reservation_guarantee_whole_sum: reservation_guarantee_whole_sum
+views.api.getPaymentType.reservation_guarantee_first_night: reservation_guarantee_first_night
+views.api.getPaymentType.reservation_guarantee_half: reservation_guarantee_half
+
+views.api.getResultsTable.hotel_rooms_for: Hotel rooms for
+views.api.getResultsTable.room_type: Room type
+views.api.getResultsTable.guests: Guests
+views.api.getResultsTable.price: Price
+views.api.getResultsTable.rooms_amount: Rooms amount
+views.api.getResultsTable.room_description: Description
+views.api.getResultsTable.room_price: Room price
+views.api.getResultsTable.hotel: Hotel
+views.api.getResultsTable.service_type: Service type
+views.api.getResultsTable.price: Price
+views.api.getResultsTable.amount: Amount
+views.api.getResultsTable.price_per: Price per
+views.api.getResultsTable.day: day
+views.api.getResultsTable.rooms: Rooms:
+views.api.getResultsTable.services: Services:
+views.api.getResultsTable.result: Result:
+views.api.getResultsTable.continue: Continue
+views.api.getResultsTable.nothing_found_for_your_query: Nothing found for your query
+views.api.tariffs.tariffs_and_special_offers: Tariffs and special offers

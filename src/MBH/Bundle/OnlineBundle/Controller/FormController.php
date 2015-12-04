@@ -26,17 +26,15 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      */
     public function indexAction()
     {
+        $this->setLocalByRequest();
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $entity = $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]);
 
-        $form = $this->createForm(
-            new FormType(),
-            $entity,
-            [
-                'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types']
-            ]
-        );
+        $form = $this->createForm(new FormType(), $entity, [
+            'paymentTypes' => $this->container->getParameter('mbh.online.form')['payment_types']
+        ]);
 
         return [
             'entity' => $entity,
