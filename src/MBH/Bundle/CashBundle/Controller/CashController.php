@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
+use MBH\Bundle\CashBundle\Form\NewCashDocumentType;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\CashBundle\Document\CashDocumentRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -221,9 +222,46 @@ class CashController extends Controller
         return $response;
     }
 
+
     /**
-     * Displays a form to edit an existing entity.
-     *
+     * @Route("/new", name="cash_new")
+     * @Method({"GET", "PUT"})
+     * @Security("is_granted('ROLE_CASH_NEW')")
+     * @Template()
+     */
+    public function newAction(Request $request)
+    {
+        $cashDocument = new CashDocument();
+
+        $form = $this->createForm(new NewCashDocumentType($this->dm), $cashDocument, [
+            'methods' => $this->container->getParameter('mbh.cash.methods'),
+            'operations' => $this->container->getParameter('mbh.cash.operations'),
+            'payers' => [],
+            'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER')
+        ]);
+
+        if ($request->isMethod("PUT")) {
+            $form->submit($request);
+
+            if ($form->isValid()) {
+                $this->dm->persist($cashDocument);
+                $this->dm->flush();
+
+                $request->getSession()->getFlashBag()->set('success',
+                    $this->get('translator')->trans('controller.cashController.edit_record_success'));
+
+                return $this->afterSaveRedirect('cash', $cashDocument->getId());
+            }
+        }
+
+        return [
+            'cashDocument' => $cashDocument,
+            'form' => $form->createView()
+        ];
+    }
+
+
+    /**
      * @Route("/{id}/edit", name="cash_edit")
      * @Method({"GET", "PUT"})
      * @Security("is_granted('ROLE_CASH_EDIT')")
@@ -395,5 +433,22 @@ class CashController extends Controller
             'error' => false,
             'message' => $this->get('translator')->trans('controller.cashController.payment_confirmed_success')
         ]);
+    }
+
+    /**
+    * @Route("/payers", name="get_payers", options={"expose"=true})
+    * @Method("GET")
+    * @Security("is_granted('ROLE_CASH_EDIT')")
+    */
+    public function getPayersAction(Request $request)
+    {
+        $query = $request->get('query');
+        $payers = [];
+
+        if($query) {
+            $payers = $this->get('mbh.package.payer_repository')->search($query);
+        }
+
+        return new JsonResponse(['results' => $payers]);
     }
 }

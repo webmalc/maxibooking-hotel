@@ -193,6 +193,11 @@
 {% embed "MBHBaseBundle:Actions:base_list.html.twig" %}
     {% block right %}
     <li>
+        <button onclick="location.href = '{{ path('cash_new') }}'" class="btn btn-success navbar-btn">
+            <i class="fa fa-plus"></i> Создать
+        </button>
+    </li>
+    <li>
         <div class="dropup">
             <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="true">
                 <i class="fa fa-upload"></i> Экспорт в 1C <span class="caret"></span>

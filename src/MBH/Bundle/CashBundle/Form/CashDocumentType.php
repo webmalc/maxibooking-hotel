@@ -8,13 +8,20 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
+/**
+ * Class CashDocumentType
+ * @author Aleksandr Arofikin <sashaaro@gmail.com>
+ */
 class CashDocumentType extends AbstractType
 {
+    /**
+     * @var DocumentManager
+     */
     private $documentManager;
 
-    public function __construct(\Doctrine\ODM\MongoDB\DocumentManager $documentManager)
+    public function __construct(DocumentManager $documentManager)
     {
         $this->documentManager = $documentManager;
     }

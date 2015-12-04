@@ -231,5 +231,28 @@ $(document).ready(function () {
         var href = $(this).attr('href');
         window.open(href + '?' + jQuery.param(data));
     });
+
+    $('.payer-select').select2({
+        minimumInputLength: 3,
+        allowClear: true,
+        placeholder: 'Выберите гостя',
+        ajax: {
+            url: Routing.generate('get_payers'),
+            dataType: 'json',
+            data: function (params) {
+                return {
+                    query: params.term // search term
+                };
+            },
+            results: function (data) {
+                console.log(data);
+                return {results: data};
+            },
+            /*processResults: function(data) {
+             console.log(data);
+             }*/
+        },
+        dropdownCssClass: "bigdrop"
+    })
 });
 

@@ -16,6 +16,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
 use MBH\Bundle\CashBundle\Validator\Constraints as MBHValidator;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBBundleUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
+use MBH\Bundle\PackageBundle\Document\Order;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 
 /**
@@ -48,10 +49,9 @@ class CashDocument extends Base
     use BlameableDocument;
 
     /**
-     * @var \MBH\Bundle\PackageBundle\Document\Order
+     * @var Order
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Order", inversedBy="cashDocuments")
-     * @Assert\NotNull(message="validator.document.cashDocument.no_order_selected")
      */
     protected $order;
 
@@ -263,7 +263,7 @@ class CashDocument extends Base
     }
 
     /**
-     * @ODM\PrePersist
+     * @PrePersist
      */
     public function prePersist()
     {
@@ -364,10 +364,10 @@ class CashDocument extends Base
     /**
      * Set order
      *
-     * @param \MBH\Bundle\PackageBundle\Document\Order $order
+     * @param Order $order
      * @return self
      */
-    public function setOrder(\MBH\Bundle\PackageBundle\Document\Order $order)
+    public function setOrder(Order $order = null)
     {
         $this->order = $order;
         return $this;
@@ -376,7 +376,7 @@ class CashDocument extends Base
     /**
      * Get order
      *
-     * @return \MBH\Bundle\PackageBundle\Document\Order $order
+     * @return Order $order
      */
     public function getOrder()
     {
