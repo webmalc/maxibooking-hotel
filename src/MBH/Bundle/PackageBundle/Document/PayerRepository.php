@@ -45,6 +45,6 @@ class PayerRepository
         /** @var Organization[] $organizations */
         $organizations = $queryBuilder->getQuery()->execute();
 
-        return array_merge($tourists->toArray(), $organizations->toArray());
+        return ['tourists' => $tourists->toArray(), 'organizations' => $organizations->toArray()];
     }
 }

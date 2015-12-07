@@ -336,7 +336,8 @@ class CashDocument extends Base
      */
     public function getHotel()
     {
-        return $this->getOrder()->getPackages()[0]->getRoomType()->getHotel();
+        $order = $this->getOrder();
+        return $order ? $order->getPackages()[0]->getRoomType()->getHotel() : null;
     }
 
 
@@ -352,10 +353,12 @@ class CashDocument extends Base
             return $this->getOrganizationPayer();
         } elseif ($this->getTouristPayer()) {
             return $this->getTouristPayer();
-        } elseif ($this->getOrder()->getOrganization()) {
-            return $this->getOrder()->getOrganization();
-        } elseif ($this->getOrder()->getMainTourist()) {
-            return $this->getOrder()->getMainTourist();
+        } elseif ($this->getOrder()) {
+            if ($this->getOrder()->getOrganization()) {
+                return $this->getOrder()->getOrganization();
+            } elseif ($this->getOrder()->getMainTourist()) {
+                return $this->getOrder()->getMainTourist();
+            }
         }
 
         return null;

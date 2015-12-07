@@ -48,7 +48,7 @@ var docReadyCash = function () {
         } else if (type === 'tourist') {
             $touristPayerInput.val(value);
         } else {
-            throw new Error("");
+            //throw new Error("");
         }
     }
 

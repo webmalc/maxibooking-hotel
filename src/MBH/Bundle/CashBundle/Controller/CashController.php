@@ -449,6 +449,6 @@ class CashController extends Controller
             $payers = $this->get('mbh.package.payer_repository')->search($query);
         }
 
-        return new JsonResponse(['results' => $payers]);
+        return new JsonResponse(['results' => $payers, 'success' => true]);
     }
 }
