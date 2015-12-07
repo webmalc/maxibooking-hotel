@@ -70,7 +70,7 @@ class Search implements SearchInterface
 
         //promotion
         $promotion = $query->getPromotion();
-        if ($promotion === null && $query->tariff->getDefaultPromotion()) {
+        if ($promotion === null && $query->tariff && $query->tariff->getDefaultPromotion()) {
             $promotion = $query->tariff->getDefaultPromotion();
         }
         if (!$promotion) {
@@ -290,7 +290,7 @@ class Search implements SearchInterface
                 }
 
                 $roomType = $caches[0]->getRoomType();
-                $useCategories = $query->isOnline && $this->config->getUseRoomTypeCategory();
+                $useCategories = $query->isOnline && $this->config && $this->config->getUseRoomTypeCategory();
                 $result = new SearchResult();
                 $tourists = $roomType->getAdultsChildrenCombination($query->adults, $query->children);
 
