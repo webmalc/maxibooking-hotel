@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -37,7 +38,7 @@ class Service extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
-    
+    use InternableDocument;
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="ServiceCategory", inversedBy="services")
@@ -71,14 +72,6 @@ class Service extends Base
      * )
      */
     protected $title;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
-     * @Assert\Regex(pattern="/^[a-zA-Z0-9 \(\)-]+$/")
-     */
-    protected $internationalTitle;
 
     /**
      * @var string
@@ -223,22 +216,6 @@ class Service extends Base
     public function getTitle()
     {
         return $this->title;
-    }
-
-    /**
-     * @return string
-     */
-    public function getInternationalTitle()
-    {
-        return $this->internationalTitle;
-    }
-
-    /**
-     * @param string $internationalTitle
-     */
-    public function setInternationalTitle($internationalTitle)
-    {
-        $this->internationalTitle = $internationalTitle;
     }
 
     /**

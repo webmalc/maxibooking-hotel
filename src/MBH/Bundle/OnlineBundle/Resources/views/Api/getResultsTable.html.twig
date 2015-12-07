@@ -11,8 +11,12 @@
                         <span id="mbh-results-duration-nights">{{ results|first.nights }}</span>
                     </div>
                     {{ 'views.api.getResultsTable.hotel_rooms_for'|trans({}, 'MBHOnlineBundle') }}
-                    {{ results|first.nights }} {{ 'nights'|transchoice(results|first.nights) }} c
-                    <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> по <span id="mbh-results-duration-end">
+                    {{ results|first.nights }} {{ 'nights'|transchoice(results|first.nights) }}
+
+                    {{ 'from'|trans }}
+                    <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span>
+                    {{ 'to'|trans }}
+                    <span id="mbh-results-duration-end">
                         {{ results|first.end|date('d.m.Y') }}
                     </span>
                 </div>
@@ -42,7 +46,7 @@
                                              src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}{{ result.roomType.getMainImage.getWebPath }}">
                                     {% endif %}
                                     <span class="mbh-results-roomType"
-                                          data-id="{{ result.roomType.id }}">{{ result.roomType.fullTitle }}</span>
+                                          data-id="{{ result.roomType.id }}">{{ result.roomType.localeTitle }}</span>
                                     {% if hotels|length > 1 %}<span class="mbh-results-hotel"
                                                                     data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span>{% endif %}
                                     {% if result.roomType.description is not empty %}

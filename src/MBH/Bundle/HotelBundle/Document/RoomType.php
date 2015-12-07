@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -44,7 +45,7 @@ class RoomType extends Base implements RoomTypeInterface
     use BlameableDocument;
 
     use RoomTypeTrait;
-
+    use InternableDocument;
     /**
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="roomTypes")
      * @Assert\NotNull(message="Не выбран отель")
@@ -80,14 +81,6 @@ class RoomType extends Base implements RoomTypeInterface
      * )
      */
     protected $title;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
-     * @Assert\Regex(pattern="/^[^А-Яа-я]+$/iu", message="validator.document.roomType.internationalTitle.only_english")
-     */
-    protected $internationalTitle;
 
 
     /**
@@ -257,24 +250,6 @@ class RoomType extends Base implements RoomTypeInterface
     {
         $this->title = $title;
 
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getInternationalTitle()
-    {
-        return $this->internationalTitle;
-    }
-
-    /**
-     * @param mixed $internationalTitle
-     * @return self
-     */
-    public function setInternationalTitle($internationalTitle)
-    {
-        $this->internationalTitle = $internationalTitle;
         return $this;
     }
 
@@ -579,18 +554,6 @@ class RoomType extends Base implements RoomTypeInterface
     {
         return $this->images;
     }
-
-    /**
-     * @ODM\PreUpdate()
-     * @ODM\PrePersist()
-     */
-    public function generateInternationalTitle()
-    {
-        if (!$this->internationalTitle && $this->fullTitle) {
-            $this->internationalTitle = Helper::translateToLat($this->fullTitle);
-        }
-    }
-
 
     public function deleteImageById($imageId)
     {
