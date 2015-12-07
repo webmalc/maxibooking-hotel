@@ -87,6 +87,31 @@ class Mongo
     }
 
     /**
+     * @param string     {
+
+     * @param array $query
+     * @param array $update
+     */
+    public function copy($collectionName, array $query, array $update)
+    {
+        $collection = $this->getCollection($collectionName);
+        $parentDocs = $collection->find($query);
+
+        $newDocs = [];
+        foreach ($parentDocs as $parent) {
+            foreach ($update as $key => $value) {
+                if (isset($parent[$key])) {
+                    $parent[$key] = $value;
+                }
+            }
+            unset($parent['_id']);
+            $newDocs[] = $parent;
+        }
+
+        $this->batchInsert($collectionName, $newDocs);
+    }
+
+    /**
      * @param $collection
      * @param array $data
      */
