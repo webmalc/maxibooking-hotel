@@ -45,6 +45,30 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
+     * Copy tariff
+     *
+     * @Route("/{id}/copy", name="tariff_copy")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_TARIFF_EDIT')")
+     * @Template()
+     * @ParamConverter(class="MBHPriceBundle:Tariff")
+     */
+    public function copyAction(Request $request, Tariff $parent)
+    {
+        $new = clone $parent;
+
+        $this->dm->persist($new);
+        $this->dm->flush();
+
+        $request->getSession()->getFlashBag()
+            ->set('success', 'Тариф успешно скопирован.')
+        ;
+        return $this->afterSaveRedirect('tariff', $new->getId());
+
+
+    }
+
+    /**
      * Displays a form to create a new entity.
      *
      * @Route("/new", name="tariff_new")

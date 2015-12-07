@@ -172,6 +172,12 @@ class Tariff extends Base
         $this->defaultServices = new ArrayCollection();
     }
 
+    public function __clone()
+    {
+        parent::__clone();
+        $this->isDefault = false;
+    }
+
     /**
      * Set hotel
      *
