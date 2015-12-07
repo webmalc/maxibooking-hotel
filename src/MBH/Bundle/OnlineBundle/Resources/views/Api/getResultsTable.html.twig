@@ -11,14 +11,8 @@
                         <span id="mbh-results-duration-nights">{{ results|first.nights }}</span>
                     </div>
                     {{ 'views.api.getResultsTable.hotel_rooms_for'|trans({}, 'MBHOnlineBundle') }}
-                    {{ results|first.nights }} {{ 'nights'|transchoice(results|first.nights) }}
-
-                    {{ 'from'|trans }}
-                    <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span>
-                    {{ 'to'|trans }}
-                    <span id="mbh-results-duration-end">
-                        {{ results|first.end|date('d.m.Y') }}
-                    </span>
+                    {{ results|first.nights }} {{ 'nights'|transchoice(results|first.nights) }} {{ 'from'|trans }}
+                    <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> {{ 'to'|trans }} <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>
                 </div>
                 {% if tariffResults|length > 0 %}
                     {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
@@ -46,7 +40,7 @@
                                              src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}{{ result.roomType.getMainImage.getWebPath }}">
                                     {% endif %}
                                     <span class="mbh-results-roomType"
-                                          data-id="{{ result.roomType.id }}">{{ result.roomType.localeTitle }}</span>
+                                          data-id="{{ result.roomType.id }}">{{ result.roomType.fullTitle }}</span>
                                     {% if hotels|length > 1 %}<span class="mbh-results-hotel"
                                                                     data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span>{% endif %}
                                     {% if result.roomType.description is not empty %}

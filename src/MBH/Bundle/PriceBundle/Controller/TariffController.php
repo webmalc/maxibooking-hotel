@@ -45,6 +45,54 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
+     * Copy tariff
+     *
+     * @Route("/{id}/copy", name="tariff_copy")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_TARIFF_EDIT')")
+     * @Template()
+     * @ParamConverter(class="MBHPriceBundle:Tariff")
+     */
+    public function copyAction(Request $request, Tariff $parent)
+    {
+        $new = clone $parent;
+        $this->dm->persist($new);
+        $this->dm->flush();
+
+        //promotions
+        foreach ($parent->getPromotions() as $promotion) {
+            $new->addPromotion(
+                $this->dm->getRepository('MBHPriceBundle:Promotion')->find($promotion->getId())
+            );
+        }
+        //services
+        foreach ($parent->getServices() as $service) {
+            $new->addService(
+                $this->dm->getRepository('MBHPriceBundle:Service')->find($service->getId())
+            );
+        }
+        foreach ($parent->getDefaultServices() as $defaultService) {
+            $new->addDefaultService($defaultService);
+        }
+        $this->dm->persist($new);
+        $this->dm->flush();
+
+        $query = ['isEnabled' => true, 'tariff.$id' => new \MongoId($parent->getId())];
+        $update = ['tariff' => ['$ref' => 'Tariffs', '$id' => new \MongoId($new->getId())]];
+
+        //Cache
+        $this->get('mbh.mongo')->copy('PriceCache', $query, $update);
+        $this->get('mbh.mongo')->copy('Restriction', $query, $update);
+        $this->get('mbh.mongo')->copy('RoomCache', $query, $update);
+
+        $request->getSession()->getFlashBag()
+            ->set('success', 'Тариф успешно скопирован.')
+        ;
+
+        return $this->redirect($this->generateUrl('tariff_edit', ['id' => $new->getId()]));
+    }
+
+    /**
      * Displays a form to create a new entity.
      *
      * @Route("/new", name="tariff_new")

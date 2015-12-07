@@ -449,7 +449,8 @@ class ApiController extends Controller
                 'roomType' => $info->roomType->id,
                 'accommodation' => false,
                 'tariff' => $info->tariff->id,
-                'isOnline' => true
+                'isOnline' => true,
+                'accommodation' => false,
             ];
         }
         foreach ($request->services as $info) {
@@ -475,9 +476,8 @@ class ApiController extends Controller
             ], null, null, $cash ? ['total' => (float)$request->total] : null);
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
-                dump($e);
+                dump($e->getMessage());
             };
-
             return false;
         }
 
