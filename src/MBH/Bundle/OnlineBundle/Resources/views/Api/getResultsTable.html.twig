@@ -40,7 +40,7 @@
                                              src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}{{ result.roomType.getMainImage.getWebPath }}">
                                     {% endif %}
                                     <span class="mbh-results-roomType"
-                                          data-id="{{ result.roomType.id }}">{{ result.roomType.fullTitle }}</span>
+                                          data-id="{{ result.roomType.id }}">{{ result.roomType.localeTitle }}</span>
                                     {% if hotels|length > 1 %}<span class="mbh-results-hotel"
                                                                     data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span>{% endif %}
                                     {% if result.roomType.description is not empty %}

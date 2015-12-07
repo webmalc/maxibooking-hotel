@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Translation\Translator;
 
 /**
  * @Route("/api")
@@ -300,9 +301,7 @@ class ApiController extends Controller
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $requestJson = json_decode($request->getContent());
-        if (property_exists($requestJson, 'locale')) {
-            $this->setLocale($requestJson->locale);
-        }
+
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
         //Create packages
@@ -317,15 +316,21 @@ class ApiController extends Controller
         $packages = iterator_to_array($order->getPackages());
         $this->sendNotifications($order, $requestJson->arrival . ':00', $requestJson->departure . ':00');
 
-        if (count($packages) > 1) {
-            $roomStr = $this->get('translator')->trans('controller.apiController.reservations_made_success');
-            $packageStr = $this->get('translator')->trans('controller.apiController.your_reservations_numbers');
-        } else {
-            $roomStr = $this->get('translator')->trans('controller.apiController.room_reservation_made_success');
-            $packageStr = $this->get('translator')->trans('controller.apiController.your_reservation_number');
+        if (property_exists($requestJson, 'locale')) {
+            $this->setLocale($requestJson->locale);
         }
-        $message = $this->get('translator')->trans('controller.apiController.thank_you').$roomStr.$this->get('translator')->trans('controller.apiController.we_will_call_you_back_soon');
-        $message .= $this->get('translator')->trans('controller.apiController.your_order_number').$order->getId().'. ';
+
+        /** @var Translator $translator */
+        $translator = $this->get('translator');
+        if (count($packages) > 1) {
+            $roomStr = $translator->trans('controller.apiController.reservations_made_success');
+            $packageStr = $translator->trans('controller.apiController.your_reservations_numbers');
+        } else {
+            $roomStr = $translator->trans('controller.apiController.room_reservation_made_success');
+            $packageStr = $translator->trans('controller.apiController.your_reservation_number');
+        }
+        $message = $translator->trans('controller.apiController.thank_you').$roomStr.$translator->trans('controller.apiController.we_will_call_you_back_soon');
+        $message .= $translator->trans('controller.apiController.your_order_number').$order->getId().'. ';
         $message .= $packageStr.': '.implode(', ', $packages).'.';
 
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
