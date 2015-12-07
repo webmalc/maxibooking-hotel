@@ -612,9 +612,10 @@ $.fn.mbhSelect2OptionsFilter = function (filter, resetOptionsHtml) {
 
 var discountInit = function ($discountInput, $isPercentDiscountCheckbox) {
     $discountInput.TouchSpin({
-        min: 1,
-        max: 100000000,
-        step: 1,
+        min: 0.01,
+        max: 9999999999999999,
+        step: 0.1,
+        decimals: 2,
         postfix: '%'
     });
     var $discountTypeInputPostfix = $discountInput.siblings('span.bootstrap-touchspin-postfix');

@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Lib;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PriceBundle\Document\Promotion;
 
 class SearchQuery
 {
@@ -80,6 +81,11 @@ class SearchQuery
      * @var string
      */
     public $room;
+
+    /**
+     * @var Promotion
+     */
+    protected $promotion;
     
     /**
      * Tariff id
@@ -142,4 +148,26 @@ class SearchQuery
     {
         return (int) $this->adults + (int) $this->children;
     }
+
+    /**
+     * @return Promotion
+     */
+    public function getPromotion()
+    {
+        return $this->promotion;
+    }
+
+    /**
+     * @param mixed $promotion
+     */
+    public function setPromotion($promotion = false)
+    {
+        if (!$promotion instanceof Promotion && $promotion !== false) {
+            $promotion = null;
+        }
+
+        $this->promotion = $promotion;
+    }
+
+
 }

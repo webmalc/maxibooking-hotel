@@ -11,6 +11,9 @@ form:
             freeAdultsQuantity: Количество взрослых бесплатно
             condition: Условие
             condition_quantity: Количество
+        group:
+            main: Основная информация
+            conditions: Условия и ограничения
         choice_label:
             condition:
                 min_accommodation: Минимальная длина брони

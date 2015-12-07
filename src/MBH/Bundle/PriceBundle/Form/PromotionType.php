@@ -22,50 +22,56 @@ class PromotionType extends AbstractType
         $builder
             ->add('fullTitle', 'text', [
                 'label' => 'form.promotionType.label.fullTitle',
+                'group' => 'form.promotionType.group.main',
             ])
             ->add('title', 'text', [
                 'label' => 'form.promotionType.label.title',
+                'group' => 'form.promotionType.group.main',
                 'required' => false
             ])
             ->add('isIndividual', 'checkbox', [
                 'label' => 'form.promotionType.label.isIndividual',
+                'group' => 'form.promotionType.group.main',
                 'required' => false
             ])
             ->add('discount', 'number', [
                 'label' => 'form.promotionType.label.discount',
-                'constraints' => [
-                    new Range(['min' => 1])
-                ],
+                'group' => 'form.promotionType.group.main',
                 'required' => false,
             ])
             ->add('isPercentDiscount', 'checkbox', [
                 'label' => 'form.promotionType.label.isPercentDiscount',
+                'group' => 'form.promotionType.group.main',
                 'required' => false
             ])
             ->add('comment', 'textarea', [
                 'label' => 'form.promotionType.label.comment',
+                'group' => 'form.promotionType.group.main',
                 'required' => false
-            ])
-            ->add('freeChildrenQuantity', 'number', [
-                'label' => 'form.promotionType.label.freeChildrenQuantity',
-                'required' => false,
-                'attr' => [
-                    'style' => 'width:100px',
-                ],
             ])
             ->add('freeAdultsQuantity', 'number', [
                 'label' => 'form.promotionType.label.freeAdultsQuantity',
+                'group' => 'form.promotionType.group.main',
                 'required' => false,
                 'attr' => [
-                    'style' => 'width:100px',
+                    'class' => 'spinner',
                 ],
             ])
-            ;
+            ->add('freeChildrenQuantity', 'number', [
+                'label' => 'form.promotionType.label.freeChildrenQuantity',
+                'group' => 'form.promotionType.group.main',
+                'required' => false,
+                'attr' => [
+                    'class' => 'spinner',
+                ],
+            ])
+        ;
         $conditions = PromotionConditionFactory::getAvailableConditions();
         $builder
             ->add('condition', 'choice', [
                 'label' => 'form.promotionType.label.condition',
                 'required' => false,
+                'group' => 'form.promotionType.group.conditions',
                 'choices' => array_combine($conditions, $conditions),
                 'choice_label' => function($value, $label) {
                     return 'form.promotionType.choice_label.condition.'.$label;
@@ -73,9 +79,11 @@ class PromotionType extends AbstractType
             ])
             ->add('condition_quantity', 'number', [
                 'label' => 'form.promotionType.label.condition_quantity',
+                'group' => 'form.promotionType.group.conditions',
                 'required' => false,
+                'error_bubbling' => false,
                 'attr' => [
-                    'style' => 'width:100px',
+                    'class' => 'spinner',
                 ],
             ])
         ;
@@ -89,10 +97,11 @@ class PromotionType extends AbstractType
                 new Callback([
                     'callback' => function(Promotion $promotion, ExecutionContextInterface $executionContext) {
                         if (!$promotion->getDiscount() && !$promotion->getFreeChildrenQuantity() && !$promotion->getFreeAdultsQuantity()) {
-                            $executionContext->buildViolation('Заполните поля скидка или количество детей/взрослых бесплатно');
+                            $executionContext->buildViolation('Заполните поля "Скидка" или "Количество детей бесплатно" или "Количество взрослых бесплатно"')
+                            ->addViolation();
                             return false;
                         }
-                        return true;
+                        return false;
                     }
                 ])
             ]

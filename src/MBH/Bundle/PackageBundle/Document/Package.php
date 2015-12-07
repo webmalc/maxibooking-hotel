@@ -141,6 +141,7 @@ class Package extends Base implements JsonSerializable
     /**
      * @var float
      * @Gedmo\Versioned
+     * @deprecated
      * @ODM\Float()
      */
     protected $promotionTotal = 0;
@@ -545,6 +546,7 @@ class Package extends Base implements JsonSerializable
 
     /**
      * @param bool|false $calculate
+     * @deprecated
      * @return float
      */
     public function getPromotionTotal($calculate = false)
@@ -563,6 +565,7 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
+     * @deprecated
      * @param float $promotionTotal
      */
     public function setPromotionTotal($promotionTotal)
@@ -593,7 +596,7 @@ class Package extends Base implements JsonSerializable
             return $this->getTotalOverwrite();
         }
 
-        return $this->price - $this->getPromotionTotal(true) - $this->getDiscountMoney() + $this->getServicesPrice();
+        return $this->price - $this->getDiscountMoney() + $this->getServicesPrice();
     }
 
     /**
@@ -605,7 +608,7 @@ class Package extends Base implements JsonSerializable
     public function getPackagePrice($discount = false)
     {
         if ($discount) {
-            return $this->price - $this->getDiscountMoney();//$this->price * $this->getDiscount(false);
+            return $this->price - $this->getDiscountMoney();
         }
 
         return $this->price;
