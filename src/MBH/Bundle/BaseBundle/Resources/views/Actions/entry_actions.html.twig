@@ -33,23 +33,19 @@
 
     {% block edit_entry %}
         {% if is_granted(edit_role) %}
-            <a href='{{ path(edit_route, { 'id': entity.id }) }}' class='btn btn-success btn-xs'
-               title='{{ 'entry.actions.edit'|trans }}' data-toggle='tooltip'><i class='fa fa-pencil-square-o'></i></a>
+            <a href='{{ path(edit_route, { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='{{ 'entry.actions.edit'|trans }}' data-toggle='tooltip'><i class='fa fa-pencil-square-o'></i></a>
         {% endif %}
     {% endblock %}
 
     {% block copy_entry %}
         {% if copy and is_granted(copy_role) %}
-            <a href='{{ path(copy_route, { 'id': entity.id }) }}' class='btn btn-default btn-xs'
-               title='{{ 'entry.actions.copy'|trans }}' data-toggle='tooltip'><i class='fa fa-clone'></i></a>
+            <a href='{{ path(copy_route, { 'id': entity.id }) }}' class='btn btn-default btn-xs' title='{{ 'entry.actions.copy'|trans }}' data-toggle='tooltip'><i class='fa fa-clone'></i></a>
         {% endif %}
     {% endblock %}
 
     {% block delete_entry %}
         {% if deleted_link and is_granted(delete_role) %}
-            <a href='{{ path(delete_route, { 'id': entity.id }) }}' class='btn btn-danger btn-xs delete-link'
-               data-text='{{ 'entry.actions.delete.confirmation'|trans({'%doc%': entity}) }}'
-               title={{ 'entry.actions.delete'|trans() }} data-toggle='tooltip'><i class='fa fa-trash-o'></i></a>
+            <a href='{{ path(delete_route, { 'id': entity.id }) }}' class='btn btn-danger btn-xs delete-link' data-text='{{ 'entry.actions.delete.confirmation'|trans({'%doc%': entity}) }}' title={{ 'entry.actions.delete'|trans() }} data-toggle='tooltip'><i class='fa fa-trash-o'></i></a>
         {% endif %}
     {% endblock %}
 {% endspaceless %}

@@ -12,9 +12,7 @@
                     </div>
                     {{ 'views.api.getResultsTable.hotel_rooms_for'|trans({}, 'MBHOnlineBundle') }}
                     {{ results|first.nights }} {{ 'nights'|transchoice(results|first.nights) }} c
-                    <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> по <span id="mbh-results-duration-end">
-                        {{ results|first.end|date('d.m.Y') }}
-                    </span>
+                    <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> по <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>
                 </div>
                 {% if tariffResults|length > 0 %}
                     {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
