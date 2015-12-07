@@ -80,3 +80,4 @@ views.form.layout.online_form: "Онлайн форма"
 views.form.layout.online_polls: "Оценки"
 views.form.layout.invite: "Визовое приглашение"
 online_form.notification: "Оформлены новые брони через онлайн форму."
+views.form.period_is_not_filled: Не выбраны даты заезда и выезда!

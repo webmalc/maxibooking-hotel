@@ -26,7 +26,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      */
     public function indexAction()
     {
-        $this->setLocalByRequest();
+        $this->setLocaleByRequest();
 
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();

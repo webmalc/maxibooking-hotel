@@ -23,3 +23,9 @@ controller.formController.settings_saved_success: 'Настройки успеш
 
 form.inviteType.type.single: 'Однократная (600 руб.)'
 form.inviteType.type.twice: 'Двукратная (900 руб.)'
+
+payment_types:
+  in_hotel: 'Оплата при заселении'
+  online_full: 'Онлайн оплата (100%)'
+  online_first_day: 'Онлайн оплата (одни сутки)'
+  online_half: 'Онлайн оплата (50%)'

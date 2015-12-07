@@ -1,1 +1,32 @@
 form.formType.is_turned_on: Turned on?
+form.formType.parameters: 'form.formType.parameters'
+form.formType.use_online_form: 'form.formType.use_online_form'
+form.formType.room_types: 'form.formType.room_types'
+form.formType.parameters: 'form.formType.parameters'
+form.formType.should_we_use_room_type_field_in_online_form: 'form.formType.should_we_use_room_type_field_in_online_form'
+form.formType.are_there_guests: 'form.formType.are_there_guests'
+form.formType.should_we_use_guests_amount_field_in_online_form: 'form.formType.should_we_use_guests_amount_field_in_online_form'
+form.formType.should_we_use_nights_field: 'form.formType.should_we_use_nights_field'
+form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: 'form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date'
+form.formType.payment: 'form.formType.payment'
+form.formType.payment_type: 'form.formType.payment_type'
+form.formType.reservation_payment_types_with_online_form: 'form.formType.reservation_payment_types_with_online_form'
+controller.apiController.reservation_error_occured_refresh_page_and_try_again: 'controller.apiController.reservation_error_occured_refresh_page_and_try_again'
+controller.apiController.reservations_made_success: 'controller.apiController.reservations_made_success'
+controller.apiController.your_reservations_numbers: 'controller.apiController.your_reservations_numbers'
+controller.apiController.room_reservation_made_success: 'controller.apiController.room_reservation_made_success'
+controller.apiController.your_reservation_number: 'controller.apiController.your_reservation_number'
+controller.apiController.thank_you: 'controller.apiController.thank_you'
+controller.apiController.we_will_call_you_back_soon: 'controller.apiController.we_will_call_you_back_soon'
+controller.apiController.your_order_number: 'controller.apiController.your_order_number'
+controller.formController.settings_saved_success: 'controller.formController.settings_saved_success'
+
+form.inviteType.type.single: 'form.inviteType.type.single'
+form.inviteType.type.twice: 'form.inviteType.type.twice'
+
+
+payment_types:
+  in_hotel: 'In hotel'
+  online_full: '100 percents'
+  online_first_day: 'per first day'
+  online_half: 'half'
