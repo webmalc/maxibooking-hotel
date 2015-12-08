@@ -260,7 +260,7 @@
         </table>
 
 
-        {% if formParams.hasStamp is defined and formParams.hasStamp and hotel.organization.stamp %}
+        {% if formParams.hasStamp is defined and formParams.hasStamp and hotel.organization and hotel.organization.stamp %}
             <img style="position: relative; top: -100px; left: 0px; width: 400px;  height: 200px" src="{{ hotel.organization.stamp }}">
         {% endif %}
 
