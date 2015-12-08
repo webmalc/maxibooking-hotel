@@ -18,6 +18,9 @@ use MBH\Bundle\BaseBundle\Document\AbstractQueryCriteria;
  */
 class CashDocumentQueryCriteria extends AbstractQueryCriteria
 {
+    const TYPE_BY_ORDER = 'order';
+    const TYPE_BY_OTHER = 'other';
+
     /**
      * @var bool
      */
@@ -89,4 +92,17 @@ class CashDocumentQueryCriteria extends AbstractQueryCriteria
      * @var string
      */
     public $createdBy;
+
+    /**
+     * @var string|null
+     */
+    public $type;
+
+    /**
+     * @return array
+     */
+    public static function getTypeList()
+    {
+        return [self::TYPE_BY_ORDER, self::TYPE_BY_OTHER];
+    }
 }

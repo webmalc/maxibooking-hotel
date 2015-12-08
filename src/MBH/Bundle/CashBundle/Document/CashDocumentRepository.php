@@ -135,8 +135,12 @@ class CashDocumentRepository extends DocumentRepository
             $qb->field($criteria->filterByRange)->lte($criteria->end);
         }
 
-        if ($criteria->orderIds) {
-            $qb->field('order.id')->in($criteria->orderIds);
+        if ($criteria->type == CashDocumentQueryCriteria::TYPE_BY_ORDER) {
+            if ($criteria->orderIds) {
+                $qb->field('order.id')->in($criteria->orderIds);
+            }
+        } elseif($criteria->type == CashDocumentQueryCriteria::TYPE_BY_OTHER) {
+            $qb->field('order')->exists(false);
         }
 
         if($criteria->deleted && $this->dm->getFilterCollection()->isEnabled('softdeleteable')) {

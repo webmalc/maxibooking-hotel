@@ -2,7 +2,8 @@
 
 namespace MBH\Bundle\CashBundle\Form;
 
-use MBH\Bundle\CashBundle\Form\Extension\PayerType;
+use MBH\Bundle\PackageBundle\Document\Organization;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
@@ -15,8 +16,21 @@ class NewCashDocumentType extends CashDocumentType
     {
         parent::buildForm($builder, $options);
 
-        $payerType = new PayerType();
-        $payerType->buildForm($builder, $options + ['ajax' => true]);
-        //$builder->add('type_payer', $payerType, ['mapped' => false]);
+        $builder
+            ->add('organizationPayer', 'document', [
+                'label' => 'form.cashDocumentType.organization',
+                'required' => false,
+                'class' => Organization::class
+            ])
+            ->add('touristPayer', 'document', [
+                'label' => 'form.cashDocumentType.tourist',
+                'required' => false,
+                'class' => Tourist::class
+            ])
+            ->add('payer_select', 'hidden', [
+                'required' => false,
+                'mapped' => false,
+            ])
+        ;
     }
 }

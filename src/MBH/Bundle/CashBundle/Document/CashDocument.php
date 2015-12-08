@@ -281,10 +281,11 @@ class CashDocument extends Base
 
     private function checkDate()
     {
-        if(!$this->getIsPaid())
+        if (!$this->getIsPaid()) {
             $this->setPaidDate(null);
-        elseif(!$this->getPaidDate())
+        } elseif (!$this->getPaidDate()) {
             $this->setPaidDate(new \DateTime('now'));
+        }
     }
 
     /**
@@ -296,6 +297,7 @@ class CashDocument extends Base
     public function setIsConfirmed($isConfirmed)
     {
         $this->isConfirmed = $isConfirmed;
+
         return $this;
     }
 
@@ -318,6 +320,7 @@ class CashDocument extends Base
     public function setIsPaid($isPaid)
     {
         $this->isPaid = $isPaid;
+
         return $this;
     }
 
@@ -337,6 +340,7 @@ class CashDocument extends Base
     public function getHotel()
     {
         $order = $this->getOrder();
+
         return $order ? $order->getPackages()[0]->getRoomType()->getHotel() : null;
     }
 
@@ -373,6 +377,7 @@ class CashDocument extends Base
     public function setOrder(Order $order = null)
     {
         $this->order = $order;
+
         return $this;
     }
 
@@ -401,6 +406,7 @@ class CashDocument extends Base
     public function setDocumentDate(\DateTime $documentDate = null)
     {
         $this->documentDate = $documentDate;
+
         return $this;
     }
 
@@ -419,6 +425,7 @@ class CashDocument extends Base
     public function setPaidDate(\DateTime $paidDate = null)
     {
         $this->paidDate = $paidDate;
+
         return $this;
     }
 
@@ -440,7 +447,6 @@ class CashDocument extends Base
 
         return $this;
     }
-
 
 
     /**
@@ -467,8 +473,9 @@ class CashDocument extends Base
      */
     public function isValidDate()
     {
-        if($this->getIsPaid() && $this->getPaidDate())
+        if ($this->getIsPaid() && $this->getPaidDate()) {
             return $this->getPaidDate()->getTimestamp() >= $this->getDocumentDate()->getTimestamp();
+        }
 
         return true;
     }
@@ -478,9 +485,10 @@ class CashDocument extends Base
      */
     public function getOrderDocument()
     {
-        foreach($this->getOrder()->getDocuments() as $document){
-            if($document->getCashDocument() == $this)
+        foreach ($this->getOrder()->getDocuments() as $document) {
+            if ($document->getCashDocument() == $this) {
                 return $document;
+            }
         }
 
         return null;

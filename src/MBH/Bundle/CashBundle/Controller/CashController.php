@@ -48,6 +48,7 @@ class CashController extends Controller
             'users' => $this->dm->getRepository('MBHUserBundle:User')->findBy(['enabled' => true],
                 ['username' => 'asc']),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
+            'typeList' => CashDocumentQueryCriteria::getTypeList()
         ];
     }
 
@@ -159,6 +160,8 @@ class CashController extends Controller
 
         $queryCriteria->createdBy = $request->get('user');
 
+        $queryCriteria->type = $request->get('type');
+
         return $queryCriteria;
     }
 
@@ -268,11 +271,11 @@ class CashController extends Controller
      * @Template()
      * @ParamConverter("entity", class="MBHCashBundle:CashDocument")
      */
-    public function editAction(CashDocument $entity, Request $request)
+    public function editAction(CashDocument $cashDocument, Request $request)
     {
         $this->dm->getFilterCollection()->disable('softdeleteable');
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())
-            || ($entity->getIsConfirmed() && !$this->get('security.authorization_checker')->isGranted('ROLE_CASH_CONFIRM'))
+        if ($cashDocument->getHotel() && !$this->container->get('mbh.hotel.selector')->checkPermissions($cashDocument->getHotel())
+            || ($cashDocument->getIsConfirmed() && !$this->get('security.authorization_checker')->isGranted('ROLE_CASH_CONFIRM'))
         ) {
             throw $this->createAccessDeniedException();
         }
@@ -280,10 +283,10 @@ class CashController extends Controller
 
         $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
 
-        $form = $this->createForm(new CashDocumentType($this->dm), $entity, [
+        $form = $this->createForm(new NewCashDocumentType($this->dm), $cashDocument, [
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
-            'payers' => $cashDocumentRepository->getAvailablePayersByOrder($entity->getOrder()),
+            //'payers' => $cashDocumentRepository->getAvailablePayersByOrder($cashDocument->getOrder()),
             'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER')
         ]);
 
@@ -291,20 +294,20 @@ class CashController extends Controller
             $form->submit($request);
 
             if ($form->isValid()) {
-                $this->dm->persist($entity);
+                $this->dm->persist($cashDocument);
                 $this->dm->flush();
 
                 $request->getSession()->getFlashBag()->set('success',
                     $this->get('translator')->trans('controller.cashController.edit_record_success'));
 
-                return $this->afterSaveRedirect('cash', $entity->getId());
+                return $this->afterSaveRedirect('cash', $cashDocument->getId());
             }
         }
 
         return [
-            'entity' => $entity,
+            'entity' => $cashDocument,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'logs' => $this->logs($cashDocument)
         ];
     }
 

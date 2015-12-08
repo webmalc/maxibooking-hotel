@@ -29,6 +29,7 @@ views.cash.index.show_not_confirmed: Показать только неподт�
 views.cash.index.show_deleted: Показать удаленные
 views.cash.index.byDay: По дням
 views.cash.index.result: Итого
+views.cash.index.type: Тип
 
 cashDocument.method.cash: "Наличные"
 cashDocument.method.cashless: "Безнал"

@@ -102,7 +102,7 @@ class OrderSubscriber implements EventSubscriber
                 }
             }
 
-            if ($entity instanceof CashDocument) {
+            if ($entity instanceof CashDocument && $entity->getOrder()) {
                 try {
                     $order = $entity->getOrder();
                     $this->container->get('mbh.calculation')->setPaid($order);
@@ -157,7 +157,7 @@ class OrderSubscriber implements EventSubscriber
         }
 
         //Calc paid
-        if($entity instanceof CashDocument) {
+        if($entity instanceof CashDocument && $entity->getOrder()) {
             try {
                 $order = $entity->getOrder();
                 $this->container->get('mbh.calculation')->setPaid($order, null, $entity);
@@ -185,7 +185,7 @@ class OrderSubscriber implements EventSubscriber
         $entity = $args->getEntity();
 
         //Calc paid
-        if($entity instanceof CashDocument) {
+        if($entity instanceof CashDocument && $entity->getOrder()) {
             $order = $entity->getOrder();
             $this->container->get('mbh.calculation')->setPaid($order, $entity);
         }

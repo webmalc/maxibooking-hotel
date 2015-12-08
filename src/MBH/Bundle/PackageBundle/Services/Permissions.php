@@ -47,7 +47,7 @@ class Permissions
     }
 
     /**
-     * @return array
+     * @return Package[]
      */
     public function getAvailablePackages()
     {

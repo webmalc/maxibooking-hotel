@@ -2,9 +2,8 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
-use MBH\Bundle\PackageBundle\Document\Order as OrderDoc;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -41,12 +40,12 @@ class Calculation
     }
 
     /**
-     * @param OrderDoc $order
+     * @param Order $order
      * @param CashDocument $newDoc
      * @param CashDocument $removeDoc
-     * @return OrderDoc
+     * @return Order
      */
-    public function setPaid(OrderDoc $order, CashDocument $newDoc = null, CashDocument $removeDoc = null)
+    public function setPaid(Order $order, CashDocument $newDoc = null, CashDocument $removeDoc = null)
     {
         $total = 0;
         $ids = [];
