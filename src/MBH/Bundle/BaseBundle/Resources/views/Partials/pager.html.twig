@@ -1,0 +1,9 @@
+{% if pages > 1 %}
+    <nav class="text-center {{ class }}">
+        <ul class="pagination pagination-sm">
+            {% for i in 1..pages %}
+                <li class="pagination-link {{ i == page ? 'active' : ''}}"><a href="#">{{ i }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+{% endif %}

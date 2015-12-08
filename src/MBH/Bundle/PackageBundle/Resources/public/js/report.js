@@ -45,9 +45,12 @@ $(document).ready(function () {
         },
         // get accommodation report content
         accommodationReportProcessing = false,
-        accommodationReportGet = function () {
+        accommodationReportGet = function (page) {
             var form = $('#accommodation-report-filter'),
-                wrapper = $('#accommodation-report-content');
+                wrapper = $('#accommodation-report-content')
+                ;
+
+            page = typeof page !== 'undefined' ? page : 1;
 
             if (wrapper.length === 0) {
                 return false;
@@ -55,9 +58,12 @@ $(document).ready(function () {
             wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
 
             if (!accommodationReportProcessing) {
+                var data = form.serializeObject();
+                data.page = page;
+
                 $.ajax({
                     url: Routing.generate('report_accommodation_table'),
-                    data: form.serializeObject(),
+                    data: data,
                     beforeSend: function () {
                         accommodationReportProcessing = true;
                     },
@@ -68,6 +74,10 @@ $(document).ready(function () {
                         accommodationReportProcessing = false;
                         $('[data-toggle="popover"]').popover({html: true});
                         choosePackages();
+                        $('.accommodation-report-pagination').find('a').click(function (e) {
+                            e.preventDefault();
+                            accommodationReportGet($(this).text());
+                        });
                     },
                     dataType: 'html'
                 });

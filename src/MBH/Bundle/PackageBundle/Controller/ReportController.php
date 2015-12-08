@@ -10,14 +10,10 @@ use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\OnlineBundle\Document\Invite;
-use MBH\Bundle\PackageBundle\Component\FillingReportGenerator;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReport;
 use MBH\Bundle\PackageBundle\Component\RoomTypeReportCriteria;
-use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\Document\PackageRepository;
-use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\UserBundle\Document\WorkShift;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -29,7 +25,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * @Route("/report")
@@ -305,12 +300,23 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $to->modify('+1 day');
         $period = iterator_to_array(new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $to));
 
+        $page = $request->get('page') ? $request->get('page') : 1;
+
         //rooms
-        $rooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetch(
+        $roomsCount = $this->dm->getRepository('MBHHotelBundle:Room')->fetchQuery(
             $hotel,
             $request->get('roomType'),
             $request->get('housing'),
             $request->get('floor')
+        )->getQuery()->count();
+
+        $rooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetch(
+            $hotel,
+            $request->get('roomType'),
+            $request->get('housing'),
+            $request->get('floor'),
+            ($page - 1) * 30 ,
+            30
         );
 
         //packages
@@ -414,6 +420,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         return [
             'calendarMonths' => $calendarMonths,
+            'roomsCount' => $roomsCount,
+            'pages' => ceil($roomsCount/30),
+            'page' => $page,
             'roomsData' => $roomsData,
             'totalDays' => count($period),
             'begin' => $begin,
