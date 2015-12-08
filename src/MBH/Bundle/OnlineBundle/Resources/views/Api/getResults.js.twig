@@ -25,8 +25,11 @@ jQuery(document).ready(function () {
         },
         query = getUrlVars()
     ;
+    //var errorHtml = '<div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Не выбраны даты заезда и выезда!</div>';
+    var errorHtml = $('#mbh-date-error').clone().removeClass('hide').attr('id', '');
     if (!query.begin || !query.end) {
-        wrapper.html('<div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Не выбраны даты заезда и выезда!</div>');
+        console.log(1);
+        wrapper.html(errorHtml);
         return false;
     }
     waiting();
@@ -240,6 +243,7 @@ jQuery(document).ready(function () {
                     requestParams.totalServices = jQuery('#mbh-results-total-services-sum').text();
                     requestParams.packages = [];
                     requestParams.services = [];
+                    requestParams.locale = $('#locale-input').val();
                     roomCount.each( function() {
                         if(jQuery(this).val() > 0) {
                             var tr = jQuery(this).closest('tr'),

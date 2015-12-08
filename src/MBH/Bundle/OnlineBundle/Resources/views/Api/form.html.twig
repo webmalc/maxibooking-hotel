@@ -9,7 +9,7 @@
         <label for="mbh-form-hotel">{{ 'views.api.form.hotel'|trans({}, 'MBHOnlineBundle') }}</label>
         <select name="hotel" id="mbh-form-hotel">
             <option></option>
-            {% for hotel in hotels %}<option value="{{ hotel.id }}">{{ hotel.fullTitle }}</option>{% endfor %}
+            {% for hotel in hotels %}<option value="{{ hotel.id }}">{{ hotel.localeTitle }}</option>{% endfor %}
         </select>
     </div>
     {% endif %}
@@ -40,7 +40,7 @@
         <label for="mbh-form-roomType"> {{ 'views.api.form.room_type'|trans({}, 'MBHOnlineBundle') }}</label>
         <select id="mbh-form-roomType" name="roomType">
             <option></option>
-            {% for roomType in hotels|first.roomTypes %}<option value="{{ roomType.id }}">{{ roomType.fullTitle }}</option>{% endfor %}
+            {% for roomType in hotels|first.roomTypes %}<option value="{{ roomType.id }}">{{ roomType.localeTitle }}</option>{% endfor %}
         </select>
     </div>
     {% endif %}
@@ -70,8 +70,10 @@
 
     <div id="mbh-actions-wrapper"></div>
 
-    <input type="hidden" name="locale" value="{{ app.request.locale }}">
+    <input type="hidden" id="mbh-form-locale" name="locale" value="{{ app.request.locale }}">
 </form>
+
+<input type="hidden" value="{{ app.request.locale }}" id="locale-input">
 {% endif %}
 {% endspaceless %}
 

@@ -134,13 +134,19 @@ class BaseController extends Controller
         return $this->redirectToRoute($route, $params);
     }
 
-    protected function setLocalByRequest()
+    protected function setLocaleByRequest()
     {
         $request = $this->get('request_stack')->getCurrentRequest();
         $locale = $request->get('locale');
         if ($locale) {
-            $request->setLocale($locale);
-            $this->get('translator')->setLocale($request->getLocale());
+            $this->setLocale($locale);
         }
+    }
+
+    protected function setLocale($locale)
+    {
+        $request = $this->get('request_stack')->getCurrentRequest();
+        $request->setLocale($locale);
+        $this->get('translator')->setLocale($request->getLocale());
     }
 }

@@ -4,6 +4,9 @@ namespace MBH\Bundle\PackageBundle\Services;
 
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite;
+use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -65,12 +68,12 @@ class Calculation
             }
             $ids[] = $cash->getId();
 
-            if($removeDoc && $removeDoc->getId() == $cash->getId()) {
+            if ($removeDoc && $removeDoc->getId() == $cash->getId()) {
                 continue;
             }
             if ($cash->getOperation() == 'out') {
                 $total -= $cash->getTotal();
-            } elseif($cash->getOperation() == 'in') {
+            } elseif ($cash->getOperation() == 'in') {
                 $total += $cash->getTotal();
             }
         }
@@ -114,9 +117,10 @@ class Calculation
      * @param \DateTime $end
      * @param int $adults
      * @param int $children
+     * @param Promotion $promotion
      * @return array|bool
      */
-    public function calcPrices(RoomType $roomType, Tariff $tariff, \DateTime $begin, \DateTime $end, $adults = 0, $children = 0)
+    public function calcPrices(RoomType $roomType, Tariff $tariff, \DateTime $begin, \DateTime $end, $adults = 0, $children = 0, Promotion $promotion = null)
     {
         $prices = [];
         $places = $roomType->getPlaces();
@@ -148,29 +152,41 @@ class Calculation
         }
 
         foreach ($combinations as $combination) {
+            $promoConditions = PromotionConditionFactory::checkConditions($promotion, $duration, $combination['adults'] + $combination['children']);
             $total = 0;
-            $all = $combination['adults'] + $combination['children'];
+            $totalChildren = $combination['children'];
+            $totalAdults = $combination['adults'];
+
+            if ($promoConditions) {
+                $totalChildren -= (int)$promotion->getFreeChildrenQuantity();
+                $totalAdults -= (int)$promotion->getFreeAdultsQuantity();
+                $totalAdults = $totalAdults >= 1 ? $totalAdults : 1;
+                $totalChildren = $totalChildren >= 0 ? $totalChildren : 0;
+            }
+
+            $all = $totalAdults + $totalChildren;
             $adds = $all - $places;
+
             if ($all > $places) {
 
-                if ($combination['adults'] >= $places) {
+                if ($totalAdults >= $places) {
                     $mainAdults = $places;
                     $mainChildren = 0;
                 } else {
-                    $mainAdults = $combination['adults'];
-                    $mainChildren = $places - $combination['adults'];
+                    $mainAdults = $totalAdults;
+                    $mainChildren = $places - $totalAdults;
                 }
 
-                if ($adds > $combination['children']) {
-                    $addsChildren = $combination['children'];
+                if ($adds > $totalChildren) {
+                    $addsChildren = $totalChildren;
                     $addsAdults = $adds - $addsChildren;
                 } else {
                     $addsChildren = $adds;
                     $addsAdults = 0;
                 }
             } else {
-                $mainAdults = $combination['adults'];
-                $mainChildren = $combination['children'];
+                $mainAdults = $totalAdults;
+                $mainChildren = $totalChildren;
                 $addsAdults = 0;
                 $addsChildren = 0;
             }
@@ -195,18 +211,18 @@ class Calculation
                 }
 
                 //calc adds
-                if($addsChildren && $cache->getAdditionalChildrenPrice() === null) {
+                if ($addsChildren && $cache->getAdditionalChildrenPrice() === null) {
                     continue 2;
                 }
-                if($addsAdults && $cache->getAdditionalPrice() === null) {
+                if ($addsAdults && $cache->getAdditionalPrice() === null) {
                     continue 2;
                 }
 
                 if ($roomType->getIsIndividualAdditionalPrices() and ($addsChildren + $addsAdults) > 1) {
                     $addsPrice = 0;
-                    $additionalCalc = function ($num, $prices, $price) {
+                    $additionalCalc = function ($num, $prices, $price, $start = 0) {
                         $result = 0;
-                        for ($i = 0; $i < $num; $i++) {
+                        for ($i = $start; $i < $num; $i++) {
                             if (isset($prices[$i]) && $prices[$i] !== null) {
                                 $result += $prices[$i];
                             } else {
@@ -224,8 +240,14 @@ class Calculation
                 }
 
                 $dayPrice += $addsPrice;
+
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
                 $total += $dayPrice;
+            }
+
+            // calc promotion discount
+            if ($promoConditions) {
+                $total -= PromotionConditionFactory::calcDiscount($promotion, $total);
             }
 
             $prices[$combination['adults'] . '_' . $combination['children']] = [

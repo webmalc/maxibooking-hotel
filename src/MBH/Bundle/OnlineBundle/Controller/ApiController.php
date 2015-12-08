@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Translation\Translator;
 
 /**
  * @Route("/api")
@@ -30,7 +31,7 @@ class ApiController extends Controller
      */
     public function getFormAction()
     {
-        $this->setLocalByRequest();
+        $this->setLocaleByRequest();
 
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
@@ -178,8 +179,6 @@ class ApiController extends Controller
      */
     public function getResultsAction()
     {
-        $this->setLocalByRequest();
-
         return [
             'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
             'urls' => [
@@ -199,7 +198,7 @@ class ApiController extends Controller
      */
     public function getResultsTableAction(Request $request)
     {
-        $this->setLocalByRequest();
+        $this->setLocaleByRequest();
 
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
@@ -253,12 +252,16 @@ class ApiController extends Controller
      */
     public function getUserFormAction(Request $request)
     {
-        $request = json_decode($request->getContent());
+        $requestJson = json_decode($request->getContent());
+        if (property_exists($requestJson, 'locale')) {
+            $this->setLocale($requestJson->locale);
+        }
+
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
         return [
             'arrival' => $this->container->getParameter('mbh.package.arrival.time'),
-            'request' => $request
+            'request' => $requestJson
         ];
     }
 
@@ -273,7 +276,10 @@ class ApiController extends Controller
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
 
-        $request = json_decode($request->getContent());
+        $requestJson = json_decode($request->getContent());
+        if (property_exists($requestJson, 'locale')) {
+            $this->setLocale($requestJson->locale);
+        }
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
         return [
@@ -281,7 +287,7 @@ class ApiController extends Controller
             'formConfig' => $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]),
             'clientConfig' => $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig(),
             'env' => $this->container->getParameter('mbh.environment') == 'prod' ? true : false,
-            'request' => $request
+            'request' => $requestJson
         ];
     }
 
@@ -294,11 +300,12 @@ class ApiController extends Controller
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
-        $request = json_decode($request->getContent());
+        $requestJson = json_decode($request->getContent());
+
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
         //Create packages
-        $order = $this->createPackages($request, $request->paymentType != 'in_hotel');
+        $order = $this->createPackages($requestJson, $requestJson->paymentType != 'in_hotel');
 
         if (empty($order)) {
             return new JsonResponse([
@@ -307,29 +314,35 @@ class ApiController extends Controller
             ]);
         }
         $packages = iterator_to_array($order->getPackages());
-        $this->sendNotifications($order, $request->arrival . ':00', $request->departure . ':00');
+        $this->sendNotifications($order, $requestJson->arrival . ':00', $requestJson->departure . ':00');
 
-        if (count($packages) > 1) {
-            $roomStr = $this->get('translator')->trans('controller.apiController.reservations_made_success');
-            $packageStr = $this->get('translator')->trans('controller.apiController.your_reservations_numbers');
-        } else {
-            $roomStr = $this->get('translator')->trans('controller.apiController.room_reservation_made_success');
-            $packageStr = $this->get('translator')->trans('controller.apiController.your_reservation_number');
+        if (property_exists($requestJson, 'locale')) {
+            $this->setLocale($requestJson->locale);
         }
-        $message = $this->get('translator')->trans('controller.apiController.thank_you').$roomStr.$this->get('translator')->trans('controller.apiController.we_will_call_you_back_soon');
-        $message .= $this->get('translator')->trans('controller.apiController.your_order_number').$order->getId().'. ';
+
+        /** @var Translator $translator */
+        $translator = $this->get('translator');
+        if (count($packages) > 1) {
+            $roomStr = $translator->trans('controller.apiController.reservations_made_success');
+            $packageStr = $translator->trans('controller.apiController.your_reservations_numbers');
+        } else {
+            $roomStr = $translator->trans('controller.apiController.room_reservation_made_success');
+            $packageStr = $translator->trans('controller.apiController.your_reservation_number');
+        }
+        $message = $translator->trans('controller.apiController.thank_you').$roomStr.$translator->trans('controller.apiController.we_will_call_you_back_soon');
+        $message .= $translator->trans('controller.apiController.your_order_number').$order->getId().'. ';
         $message .= $packageStr.': '.implode(', ', $packages).'.';
 
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
-        if ($request->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
+        if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
             $form = false;
         } else {
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig', [
                     'data' => array_merge(['test' => false,
                         'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
-                            ['%total%' => number_format($request->total, 2), '%order_id%' => $order->getId()],
+                            ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],
                             'MBHOnlineBundle')
                     ], $clientConfig->getFormData($order->getCashDocuments()[0],
                         $this->container->getParameter('online_form_result_url'),
@@ -439,8 +452,10 @@ class ApiController extends Controller
                 'adults' => $info->adults,
                 'children' => $info->children,
                 'roomType' => $info->roomType->id,
+                'accommodation' => false,
                 'tariff' => $info->tariff->id,
-                'isOnline' => true
+                'isOnline' => true,
+                'accommodation' => false,
             ];
         }
         foreach ($request->services as $info) {
@@ -466,9 +481,8 @@ class ApiController extends Controller
             ], null, null, $cash ? ['total' => (float)$request->total] : null);
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
-                dump($e);
+                dump($e->getMessage());
             };
-
             return false;
         }
 

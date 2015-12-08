@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
@@ -44,7 +45,7 @@ class Hotel extends Base implements \JsonSerializable
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
-
+    use InternableDocument;
     /**
      * @var string
      * @Gedmo\Versioned
@@ -71,20 +72,6 @@ class Hotel extends Base implements \JsonSerializable
      * )
      */
     protected $title;
-
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
-     * @Assert\Length(
-     *      min=2,
-     *      minMessage="validator.document.hotel.min_name",
-     *      max=100,
-     *      maxMessage="validator.document.hotel.min_name"
-     * )
-     * @Assert\Regex(pattern="/^[^А-Яа-я]+$/iu", message="validator.document.roomType.internationalTitle.only_english")
-     */
-    protected $internationalTitle;
 
     /**
      * @var string
@@ -345,22 +332,6 @@ class Hotel extends Base implements \JsonSerializable
         $this->title = $title;
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getInternationalTitle()
-    {
-        return $this->internationalTitle;
-    }
-
-    /**
-     * @param string $internationalTitle
-     */
-    public function setInternationalTitle($internationalTitle)
-    {
-        $this->internationalTitle = $internationalTitle;
     }
 
     /**

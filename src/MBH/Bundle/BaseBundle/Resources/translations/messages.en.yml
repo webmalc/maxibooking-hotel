@@ -112,3 +112,6 @@ mailer.userArrival.bye: We will be glad to see you!
 mailer.base.rate.bad: Bad
 mailer.base.rate.good: Good
 mailer.base.rate.perfect: Perfect
+
+to: to
+from: from

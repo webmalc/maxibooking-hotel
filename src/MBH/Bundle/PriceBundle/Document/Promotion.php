@@ -68,20 +68,23 @@ class Promotion extends Base
     protected $title;
 
     /**
-     * @ODM\Integer()
+     * @ODM\Float()
      * @var int
+     * @Assert\Range(min=0)
      */
     protected $discount;
 
     /**
      * @ODM\Bool()
      * @var bool
+     * @Assert\Type(type="boolean")
      */
     protected $isPercentDiscount;
 
     /**
      * @ODM\Bool()
      * @var bool
+     * @Assert\Type(type="boolean")
      */
     protected $isIndividual;
 
@@ -95,7 +98,7 @@ class Promotion extends Base
      * @ODM\Integer()
      * @var integer
      * @Assert\Type(type="numeric")
-     * @Assert\Length(min="0", max="10")
+     * @Assert\Range(min="1", max="10")
      */
     protected $freeChildrenQuantity;
 
@@ -103,7 +106,7 @@ class Promotion extends Base
      * @ODM\Integer()
      * @var integer
      * @Assert\Type(type="numeric")
-     * @Assert\Length(min="0", max="10")
+     * @Assert\Range(min="1", max="10")
      */
     protected $freeAdultsQuantity;
 
@@ -118,6 +121,7 @@ class Promotion extends Base
      * @ODM\Integer()
      * @var integer
      * @Assert\Type(type="numeric")
+     * @Assert\Range(min="1", max="10")
      */
     protected $conditionQuantity;
 

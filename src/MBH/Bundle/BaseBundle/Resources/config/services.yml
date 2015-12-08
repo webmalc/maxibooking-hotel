@@ -158,6 +158,11 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: mbh_range }
 
+    mbh.event_listener.generate_internationl_listener:
+        class: MBH\Bundle\BaseBundle\EventListener\GenerateInternationalListener
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
     #mbh.menu.voter.request:
     #    class: MBH\Bundle\BaseBundle\Menu\RequestContentIdentityVoter
     #    arguments:

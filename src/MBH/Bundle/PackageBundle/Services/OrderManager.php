@@ -61,10 +61,12 @@ class OrderManager
             $old->getEnd() == $new->getEnd() &&
             $old->getRoomType()->getId() == $new->getRoomType()->getId() &&
             $old->getAdults() == $new->getAdults() &&
-            $old->getChildren() == $new->getChildren()
+            $old->getChildren() == $new->getChildren() &&
+            $old->getPromotion() == $new->getPromotion()
         ) {
             return $new;
         }
+
 
         //check accommodation
         $accommodation = $old->getAccommodation();
@@ -97,6 +99,7 @@ class OrderManager
         $query->excludeBegin = $old->getBegin();
         $query->excludeEnd = $oldEnd->modify('-1 day');
         $query->forceRoomTypes = true;
+        $query->setPromotion($new->getPromotion() ? $new->getPromotion() : false);
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
