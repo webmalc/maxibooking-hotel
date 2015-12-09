@@ -2,9 +2,13 @@
 
 namespace MBH\Bundle\CashBundle\Form;
 
+use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 /**
  * Class NewCashDocumentType
@@ -17,20 +21,20 @@ class NewCashDocumentType extends CashDocumentType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('organizationPayer', 'document', [
+            ->add('organizationPayer', 'text', [
                 'label' => 'form.cashDocumentType.organization',
-                'required' => false,
-                'class' => Organization::class
+                'required' => false
             ])
-            ->add('touristPayer', 'document', [
+            ->add('touristPayer', 'text', [
                 'label' => 'form.cashDocumentType.tourist',
-                'required' => false,
-                'class' => Tourist::class
+                'required' => false
             ])
             ->add('payer_select', 'hidden', [
                 'required' => false,
                 'mapped' => false,
             ])
         ;
+        $builder->get('organizationPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Organization::class));
+        $builder->get('touristPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Tourist::class));
     }
 }

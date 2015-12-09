@@ -123,6 +123,7 @@ $(document).ready(function () {
         "aoColumns": [
             {"bSortable": false}, // icon
             null, // prefix
+            {"class": "text-center"},
             null, // in
             null, // out
             null, //operation
@@ -131,6 +132,7 @@ $(document).ready(function () {
             null, // isPaid
             null, // user
             null, // deletedAt
+            {"class": "show-on-print"}, // note
             {"bSortable": false, "class": "table-actions-td"} // actions
         ],
         "drawCallback": drawCallback
@@ -235,4 +237,3 @@ $(document).ready(function () {
         window.open(href + '?' + jQuery.param(data));
     });
 });
-

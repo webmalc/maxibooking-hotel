@@ -5,6 +5,7 @@ views.cash.index.filter.byPaidDate: 'По поступлению'
 views.cash.index.filter.byDocumentDate: 'По выставлению'
 views.cash.index.filter.byDeletedDate: 'По удалению'
 views.cash.index.document_list: 'список документов'
+views.cash.index.note: Комментарий
 views.cash.index.reservation: Заказ
 views.cash.index.income: Приход
 views.cash.index.expense: Расход
@@ -29,7 +30,7 @@ views.cash.index.show_not_confirmed: Показать только неподт�
 views.cash.index.show_deleted: Показать удаленные
 views.cash.index.byDay: По дням
 views.cash.index.result: Итого
-views.cash.index.type: Тип
+views.cash.index.type: Движение д/с
 
 cashDocument.method.cash: "Наличные"
 cashDocument.method.cashless: "Безнал"

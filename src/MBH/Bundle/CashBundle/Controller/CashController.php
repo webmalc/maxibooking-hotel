@@ -16,7 +16,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use MBH\Bundle\CashBundle\Form\CashDocumentType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -43,8 +42,16 @@ class CashController extends Controller
             ['cashless_electronic' => "Безнал (в т.ч. электронные)"] +
             array_slice($methods, 2, count($methods) - 1, true);
 
+        $queryCriteria = new CashDocumentQueryCriteria();
+        $queryCriteria->methods = ['cash'];
+        $queryCriteria->isPaid = true;
+        $in = $this->dm->getRepository('MBHCashBundle:CashDocument')->total('in', $queryCriteria);
+        $out = $this->dm->getRepository('MBHCashBundle:CashDocument')->total('out', $queryCriteria);
+        $total = $in - $out;
+
         return [
             'methods' => $methods,
+            'total' => $total,
             'users' => $this->dm->getRepository('MBHUserBundle:User')->findBy(['enabled' => true],
                 ['username' => 'asc']),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
@@ -174,13 +181,16 @@ class CashController extends Controller
         $clientDataTableParams = ClientDataTableParams::createFromRequest($request);
         $clientDataTableParams->setSortColumnFields([
             1 => 'number',
-            2 => 'total',
+            2 => 'order',
             3 => 'total',
-            4 => 'operation',
-            6 => 'documentDate',
-            7 => 'paidDate',
-            8 => 'createdBy',
-            9 => 'deletedAt'
+            4 => 'total',
+            5 => 'operation',
+            6 => 'payer',
+            7 => 'documentDate',
+            8 => 'paidDate',
+            9 => 'createdBy',
+            10 => 'deletedAt',
+            11 => 'note',
         ]);
 
         $queryCriteria->skip = $clientDataTableParams->getStart();
@@ -254,6 +264,17 @@ class CashController extends Controller
                     $this->get('translator')->trans('controller.cashController.edit_record_success'));
 
                 return $this->afterSaveRedirect('cash', $cashDocument->getId());
+            }
+        } else {
+            if (!$cashDocument->getId() && !$cashDocument->getNumber()) {
+                $collection = $this->dm->getFilterCollection();
+                $collection->disable('softdeleteable');
+                $inc = $this->dm->getRepository('MBHCashBundle:CashDocument')
+                    ->createQueryBuilder()->field('order')->exists(false)
+                    ->getQuery()->count();
+                $cashDocument->setNumber($inc);
+                $collection->enable('softdeleteable');
+                $form->setData($cashDocument);
             }
         }
 

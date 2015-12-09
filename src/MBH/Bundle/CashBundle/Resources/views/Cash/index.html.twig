@@ -53,6 +53,16 @@
                 </select>
             </div>
             <div class="input">
+                <i class="fa fa-paper-plane" title="{{ 'views.cash.index.type'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"></i>
+                &nbsp;
+                <select id="cash-type" name="type">
+                    <option></option>
+                    {% for type in typeList %}
+                        <option value="{{ type }}">{{ ('cashDocumentCriteria.type.' ~ type)|trans }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input">
                 <i class="fa fa-check"
                    title="{{ 'views.cash.index.show_not_confirmed'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"
                 ></i>
@@ -74,80 +84,74 @@
                           data-toggle="tooltip"></i>&nbsp;
                 <input type="checkbox" name="by_day" id="by_day" value="1">
             </div>
-            <div class="input">
-                <i class="fa fa-paper-plane" title="{{ 'views.cash.index.type'|trans({}, 'MBHCashBundle') }}" data-toggle="tooltip"></i>
-                &nbsp;
-                <select id="cash-type" name="type">
-                    <option></option>
-                    {% for type in typeList %}
-                        <option value="{{ type }}">{{ ('cashDocumentCriteria.type.' ~ type)|trans }}</option>
-                    {% endfor %}
-                </select>
-            </div>
         </form>
         {% endblock content %}
     {% endembed %}
 
 <div class="cash-table-item">
-<table id="cash-table"
-       class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
-    <thead>
-    <tr>
-        <th class="td-xxs text-center"></th>
-        <th class="td-xs text-center">{{ 'views.cash.index.reservation'|trans({}, 'MBHCashBundle') }}</th>
-        <th class="td-md text-right">{{ 'views.cash.index.income'|trans({}, 'MBHCashBundle') }}</th>
-        <th class="td-md text-right">{{ 'views.cash.index.expense'|trans({}, 'MBHCashBundle') }}</th>
-        <th class="td-md">{{ 'views.cash.index.operation_type'|trans({}, 'MBHCashBundle') }}</th>
-        <th class="td-md">{{ 'order.cash.payer'|trans({}, 'MBHPackageBundle') }}</th>
-        <th class="td-xs">{{ 'views.cash.index.date'|trans({}, 'MBHCashBundle') }}</th>
-        <th class="td-sm text-center">{{ 'views.cash.index.is_paid'|trans({}, 'MBHCashBundle') }}</th>
-        <th class="td-sm text-center">{{ 'views.cash.index.user'|trans({}, 'MBHCashBundle') }}</th>
-        <th class="td-sm">{{ 'views.cash.index.removed'|trans({}, 'MBHCashBundle') }}</th>
-        <th class="td-md"></th>
-    </tr>
-    </thead>
-    <tbody>
-    </tbody>
-    <tfoot>
-    <tr>
-        <td></td>
-        <td class="text-center">
-            <strong>{{ 'views.cash.index.result'|trans({}, 'MBHCashBundle') }}:</strong>
+    <table id="cash-table"
+           class="table not-auto-datatable table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xxs text-center"></th>
+            <th class="td-xs text-center">#</th>
+            <th class="td-xs text-center">{{ 'views.cash.index.reservation'|trans({}, 'MBHCashBundle') }}</th>
+            <th class="td-md text-right">{{ 'views.cash.index.income'|trans({}, 'MBHCashBundle') }}</th>
+            <th class="td-md text-right">{{ 'views.cash.index.expense'|trans({}, 'MBHCashBundle') }}</th>
+            <th class="td-md">{{ 'views.cash.index.operation_type'|trans({}, 'MBHCashBundle') }}</th>
+            <th class="td-md">{{ 'order.cash.payer'|trans({}, 'MBHPackageBundle') }}</th>
+            <th class="td-xs">{{ 'views.cash.index.date'|trans({}, 'MBHCashBundle') }}</th>
+            <th class="td-sm text-center">{{ 'views.cash.index.is_paid'|trans({}, 'MBHCashBundle') }}</th>
+            <th class="td-sm text-center">{{ 'views.cash.index.user'|trans({}, 'MBHCashBundle') }}</th>
+            <th class="td-sm">{{ 'views.cash.index.removed'|trans({}, 'MBHCashBundle') }}</th>
+            <th class="td-md text-right show-on-print">{{ 'views.cash.index.note'|trans({}, 'MBHCashBundle') }}</th>
+            <th class="td-md"></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="text-center">
+                <strong>{{ 'views.cash.index.result'|trans({}, 'MBHCashBundle') }}:</strong>
 
-            <div>&nbsp;</div>
-        </td>
-        <td class="text-right">
-            <div>
-                <strong class="cash-table-total-in text-success"></strong>
-            </div>
-            <div>
-                &nbsp;
-                <small class="cash-table-no-confirmed-total-in text-info"></small>
-            </div>
-        </td>
-        <td class="text-right">
-            <div>
-                <strong class="cash-table-total-out text-danger"></strong>
-            </div>
-            <div>
-                &nbsp;
-                <small class="cash-table-no-confirmed-total-out text-info"></small>
-            </div>
-        </td>
-        <td class="text-center">
-            <strong>{{ 'views.cash.index.saldo'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp; <strong
-                    class="cash-table-total"></strong>
+                <div>&nbsp;</div>
+            </td>
+            <td class="text-right">
+                <div>
+                    <strong class="cash-table-total-in text-success"></strong>
+                </div>
+                <div>
+                    &nbsp;
+                    <small class="cash-table-no-confirmed-total-in text-info"></small>
+                </div>
+            </td>
+            <td class="text-right">
+                <div>
+                    <strong class="cash-table-total-out text-danger"></strong>
+                </div>
+                <div>
+                    &nbsp;
+                    <small class="cash-table-no-confirmed-total-out text-info"></small>
+                </div>
+            </td>
+            <td class="text-center">
+                <strong>{{ 'views.cash.index.saldo'|trans({}, 'MBHCashBundle') }}:</strong>&nbsp; <strong
+                        class="cash-table-total"></strong>
 
-            <div>&nbsp;</div>
-        </td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    </tfoot>
-</table>
+                <div>&nbsp;</div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="show-on-print"></td>
+            <td></td>
+        </tr>
+        </tfoot>
+    </table>
 </div>
 
 
@@ -196,6 +200,10 @@
 </table>
 </div>
 
+<div class="show-on-print pull-right">
+    <a>Остаток по кассе: <strong>{{ total|number_format(2) }}</strong>&nbsp;<i class="{{ currency().icon }}"></i></a>
+</div>
+
 <style>
 .cash-table-item {
 display: none;
@@ -203,7 +211,7 @@ display: none;
 </style>
 
 {% embed "MBHBaseBundle:Actions:base_list.html.twig" %}
-{% block right %}
+{% block left %}
 <li>
 <button onclick="location.href = '{{ path('cash_new') }}'" class="btn btn-success navbar-btn">
     <i class="fa fa-plus"></i> Создать
@@ -219,6 +227,11 @@ display: none;
         <li><a href="{{ path('cash_1c_export', {method: 'cashless'}) }}" target="_blank">Выгрузить всё</a></li>
     </ul>
 </div>
+</li>
+{% endblock %}
+{% block right %}
+<li>
+    <a href="{{ path('cash') }}"> Остаток по кассе: <strong>{{ total|number_format(2) }}</strong>&nbsp;<i class="{{ currency().icon }}"></i></a>
 </li>
 {% endblock %}
 {% endembed %}

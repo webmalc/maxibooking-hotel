@@ -14,4 +14,4 @@ controller.cashController.edit_record_success: 'Запись успешно от
 controller.cashController.payment_confirmed_success: 'Платеж успешно подтвержден'
 
 cashDocumentCriteria.type.order: По заказам
-cashDocumentCriteria.type.other: Дополнительные
+cashDocumentCriteria.type.other: Без заказов

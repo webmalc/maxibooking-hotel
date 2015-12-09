@@ -19,7 +19,7 @@ class CashDocumentType extends AbstractType
     /**
      * @var DocumentManager
      */
-    private $documentManager;
+    protected $documentManager;
 
     public function __construct(DocumentManager $documentManager)
     {
