@@ -22,7 +22,7 @@ class HotelableListener implements EventSubscriber
     public function getSubscribedEvents()
     {
         return [
-            Events::prePersist => 'prePersist'
+            //Events::prePersist => 'prePersist'
         ];
     }
 
