@@ -292,7 +292,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             $begin->modify('-4 days');
         }
         $end = $helper->getDateFromString($request->get('end'));
-        if (!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
+        if (!$end || $end->diff($begin)->format("%a") > 160 || $end <= $begin) {
             $end = clone $begin;
             $end->modify('+40 days');
         }
