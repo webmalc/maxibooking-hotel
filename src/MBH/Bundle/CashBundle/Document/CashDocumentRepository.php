@@ -64,7 +64,18 @@ class CashDocumentRepository extends DocumentRepository
             $qb->field('operation')->in(['out', 'fee']);
         }
 
-        $qb->map('function() { emit(1, this.total); }')
+        $aggregate = [
+            ['$match' => $qb->getQuery()->getQuery()['query']],
+            ['$project' => ['total' => 1]],
+            ['$group' => [
+                '_id' => null, 'total' => ['$sum' => '$total']]
+            ]
+        ];
+        $result = $this->dm->getDocumentCollection(CashDocument::class)->aggregate($aggregate);
+        $total = $result[0]['total'];
+
+        /*$qb
+            ->map('function() { emit(1, this.total); }')
             ->reduce('function(k, vals) {
                     var sum = 0;
                     for (var i in vals) {
@@ -72,10 +83,11 @@ class CashDocumentRepository extends DocumentRepository
                     }
                     return sum;
             }');
-
         $result = $qb->getQuery()->execute();
+        $total = (isset($result[0]['value'])) ? $result[0]['value'] : 0;
+        */
 
-        return (isset($result[0]['value'])) ? $result[0]['value'] : 0;
+        return $total;
     }
 
     /**
@@ -105,12 +117,10 @@ class CashDocumentRepository extends DocumentRepository
         }
 
         if ($criteria->methods) {
-
             $qb->field('method')->in($criteria->methods);
         }
 
         if ($criteria->createdBy) {
-
             $qb->field('createdBy')->equals($criteria->createdBy);
         }
 
@@ -135,8 +145,12 @@ class CashDocumentRepository extends DocumentRepository
             $qb->field($criteria->filterByRange)->lte($criteria->end);
         }
 
-        if ($criteria->orderIds) {
-            $qb->field('order.id')->in($criteria->orderIds);
+        if ($criteria->type == CashDocumentQueryCriteria::TYPE_BY_ORDER) {
+            if ($criteria->orderIds) {
+                $qb->field('order.id')->in($criteria->orderIds);
+            }
+        } elseif($criteria->type == CashDocumentQueryCriteria::TYPE_BY_OTHER) {
+            $qb->field('order')->exists(false);
         }
 
         if($criteria->deleted && $this->dm->getFilterCollection()->isEnabled('softdeleteable')) {

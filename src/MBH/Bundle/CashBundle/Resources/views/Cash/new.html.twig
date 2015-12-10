@@ -1,0 +1,24 @@
+{% extends 'MBHCashBundle:Cash:layout.html.twig' %}
+
+{% set small_title = 'views.cash.edit.new_document'|trans({}, 'MBHCashBundle') %}
+{% set layout = 'box' %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/cash.js'%}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('cash_new'), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' with {entity: cashDocument} %}
+    {{ form_end(form) }}
+
+</div>
+</div>
+{% endblock %}

@@ -93,7 +93,8 @@ var docReadyTourists = function () {
             return;
         }
 
-        select2Text(org).select2({
+        org.mbhOrganizationSelectPlugin();
+        /*select2Text(org).select2({
             minimumInputLength: 3,
             ajax: {
                 url: Routing.generate('organization_json_list'),
@@ -113,18 +114,9 @@ var docReadyTourists = function () {
                     return {results: data.list};
                 }
             },
-            /*initSelection: function (element, callback) {
-             var id = $(element).val();
-             if (id !== "") {
-             $.ajax(Routing.generate('organization_json_list') + '/' + id, {
-             dataType: "json"
-             }).done(function (data) {
-             callback(data);
-             });
-             }
-             },*/
             dropdownCssClass: "bigdrop"
-        }).on('change', function () {
+        })*/
+        org.on('change', function () {
             var value = $(this).val();
             var detail = details[value];
             $.each(detail, function (key, value) {

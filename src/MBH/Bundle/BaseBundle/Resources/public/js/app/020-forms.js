@@ -91,6 +91,62 @@ $.fn.mbhGuestSelectPlugin = function() {
                  console.log(data);
                  }*/
             },
+            initSelection: function (element, callback) {
+                var id = $(element).val();
+                if (id !== "") {
+                    $.ajax(Routing.generate('ajax_tourists', {id: id}), {
+                        dataType: "json"
+                    }).done(function (data) {
+                        callback(data);
+                    });
+                }
+            },
+            dropdownCssClass: "bigdrop"
+        });
+    })
+}
+
+$.fn.mbhOrganizationSelectPlugin = function() {
+    this.each(function(){
+        var $this = $(this);
+        if($this.is('input')) {
+            $this = select2Text($this);
+        }
+        $this.select2({
+            minimumInputLength: 3,
+            allowClear: true,
+            placeholder: 'Выберите организацию',
+            ajax: {
+                url: Routing.generate('organization_json_list'),
+                dataType: 'json',
+                data: function (params) {
+                    return {
+                        query: params.term // search term
+                    };
+                },
+                results: function (data) {
+                    return {results: data};
+                },
+                processResults: function (data) {
+                    details = data.details;
+                    $.each(data.list, function (k, v) {
+                        var d = details[v.id];
+                        data.list[k].text = v.text + ' ' + '(ИНН ' + d['inn'] + ')' + (d['fio'] ? ' ' + d['fio'] : '')
+                    });
+
+                    return {results: data.list};
+                }
+            },
+            initSelection: function (element, callback) {
+                var id = $(element).val();
+                if (id !== "") {
+                    $.ajax(Routing.generate('organization_json_list', {id: id}), {
+                        dataType: "json"
+                    }).done(function (data) {
+                        callback(data);
+                    });
+                }
+            },
             dropdownCssClass: "bigdrop"
         });
     })

@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
-use MBH\Bundle\PackageBundle\Document\Order as OrderDoc;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -21,12 +21,12 @@ class Calculation
 {
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface 
      */
     protected $container;
 
     /**
-     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry
+     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry 
      */
     protected $dm;
 
@@ -43,12 +43,12 @@ class Calculation
     }
 
     /**
-     * @param OrderDoc $order
+     * @param Order $order
      * @param CashDocument $newDoc
      * @param CashDocument $removeDoc
-     * @return OrderDoc
+     * @return Order
      */
-    public function setPaid(OrderDoc $order, CashDocument $newDoc = null, CashDocument $removeDoc = null)
+    public function setPaid(Order $order, CashDocument $newDoc = null, CashDocument $removeDoc = null)
     {
         $total = 0;
         $ids = [];
