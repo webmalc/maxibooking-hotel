@@ -141,6 +141,11 @@ class HotelExtendedType extends AbstractType
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
             ])
+            ->add('scheme', 'text', [
+                'label' => 'form.hotelExtendedType.scheme',
+                'group' => 'form.hotelExtendedType.parameters',
+                'required' => false,
+            ])
     ;
 
         $builder->add('vega_address_id', 'number', [

@@ -72,6 +72,12 @@ class HotelType extends AbstractType
                 'required' => false,
                 'help' => 'form.hotelType.hostel_hotel_or_not'
             ])
+            ->add('is_enabled', 'checkbox', [
+                'label' => 'form.hotelType.is_enabled',
+                'group' => 'form.hotelType.settings',
+                'value' => true,
+                'required' => false
+            ])
             ->add('isRecommend', 'checkbox', [
                 'label' => 'form.hotelType.is_recommend',
                 'group' => 'form.hotelType.settings',

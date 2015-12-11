@@ -2,13 +2,13 @@
     {{ hotel.fullTitle }}
 </h2>
 <input type="hidden" id="hotel-panorama" value="{{ hotel.panorama }}">
-<div class="mbh-hotel-rating">{{ hotel.rate|number_format(2) }}</div>
+<div class="mbh-hotel-rating"><i class="fa fa-lg fa-star text-warning"></i> {{ hotel.rate|number_format(2) }}</div>
 <div class="mbh-hotel-address">
     {% if hotel.city or hotel.street %}
         <small>
+            <i class="fa fa-map-marker text-warning"></i>
             {{ hotel.settlement }} {% if hotel.settlement and hotel.street %}, {{ hotel.street }}{% if hotel.house %}, {{ hotel.house }}{% endif %}{% endif %}
             <br>
-            <i class="fa fa-map-marker text-warning"></i>
             {% if hotel.highway %}{{ hotel.highway|join(', ') }}{% endif %}
             {% if hotel.MKADdistance %}({{ hotel.MKADdistance }} км. от МКАД){% endif %}
         </small>
@@ -65,6 +65,11 @@
         <div id="map-tab" class="tab-pane">
             <div class="panel panel-warning">
                 <div class="panel-body">
+                    {% if hotel.scheme %}
+                    <a href="{{ hotel.scheme }}" style="margin-bottom: 5px" class="fancybox btn btn-primary pull-right">
+                        <i class="fa fa-map-signs"></i> Схема проезда
+                    </a>
+                    {% endif %}
                     <div id="map"></div>
                 </div>
             </div>
@@ -182,6 +187,10 @@
         });
         {% endfor %}
     }
+
+    $(document).on('ready', function(){
+        $(".fancybox").fancybox({'openEffect': 'elastic'});
+    })
 </script>
 <style>
     #map {
@@ -189,7 +198,6 @@
         height: 600px;
     }
 </style>
-
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCfKBAVL-KTZM53CNZsmx-xsusJe21fkfE&callback=initMap"></script>
 {% endif %}
 
@@ -197,4 +205,5 @@
 <script>$.isFunction($().select2) || document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.min.js"><\/script><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.css"/>')</script>
 <script>$.isFunction($().mask) || document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.3.1/jquery.maskedinput.min.js"><\/script>')</script>
 <script>$.isFunction($().cookie) || document.write('<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"><\/script>')</script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.pack.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.css" type="text/css" media="screen" />
 <script type="text/javascript" src="http://mbh.h/app_dev.php/management/online/api/results"></script>

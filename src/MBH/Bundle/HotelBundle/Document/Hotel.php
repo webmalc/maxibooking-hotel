@@ -328,6 +328,13 @@ class Hotel extends Base implements \JsonSerializable
      */
     protected $isRecommend;
 
+    /**
+     * @Gedmo\Versioned
+     * @ODM\String()
+     * @var string
+     */
+    protected $scheme;
+
     public function __construct()
     {
         $this->roomTypes = new \Doctrine\Common\Collections\ArrayCollection();
@@ -1320,5 +1327,21 @@ class Hotel extends Base implements \JsonSerializable
     public function setIsRecommend($isRecommend)
     {
         $this->isRecommend = $isRecommend;
+    }
+
+    /**
+     * @return string
+     */
+    public function getScheme()
+    {
+        return $this->scheme;
+    }
+
+    /**
+     * @param string $scheme
+     */
+    public function setScheme($scheme)
+    {
+        $this->scheme = $scheme;
     }
 }
