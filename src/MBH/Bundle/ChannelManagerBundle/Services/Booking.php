@@ -185,15 +185,15 @@ class Booking extends Base
                 true
             );
 
-            foreach ($roomTypes as $roomTypeId => $roomType) {
+            foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     if (isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])) {
                         $info = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
-                        $data[$roomType['syncId']][$day->format('Y-m-d')] = [
+                        $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')] = [
                             'roomstosell' => $info->getLeftRooms() > 0 ? $info->getLeftRooms() : 0
                         ];
                     } else {
-                        $data[$roomType['syncId']][$day->format('Y-m-d')] = [
+                        $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')] = [
                             'roomstosell' => 0
                         ];
                     }
@@ -249,9 +249,9 @@ class Booking extends Base
                 $this->roomManager->useCategories
             );
 
-            foreach ($roomTypes as $roomTypeId => $roomType) {
+            foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
 
-                $roomTypeId = $this->getRoomTypeArray($roomType['doc'])[0];
+                $roomTypeId = $this->getRoomTypeArray($roomTypeInfo['doc'])[0];
 
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
@@ -262,7 +262,7 @@ class Booking extends Base
 
                         if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
                             $info = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
-                            $data[$roomType['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
+                            $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'price' => $this->currencyConvertFromRub($config, $info->getPrice()),
                                 'price1' => $info->getSinglePrice() ? $this->currencyConvertFromRub(
                                     $config,
@@ -272,7 +272,7 @@ class Booking extends Base
                             ];
 
                         } else {
-                            $data[$roomType['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
+                            $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'price' => null,
                                 'price1' => null,
                                 'closed' => true
@@ -340,7 +340,7 @@ class Booking extends Base
                 true
             );
 
-            foreach ($roomTypes as $roomTypeId => $roomType) {
+            foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
 
@@ -355,7 +355,7 @@ class Booking extends Base
 
                         if (isset($restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
                             $info = $restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')];
-                            $data[$roomType['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
+                            $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'minimumstay_arrival' => (int)$info->getMinStayArrival(),
                                 'maximumstay_arrival' => (int)$info->getMaxStayArrival(),
                                 'minimumstay' => (int)$info->getMinStay(),
@@ -365,7 +365,7 @@ class Booking extends Base
                                 'closed' => $info->getClosed() || !$price ? 1 : 0,
                             ];
                         } else {
-                            $data[$roomType['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
+                            $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'minimumstay_arrival' => 0,
                                 'maximumstay_arrival' => 0,
                                 'minimumstay' => 0,

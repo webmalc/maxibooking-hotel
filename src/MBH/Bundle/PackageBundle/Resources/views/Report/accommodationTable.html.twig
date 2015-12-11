@@ -2,6 +2,7 @@
 <input type="hidden" name="end" id="accommodation-report-end" class="hidden" value="{{ end|date('d.m.Y') }}">
 
 {% if roomsData|length > 0 %}
+    {% include 'MBHBaseBundle:Partials:pager.html.twig' with {'page': page, 'pages': pages, class : 'accommodation-report-pagination'} %}
 
     {% set headerWidth = 200 %}
 
@@ -428,6 +429,9 @@
         {% endfor %}
 
     </div>
+
+    {% include 'MBHBaseBundle:Partials:pager.html.twig' with {'page': page, 'pages': pages, class: 'accommodation-report-pagination'} %}
+
 {% else %}
     <div class="alert alert-danger"><i
                 class="fa fa-exclamation-circle"> </i> {{ "report.accommodationTable.no_room_found"|trans({}, "MBHPackageBundle") }}
