@@ -69,7 +69,7 @@ class Search
 
             $qb = $hotelRepository->createQueryBuilder();
 
-            $qb->field('isEnabled')->exists(true);
+            $qb->field('isEnabled')->equals(true);
 
             if($query->highway) {
                 $qb->field('highway')->equals($query->highway);
