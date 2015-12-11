@@ -14,6 +14,12 @@
 
 {% block content %}
 
+    {% if entity.order %}
+        <div class="bg-gray color-palette alert">
+            <i class="fa fa-paper-plane"> </i> Перейти к заказу <a href="{{ path('package_order_cash', {id: entity.order.id, packageId: (entity.order.packages|first).id}) }}">#{{ entity.order.id }}</a>
+        </div>
+    {% endif %}
+
     {{ form_start(form, {'action': path('cash_edit', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
     {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'cash_delete' } %}
