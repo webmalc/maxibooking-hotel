@@ -311,8 +311,7 @@ class Search implements SearchInterface
                     ->setRoomsCount($min)
                     ->setAdults($tourists['adults'])
                     ->setChildren($tourists['children'])
-                    ->setUseCategories($useCategories)
-                ;
+                    ->setUseCategories($useCategories);
 
                 //prices
                 $prices = $calc->calcPrices($roomType, $tariff, $query->begin, $end, $tourists['adults'], $tourists['children'], $promotion);
@@ -492,11 +491,9 @@ class Search implements SearchInterface
             if ($tariff->getEnd() && $tariff->getEnd() < $this->now) {
                 continue;
             }
-
             if ($query->isOnline && !$tariff->getIsOnline()) {
                 continue;
             }
-
             if ($query->grouped) {
                 $results[$tariff->getHotel()->getId()][] = $tariff;
             } else {

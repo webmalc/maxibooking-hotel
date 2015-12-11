@@ -4,7 +4,7 @@
     "recordsFiltered": "{{ total }}",
     "data": [
         {% for tourist in tourists %}
-            {% set package = touristPackages[tourist.id] %}
+            {% set package = null %}
             [
                 "<div class='text-center'><i class='fa fa-male'></i></div>",
                 "{{ package ? package.numberWithPrefix : '' }}",
@@ -20,7 +20,7 @@
                 "{% if tourist.birthday %}{{ tourist.birthday|date('d.m.Y')}}{% if tourist.age %}<br><small>{{ tourist.age }}</small>{% endif %}{% endif %}",
                 "{{ tourist.phone|default('-') }}<br><small>{% if tourist.email %}<a href='mailto:{{ tourist.email }}'>{{ tourist.email }}</a>{% endif %}</small>",
                 "<div class='btn-list'>{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': tourist, 'route': 'tourist'} %}{% endembed %}</div>"
-            ]{% if loop.index != tourists.count(true) %},{% endif %}
+            ]{% if loop.index != tourists|length %},{% endif %}
         {% endfor %}
     ]
 }
