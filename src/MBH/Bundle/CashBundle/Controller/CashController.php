@@ -312,12 +312,17 @@ class CashController extends Controller
         //$cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
 
         $formType = $cashDocument->getOrder() ? new CashDocumentType($this->dm) : new NewCashDocumentType($this->dm);
-        $form = $this->createForm($formType, $cashDocument, [
+
+        $options = [
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
-            //'payers' => $cashDocumentRepository->getAvailablePayersByOrder($cashDocument->getOrder()),
             'number' => $this->get('security.authorization_checker')->isGranted('ROLE_CASH_NUMBER')
-        ]);
+        ];
+        if($cashDocument->getOrder()) {
+            $cashDocumentRepository = $this->dm->getRepository(CashDocument::class);
+            $options['payers'] = $cashDocumentRepository->getAvailablePayersByOrder($cashDocument->getOrder());
+        }
+        $form = $this->createForm($formType, $cashDocument, $options);
 
         if ($request->isMethod("PUT")) {
             $form->submit($request);

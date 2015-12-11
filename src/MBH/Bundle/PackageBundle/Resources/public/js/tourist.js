@@ -88,13 +88,15 @@ var docReadyTourists = function () {
     var details = {};
         //payer select2
     (function () {
-        var org = $('#organization_organization');
-        if (org.length !== 1) {
+        var $organization = $('#organization_organization');
+        if ($organization.length !== 1) {
             return;
         }
 
-        org.mbhOrganizationSelectPlugin();
-        /*select2Text(org).select2({
+
+        var details;
+        $organization.mbhOrganizationSelectPlugin();
+        select2Text($organization).select2({
             minimumInputLength: 3,
             ajax: {
                 url: Routing.generate('organization_json_list'),
@@ -115,8 +117,9 @@ var docReadyTourists = function () {
                 }
             },
             dropdownCssClass: "bigdrop"
-        })*/
-        org.on('change', function () {
+        })
+        var $organization = $('#organization_organization');
+        $organization.on('change', function () {
             var value = $(this).val();
             var detail = details[value];
             $.each(detail, function (key, value) {

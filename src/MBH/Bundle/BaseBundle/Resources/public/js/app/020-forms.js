@@ -104,6 +104,8 @@ $.fn.mbhGuestSelectPlugin = function() {
             dropdownCssClass: "bigdrop"
         });
     })
+
+    return this;
 }
 
 $.fn.mbhOrganizationSelectPlugin = function() {
@@ -128,7 +130,7 @@ $.fn.mbhOrganizationSelectPlugin = function() {
                     return {results: data};
                 },
                 processResults: function (data) {
-                    details = data.details;
+                    var details = data.details;
                     $.each(data.list, function (k, v) {
                         var d = details[v.id];
                         data.list[k].text = v.text + ' ' + '(ИНН ' + d['inn'] + ')' + (d['fio'] ? ' ' + d['fio'] : '')
@@ -137,19 +139,64 @@ $.fn.mbhOrganizationSelectPlugin = function() {
                     return {results: data.list};
                 }
             },
-            initSelection: function (element, callback) {
+            /*initSelection: function (element, callback) {
                 var id = $(element).val();
                 if (id !== "") {
                     $.ajax(Routing.generate('organization_json_list', {id: id}), {
                         dataType: "json"
                     }).done(function (data) {
-                        callback(data);
+                        console.log(data);
                     });
                 }
-            },
+            },*/
             dropdownCssClass: "bigdrop"
         });
     })
+
+    return this;
+}
+
+mbh.payerSelect = function($payerSelect, $organizationPayerInput, $touristPayerInput)
+{
+    this.$payerSelect = $payerSelect;
+    this.$organizationPayerInput = $organizationPayerInput;
+    this.$touristPayerInput = $touristPayerInput;
+
+    if (this.$organizationPayerInput.val()) {
+        this.$payerSelect.val('org_' + this.$organizationPayerInput.val());
+    } else if (this.$touristPayerInput.val()) {
+        this.$payerSelect.val('tourist_' + this.$touristPayerInput.val());
+    }
+
+    if (this.$payerSelect.val()) {
+        var value = this.$payerSelect.val().split('_');
+        this.update(value[0], value[1]);
+    };
+
+    this.bindEventHandlers();
+}
+
+mbh.payerSelect.prototype.bindEventHandlers = function() {
+    var that = this;
+    this.$payerSelect.on('change', function () {
+        /** @type String */
+        var value = $(this).val();
+        that.$organizationPayerInput.add(that.$touristPayerInput).val(null);
+        if (value) {
+            value = value.split('_');
+            that.update(value[0], value[1]);
+        }
+    });
+}
+
+mbh.payerSelect.prototype.update = function(type, value) {
+    if (type === 'org'){
+        this.$organizationPayerInput.val(value);
+    } else if (type === 'tourist') {
+        this.$touristPayerInput.val(value);
+    } else {
+        //throw new Error("");
+    }
 }
 
 var docReadyForms = function () {
