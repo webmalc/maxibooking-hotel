@@ -33,6 +33,17 @@ class CashDocumentArticle extends Base
     protected $title;
 
     /**
+     * @var self
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\CashBundle\Document\CashDocumentArticle")
+     */
+    protected $parent;
+
+    /**
+     * @var self[]
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\CashBundle\Document\CashDocumentArticle", mappedBy="parent")
+     */
+    protected $children;
+    /**
      * @return string
      */
     public function getCode()
@@ -62,5 +73,37 @@ class CashDocumentArticle extends Base
     public function setTitle($title)
     {
         $this->title = $title;
+    }
+
+    /**
+     * @return CashDocumentArticle
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param CashDocumentArticle $parent
+     */
+    public function setParent(self $parent = null)
+    {
+        $this->parent = $parent;
+    }
+
+    /**
+     * @return CashDocumentArticle[]
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param CashDocumentArticle[] $children
+     */
+    public function setChildren($children)
+    {
+        $this->children = $children;
     }
 }

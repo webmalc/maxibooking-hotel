@@ -61,6 +61,7 @@ $(document).ready(function () {
 
     var $filterSelectElement = $('#filter'),
         $methodSelectElement = $('#method'),
+        $articleSelectElement = $('#article'),
         $begin = $('#begin'),
         defaultBeginValue = $begin.val(),
         $cashTable = $('#cash-table'),
@@ -81,6 +82,7 @@ $(document).ready(function () {
                 end: $('#end').val(),
                 filter: $filterSelectElement.select2('val'),
                 method: $methodSelectElement.select2('val'),
+                article: $articleSelectElement.select2('val'),
                 show_no_paid: $showNoPaidCheckbox.prop("checked") ? 1 : 0,
                 show_no_confirmed: $showNoConfirmed.prop("checked") ? 1 : 0,
                 by_day: $byDayCheckbox.prop("checked") ? 1 : 0,

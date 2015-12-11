@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\CashBundle\Document\CashDocumentArticle;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
 use MBH\Bundle\CashBundle\Form\CashDocumentType;
 use MBH\Bundle\CashBundle\Form\NewCashDocumentType;
@@ -50,9 +51,12 @@ class CashController extends Controller
         $out = $this->dm->getRepository('MBHCashBundle:CashDocument')->total('out', $queryCriteria);
         $total = $in - $out;
 
+        $articles = $this->dm->getRepository(CashDocumentArticle::class)->findBy(['parent' => ['$exists' => false]]);
+
         return [
             'methods' => $methods,
             'total' => $total,
+            'articles' => $articles,
             'users' => $this->dm->getRepository('MBHUserBundle:User')->findBy(['enabled' => true],
                 ['username' => 'asc']),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
@@ -167,6 +171,8 @@ class CashController extends Controller
         $queryCriteria->deleted = $request->get('deleted');
 
         $queryCriteria->createdBy = $request->get('user');
+
+        $queryCriteria->article = $request->get('article');
 
         $queryCriteria->type = $request->get('type');
 

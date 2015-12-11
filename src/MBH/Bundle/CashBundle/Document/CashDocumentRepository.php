@@ -120,6 +120,10 @@ class CashDocumentRepository extends DocumentRepository
             $qb->field('method')->in($criteria->methods);
         }
 
+        if($criteria->article) {
+            $qb->field('article.id')->equals($criteria->article);
+        }
+
         if ($criteria->createdBy) {
             $qb->field('createdBy')->equals($criteria->createdBy);
         }

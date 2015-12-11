@@ -42,6 +42,25 @@
                 </select>
             </div>
             <div class="input">
+                <i class="fa fa-paperclip" title='{{ 'views.cash.index.article'|trans({}, 'MBHCashBundle') }}'
+                   data-toggle='tooltip'></i>
+                &nbsp
+                <select name="article" id="article" placeholder="{{ 'views.cash.index.article'|trans({}, 'MBHCashBundle') }}">
+                    <option></option>
+                    {% for article in articles %}
+                        <optgroup label="{{ article }}">
+                            {% if article.children|length == 0 %}
+                                <option value="{{ article.id }}">{{ article.code }} {{ article.title }}</option>
+                            {% else %}
+                                {% for article in article.children %}
+                                    <option value="{{ article.id }}">{{ article.code }} {{ article.title }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input">
                 <i class="fa fa-user" title='{{ 'views.cash.index.user'|trans({}, 'MBHCashBundle') }}'
                    data-toggle='tooltip'></i>
                 &nbsp
