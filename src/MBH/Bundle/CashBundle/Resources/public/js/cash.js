@@ -127,6 +127,7 @@ $(document).ready(function () {
             null, // in
             null, // out
             null, //operation
+            null, //article
             {"bSortable": false}, // payer
             null, // date
             null, // isPaid

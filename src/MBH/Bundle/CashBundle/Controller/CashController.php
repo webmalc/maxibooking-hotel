@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
+use MBH\Bundle\CashBundle\Form\CashDocumentType;
 use MBH\Bundle\CashBundle\Form\NewCashDocumentType;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\CashBundle\Document\CashDocumentRepository;
@@ -302,9 +303,10 @@ class CashController extends Controller
         }
         $this->dm->getFilterCollection()->enable('softdeleteable');
 
-        $cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
+        //$cashDocumentRepository = $this->dm->getRepository('MBHCashBundle:CashDocument');
 
-        $form = $this->createForm(new NewCashDocumentType($this->dm), $cashDocument, [
+        $formType = $cashDocument->getOrder() ? new CashDocumentType($this->dm) : new NewCashDocumentType($this->dm);
+        $form = $this->createForm($formType, $cashDocument, [
             'methods' => $this->container->getParameter('mbh.cash.methods'),
             'operations' => $this->container->getParameter('mbh.cash.operations'),
             //'payers' => $cashDocumentRepository->getAvailablePayersByOrder($cashDocument->getOrder()),

@@ -16,6 +16,7 @@ views.cash.index.is_updated: Обновлён
 views.cash.index.removed: Удален
 views.cash.index.payment_way: 'Способ оплаты'
 views.cash.index.operation_type: 'Вид операции'
+views.cash.index.article: 'Статья'
 views.cash.index.date: Дата
 views.cash.index.no_confirmed: 'Не подтверждено'
 views.cash.jsonButtons.confirm_payment: 'Подтверждение платежа'

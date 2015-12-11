@@ -155,6 +155,12 @@ class CashDocument extends Base
     protected $orderDocument;
 
     /**
+     * @var CashDocumentArticle
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\CashBundle\Document\CashDocumentArticle")
+     */
+    protected $article;
+
+    /**
      * Set method
      *
      * @param string $method
@@ -492,5 +498,21 @@ class CashDocument extends Base
         }
 
         return null;
+    }
+
+    /**
+     * @return CashDocumentArticle
+     */
+    public function getArticle()
+    {
+        return $this->article;
+    }
+
+    /**
+     * @param CashDocumentArticle $article
+     */
+    public function setArticle(CashDocumentArticle $article = null)
+    {
+        $this->article = $article;
     }
 }

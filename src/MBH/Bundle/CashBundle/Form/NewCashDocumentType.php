@@ -2,13 +2,12 @@
 
 namespace MBH\Bundle\CashBundle\Form;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
-use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\CashBundle\Document\CashDocumentArticle;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 
 /**
  * Class NewCashDocumentType
@@ -32,9 +31,21 @@ class NewCashDocumentType extends CashDocumentType
             ->add('payer_select', 'hidden', [
                 'required' => false,
                 'mapped' => false,
-            ])
-        ;
+            ]);
         $builder->get('organizationPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Organization::class));
         $builder->get('touristPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Tourist::class));
+
+        $builder->add('article', 'document', [
+            'required' => false,
+            'class' => CashDocumentArticle::class,
+            'empty_value' => '',
+            'label' => 'form.cashDocumentType.article',
+            'property' => function (CashDocumentArticle $article) {
+                return $article->getCode() . ' ' . $article->getTitle();
+            },
+            'query_builder' => function (DocumentRepository $repository) {
+                return $repository->createQueryBuilder()->sort(['code' => 1]);
+            }
+        ]);
     }
 }
