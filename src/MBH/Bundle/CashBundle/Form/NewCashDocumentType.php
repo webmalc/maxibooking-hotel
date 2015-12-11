@@ -31,10 +31,8 @@ class NewCashDocumentType extends CashDocumentType
                 'label' => 'form.cashDocumentType.tourist',
                 'required' => false
             ])
-            ->add('payer_select', 'hidden', [
-                'required' => false,
-                'mapped' => false,
-            ]);
+            ->remove('payer_select')
+        ;
         $builder->get('organizationPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Organization::class));
         $builder->get('touristPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Tourist::class));
 
