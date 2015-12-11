@@ -22,7 +22,7 @@ class CashDocumentValidator extends ConstraintValidator
             $this->context->addViolation($constraint->messagePayer);
         }
         /** expenseGreaterThanIncome */
-        if ($cashDocument->getOperation() == 'out') {
+        if ($cashDocument->getOperation() == 'out' && $order) {
             if ($cashDocument->getTotal() >  $order->getPaid()) {
                 $this->context->addViolation($constraint->messageExpenseGreaterThanIncome, ['%total%' => (float) $order->getPaid()]);
             }

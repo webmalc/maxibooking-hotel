@@ -49,7 +49,8 @@
                     {% endif %}
                 </td>
                 <td class="table-actions-td text-right">
-                    {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'tariff'} %}{% endembed %}
+                    {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'tariff', 'copy': true} %}
+                    {% endembed %}
                 </td>
             </tr>
         {% endfor %}

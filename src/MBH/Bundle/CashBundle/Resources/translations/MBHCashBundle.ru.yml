@@ -1,9 +1,11 @@
+views.cash.edit.new_document: 'создание документа #'
 views.cash.edit.edit_document: 'редактирование документа #'
 views.cash.index.period: 'Период'
 views.cash.index.filter.byPaidDate: 'По поступлению'
 views.cash.index.filter.byDocumentDate: 'По выставлению'
 views.cash.index.filter.byDeletedDate: 'По удалению'
 views.cash.index.document_list: 'список документов'
+views.cash.index.note: Комментарий
 views.cash.index.reservation: Заказ
 views.cash.index.income: Приход
 views.cash.index.expense: Расход
@@ -14,6 +16,7 @@ views.cash.index.is_updated: Обновлён
 views.cash.index.removed: Удален
 views.cash.index.payment_way: 'Способ оплаты'
 views.cash.index.operation_type: 'Вид операции'
+views.cash.index.article: 'Статья'
 views.cash.index.date: Дата
 views.cash.index.no_confirmed: 'Не подтверждено'
 views.cash.jsonButtons.confirm_payment: 'Подтверждение платежа'
@@ -28,6 +31,7 @@ views.cash.index.show_not_confirmed: Показать только неподт�
 views.cash.index.show_deleted: Показать удаленные
 views.cash.index.byDay: По дням
 views.cash.index.result: Итого
+views.cash.index.type: Движение д/с
 
 cashDocument.method.cash: "Наличные"
 cashDocument.method.cashless: "Безнал"

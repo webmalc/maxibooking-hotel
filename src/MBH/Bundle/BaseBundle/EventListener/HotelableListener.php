@@ -28,11 +28,13 @@ class HotelableListener implements EventSubscriber
 
     public function prePersist(LifecycleEventArgs $args)
     {
-        $document = $args->getDocument();
-        $traits = class_uses($document);
-        if (in_array($this->traitName, $traits) && $document->getHotel() === null) {
-            /** @var HotelableDocument $document */
-            $document->setHotel($this->hotelSelector->getSelected());
-        };
+        try{
+            $document = $args->getDocument();
+            $traits = class_uses($document);
+            if (in_array($this->traitName, $traits) && $document->getHotel() === null) {
+                /** @var HotelableDocument $document */
+                $document->setHotel($this->hotelSelector->getSelected());
+            };
+        } catch(\Exception $e){}
     }
 }

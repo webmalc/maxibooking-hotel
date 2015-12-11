@@ -34,3 +34,12 @@ services:
         class: MBH\Bundle\HotelBundle\Document\FacilityRepository
         calls:
             - [ setContainer, [ '@service_container' ] ]
+
+    mbh.hotel.task_repository:
+        class: MBH\Bundle\HotelBundle\Document\TaskRepository
+        factory_service: doctrine_mongodb.odm.default_document_manager
+        factory_method: getRepository
+        arguments:
+            - MBH\Bundle\HotelBundle\Document\Task
+        calls:
+            - [ setContainer, [ '@service_container' ] ]

@@ -61,7 +61,9 @@ $(document).ready(function () {
 
     var $filterSelectElement = $('#filter'),
         $methodSelectElement = $('#method'),
-        defaultBeginValue = $('#begin').val(),
+        $articleSelectElement = $('#article'),
+        $begin = $('#begin'),
+        defaultBeginValue = $begin.val(),
         $cashTable = $('#cash-table'),
         $cashTableByDay = $('#cash-table-by-day'),
         $showNoPaidCheckbox = $('#show_no_paid'),
@@ -69,22 +71,25 @@ $(document).ready(function () {
         $deletedCheckbox = $('#deleted-checkbox'),
         $byDayCheckbox = $('#by_day'),
         $user = $('#user'),
+        $typeSelect = $('#cash-type'),
         getFormData = function () {
-            var data = {};
-            if (!$('#begin').val() && defaultBeginValue) {
-                $('#begin').val(defaultBeginValue);
+            if (!$begin.val() && defaultBeginValue) {
+                $begin.val(defaultBeginValue);
             }
-            data.begin = $('#begin').val();
-            data.end = $('#end').val();
-            data.filter = $filterSelectElement.select2('val');
-            data.method = $methodSelectElement.select2('val');
-            data.show_no_paid = $showNoPaidCheckbox.prop("checked") ? 1 : 0;
-            data.show_no_confirmed = $showNoConfirmed.prop("checked") ? 1 : 0;
-            data.by_day = $byDayCheckbox.prop("checked") ? 1 : 0;
-            data.deleted = $deletedCheckbox.prop("checked") ? 1 : 0;
-            data.user = $user.val();
 
-            return data;
+            return {
+                begin: $begin.val(),
+                end: $('#end').val(),
+                filter: $filterSelectElement.select2('val'),
+                method: $methodSelectElement.select2('val'),
+                article: $articleSelectElement.select2('val'),
+                show_no_paid: $showNoPaidCheckbox.prop("checked") ? 1 : 0,
+                show_no_confirmed: $showNoConfirmed.prop("checked") ? 1 : 0,
+                by_day: $byDayCheckbox.prop("checked") ? 1 : 0,
+                deleted: $deletedCheckbox.prop("checked") ? 1 : 0,
+                user: $user.val(),
+                type: $typeSelect.val(),
+            };
         },
         drawCallback = function (settings) {
             $('a[data-toggle="tooltip"], li[data-toggle="tooltip"], span[data-toggle="tooltip"]').tooltip();
@@ -120,14 +125,17 @@ $(document).ready(function () {
         "aoColumns": [
             {"bSortable": false}, // icon
             null, // prefix
+            {"class": "text-center"},
             null, // in
             null, // out
             null, //operation
+            null, //article
             {"bSortable": false}, // payer
             null, // date
             null, // isPaid
             null, // user
             null, // deletedAt
+            {"class": "show-on-print"}, // note
             {"bSortable": false, "class": "table-actions-td"} // actions
         ],
         "drawCallback": drawCallback
@@ -232,4 +240,3 @@ $(document).ready(function () {
         window.open(href + '?' + jQuery.param(data));
     });
 });
-

@@ -135,7 +135,7 @@ class TouristController extends Controller
         $arrivals = $this->container->getParameter('mbh.package.arrivals');
 
         return [
-            'tourists' => $tourists,
+            'tourists' => iterator_to_array($tourists),
             'total' => count($tourists),
             'draw' => $request->get('draw'),
             'touristPackages' => $touristPackages,
@@ -660,7 +660,7 @@ class TouristController extends Controller
 
         $regex = new \MongoRegex('/.*' . $request->get('query') . '.*/i');
         $qb = $this->dm->getRepository('MBHPackageBundle:Tourist')->createQueryBuilder('q')
-            ->sort(['fullName' => 'asc', 'birthday' => 'desc']);
+            ->sort(['fullName' => 'asc', 'birthday' => 'desc'])->limit(100);
         $qb->addOr($qb->expr()->field('fullName')->equals($regex));
         $qb->addOr($qb->expr()->field('email')->equals($regex));
         $qb->addOr($qb->expr()->field('phone')->equals($regex));

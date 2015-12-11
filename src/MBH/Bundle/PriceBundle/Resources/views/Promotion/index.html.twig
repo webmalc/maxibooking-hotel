@@ -6,11 +6,11 @@
     <thead>
         <tr>
             <th class="td-xxs"></th>
-            <th >Название</th>
+            <th>Название</th>
             <th class="text-center td-md">Индивидуальная</th>
-            <th class="text-center td-md">В процентах</th>
             <th class="td-md">Скидка</th>
-            <th>Комментарий</th>
+            <th class="td-sm"><i class="fa fa-male" data-toggle="tooltip" title="Взрослые бесплатно"></i></th>
+            <th class="td-sm"><i class="fa fa-child" data-toggle="tooltip" title="Дети бесплатно"></i></th>
             <th class="td-sm"></th>
         </tr>
     </thead>
@@ -26,16 +26,16 @@
                     <span class="label label-success">Да</span>
                 {% endif %}
             </td>
-            <td class="text-center">
-                {% if promotion.isPercentDiscount %}
-                    <span class="label label-success">Да</span>
-                {% endif %}
-            </td>
             <td>
                 {{ promotion.discount }}
                 {{ promotion.isPercentDiscount ? '%' : ('<i class="' ~ currency().icon ~ '"></i>')|raw }}
             </td>
-            <td>{{ promotion.comment }}</td>
+            <td>
+                {{ promotion.freeAdultsQuantity }}
+            </td>
+            <td>
+                {{ promotion.freeChildrenQuantity }}
+            </td>
             <td class="text-center">
                 <div class='btn-list'>
                     {% if app.security.granted('ROLE_PROMOTION_EDIT') %}

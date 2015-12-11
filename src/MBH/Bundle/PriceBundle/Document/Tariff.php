@@ -172,6 +172,15 @@ class Tariff extends Base
         $this->defaultServices = new ArrayCollection();
     }
 
+    public function __clone()
+    {
+        parent::__clone();
+        $this->isDefault = false;
+        $this->promotions = new ArrayCollection();
+        $this->defaultServices = new ArrayCollection();
+        $this->services  = new ArrayCollection();
+    }
+
     /**
      * Set hotel
      *
@@ -447,6 +456,26 @@ class Tariff extends Base
     public function addDefaultService(TariffService $defaultService)
     {
         $this->defaultServices[] = $defaultService;
+        return $this;
+    }
+
+    /**
+     * @param Promotion $promotion
+     * @return $this
+     */
+    public function addPromotion(Promotion $promotion)
+    {
+        $this->promotions[] = $promotion;
+        return $this;
+    }
+
+    /**
+     * @param Service $service
+     * @return $this
+     */
+    public function addService(Service $service)
+    {
+        $this->services[] = $service;
         return $this;
     }
 

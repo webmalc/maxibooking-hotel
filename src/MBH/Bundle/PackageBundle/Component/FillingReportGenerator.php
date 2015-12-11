@@ -49,31 +49,31 @@ class FillingReportGenerator
 
         $priceCacheRepository = $dm->getRepository('MBHPriceBundle:PriceCache');
 
+        $catsIds = [];
         if ($manager->useCategories) {
-            $catsIds = [];
             foreach ($roomTypes as $roomType) {
-
                 $cat = $roomType->getCategory();
                 if (!$cat) {
                     continue;
                 }
-                $catsIds[$cat->getId()] = $cat->getId();
+                $catsIds[] = $cat->getId();
             }
         }
 
         $roomTypeIDs = $this->container->get('mbh.helper')->toIds($roomTypes);
 
+        $criteria = ['date' => ['$gte' => reset($rangeDateList), '$lte' => end($rangeDateList)]];
         if ($manager->useCategories) {
-            $priceCaches = $priceCacheRepository->findBy([
-                'date' => ['$gte' => reset($rangeDateList), '$lte' => end($rangeDateList)],
-                'roomTypeCategory.id' => ['$in' => isset($catsIds) && count($catsIds) ? $catsIds : []]
-            ]);
+            if($catsIds) {
+                $criteria['roomTypeCategory.id'] = ['$in' => $catsIds];
+            }
         } else {
-            $priceCaches = $priceCacheRepository->findBy([
-                'date' => ['$gte' => reset($rangeDateList), '$lte' => end($rangeDateList)],
-                'roomType.id' => ['$in' => isset($roomTypeIDs) && count($roomTypeIDs) ? $roomTypeIDs : []]
-            ]);
+            if($roomTypeIDs) {
+                $criteria['roomType.id'] = ['$in' => $roomTypeIDs];
+            }
         }
+        $priceCaches = $priceCacheRepository->findBy($criteria);
+
 
         $allPackages = $dm->getRepository('MBHPackageBundle:Package')->findBy([
             'end' => ['$gte' => reset($rangeDateList)],

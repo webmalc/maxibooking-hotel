@@ -9,7 +9,7 @@ use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 
 /**
- * Class AutoTaskCreator
+ * Class RoomTypeManager
  * @author Aleksandr Arofikin <sashaaro@gmail.com>
  */
 class RoomTypeManager

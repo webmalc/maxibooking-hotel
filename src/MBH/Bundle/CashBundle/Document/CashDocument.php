@@ -16,6 +16,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
 use MBH\Bundle\CashBundle\Validator\Constraints as MBHValidator;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBBundleUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
+use MBH\Bundle\PackageBundle\Document\Order;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 
 /**
@@ -48,10 +49,9 @@ class CashDocument extends Base
     use BlameableDocument;
 
     /**
-     * @var \MBH\Bundle\PackageBundle\Document\Order
+     * @var Order
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Order", inversedBy="cashDocuments")
-     * @Assert\NotNull(message="validator.document.cashDocument.no_order_selected")
      */
     protected $order;
 
@@ -153,6 +153,12 @@ class CashDocument extends Base
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\OrderDocument", inversedBy="cashDocuments")
      */
     protected $orderDocument;
+
+    /**
+     * @var CashDocumentArticle
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\CashBundle\Document\CashDocumentArticle")
+     */
+    protected $article;
 
     /**
      * Set method
@@ -263,7 +269,7 @@ class CashDocument extends Base
     }
 
     /**
-     * @ODM\PrePersist
+     * @PrePersist
      */
     public function prePersist()
     {
@@ -281,10 +287,11 @@ class CashDocument extends Base
 
     private function checkDate()
     {
-        if(!$this->getIsPaid())
+        if (!$this->getIsPaid()) {
             $this->setPaidDate(null);
-        elseif(!$this->getPaidDate())
+        } elseif (!$this->getPaidDate()) {
             $this->setPaidDate(new \DateTime('now'));
+        }
     }
 
     /**
@@ -296,6 +303,7 @@ class CashDocument extends Base
     public function setIsConfirmed($isConfirmed)
     {
         $this->isConfirmed = $isConfirmed;
+
         return $this;
     }
 
@@ -318,6 +326,7 @@ class CashDocument extends Base
     public function setIsPaid($isPaid)
     {
         $this->isPaid = $isPaid;
+
         return $this;
     }
 
@@ -336,7 +345,9 @@ class CashDocument extends Base
      */
     public function getHotel()
     {
-        return $this->getOrder()->getPackages()[0]->getRoomType()->getHotel();
+        $order = $this->getOrder();
+
+        return $order ? $order->getPackages()[0]->getRoomType()->getHotel() : null;
     }
 
 
@@ -352,10 +363,12 @@ class CashDocument extends Base
             return $this->getOrganizationPayer();
         } elseif ($this->getTouristPayer()) {
             return $this->getTouristPayer();
-        } elseif ($this->getOrder()->getOrganization()) {
-            return $this->getOrder()->getOrganization();
-        } elseif ($this->getOrder()->getMainTourist()) {
-            return $this->getOrder()->getMainTourist();
+        } elseif ($this->getOrder()) {
+            if ($this->getOrder()->getOrganization()) {
+                return $this->getOrder()->getOrganization();
+            } elseif ($this->getOrder()->getMainTourist()) {
+                return $this->getOrder()->getMainTourist();
+            }
         }
 
         return null;
@@ -364,19 +377,20 @@ class CashDocument extends Base
     /**
      * Set order
      *
-     * @param \MBH\Bundle\PackageBundle\Document\Order $order
+     * @param Order $order
      * @return self
      */
-    public function setOrder(\MBH\Bundle\PackageBundle\Document\Order $order)
+    public function setOrder(Order $order = null)
     {
         $this->order = $order;
+
         return $this;
     }
 
     /**
      * Get order
      *
-     * @return \MBH\Bundle\PackageBundle\Document\Order $order
+     * @return Order $order
      */
     public function getOrder()
     {
@@ -398,6 +412,7 @@ class CashDocument extends Base
     public function setDocumentDate(\DateTime $documentDate = null)
     {
         $this->documentDate = $documentDate;
+
         return $this;
     }
 
@@ -416,6 +431,7 @@ class CashDocument extends Base
     public function setPaidDate(\DateTime $paidDate = null)
     {
         $this->paidDate = $paidDate;
+
         return $this;
     }
 
@@ -437,7 +453,6 @@ class CashDocument extends Base
 
         return $this;
     }
-
 
 
     /**
@@ -464,8 +479,9 @@ class CashDocument extends Base
      */
     public function isValidDate()
     {
-        if($this->getIsPaid() && $this->getPaidDate())
+        if ($this->getIsPaid() && $this->getPaidDate()) {
             return $this->getPaidDate()->getTimestamp() >= $this->getDocumentDate()->getTimestamp();
+        }
 
         return true;
     }
@@ -475,11 +491,28 @@ class CashDocument extends Base
      */
     public function getOrderDocument()
     {
-        foreach($this->getOrder()->getDocuments() as $document){
-            if($document->getCashDocument() == $this)
+        foreach ($this->getOrder()->getDocuments() as $document) {
+            if ($document->getCashDocument() == $this) {
                 return $document;
+            }
         }
 
         return null;
+    }
+
+    /**
+     * @return CashDocumentArticle
+     */
+    public function getArticle()
+    {
+        return $this->article;
+    }
+
+    /**
+     * @param CashDocumentArticle $article
+     */
+    public function setArticle(CashDocumentArticle $article = null)
+    {
+        $this->article = $article;
     }
 }

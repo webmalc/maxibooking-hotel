@@ -95,12 +95,14 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      * @var string
      * @Gedmo\Versioned
      * @ODM\String(name="fullName")
+     * @ODM\Index()
      */
     protected $fullName;
     /**
      * @var \DateTime
      * @Gedmo\Versioned
      * @ODM\Date(name="birthday")
+     * @ODM\Index
      * @Assert\Date()
      */
     protected $birthday;

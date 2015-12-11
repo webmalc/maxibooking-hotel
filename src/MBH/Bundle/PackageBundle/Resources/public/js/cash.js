@@ -25,14 +25,10 @@ var docReadyCash = function () {
     var $payerSelect = $('#mbh_bundle_cash_cash_document_payer_select');
     var $organizationPayerInput = $('#mbh_bundle_cash_cash_document_organizationPayer');
     var $touristPayerInput = $('#mbh_bundle_cash_cash_document_touristPayer');
-    var $bothPayerInputs = $organizationPayerInput.add($touristPayerInput);
 
 
-    if ($organizationPayerInput.val()) {
-        $payerSelect.val('org_' + $organizationPayerInput.val());
-    } else if ($touristPayerInput.val()) {
-        $payerSelect.val('tourist_' + $touristPayerInput.val());
-    }
+    new mbh.payerSelect($payerSelect, $organizationPayerInput, $touristPayerInput);
+
     //$payerSelect.select2("updateResults");
 
     /*
@@ -42,30 +38,6 @@ var docReadyCash = function () {
      }
      $payerSelect.select2({"templateSelection": formatResult});*/
 
-    function updateOrganizationPayerInput(type, value) {
-        if (type === 'org'){
-            $organizationPayerInput.val(value);
-        } else if (type === 'tourist') {
-            $touristPayerInput.val(value);
-        } else {
-            throw new Error("");
-        }
-    }
-
-    $payerSelect.on('change', function () {
-        /** @type String */
-        var value = $(this).val();
-        $bothPayerInputs.val(null);
-        if (value) {
-            value = value.split('_');
-            updateOrganizationPayerInput(value[0], value[1]);
-        }
-    });
-
-    if ($payerSelect.val()) {
-        var value = $payerSelect.val().split('_');
-        updateOrganizationPayerInput(value[0], value[1]);
-    };
 };
 
 /**

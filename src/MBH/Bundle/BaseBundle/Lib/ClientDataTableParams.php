@@ -68,7 +68,7 @@ class ClientDataTableParams
 
         $sortColumnFields = [];
 
-        foreach($params->columns as $column) {
+        foreach((array)$params->columns as $column) {
             $columnNumber = $column['data'];
             $columnName = $column['name'];
             if($column['orderable'] === 'true' && $columnName) {

@@ -98,3 +98,7 @@ services:
             class: MBH\Bundle\PackageBundle\Component\FillingReportGenerator
             calls:
                    - [setContainer, [@service_container]]
+    mbh.package.payer_repository:
+            class: MBH\Bundle\PackageBundle\Document\PayerRepository
+            calls:
+                   - [setContainer, [@service_container]]

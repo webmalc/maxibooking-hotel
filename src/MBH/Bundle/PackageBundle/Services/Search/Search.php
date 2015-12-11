@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Services\Search;
 
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
@@ -65,6 +66,15 @@ class Search implements SearchInterface
         $calc = $this->container->get('mbh.calculation');
         if (!empty($query->tariff) && !$query->tariff instanceof Tariff) {
             $query->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($query->tariff);
+        }
+
+        //promotion
+        $promotion = $query->getPromotion();
+        if ($promotion === null && $query->tariff && $query->tariff->getDefaultPromotion()) {
+            $promotion = $query->tariff->getDefaultPromotion();
+        }
+        if (!$promotion) {
+            $promotion = null;
         }
 
         // dates
@@ -280,7 +290,7 @@ class Search implements SearchInterface
                 }
 
                 $roomType = $caches[0]->getRoomType();
-                $useCategories = $query->isOnline && $this->config->getUseRoomTypeCategory();
+                $useCategories = $query->isOnline && $this->config && $this->config->getUseRoomTypeCategory();
                 $result = new SearchResult();
                 $tourists = $roomType->getAdultsChildrenCombination($query->adults, $query->children);
 
@@ -301,11 +311,10 @@ class Search implements SearchInterface
                     ->setRoomsCount($min)
                     ->setAdults($tourists['adults'])
                     ->setChildren($tourists['children'])
-                    ->setUseCategories($useCategories)
-                ;
+                    ->setUseCategories($useCategories);
 
                 //prices
-                $prices = $calc->calcPrices($roomType, $tariff, $query->begin, $end, $tourists['adults'], $tourists['children']);
+                $prices = $calc->calcPrices($roomType, $tariff, $query->begin, $end, $tourists['adults'], $tourists['children'], $promotion);
 
                 if (!$prices || (($query->adults + $query->children) != 0 && !isset($prices[$tourists['adults'] . '_' . $tourists['children']]))) {
                     continue;
@@ -482,11 +491,9 @@ class Search implements SearchInterface
             if ($tariff->getEnd() && $tariff->getEnd() < $this->now) {
                 continue;
             }
-
             if ($query->isOnline && !$tariff->getIsOnline()) {
                 continue;
             }
-
             if ($query->grouped) {
                 $results[$tariff->getHotel()->getId()][] = $tariff;
             } else {

@@ -13,7 +13,7 @@
                     <i class="fa fa-bed" style="color:{{ entity.color }};"></i>&nbsp;
                     {% if not entity.isEnabled %}<del class="text-danger">{% endif %}
                         {{ entity.name }}
-                        {% if client_config().useRoomTypeCategory %}
+                        {% if client_config() and client_config().useRoomTypeCategory %}
                             <br><small>{{ entity.category ? entity.category : 'группа не указана' }}</small>
                         {% endif %}
                     {% if not entity.isEnabled %}</del>{% endif %}

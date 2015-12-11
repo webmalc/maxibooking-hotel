@@ -28,7 +28,7 @@ class InviteController extends Controller  implements CheckHotelControllerInterf
     /**
      * @Route("/", name="invite")
      * @Method("GET")
-     * @Security("is_granted('ROLE_BASE_USER')")
+     * @Security("is_granted('ROLE_ONLINE_FORM')") todo replace to new role
      * @Template()
      */
     public function indexAction()
@@ -42,6 +42,7 @@ class InviteController extends Controller  implements CheckHotelControllerInterf
 
     /**
      * @Route("/form", name="invite_form")
+     * @Security("is_granted('ROLE_BASE_USER')")
      * @Method({"GET", "POST"})
      * @Template()
      */

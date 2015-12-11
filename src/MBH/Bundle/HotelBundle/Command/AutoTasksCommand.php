@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Command;
 
 
+use MBH\Bundle\HotelBundle\Service\AutoTaskCreator;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,6 +30,7 @@ class AutoTasksCommand extends ContainerAwareCommand
         if(!$taskModuleEnabled) {
             $output->writeln("Tasks module is disabled.");
         }
+        /** @var AutoTaskCreator $creator */
         $creator = $this->getContainer()->get('mbh.hotel.auto_task_creator');
         $check = $input->getArgument('check');
         if(!$check) {

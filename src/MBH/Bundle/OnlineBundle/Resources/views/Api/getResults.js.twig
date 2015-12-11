@@ -2,8 +2,13 @@
 jQuery(document).ready(function () {
     var wrapper = jQuery('#mbh-results-wrapper'),
         requestParams = {},
+        getLocale = function() {
+            return jQuery('#mbh-form-locale').val();
+        },
         waiting = function () {
-            wrapper.html('<div class="mbh-results-info" style="padding: 10px; margin: 10px 0px; background-color: #308dac; color: #fff; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+            //var locale = getLocale();
+            var text = '';//!locale || locale == 'ru' ?'Подождите...' : 'Please wait...';
+            wrapper.html('<div class="mbh-results-info" style="padding: 10px; margin: 10px 0px; background-color: #308dac; color: #fff; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;"><i class="fa fa-spinner fa-spin"></i> '+ text +'</div>');
         },
         getUrlVars = function () {
             var vars = [], hash;
@@ -25,8 +30,10 @@ jQuery(document).ready(function () {
         },
         query = getUrlVars()
     ;
+    //var errorHtml = '<div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Не выбраны даты заезда и выезда!</div>';
+    var errorHtml = $('#mbh-date-error').clone().removeClass('hide').attr('id', '');
     if (!query.begin || !query.end) {
-        wrapper.html('<div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Не выбраны даты заезда и выезда!</div>');
+        wrapper.html(errorHtml);
         return false;
     }
     waiting();
@@ -240,6 +247,7 @@ jQuery(document).ready(function () {
                     requestParams.totalServices = jQuery('#mbh-results-total-services-sum').text();
                     requestParams.packages = [];
                     requestParams.services = [];
+                    requestParams.locale = getLocale();
                     roomCount.each( function() {
                         if(jQuery(this).val() > 0) {
                             var tr = jQuery(this).closest('tr'),

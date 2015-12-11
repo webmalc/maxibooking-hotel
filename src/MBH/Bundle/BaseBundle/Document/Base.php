@@ -86,6 +86,28 @@ class Base
     public function __clone()
     {
         $this->id = null;
+        $this->isEnabled = false;
+        $now = new \DateTime();
+        $copyName = '_copy_' . $now->format('d.m.Y_H:i');
+
+        if (method_exists($this, 'setFullTitle') && !empty($this->getFullTitle())) {
+            $this->setFullTitle($this->getFullTitle() . $copyName);
+        }
+        if (method_exists($this, 'setTitle') && !empty($this->getTitle())) {
+            $this->setTitle($this->getTitle() . $copyName);
+        }
+        if (property_exists($this, 'createdAt')) {
+            $this->createdAt = null;
+        }
+        if (property_exists($this, 'updatedAt')) {
+            $this->updatedAt = null;;
+        }
+        if (method_exists($this, 'createdBy')) {
+            $this->createdBy = null;
+        }
+        if (method_exists($this, 'setUpdatedBy')) {
+            $this->updatedBy = null;
+        }
     }
     
 }

@@ -23,6 +23,7 @@ nbproject/
 !/web/upload/roomTypes/.gitkeep
 !/web/media/cache/.gitkeep
 /web/demo
+/web/index.html
 .idea/
 /parameters.yml
 parameters.yml

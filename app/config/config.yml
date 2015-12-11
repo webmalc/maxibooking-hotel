@@ -9,7 +9,7 @@ framework:
     serializer:
         enabled: true
     #esi:             ~
-    translator:      { fallback: ["%locale%", ru] }
+    translator:      { fallback: ["%locale%", ru, en] }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
