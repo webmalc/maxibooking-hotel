@@ -26,7 +26,7 @@ class HotelManager
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->dm = $this->get('doctrine_mongodb')->getManager();
+        $this->dm = $this->container->getManager();
     }
 
     public function create(Hotel $hotel)
