@@ -230,10 +230,12 @@ class ApiController extends Controller
         $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
 
         $userID = $request->get('userID');
+        $facilitiesRepository = $this->get('mbh.facility_repository');
 
         return [
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
+            'facilities' => $facilitiesRepository->getAll(),
             'hotels' => $hotels,
             'tariffResults' => $tariffResults,
             'userID' => $userID

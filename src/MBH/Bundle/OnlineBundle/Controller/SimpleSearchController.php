@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -390,10 +391,38 @@ class SimpleSearchController extends Controller
     {
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
         $this->dm->getFilterCollection()->disable('softdeleteable');
-        $packages = $packageRepository->findBy(['frontUser' => intval($id)]);
+        $frontUser = intval($id);
+        $packages = $packageRepository->findBy(['frontUser' => $frontUser]);
 
         return [
             'packages' => $packages,
+            'frontUser' => $frontUser,
         ];
+    }
+
+    /**
+     * @Route("/delete_package/{id}/{userID}", name="simple_search_delete_package")
+     * @Method("GET")
+     * @param $id
+     * @param $userID
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     */
+    public function deletePackageAction($id, $userID, Request $request)
+    {
+        $packageRepository = $this->dm->getRepository(Package::class);
+        $package = $packageRepository->find($id);
+        if(!$package) {
+            throw $this->createNotFoundException();
+        }
+
+        if (md5($package->getFrontUser().'123') != $userID) {
+            throw $this->createNotFoundException();
+        }
+
+        $this->dm->remove($package);
+        $this->dm->flush();
+
+        return $this->redirect($request->headers->get('referer'));
     }
 }

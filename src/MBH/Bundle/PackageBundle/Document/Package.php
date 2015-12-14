@@ -53,6 +53,7 @@ class Package extends Base implements JsonSerializable
     protected $tariff;
 
     /**
+     * @var integer
      * @Gedmo\Versioned
      * @ODM\Integer()
      */
@@ -342,7 +343,7 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * @return mixed
+     * @return integer
      */
     public function getFrontUser()
     {
@@ -350,7 +351,7 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
-     * @param mixed $frontUser
+     * @param integer $frontUser
      * @return self
      */
     public function setFrontUser($frontUser)

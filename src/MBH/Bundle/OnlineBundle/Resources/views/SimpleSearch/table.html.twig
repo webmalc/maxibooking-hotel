@@ -24,6 +24,9 @@
         <td>
             {% if 'now'|date('d.m.Y') == entity.createdAt|date('d.m.Y') %}{{ "package.json.today"|trans({}, "MBHPackageBundle") }} {{ entity.createdAt|date('H:i') }}{% else %}{{ entity.createdAt|date('d.m.Y H:i') }}{% endif %}<br><small>{{ entity.createdBy|default(entity.channelManagerType)|default('online') }}</small>
         </td>
+        <td>
+            <a href="{{ path('simple_search_delete_package', {id: entity.id, userID: (frontUser ~ '123')|mbh_md5}) }}" onclick="javascript: return confirm('Вы уверены?')">Удалить</a>
+        </td>
     </tr>
     {% endfor %}
 </table>
