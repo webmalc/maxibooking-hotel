@@ -93,6 +93,7 @@ class HotelController extends Controller
      * @Method("POST")
      * @Security("is_granted('ROLE_HOTEL_NEW')")
      * @Template("MBHHotelBundle:Hotel:new.html.twig")
+     * @see HotelManager::create
      */
     public function createAction(Request $request)
     {
