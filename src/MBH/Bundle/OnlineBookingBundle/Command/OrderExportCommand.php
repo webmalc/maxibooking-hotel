@@ -64,26 +64,27 @@ class OrderExportCommand extends ContainerAwareCommand
                 return iconv("WINDOWS-1251", "UTF-8", $item);
             }, $data);
 
+            if (!count($data) > 34) {
+                continue;
+            }
+
+            $index = $data[0];
             $number = $data[1];
             $date = $data[2];
             $fio = $data[3];
             $total = $data[13];
             $sale = $data[14];
-            $finalTotal = $data[14];
+            $finalTotal = $data[15];
             $duty = $data[16];
-            $phone = $data[18];
-            $roomTypeCategoryTitle = $data[19];
-            $roomTypeName = $data[20];
-            $additionalPlaces = $data[22];
-            $children = $data[23];
-            $adults = $data[24];
-            $places = $data[25];
-            $arrivalTime = $data[26];
-            $departureTime = $data[33];
-
-            if (!$fio) {
-                continue;
-            }
+            $phone = $data[19];
+            $roomTypeCategoryTitle = $data[20];
+            $roomTypeName = $data[21];
+            $additionalPlaces = $data[23];
+            $children = $data[24];
+            $adults = $data[25];
+            $places = $data[26];
+            $arrivalTime = $data[27];
+            $departureTime = $data[34];
 
             $order = new Order();
             $date = $helper->getDateFromString($date, 'd.m.Y h:i:s');
@@ -114,18 +115,18 @@ class OrderExportCommand extends ContainerAwareCommand
 
             $arrivalTime = $helper->getDateFromString($arrivalTime, 'd.m.Y h:i:s');
             $departureTime = $helper->getDateFromString($departureTime, 'd.m.Y h:i:s');
-            if($arrivalTime) {
-                $package->setArrivalTime($arrivalTime);
-                $package->setBegin($arrivalTime);
+            if(!$arrivalTime || !$departureTime) {
+                dump($data);
+                throw new \Exception($index . ' has not date');
             }
-            if($departureTime) {
-                $package->setDepartureTime($departureTime);
-                $package->setEnd($departureTime);
-            }
+            //$package->setArrivalTime($arrivalTime);
+            $package->setBegin($arrivalTime);
+            //$package->setDepartureTime($departureTime);
+            $package->setEnd($departureTime);
 
+            $package->setExternalNumber($number);
             $order->setNote(implode(', ', $data));
 
-            //$order->setExternalNumber($number);
             $result = [];
             preg_match("/^([1-3]{1})/i", $number, $result);
             $number = intval($result[1]);
@@ -135,7 +136,7 @@ class OrderExportCommand extends ContainerAwareCommand
                 case 2: $hotelTitle = 'АзовЛенд'; break;
                 case 3: $hotelTitle = 'РИО'; break;
                 default:
-                    throw new \Exception();
+                    throw new \Exception('hotel is not defined');
                     break;
             }
 
