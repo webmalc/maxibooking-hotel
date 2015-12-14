@@ -259,7 +259,7 @@ class PackageSubscriber implements EventSubscriber
             }
         }
 
-        if($package->getTariff()->getDefaultPromotion()) {
+        if($package->getTariff() && $package->getTariff()->getDefaultPromotion()) {
             $package->setPromotion($package->getTariff()->getDefaultPromotion());
         }
     }
