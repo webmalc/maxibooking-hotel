@@ -8,6 +8,8 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategoryRepository;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\HotelBundle\Service\HotelManager;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -47,6 +49,8 @@ class OrderExportCommand extends ContainerAwareCommand
         $touristRepository = $dm->getRepository(Tourist::class);
         /** @var DocumentRepository $hotelRepository */
         $hotelRepository = $dm->getRepository(Hotel::class);
+        /** @var RoomTypeCategoryRepository $roomTypeCategoryRepository */
+        $roomTypeCategoryRepository = $dm->getRepository(RoomTypeCategory::class);
         /** @var RoomTypeRepository $roomTypeRepository */
         $roomTypeRepository = $dm->getRepository(RoomType::class);
         /** @var HotelManager $hotelManager */
@@ -68,7 +72,7 @@ class OrderExportCommand extends ContainerAwareCommand
             $finalTotal = $data[14];
             $duty = $data[16];
             $phone = $data[18];
-            $accommodation = $data[19];
+            $roomTypeCategoryTitle = $data[19];
             $roomTypeName = $data[20];
             $additionalPlaces = $data[22];
             $children = $data[23];
@@ -142,14 +146,27 @@ class OrderExportCommand extends ContainerAwareCommand
                 $hotelManager->create($hotel);
             }
 
+
+            $roomTypeCategory = $roomTypeCategoryRepository->findOneBy(['title' => $roomTypeCategoryTitle, 'hotel.id' => $hotel->getId()]);
+            if (!$roomTypeCategory) {
+                $roomTypeCategory = new RoomTypeCategory();
+                $roomTypeCategory->setTitle($roomTypeCategoryTitle);
+                $roomTypeCategory->setHotel($hotel);
+                $dm->persist($roomTypeCategory);
+            }
+
             $roomType = $roomTypeRepository->findOneBy(['title' => $roomTypeName, 'hotel.id' => $hotel->getId()]);
             if (!$roomType) {
                 $roomType = new RoomType();
                 $roomType->setHotel($hotel);
                 $roomType->setTitle($roomTypeName);
                 $dm->persist($roomType);
-                //$dm->flush();
             }
+
+            $dm->persist($order);
+            $dm->persist($package);
+
+            $dm->flush();
         }
 
         $output->writeln('Done');
