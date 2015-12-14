@@ -8,6 +8,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -570,13 +571,16 @@ class Vashotel extends Base
 
                 //prices
                 $total = $totalServices = 0;
-                $pricesByDate = [];
+                $pricesByDate = $packagePrices = [];
                 $packageServices = [];
                 $breakfastCount  = 0;
                 foreach ($room->pricePerDay->price as $price) {
                     $total += (float)$price->price;
                     $date = $helper->getDateFromString((string)$price['date'], 'Y-m-d');
                     $pricesByDate[$date->format('d_m_Y')] = (float)$price->price;
+                    $packagePrices[] =  $packagePrices[] = new PackagePrice(
+                        $date, (float)$price->price, $tariff
+                    );
 
                     if ((string) $price->breakfast_included == 'yes') {
                         $breakfastCount++;
@@ -661,6 +665,7 @@ class Vashotel extends Base
                     ->setChildren(0)
                     ->setIsSmoking(false)
                     ->setPricesByDate($pricesByDate)
+                    ->setPrices($packagePrices)
                     ->setPrice((float)$total)
                     ->setTotalOverwrite((float)$total)
                     ->setNote($errorMessage)

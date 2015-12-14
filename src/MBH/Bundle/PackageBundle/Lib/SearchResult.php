@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Lib;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 
 class SearchResult
 {
@@ -63,6 +64,10 @@ class SearchResult
      */
     protected $rooms = [];
 
+    /**
+     * @var PackagePrice[]
+     */
+    protected $packagePrices = [];
 
     /**
      * @var bool
@@ -302,6 +307,7 @@ class SearchResult
      * @param int $adults
      * @param int $children
      * @return self
+     * @deprecated
      */
     public function setPricesByDate(array $prices, $adults, $children)
     {
@@ -381,4 +387,30 @@ class SearchResult
         return $roomType;
     }
 
+    /**
+     * @param $adults
+     * @param $children
+     * @return null|array
+     */
+    public function getPackagePrices($adults, $children)
+    {
+        if (isset($this->packagePrices[$adults . '_' . $children])) {
+            return $this->packagePrices[$adults . '_' . $children];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array $packagePrices
+     * @param int $adults
+     * @param int $children
+     * @return SearchResult
+     */
+    public function setPackagePrices(array $packagePrices, $adults, $children)
+    {
+        $this->packagePrices[$adults . '_' . $children] = $packagePrices;
+
+        return $this;
+    }
 }

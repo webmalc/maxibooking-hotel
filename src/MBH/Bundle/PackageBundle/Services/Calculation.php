@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Services;
 
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\RoomCacheOverwrite;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -125,6 +126,8 @@ class Calculation
         $prices = [];
         $places = $roomType->getPlaces();
         $hotel = $roomType->getHotel();
+        $endPlus = clone $end;
+        $endPlus->modify('+1 day');
 
         if ($this->manager->useCategories) {
             if (!$roomType->getCategory()) {
@@ -140,7 +143,35 @@ class Calculation
         $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
             ->fetch($begin, $end, $hotel, [$roomTypeId], [$tariffId], true, $this->manager->useCategories);
 
-        if (!isset($priceCaches[$roomTypeId][$tariffId]) || count($priceCaches[$roomTypeId][$tariffId]) != $duration) {
+        if (!$tariff->getIsDefault()) {
+            $defaultTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchBaseTariff($hotel);
+            if (!$defaultTariff) {
+                return false;
+            }
+            $defaultPriceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                ->fetch($begin, $end, $hotel, [$roomTypeId], [$defaultTariff->getId()], true, $this->manager->useCategories);
+
+        } else {
+            $defaultPriceCaches = $priceCaches;
+            $defaultTariff = $tariff;
+        }
+
+        if (!isset($priceCaches[$roomTypeId][$tariffId])) {
+            return false;
+        }
+
+        $caches = [];
+        foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $endPlus) as $cacheDay) {
+            $cacheDayStr =  $cacheDay->format('d.m.Y');
+
+            if (isset($priceCaches[$roomTypeId][$tariffId][$cacheDayStr])) {
+                $caches[$cacheDayStr] = $priceCaches[$roomTypeId][$tariffId][$cacheDayStr];
+            } elseif (isset($defaultPriceCaches[$roomTypeId][$defaultTariff->getId()][$cacheDayStr])) {
+                $caches[$cacheDayStr] = $defaultPriceCaches[$roomTypeId][$defaultTariff->getId()][$cacheDayStr];
+            }
+        }
+
+        if (count($caches) != $duration) {
             return false;
         }
 
@@ -152,47 +183,54 @@ class Calculation
         }
 
         foreach ($combinations as $combination) {
-            $promoConditions = PromotionConditionFactory::checkConditions($promotion, $duration, $combination['adults'] + $combination['children']);
             $total = 0;
-            $totalChildren = $combination['children'];
-            $totalAdults = $combination['adults'];
+            $dayPrices = $packagePrices = [];
+            foreach ($caches as $day => $cache) {
+                $promoConditions = PromotionConditionFactory::checkConditions(
+                    $promotion, $duration, $combination['adults'] + $combination['children']
+                );
 
-            if ($promoConditions) {
-                $totalChildren -= (int)$promotion->getFreeChildrenQuantity();
-                $totalAdults -= (int)$promotion->getFreeAdultsQuantity();
-                $totalAdults = $totalAdults >= 1 ? $totalAdults : 1;
-                $totalChildren = $totalChildren >= 0 ? $totalChildren : 0;
-            }
+                if ($cache->getTariff()->getId() != $tariff->getId()) {
+                    $promoConditions = false;
+                }
 
-            $all = $totalAdults + $totalChildren;
-            $adds = $all - $places;
+                $totalChildren = $combination['children'];
+                $totalAdults = $combination['adults'];
 
-            if ($all > $places) {
+                if ($promoConditions) {
+                    $totalChildren -= (int)$promotion->getFreeChildrenQuantity();
+                    $totalAdults -= (int)$promotion->getFreeAdultsQuantity();
+                    $totalAdults = $totalAdults >= 1 ? $totalAdults : 1;
+                    $totalChildren = $totalChildren >= 0 ? $totalChildren : 0;
+                }
 
-                if ($totalAdults >= $places) {
-                    $mainAdults = $places;
-                    $mainChildren = 0;
+                $all = $totalAdults + $totalChildren;
+                $adds = $all - $places;
+
+                if ($all > $places) {
+
+                    if ($totalAdults >= $places) {
+                        $mainAdults = $places;
+                        $mainChildren = 0;
+                    } else {
+                        $mainAdults = $totalAdults;
+                        $mainChildren = $places - $totalAdults;
+                    }
+
+                    if ($adds > $totalChildren) {
+                        $addsChildren = $totalChildren;
+                        $addsAdults = $adds - $addsChildren;
+                    } else {
+                        $addsChildren = $adds;
+                        $addsAdults = 0;
+                    }
                 } else {
                     $mainAdults = $totalAdults;
-                    $mainChildren = $places - $totalAdults;
-                }
-
-                if ($adds > $totalChildren) {
-                    $addsChildren = $totalChildren;
-                    $addsAdults = $adds - $addsChildren;
-                } else {
-                    $addsChildren = $adds;
+                    $mainChildren = $totalChildren;
                     $addsAdults = 0;
+                    $addsChildren = 0;
                 }
-            } else {
-                $mainAdults = $totalAdults;
-                $mainChildren = $totalChildren;
-                $addsAdults = 0;
-                $addsChildren = 0;
-            }
 
-            $dayPrices = [];
-            foreach ($priceCaches[$roomTypeId][$tariffId] as $day => $cache) {
                 $dayPrice = 0;
 
                 if ($cache->getSinglePrice() !== null &&
@@ -241,20 +279,32 @@ class Calculation
 
                 $dayPrice += $addsPrice;
 
+                // calc promotion discount
+                if ($promoConditions) {
+                    $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
+                }
+
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
+                $packagePrices[] = new PackagePrice(
+                    $cache->getDate(), $dayPrice, $cache->getTariff(), $promoConditions ? $promotion : null
+                );
                 $total += $dayPrice;
             }
 
-            // calc promotion discount
+            $promoConditions = PromotionConditionFactory::checkConditions(
+                $promotion, $duration, $combination['adults'] + $combination['children']
+            );
+
             if ($promoConditions) {
-                $total -= PromotionConditionFactory::calcDiscount($promotion, $total);
+                $total -= PromotionConditionFactory::calcDiscount($promotion, $total, false);
             }
 
             $prices[$combination['adults'] . '_' . $combination['children']] = [
                 'adults' => $combination['adults'],
                 'children' => $combination['children'],
                 'total' => $total,
-                'prices' => $dayPrices
+                'prices' => $dayPrices,
+                'packagePrices' => $packagePrices,
             ];
         }
 
