@@ -124,6 +124,7 @@ $(document).ready(function () {
             null, // out
             null, //operation
             {"bSortable": false}, // payer
+            null, // hotel
             null, // date
             null, // isPaid
             null, // user
