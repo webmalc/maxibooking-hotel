@@ -43,3 +43,7 @@ services:
             - MBH\Bundle\HotelBundle\Document\Task
         calls:
             - [ setContainer, [ '@service_container' ] ]
+
+    mbh.hotel.hotel_manager:
+        class: MBH\Bundle\HotelBundle\Service\HotelManager
+        arguments: [@service_container]
