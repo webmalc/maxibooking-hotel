@@ -34,7 +34,7 @@ class HotelManager
         $hotel->uploadFile();
 
         $this->dm->persist($hotel);
-        $this->dm->flush();
+        //$this->dm->flush();
 
         $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
         $process = new \Symfony\Component\Process\Process('nohup php ' . $console . 'mbh:base:fixtures --no-debug > /dev/null 2>&1 &');
