@@ -34,7 +34,7 @@
                         <span class="mbh-results-tariff"
                               data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
                         {% if result.roomType.getMainImage is not empty %}
-                        <a class="fancybox" title="{{ result.roomType }}" rel="group_{{ result.roomType.id }}" href="{{ asset(result.roomType.getMainImage.path, null, true) }}">
+                        <a class="fancybox" title="{{ result.roomType }}" href="{{ asset(result.roomType.getMainImage.path, null, true) }}">
                             <img class="mbh-roomType-image" src="{{ asset(result.roomType.getMainImage.path, null, true) }}">
                         </a>
                         {% endif %}
@@ -104,7 +104,9 @@
                         <div class="room-type-photos">
                             {% for photo in result.roomType.images|slice(0, 10) %}
                                 {% if not photo.isMain %}
-                                    <a class="fancybox" title="{{ result.roomType }}" rel="group_{{ result.roomType.id }}" href="{{ photo.path|imagine_filter('zamkadom_thumb') }}"><img src="{{ photo.path|imagine_filter('zamkadom_thumb') }}" data-title="{{ result.roomType }}" alt="{{ result.roomType }}"></a>
+                                    <a class="fancybox" title="{{ result.roomType }}" href="{{ photo.path|imagine_filter('zamkadom_thumb') }}">
+                                        <img title="{{ result.roomType }}" src="{{ photo.path|imagine_filter('zamkadom_thumb') }}" data-title="{{ result.roomType }}">
+                                    </a>
                                 {% endif %}
                             {% endfor %}
                         </div>
@@ -144,7 +146,7 @@
     {% endif %}
 {% endspaceless %}
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.pack.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.css" type="text/css" media="screen" />
+
 <script>
     setTimeout(function() {$(".fancybox").fancybox({'openEffect': 'elastic'});}, 1000);
 
