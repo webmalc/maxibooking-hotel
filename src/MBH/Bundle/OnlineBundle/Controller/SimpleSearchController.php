@@ -453,17 +453,17 @@ class SimpleSearchController extends Controller
             ->setEnd(new \DateTime('+1 minute'))
         ;
 
-        $objectIdentity = ObjectIdentity::fromDomainObject($hotel);
+        /*$objectIdentity = ObjectIdentity::fromDomainObject($hotel);
         $aclProvider = $this->get('security.acl.provider');
         $acl = $aclProvider->findAcl($objectIdentity);
-
         $users = $userRepository->findAll();
         foreach($users as $user) {
             $securityIdentity = new UserSecurityIdentity($user, 'MBH\Bundle\UserBundle\Document\User');
             if ($user->getEmail() && $acl->isGranted([MaskBuilder::MASK_MASTER], [$securityIdentity])) {
                 $message->addRecipient($user);
             };
-        }
+        }*/
+
         $this->get('mbh.notifier.mailer')->setMessage($message)->notify();
 
         $referer = $request->headers->get('referer');
