@@ -2,12 +2,14 @@
 
 namespace MBH\Bundle\OnlineBundle\Controller;
 
+use Documents\UserRepository;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\UserBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -16,6 +18,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGenerator;
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
+use Symfony\Component\Security\Acl\Permission\MaskBuilder;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Zend\Json\Json;
 
 /**
@@ -405,7 +411,6 @@ class SimpleSearchController extends Controller
      * @Method("GET")
      * @param $id
      * @param $userID
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Doctrine\ODM\MongoDB\LockException
      */
     public function deletePackageAction($id, $userID, Request $request)
@@ -416,13 +421,58 @@ class SimpleSearchController extends Controller
             throw $this->createNotFoundException();
         }
 
-        if (md5($package->getFrontUser().'123') != $userID) {
-            throw $this->createNotFoundException();
+        //if (md5($package->getFrontUser().'123') != $userID) {
+        //    throw $this->createNotFoundException();
+        //}
+
+        //$this->dm->remove($package);
+        //$this->dm->flush();
+
+        $hotel = $package->getRoomType()->getHotel();
+        /** @var UserRepository $userRepository */
+        $userRepository = $this->dm->getRepository(User::class);
+
+        //$username = $hotel->getCreatedBy();
+        /** @var User $user */
+        //$user = $userRepository->findOneBy(['username' => $username]);
+
+
+        $notifier = $this->container->get('mbh.notifier');
+        $message = $notifier::createMessage();
+        $message
+            ->setText('zamkadom.booking.notification.delete')
+            ->setFrom('online_form')
+            ->setSubject('zamkadom.booking.notification.subject.delete')
+            ->setTranslateParams(['%packages%' => $package->getId()])
+            ->setType('info')
+            ->setCategory('notification')
+            ->setAdditionalData([])
+            ->setHotel($hotel)
+            ->setTemplate('MBHBaseBundle:Mailer:base.html.twig')
+            ->setAutohide(false)
+            ->setEnd(new \DateTime('+1 minute'))
+        ;
+
+        dump($hotel);
+        $objectIdentity = ObjectIdentity::fromDomainObject($hotel);
+        $aclProvider = $this->get('security.acl.provider');
+        $acl = $aclProvider->findAcl($objectIdentity);
+
+        $users = $userRepository->findAll();
+        foreach($users as $user) {
+            $securityIdentity = new UserSecurityIdentity($user, 'MBH\Bundle\UserBundle\Document\User');
+            if ($user->getEmail() && $acl->isGranted([MaskBuilder::MASK_MASTER], [$securityIdentity])) {
+                $message->addRecipient($user);
+            };
         }
+        $this->get('mbh.notifier.mailer')->setMessage($message)->notify();
 
-        $this->dm->remove($package);
-        $this->dm->flush();
-
-        return $this->redirect($request->headers->get('referer'));
+        $referer = $request->headers->get('referer');
+        if ($referer) {
+            return $this->redirect($referer);
+        } else {
+            return new Response( '1');
+            //return new JsonResponse(['success' => true]);
+        }
     }
 }

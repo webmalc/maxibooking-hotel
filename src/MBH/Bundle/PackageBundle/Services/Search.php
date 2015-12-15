@@ -3,6 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
@@ -28,6 +30,8 @@ class Search
      * @var \DateTime
      */
     public $now;
+
+    protected $lastSortHotelIDs = [];
 
     public function __construct(ContainerInterface $container)
     {
@@ -101,7 +105,9 @@ class Search
 
             $hotels = $qb->getQuery()->execute();
 
+            $this->lastSortHotelIDs = [];
             foreach($hotels as $hotel) {
+                $this->lastSortHotelIDs[] = $hotel->getID();
                 $query->roomTypes = array_merge($helper->toIds($hotel->getRoomTypes()), $query->roomTypes);
             }
 
@@ -358,6 +364,8 @@ class Search
                 $results[$hotelID]['roomTypes'][] = $result->getRoomType();
             }
         }
+
+        $results = Helper::sortArrayByArray($results, $this->lastSortHotelIDs);
 
         return $results;
     }

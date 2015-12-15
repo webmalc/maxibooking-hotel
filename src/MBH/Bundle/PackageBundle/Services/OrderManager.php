@@ -273,7 +273,7 @@ class OrderManager
             ->setAdults($results[0]->getAdults())
             ->setChildren($results[0]->getChildren())
             ->setTariff($results[0]->getTariff())
-            ->setFrontUser($data['frontUser'])
+            ->setFrontUser(isset($data['frontUser']) ? $data['frontUser'] : null)
             ->setRoomType($results[0]->getRoomType())
             ->setNote(!empty($data['note']) ? $data['note'] : null)
             ->setArrivalTime(!empty($data['arrivalTime']) ? $data['arrivalTime'] : null)
