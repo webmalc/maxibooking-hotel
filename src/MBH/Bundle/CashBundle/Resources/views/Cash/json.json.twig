@@ -16,7 +16,7 @@
                 "<div class='text-right'>{% if entity.operation in ['fee', 'out'] %}<a href='{{ path('cash_edit', { 'id': entity.id }) }}' rel='main' class='text-danger' title='Редактирование записи' data-toggle='tooltip'>{{ entity.total|number_format(2) }}</a>{% endif %}</div>",
                 "{{ operations[entity.operation] }}<br><small>{{ methods[entity.method] }}</small>",
                 "{{ entity.payer.shortName }}",
-                "{{ entity.order ? ((entity.order.packages)|first).roomType.hotel : '' }}<br><small>{{ entity.order.packages ? ((entity.order.packages)|first).roomType : '' }}</small><br>{{ ((entity.order.packages)|first).begin|mbh_format }} - {{ ((entity.order.packages)|first).end|mbh_format }}",
+                "{{ entity.order and entity.order.packages|first ? ((entity.order.packages)|first).roomType.hotel : '' }}<br><small>{{ entity.order and entity.order.packages|first ? ((entity.order.packages)|first).roomType : '' }}</small><br>{{ entity.order.packages|first ? ((entity.order.packages)|first).begin|mbh_format ~ ' - ' ~ ((entity.order.packages)|first).end|mbh_format : '' }}",
                 "{{ entity.documentDate|date('d.m.Y') }}",
                 "<div class='text-center'>{% if entity.isPaid %} {{ entity.paidDate|date('d.m.Y') }} {% else %} <span class='label label-danger'>{{ 'order.cash.no'|trans({}, 'MBHPackageBundle') }}</span>{% endif %}</div>",
                 "<div class='text-center'>{{ entity.createdBy }}</div>",
