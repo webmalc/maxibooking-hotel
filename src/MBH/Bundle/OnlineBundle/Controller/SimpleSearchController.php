@@ -453,7 +453,6 @@ class SimpleSearchController extends Controller
             ->setEnd(new \DateTime('+1 minute'))
         ;
 
-        dump($hotel);
         $objectIdentity = ObjectIdentity::fromDomainObject($hotel);
         $aclProvider = $this->get('security.acl.provider');
         $acl = $aclProvider->findAcl($objectIdentity);
