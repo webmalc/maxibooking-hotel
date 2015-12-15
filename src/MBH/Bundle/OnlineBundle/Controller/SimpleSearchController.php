@@ -421,12 +421,12 @@ class SimpleSearchController extends Controller
             throw $this->createNotFoundException();
         }
 
-        //if (md5($package->getFrontUser().'123') != $userID) {
-        //    throw $this->createNotFoundException();
-        //}
+        if (md5($package->getFrontUser().'123') != $userID) {
+            throw $this->createNotFoundException();
+        }
 
-        //$this->dm->remove($package);
-        //$this->dm->flush();
+        $this->dm->remove($package);
+        $this->dm->flush();
 
         $hotel = $package->getRoomType()->getHotel();
         /** @var UserRepository $userRepository */
