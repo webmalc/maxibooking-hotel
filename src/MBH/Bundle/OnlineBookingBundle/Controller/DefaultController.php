@@ -43,10 +43,12 @@ class DefaultController extends BaseController
             'csrf_protection' => false
         ])
             ->add('hotel', 'document', [
+                'label' => 'Отель',
                 'empty_value' => '',
                 'class' => Hotel::class
             ])
             ->add('roomType', 'choice', [
+                'label' => 'Тип номера',
                 'required' => false,
                 'empty_value' => '',
                 'choices' => $roomTypeList,
@@ -54,20 +56,33 @@ class DefaultController extends BaseController
                     return ['data-hotel' => $hotelIds[$roomType]];
                 }
             ])
+            ->add('range', 'text', [
+                'label' => 'Даты',
+                'required' => false,
+                'mapped' => false
+            ])
             ->add('begin', new DateType(), [
+                'label' => 'Заезд',
+                'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
             ])
             ->add('end', new DateType(), [
+                'label' => 'Выезд',
+                'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
             ])
-            ->add('adults', 'integer', [])
+            ->add('adults', 'integer', [
+                'label' => 'Взрослые',
+            ])
             ->add('children', 'integer', [
+                'label' => 'Дети',
                 'attr' => ['min' => 1, 'max' => 10],
                 'required' => false
             ])
             ->add('children_age', 'collection', [
+                'label' => 'Возраста детей',
                 'required' => false,
                 'type' => 'integer',
                 'prototype' => true,

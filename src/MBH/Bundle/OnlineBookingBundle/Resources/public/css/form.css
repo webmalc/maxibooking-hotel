@@ -1,7 +1,3 @@
-#search-form {
-    width: 600px
-}
-
 #children-icon {
     position: relative;
     bottom: 15px;
@@ -15,5 +11,5 @@
     margin-right: 5px;
 }
 #search-form .popover-content input:last-child {
-    margin-right: 0px;
+    margin-right: 0;
 }

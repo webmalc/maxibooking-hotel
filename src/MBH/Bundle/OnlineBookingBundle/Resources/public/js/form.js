@@ -51,7 +51,35 @@ if ($roomTypeSelect.data('value') && !$roomTypeSelect.val()) {
 }
 
 $hotelSelect.on('change', updateSelectView);
-$('#form_begin,#form_end').datepicker({language: 'ru'});
+
+var $beginInput = $('#form_begin');
+var $endInput = $('#form_end');
+var $rangeInput = $('#form_range');
+$rangeInput.daterangepicker({
+    language: 'ru',
+    locale: {
+        format: 'DD.MM.YYYY'
+    }
+});
+//$('#form_begin,#form_end').datepicker({language: 'ru'});
+
+$rangeInput.on('apply.daterangepicker', function(ev, picker) {
+    $beginInput.val(picker.startDate.format('DD.MM.YYYY'));
+    $endInput.val(picker.endDate.format('DD.MM.YYYY'));
+});
+
+$rangeInput.on('cancel.daterangepicker', function(ev, picker) {
+    $beginInput.val('');
+    $endInput.val('');
+});
+
+var dateRangePicker = $rangeInput.data('daterangepicker');
+if ($beginInput.val()) {
+    dateRangePicker.setStartDate($beginInput.val());
+}
+if ($endInput.val()) {
+    dateRangePicker.setEndDate($endInput.val());
+}
 
 var $children = $('#form_children');
 var $childrenIcon = $('#children-icon');

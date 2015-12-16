@@ -1,60 +1,44 @@
-{#<form id="search-form" method="get" action="{{ requestSearchUrl }}">
-    <div class="form-group">
-        <label>Все пансионаты</label>
-        <select name="hotel" class="form-control" id="hotel" placeholder="Все пансионаты">
-            <option value="">Все пансионаты</option>
-            {% for hotel in hotels %}
-                <option {% if app.request.get('hotel') == hotel.id %}selected{% endif %} value="{{ hotel.id }}">{{ hotel }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="form-group">
-        <label>Все типы номеров</label>
-        <select data-value="{{ app.request.get('roomType') }}" name="roomType" class="form-control" id="roomType" placeholder="Все типы номеров">
-            <option value=""></option>
-            {% for roomType in roomTypes %}
-                <option data-hotel="{{ roomType.hotel.id }}" value="{{ roomType.id }}">{{ roomType }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="form-group">
-        <input type="text" required="required" name="begin" class="form-control" id="dateBegin" value="{{ app.request.get('begin') }}">
-    </div>
-    <div class="form-group">
-        <input type="text" required="required" name="end" class="form-control" id="dateEnd" value="{{ app.request.get('end') }}">
-    </div>
-    <div class="form-group">
-        <label>Взрослых: </label>
-        <input type="number" min="0" max="6" step="1" required="required" name="adults" id="adults" value="{{ app.request.get('adults') }}" maxlength="1" class="form-control">
-    </div>
-
-    <div class="form-group">
-        <label>Детей: </label>
-        <input type="number" min="0" max="5" step="1" name="children" id="children" value="{{ app.request.get('children') }}" maxlength="1" class="form-control">
-        <div id="children-icon" data-value="{{ app.request.get('children_age')|json_encode }}" style="visibility: hidden"></div>
-    </div>
-
-    <button type="submit" class="btn btn-info" id="btn-search"><i class="glyphicon glyphicon-search"></i> Найти</button>
-</form>#}
-
-{% form_theme form 'bootstrap_3_layout.html.twig' %}
+{#% form_theme form 'bootstrap_3_layout.html.twig' %#}
 {{ form_start(form, {attr: {id: 'search-form'}, action: requestSearchUrl}) }}
-    {{ form_row(form.hotel) }}
-    <div class="form-group">
-        {{ form_label(form.roomType) }}
-        {{ form_widget(form.roomType, {attr: {'data-value': form.roomType.vars.value}}) }}
-        {{ form_errors(form.roomType) }}
+<div class="form-group">
+    {{ form_label(form.hotel) }}
+    <div class="input-group">
+        {{ form_widget(form.hotel) }}
+        <span class="input-group-addon"><i class="fa fa-home"></i></span>
     </div>
-    {{ form_row(form.begin) }}
-    {{ form_row(form.end) }}
-    {{ form_row(form.adults) }}
-    <div class="form-group">
+</div>
+<div class="form-group">
+    {{ form_label(form.roomType) }}
+    <div class="input-group">
+        {{ form_widget(form.roomType, {attr: {'data-value': form.roomType.vars.value}}) }}
+        <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+    </div>
+</div>
+
+<div class="form-group">
+    {{ form_label(form.range) }}
+    <div class="input-group">
+        {{ form_widget(form.range) }}
+        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-sm-6">
+        {{ form_label(form.adults) }}
+        {{ form_widget(form.adults) }}
+    </div>
+    <div class="col-sm-6">
         {{ form_label(form.children) }}
         {{ form_widget(form.children) }}
         <div id="children-icon" data-value="{{ form.children_age.vars.value|json_encode }}" style="visibility: hidden"></div>
-        {{ form_errors(form.children) }}
     </div>
-    <button type="submit" class="btn btn-info" id="btn-search"><i class="glyphicon glyphicon-search"></i> Найти</button>
+</div>
+
+{{ form_widget(form.begin, {attr: {class: 'hide'}}) }}
+{{ form_widget(form.end, {attr: {class: 'hide'}}) }}
+
+<input type="submit" name="submit" value="Рассчитать" id="rsc">
 {{ form_end(form, {render_rest: false}) }}
 
 <script src="{{ asset('bundles/mbhonlinebooking/js/form.js', null, true) }}"></script>
