@@ -53,7 +53,7 @@ class HotelController extends Controller
      *
      * @Route("/", name="hotel")
      * @Method("GET")
-     * @Security("is_granted('ROLE_HOTEL_VIEW')")
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Template()
      */
     public function indexAction()

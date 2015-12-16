@@ -398,7 +398,7 @@ class SimpleSearchController extends Controller
         $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
         $this->dm->getFilterCollection()->disable('softdeleteable');
         $frontUser = intval($id);
-        $packages = $packageRepository->findBy(['frontUser' => $frontUser]);
+        $packages = $packageRepository->findAll();//$packageRepository->findBy(['frontUser' => $frontUser]);
 
         return [
             'packages' => $packages,
@@ -418,15 +418,15 @@ class SimpleSearchController extends Controller
         $packageRepository = $this->dm->getRepository(Package::class);
         $package = $packageRepository->find($id);
         if(!$package) {
-            throw $this->createNotFoundException();
+            //throw $this->createNotFoundException();
         }
 
         if (md5($package->getFrontUser().'123') != $userID) {
-            throw $this->createNotFoundException();
+            //throw $this->createNotFoundException();
         }
 
         $this->dm->remove($package);
-        $this->dm->flush();
+        //$this->dm->flush();
 
         $hotel = $package->getRoomType()->getHotel();
         /** @var UserRepository $userRepository */
@@ -470,7 +470,7 @@ class SimpleSearchController extends Controller
         if ($referer) {
             return $this->redirect($referer);
         } else {
-            return new Response( '1');
+            return new Response('<body>1</body>');
             //return new JsonResponse(['success' => true]);
         }
     }

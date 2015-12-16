@@ -1,31 +1,33 @@
 <table>
     {% for entity in packages %}
-    <tr>
+    <tr {% if entity.isDeleted %}class="danger"{% endif %}>
         <td>
             {{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}<br><small>{{ entity.nights }} {{ 'nights'|transchoice(entity.nights) }}</small>
         </td>
         <td>
-            {{ entity.roomType }}<br>
-            <small>
-                {% if entity.accommodation and entity.accommodation.roomType %}
-                        {{ entity.accommodation.name(entity.roomType.id == entity.accommodation.roomType.id ? false : true) }}
-                    {% else %}
-                        &lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;
-                {% endif %}
-            </small>
+            {{ entity.roomType ? entity.roomType.hotel : '' }}
+            <br>
+            {{ entity.roomType }}
         </td>
         <td>
             {% if entity.order.mainTourist %}{{ entity.order.mainTourist.lastNameWithInitials }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}
-            <small>><br>{% if entity.adults > 0 %}{{ entity.adults }} вз.{% endif %}{% if entity.adults > 0 and entity.children > 0 %}+{% endif %}{% if entity.children > 0 %}{{ entity.children }} рб.{% endif %}</small>
+            <small><br>{% if entity.adults > 0 %}{{ entity.adults }} вз.{% endif %}{% if entity.adults > 0 and entity.children > 0 %}+{% endif %}{% if entity.children > 0 %}{{ entity.children }} рб.{% endif %}</small>
         </td>
         <td>
             {{ entity.price|number_format(2) }}
         </td>
         <td>
-            {% if 'now'|date('d.m.Y') == entity.createdAt|date('d.m.Y') %}{{ "package.json.today"|trans({}, "MBHPackageBundle") }} {{ entity.createdAt|date('H:i') }}{% else %}{{ entity.createdAt|date('d.m.Y H:i') }}{% endif %}<br><small>{{ entity.createdBy|default(entity.channelManagerType)|default('online') }}</small>
+            {% if 'now'|date('d.m.Y') == entity.createdAt|date('d.m.Y') %}{{ "package.json.today"|trans({}, "MBHPackageBundle") }} {{ entity.createdAt|date('H:i') }}{% else %}{{ entity.createdAt|date('d.m.Y H:i') }}{% endif %}
         </td>
         <td>
-            <a href="{{ path('simple_search_delete_package', {id: entity.id, userID: (frontUser ~ '123')|mbh_md5}) }}" onclick="javascript: return confirm('Вы уверены?')">Удалить</a>
+            {% if entity.isDeleted %}
+                <strong class="text-danger">Удалено</strong>
+            {% else %}
+                {% if entity.confirmed %}
+                    <strong class="text-danger">Подтверждено</strong><br>
+                {% endif %}
+                <a href="#" onclick="javascript: event.preventDefault(); if(confirm('В случае отмены отель может применять штрафные санкции. Вы уверены, что хотите отменить бронирование?')) { window.location.href = '{{ path('simple_search_delete_package', {id: entity.id, userID: (frontUser ~ '123')|mbh_md5}) }}' }">Отменить бронь</a>
+            {% endif %}
         </td>
     </tr>
     {% endfor %}
