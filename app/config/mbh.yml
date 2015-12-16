@@ -169,7 +169,7 @@ parameters:
     #mailer
     mbh.mailer:
       fromText: 'MaxiBooking'
-      fromMail: robot@maxi-booking.ru
+      fromMail: %mailer_user% #robot@maxi-booking.ru
       subject: 'Сообщение от MaxiBooking'
       template: 'MBHBaseBundle:Mailer:base.html.twig'
 
