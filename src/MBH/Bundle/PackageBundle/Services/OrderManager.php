@@ -114,7 +114,8 @@ class OrderManager
             );
 
             $new->setPrice($results[0]->getPrice($results[0]->getAdults(), $results[0]->getChildren()))
-                ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()));
+                ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
+                ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()));
 
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($new->getBegin(), $new->getEnd());
 
@@ -290,7 +291,9 @@ class OrderManager
                 (isset($data['price'])) ? (int)$data['price'] : $results[0]->getPrice($results[0]->getAdults(),
                     $results[0]->getChildren())
             )
-            ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()));
+            ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
+            ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()))
+        ;
 
         //accommodation
         if ($query->accommodations) {

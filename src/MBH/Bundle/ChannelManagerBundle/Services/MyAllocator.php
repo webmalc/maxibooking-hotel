@@ -7,6 +7,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MyAllocator\phpsdk\src\Api\BookingList;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
@@ -714,6 +715,9 @@ class MyAllocator extends Base
 
                 $date = $helper->getDateFromString($day['Date'], 'Y-m-d');
                 $pricesByDate[$date->format('d_m_Y')] = $this->currencyConvertToRub($config, (float)$day['Rate']);
+                $packagePrices[] = new PackagePrice(
+                    $date, $this->currencyConvertToRub($config, (float)$day['Rate']), $tariffs['base']['doc']
+                );
             }
 
             $packageNote = '';
@@ -751,6 +755,7 @@ class MyAllocator extends Base
                 ->setChildren(0)
                 ->setIsSmoking(!empty($room['OccupantSmoker']) ? true : false)
                 ->setPricesByDate($pricesByDate)
+                ->setPrices($packagePrices)
                 ->setPrice($packageTotal)
                 ->setOriginalPrice($packageTotal)
                 ->setTotalOverwrite($packageTotal)

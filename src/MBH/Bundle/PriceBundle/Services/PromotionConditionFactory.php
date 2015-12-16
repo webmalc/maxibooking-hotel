@@ -30,12 +30,21 @@ class PromotionConditionFactory
     /**
      * @param Promotion|null $promotion
      * @param $price
-     * @return float
+     * @param bool|false $day
+     * @return float|int
      */
-    public static function calcDiscount(Promotion $promotion =  null, $price)
+    public static function calcDiscount(Promotion $promotion =  null, $price, $day = false)
     {
         $total = 0;
         if ($promotion && $promotion->getDiscount()) {
+
+            if ($day && !$promotion->getisPercentDiscount()) {
+                return $total;
+            }
+            if (!$day && $promotion->getisPercentDiscount()) {
+                return $total;
+            }
+
             $total = $promotion->getisPercentDiscount() ? $price * $promotion->getDiscount() / 100 : $promotion->getDiscount();
         }
 

@@ -321,7 +321,9 @@ class Search implements SearchInterface
                 }
                 foreach ($prices as $price) {
                     $result->addPrice($price['total'], $price['adults'], $price['children'])
-                        ->setPricesByDate($price['prices'], $price['adults'], $price['children']);
+                        ->setPricesByDate($price['prices'], $price['adults'], $price['children'])
+                        ->setPackagePrices($price['packagePrices'], $price['adults'], $price['children'])
+                    ;
                 }
                 if (empty($result->getPrices())) {
                     continue;
@@ -347,7 +349,6 @@ class Search implements SearchInterface
                 ) {
                     $results[$roomTypeObjId] = $result;
                 }
-
             }
         }
         sort($results);

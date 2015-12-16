@@ -7,6 +7,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -615,7 +616,7 @@ class Booking extends Base
             //prices
             $total = 0;
             $tariff = $rateId = null;
-            $pricesByDate = [];
+            $pricesByDate = $packagePrices = [];
             foreach ($room->price as $price) {
                 if (!$rateId) {
                     $rateId = (string)$price['rate_id'];
@@ -623,19 +624,21 @@ class Booking extends Base
                 if (!$tariff && isset($tariffs[$rateId])) {
                     $tariff = $tariffs[$rateId]['doc'];
                 }
+                if (!$tariff) {
+                    $tariff = $this->createTariff($config, $rateId);
+
+                    if (!$tariff) {
+                        continue;
+                    }
+                    $corrupted = true;
+                    $errorMessage .= 'ERROR: Not mapped rate <' . $tariff->getName() . '>. ';
+                }
                 $total += (float)$price;
                 $date = $helper->getDateFromString((string)$price['date'], 'Y-m-d');
                 $pricesByDate[$date->format('d_m_Y')] = $this->currencyConvertToRub($config, (float)$price);
+                $packagePrices[] = new PackagePrice($date, $this->currencyConvertToRub($config, (float)$price), $tariff);
             }
-            if (!$tariff) {
-                $tariff = $this->createTariff($config, $rateId);
 
-                if (!$tariff) {
-                    continue;
-                }
-                $corrupted = true;
-                $errorMessage .= 'ERROR: Not mapped rate <' . $tariff->getName() . '>. ';
-            }
 
             $packageNote = 'remarks: ' . $room->remarks . '; extra_info: ' . $room->extra_info . '; facilities: ' . $room->facilities . '; max_children: ' . $room->max_children;
             $packageNote .= '; commissionamount=' . $room->commissionamount . '; currencycode = ' . $room->currencycode . '; ';
@@ -654,6 +657,7 @@ class Booking extends Base
                 ->setChildren(0)
                 ->setIsSmoking((int)$room->smoking ? true : false)
                 ->setPricesByDate($pricesByDate)
+                ->setPrices($packagePrices)
                 ->setPrice($packageTotal)
                 ->setOriginalPrice((float)$total)
                 ->setTotalOverwrite($packageTotal)

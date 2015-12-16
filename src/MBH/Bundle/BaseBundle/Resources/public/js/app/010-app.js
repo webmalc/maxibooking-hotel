@@ -1,5 +1,9 @@
 /*global $, window, document, $ */
 
+var toggler = function (id) {
+    $("#" + id).toggle();
+}
+
 var closePopovers = function () {
     'use strict';
     $('body').on('click', function (e) {

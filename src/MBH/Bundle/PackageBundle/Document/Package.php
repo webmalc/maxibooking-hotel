@@ -195,8 +195,15 @@ class Package extends Base implements JsonSerializable
      * @Gedmo\Versioned
      * @ODM\Hash()
      * @Assert\Type(type="array")
+     * @deprecated
      */
     protected $pricesByDate = [];
+
+    /**
+     * @var PackagePrice
+     * @ODM\EmbedMany(targetDocument="PackagePrice")
+     */
+    protected $prices;
 
     /**
      * @var int
@@ -1087,6 +1094,7 @@ class Package extends Base implements JsonSerializable
      *
      * @param array $pricesByDate
      * @return self
+     * @deprecated
      */
     public function setPricesByDate($pricesByDate)
     {
@@ -1098,6 +1106,7 @@ class Package extends Base implements JsonSerializable
      * Get pricesByDate
      *
      * @return array $pricesByDate
+     * @deprecated
      */
     public function getPricesByDate()
     {
@@ -1420,4 +1429,24 @@ class Package extends Base implements JsonSerializable
             $rangeValidator->validate($this->discount, new Assert\Range(['min' => 0, 'max' => 100]));
         }
     }
+
+    /**
+     * @return PackagePrice
+     */
+    public function getPrices()
+    {
+        return $this->prices;
+    }
+
+    /**
+     * @param array $prices
+     * @return Package
+     */
+    public function setPrices($prices)
+    {
+        $this->prices = $prices;
+        return $this;
+    }
+
+
 }
