@@ -56,8 +56,9 @@ var $beginInput = $('#form_begin');
 var $endInput = $('#form_end');
 var $rangeInput = $('#form_range');
 $rangeInput.daterangepicker({
-    language: 'ru',
     locale: {
+        applyLabel: 'Принять',
+        cancelLabel: 'Отмена',
         format: 'DD.MM.YYYY'
     }
 });
