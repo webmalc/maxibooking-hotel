@@ -1,8 +1,9 @@
-{% form_theme form 'bootstrap_3_layout.html.twig' %}
+{#% form_theme form 'bootstrap_3_layout.html.twig' %#}
 
-{{ form_start(form, {attr: {id: 'search-fomr', method: 'get' }, action: requestSearchUrl}) }}
+<div id="sign-page">
+    {{ form_start(form, {attr: {id: 'sign-form', method: 'get' }, action: requestSearchUrl}) }}
     {{ form_widget(form) }}
-    <button type="submit" class="btn btn-success" id="btn-search">Забронировать</button>
+    <button type="submit">Забронировать</button>
     <input type="hidden" name="step" value="2">
     {#<input type="hidden" name="adults" value="{{ app.request.get('adults') }}">
     <input type="hidden" name="children" value="{{ app.request.get('children') }}">
@@ -10,4 +11,95 @@
     <input type="hidden" name="end" value="{{ app.request.get('end') }}">
     <input type="hidden" name="roomType" value="{{ app.request.get('roomType') }}">
     <input type="hidden" name="tariff" value="{{ app.request.get('tariff') }}">#}
-{{ form_end(form) }}
+    {{ form_end(form) }}
+</div>
+
+<div id="info">
+    <div class="title">Детали бронирования</div>
+    <div class="item row">
+        <div class="col-md-4">
+            <img src="{{ asset(roomType.mainImage.path, null, true) }}" width="70px" height="70px">
+        </div>
+        <div class="col-md-8">
+            <div>{{ roomType.hotel }}</div>
+            <div>{{ roomType }}</div>
+        </div>
+    </div>
+    <div class="date-info row">
+        <div class="arrival col-md-4">
+            <div>Заезд</div>
+            <div class="date">
+                {{ data.begin }}
+            </div>
+            <div class="date">
+                с 12:00
+            </div>
+        </div>
+        <div class="days col-md-4">
+            <div>
+                <i class="fa fa-clock-o fa-2x"></i>
+            </div>
+            <div>7 дней</div>
+            <div>7 ночей</div>
+        </div>
+        <div class="departure col-md-4">
+            <div>Выезд</div>
+            <div class="date">
+                {{ data.end }}
+            </div>
+            <div class="date">
+                до 12:00
+            </div>
+        </div>
+    </div>
+    <div class="guests">
+        Гости: {{ data.adults }} взрослых {{ data.children }} ребёнок
+    </div>
+
+    <div class="title" style="margin-top: 15px">Стоймость</div>
+    <div class="price-info">
+        {#<div class="price-item">
+            <div>Тип номера:</div>
+            <div>Симейные апартаменты</div>
+        </div>#}
+        <div class="price-item">
+            <div>Стоймость в сутки:</div>
+            <div>1 600</div>
+        </div>
+        <div class="price-item">
+            <div>7 ночей / 7 дней:</div>
+            <div>45 600</div>
+        </div>
+        <div class="price-item">
+            <div>Сумма скидки:</div>
+            <div>5 300</div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 15px">
+        <div class="title" style="display: inline-block;">Сумма к оплате</div>
+        <div class="pull-right" style="color: #41bc19; display: inline-block; font-weight: bold; font-size: 18px">3 676</div>
+    </div>
+</div>
+
+
+<div id="questions">
+    <div class="title">Остались вопросы?</div>
+    <div class="description">
+        <p>Свяжитесь с нами!</p>
+        <p>Звонок вас ни к чему не обязывает,
+        но обеспечит дополнительной
+        информацией</p>
+    </div>
+    <div class="phone">
+        <i class="fa fa-phone fa-2x"></i>
+        <span>8-800-555-25-55</span>
+    </div>
+    <div class="email">
+        email@email.com
+    </div>
+</div>
+
+
+
+<link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/sign.css', null, true) }}">

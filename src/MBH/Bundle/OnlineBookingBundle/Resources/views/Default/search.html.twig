@@ -1,5 +1,10 @@
+<form class="sort" action="" method="POST">
+    Сортировать по:
+</form>
+
+<div id="online-booking-search">
 {% for result in searchResults %}
-<div class="row oneblock">
+<div class="row oneblock room-type-row">
     <!--<div class="sale"></div>-->
 
     <div class="col-md-4" style="padding:0px;">
@@ -46,7 +51,7 @@
             </thead>
             <tbody>
             {% for searchResult in result.results %}
-            <tr data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}">
+            <tr class="tariff-row" data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}">
                 <td>{{ searchResult.tariff }}</td>
                 <td>
                     {{ searchResult.adults }} взр + {{ searchResult.children }} реб
@@ -67,15 +72,26 @@
 
         <div class="btmactions">
             <a href="#" class="pull-right" style="margin-top: 10px" title="Купить Online">
-                <div class="onl">Забронировать</div>
+                <a href="#" class="onl">Забронировать</a>
             </a>
         </div>
     </div>
 </div>
 {% endfor %}
+</div>
 
+<div class="breadcrumbs">
+    <a href="#"><p class="onebread active">1</p></a>
+    <a href="#"><p class="onebread">2</p></a>
+    <a href="#"><p class="onebread">3</p></a>
+    <a href="#"><p class="onebread">4</p></a>
+    <a href="#"><p class="onebread">5</p></a>
+    <a href="#"><p class="onebread">6</p></a>
+    <a href="#"><p class="onebread">7</p></a>
+    <a href="#"><p class="onebread">8</p></a>
 
-
+    <div class="clear"></div>
+</div>
 
 
 
@@ -109,11 +125,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
 
 <script>
-    var $onlineBookingSearch = $('#online-booking-search');
-
     var RoomTypeRow = function($row) {
         this.$row = $row;
-        this.$bookingButton = $row.find('.btn-success');
+        this.$bookingButton = $row.find('.onl');
         this.tariffRows = [];
         this.selectedTariffRow = null;
     }
@@ -205,6 +219,7 @@
         //this.$checkbox.attr('checked', false);
     }
 
+    var $onlineBookingSearch = $('#online-booking-search');
     $onlineBookingSearch.ready(function() {
         $onlineBookingSearch.find('.fancybox').fancybox();
 
