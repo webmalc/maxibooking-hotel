@@ -301,29 +301,48 @@ class DefaultController extends BaseController
 
             $this->sendNotifications($order);
 
+            $payButtonHtml = '';
             if ($payment != 'in_hotel' && $clientConfig->getPaymentSystem()) {
                 $buttonText = $this->get('translator')->trans('views.api.make_payment_for_order_id',
                     ['%total%' => number_format($cash['total'], 2), '%order_id%' => $order->getId()],
                     'MBHOnlineBundle');
 
-                $formData = $clientConfig->getFormData($order->getCashDocuments()[0], $this->container->getParameter('online_form_result_url'), $this->generateUrl('online_form_check_order', [], true));
+                $formData = $clientConfig->getFormData($order->getCashDocuments()[0],
+                    $this->container->getParameter('online_form_result_url'),
+                    $this->generateUrl('online_form_check_order', [], true));
                 $data = array_merge(['test' => false, 'buttonText' => $buttonText], $formData);
 
                 $parameters = ['data' => $data];
-                return $this->render('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', $parameters);
-            } else {
-                return new Response('Заказ успешно создан №' . $order->getId());
+
+                $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig',
+                    $parameters);
             }
+
+            $text = 'Заказ успешно создан №' . $order->getId();
+            return $this->render('MBHOnlineBookingBundle:Default:sign-success.html.twig', [
+                'text' => $text,
+                'payButtonHtml' => $payButtonHtml,
+            ]);
         } else {
             $roomTypeID = $form['roomType']->getData();
             /** @var RoomType $roomType */
             $roomType = $this->dm->getRepository(RoomType::class)->find($roomTypeID);
             $data = $form->getData();
+
+            $beginTime = $this->get('mbh.helper')->getDateFromString($data['begin']);
+            $endTime = $this->get('mbh.helper')->getDateFromString($data['end']);
+
+            $days = 1;
+            if($beginTime && $endTime) {
+                $days = $endTime->diff($beginTime)->d;
+            }
+
             return $this->render('MBHOnlineBookingBundle:Default:sign.html.twig', [
                 'requestSearchUrl' => $requestSearchUrl,
                 'form' => $form->createView(),
                 'roomType' => $roomType,
                 'data' => $data,
+                'days' => $days,
             ]);
         }
     }

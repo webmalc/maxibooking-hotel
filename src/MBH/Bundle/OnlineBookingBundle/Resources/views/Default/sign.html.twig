@@ -62,23 +62,23 @@
             <div>Тип номера:</div>
             <div>Симейные апартаменты</div>
         </div>#}
-        <div class="price-item">
+        {#<div class="price-item">
             <div>Стоймость в сутки:</div>
             <div>1 600</div>
-        </div>
+        </div>#}
         <div class="price-item">
-            <div>7 ночей / 7 дней:</div>
-            <div>45 600</div>
+            <div>{{ days ~ ' ' ~ 'nights'|transchoice(days) }}:</div>
+            <div>{{ data.total|number_format(2) }}</div>
         </div>
-        <div class="price-item">
+        {#<div class="price-item">
             <div>Сумма скидки:</div>
             <div>5 300</div>
-        </div>
+        </div>#}
     </div>
 
     <div class="row" style="margin-top: 15px">
         <div class="title" style="display: inline-block;">Сумма к оплате</div>
-        <div class="pull-right" style="color: #41bc19; display: inline-block; font-weight: bold; font-size: 18px">3 676</div>
+        <div class="pull-right" style="color: #41bc19; display: inline-block; font-weight: bold; font-size: 18px">{{ data.total|number_format(2) }}</div>
     </div>
 </div>
 
