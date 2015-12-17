@@ -61,12 +61,13 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $entity->setIsHostel($this->hotel->getIsHostel());
         $form = $this->createForm(new RoomTypeType(), $entity, [
             'facilities' => $this->getParameter('mbh.hotel')['facilities'],
-            'useRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getUseRoomTypeCategory()
+            'useRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getUseRoomTypeCategory(),
+            'hotel' => $this->hotel
         ]);
 
-        return array(
+        return [
             'form' => $form->createView()
-        );
+        ];
     }
 
     /**
@@ -83,7 +84,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $entity->setHotel($this->hotel);
         $form = $this->createForm(new RoomTypeType(), $entity, [
             'facilities' => $this->getParameter('mbh.hotel')['facilities'],
-            'useRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getUseRoomTypeCategory()
+            'useRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getUseRoomTypeCategory(),
+            'hotel' => $entity->getHotel()
         ]);
 
         $form->submit($request);
@@ -142,15 +144,16 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(new RoomTypeType(), $entity, [
-            'useRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getUseRoomTypeCategory()
+            'useRoomTypeCategory' => $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getUseRoomTypeCategory(),
+            'hotel' => $entity->getHotel()
         ]);
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity),
             'images' => $entity->getImages()
-        );
+        ];
     }
 
 
@@ -172,7 +175,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         /** @var ClientConfig $config */
         $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
         $form = $this->createForm(new RoomTypeType(), $entity, [
-            'useRoomTypeCategory' => $config ? $config->getUseRoomTypeCategory() : false
+            'useRoomTypeCategory' => $config ? $config->getUseRoomTypeCategory() : false,
+            'hotel' => $entity->getHotel()
         ]);
         $form->submit($request);
 
@@ -186,12 +190,12 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }
 
-        return array(
+        return [
             'entity' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity),
             'images' => $entity->getImages()
-        );
+        ];
     }
 
 
