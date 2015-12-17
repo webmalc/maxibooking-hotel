@@ -303,19 +303,16 @@ class DefaultController extends BaseController
 
             $payButtonHtml = '';
             if ($payment != 'in_hotel' && $clientConfig->getPaymentSystem()) {
-                $buttonText = $this->get('translator')->trans('views.api.make_payment_for_order_id',
-                    ['%total%' => number_format($cash['total'], 2), '%order_id%' => $order->getId()],
-                    'MBHOnlineBundle');
-
-                $formData = $clientConfig->getFormData($order->getCashDocuments()[0],
-                    $this->container->getParameter('online_form_result_url'),
-                    $this->generateUrl('online_form_check_order', [], true));
-                $data = array_merge(['test' => false, 'buttonText' => $buttonText], $formData);
-
-                $parameters = ['data' => $data];
-
-                $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig',
-                    $parameters);
+                $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
+                    'data' => array_merge([
+                        'test' => false,
+                        'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
+                            ['%total%' => number_format($cash['total'], 2), '%order_id%' => $order->getId()],
+                            'MBHOnlineBundle')
+                    ], $clientConfig->getFormData($order->getCashDocuments()[0],
+                        $this->container->getParameter('online_form_result_url'),
+                        $this->generateUrl('online_form_check_order', [], true)))
+                ]);
             }
 
             $text = 'Заказ успешно создан №' . $order->getId();
