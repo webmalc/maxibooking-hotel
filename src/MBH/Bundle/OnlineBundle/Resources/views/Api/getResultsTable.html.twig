@@ -104,7 +104,7 @@
                         <div class="room-type-photos">
                             {% for photo in result.roomType.images|slice(0, 10) %}
                                 {% if not photo.isMain %}
-                                    <a class="fancybox" title="{{ result.roomType }}" href="{{ photo.path|imagine_filter('zamkadom_thumb') }}">
+                                    <a class="fancybox" rel="group_{{ result.roomType.id }}" title="{{ result.roomType }}" href="{{ asset(photo.path, null, true) }}">
                                         <img title="{{ result.roomType }}" src="{{ photo.path|imagine_filter('zamkadom_thumb') }}" data-title="{{ result.roomType }}">
                                     </a>
                                 {% endif %}
