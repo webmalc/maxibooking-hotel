@@ -164,6 +164,7 @@ class OrderExportCommand extends ContainerAwareCommand
             $package->setEnd($departureTime);
 
             $package->setExternalNumber($number);
+            $package->setNumberWithPrefix($number);
             $order->setNote(implode(', ', $data));
 
             $result = [];
