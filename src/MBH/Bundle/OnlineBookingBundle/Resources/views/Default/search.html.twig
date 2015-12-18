@@ -1,7 +1,3 @@
-<form class="sort" action="" method="POST">
-    Сортировать по:
-</form>
-
 <div id="online-booking-search">
 {% for result in searchResults %}
 <div class="row oneblock room-type-row">
@@ -80,19 +76,11 @@
 {% endfor %}
 </div>
 
-<div class="breadcrumbs">
-    <a href="#"><p class="onebread active">1</p></a>
-    <a href="#"><p class="onebread">2</p></a>
-    <a href="#"><p class="onebread">3</p></a>
-    <a href="#"><p class="onebread">4</p></a>
-    <a href="#"><p class="onebread">5</p></a>
-    <a href="#"><p class="onebread">6</p></a>
-    <a href="#"><p class="onebread">7</p></a>
-    <a href="#"><p class="onebread">8</p></a>
-
-    <div class="clear"></div>
-</div>
-
+{% if not searchResults %}
+    <div style="background-color: #FFFFFF; padding: 15px">
+        <strong><i class="fa fa-exclamation"></i> По вашему запросу ничего не найдено</strong>
+    </div>
+{% endif %}
 
 
 {#% for result in searchResults %}

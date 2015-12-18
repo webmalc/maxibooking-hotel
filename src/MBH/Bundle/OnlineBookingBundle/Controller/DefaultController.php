@@ -44,6 +44,7 @@ class DefaultController extends BaseController
         ])
             ->add('hotel', 'document', [
                 'label' => 'Отель',
+                'required' => false,
                 'empty_value' => '',
                 'class' => Hotel::class
             ])
@@ -78,7 +79,7 @@ class DefaultController extends BaseController
             ])
             ->add('children', 'integer', [
                 'label' => 'Дети',
-                'attr' => ['min' => 1, 'max' => 10],
+                'attr' => ['min' => 0, 'max' => 10],
                 'required' => false
             ])
             ->add('children_age', 'collection', [

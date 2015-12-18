@@ -1,26 +1,24 @@
+#right-column {
+}
 #sign-page, #info {
-    float: left;
     background-color: #FFFFFF;
     padding: 15px;
 }
-#sign-page {
-    width: 480px;
-}
 #info {
-    width: 290px;
-    margin-left: 15px;
+    width: 100%;
+    margin-bottom: 15px;
 }
 #info .title {
     font-weight: bold;
     color: #364052;
     font-size: 16px;
 }
-#info .col-md-8 div:first-child {
+#info .item div:first-child {
     font-weight: bold;
     color: #364052;
     font-size: 14px;
 }
-#info .col-md-8 div:last-child {
+#info .item div:last-child {
     color: #364052;
     font-size: 12px;
 }
@@ -34,7 +32,10 @@
 
 
 #info .date-info {
+    margin-left: auto;
+    margin-right: auto;
     margin-bottom: 5px;
+    max-width: 220px;
 }
 
 #info .date-info .arrival {
@@ -117,10 +118,11 @@
 }
 
 #questions {
-    width: 290px;
+    width: 100%;
+    /*width: 290px;
     float: left;
+    margin-left: 15px;*/
     margin-top: 15px;
-    margin-left: 15px;
     background-color: #FFFFFF;
     padding: 15px;
 }
