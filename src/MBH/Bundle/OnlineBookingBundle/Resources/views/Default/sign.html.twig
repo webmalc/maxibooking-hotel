@@ -20,7 +20,7 @@
         <div class="item row">
             <div class="col-xs-4">
                 <a href="{{ asset(roomType.mainImage.path, null, true) }}" class="fancybox">
-                    <img src="{{ asset(roomType.mainImage.path, null, true) }}" width="70px" height="70px">
+                    <img src="{{ roomType.mainImage.path|imagine_filter('thumb_100x100') }}" width="70px" height="70px">
                 </a>
             </div>
             <div class="col-xs-8">
