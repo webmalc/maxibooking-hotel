@@ -16,6 +16,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\TouristRepository;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -59,8 +60,12 @@ class OrderExportCommand extends ContainerAwareCommand
         $path = $this->getPathTouristsCsv();
         $resource = fopen($path, 'r');
         fgetcsv($resource, null, ",");
-        while(($data = fgetcsv($resource, null, ",")) !== false) {
-            $data = array_map(function($item){
+
+        $tariffRepository = $dm->getRepository('MBHPriceBundle:Tariff');
+        $userRepository = $dm->getRepository('MBHUserBundle:User');
+
+        while (($data = fgetcsv($resource, null, ",")) !== false) {
+            $data = array_map(function ($item) {
                 return iconv("WINDOWS-1251", "UTF-8", $item);
             }, $data);
 
@@ -68,13 +73,16 @@ class OrderExportCommand extends ContainerAwareCommand
                 continue;
             }
 
+
             $index = $data[0];
             $number = $data[1];
             $date = $data[2];
             $fio = $data[3];
-            $total = $data[13];
+            $total = floatval(str_replace(' ', '', $data[13]));
             $sale = $data[14];
             $finalTotal = $data[15];
+            $finalTotal = floatval(str_replace(' ', '', $data[16]));
+
             $duty = $data[16];
             $phone = $data[19];
             $roomTypeCategoryTitle = $data[20];
@@ -85,28 +93,60 @@ class OrderExportCommand extends ContainerAwareCommand
             $places = $data[26];
             $arrivalTime = $data[27];
             $departureTime = $data[34];
+            $manager = $data[41];
 
             $order = new Order();
+            $order->setStatus('offline');
+            $order->setIsEnabled(true);
+            $order->setTotalOverwrite($finalTotal);
+
             $date = $helper->getDateFromString($date, 'd.m.Y h:i:s');
-            if($date) {
+            if ($date) {
                 $order->setCreatedAt($date);
             }
-            //$fio
-            list ($lastName, $firstName, $patronymic) = explode(' ', trim($fio));
+            if ($fio) {
+                list ($lastName, $firstName, $patronymic) = explode(' ', trim($fio));
 
-            $tourist = $touristRepository->createQueryBuilder()
-                ->field('firstName')->equals($firstName)
-                ->field('lastName')->equals($lastName)
-                ->field('patronymic')->equals($patronymic)
-                ->limit(1)
-                ->getQuery()
-                ->getSingleResult()
-            ;
-            if (!$tourist) {
+                /*$tourist = $touristRepository->createQueryBuilder()
+                    ->field('firstName')->equals($firstName)
+                    ->field('lastName')->equals($lastName)
+                    ->field('patronymic')->equals($patronymic)
+                    ->limit(1)
+                    ->getQuery()
+                    ->getSingleResult();
+                if (!$tourist) {*/
+                    $tourist = $touristRepository->fetchOrCreate($lastName, $firstName, $patronymic);
+                //}
+                $order->setMainTourist($tourist);
+                $dm->persist($tourist);
+            } else {
+                //throw new \Exception('Fio is not exists');
+                continue;
+            }
+            if (!$number) {
                 continue;
             }
 
             $package = new Package();
+
+            if($manager) {
+                list ($lastName, $firstName) = explode(' ', trim($manager));
+                if($lastName && $finalTotal) {
+                    $user = $userRepository->findOneBy(['firstName' => $firstName, 'lastName' => $lastName]);
+                    if (!$user) {
+                        $user = new User();
+                        $user->setFirstName($firstName);
+                        $user->setLastName($lastName);
+                        $user->setPlainPassword('12345');
+                        $user->setUsername(Helper::translateToLat($firstName.'_'.$lastName));
+                        $dm->persist($user);
+                    }
+
+                    $order->setCreatedBy($user->getUsername());
+                    $package->setCreatedBy($user->getUsername());
+                }
+            }
+
             $order->addPackage($package);
             $package->setOrder($order);
             $package->setTotalOverwrite($total);
@@ -115,8 +155,7 @@ class OrderExportCommand extends ContainerAwareCommand
 
             $arrivalTime = $helper->getDateFromString($arrivalTime, 'd.m.Y h:i:s');
             $departureTime = $helper->getDateFromString($departureTime, 'd.m.Y h:i:s');
-            if(!$arrivalTime || !$departureTime) {
-                dump($data);
+            if (!$arrivalTime || !$departureTime) {
                 throw new \Exception($index . ' has not date');
             }
             //$package->setArrivalTime($arrivalTime);
@@ -128,13 +167,20 @@ class OrderExportCommand extends ContainerAwareCommand
             $order->setNote(implode(', ', $data));
 
             $result = [];
-            preg_match("/^([1-3]{1})/i", $number, $result);
-            $number = intval($result[1]);
+            preg_match("/^([1-3]{1})-([0-9]+)/i", $number, $result);
+            $prefix = intval($result[1]);
+            //$number = intval($result[2]);
             $hotelTitle = null;
-            switch ($number) {
-                case 1: $hotelTitle = 'Азовский'; break;
-                case 2: $hotelTitle = 'АзовЛенд'; break;
-                case 3: $hotelTitle = 'РИО'; break;
+            switch ($prefix) {
+                case 1:
+                    $hotelTitle = 'Азовский';
+                    break;
+                case 2:
+                    $hotelTitle = 'АзовЛенд';
+                    break;
+                case 3:
+                    $hotelTitle = 'РИО';
+                    break;
                 default:
                     throw new \Exception('hotel is not defined');
                     break;
@@ -148,7 +194,10 @@ class OrderExportCommand extends ContainerAwareCommand
             }
 
 
-            $roomTypeCategory = $roomTypeCategoryRepository->findOneBy(['title' => $roomTypeCategoryTitle, 'hotel.id' => $hotel->getId()]);
+            $roomTypeCategory = $roomTypeCategoryRepository->findOneBy([
+                'title' => $roomTypeCategoryTitle,
+                'hotel.id' => $hotel->getId()
+            ]);
             if (!$roomTypeCategory) {
                 $roomTypeCategory = new RoomTypeCategory();
                 $roomTypeCategory->setTitle($roomTypeCategoryTitle);
@@ -161,13 +210,19 @@ class OrderExportCommand extends ContainerAwareCommand
                 $roomType = new RoomType();
                 $roomType->setHotel($hotel);
                 $roomType->setTitle($roomTypeName);
+                $roomType->setCategory($roomTypeCategory);
                 $dm->persist($roomType);
             }
 
+            $package->setRoomType($roomType);
+
+            $baseTariff = $tariffRepository->fetchBaseTariff($hotel);
+            $package->setTariff($baseTariff);
+
             $dm->persist($order);
             $dm->persist($package);
-
             $dm->flush();
+            $dm->clear();
         }
 
         $output->writeln('Done');
