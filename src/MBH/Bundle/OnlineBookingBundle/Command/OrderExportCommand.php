@@ -6,6 +6,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Command;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
@@ -80,10 +81,10 @@ class OrderExportCommand extends ContainerAwareCommand
             $fio = $data[3];
             $total = floatval(str_replace(' ', '', $data[13]));
             $sale = $data[14];
-            $finalTotal = $data[15];
+            //$finalTotal = $data[15];
             $finalTotal = floatval(str_replace(' ', '', $data[16]));
 
-            $duty = $data[16];
+            $duty = floatval(str_replace(' ', '', $data[17]));
             $phone = $data[19];
             $roomTypeCategoryTitle = $data[20];
             $roomTypeName = $data[21];
@@ -100,10 +101,7 @@ class OrderExportCommand extends ContainerAwareCommand
             $order->setIsEnabled(true);
             $order->setTotalOverwrite($finalTotal);
 
-            $date = $helper->getDateFromString($date, 'd.m.Y h:i:s');
-            if ($date) {
-                $order->setCreatedAt($date);
-            }
+            $tourist = null;
             if ($fio) {
                 list ($lastName, $firstName, $patronymic) = explode(' ', trim($fio));
 
@@ -129,6 +127,7 @@ class OrderExportCommand extends ContainerAwareCommand
 
             $package = new Package();
 
+            $user = null;
             if($manager) {
                 list ($lastName, $firstName) = explode(' ', trim($manager));
                 if($lastName && $finalTotal) {
@@ -145,6 +144,38 @@ class OrderExportCommand extends ContainerAwareCommand
                     $order->setCreatedBy($user->getUsername());
                     $package->setCreatedBy($user->getUsername());
                 }
+            }
+
+            $date = $helper->getDateFromString($date, 'd.m.Y h:i:s');
+            if ($date) {
+                $order->setCreatedAt($date);
+                $package->setCreatedAt($date);
+            }
+
+            if ($duty != $finalTotal && $finalTotal - $duty) {
+                $cashDocument = new CashDocument();
+                $cashDocument->setTotal($finalTotal - $duty);
+                $cashDocument->setIsPaid(true);
+                $cashDocument->setMethod('cash');
+                if($date) {
+                    $cashDocument->setCreatedAt($date);
+                    $cashDocument->setDocumentDate($date);
+                }
+                if($user) {
+                    $cashDocument->setCreatedBy($user);
+                }
+                if($tourist) {
+                    $cashDocument->setTouristPayer($tourist);
+                }
+                $cashDocument->setIsConfirmed(true);
+                $cashDocument->setOperation('in');
+                $cashDocument->setIsEnabled(true);
+                $cashDocument->setOrder($order);
+                $dm->persist($cashDocument);
+            }
+
+            if ($duty == 0) {
+                $order->setIsPaid(true);
             }
 
             $order->addPackage($package);
