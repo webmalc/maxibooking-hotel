@@ -1,23 +1,32 @@
 #right-column {
 }
+
 #sign-page, #info {
     background-color: #FFFFFF;
     padding: 15px;
 }
+
 #info {
     width: 100%;
     margin-bottom: 15px;
 }
+
 #info .title {
     font-weight: bold;
     color: #364052;
     font-size: 16px;
 }
+
+#info .item {
+    margin-bottom: 5px;
+}
+
 #info .item div:first-child {
     font-weight: bold;
     color: #364052;
     font-size: 14px;
 }
+
 #info .item div:last-child {
     color: #364052;
     font-size: 12px;
@@ -26,10 +35,6 @@
 #info .title {
     margin-bottom: 5px;
 }
-#info .item {
-    margin-bottom: 5px;
-}
-
 
 #info .date-info {
     margin-left: auto;
@@ -41,29 +46,36 @@
 #info .date-info .arrival {
     padding: 0;
 }
+
 #info .date-info .departure {
     padding: 0;
 }
+
 #info .date-info .arrival div {
     float: right;
 }
+
 #info .date-info .departure div {
     float: left;
 }
+
 #info .date-info .arrival div:first-child {
     font-weight: bold;
     color: #10a3ed;
 }
+
 #info .date-info .departure div:first-child {
     font-weight: bold;
     color: #10a3ed;
 }
+
 #info .date-info .arrival .date {
     font-size: 11px;
     font-weight: bold;
     text-transform: uppercase;
     color: #c0c0c0;
 }
+
 #info .date-info .departure .date {
     font-size: 11px;
     font-weight: bold;
@@ -109,6 +121,7 @@
 #info .price-info .price-item div:first-child {
     color: #10a3ed;
 }
+
 #info .price-info .price-item div:last-child {
     color: #c0c0c0;
 }
@@ -119,9 +132,6 @@
 
 #questions {
     width: 100%;
-    /*width: 290px;
-    float: left;
-    margin-left: 15px;*/
     margin-top: 15px;
     background-color: #FFFFFF;
     padding: 15px;
@@ -133,18 +143,22 @@
     font-size: 16px;
     margin-bottom: 10px;
 }
+
 #questions .description {
     margin-bottom: 10px;
 }
+
 #questions .description p, #questions .email {
     font-weight: bold;
     font-size: 12px;
     color: #c0c0c0;
     margin-bottom: 0;
 }
+
 #questions .phone {
     margin-bottom: 10px;
 }
+
 #questions .phone span {
     margin-left: 5px;
     color: #10a3ed;
