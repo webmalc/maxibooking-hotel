@@ -51,7 +51,7 @@ class CashController extends Controller
         $out = $this->dm->getRepository('MBHCashBundle:CashDocument')->total('out', $queryCriteria);
         $total = $in - $out;
 
-        $articles = $this->dm->getRepository(CashDocumentArticle::class)->findBy(['parent' => ['$exists' => false]]);
+        $articles = $this->dm->getRepository(CashDocumentArticle::class)->findBy(['parent' => ['$exists' => false]], ['code' => 1]);
 
         return [
             'methods' => $methods,
