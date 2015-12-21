@@ -21,6 +21,7 @@ use MBH\Bundle\PackageBundle\Document\TouristRepository;
 use MBH\Bundle\PriceBundle\Document\PackageInfo;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\RoomCacheRepository;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -122,7 +123,7 @@ class OrderExportCommand extends ContainerAwareCommand
                     ->getQuery()
                     ->getSingleResult();
                 if (!$tourist) {*/
-                    $tourist = $touristRepository->fetchOrCreate($lastName, $firstName, $patronymic);
+                $tourist = $touristRepository->fetchOrCreate($lastName, $firstName, $patronymic);
                 //}
                 $order->setMainTourist($tourist);
                 $dm->persist($tourist);
@@ -137,16 +138,16 @@ class OrderExportCommand extends ContainerAwareCommand
             $package = new Package();
 
             $user = null;
-            if($manager) {
+            if ($manager) {
                 list ($lastName, $firstName) = explode(' ', trim($manager));
-                if($lastName && $finalTotal) {
+                if ($lastName && $finalTotal) {
                     $user = $userRepository->findOneBy(['firstName' => $firstName, 'lastName' => $lastName]);
                     if (!$user) {
                         $user = new User();
                         $user->setFirstName($firstName);
                         $user->setLastName($lastName);
                         $user->setPlainPassword('12345');
-                        $user->setUsername(Helper::translateToLat($firstName.'_'.$lastName));
+                        $user->setUsername(Helper::translateToLat($firstName . '_' . $lastName));
                         $dm->persist($user);
                     }
 
@@ -166,14 +167,14 @@ class OrderExportCommand extends ContainerAwareCommand
                 $cashDocument->setTotal($finalTotal - $duty);
                 $cashDocument->setIsPaid(true);
                 $cashDocument->setMethod('cash');
-                if($date) {
+                if ($date) {
                     $cashDocument->setCreatedAt($date);
                     $cashDocument->setDocumentDate($date);
                 }
-                if($user) {
+                if ($user) {
                     $cashDocument->setCreatedBy($user);
                 }
-                if($tourist) {
+                if ($tourist) {
                     $cashDocument->setTouristPayer($tourist);
                 }
                 $cashDocument->setIsConfirmed(true);
@@ -281,7 +282,7 @@ class OrderExportCommand extends ContainerAwareCommand
     {
         $minDate = null;
         $maxDate = null;
-        foreach($packages as $package) {
+        foreach ($packages as $package) {
             if (!$minDate || $minDate > $package->getBegin()) {
                 $minDate = $package->getBegin();
             }
@@ -303,13 +304,13 @@ class OrderExportCommand extends ContainerAwareCommand
         $roomCaches = $roomCacheRepository->findBy(['date' => ['$gte' => $minDate, '$lte' => $maxDate]]);
 
 
-        foreach($roomCaches as $roomCache) {
+        foreach ($roomCaches as $roomCache) {
             $packageCount = 0;
             $tariff = null;
-            foreach($packages as $package) {
-                if($package->getBegin()->getTimestamp() <= $roomCache->getDate()->getTimestamp() && $package->getEnd()->getTimestamp() > $roomCache->getDate()->getTimestamp() && $package->getRoomType()->getId() == $roomCache->getRoomType()->getId()) {
+            foreach ($packages as $package) {
+                if ($package->getBegin()->getTimestamp() <= $roomCache->getDate()->getTimestamp() && $package->getEnd()->getTimestamp() > $roomCache->getDate()->getTimestamp() && $package->getRoomType()->getId() == $roomCache->getRoomType()->getId()) {
                     $packageCount++;
-                    //$tariff = $package->getTariff();
+                    $tariff = $package->getTariff();
                 }
             }
             /*$packageCount = $packageRepository->createQueryBuilder()
@@ -322,16 +323,20 @@ class OrderExportCommand extends ContainerAwareCommand
             $roomCache->setPackagesCount($packageCount);
             $roomCache->setLeftRooms($roomCache->getTotalRooms() - $roomCache->getPackagesCount());
 
-            /*$packageInfo = new PackageInfo();
-            if($tariff) {
-                $packageInfo->setTariff($tariff);
+            $packageInfo = new PackageInfo();
+            dump($tariff->getId());
+            if ($tariff) {
+                //$tariff = $dm->getRepository(Tariff::class)->find($tariff->getId());
+                //$packageInfo->setTariff($tariff);
             }
             $packageInfo->setPackagesCount($packageCount);
-            $roomCache->addPackageInfo($packageInfo);*/
+            $roomCache->addPackageInfo($packageInfo);
 
+            //$dm->persist($packageInfo);
             $dm->persist($roomCache);
-        }
 
-        $dm->flush();
+            $dm->flush();
+            $dm->clear();
+        }
     }
 }
