@@ -15,8 +15,12 @@ use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\HotelBundle\Service\HotelManager;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\TouristRepository;
+use MBH\Bundle\PriceBundle\Document\PackageInfo;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\PriceBundle\Document\RoomCacheRepository;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -64,6 +68,11 @@ class OrderExportCommand extends ContainerAwareCommand
 
         $tariffRepository = $dm->getRepository('MBHPriceBundle:Tariff');
         $userRepository = $dm->getRepository('MBHUserBundle:User');
+
+        $minDate = null;
+        $maxDate = null;
+
+        $packages = [];
 
         while (($data = fgetcsv($resource, null, ",")) !== false) {
             $data = array_map(function ($item) {
@@ -255,8 +264,74 @@ class OrderExportCommand extends ContainerAwareCommand
             $dm->persist($package);
             $dm->flush();
             $dm->clear();
+
+            $packages[] = $package;
         }
 
+        $this->recountRoomCache($packages);
+
         $output->writeln('Done');
+    }
+
+
+    /**
+     * @param Package[] $packages
+     */
+    private function recountRoomCache($packages)
+    {
+        $minDate = null;
+        $maxDate = null;
+        foreach($packages as $package) {
+            if (!$minDate || $minDate > $package->getBegin()) {
+                $minDate = $package->getBegin();
+            }
+            if ($maxDate < $package->getEnd()) {
+                $maxDate = $package->getEnd();
+            }
+        }
+
+        /** @var DocumentManager $dm */
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+        /** @var RoomCacheRepository $roomCacheRepository */
+        $roomCacheRepository = $dm->getRepository(RoomCache::class);
+
+        /** @var PackageRepository $packageRepository */
+        $packageRepository = $dm->getRepository(Package::class);
+
+        /** @var RoomCache[] $roomCaches */
+        $roomCaches = $roomCacheRepository->findBy(['date' => ['$gte' => $minDate, '$lte' => $maxDate]]);
+
+
+        foreach($roomCaches as $roomCache) {
+            $packageCount = 0;
+            $tariff = null;
+            foreach($packages as $package) {
+                if($package->getBegin()->getTimestamp() <= $roomCache->getDate()->getTimestamp() && $package->getEnd()->getTimestamp() > $roomCache->getDate()->getTimestamp() && $package->getRoomType()->getId() == $roomCache->getRoomType()->getId()) {
+                    $packageCount++;
+                    //$tariff = $package->getTariff();
+                }
+            }
+            /*$packageCount = $packageRepository->createQueryBuilder()
+                ->field('begin')->lte($roomCache->getDate())
+                ->field('end')->gt($roomCache->getDate())
+                ->field('roomType.id')->equals($roomCache->getRoomType()->getId())
+                ->getQuery()->count();
+            ;*/
+
+            $roomCache->setPackagesCount($packageCount);
+            $roomCache->setLeftRooms($roomCache->getTotalRooms() - $roomCache->getPackagesCount());
+
+            /*$packageInfo = new PackageInfo();
+            if($tariff) {
+                $packageInfo->setTariff($tariff);
+            }
+            $packageInfo->setPackagesCount($packageCount);
+            $roomCache->addPackageInfo($packageInfo);*/
+
+            $dm->persist($roomCache);
+        }
+
+        $dm->flush();
     }
 }
