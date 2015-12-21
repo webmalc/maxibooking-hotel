@@ -36,21 +36,13 @@ class NewCashDocumentType extends CashDocumentType
         $builder->get('organizationPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Organization::class));
         $builder->get('touristPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Tourist::class));
 
-        //$articles = $this->documentManager->getRepository(CashDocumentArticle::class)->findAll();
+        $articles = $this->documentManager->getRepository(CashDocumentArticle::class)->findBy([], ['code' => 1]);
 
-        //$list = [];
-        //foreach($articles as $article) {
-            /*if(count($article->getChildren())) {
-                $list[$article->getId()] = iterator_to_array($article->getChildren());
-            } elseif (!$article->getParent()) {
-                $list[$article->getId()] = [$article];
-            }*/
-            /*if(isset($list[$article->getId()]) && is_array($list[$article->getId()])) {
-                $list[$article->getId()][] = $article;
-            } elseif(count($article->getChildren()) == 0) {
-                $list[$article->getId()] = [$article];
-            }*/
-        //}
+        foreach($articles as $article) {
+            if (!$article->getParent()) {
+                $article->setParent($article);
+            }
+        }
 
         $builder->add('article', 'document', [
             'required' => false,
@@ -62,10 +54,10 @@ class NewCashDocumentType extends CashDocumentType
                 return $article->getCode() . ' ' . $article->getTitle();
             },
             //'attr' => ['class' => 'plain-html'],
-            'query_builder' => function (DocumentRepository $repository) {
+            /*'query_builder' => function (DocumentRepository $repository) {
                 return $repository->createQueryBuilder()->sort(['code' => 1]);
-            }
-            //'choices' => $list
+            },*/
+            'choices' => $articles,
         ]);
     }
 
