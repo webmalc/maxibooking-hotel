@@ -376,7 +376,7 @@ class CashController extends Controller
         $this->dm->getFilterCollection()->disable('softdeleteable');
         $entity = $this->dm->getRepository('MBHCashBundle:CashDocument')->find($id);
 
-        if (!$entity || !$entity->getIsPaid() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$entity || !$entity->getIsPaid() || ($entity->getHotel() && !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel()))) {
             return new JsonResponse([
                 'error' => true,
                 'message' => 'CashDocument not found'
