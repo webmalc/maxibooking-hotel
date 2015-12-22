@@ -50,7 +50,7 @@
             <tr class="tariff-row" data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}">
                 <td>{{ searchResult.tariff }}</td>
                 <td>
-                    {{ searchResult.adults }} взр + {{ searchResult.children }} реб
+                    {{ searchResult.adults }} взр{% if searchResult.children %} + {{ searchResult.children }} реб{% endif %}
                 </td>
                 <td>
                     {{ searchResult.begin|date('d.m.y') }} - {{ searchResult.end|date('d.m.y') }}

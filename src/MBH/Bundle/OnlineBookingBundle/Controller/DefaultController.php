@@ -10,6 +10,7 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -168,6 +169,24 @@ class DefaultController extends BaseController
                 ->setAdditionalDates()
                 ->setWithTariffs()
                 ->search($searchQuery);
+
+            foreach($searchResults as $k => $item) {
+                $dd = [];
+                /** @var SearchResult[] $results */
+                $results = $item['results'];
+                foreach($results as $i => $searchResult) {
+                    if ($searchResult->getRoomType()->getCategory()) {
+                        $c = $searchResult->getRoomType()->getCategory()->getId();
+                        $c .= $searchResult->getTariff()->getId();
+                        $c .= $searchResult->getBegin()->format('dmY') . ' ' . $searchResult->getEnd()->format('dmY');
+                        if (in_array($c, $dd)) {
+                            unset($searchResults[$k]['results'][$i]);
+                        } else {
+                            $dd[] = $c;
+                        }
+                    }
+                }
+            }
         }
 
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
