@@ -252,6 +252,7 @@ class CashController extends Controller
     public function newAction(Request $request)
     {
         $cashDocument = new CashDocument();
+        $cashDocument->setMethod('cash');
 
         $form = $this->createForm(new NewCashDocumentType($this->dm), $cashDocument, [
             'methods' => $this->container->getParameter('mbh.cash.methods'),
@@ -278,7 +279,11 @@ class CashController extends Controller
                 $collection->disable('softdeleteable');
                 $inc = $this->dm->getRepository('MBHCashBundle:CashDocument')
                     ->createQueryBuilder()->field('order')->exists(false)
-                    ->getQuery()->count();
+                    ->getQuery()->count() + 1;
+
+                $cashDocument->setDocumentDate(new \DateTime());
+                $cashDocument->setPaidDate(new \DateTime());
+
                 $cashDocument->setNumber($inc);
                 $collection->enable('softdeleteable');
                 $form->setData($cashDocument);

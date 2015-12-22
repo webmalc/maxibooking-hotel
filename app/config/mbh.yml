@@ -311,7 +311,7 @@ parameters:
     #Типы операций с кассой
     mbh.cash.operations:
         in: "Поступление"
-        out: "Возврат"
+        out: "Расход"
         #fine: "Штраф"
         fee: "Комиссия"
 

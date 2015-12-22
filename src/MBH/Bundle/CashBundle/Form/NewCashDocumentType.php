@@ -23,15 +23,16 @@ class NewCashDocumentType extends CashDocumentType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('organizationPayer', 'text', [
+            /*->add('organizationPayer', 'text', [
                 'label' => 'form.cashDocumentType.organization',
                 'required' => false
             ])
             ->add('touristPayer', 'text', [
                 'label' => 'form.cashDocumentType.tourist',
                 'required' => false
-            ])
+            ])*/
             ->remove('payer_select')
+            ->remove('method')
         ;
         $builder->get('organizationPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Organization::class));
         $builder->get('touristPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Tourist::class));
