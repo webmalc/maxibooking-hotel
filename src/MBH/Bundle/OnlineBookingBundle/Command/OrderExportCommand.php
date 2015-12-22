@@ -269,6 +269,10 @@ class OrderExportCommand extends ContainerAwareCommand
             $packages[] = $package;
         }
 
+        foreach($packages as $package) {
+            $dm->persist($package);
+        }
+
         $this->recountRoomCache($packages);
 
         $output->writeln('Done');
@@ -327,7 +331,8 @@ class OrderExportCommand extends ContainerAwareCommand
             dump($tariff->getId());
             if ($tariff) {
                 //$tariff = $dm->getRepository(Tariff::class)->find($tariff->getId());
-                //$packageInfo->setTariff($tariff);
+                $packageInfo->setTariff($tariff);
+                //$dm->persist($tariff);
             }
             $packageInfo->setPackagesCount($packageCount);
             $roomCache->addPackageInfo($packageInfo);
