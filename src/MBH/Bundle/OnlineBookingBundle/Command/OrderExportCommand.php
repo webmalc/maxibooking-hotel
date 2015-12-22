@@ -3,6 +3,7 @@
 
 namespace MBH\Bundle\OnlineBookingBundle\Command;
 
+use Doctrine\MongoDB\Connection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\Helper;
@@ -51,6 +52,10 @@ class OrderExportCommand extends ContainerAwareCommand
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         /** @var Helper $helper */
         $helper = $this->getContainer()->get('mbh.helper');
+
+        /** @var Connection $connection */
+        $connection = $this->getContainer()->get('doctrine_mongodb')->getConnection();
+        $connection->getConfiguration()->setLoggerCallable(null);
 
         /** @var TouristRepository $touristRepository */
         $touristRepository = $dm->getRepository(Tourist::class);
@@ -264,14 +269,17 @@ class OrderExportCommand extends ContainerAwareCommand
             $dm->persist($order);
             $dm->persist($package);
             $dm->flush();
-            $dm->clear();
+            $dm->clear($order);
+            if(isset($cashDocument)) {
+                $dm->clear($cashDocument);
+            }
 
             $packages[] = $package;
         }
 
-        foreach($packages as $package) {
+        /*foreach($packages as $package) {
             $dm->persist($package);
-        }
+        }*/
 
         $this->recountRoomCache($packages);
 
@@ -307,8 +315,8 @@ class OrderExportCommand extends ContainerAwareCommand
         /** @var RoomCache[] $roomCaches */
         $roomCaches = $roomCacheRepository->findBy(['date' => ['$gte' => $minDate, '$lte' => $maxDate]]);
 
-
-        foreach ($roomCaches as $roomCache) {
+        foreach ($roomCaches as $i => $roomCache) {
+            dump($i);
             $packageCount = 0;
             $tariff = null;
             foreach ($packages as $package) {
@@ -328,7 +336,6 @@ class OrderExportCommand extends ContainerAwareCommand
             $roomCache->setLeftRooms($roomCache->getTotalRooms() - $roomCache->getPackagesCount());
 
             $packageInfo = new PackageInfo();
-            dump($tariff->getId());
             if ($tariff) {
                 //$tariff = $dm->getRepository(Tariff::class)->find($tariff->getId());
                 $packageInfo->setTariff($tariff);
@@ -337,11 +344,15 @@ class OrderExportCommand extends ContainerAwareCommand
             $packageInfo->setPackagesCount($packageCount);
             $roomCache->addPackageInfo($packageInfo);
 
-            //$dm->persist($packageInfo);
+            $dm->persist($packageInfo);
             $dm->persist($roomCache);
 
             $dm->flush();
-            $dm->clear();
+
+            $dm->clear($packageInfo);
+            $dm->clear($roomCache);
+            //gc_collect_cycles();
         }
+        //$dm->flush();
     }
 }
