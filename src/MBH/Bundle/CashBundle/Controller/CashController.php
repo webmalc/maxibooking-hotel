@@ -51,7 +51,8 @@ class CashController extends Controller
         $out = $this->dm->getRepository('MBHCashBundle:CashDocument')->total('out', $queryCriteria);
         $total = $in - $out;
 
-        $articles = $this->dm->getRepository(CashDocumentArticle::class)->findBy(['parent' => ['$exists' => false]], ['code' => 1]);
+        $cashArticleRepository = $this->dm->getRepository(CashDocumentArticle::class);
+        $articles = $cashArticleRepository->findBy([], ['code' => 1]);
 
         return [
             'methods' => $methods,
@@ -164,7 +165,7 @@ class CashController extends Controller
             $queryCriteria->end = new \DateTime('midnight +1 day');
         }
 
-        empty($request->get('filter')) ? $queryCriteria->filterByRange = 'paidDate': $queryCriteria->filterByRange = $request->get('filter');
+        $queryCriteria->filterByRange = empty($request->get('filter')) ? 'paidDate' : $request->get('filter');
 
         $queryCriteria->orderIds = $this->get('mbh.helper')->toIds($this->get('mbh.package.permissions')->getAvailableOrders());
 
@@ -172,7 +173,9 @@ class CashController extends Controller
 
         $queryCriteria->createdBy = $request->get('user');
 
-        $queryCriteria->article = $request->get('article');
+        if ($request->get('article')) {
+            $queryCriteria->article = $this->dm->getRepository(CashDocumentArticle::class)->find($request->get('article'));
+        }
 
         $queryCriteria->type = $request->get('type');
 
@@ -412,7 +415,7 @@ class CashController extends Controller
         $this->dm->getFilterCollection()->disable('softdeleteable');
         $order = $entity->getOrder();
         $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        if (!$this->get('mbh.hotel.selector')->checkPermissions($entity->getHotel()) || !$order->getCreditCard()
+        if ($entity->getHotel() && !$this->get('mbh.hotel.selector')->checkPermissions($entity->getHotel()) || !$order->getCreditCard()
             || !$clientConfig || $clientConfig->getPaymentSystem() != 'uniteller'
         ) {
             throw $this->createNotFoundException();
@@ -445,7 +448,7 @@ class CashController extends Controller
         $this->dm->getFilterCollection()->disable('softdeleteable');
         $entity = $this->dm->getRepository('MBHCashBundle:CashDocument')->find($id);
 
-        if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$entity || $entity->getHotel() && !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             return new JsonResponse([
                 'error' => true,
                 'message' => 'CashDocument not found'

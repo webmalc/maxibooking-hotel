@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\CashBundle\DataFixtures;
+namespace MBH\Bundle\CashBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -8,7 +8,7 @@ use MBH\Bundle\CashBundle\Document\CashDocumentArticle;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class CashArticleData implements FixtureInterface, ContainerAwareInterface
+class CashDocumentArticleData implements FixtureInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 

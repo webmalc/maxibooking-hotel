@@ -5,6 +5,7 @@ namespace MBH\Bundle\CashBundle\Document;
 use Doctrine\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Lib\QueryBuilder;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -121,7 +122,11 @@ class CashDocumentRepository extends DocumentRepository
         }
 
         if($criteria->article) {
-            $qb->field('article.id')->equals($criteria->article);
+            if (count($criteria->article->getChildren()) > 0) {
+                $qb->field('article.id')->in(Helper::toIds($criteria->article->getChildren()));
+            } else {
+                $qb->field('article.id')->equals($criteria->article->getId());
+            }
         }
 
         if ($criteria->createdBy) {
