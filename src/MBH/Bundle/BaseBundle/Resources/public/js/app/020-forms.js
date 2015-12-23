@@ -740,11 +740,8 @@ var discountInit = function ($discountInput, $isPercentDiscountCheckbox) {
     discountInputUpdate($isPercentDiscountCheckbox.is(':checked'));
 }
 /**
- *
- * Arofkin Aleksandr
- *
+ * @author Alexandr Arofikin <sashaaro@gmail.com>
  * @link http://www.datatables.net/plug-ins/api/fnSetFilteringDelay
- *
  *
  * @param oSettings
  * @param iDelay

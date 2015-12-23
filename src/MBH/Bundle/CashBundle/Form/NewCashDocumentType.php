@@ -38,19 +38,19 @@ class NewCashDocumentType extends CashDocumentType
         $builder->get('touristPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Tourist::class));
 
         $builder->add('article', 'document', [
-            'label' => 'form.cashDocumentType.article',
             'required' => false,
-            //'attr' => ['class' => 'plain-html'],
-            'empty_value' => '',
             'class' => CashDocumentArticle::class,
+            'empty_value' => '',
+            'label' => 'form.cashDocumentType.article',
             'group_by' => 'parent',
             'property' => function (CashDocumentArticle $article) {
                 return $article->getCode() . ' ' . $article->getTitle();
             },
+            //'attr' => ['class' => 'plain-html'],
             'query_builder' => function (DocumentRepository $repository) {
-                return $repository->createQueryBuilder()->field('parent')->exists(true)->sort(['code' => 1]);
+                return $repository->createQueryBuilder()->field('parent')->exists(true)->sort(['parent' => 1, 'code' => 1]);
             },
-            //'choices' => $articles,
+            //'choices' => $list,
         ]);
     }
 

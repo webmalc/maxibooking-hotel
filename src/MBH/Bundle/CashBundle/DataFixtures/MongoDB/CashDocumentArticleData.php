@@ -42,6 +42,24 @@ class CashDocumentArticleData implements FixtureInterface, ContainerAwareInterfa
                 $parents[$article->getCode()] = $article;
             }
         }
+
+        $manager->flush();
+
+        $cashDocumentArticleRepository = $manager->getRepository(CashDocumentArticle::class);
+        $articles = $cashDocumentArticleRepository->findAll();
+
+        foreach($articles as $article) {
+            if (!$article->getParent() && count($article->getChildren()) == 0) {
+                $sameParent = new CashDocumentArticle();
+                $sameParent->setCode($article->getCode());
+                $sameParent->setTitle($article->getTitle());
+
+                $article->setParent($sameParent);
+                $manager->persist($sameParent);
+                $manager->persist($article);
+            }
+        }
+
         $manager->flush();
     }
 }

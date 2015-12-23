@@ -5,6 +5,7 @@ namespace MBH\Bundle\CashBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\CashBundle\DataFixtures\MongoDB\CashDocumentArticleData;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\CashBundle\Document\CashDocumentArticle;
 use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
@@ -52,7 +53,12 @@ class CashController extends Controller
         $total = $in - $out;
 
         $cashArticleRepository = $this->dm->getRepository(CashDocumentArticle::class);
-        $articles = $cashArticleRepository->findBy([], ['code' => 1]);
+        $articles = $cashArticleRepository->findBy(['parent' => ['$exists' => false]], ['code' => 1]);
+
+        /*$cashArticleRepository->createQueryBuilder()->remove()->getQuery()->execute();
+        $d = new CashDocumentArticleData();
+        $d->setContainer($this->container);
+        $d->load($this->dm);*/
 
         return [
             'methods' => $methods,

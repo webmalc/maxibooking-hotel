@@ -122,11 +122,13 @@ class CashDocumentRepository extends DocumentRepository
         }
 
         if($criteria->article) {
-            if (count($criteria->article->getChildren()) > 0) {
-                $qb->field('article.id')->in(Helper::toIds($criteria->article->getChildren()));
-            } else {
-                $qb->field('article.id')->equals($criteria->article->getId());
+            $ids = Helper::toIds($criteria->article->getChildren());
+            $ids[] = $criteria->article->getId();
+            foreach($criteria->article->getChildren() as $child) {
+                $ids = array_merge($ids, Helper::toIds($child->getChildren()));
             }
+
+            $qb->field('article.id')->in($ids);
         }
 
         if ($criteria->createdBy) {
