@@ -45,6 +45,8 @@ class CashDocumentArticleData implements FixtureInterface, ContainerAwareInterfa
 
         $manager->flush();
 
+        $manager->clear();
+
         $cashDocumentArticleRepository = $manager->getRepository(CashDocumentArticle::class);
         $articles = $cashDocumentArticleRepository->findAll();
 

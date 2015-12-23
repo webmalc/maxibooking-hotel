@@ -48,7 +48,7 @@ class NewCashDocumentType extends CashDocumentType
             },
             //'attr' => ['class' => 'plain-html'],
             'query_builder' => function (DocumentRepository $repository) {
-                return $repository->createQueryBuilder()->field('parent')->exists(true)->sort(['parent' => 1, 'code' => 1]);
+                return $repository->createQueryBuilder()->field('parent')->exists(true)->sort(['code' => 1]);
             },
             //'choices' => $list,
         ]);

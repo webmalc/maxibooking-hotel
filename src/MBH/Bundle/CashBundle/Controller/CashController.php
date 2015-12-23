@@ -53,12 +53,13 @@ class CashController extends Controller
         $total = $in - $out;
 
         $cashArticleRepository = $this->dm->getRepository(CashDocumentArticle::class);
-        $articles = $cashArticleRepository->findBy(['parent' => ['$exists' => false]], ['code' => 1]);
 
         /*$cashArticleRepository->createQueryBuilder()->remove()->getQuery()->execute();
         $d = new CashDocumentArticleData();
         $d->setContainer($this->container);
         $d->load($this->dm);*/
+
+        $articles = $cashArticleRepository->findBy(['parent' => ['$exists' => false]], ['code' => 1]);
 
         return [
             'methods' => $methods,
