@@ -8,6 +8,7 @@ use MBH\Bundle\ClientBundle\Document\Moneymail;
 use MBH\Bundle\ClientBundle\Document\Payanyway;
 use MBH\Bundle\ClientBundle\Document\Robokassa;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
+use MBH\Bundle\ClientBundle\Document\YandexMoney;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -115,6 +116,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     public function paymentSystemSaveAction(Request $request)
     {
         $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        dump($this->container->getParameter('mbh.payment_systems'));
 
         $form = $this->createForm(new ClientPaymentSystemType(), $entity, [
             'paymentTypes' => $this->container->getParameter('mbh.payment_systems'),
@@ -153,6 +155,13 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                         ->setUnitellerPassword($form->get('unitellerPassword')->getData());
                     $entity->setUniteller($uniteller);
                     break;
+                case 'yandexmoney':
+                    $yandexMoney = new YandexMoney();
+                    $yandexMoney->setYandexmoneypassword($form->get('yandexmoneyPassword')->getData());
+                    $yandexMoney->setYandexmoneyshopId($form->get('yandexmoneyShopId')->getData());
+                    $yandexMoney->setYandexmoneyscid($form->get('yandexmoneyscid')->getData());
+                    $entity->setYandexMoney($yandexMoney);
+                break;
                 default:
                     break;
             }

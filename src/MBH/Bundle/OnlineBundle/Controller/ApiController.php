@@ -342,9 +342,9 @@ class ApiController extends Controller
                 'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig', [
                     'data' => array_merge(['test' => false,
                         'buttonText' => $translator->trans('views.api.make_payment_for_order_id',
-                            ['%total%' => number_format($request->total, 2), '%order_id%' => $order->getId()],
+                            ['%total%' => number_format((int)$request->total, 2), '%order_id%' => $order->getId()],
                             'MBHOnlineBundle')
-                    ], $clientConfig->getFormData($order->getCashDocuments()[0],
+                    ], (array) $clientConfig->getFormData($order->getCashDocuments()[0],
                         $this->container->getParameter('online_form_result_url'),
                         $this->generateUrl('online_form_check_order', [], true)))
                 ]
