@@ -61,6 +61,10 @@ var docReadyPackages = function () {
 
     //package datatable
     var pTable = $('#package-table').dataTable({
+        "dom": 'T<"clear">lfrtip',
+        "tableTools": {
+            "sSwfPath": "/assets/vendor/datatables-tabletools/swf/copy_csv_xls.swf"
+        },
         "processing": true,
         "serverSide": true,
         "ordering": true,
