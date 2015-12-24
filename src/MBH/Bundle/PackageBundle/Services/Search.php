@@ -89,7 +89,12 @@ class Search
             }
 
             if($query->sort) {
-                $qb->sort($query->sort, 1);
+                $asc = 1;
+                if (in_array($query->asc, [-1, 1])) {
+                    $asc = $query->asc;
+                }
+
+                $qb->sort($query->sort, $asc);
             }
 
             if($query->skip) {

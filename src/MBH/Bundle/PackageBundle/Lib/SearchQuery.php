@@ -101,6 +101,10 @@ class SearchQuery
      * @var string
      */
     public $sort;
+    /**
+     * @var int
+     */
+    public $asc;
 
     /**
      * @var int

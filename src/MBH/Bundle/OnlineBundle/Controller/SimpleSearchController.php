@@ -70,6 +70,7 @@ class SimpleSearchController extends Controller
         $query->tariff = $request->get('tariff');
         $query->distance = (float)$request->get('distance');
         $query->sort = $request->get('sort');
+        $query->asc = (int) $request->get('asc');
         $query->addRoomType($request->get('roomType'));
         $query->highway = $request->get('highway');
 
