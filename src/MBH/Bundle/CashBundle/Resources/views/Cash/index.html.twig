@@ -48,15 +48,15 @@
                 <select name="article" id="article" placeholder="{{ 'views.cash.index.article'|trans({}, 'MBHCashBundle') }}">
                     <option></option>
                     {% for article in articles %}
-                        <optgroup label="{{ article }}">
-                            {#% if article.children|length == 0 %#}
+                        {#<optgroup label="{{ article }}">
+                            % if article.children|length == 0 %#}
                                 <option value="{{ article.id }}">{{ article.code }} {{ article.title }}</option>
-                            {#% else %#}
+                            {#% else %
                                 {% for article in article.children %}
                                     <option value="{{ article.id }}">{{ article.code }} {{ article.title }}</option>
                                 {% endfor %}
-                            {#% endif %#}
-                        </optgroup>
+                            % endif %
+                        </optgroup>#}
                     {% endfor %}
                 </select>
             </div>

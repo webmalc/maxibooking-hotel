@@ -73,6 +73,7 @@ class PackageAccommodationType extends AbstractType
             'time_widget' => 'single_text',
             'date_widget' => 'single_text',
             'attr' => ['placeholder' => '12:00', 'class' => 'input-time'],
+            'date_format' => 'dd.MM.yyyy',
         ];
 
         if ($options['hasEarlyCheckIn']) {
@@ -104,7 +105,8 @@ class PackageAccommodationType extends AbstractType
             'required' => false,
             'time_widget' => 'single_text',
             'date_widget' => 'single_text',
-            'attr' => array('placeholder' => '12:00', 'class' => 'input-time'),
+            'attr' => ['placeholder' => '12:00', 'class' => 'input-time'],
+            'date_format' => 'dd.MM.yyyy',
         ];
 
         if ($options['hasLateCheckOut']) {

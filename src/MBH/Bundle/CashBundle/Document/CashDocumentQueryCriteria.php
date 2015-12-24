@@ -94,7 +94,7 @@ class CashDocumentQueryCriteria extends AbstractQueryCriteria
     public $createdBy;
 
     /**
-     * @var string
+     * @var CashDocumentArticle
      */
     public $article;
 

@@ -23,26 +23,19 @@ class NewCashDocumentType extends CashDocumentType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('organizationPayer', 'text', [
+            /*->add('organizationPayer', 'text', [
                 'label' => 'form.cashDocumentType.organization',
                 'required' => false
             ])
             ->add('touristPayer', 'text', [
                 'label' => 'form.cashDocumentType.tourist',
                 'required' => false
-            ])
+            ])*/
             ->remove('payer_select')
+            ->remove('method')
         ;
         $builder->get('organizationPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Organization::class));
         $builder->get('touristPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Tourist::class));
-
-        $articles = $this->documentManager->getRepository(CashDocumentArticle::class)->findBy([], ['code' => 1]);
-
-        foreach($articles as $article) {
-            if (!$article->getParent()) {
-                $article->setParent($article);
-            }
-        }
 
         $builder->add('article', 'document', [
             'required' => false,
@@ -54,10 +47,10 @@ class NewCashDocumentType extends CashDocumentType
                 return $article->getCode() . ' ' . $article->getTitle();
             },
             //'attr' => ['class' => 'plain-html'],
-            /*'query_builder' => function (DocumentRepository $repository) {
-                return $repository->createQueryBuilder()->sort(['code' => 1]);
-            },*/
-            'choices' => $articles,
+            'query_builder' => function (DocumentRepository $repository) {
+                return $repository->createQueryBuilder()->field('parent')->exists(true)->sort(['code' => 1]);
+            },
+            //'choices' => $list,
         ]);
     }
 

@@ -304,7 +304,7 @@ class Helper
      * @param string $method
      * @return array
      */
-    public function toIds($collection, $method = 'getId')
+    public static function toIds($collection, $method = 'getId')
     {
         $result = [];
 
