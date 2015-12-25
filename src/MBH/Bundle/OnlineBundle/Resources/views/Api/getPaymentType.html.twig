@@ -62,7 +62,7 @@
                         <p> {{ 'views.api.getPaymentType.reservation_guarantee_half'|trans({}, 'MBHOnlineBundle') }}</p>
                     {% elseif paymentType == 'online_twenty_percent' or paymentType == 'bank' %}
                         <div class="mbh-payment-type-row-total">{{ (request.total/5)|round }} {{ currency().text }}</div>
-                        <p> {{ 'views.api.getPaymentType.reservation_guarantee_half'|trans({}, 'MBHOnlineBundle') }}</p>
+                        <p> {{ 'views.api.getPaymentType.reservation_guarantee_twenty_percent'|trans({}, 'MBHOnlineBundle') }}</p>
                     {% endif %}
                 </div>
                 {% endif %}
