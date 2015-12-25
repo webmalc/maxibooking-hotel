@@ -76,7 +76,7 @@ class FormConfig extends Base
      * @Gedmo\Versioned
      * @ODM\Collection
      * @Assert\NotNull()
-     * @Assert\Choice(choices = {"in_hotel", "online_full", "online_first_day", "online_half"}, multiple = true)
+     * @Assert\Choice(choices = {"in_hotel", "online_full", "online_first_day", "online_half", "online_twenty_percent", "bank"}, multiple = true)
      */
     protected $paymentTypes = [];
 
@@ -167,7 +167,7 @@ class FormConfig extends Base
     public function getPaymentTypes($online = true)
     {
         if (!$online) {
-            $this->paymentTypes = array_diff($this->paymentTypes, ["online_full", "online_first_day", "online_half"]);
+            $this->paymentTypes = array_diff($this->paymentTypes, ["online_full", "online_first_day", "online_half", "online_twenty_percent"]);
         }
 
         return $this->paymentTypes;

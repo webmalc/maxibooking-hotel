@@ -178,47 +178,46 @@ jQuery(document).ready(function () {
             // calc total
             (function() {
                 var calc = function() {
-                        var totalPackages = 0,
-                            totalServices = 0,
-                            total = 0,
-                            nextButton = jQuery('#mbh-results-next'),
-                            roomCount = jQuery('select.mbh-results-packages-count'),
-                            servicesCount = jQuery('select.mbh-results-services-count')
-                        ;
-                        nextButton.prop('disabled', true);
-                        roomCount.each( function() {
-                            if(jQuery(this).val() > 0) {
-                                var tr = jQuery(this).closest('tr'),
-                                    li = tr.find('ul.mbh-results-prices li:visible')
-                                    ;
-                                    if(li.length) {
-                                        totalPackages += parseInt(li.attr('data-value')) * jQuery(this).val();
-                                    }
-                                ;
-                            }
-                        });
-                        servicesCount.each( function() {
-                            if(jQuery(this).val() > 0) {
-                                var tr = jQuery(this).closest('tr'),
-                                    span = tr.find('span.mbh-results-services-prices')
-                                    ;
-                                if(span.length) {
-                                    totalServices += parseInt(span.attr('data-value')) * jQuery(this).val();
-                                }
-                                ;
-                            }
-                        });
-
-                        total = totalServices + totalPackages
-
-                        jQuery('#mbh-results-total-sum').html(total);
-                        jQuery('#mbh-results-total-packages-sum').html(totalPackages);
-                        jQuery('#mbh-results-total-services-sum').html(totalServices);
-                        if(totalPackages > 0) {
-                            nextButton.prop('disabled', false);
-                        }
-                    }
+                    var totalPackages = 0,
+                        totalServices = 0,
+                        total = 0,
+                        nextButton = jQuery('#mbh-results-next'),
+                        roomCount = jQuery('select.mbh-results-packages-count'),
+                        servicesCount = jQuery('select.mbh-results-services-count')
                     ;
+                    nextButton.prop('disabled', true);
+                    roomCount.each( function() {
+                        if(jQuery(this).val() > 0) {
+                            var tr = jQuery(this).closest('tr'),
+                                li = tr.find('ul.mbh-results-prices li:visible')
+                                ;
+                                if(li.length) {
+                                    totalPackages += parseInt(li.attr('data-value')) * jQuery(this).val();
+                                }
+                            ;
+                        }
+                    });
+                    servicesCount.each( function() {
+                        if(jQuery(this).val() > 0) {
+                            var tr = jQuery(this).closest('tr'),
+                                span = tr.find('span.mbh-results-services-prices')
+                                ;
+                            if(span.length) {
+                                totalServices += parseInt(span.attr('data-value')) * jQuery(this).val();
+                            }
+                            ;
+                        }
+                    });
+
+                    total = totalServices + totalPackages
+
+                    jQuery('#mbh-results-total-sum').html(total);
+                    jQuery('#mbh-results-total-packages-sum').html(totalPackages);
+                    jQuery('#mbh-results-total-services-sum').html(totalServices);
+                    if(totalPackages > 0) {
+                        nextButton.prop('disabled', false);
+                    }
+                };
                 calc();
                 jQuery('.mbh-results-tourists-select, .mbh-results-packages-count, .mbh-results-services-count').click(function() {
                     calc();
@@ -412,21 +411,24 @@ jQuery(document).ready(function () {
                                                     sumHidden = total,
                                                     sumPackages = totalPackages
                                                     ;
-                                                if (type.length && type.val() === 'online_first_day') {
-                                                    sumPackages = Math.round(totalPackages/requestParams.nights);
-                                                    sum =  parseInt(totalPackages, 10) + parseInt(totalServices, 10);
-                                                    sumHidden = parseInt(sumPackages, 10) + parseInt(totalServices, 10);
-                                                }
-                                                if (type.length && type.val() === 'online_half') {
 
-                                                    sumPackages = Math.round(totalPackages/2);
+
+
+                                                if (type.length) {
+                                                    if (type.val() === 'online_first_day') {
+                                                        sumPackages = Math.round(totalPackages/requestParams.nights);
+                                                    } else if (type.val() === 'online_half') {
+                                                        sumPackages = Math.round(totalPackages/2);
+                                                    } else if (type.val() === 'online_twenty_percent' || type.val() == 'bank') {
+                                                        sumPackages = Math.round(totalPackages/5);
+                                                    }
+
                                                     sum = parseInt(totalPackages, 10) + parseInt(totalServices, 10);
                                                     sumHidden = parseInt(sumPackages, 10) + parseInt(totalServices, 10);
                                                 }
                                                 totalWrapper.html(sum);
                                                 totalHidden.html(sumHidden);
                                                 totalPackagesWrapper.html(sumPackages);
-
                                             }
                                             validate();
                                             jQuery('.mbh-payment-types-radio').change(function() {

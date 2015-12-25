@@ -14,7 +14,7 @@
                     </span>&nbsp;{{ currency().text }}
                 </span>
             </strong>
-            {#&nbsp; {{ 'views.api.getPaymentType.nomera'|trans({}, 'MBHOnlineBundle') }}
+            &nbsp; {{ 'views.api.getPaymentType.nomera'|trans({}, 'MBHOnlineBundle') }}
             <span class="mbh-results-total-sum">
                 <span id="mbh-package-info-total-packages">
                     {{ request.totalPackages }}
@@ -30,8 +30,8 @@
             {% if request.tariff is defined %}
                 {{ 'views.api.getPaymentType.tariff'|trans({}, 'MBHOnlineBundle') }}<strong> {{ request.tariff.title }} </strong>
             {% endif %}
+
             <span id="mbh-package-info-total-hidden" style="display: none;">{{ request.total }}</span>
-            #}
         </div>
 
         {% set package = request.packages|first%}
@@ -51,17 +51,17 @@
                     {% if paymentType == 'in_hotel' %}
                         <div class="mbh-payment-type-row-total">{{ request.total }} {{ currency().text }}</div>
                         <p> {{ 'views.api.getPaymentType.payment_fine'|trans({}, 'MBHOnlineBundle') }}</p>
-                    {% endif %}
-                    {% if paymentType == 'online_full' %}
+                    {% elseif paymentType == 'online_full' %}
                         <div class="mbh-payment-type-row-total">{{ request.total }} {{ currency().text }}</div>
                         <p> {{ 'views.api.getPaymentType.reservation_guarantee_whole_sum'|trans({}, 'MBHOnlineBundle') }}</p>
-                    {% endif %}
-                    {% if paymentType == 'online_first_day' %}
+                    {% elseif paymentType == 'online_first_day' %}
                         <div class="mbh-payment-type-row-total">{{ (request.total/request.nights)|round }} {{ currency().text }}</div>
                         <p> {{ 'views.api.getPaymentType.reservation_guarantee_first_night'|trans({}, 'MBHOnlineBundle') }}</p>
-                    {% endif %}
-                    {% if paymentType == 'online_half' %}
+                    {% elseif paymentType == 'online_half' %}
                         <div class="mbh-payment-type-row-total">{{ (request.total/2)|round }} {{ currency().text }}</div>
+                        <p> {{ 'views.api.getPaymentType.reservation_guarantee_half'|trans({}, 'MBHOnlineBundle') }}</p>
+                    {% elseif paymentType == 'online_twenty_percent' or paymentType == 'bank' %}
+                        <div class="mbh-payment-type-row-total">{{ (request.total/5)|round }} {{ currency().text }}</div>
                         <p> {{ 'views.api.getPaymentType.reservation_guarantee_half'|trans({}, 'MBHOnlineBundle') }}</p>
                     {% endif %}
                 </div>
