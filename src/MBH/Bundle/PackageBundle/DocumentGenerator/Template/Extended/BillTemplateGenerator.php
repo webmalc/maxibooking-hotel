@@ -28,7 +28,7 @@ class BillTemplateGenerator extends DefaultTemplateGenerator
         $order = $formData['package']->getOrder();
         $packages = $order->getPackages();
         foreach($packages as $package) {
-            $packageServices = array_merge(iterator_to_array($package->getServices()), $packageServices);
+            $packageServices = array_merge(is_object($package->getServices()) ? iterator_to_array($package->getServices()) : is_array($package->getServices()) ? $package->getServices() : [], $packageServices);
             $total += $package->getPackagePrice(true);
         }
 

@@ -7,6 +7,8 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\DocumentGenerator\Template\Extended\BillTemplateGenerator;
+use MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\UserBundle\Document\User;
@@ -313,7 +315,7 @@ class ApiController extends Controller
             ]);
         }
         $packages = iterator_to_array($order->getPackages());
-        $this->sendNotifications($order, $request->arrival . ':00', $request->departure . ':00');
+        $this->sendNotifications($order, $request->paymentType, $request->arrival . ':00', $request->departure . ':00');
 
         $translator = $this->get('translator');
         if (count($packages) > 1) {
@@ -360,7 +362,7 @@ class ApiController extends Controller
      * @param null $departure
      * @return bool
      */
-    private function sendNotifications(Order $order, $arrival = null, $departure = null)
+    private function sendNotifications(Order $order, $paymentType, $arrival = null, $departure = null)
     {
         try {
 
@@ -428,10 +430,72 @@ class ApiController extends Controller
                     ->setMessage($message)
                     ->notify()
                 ;
+
+
+
+
+                $cashDocuments = $order->getCashDocuments();
+                if (count($cashDocuments) > 0) {
+                    if ($paymentType == 'bank') {
+
+                        $templateFactory = $this->get('mbh.package.document_tempalte_factory');
+                        /** @var BillTemplateGenerator $templateGenerator */
+                        $templateGenerator = $templateFactory->createGeneratorByType(TemplateGeneratorFactory::TYPE_BILL);
+
+                        $packages = $order->getPackages();
+                        if (count($packages) == 0) {
+                            throw new \InvalidArgumentException('Order has not one package');
+                        }
+                        $formData = [
+                            'package' => $packages[0]
+                        ];
+
+                        $template = $templateGenerator->getTemplate($formData);
+                        $uniqudFileName = uniqid().'.pdf';
+                        $pdfPath = sys_get_temp_dir().'/'.$uniqudFileName;
+                        $this->get('knp_snappy.pdf')->generateFromHtml($template, $pdfPath);
+
+                        $message
+                            ->setFrom('online_form')
+                            ->setSubject('Счёт на оплату')
+                            ->setType('info')
+                            ->setCategory('notification')
+                            ->setOrder($order)
+                            ->setAdditionalData([
+                                'prependText' => 'Счёт на оплату в приложении',
+                                //'appendText' => 'mailer.online.user.append',
+                                'fromText' => $hotel->getName()
+                            ])
+                            ->setHotel($hotel)
+                            ->setTemplate('MBHBaseBundle:Mailer:base.html.twig')
+                            ->setAutohide(false)
+                            ->setEnd(new \DateTime('+1 minute'))
+                            ->addRecipient($order->getMainTourist())
+                            ->setLink('hide')
+                            ->setSignature('mailer.online.user.signature')
+                        ;
+
+                        $swiftMessage = new \Swift_Message(
+                            'Счёт на оплату заказанных услуг',
+                            '<h1>Счёт на оплату Zamkadom24</h1><p>Уважаемый клиент! Счёт на оплату заказанных Вами номеров был сформирован и приложен к этому письму.</p><p>Благодарим за пользование услугами нашего портала.</p><p>------------<br>Zamkadom24</p>', 'text/html'
+                        );
+                        $swiftMessage->addTo($order->getPayer()->getEmail());
+                        $swiftMessage->setFrom([$this->getParameter('mailer_user') => $this->getParameter('mailer_user')]);
+                        $swiftMessage->attach(\Swift_Attachment::fromPath($pdfPath));
+                        $this->get('mailer')->send($swiftMessage);
+
+                        $spool = $this->get('mailer')->getTransport()->getSpool();
+                        $transport = $this->container->get('swiftmailer.transport.real');
+                        $spool->flushQueue($transport);
+
+                        //$notifier->setMessage($message)->notify();
+                    }
+                }
             }
 
-        } catch (\Exception $e) {
 
+        } catch (\Exception $e) {
+            //dump($e);
             return false;
         }
     }

@@ -6,6 +6,7 @@ use Documents\UserRepository;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
@@ -407,6 +408,8 @@ class SimpleSearchController extends Controller
         ];
     }
 
+
+
     /**
      * @Route("/delete_package/{id}/{userID}", name="simple_search_delete_package")
      * @Method("GET")
@@ -418,7 +421,8 @@ class SimpleSearchController extends Controller
     {
         $packageRepository = $this->dm->getRepository(Package::class);
         $package = $packageRepository->find($id);
-        if(!$package) {
+        $package = $packageRepository->findOneBy([]);
+        /*if(!$package) {
             throw $this->createNotFoundException();
         }
 
@@ -428,29 +432,32 @@ class SimpleSearchController extends Controller
 
         $this->dm->remove($package);
         $this->dm->flush();
+*/
 
         $hotel = $package->getRoomType()->getHotel();
         /** @var UserRepository $userRepository */
         $userRepository = $this->dm->getRepository(User::class);
 
-        //$username = $hotel->getCreatedBy();
+        $username = $hotel->getCreatedBy();
         /** @var User $user */
-        //$user = $userRepository->findOneBy(['username' => $username]);
+        $user = $userRepository->findOneBy(['username' => $username]);
 
+        $translator = $this->get('translator');
 
         $notifier = $this->container->get('mbh.notifier');
         $message = $notifier::createMessage();
         $message
-            ->setText('zamkadom.booking.notification.delete')
+            ->setText($translator->trans('zamkadom.booking.notification.delete', [], 'MBHChannelManagerBundle'))
             ->setFrom('online_form')
-            ->setSubject('zamkadom.booking.notification.subject.delete')
-            ->setTranslateParams(['%packages%' => $package->getId()])
+            ->setSubject($translator->trans('zamkadom.booking.notification.subject.delete', [], 'MBHChannelManagerBundle'))
+            ->setTranslateParams(['%packages%' => $package->getNumber(), '%order%' => $package->getOrder()->getId()])
             ->setType('info')
             ->setCategory('notification')
             ->setAdditionalData([])
             ->setHotel($hotel)
             ->setTemplate('MBHBaseBundle:Mailer:base.html.twig')
             ->setAutohide(false)
+            ->addRecipient($user)
             ->setEnd(new \DateTime('+1 minute'))
         ;
 
@@ -466,6 +473,10 @@ class SimpleSearchController extends Controller
         }*/
 
         $this->get('mbh.notifier.mailer')->setMessage($message)->notify();
+
+        $spool = $this->get('mailer')->getTransport()->getSpool();
+        $transport = $this->container->get('swiftmailer.transport.real');
+        $spool->flushQueue($transport);
 
         $referer = $request->headers->get('referer');
         if ($referer) {
