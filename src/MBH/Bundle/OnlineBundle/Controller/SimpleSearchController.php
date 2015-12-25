@@ -421,8 +421,7 @@ class SimpleSearchController extends Controller
     {
         $packageRepository = $this->dm->getRepository(Package::class);
         $package = $packageRepository->find($id);
-        $package = $packageRepository->findOneBy([]);
-        /*if(!$package) {
+        if(!$package) {
             throw $this->createNotFoundException();
         }
 
@@ -432,7 +431,6 @@ class SimpleSearchController extends Controller
 
         $this->dm->remove($package);
         $this->dm->flush();
-*/
 
         $hotel = $package->getRoomType()->getHotel();
         /** @var UserRepository $userRepository */
