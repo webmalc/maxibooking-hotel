@@ -1,0 +1,90 @@
+<input type="hidden" name="begin" id="room-cache-overview-begin" class="hidden" value="{{ begin|date('d.m.Y') }}">
+<input type="hidden" name="end" id="room-cache-overview-end" class="hidden" value="{{ end|date('d.m.Y') }}">
+{% if error is defined and error is not empty %}
+    <div class="alert alert-warning"><i class="fa fa-exclamation-circle"> </i> {{ error }}</div>
+{% else %}
+    <ul class="mbh-graph-help">
+        <li><div class="bg-green disabled color-palette">3</div> - забронировано</li>
+        <li><div class="bg-gray disabled color-palette">5</div> - осталось</li>
+        <li><div class="mbh-graph-cell-danger"><i class="fa text-red fa-times"></i></div> - нет данных</li>
+        {% if client_config() and client_config().getSearchWindows() %}
+            <li><div class="bg-yellow disabled color-palette">5</div> - окно</li>
+        {% endif %}
+    </ul>
+
+
+
+    {% for roomType in data.roomTypes %}
+        <div class="bg-gray color-palette mbh-graph-header">
+            <i class="fa fa-bed" style="color:{{ roomType.color }};"></i>
+            {{ roomType }}
+        </div>
+        <div class="mbh-graph-wrapper">
+            <table class="table-hover">
+                <thead>
+                <tr>
+                    <th class="mbh-graph-date-th">#</th>
+                    {% for date in data.dates %}
+                        <th class="mbh-graph-date-th">
+                            <span class="{{ date|date('N') in [6,7] ? 'text-red' }} {{ date|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-yellow' }} ">{{ date|date('d.m') }}</span>
+                            <div class="text-muted">
+                            {{ date|date('Y') == 'now'|date('Y') ? weekdays[date|date('N')]|lower : date|date('Y') }}
+                            </div>
+                        </th>
+                    {% endfor %}
+                </tr>
+                </thead>
+
+                <tbody>
+                    {% for i in data.getMaxTotalRooms(roomType)..1 %}
+                        <tr>
+                            <td class="text-center text-muted mbh-graph-cell"><small>{{ i }}</small></td>
+                            {% for date in data.dates %}
+
+                                {% set info = data.getInfo(roomType, date) %}
+                                {% set cellClass = null %}
+                                {% set cellText = null %}
+                                {% set cellIcon = null %}
+
+                                {% if info.leftRooms is not defined  %}
+                                    {% set cellClass = 'mbh-graph-cell-danger' %}
+                                    {% set cellIcon = 'fa text-red fa-times' %}
+                                {% elseif info.packageCount >= i  %}
+                                    {% set cellClass = 'bg-green disabled color-palette' %}
+                                    {% if info.packageCount == i %}
+                                        {% set cellText = info.packageCount %}
+                                    {% else %}
+                                        {% set cellText = '<span class="mbh-graph-hidden-info">' ~ info.packageCount ~ '</span>' %}
+                                    {% endif %}
+                                {% elseif info.totalRooms >= i  %}
+                                    {% set cellClass = 'bg-gray disabled color-palette' %}
+                                    {% set mutted = 'text-muted' %}
+
+                                    {% if info.broken %}
+                                        {% set cellClass = 'bg-yellow disabled color-palette' %}
+                                        {% set mutted = '' %}
+                                    {% endif %}
+
+                                    {% if info.packageCount + 1 == i %}
+
+                                        {% set cellText = '<span class="' ~ mutted ~ '">' ~ info.leftRooms ~ '</span>' %}
+                                    {% else %}
+                                        {% set cellText = '<span class="' ~ mutted ~ ' mbh-graph-hidden-info">' ~ info.leftRooms ~ '</span>' %}
+                                    {% endif %}
+                                {% endif %}
+
+                                <td class="text-center mbh-graph-cell {{ cellClass }}">
+                                    {% if cellIcon %}
+                                        <small><i class="{{ cellIcon }}"></i></small>
+                                    {% elseif cellText %}
+                                        <small>{{ cellText|raw }}</small>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+{% endif %}

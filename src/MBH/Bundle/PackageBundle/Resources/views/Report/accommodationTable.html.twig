@@ -52,7 +52,7 @@
                             <li class="tile tile-not-selected tile-free both" style="width:{{ headerWidth }}px;">
                                 <div class="title-sub">
                                     {{ roomData.room.getName[0:48] }}
-                                    {% if roomData.room.status %}
+                                    {% if roomData.room.status and roomData.room.status.code %}
                                         <i style="position: absolute; right: 10px; top: 15px;" class="fa mbf-{{ roomStatusIcons[roomData.room.status.code] }}" title='{{ roomData.room.status.title }}'></i>
                                     {% endif %}
                                 </div>

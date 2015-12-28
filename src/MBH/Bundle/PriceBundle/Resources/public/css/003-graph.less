@@ -1,0 +1,63 @@
+.mbh-graph-header {
+  padding: 5px;
+}
+.mbh-graph-wrapper {
+  margin: 10px 0px 20px 0px;
+  table {
+    width: 100%;
+    table-layout: fixed;
+  }
+}
+.mbh-graph-date-th {
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+  width: 45px;
+  border: 1px solid #dce0e0;
+  div {
+    font-weight: normal;
+  }
+}
+.mbh-graph-cell {
+  height: 20px;
+  border: 1px solid #dce0e0;
+  cursor: pointer;
+
+  small {
+    font-size: 10px;
+  }
+  background-image: url('/bundles/mbhbase/images/FFFFFF-0.1.png')
+}
+.mbh-graph-wrapper tr:hover, .mbh-graph-cell:hover {
+  .mbh-graph-hidden-info {
+    opacity: 1;
+  }
+  td {
+    background-image: none;
+  }
+}
+.mbh-broken-cell {
+  border-bottom: 2px #f39c12 solid;
+}
+.mbh-graph-hidden-info {
+  opacity: 0;
+}
+.mbh-graph-cell-danger {
+  background-color: #f2dede;
+}
+.mbh-graph-help {
+  list-style-type: none;
+  margin: 0px 3px 5px 0px;
+  padding: 0px;
+  text-align: right;
+
+  li {
+    display: inline-block;
+    font-size: 10px;
+    margin-right: 5px;
+    div {
+      display: inline-block;
+      padding: 0px 3px;
+    }
+  }
+}

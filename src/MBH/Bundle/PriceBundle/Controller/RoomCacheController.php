@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\PriceBundle\Lib\RoomCacheGraphGenerator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -30,6 +31,27 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         return [
             'roomTypes' => $hotel->getRoomTypes(),
             'tariffs' => $hotel->getTariffs(),
+        ];
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     * @Route("/graph", name="room_cache_overview_graph", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_ROOM_CACHE_VIEW')")
+     * @Template()
+     */
+    public function graphAction(Request $request)
+    {
+
+        $generator = $this->get('mbh.room.cache.graph.generator');
+
+        return [
+            'data' => $generator->generate($request, $this->hotel),
+            'begin' => $generator->getBegin(),
+            'end' => $generator->getEnd(),
+            'error' => $generator->getError()
         ];
     }
 

@@ -419,7 +419,7 @@ class Search implements SearchInterface
         }
 
         $switchCount = $ascCount = $descCount = 0;
-        $prevNum = $switchDir = null;
+        $prevNum = null;
         foreach ($caches as $cache) {
             $strDate = $cache->getDate()->format('d.m.Y');
             if (isset($tariffCaches[$roomTypeId][$tariffId][$strDate])) {
