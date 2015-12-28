@@ -69,6 +69,12 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
      */
     protected $types;
 
+    /**
+     * @var RoomType[]
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType", mappedBy="category")
+     */
+    protected $roomTypes;
+
     public function __construct()
     {
         $this->types = new ArrayCollection();
@@ -151,6 +157,22 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
         $this->types = $types;
     }
 
+    /**
+     * @return RoomType[]
+     */
+    public function getRoomTypes()
+    {
+        return $this->roomTypes;
+    }
+
+    /**
+     * @param RoomType[] $roomTypes
+     */
+    public function setRoomTypes($roomTypes)
+    {
+        $this->roomTypes = $roomTypes;
+    }
+
     public function getIsHostel()
     {
         return false;
@@ -164,5 +186,15 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
             $places = max($roomType->getAdditionalPlaces(), $places);
         }
         return $places;
+    }
+
+    public function getMainImage()
+    {
+        foreach($this->getRoomTypes() as $roomType) {
+            if($roomType->getMainImage()) {
+                return $roomType->getMainImage();
+            }
+        }
+        return null;
     }
 }

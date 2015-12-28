@@ -42,7 +42,7 @@ class PackageSubscriber implements EventSubscriber
     {
         $package = $args->getDocument();
 
-        if ($package instanceof Package) {
+        if ($package instanceof Package && !$package->getExternalNumber()) {
             $end = clone $package->getEnd();
             $this->container->get('mbh.room.cache')->recalculate(
                 $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff()
