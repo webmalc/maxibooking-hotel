@@ -34,6 +34,19 @@ class YandexMoney implements PaymentSystemInterface
      */
     protected $yandexmoneyscid;
 
+    private $dev = true;
+
+    /*public function __construct()
+    {
+        $this->yandexmoneyshopId = 111174;
+        $this->yandexmoneyscid = 530830;
+    }*/
+
+    public function getHandlerActionUrl()
+    {
+        return $this->dev ? 'https://demomoney.yandex.ru/eshop.xml' : 'https://money.yandex.ru/eshop.xml';
+    }
+
     /**
      * @param CashDocument $cashDocument
      * @param string $url
@@ -43,7 +56,7 @@ class YandexMoney implements PaymentSystemInterface
     public function getFormData(CashDocument $cashDocument, $url = null , $checkUrl = null)
     {
         return [
-            'action' => 'https://money.yandex.ru/eshop.xml',
+            'action' => $this->getHandlerActionUrl(),
             'shopId' => $this->yandexmoneyshopId,
             'scid' => $this->yandexmoneyscid,
             'sum' => $cashDocument->getTotal(),
@@ -60,14 +73,19 @@ class YandexMoney implements PaymentSystemInterface
      */
     public function getSignature(CashDocument $cashDocument, $url = null)
     {
+        //todo
+    }
+
+    private function getCheckSignature(Request $request)
+    {
         $params = [
-            'action' => '',
-            'orderSumAmount' => $cashDocument->getTotal(),
-            'orderSumCurrencyPaycash' => '',
-            'orderSumBankPaycash' => '',
+            'action' => $request->get('action'),
+            'orderSumAmount' => $request->get('orderSumAmount'),
+            'orderSumCurrencyPaycash' => $request->get('orderSumCurrencyPaycash'),
+            'orderSumBankPaycash' => $request->get('orderSumBankPaycash'),
             'shopId' => $this->getYandexmoneyshopId(),
-            'invoiceId' => '',
-            'customerNumber' => $cashDocument->getId(),
+            'invoiceId' => $request->get('invoiceId'),
+            'customerNumber' => $request->get('customerNumber'),
             'shopPassword' => $this->getYandexmoneypassword(),
         ];
         return md5(implode(';', $params));
@@ -80,23 +98,10 @@ class YandexMoney implements PaymentSystemInterface
     public function checkRequest(Request $request)
     {
         $doc = $request->get('orderNumber');//customerNumber
-        //if ($this->getSignature($doc) != $request->get('md5')) {
+        $md5 = $this->getCheckSignature($request);
+        if ($md5 != $request->get('md5')) {
             return false;
-        //};
-
-        $params = [
-            'action' => $request->get('action'),
-            'orderSumAmount' => $request->get('orderSumAmount'),
-            'orderSumCurrencyPaycash' => $request->get('orderSumCurrencyPaycash'),
-            'orderSumBankPaycash' => $request->get('orderSumBankPaycash'),
-            'shopId' => $request->get('shopId'),
-            'invoiceId' => $request->get('invoiceId'),
-            'customerNumber' => $request->get('customerNumber'),
-            'shopPassword' => $request->get('shopPassword'),
-        ];
-        //if ($this->getSignature() != md5(implode(';', $params))) {
-            return false;
-        //}
+        };
 
         return [
             'doc' => $doc,
