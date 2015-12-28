@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -14,13 +15,21 @@ class RoomTypeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         if ($options['useRoomTypeCategory']) {
+            $hotel = $options['hotel'];
             $builder
                 ->add('category', 'document', [
                     'label' => 'form.roomTypeType.category',
                     'group' => 'form.roomTypeType.general_info',
                     'required' => true,
                     'empty_value' => '',
-                    'class' => 'MBHHotelBundle:RoomTypeCategory'
+                    'class' => 'MBHHotelBundle:RoomTypeCategory',
+                    'query_builder' => function(DocumentRepository $repository) use ($hotel) {
+                        $qb = $repository->createQueryBuilder();
+                        if ($hotel) {
+                            $qb->field('hotel.id')->equals($hotel->getID());
+                        }
+                        return $qb;
+                    }
                 ])
             ;
         }
@@ -129,6 +138,7 @@ class RoomTypeType extends AbstractType
             'deleteImageUrl' => null,
             'facilities' => [],
             'useRoomTypeCategory' => false,
+            'hotel' => null,
         ]);
     }
 

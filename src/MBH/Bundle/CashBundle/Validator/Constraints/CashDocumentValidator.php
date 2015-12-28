@@ -18,9 +18,9 @@ class CashDocumentValidator extends ConstraintValidator
         $order = $cashDocument->getOrder();
 
         /** payer **/
-        if (!$cashDocument->getPayer(true)) {
+        /*if (!$cashDocument->getPayer(true)) {
             $this->context->addViolation($constraint->messagePayer);
-        }
+        }*/
         /** expenseGreaterThanIncome */
         if ($cashDocument->getOperation() == 'out' && $order) {
             if ($cashDocument->getTotal() >  $order->getPaid()) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\CashBundle\DataFixtures;
+namespace MBH\Bundle\CashBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -8,7 +8,7 @@ use MBH\Bundle\CashBundle\Document\CashDocumentArticle;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class CashArticleData implements FixtureInterface, ContainerAwareInterface
+class CashDocumentArticleData implements FixtureInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
@@ -42,6 +42,26 @@ class CashArticleData implements FixtureInterface, ContainerAwareInterface
                 $parents[$article->getCode()] = $article;
             }
         }
+
+        $manager->flush();
+
+        $manager->clear();
+
+        $cashDocumentArticleRepository = $manager->getRepository(CashDocumentArticle::class);
+        $articles = $cashDocumentArticleRepository->findAll();
+
+        foreach($articles as $article) {
+            if (!$article->getParent() && count($article->getChildren()) == 0) {
+                $sameParent = new CashDocumentArticle();
+                $sameParent->setCode($article->getCode());
+                $sameParent->setTitle($article->getTitle());
+
+                $article->setParent($sameParent);
+                $manager->persist($sameParent);
+                $manager->persist($article);
+            }
+        }
+
         $manager->flush();
     }
 }

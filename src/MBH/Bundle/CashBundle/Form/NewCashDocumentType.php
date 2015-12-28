@@ -23,34 +23,19 @@ class NewCashDocumentType extends CashDocumentType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('organizationPayer', 'text', [
+            /*->add('organizationPayer', 'text', [
                 'label' => 'form.cashDocumentType.organization',
                 'required' => false
             ])
             ->add('touristPayer', 'text', [
                 'label' => 'form.cashDocumentType.tourist',
                 'required' => false
-            ])
+            ])*/
             ->remove('payer_select')
+            ->remove('method')
         ;
         $builder->get('organizationPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Organization::class));
         $builder->get('touristPayer')->addViewTransformer(new EntityToIdTransformer($this->documentManager, Tourist::class));
-
-        //$articles = $this->documentManager->getRepository(CashDocumentArticle::class)->findAll();
-
-        //$list = [];
-        //foreach($articles as $article) {
-            /*if(count($article->getChildren())) {
-                $list[$article->getId()] = iterator_to_array($article->getChildren());
-            } elseif (!$article->getParent()) {
-                $list[$article->getId()] = [$article];
-            }*/
-            /*if(isset($list[$article->getId()]) && is_array($list[$article->getId()])) {
-                $list[$article->getId()][] = $article;
-            } elseif(count($article->getChildren()) == 0) {
-                $list[$article->getId()] = [$article];
-            }*/
-        //}
 
         $builder->add('article', 'document', [
             'required' => false,
@@ -63,9 +48,9 @@ class NewCashDocumentType extends CashDocumentType
             },
             //'attr' => ['class' => 'plain-html'],
             'query_builder' => function (DocumentRepository $repository) {
-                return $repository->createQueryBuilder()->sort(['code' => 1]);
-            }
-            //'choices' => $list
+                return $repository->createQueryBuilder()->field('parent')->exists(true)->sort(['code' => 1]);
+            },
+            //'choices' => $list,
         ]);
     }
 

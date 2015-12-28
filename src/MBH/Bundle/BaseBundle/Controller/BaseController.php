@@ -109,7 +109,7 @@ class BaseController extends Controller
             }
 
             if (method_exists($entity, 'getHotel')) {
-                if (!$this->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+                if ($entity->getHotel() && !$this->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
                     throw $this->createNotFoundException();
                 }
             }

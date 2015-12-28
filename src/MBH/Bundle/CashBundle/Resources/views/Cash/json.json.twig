@@ -17,7 +17,7 @@
                 "<div class='text-right total'>{% if entity.operation in ['fee', 'out'] %}<span class='text-danger' {% if entity.note %}title='{{ entity.note|nl2br|replace({"\n":' ', "\r":' ', "'": ''}) }}' data-toggle='tooltip'{% endif %}>{{ entity.total|number_format(2) }}</span> {% if entity.note %}<i class='fa fa-info'></i>{% endif %}{% endif %}</div>",
                 "{{ operations[entity.operation] }}<br><small>{{ methods[entity.method] }}</small>",
                 "{% if entity.article %}<span data-toggle='tooltip' title='{{ entity.article.title }}'>{{ entity.article.code }}</span>{% endif %}",
-                "{{ entity.payer.shortName }}",
+                "{{ entity.payer ? entity.payer.shortName : '' }}",
                 "{{ entity.documentDate|date('d.m.Y') }}",
                 "<div class='text-center'>{% if entity.isPaid %} {{ entity.paidDate|date('d.m.Y') }} {% else %} <span class='label label-danger'>{{ 'order.cash.no'|trans({}, 'MBHPackageBundle') }}</span>{% endif %}</div>",
                 "<div class='text-center'>{{ entity.createdBy }}</div>",

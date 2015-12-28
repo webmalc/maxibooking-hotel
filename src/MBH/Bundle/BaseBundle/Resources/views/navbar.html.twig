@@ -25,7 +25,7 @@
                                     <a href="{{ is_granted('ROLE_CASH_EDIT') ? path('cash_edit', {'id': doc.id}) : '#' }}">
                                     <small>
                                         Документ #{{ doc.number }}, сумма: {{ doc.total|number_format }} {{ currency()['text'] }}<br>
-                                        {{ doc.payer.shortName }} не подтвержден
+                                        {{ doc.payer ? doc.payer.shortName : null }} не подтвержден
                                     </small>
                                     </a>
                                 </li>
