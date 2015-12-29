@@ -77,10 +77,11 @@ class DefaultController extends BaseController
             ])
             ->add('adults', 'integer', [
                 'label' => 'Взрослые',
+                'attr' => ['min' => 1],
             ])
             ->add('children', 'integer', [
                 'label' => 'Дети',
-                'attr' => ['min' => 0, 'max' => 10],
+                'attr' => ['min' => 0, 'max' => 5],
                 'required' => false
             ])
             ->add('children_age', 'collection', [
@@ -137,11 +138,11 @@ class DefaultController extends BaseController
         $form->handleRequest($request);
 
         $searchResults = [];
+
+        //dump($form->isValid());
+
         if ($form->isValid()) {
             $formData = $form->getData();
-            if ($formData['hotel']) {
-                $searchQuery->addHotel($formData['hotel']);
-            }
             if ($formData['roomType']) {
                 $searchQuery->addRoomType($formData['roomType']);
                 /*$roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($formData['roomType']);
@@ -154,12 +155,16 @@ class DefaultController extends BaseController
                         $searchQuery->addRoomType($roomType->getId());
                     }
                 }*/
+            } elseif ($formData['hotel']) {
+                $searchQuery->addHotel($formData['hotel']);
             }
+
             $searchQuery->begin = $formData['begin'];
             $searchQuery->end = $formData['end'];
             $searchQuery->adults = (int)$formData['adults'];
             $searchQuery->children = (int)$formData['children'];
-            $searchQuery->accommodations = true;
+            //$searchQuery->accommodations = true;
+            $searchQuery->forceRoomTypes = true;
             $searchQuery->isOnline = true;
             if ($formData['children_age']) {
                 $searchQuery->setChildrenAges($formData['children_age']);

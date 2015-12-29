@@ -13,3 +13,7 @@
 #search-form .popover-content input:last-child {
     margin-right: 0;
 }
+
+#search-form .popover-content div {
+    white-space:nowrap;
+}

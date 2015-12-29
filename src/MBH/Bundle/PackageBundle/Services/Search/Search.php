@@ -57,6 +57,7 @@ class Search implements SearchInterface
      */
     public function search(SearchQuery $query)
     {
+
         $results = $groupedCaches = $deletedCaches = $cachesMin = $tariffMin = [];
 
         if (empty($query->end) || empty($query->begin) || $query->end <= $query->begin) {

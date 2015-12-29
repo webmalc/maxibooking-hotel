@@ -60,7 +60,8 @@ $rangeInput.daterangepicker({
         applyLabel: 'Принять',
         cancelLabel: 'Отмена',
         format: 'DD.MM.YYYY'
-    }
+    },
+    autoApply: true,
 });
 //$('#form_begin,#form_end').datepicker({language: 'ru'});
 
@@ -118,10 +119,10 @@ $children.on('change', function() {
         var content = '';
         for(var i = 0; i < value; i++) {
             var inputValue = childrenValues[i];
-            content = content + '<input name="form[children_age]['+i+']" type="number" value="'+inputValue+'" min="1" max="18" class="form-control inline-block input-sm">';
+            content = content + '<input name="form[children_age]['+i+']" type="number" value="'+inputValue+'" min="1" max="18" class="form-control input-sm" style="display: inline-block">';
         }
         if(content) {
-            content = '<div class="form-inline">' + content + '</div>';
+            content = '<div>' + content + '</div>';
         }
 
         var popover = $childrenIcon.data('bs.popover');
