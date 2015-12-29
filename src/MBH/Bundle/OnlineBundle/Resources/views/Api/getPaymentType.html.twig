@@ -60,9 +60,12 @@
                     {% elseif paymentType == 'online_half' %}
                         <div class="mbh-payment-type-row-total">{{ (request.total/2)|round }} {{ currency().text }}</div>
                         <p> {{ 'views.api.getPaymentType.reservation_guarantee_half'|trans({}, 'MBHOnlineBundle') }}</p>
-                    {% elseif paymentType == 'online_twenty_percent' or paymentType == 'bank' %}
+                    {% elseif paymentType == 'online_twenty_percent' %}
                         <div class="mbh-payment-type-row-total">{{ (request.total/5)|round }} {{ currency().text }}</div>
                         <p> {{ 'views.api.getPaymentType.reservation_guarantee_twenty_percent'|trans({}, 'MBHOnlineBundle') }}</p>
+                    {% elseif paymentType == 'bank' %}
+                        <div class="mbh-payment-type-row-total">{{ (request.total)|round }} {{ currency().text }}</div>
+                        <p> {{ 'views.api.getPaymentType.reservation_guarantee_bank'|trans({}, 'MBHOnlineBundle') }}</p>
                     {% endif %}
                 </div>
                 {% endif %}
