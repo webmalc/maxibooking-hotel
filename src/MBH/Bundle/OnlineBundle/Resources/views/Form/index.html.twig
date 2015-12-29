@@ -35,7 +35,7 @@
                     <h3 class="panel-title">{{ 'views.form.index.site_embed_form_code'|trans({}, 'MBHOnlineBundle') }}</h3>
                 </div>
                 <div class="panel-body">
-                    {% set code1  = '<div id="mbh-form-wrapper" style="overflow: hidden; width: ' ~ config.form.width ~'; height: ' ~ config.form.height ~';"><a href="http://maxi-booking.ru/">' + 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') + '</a></div>' %}
+                    {% set code1  = '<div id="mbh-form-wrapper" style="overflow: hidden; width: ' ~ config.form.width ~'; height: ' ~ config.form.height ~';"><a href="http://maxi-booking.ru/">' ~ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') ~ '</a></div>' %}
                     {% set code2  = '<script>window.jQuery || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"><\\/script>\')</script>' %}
                     {% set code3  = '<script>$.isFunction($().datepicker) || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"><\\/script><link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css"/>\')</script>' %}
                     {% set code4  = '<script type="text/javascript" src="' ~ url('online_form_get') ~ '"></script>' %}

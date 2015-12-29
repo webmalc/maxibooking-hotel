@@ -8,6 +8,8 @@ $(document).ready(function () {
             var wrapper = $('#room-cache-overview-table-wrapper'),
                 begin = $('#room-cache-overview-filter-begin'),
                 end = $('#room-cache-overview-filter-end'),
+                graph = $('#room-cache-overview-filter-graph'),
+                route = graph.is(':checked') ? 'room_cache_overview_graph' : 'room_cache_overview_table',
                 data = {
                     'begin': begin.val(),
                     'end': end.val(),
@@ -46,7 +48,7 @@ $(document).ready(function () {
             wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
             if (!roomProcessing) {
                 $.ajax({
-                    url: Routing.generate('room_cache_overview_table'),
+                    url: Routing.generate(route),
                     data: data,
                     beforeSend: function () {roomProcessing = true; },
                     success: function (data) {
@@ -55,7 +57,6 @@ $(document).ready(function () {
                         end.val($('#room-cache-overview-end').val());
                         inputs();
                         roomProcessing = false;
-
                     },
                     dataType: 'html'
                 });
@@ -63,7 +64,7 @@ $(document).ready(function () {
         };
 
     showTable();
-    $('.room-cache-overview-filter').change(function () {
+    $('.room-cache-overview-filter').on('change switchChange.bootstrapSwitch', function () {
         showTable();
     });
 
