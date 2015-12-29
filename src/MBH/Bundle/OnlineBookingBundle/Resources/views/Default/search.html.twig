@@ -3,24 +3,23 @@
 <div class="row oneblock room-type-row">
     <!--<div class="sale"></div>-->
 
-    <div class="col-md-4" style="padding:0px;">
+    <div class="col-md-4 logo">
         {% set renderedImage = false %}
         {% for searchResult in result.results if not renderedImage %}
             {% if searchResult.roomType.mainImage %}
                 <a class="fancybox" href="{{ asset(searchResult.roomType.mainImage.path, null, true) }}">
-                    <img class="oblimg" src="{{ searchResult.roomType.mainImage.path|imagine_filter('thumb_95x80') }}">
+                    <img class="oblimg" src="{{ searchResult.roomType.mainImage.path|imagine_filter('thumb_275x270') }}">
                 </a>
                 {% set renderedImage = true %}
             {% endif %}
         {% endfor %}
         <!--<div class="oblimg" style="background:url(images/img1.jpg)no-repeat;background-size:cover;"></div>-->
     </div>
-    <div class="col-md-8 descrobl" style="padding:0px;">
+    <div class="col-md-8" style="padding:0px;">
         <div class="row">
-            <div class="col-md-5 col-sm-6 col-xs-12 title">
-                <p>{{ result.roomType }}</p>
-                <small>{{ result.roomType.hotel }}</small>
-                {#<p class="subtitle"><img src="images/pn.png" alt=""> 10 дней / 10 ночей</p>#}
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <div class="title">{{ result.roomType }}</div>
+                <div class="subtitle">{{ result.roomType.hotel }}</div>
             </div>
             <div class="col-md-7 col-sm-6 col-xs-12 prices">
                 {#<div class="col-md-7 col-sm-7 col-xs-7 newprice">забронируй сейчас<br><span>&#8381;56 344</span></div>#}
@@ -68,7 +67,7 @@
 
         <div class="btmactions">
             <a href="#" class="pull-right" style="margin-top: 10px" title="Купить Online">
-                <a href="#" class="onl">Забронировать</a>
+                <a href="#" class="btn btn-booking">Забронировать</a>
             </a>
         </div>
     </div>
@@ -115,7 +114,7 @@
 <script>
     var RoomTypeRow = function($row) {
         this.$row = $row;
-        this.$bookingButton = $row.find('.onl');
+        this.$bookingButton = $row.find('.btn-booking');
         this.tariffRows = [];
         this.selectedTariffRow = null;
     }
