@@ -187,10 +187,10 @@ parameters:
             url: %online_form_result_url%
           payment_types:
             in_hotel: 'Оплата при заселении'
-            bank: 'Предоплата по счёту (20%)'
-            online_first_day: 'Онлайн оплата (одни сутки)'
+            bank: 'Оплата наличными в офисе или в представительстве'
+            # online_first_day: 'Онлайн оплата (одни сутки)'
             online_twenty_percent: 'Онлайн оплата (20%)'
-            online_half: 'Онлайн оплата (50%)'
+            # online_half: 'Онлайн оплата (50%)'
             online_full: 'Онлайн оплата (100%)'
 
     #платежные системы

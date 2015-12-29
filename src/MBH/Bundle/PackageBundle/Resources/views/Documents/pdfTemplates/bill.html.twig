@@ -59,8 +59,7 @@
                     Отель {% if hotel and hotel.name %}<strong>"{{ hotel.name }}"</strong>{% else %}____________________{% endif %},
                     адрес: {% if hotel and hotel.country and hotel.city and hotel.street %}
                     {{ hotel.country.title }}, {% if hotel.region %}{{ hotel.region.title }},{% endif %} г. {{ hotel.city.title }}{% if hotel.settlement %}, {{ hotel.settlement }}{% endif %}, {{ hotel.street }},
-                    {% if hotel.house %} д. {{ hotel.house }}{% endif %}{% if hotel.corpus %}, кор. {{ hotel.corpus }}{% endif %}{% if hotel.flat %}, кв. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %},
-                    ИНН {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %}
+                    {% if hotel.house %} д. {{ hotel.house }}{% endif %}{% if hotel.corpus %}, кор. {{ hotel.corpus }}{% endif %}{% if hotel.flat %}, кв. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %}
                 </td>
             </tr>
             <tr>
@@ -124,6 +123,14 @@
             <tr>
                 <td align="right"><strong>Заказано:</strong></td>
                 <td align="right" style="width: 120px;"><strong>{{ total|number_format(2) }}</strong></td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="right"><strong>К оплате:</strong></td>
+                <td align="right" style="width: 120px;"><strong>{{ (total * percents / 100)|number_format(2) }}</strong></td>
             </tr>
         </table>
     </div>

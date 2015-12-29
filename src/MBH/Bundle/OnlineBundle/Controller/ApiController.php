@@ -436,7 +436,14 @@ class ApiController extends Controller
 
                 $cashDocuments = $order->getCashDocuments();
                 if (count($cashDocuments) > 0) {
-                    if ($paymentType == 'bank') {
+                    if ($paymentType != 'online_full') {
+
+                        $percents = 0;
+                        if ($paymentType == 'in_hotel' || $paymentType == 'bank') {
+                            $percents = 100;
+                        } elseif ($paymentType == 'online_twenty_percent') {
+                            $percents = 80;
+                        }
 
                         $templateFactory = $this->get('mbh.package.document_tempalte_factory');
                         /** @var BillTemplateGenerator $templateGenerator */
@@ -447,7 +454,8 @@ class ApiController extends Controller
                             throw new \InvalidArgumentException('Order has not one package');
                         }
                         $formData = [
-                            'package' => $packages[0]
+                            'package' => $packages[0],
+                            'percents' => $percents
                         ];
 
                         $template = $templateGenerator->getTemplate($formData);

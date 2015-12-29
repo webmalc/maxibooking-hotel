@@ -138,9 +138,10 @@ class Mailer implements \SplObserver
                 $acl = $aclProvider->findAcl($objectIdentity);
 
                 $users = $userRepository->findAll();
+                $authorizationChecker = $this->container->get('security.authorization_checker');
                 foreach($users as $user) {
                     $securityIdentity = new UserSecurityIdentity($user, 'MBH\Bundle\UserBundle\Document\User');
-                    if ($user->getEmail() && $acl->isGranted([MaskBuilder::MASK_MASTER], [$securityIdentity])) {
+                    if ($user->getEmail() && ($authorizationChecker->isGranted('ROLE_ADMIN') || $acl->isGranted([MaskBuilder::MASK_MASTER], [$securityIdentity]))) {
                         $recipients[] = $user;
                     };
                 }

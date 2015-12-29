@@ -111,7 +111,7 @@ class MailerCommand extends ContainerAwareCommand
                     ->setOrder($package->getOrder())
                     ->setAdditionalData([
                         'package' => $package,
-                        'links' => $this->getContainer()->getParameter('mailer_user_arrival_links'),
+                        'links' => null,//$this->getContainer()->getParameter('mailer_user_arrival_links'),
                         'fromText' => $package->getRoomType()->getHotel()
                     ])
                     ->setTemplate('MBHBaseBundle:Mailer:userArrival.html.twig')
