@@ -13,20 +13,22 @@
                 {% set renderedImage = true %}
             {% endif %}
         {% endfor %}
-        <!--<div class="oblimg" style="background:url(images/img1.jpg)no-repeat;background-size:cover;"></div>-->
+        {% if not renderedImage %}
+            <div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>
+        {% endif %}
     </div>
-    <div class="col-md-8" style="padding:0px;">
+    <div class="col-md-8 right-info">
         <div class="row">
-            <div class="col-md-5 col-sm-6 col-xs-12">
+            <div class="col-md-5 col-sm-6 col-xs-12" style="padding:0px;">
                 <div class="title">{{ result.roomType }}</div>
                 <div class="subtitle">{{ result.roomType.hotel }}</div>
             </div>
             <div class="col-md-7 col-sm-6 col-xs-12 prices">
                 {#<div class="col-md-7 col-sm-7 col-xs-7 newprice">забронируй сейчас<br><span>&#8381;56 344</span></div>#}
                 {% set searchResult = result.results|first %}
-                <div class="col-md-5 col-sm-5 col-xs-5 oldprice pull-right">
-                    стоимость<br>
+                <div class="oldprice pull-right">
                     <span>{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}</span>
+                    <i class="fa fa-2x fa-ruble"></i>
                 </div>
             </div>
         </div>
@@ -37,10 +39,22 @@
         <table class="table table-hover table-striped">
             <thead>
             <tr>
-                <th><img src="images/ic1.jpg" alt="" style="width: 25px"> Тариф</th>
-                <th><img src="images/ic2.jpg" alt="" style="width: 25px"> Гости</th>
-                <th><img src="images/ic3.jpg" alt="" style="width: 25px"> Дата</th>
-                <th>Цена</th>
+                <th>
+                    <i class="fa fa-tag"></i>
+                    Тариф
+                </th>
+                <th>
+                    <i class="fa fa-users"></i>
+                    Гости
+                </th>
+                <th>
+                    <i class="fa fa-calendar"></i>
+                    Дата
+                </th>
+                <th>
+                    <i class="fa fa-ruble"></i>
+                    Цена
+                </th>
                 <th></th>
             </tr>
             </thead>
@@ -52,7 +66,19 @@
                     {{ searchResult.adults }} взр{% if searchResult.children %} + {{ searchResult.children }} реб{% endif %}
                 </td>
                 <td>
-                    {{ searchResult.begin|date('d.m.y') }} - {{ searchResult.end|date('d.m.y') }}
+                    {% if searchResult.begin|date('Y') == 'now'|date('Y') %}
+                        {% set format = 'd.MMM' %}
+                    {% else %}
+                        {% set format = null %}
+                    {% endif %}
+                    {{ searchResult.begin|localizeddate('medium', 'none', 'ru', null, format) }}
+                    -
+                    {% if searchResult.end|date('Y') == 'now'|date('Y') %}
+                        {% set format = 'd.MMM' %}
+                    {% else %}
+                        {% set format = null %}
+                    {% endif %}
+                    {{ searchResult.end|localizeddate('medium', 'none', 'ru', null, format) }}
                 </td>
                 <td>
                     {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}

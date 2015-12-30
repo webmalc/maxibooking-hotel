@@ -63,13 +63,13 @@ class DefaultController extends BaseController
                 'required' => false,
                 'mapped' => false
             ])
-            ->add('begin', new DateType(), [
+            ->add('begin', 'date', [
                 'label' => 'Заезд',
                 'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
             ])
-            ->add('end', new DateType(), [
+            ->add('end', 'date', [
                 'label' => 'Выезд',
                 'required' => false,
                 'widget' => 'single_text',
@@ -138,8 +138,6 @@ class DefaultController extends BaseController
         $form->handleRequest($request);
 
         $searchResults = [];
-
-        //dump($form->isValid());
 
         if ($form->isValid()) {
             $formData = $form->getData();
