@@ -84,7 +84,7 @@
                     {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}
                 </td>
                 <td>
-                    <input type="radio" name="booking">
+                    <input type="radio" name="booking-{{ searchResult.roomType.id }}">
                 </td>
             </tr>
             {% endfor %}
@@ -145,10 +145,24 @@
         this.selectedTariffRow = null;
     }
 
+    /*RoomTypeRow.prototype.isSelected = function()
+    {
+        return this.selectedTariffRow;
+    }*/
+
+    RoomTypeRow.prototype.update = function()
+    {
+        this.notAlreadyBooking();
+        this.tariffRows.forEach(function(t) {
+            t.update();
+        })
+    }
+
     RoomTypeRow.prototype.init = function()
     {
         this.bindEventHandlers();
         this.initTariff();
+        this.update();
     }
 
     RoomTypeRow.prototype.bindEventHandlers = function()
@@ -196,7 +210,7 @@
 
     var TariffRow = function($row, roomTypeRow) {
         this.$row = $row;
-        this.$checkbox = this.$row.find('input[type=radio]');
+        this.$radiobutton = this.$row.find('input[type=radio]');
         this.bookingHref = this.$row.data('url');
         this.$promotionSelect = $row.find('select');
         this.roomTypeRow = roomTypeRow;
@@ -207,11 +221,22 @@
         this.bindEventHandlers();
     }
 
+    TariffRow.prototype.isSelected = function()
+    {
+        return this.$radiobutton.is(':checked');
+    }
+
+    TariffRow.prototype.update = function()
+    {
+        if (this.isSelected()) {
+            this.selected();
+        }
+    }
+
     TariffRow.prototype.bindEventHandlers = function()
     {
         var that = this;
-        this.$checkbox.on('change', function() {
-            that.roomTypeRow.selectedTariffRow = that;
+        this.$radiobutton.on('ifChanged', function() {
             that.selected();
         })
         this.$promotionSelect.on('change', function() {
@@ -222,6 +247,7 @@
 
     TariffRow.prototype.selected = function()
     {
+        this.roomTypeRow.selectedTariffRow = this;
         this.$promotionSelect.removeClass('hide');
         this.roomTypeRow.alreadyBooking(this);
     }
@@ -229,7 +255,7 @@
     TariffRow.prototype.notSelected = function()
     {
         this.$promotionSelect.addClass('hide');
-        //this.$checkbox.attr('checked', false);
+        //this.$radiobutton.attr('checked', false);
     }
 
     var $onlineBookingSearch = $('#online-booking-search');
@@ -240,7 +266,6 @@
         $roomTypeRows.each(function() {
             var roomTypeRow = new RoomTypeRow($(this));
             roomTypeRow.init();
-            roomTypeRow.notAlreadyBooking();
         })
     });
 </script>
