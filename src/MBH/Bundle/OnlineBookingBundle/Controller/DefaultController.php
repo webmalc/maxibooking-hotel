@@ -271,9 +271,14 @@ class DefaultController extends BaseController
     {
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
         $form = $this->getSignForm();
-        $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        $isSubmit = $request->get('submit');
+        if($isSubmit) {
+            $form->submit($request->get('form'));
+        } else {
+            $form->setData($request->get('form'));
+        }
+        if ($isSubmit && $form->isValid()) {
             $helper = $this->get('mbh.helper');
             $orderManger = $this->get('mbh.order_manager');
             $formData = $form->getData();
@@ -344,10 +349,14 @@ class DefaultController extends BaseController
                 'payButtonHtml' => $payButtonHtml,
             ]);
         } else {
-            $roomTypeID = $form['roomType']->getData();
+            $data = $isSubmit ? $form->getData() : $request->get('form');
+            $roomTypeID = $data['roomType'];
+
             /** @var RoomType $roomType */
             $roomType = $this->dm->getRepository(RoomType::class)->find($roomTypeID);
-            $data = $form->getData();
+            if (!$roomType) {
+                throw $this->createNotFoundException('Room type is not exists');
+            }
 
             $beginTime = $this->get('mbh.helper')->getDateFromString($data['begin']);
             $endTime = $this->get('mbh.helper')->getDateFromString($data['end']);

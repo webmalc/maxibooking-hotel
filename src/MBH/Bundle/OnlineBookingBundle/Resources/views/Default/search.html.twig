@@ -67,14 +67,14 @@
                 </td>
                 <td>
                     {% if searchResult.begin|date('Y') == 'now'|date('Y') %}
-                        {% set format = 'd.MMM' %}
+                        {% set format = 'd MMM' %}
                     {% else %}
                         {% set format = null %}
                     {% endif %}
                     {{ searchResult.begin|localizeddate('medium', 'none', 'ru', null, format) }}
                     -
                     {% if searchResult.end|date('Y') == 'now'|date('Y') %}
-                        {% set format = 'd.MMM' %}
+                        {% set format = 'd MMM' %}
                     {% else %}
                         {% set format = null %}
                     {% endif %}

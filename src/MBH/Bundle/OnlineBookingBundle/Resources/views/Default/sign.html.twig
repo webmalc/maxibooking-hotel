@@ -3,7 +3,7 @@
 <div id="sign-page" class="col-md-8">
     {{ form_start(form, {attr: {id: 'sign-form', method: 'get' }, action: requestSearchUrl}) }}
     {{ form_widget(form) }}
-    <button type="submit">Забронировать</button>
+    <button type="submit" name="submit" value="1">Забронировать</button>
     <input type="hidden" name="step" value="2">
     {#<input type="hidden" name="adults" value="{{ app.request.get('adults') }}">
     <input type="hidden" name="children" value="{{ app.request.get('children') }}">
