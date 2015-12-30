@@ -137,7 +137,8 @@ class RoomCacheGraphGenerator
                 ;
             }
         }
-        return $this->checkWindows($request);
+        //return $this->checkWindows($request);
+        return $this;
     }
 
     /**
@@ -326,6 +327,4 @@ class RoomCacheGraphGenerator
 
         return 0;
     }
-
-
 }

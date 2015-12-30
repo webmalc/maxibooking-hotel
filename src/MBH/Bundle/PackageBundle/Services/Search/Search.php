@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Services\Search;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
+use MBH\Bundle\PriceBundle\Services\Restriction;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
@@ -309,6 +310,7 @@ class Search implements SearchInterface
                     ->setRoomType($roomType)
                     ->setTariff($tariff)
                     ->setRoomsCount($min)
+                    ->setPackagesCount($caches[0]->getPackagesCount())
                     ->setAdults($tourists['adults'])
                     ->setChildren($tourists['children'])
                     ->setUseCategories($useCategories);
@@ -361,93 +363,85 @@ class Search implements SearchInterface
             return true;
         }
 
-        $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
+        $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')->findOneByDate(
             $result->getBegin(),
-            $result->getBegin(),
-            null,
-            [$result->getRoomType()->getId()],
-            [$result->getTariff()->getId()]
-        )->toArray();
+            $result->getRoomType(),
+            $result->getTariff()
+        );
 
-        if (!count($restrictions)) {
+        if (!$restriction || !$restriction->getMinStayArrival()) {
             return true;
         }
 
-        $restriction = array_values($restrictions)[0];
-
-        if ($restriction->getDate() != $result->getBegin() || !$restriction->getMinStayArrival()) {
-            return true;
-        }
-
-        $endWindow = clone $result->getEnd();
-        $endWindow->modify('+' . $restriction->getMinStayArrival() . ' days');
-
-        //check right window
-        if (!$this->checkWindow($result->getEnd(), $endWindow, $result, $restriction->getMinStayArrival())) {
+        if (!$this->checkWindow(
+            $restriction->getMinStayArrival(),
+            $result,
+            true
+        )) {
             return false;
         }
-
-        //check left window
-        if ($result->getBegin() != new \DateTime('midnight')) {
-            $beginWindow = clone $result->getBegin();
-            $beginWindow->modify('-' . $restriction->getMinStayArrival() . ' days');
-            if (!$this->checkWindow(
-                $beginWindow, $result->getBegin(), $result, $restriction->getMinStayArrival(), false
-            )
-            ) {
-                return false;
-            }
+        if (!$this->checkWindow(
+            $restriction->getMinStayArrival(),
+            $result,
+            false
+        )) {
+            return false;
         }
 
         return true;
     }
 
-    public function checkWindow(\DateTime $begin, \DateTime $end, SearchResult $result, $len, $right = true)
+    public function checkWindow($len, SearchResult $result, $right = false)
     {
         $roomTypeId = $result->getRoomType()->getId();
         $tariffId = $result->getTariff()->getId();
+        $middle = $result->getPackagesCount() + 1;
+        $greater = 0;
+        $less = 0;
 
-        $caches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-            $begin, $end, null, [$roomTypeId], null
-        );
-        $tariffCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-            $begin, $end, null, [$roomTypeId], [$tariffId], true
-        );
+        if ($right) {
+            $from = clone $result->getEnd();
+            $to = clone $result->getEnd();
+            $to->modify('+ ' . $len . ' days');
+            $to->modify('-1 day');
+        } else {
 
-        if (count($caches) < $len + 1) {
-            return true;
+            if ($result->getBegin() <= new \DateTime('midnight')) {
+                return true;
+            }
+
+            $from = clone $result->getBegin();
+            $to = clone $result->getBegin();
+            $to->modify('-1 day');
+            $from->modify('- ' . $len . ' days');
         }
 
-        $switchCount = $ascCount = $descCount = 0;
-        $prevNum = null;
+        $caches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
+            $from, $to, null, [$roomTypeId], null
+        );
+        $tariffCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
+            $from, $to, null, [$roomTypeId], [$tariffId], true
+        );
+
         foreach ($caches as $cache) {
+
             $strDate = $cache->getDate()->format('d.m.Y');
             if (isset($tariffCaches[$roomTypeId][$tariffId][$strDate])) {
                 $cache = $tariffCaches[$roomTypeId][$tariffId][$strDate];
             }
 
-            $num = $cache->getLeftRooms();
-
-            if ($right && $cache->getDate() == $begin) {
-                $num--;
+            if (count($caches) < $len) {
+                return true;
             }
-            if (!$right && $cache->getDate() == $end) {
-                $num--;
-            }
-            if ($prevNum !== null && $num != $prevNum) {
 
-                $switchCount++;
-
-                if ($num > $prevNum) {
-                    $ascCount++;
-                }
-                if ($num < $prevNum) {
-                    $descCount++;
-                }
+            if ($cache->getLeftRooms() >= $middle) {
+                $greater += 1;
+            } else {
+                $less +=1;
             }
-            $prevNum = $num;
         }
-        if ($switchCount > 1 && $descCount > 0 && $ascCount > 0) {
+
+        if ($greater && $less) {
             return false;
         }
 
