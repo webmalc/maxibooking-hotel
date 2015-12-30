@@ -421,11 +421,11 @@ class ApiController extends Controller
 
                 $params = $this->container->getParameter('mailer_user_arrival_links');
 
-                if (!empty($params['map'])) {
+                /*if (!empty($params['map'])) {
                     $message->setLink($params['map'])
                         ->setLinkText($tr->trans('mailer.online.user.map'))
                     ;
-                }
+                }*/
 
                 $notifier
                     ->setMessage($message)
