@@ -93,11 +93,23 @@ class SearchQuery
      * @var mixed
      */
     public $tariff;
+
+    /**
+     * @var RoomTypes ids
+     */
+    public $availableRoomTypes = [];
     
     public function addExcludeRoomType($id)
     {
         if (!in_array($id, $this->excludeRoomTypes) && !empty($id)) {
             $this->excludeRoomTypes[] = $id;
+        }
+    }
+
+    public function addAvailableRoomType($id)
+    {
+        if (!in_array($id, $this->availableRoomTypes) && !empty($id)) {
+            $this->availableRoomTypes[] = $id;
         }
     }
 
@@ -124,6 +136,10 @@ class SearchQuery
 
     public function addRoomType($id)
     {
+        if (!empty($this->availableRoomTypes) && !in_array($id, $this->availableRoomTypes)) {
+            return false;
+        }
+
         if (!in_array($id, $this->roomTypes) && !empty($id)) {
             $this->roomTypes[] = $id;
         }

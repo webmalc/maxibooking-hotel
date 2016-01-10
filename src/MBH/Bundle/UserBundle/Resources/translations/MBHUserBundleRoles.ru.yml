@@ -141,6 +141,10 @@ ROLE_HOTELINN: Hotel-inn
 ROLE_MYALLOCATOR: MyAllocator
 
 ROLE_ONLINE_FORM: Онлайн форма
+ROLE_ONLINE_FORM_VIEW: Просмотр онлайн форм
+ROLE_ONLINE_FORM_EDIT: Редактирование онлайн форм
+ROLE_ONLINE_FORM_NEW: Создание онлайн форм
+ROLE_ONLINE_FORM_DELETE: Удаление онлайн форм
 ROLE_POLLS: Голосования
 
 ROLE_REPORTS: Отчеты

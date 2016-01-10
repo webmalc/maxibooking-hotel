@@ -1,78 +1,55 @@
 {% extends 'MBHOnlineBundle:Form:layout.html.twig' %}
 
-{% set small_title = 'views.form.index.settings_in_quotes'|trans({}, 'MBHOnlineBundle') %}
-{% set layout = "tabs" %}
+{% set small_title = 'views.form.index.list'|trans({}, 'MBHOnlineBundle') %}
+{% set layout = "box" %}
 
 {% block content %}
-    <ul class="nav nav-tabs">
-        <li class="active"><a href="#online-form-config" data-toggle="tab"><i class="fa fa-cog"> </i> {{ 'views.form.index.settings'|trans({}, 'MBHOnlineBundle') }}</a></li>
+    <table class="table table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xs"></th>
+            <th>Отели</th>
+            <th>Типы номеров</th>
+            <th>Гости</th>
+            <th>Включена</th>
+            <th class="td-sm"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for doc in docs %}
+            <tr {{ not doc.enabled ? 'class="danger"' }}>
+                <td class="text-center table-icon"><i class="fa fa-globe"></i></td>
+                <td>
+                    {% if doc.hotels|length %}
+                        {{ doc.hotels|join(', ') }}
+                    {% else %}
+                        Все отели
+                    {% endif %}
+                </td>
+                <td>
+                    {% if doc.roomTypes %}
+                        <span class="label label-success">Да</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if doc.tourists %}
+                        <span class="label label-success">Да</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not doc.enabled %}
+                        <span class="label label-danger">Нет</span>
+                    {% else %}
+                        <span class="label label-success">Да</span>
+                    {% endif %}
+                </td>
+                <td class="table-actions-td text-center">
+                    {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': doc, 'route': 'online_form'} %}{% endembed %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
-        {% if entity %}
-            <li><a href="#online-form-code" data-toggle="tab"><i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
-        {% else %}
-            <li class="disabled"><a href="#" data-toggle="tooltip" title='{{ 'views.form.index.settings_required'|trans({}, 'MBHOnlineBundle') }}'><i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
-        {%  endif %}
-
-    </ul>
-
-    <div class="tab-content">
-        <div class="tab-pane in active" id="online-form-config">
-
-            {{ form_start(form, {'action': path('online_form_save'), 'attr': {'class': 'form-horizontal'}}) }}
-            {{ form_widget(form) }}
-            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
-            {{ form_end(form) }}
-
-            {%  if entity %}
-                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'tariff_delete' } %}
-            {%  endif %}
-
-        </div>
-        <div class="tab-pane"  id="online-form-code">
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{{ 'views.form.index.site_embed_form_code'|trans({}, 'MBHOnlineBundle') }}</h3>
-                </div>
-                <div class="panel-body">
-                    {% set code1  = '<div id="mbh-form-wrapper" style="overflow: hidden; width: ' ~ config.form.width ~'; height: ' ~ config.form.height ~';"><a href="http://maxi-booking.ru/">' ~ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') ~ '</a></div>' %}
-                    {% set code2  = '<script>window.jQuery || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"><\\/script>\')</script>' %}
-                    {% set code3  = '<script>$.isFunction($().datepicker) || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"><\\/script><link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css"/>\')</script>' %}
-                    {% set code4  = '<script type="text/javascript" src="' ~ url('online_form_get') ~ '"></script>' %}
-                    <div class="row spacer-bottom">
-                        <div class="col-md-3"><small>{{ 'views.form.index.to_form_place'|trans({}, 'MBHOnlineBundle') }}</small></div>
-                        <div class="col-md-9"><span class="text-success">{{ code1 }}</span></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-3"><small>{{ 'views.form.index.before_closing_tag'|trans({}, 'MBHOnlineBundle') }}&lt;/body&gt;:</small></div>
-                        <div class="col-md-9"><span class="text-success">{{ code2 }}{{ code3 }}{{ code4 }}</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{{ 'views.form.index.search_page_embed_code'|trans({}, 'MBHOnlineBundle') }}</h3>
-                </div>
-                <div class="panel-body">
-                    <div id="mbh-date-error" class="hide"><i class="fa fa-exclamation-circle"></i> {{ 'views.form.period_is_not_filled'|trans({}, 'MBHOnlineBundle') }}</div>
-                    {% set code0  = '<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">' %}
-                    {% set code1  = '<div id="mbh-results-wrapper" style="overflow: hidden; width: ' ~ config.result.width ~'; height: ' ~ config.result.height ~';"></div>' %}
-                    {% set code2  = '<script>window.jQuery || document.write(\'<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"><\\/script>\')</script>' %}
-                    {% set code3  = '<script>$.isFunction($().select2) || document.write(\'<script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.min.js"><\\/script><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.css"/>\')</script>'%}
-                    {% set code4  = '<script>$.isFunction($().mask) || document.write(\'<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.3.1/jquery.maskedinput.min.js"><\\/script>\')</script>'%}
-                    {% set code5  = '<script>$.isFunction($().cookie) || document.write(\'<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"><\\/script>\')</script>'%}
-                    {% set code6  = '<script type="text/javascript" src="' ~ url('online_form_results') ~ '"></script>' %}
-                    <div class="row spacer-bottom">
-                        <div class="col-md-3"><small>{{ 'views.form.index.to_results_place'|trans({}, 'MBHOnlineBundle') }}</small></div>
-                        <div class="col-md-9"><span class="text-success">{{ code0 }}{{ code1 }}</span></div>
-                    </div>
-                    <div class="row spacer-bottom">
-                        <div class="col-md-3"><small>{{ 'views.form.index.before_closing_tag'|trans({}, 'MBHOnlineBundle') }}&lt;/body&gt;:</small></div>
-                        <div class="col-md-9"><span class="text-success">{{ code2 }}{{ code3 }}{{ code4 }}{{ code5 }}{{ code6 }}</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'online_form_new', 'role': 'ONLINE_FORM'} %}
 {% endblock %}
