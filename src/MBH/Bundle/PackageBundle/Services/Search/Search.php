@@ -60,6 +60,9 @@ class Search implements SearchInterface
     {
         $results = $groupedCaches = $deletedCaches = $cachesMin = $tariffMin = [];
 
+        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_FORCE_BOOKING')) {
+            $query->forceBooking = false;
+        }
         if (empty($query->end) || empty($query->begin) || $query->end <= $query->begin) {
             return $results;
         }
@@ -175,64 +178,66 @@ class Search implements SearchInterface
             }
         }
 
-        //restrictions
-        $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
-            $query->begin, $query->end, null, $query->roomTypes
-        );
+        if (!$query->forceBooking) {
+            //restrictions
+            $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
+                $query->begin, $query->end, null, $query->roomTypes
+            );
 
-        foreach ($restrictions as $restriction) {
-            $delete = false;
+            foreach ($restrictions as $restriction) {
+                $delete = false;
 
-            if ($query->tariff && $query->tariff->getId() != $restriction->getTariff()->getId()) {
-                continue;
-            }
-            if (!$query->tariff && !$restriction->getTariff()->getIsDefault()) {
-                continue;
-            }
+                if ($query->tariff && $query->tariff->getId() != $restriction->getTariff()->getId()) {
+                    continue;
+                }
+                if (!$query->tariff && !$restriction->getTariff()->getIsDefault()) {
+                    continue;
+                }
 
-            //ClosedOnDeparture
-            if ($restriction->getDate()->format('d.m.Y') == $query->end->format('d.m.Y')) {
-                if ($restriction->getClosedOnDeparture() && isset($deletedCaches[$restriction->getHotel()->getId()][$restriction->getRoomType()->getId()])) {
+                //ClosedOnDeparture
+                if ($restriction->getDate()->format('d.m.Y') == $query->end->format('d.m.Y')) {
+                    if ($restriction->getClosedOnDeparture() && isset($deletedCaches[$restriction->getHotel()->getId()][$restriction->getRoomType()->getId()])) {
+                        unset($deletedCaches[$restriction->getHotel()->getId()][$restriction->getRoomType()->getId()]);
+                    }
+                    continue;
+                }
+                //MinBeforeArrival
+                if ($restriction->getMinBeforeArrival() && $beforeArrival < $restriction->getMinBeforeArrival()) {
+                    $delete = true;
+                }
+                //MaxBeforeArrival
+                if ($restriction->getMaxBeforeArrival() && $beforeArrival > $restriction->getMaxBeforeArrival()) {
+                    $delete = true;
+                }
+                //MinStay
+                if ($restriction->getMinStay() && $duration < $restriction->getMinStay()) {
+                    $delete = true;
+                }
+                //MinStay
+                if ($restriction->getMaxStay() && $duration > $restriction->getMaxStay()) {
+                    $delete = true;
+                }
+                //MinStayArrival
+                if ($restriction->getMinStayArrival() && $restriction->getDate()->format('d.m.Y') == $query->begin->format('d.m.Y') && $duration < $restriction->getMinStayArrival()) {
+                    $delete = true;
+                }
+                //MaxStayArrival
+                if ($restriction->getMaxStayArrival() && $restriction->getDate()->format('d.m.Y') == $query->begin->format('d.m.Y') && $duration > $restriction->getMaxStayArrival()) {
+                    $delete = true;
+                }
+                //ClosedOnArrival
+                if ($restriction->getClosedOnArrival() && $restriction->getDate()->format('d.m.Y') == $query->begin->format('d.m.Y')) {
+                    $delete = true;
+                }
+                //closed
+                if ($restriction->getClosed()) {
+                    $delete = true;
+                }
+
+                //delete chain
+                if ($delete && isset($deletedCaches[$restriction->getHotel()->getId()][$restriction->getRoomType()->getId()])) {
                     unset($deletedCaches[$restriction->getHotel()->getId()][$restriction->getRoomType()->getId()]);
                 }
-                continue;
-            }
-            //MinBeforeArrival
-            if ($restriction->getMinBeforeArrival() && $beforeArrival < $restriction->getMinBeforeArrival()) {
-                $delete = true;
-            }
-            //MaxBeforeArrival
-            if ($restriction->getMaxBeforeArrival() && $beforeArrival > $restriction->getMaxBeforeArrival()) {
-                $delete = true;
-            }
-            //MinStay
-            if ($restriction->getMinStay() && $duration < $restriction->getMinStay()) {
-                $delete = true;
-            }
-            //MinStay
-            if ($restriction->getMaxStay() && $duration > $restriction->getMaxStay()) {
-                $delete = true;
-            }
-            //MinStayArrival
-            if ($restriction->getMinStayArrival() && $restriction->getDate()->format('d.m.Y') == $query->begin->format('d.m.Y') && $duration < $restriction->getMinStayArrival()) {
-                $delete = true;
-            }
-            //MaxStayArrival
-            if ($restriction->getMaxStayArrival() && $restriction->getDate()->format('d.m.Y') == $query->begin->format('d.m.Y') && $duration > $restriction->getMaxStayArrival()) {
-                $delete = true;
-            }
-            //ClosedOnArrival
-            if ($restriction->getClosedOnArrival() && $restriction->getDate()->format('d.m.Y') == $query->begin->format('d.m.Y')) {
-                $delete = true;
-            }
-            //closed
-            if ($restriction->getClosed()) {
-                $delete = true;
-            }
-
-            //delete chain
-            if ($delete && isset($deletedCaches[$restriction->getHotel()->getId()][$restriction->getRoomType()->getId()])) {
-                unset($deletedCaches[$restriction->getHotel()->getId()][$restriction->getRoomType()->getId()]);
             }
         }
 
@@ -246,7 +251,6 @@ class Search implements SearchInterface
                 }
             }
         }
-
         //generate result
         foreach ($deletedCaches as $hotelId => $hotelArray) {
 
@@ -318,7 +322,9 @@ class Search implements SearchInterface
                     ->setPackagesCount($caches[0]->getPackagesCount())
                     ->setAdults($tourists['adults'])
                     ->setChildren($tourists['children'])
-                    ->setUseCategories($useCategories);
+                    ->setUseCategories($useCategories)
+                    ->setForceBooking($query->forceBooking)
+                ;
 
                 //prices
                 $prices = $calc->calcPrices($roomType, $tariff, $query->begin, $end, $tourists['adults'], $tourists['children'], $promotion);
@@ -364,7 +370,7 @@ class Search implements SearchInterface
 
     public function checkWindows(SearchResult $result)
     {
-        if (!$this->config || !$this->config->getSearchWindows()) {
+        if (!$this->config || !$this->config->getSearchWindows() || $result->getForceBooking()) {
             return true;
         }
 
@@ -439,7 +445,7 @@ class Search implements SearchInterface
                 return true;
             }
 
-            if ($cache->getLeftRooms() >= $middle) {
+            if ($cache->getPackagesCount() >= $middle) {
                 $greater += 1;
             } else {
                 $less +=1;

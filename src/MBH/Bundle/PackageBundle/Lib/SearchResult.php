@@ -79,6 +79,8 @@ class SearchResult
      */
     protected $useCategories = false;
 
+    protected $forceBooking = false;
+
     /**
      * @return \DateTime
      */
@@ -434,6 +436,24 @@ class SearchResult
     public function setPackagesCount($packagesCount)
     {
         $this->packagesCount = $packagesCount;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getForceBooking()
+    {
+        return $this->forceBooking;
+    }
+
+    /**
+     * @param boolean $forceBooking
+     * @return SearchResult
+     */
+    public function setForceBooking($forceBooking)
+    {
+        $this->forceBooking = $forceBooking;
         return $this;
     }
 

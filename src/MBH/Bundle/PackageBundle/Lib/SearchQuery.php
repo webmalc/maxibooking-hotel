@@ -98,6 +98,11 @@ class SearchQuery
      * @var RoomTypes ids
      */
     public $availableRoomTypes = [];
+
+    /**
+     * @var bool
+     */
+    public $forceBooking = false;
     
     public function addExcludeRoomType($id)
     {
