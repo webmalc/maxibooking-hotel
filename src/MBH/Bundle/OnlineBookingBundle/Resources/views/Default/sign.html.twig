@@ -63,7 +63,8 @@
             </div>
         </div>
         <div class="guests">
-            Гости: {{ data.adults }} взрослых {{ data.children }} ребёнок
+            <div>Гости: {{ data.adults }} взрослых {{ data.children }} ребёнок</div>
+            <div>Тариф: {{ tariff }}</div>
         </div>
 
         {#<div class="title" style="margin-top: 15px">Стоимость</div>
@@ -87,7 +88,7 @@
         </div>#}
 
         <div class="row" style="margin-top: 15px">
-            <div class="title" style="display: inline-block;">К оплате</div>
+            <div class="title" style="display: inline-block;">Стоимость</div>
             <div class="pull-right" style="color: #41bc19; display: inline-block; font-weight: bold; font-size: 18px">{{ data.total|number_format(2) }} <i class="fa fa-ruble"></i></div>
         </div>
     </div>

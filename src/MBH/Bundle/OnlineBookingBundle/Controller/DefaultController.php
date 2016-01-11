@@ -12,6 +12,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -352,11 +353,17 @@ class DefaultController extends BaseController
         } else {
             $data = $isSubmit ? $form->getData() : $request->get('form');
             $roomTypeID = $data['roomType'];
+            $tariffID = $data['tariff'];
 
             /** @var RoomType $roomType */
             $roomType = $this->dm->getRepository(RoomType::class)->find($roomTypeID);
             if (!$roomType) {
                 throw $this->createNotFoundException('Room type is not exists');
+            }
+            /** @var Tariff $tariff */
+            $tariff = $this->dm->getRepository(Tariff::class)->find($tariffID);
+            if (!$tariff) {
+                throw $this->createNotFoundException('Tariff is not exists');
             }
 
             $beginTime = $this->get('mbh.helper')->getDateFromString($data['begin']);
@@ -371,6 +378,7 @@ class DefaultController extends BaseController
                 'requestSearchUrl' => $requestSearchUrl,
                 'form' => $form->createView(),
                 'roomType' => $roomType,
+                'tariff' => $tariff,
                 'data' => $data,
                 'days' => $days,
             ]);
