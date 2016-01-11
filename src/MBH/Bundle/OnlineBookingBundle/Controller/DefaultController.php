@@ -254,8 +254,9 @@ class DefaultController extends BaseController
             ->add('roomType', 'hidden', [])
             ->add('tariff', 'hidden', [])
             ->add('payment', 'choice', [
-                'label' => 'Платёж',
-                'choices' => $paymentTypes
+                'label' => 'Способ оплаты',
+                'choices' => $paymentTypes,
+                'expanded' => true
             ])
             ->add('total', 'hidden')
             ->add('promotion', 'hidden');

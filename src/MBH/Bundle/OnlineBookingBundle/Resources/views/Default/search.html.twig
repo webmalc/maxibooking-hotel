@@ -43,7 +43,7 @@
                     <i class="fa fa-tag"></i>
                     Тариф
                 </th>
-                <th>
+                <th style="width: 75px">
                     <i class="fa fa-users"></i>
                     Гости
                 </th>
@@ -69,14 +69,14 @@
                     {% if searchResult.begin|date('Y') == 'now'|date('Y') %}
                         {% set format = 'd MMM' %}
                     {% else %}
-                        {% set format = null %}
+                        {% set format = 'd MMM y' %}
                     {% endif %}
                     {{ searchResult.begin|localizeddate('medium', 'none', 'ru', null, format) }}
                     -
                     {% if searchResult.end|date('Y') == 'now'|date('Y') %}
                         {% set format = 'd MMM' %}
                     {% else %}
-                        {% set format = null %}
+                        {% set format = 'd MMM y' %}
                     {% endif %}
                     {{ searchResult.end|localizeddate('medium', 'none', 'ru', null, format) }}
                 </td>
@@ -248,7 +248,8 @@
     TariffRow.prototype.selected = function()
     {
         this.roomTypeRow.selectedTariffRow = this;
-        this.$promotionSelect.removeClass('hide');
+        //this.$promotionSelect.removeClass('hide');
+        this.$radiobutton.iCheck('check');
         this.roomTypeRow.alreadyBooking(this);
     }
 
@@ -266,6 +267,18 @@
         $roomTypeRows.each(function() {
             var roomTypeRow = new RoomTypeRow($(this));
             roomTypeRow.init();
-        })
+
+            roomTypeRow.tariffRows.forEach(function(tariffRow) {
+                tariffRow.$row.on('click', function() {
+                    tariffRow.selected();
+                });
+            })
+        });
     });
 </script>
+
+<style>
+    #online-booking-search .right-info .table tbody tr {
+        cursor: pointer;
+    }
+</style>

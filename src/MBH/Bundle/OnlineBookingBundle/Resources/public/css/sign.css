@@ -1,6 +1,18 @@
 #right-column {
 }
 
+
+
+#sign-page ul li {
+    color: red;
+}
+
+#form_payment .iradio_flat-red {
+    float: left;
+    margin-right: 10px;
+}
+
+
 #sign-page, #info {
     background-color: #FFFFFF;
     padding: 15px;
