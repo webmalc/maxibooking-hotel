@@ -112,3 +112,9 @@
 </div>
 
 <link rel="stylesheet" href="{{ asset('bundles/mbhonlinebooking/css/sign.css', null, true) }}">
+<script>
+    var $radio = $('#form_payment input[value=online_half]').parent().parent();
+    if ($radio.length) {
+        $radio.get(0).innerHTML += ' - ' + {{ data.total / 2 }} + ' <i class="fa fa-ruble"></i>';
+    }
+</script>

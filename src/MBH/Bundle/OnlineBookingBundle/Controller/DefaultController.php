@@ -208,6 +208,7 @@ class DefaultController extends BaseController
     {
         $paymentTypes = $this->getParameter('mbh.online.form')['payment_types'];
         unset($paymentTypes['online_first_day']);
+
         $formBuilder = $this->createFormBuilder(null, [
             'method' => Request::METHOD_GET,
             'csrf_protection' => false
