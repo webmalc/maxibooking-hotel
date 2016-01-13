@@ -47,6 +47,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     {
         $now = new \DateTime('midnight');
         $tomorrow = new \DateTime('midnight +1 day');
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         $data['deleted'] = false;
 
@@ -384,7 +385,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'children' => $request->get('children'),
             'roomType' => $request->get('roomType'),
             'tariff' => $request->get('tariff'),
-            'accommodation' => $request->get('accommodation')
+            'accommodation' => $request->get('accommodation'),
+            'forceBooking' => $request->get('forceBooking'),
         ];
 
         if ($quantity > 20 || $quantity < 1) {
@@ -411,7 +413,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                     ->set('danger', 'Создано ' . $createdPackageCount . ' из ' . count($packages) . ' броней');
                 $order = $e->order;
             } else {
-                throw $e;
+                if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+                    dump($e);
+                };
+                return [];
             }
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {

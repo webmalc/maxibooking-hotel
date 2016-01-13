@@ -106,7 +106,8 @@
                         roomType: result.roomType.id,
                         tariff: result.tariff.id,
                         begin: result.begin|date('d.m.Y'),
-                        end: result.end|date('d.m.Y')
+                        end: result.end|date('d.m.Y'),
+                        forceBooking: result.forceBooking
                     })) }}"
                        target="_blank"
                        class="btn btn-success btn-xs package-search-book {{ is_granted('ROLE_PACKAGE_NEW') is empty ? 'hidden' }}"

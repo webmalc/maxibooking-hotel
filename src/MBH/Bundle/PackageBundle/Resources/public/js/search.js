@@ -335,7 +335,7 @@ $(document).ready(function () {
 
     sendForm();
 
-    $packageSearchForm.find('input, select').on('change', sendForm);
+    $packageSearchForm.find('input, select').on('change switchChange.bootstrapSwitch', sendForm);
 
     $packageSearchForm.on('submit', function (e) {
         e.preventDefault();

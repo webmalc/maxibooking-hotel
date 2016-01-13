@@ -103,6 +103,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                 $query->children = (int)$data['children'];
                 $query->room = $data['room'];
                 $query->accommodations = true;
+                $query->forceBooking = $data['forceBooking'];
 
                 !empty($request->get('s')['children_age']) ? $childrenAges = $request->get('s')['children_age'] : $childrenAges = [];
                 $query->setChildrenAges($childrenAges);

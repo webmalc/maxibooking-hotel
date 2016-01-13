@@ -11,7 +11,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 
 /**
- * @ODM\Document(collection="FormConfig")
+ * @ODM\Document(collection="FormConfig", repositoryClass="MBH\Bundle\OnlineBundle\Document\FormConfigRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
@@ -38,6 +38,12 @@ class FormConfig extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
+    /**
+     * @var array
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
+     */
+    protected $hotels;
 
     /**
      * @var boolean
@@ -83,6 +89,11 @@ class FormConfig extends Base
      * @Assert\Choice(callback = "getPaymentTypesList", multiple = true)
      */
     protected $paymentTypes = [];
+
+    public function __construct()
+    {
+        $this->hotels = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * @return array
@@ -206,4 +217,24 @@ class FormConfig extends Base
     {
         return $this->nights;
     }
+
+    /**
+     * @return array
+     */
+    public function getHotels()
+    {
+        return $this->hotels;
+    }
+
+    /**
+     * @param array $hotels
+     * @return FormConfig
+     */
+    public function setHotels($hotels)
+    {
+        $this->hotels = $hotels;
+        return $this;
+    }
+
+
 }

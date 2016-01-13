@@ -141,6 +141,10 @@ ROLE_HOTELINN: Hotel-inn
 ROLE_MYALLOCATOR: MyAllocator
 
 ROLE_ONLINE_FORM: Онлайн форма
+ROLE_ONLINE_FORM_VIEW: Просмотр онлайн форм
+ROLE_ONLINE_FORM_EDIT: Редактирование онлайн форм
+ROLE_ONLINE_FORM_NEW: Создание онлайн форм
+ROLE_ONLINE_FORM_DELETE: Удаление онлайн форм
 ROLE_POLLS: Голосования
 
 ROLE_REPORTS: Отчеты
@@ -165,6 +169,9 @@ ROLE_PACKAGE_DELETE_ALL: Удаление любой брони
 ROLE_PACKAGE_DOCS: Документы заказа
 ROLE_ORDER_AUTO_CONFIRMATION: Автоподтверждение заказа
 ROLE_PACKAGE_PRICE_EDIT: Редактирование цены брони
+ROLE_INDIVIDUAL_PROMOTION_ADD: Добавление индивидуальной акции
+ROLE_PROMOTION_ADD: Добавление акции
+ROLE_FORCE_BOOKING: Принудительное бронирование
 
 ROLE_TOURIST: Клиенты
 ROLE_PORTER_REPORT: Отчет портье

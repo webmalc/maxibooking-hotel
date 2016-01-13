@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -17,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Translation\Translator;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * @Route("/api")
@@ -25,18 +27,18 @@ class ApiController extends Controller
 {
     /**
      * Online form js
-     * @Route("/form", name="online_form_get", defaults={"_format"="js"})
+     * @Route("/form/{id}", name="online_form_get", defaults={"_format"="js", "id"=null})
      * @Method("GET")
      * @Template("")
      */
-    public function getFormAction()
+    public function getFormAction($id = null)
     {
         $this->setLocaleByRequest();
 
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $config = $this->container->getParameter('mbh.online.form');
-        $formConfig = $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]);
+        $formConfig = $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($id);
 
         if (!$formConfig || !$formConfig->getEnabled()) {
             throw $this->createNotFoundException();
@@ -46,8 +48,15 @@ class ApiController extends Controller
             ->createQueryBuilder('q')
             ->sort('fullTitle', 'asc');
 
+        $configHotelsIds = $this->get('mbh.helper')->toIds($formConfig->getHotels());
+
         $hotels = [];
         foreach ($hotelsQb->getQuery()->execute() as $hotel) {
+
+            if ($configHotelsIds && !in_array($hotel->getId(), $configHotelsIds)) {
+                continue;
+            }
+
             foreach ($hotel->getTariffs() as $tariff) {
                 if ($tariff->getIsOnline()) {
                     $hotels[] = $hotel;
@@ -172,31 +181,12 @@ class ApiController extends Controller
     }
 
     /**
-     * Results js
-     * @Route("/results", name="online_form_results", defaults={"_format"="js"})
-     * @Method("GET")
-     * @Template("")
-     */
-    public function getResultsAction()
-    {
-        return [
-            'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
-            'urls' => [
-                'table' => $this->generateUrl('online_form_results_table', [], true),
-                'user_form' => $this->generateUrl('online_form_user_form', [], true),
-                'payment_type' => $this->generateUrl('online_form_payment_type', [], true),
-                'results' => $this->generateUrl('online_form_packages_create', [], true),
-            ]
-        ];
-    }
-
-    /**
      * Results table
-     * @Route("/results/table", name="online_form_results_table", options={"expose"=true})
+     * @Route("/results/table/{id}", name="online_form_results_table", options={"expose"=true}, defaults={"id"=null})
      * @Method("GET")
      * @Template("")
      */
-    public function getResultsTableAction(Request $request)
+    public function getResultsTableAction(Request $request, $id = null)
     {
         $this->setLocaleByRequest();
 
@@ -205,6 +195,11 @@ class ApiController extends Controller
 
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
         $helper = $this->get('mbh.helper');
+        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($id);
+
+        if (!$formConfig || !$formConfig->getEnabled()) {
+            throw $this->createNotFoundException();
+        }
 
         $query = new SearchQuery();
         $query->isOnline = true;
@@ -213,14 +208,28 @@ class ApiController extends Controller
         $query->adults = (int)$request->get('adults');
         $query->children = (int)$request->get('children');
         $query->tariff = $request->get('tariff');
+
+        foreach ($formConfig->getHotels() as $h) {
+            foreach ($h->getRoomTypes() as $roomType) {
+                $query->addAvailableRoomType($roomType->getId());
+            }
+        }
+
         $query->addRoomType($request->get('roomType'));
         $query->addHotel($dm->getRepository('MBHHotelBundle:Hotel')->find($request->get('hotel')));
 
-        $results = $this->get('mbh.package.search')->search($query);
-
-        if(empty($results)) {
-            $query->adults = $query->children = 0;
+        if (count($formConfig->getHotels()) && empty($query->availableRoomTypes)) {
+            $results = [];
+            $tariffResults = [];
+        } else {
             $results = $this->get('mbh.package.search')->search($query);
+
+            if(empty($results)) {
+                $query->adults = $query->children = 0;
+                $results = $this->get('mbh.package.search')->search($query);
+            }
+
+            $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
         }
 
         $hotels = $services = [];
@@ -232,10 +241,6 @@ class ApiController extends Controller
             $services = array_merge($services, $hotel->getServices(true, true));
         }
 
-        $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
-
-
-
         return [
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
@@ -246,7 +251,7 @@ class ApiController extends Controller
 
     /**
      * User form
-     * @Route("/results/user/form", name="online_form_user_form", options={"expose"=true})
+     * @Route("/results/user/form", name="online_form_user_form", options={"expose"=true}, defaults={"id"=null})
      * @Method("POST")
      * @Template("")
      */
@@ -267,11 +272,11 @@ class ApiController extends Controller
 
     /**
      * Payment type form
-     * @Route("/results/payment/type", name="online_form_payment_type", options={"expose"=true})
+     * @Route("/results/payment/type/{id}", name="online_form_payment_type", options={"expose"=true})
      * @Method("POST")
      * @Template("")
      */
-    public function getPaymentTypeAction(Request $request)
+    public function getPaymentTypeAction(Request $request, $id = null)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
@@ -282,11 +287,16 @@ class ApiController extends Controller
         }
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
+        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($id);
+
+        if (!$formConfig || !$formConfig->getEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
         return [
             'config' => $this->container->getParameter('mbh.online.form'),
-            'formConfig' => $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy([]),
+            'formConfig' => $formConfig,
             'clientConfig' => $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig(),
-            'env' => $this->container->getParameter('mbh.environment') == 'prod' ? true : false,
             'request' => $requestJson
         ];
     }
@@ -488,5 +498,32 @@ class ApiController extends Controller
         }
 
         return $order;
+    }
+
+    /**
+     * Results js
+     * @Route("/results/{id}", name="online_form_results", defaults={"_format"="js"})
+     * @Method("GET")
+     * @Template("")
+     */
+    public function getResultsAction($id = null)
+    {
+        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($id);
+
+        if (!$formConfig || !$formConfig->getEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
+        $id ? $params = ['id' => $id] : $params = [];
+
+        return [
+            'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
+            'urls' => [
+                'table' => $this->generateUrl('online_form_results_table', $params, true),
+                'user_form' => $this->generateUrl('online_form_user_form', [], true),
+                'payment_type' => $this->generateUrl('online_form_payment_type', $params, true),
+                'results' => $this->generateUrl('online_form_packages_create', [], true),
+            ]
+        ];
     }
 }

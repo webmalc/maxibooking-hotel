@@ -13,7 +13,7 @@ framework:
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
-        strict_requirements: ~
+        strict_requirements: false
     form:            ~
     csrf_protection: ~
     validation:      { enable_annotations: true }

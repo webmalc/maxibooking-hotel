@@ -12,8 +12,6 @@
         {% endif %}
     </ul>
 
-
-
     {% for roomType in data.roomTypes %}
         <div class="bg-gray color-palette mbh-graph-header">
             <i class="fa fa-bed" style="color:{{ roomType.color }};"></i>
@@ -41,7 +39,11 @@
                             <td class="text-center text-muted mbh-graph-cell"><small>{{ i }}</small></td>
                             {% for date in data.dates %}
 
+
+
                                 {% set info = data.getInfo(roomType, date) %}
+
+
                                 {% set cellClass = null %}
                                 {% set cellText = null %}
                                 {% set cellIcon = null %}

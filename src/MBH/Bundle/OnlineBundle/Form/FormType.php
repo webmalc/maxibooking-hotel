@@ -13,6 +13,19 @@ class FormType extends AbstractType
     {
         $builder
             ->add(
+                'hotels',
+                'document',
+                [
+                    'label' => 'form.formType.hotels',
+                    'class' => 'MBH\Bundle\HotelBundle\Document\Hotel',
+                    'group' => 'form.formType.parameters',
+                    'required' => false,
+                    'multiple' => true,
+                    'attr' => ['placeholder' => 'form.formType.hotels_placeholder'],
+                    'help' =>  'form.formType.hotels_desc'
+                ]
+            )
+            ->add(
                 'enabled',
                 'checkbox',
                 [

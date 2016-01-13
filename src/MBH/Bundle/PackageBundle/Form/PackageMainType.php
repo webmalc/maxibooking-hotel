@@ -47,6 +47,12 @@ class PackageMainType extends AbstractType
                     'data-date-format' => 'dd.mm.yyyy'
                 )
             ])
+            ->add('isForceBooking', 'checkbox', [
+                'label' => 'Принудительное бронирование?',
+                'required' => false,
+                'group' => 'Заезд/отъезд',
+                'help' => 'Игнорировать условия и ограничения при поиске доступного номера?'
+            ])
             ->add('roomType', 'document', [
                 'label' => 'Тип номера',
                 'class' => 'MBHHotelBundle:RoomType',

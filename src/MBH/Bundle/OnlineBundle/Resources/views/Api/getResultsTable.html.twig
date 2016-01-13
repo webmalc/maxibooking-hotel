@@ -112,7 +112,7 @@
                     <span id="mbh-results-packages-total"> {{ 'views.api.getResultsTable.rooms'|trans({}, 'MBHOnlineBundle') }}
                         <span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span
                                 class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
-                    <span id="mbh-results-services-total"> {{ 'views.api.getResultsTable.services'|trans({}, 'MBHOnlineBundle') }}
+                    <span id="mbh-results-services-total" style="display: none;"> {{ 'views.api.getResultsTable.services'|trans({}, 'MBHOnlineBundle') }}
                         <span id="mbh-results-total-services-sum" class="mbh-results-total-sum">0</span>&nbsp;<span
                                 class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
                     <span id="mbh-results-total">{{ 'views.api.getResultsTable.result'|trans({}, 'MBHOnlineBundle') }}
@@ -132,5 +132,10 @@
                 </div>
             {% endif %}
         </div>
+    {% else %}
+        <div class="mbh-results-error"><i
+                    class="fa fa-exclamation-circle"> </i> {{ 'views.api.getResultsTable.nothing_found_for_your_query'|trans({}, 'MBHOnlineBundle') }}
+        </div>
+
     {% endif %}
 {% endspaceless %}

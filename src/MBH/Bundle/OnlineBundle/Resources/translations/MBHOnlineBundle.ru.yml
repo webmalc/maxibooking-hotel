@@ -67,7 +67,9 @@ views.api.notification.phone: Телефон:
 views.api.make_payment_for_order_id: Оплатить %total%. Номера заказа: %order_id%
 views.api.tariffs.base_tariff: (базовый тариф)
 views.api.tariffs.tariffs_and_special_offers: Тарифы и спецпредложения
-views.form.index.settings_in_quotes: "настройки"
+views.form.index.list: "список"
+views.form.index.edit: "редактирование"
+views.form.index.new: "создание"
 views.form.index.settings: Настройки
 views.form.index.site_embed_code: Код для сайта
 views.form.index.settings_required: "Необходимо заполнить основные настройки!"

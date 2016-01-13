@@ -60,6 +60,11 @@ class SearchResult
     protected $roomsCount = 0;
 
     /**
+     * @var int
+     */
+    protected $packagesCount = 0;
+
+    /**
      * @var array
      */
     protected $rooms = [];
@@ -73,6 +78,8 @@ class SearchResult
      * @var bool
      */
     protected $useCategories = false;
+
+    protected $forceBooking = false;
 
     /**
      * @return \DateTime
@@ -413,4 +420,42 @@ class SearchResult
 
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getPackagesCount()
+    {
+        return $this->packagesCount;
+    }
+
+    /**
+     * @param int $packagesCount
+     * @return SearchResult
+     */
+    public function setPackagesCount($packagesCount)
+    {
+        $this->packagesCount = $packagesCount;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getForceBooking()
+    {
+        return $this->forceBooking;
+    }
+
+    /**
+     * @param boolean $forceBooking
+     * @return SearchResult
+     */
+    public function setForceBooking($forceBooking)
+    {
+        $this->forceBooking = $forceBooking;
+        return $this;
+    }
+
+
 }

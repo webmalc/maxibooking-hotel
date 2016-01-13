@@ -54,6 +54,27 @@ class RoomCacheRepository extends DocumentRepository
     }
 
     /**
+     * @param \DateTime $date
+     * @param RoomType $roomType
+     * @param Tariff $tariff
+     * @return null|object
+     */
+    public function findOneByDate(\DateTime $date, RoomType $roomType, Tariff $tariff = null)
+    {
+        $qb = $this->createQueryBuilder('q');
+        $qb
+            ->field('date')->equals($date)
+            ->field('roomType.id')->equals($roomType->getId())
+        ;
+
+        if ($tariff) {
+            $qb->field('tariff.id')->equals($tariff->getId());
+        }
+
+        return $qb->getQuery()->getSingleResult();
+    }
+
+    /**
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param Hotel $hotel

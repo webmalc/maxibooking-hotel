@@ -202,7 +202,9 @@ mbh.payerSelect.prototype.update = function(type, value) {
 var docReadyForms = function () {
     'use strict';
 
-    $('form.remember input:not(.not-remember), form.remember select:not(.not-remember), form.remember textarea:not(.not-remember)').phoenix();
+    $('form.remember input:not(.not-remember), form.remember select:not(.not-remember), form.remember textarea:not(.not-remember)').phoenix({
+        webStorage: 'sessionStorage'
+    });
 
     $(".timepicker").timepicker({
         showMeridian: false
