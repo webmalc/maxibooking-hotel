@@ -61,6 +61,8 @@ form:
         name: Название
         inner_name: Внутреннее название
         is_enabled: Включен?
+        desc: Описание
+        desc_help: Описание группы номеров для онлайн бронирования
 
 form.roomTypeGenerateRoomsType.first_bed_number: Номер первого койко-места
 form.roomTypeGenerateRoomsType.first_room_number: С

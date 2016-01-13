@@ -28,6 +28,13 @@ class RoomTypeCategoryType extends AbstractType
                 'group' => 'form.roomTypeType.general_info',
                 'required' => false,
             ])
+            ->add('description', 'textarea', [
+                'label' => 'form.roomTypeCategory.desc',
+                'help' => 'form.roomTypeCategory.desc_help',
+                'required' => false,
+                'group' => 'form.roomTypeType.general_info',
+                'attr' => ['class' => 'big roomTypeTypeEditor tinymce']
+            ])
             ->add('isChildPrices', 'checkbox', [
                 'label' => 'form.roomTypeType.isChildPrices',
                 'group' => 'form.roomTypeType.prices',
