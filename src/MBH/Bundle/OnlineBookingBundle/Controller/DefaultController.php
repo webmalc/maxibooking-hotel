@@ -163,8 +163,12 @@ class DefaultController extends BaseController
             $searchQuery->adults = (int)$formData['adults'];
             $searchQuery->children = (int)$formData['children'];
             //$searchQuery->accommodations = true;
-            $searchQuery->forceRoomTypes = true;
+            //$searchQuery->forceRoomTypes = true;
             $searchQuery->isOnline = true;
+
+            $searchQuery->accommodations = true;
+            $searchQuery->forceRoomTypes = false;
+
             if ($formData['children_age']) {
                 $searchQuery->setChildrenAges($formData['children_age']);
             };
