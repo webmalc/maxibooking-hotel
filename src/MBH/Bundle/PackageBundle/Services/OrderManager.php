@@ -62,7 +62,8 @@ class OrderManager
             $old->getRoomType()->getId() == $new->getRoomType()->getId() &&
             $old->getAdults() == $new->getAdults() &&
             $old->getChildren() == $new->getChildren() &&
-            $old->getPromotion() == $new->getPromotion()
+            $old->getPromotion() == $new->getPromotion() &&
+            $old->getIsForceBooking() == $new->getIsForceBooking()
         ) {
             return $new;
         }
@@ -100,6 +101,7 @@ class OrderManager
         $query->excludeEnd = $oldEnd->modify('-1 day');
         $query->forceRoomTypes = true;
         $query->setPromotion($new->getPromotion() ? $new->getPromotion() : false);
+        $query->forceBooking = $new->getIsForceBooking();
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
@@ -261,6 +263,7 @@ class OrderManager
         $query->addRoomType($data['roomType']);
         $query->accommodations = (boolean)$data['accommodation'];
         $query->forceRoomTypes = true;
+        $query->forceBooking = !empty($data['forceBooking']);
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
@@ -293,6 +296,7 @@ class OrderManager
             )
             ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
             ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()))
+            ->setIsForceBooking($results[0]->getForceBooking())
         ;
 
         //accommodation

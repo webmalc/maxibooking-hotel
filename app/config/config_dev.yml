@@ -6,7 +6,7 @@ imports:
 framework:
     router:
         resource: "%kernel.root_dir%/config/routing_dev.yml"
-        strict_requirements: true
+        strict_requirements: false
     profiler: { only_exceptions: false }
 
 web_profiler:

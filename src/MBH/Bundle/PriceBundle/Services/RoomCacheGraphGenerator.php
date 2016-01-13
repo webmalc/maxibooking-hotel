@@ -82,7 +82,6 @@ class RoomCacheGraphGenerator
         return $this->error;
     }
 
-
     public function getBegin()
     {
         return $this->begin;
@@ -132,12 +131,11 @@ class RoomCacheGraphGenerator
             $this->addRoomType($roomType);
 
             foreach ($period as $day) {
-                $this->addDate($day)
-                    ->addInfo($day, $roomType, $roomCaches)
-                ;
+                $this->addDate($day)->addInfo($day, $roomType, $roomCaches);
             }
         }
         return $this->checkWindows($request);
+        return $this;
     }
 
     /**
@@ -163,11 +161,69 @@ class RoomCacheGraphGenerator
 
         foreach ($this->data as $roomTypeId => $days) {
             foreach ($days as $day => $info) {
-                $this->checkWindow($info, $days, $restrictions);
+                $this->checkWindow($info, $days, $restrictions, true);
+                $this->checkWindow($info, $days, $restrictions, false);
             }
         }
 
         return $this;
+    }
+
+    private function checkWindow(array $info, $days, array $restrictions, $right = true)
+    {
+        $date = $info['date'];
+        $restriction = null;
+        $middle = $info['packageCount'];
+        if (!$info['leftRooms']) {
+            return true;
+        }
+
+        if (isset($restrictions[$info['roomType']->getId()][$this->tariff->getId()][$date->format('d.m.Y')])) {
+            $restriction = $restrictions[$info['roomType']->getId()][$this->tariff->getId()][$date->format('d.m.Y')];
+        }
+
+        if (!$restriction || !$restriction->getMinStayArrival()) {
+            return true;
+        }
+        if ($restriction->getClosed() || ($right && $restriction->getClosedOnDeparture()) || (!$right && $restriction->getClosedOnArrival())) {
+            return true;
+        }
+        $len = $restriction->getMinStayArrival();
+
+        if ($right) {
+            $from = clone $date;
+            $to = clone $date;
+            $to->modify('+ ' . $len . ' days');
+            $to->modify('-1 day');
+        } else {
+            $from = clone $date;
+            $to = clone $date;
+            $to->modify('-1 day');
+            $from->modify('- ' . $len . ' days');
+        }
+        $to->modify('+1 day');
+        $period = new \DatePeriod($from, \DateInterval::createFromDateString('1 day'), $to);
+
+        $greater = 0;
+        $less = 0;
+        foreach ($period as $day) {
+            if (!isset($days[$day->format('d.m.Y')])) {
+                return true;
+            }
+            $data = $days[$day->format('d.m.Y')];
+
+            if ($data['packageCount'] >= $middle) {
+                $greater += 1;
+            } else {
+                $less +=1;
+            }
+        }
+
+        if ($greater && $less) {
+            foreach ($period as $day) {
+                $this->data[$info['roomType']->getId()][$day->format('d.m.Y')]['broken'] = true;
+            }
+        }
     }
 
     /**
@@ -177,7 +233,7 @@ class RoomCacheGraphGenerator
      * @param bool $right
      * @return bool
      */
-    private function checkWindow(array $info, array $days, array $restrictions, $right = true)
+    /*private function checkWindow(array $info, array $days, array $restrictions, $right = true)
     {
         $begin = $info['date'];
         $restriction = null;
@@ -225,7 +281,7 @@ class RoomCacheGraphGenerator
                 $this->data[$info['roomType']->getId()][$day->format('d.m.Y')]['broken'] = true;
             }
         }
-    }
+    }*/
 
 
     /**
@@ -326,6 +382,4 @@ class RoomCacheGraphGenerator
 
         return 0;
     }
-
-
 }

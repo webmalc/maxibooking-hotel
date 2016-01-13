@@ -116,6 +116,10 @@ class SearchType extends AbstractType
                     new NotBlank(['message' => 'form.searchType.children_amount_not_filled'])
                 ]
             ])
+            ->add('forceBooking', 'checkbox', [
+                'label' => 'form.searchType.forceBooking',
+                'required' => false,
+            ])
             ->add('room', 'hidden', [
                 'required' => false
             ])

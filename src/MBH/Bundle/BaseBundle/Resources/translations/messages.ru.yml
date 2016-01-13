@@ -178,5 +178,5 @@ crud.edit: Редактировать
 crud.delete: Удалить
 form.quick_links: Быстрые ссылки
 
-to: c
-from: до
+to: до
+from: c

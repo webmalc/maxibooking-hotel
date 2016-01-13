@@ -322,6 +322,7 @@ class Package extends Base implements JsonSerializable
      * @Assert\Type(type="boolean")
      */
     protected $corrupted = false;
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -329,6 +330,14 @@ class Package extends Base implements JsonSerializable
      * @Assert\Type(type="boolean")
      */
     protected $isLocked = false;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isForceBooking = false;
 
     /**
      * Set tariff
@@ -1445,6 +1454,24 @@ class Package extends Base implements JsonSerializable
     public function setPrices($prices)
     {
         $this->prices = $prices;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsForceBooking()
+    {
+        return $this->isForceBooking;
+    }
+
+    /**
+     * @param boolean $isForceBooking
+     * @return Package
+     */
+    public function setIsForceBooking($isForceBooking)
+    {
+        $this->isForceBooking = $isForceBooking;
         return $this;
     }
 

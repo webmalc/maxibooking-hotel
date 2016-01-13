@@ -578,7 +578,7 @@ class PackageRepository extends DocumentRepository
             $qb->limit($data['limit']);
         }
 
-        //deletedif
+        //deleted if
         if (isset($data['deleted']) && $data['deleted'] || $dateType == 'deletedAt') {
             if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $dm->getFilterCollection()->disable('softdeleteable');

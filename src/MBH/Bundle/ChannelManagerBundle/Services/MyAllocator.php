@@ -744,11 +744,13 @@ class MyAllocator extends Base
             $packageTotal = $this->currencyConvertToRub($config, (float)$room['Price']);
 
             $package = new Package();
+            $endDate = $helper->getDateFromString($room['EndDate'], 'Y-m-d');
+            $endDate->modify('+1 day');
             $package
                 ->setChannelManagerId($booking['MyallocatorId'])
                 ->setChannelManagerType('myallocator')
                 ->setBegin($helper->getDateFromString($room['StartDate'], 'Y-m-d'))
-                ->setEnd($helper->getDateFromString($room['EndDate'], 'Y-m-d'))
+                ->setEnd($endDate)
                 ->setRoomType($roomType)
                 ->setTariff($tariffs['base']['doc'])
                 ->setAdults((int)$room['Occupancy'])
