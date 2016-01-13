@@ -192,12 +192,8 @@ class DefaultController extends BaseController
                     if ($searchResult->getRoomType()->getCategory()) {
                         $uniqid = $searchResult->getRoomType()->getCategory()->getId().$searchResult->getTariff()->getId();
                         $uniqid .= $searchResult->getBegin()->format('dmY').$searchResult->getEnd()->format('dmY');
-                        if (
-                            !array_key_exists($uniqid, $filterSearchResults) ||
-                            $searchResult->getRoomType()->getTotalPlaces() <
-                            $filterSearchResults[$uniqid]->getRoomType()->getTotalPlaces()) {
+                        if (!array_key_exists($uniqid, $filterSearchResults) || $searchResult->getRoomType()->getTotalPlaces() < $filterSearchResults[$uniqid]->getRoomType()->getTotalPlaces()) {
                             $filterSearchResults[$uniqid] = $searchResult;
-                            //unset($searchResults[$k]['results'][$i]);
                         }
                     }
                 }
@@ -345,7 +341,7 @@ class DefaultController extends BaseController
             $this->sendNotifications($order);
 
             $payButtonHtml = '';
-            if ($payment != 'in_hotel' && $clientConfig->getPaymentSystem()) {
+            if (($payment != 'in_hotel' || $payment != 'by_receipt') && $clientConfig->getPaymentSystem()) {
                 $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
                     'data' => array_merge([
                         'test' => false,
