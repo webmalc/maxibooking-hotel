@@ -47,6 +47,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     {
         $now = new \DateTime('midnight');
         $tomorrow = new \DateTime('midnight +1 day');
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         $data['deleted'] = false;
 
