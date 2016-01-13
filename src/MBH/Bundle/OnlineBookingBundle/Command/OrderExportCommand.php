@@ -80,7 +80,7 @@ class OrderExportCommand extends ContainerAwareCommand
 
         $packages = [];
 
-        while (($data = fgetcsv($resource, null, ",")) !== false) {
+        while (($data = fgetcsv($resource, 2000, ",")) !== false) {
             $data = array_map(function ($item) {
                 return iconv("WINDOWS-1251", "UTF-8", $item);
             }, $data);
@@ -120,16 +120,22 @@ class OrderExportCommand extends ContainerAwareCommand
             if ($fio) {
                 list ($lastName, $firstName, $patronymic) = explode(' ', trim($fio));
 
-                /*$tourist = $touristRepository->createQueryBuilder()
+                $tourist = $touristRepository->createQueryBuilder()
                     ->field('firstName')->equals($firstName)
                     ->field('lastName')->equals($lastName)
                     ->field('patronymic')->equals($patronymic)
                     ->limit(1)
                     ->getQuery()
                     ->getSingleResult();
-                if (!$tourist) {*/
-                $tourist = $touristRepository->fetchOrCreate($lastName, $firstName, $patronymic);
-                //}
+                if (!$tourist) {
+                    $tourist = new Tourist();
+                    $tourist->setFirstName($firstName);
+                    $tourist->setLastName($lastName);
+                    $tourist->setPatronymic($patronymic);
+                    //$dm->persist($tourist);
+                    //$dm->flush();
+                    //$tourist = $touristRepository->fetchOrCreate($lastName, $firstName, $patronymic);
+                }
                 $order->setMainTourist($tourist);
                 $dm->persist($tourist);
             } else {
@@ -236,35 +242,35 @@ class OrderExportCommand extends ContainerAwareCommand
             $hotel = $hotelRepository->findOneBy(['title' => $hotelTitle]);
             if (!$hotel) {
                 $hotel = new Hotel();
-                $hotel->setTitle($hotelTitle);
-                $hotelManager->create($hotel);
+                $hotel->setTitle($hotelTitle)->setFullTitle($hotelTitle);
+                //$hotelManager->create($hotel);
+                $dm->persist($hotel);
+                //$dm->flush();
             }
 
+            if ($hotel->getId()) {
+                $roomTypeCategory = $roomTypeCategoryRepository->findOneBy([
+                    'title' => $roomTypeCategoryTitle,
+                    'hotel.id' => $hotel->getId()
+                ]);
+                if (!$roomTypeCategory) {
+                    $roomTypeCategory = new RoomTypeCategory();
+                    $roomTypeCategory->setTitle($roomTypeCategoryTitle);
+                    $roomTypeCategory->setHotel($hotel);
+                    $dm->persist($roomTypeCategory);
+                }
 
-            $roomTypeCategory = $roomTypeCategoryRepository->findOneBy([
-                'title' => $roomTypeCategoryTitle,
-                'hotel.id' => $hotel->getId()
-            ]);
-            if (!$roomTypeCategory) {
-                $roomTypeCategory = new RoomTypeCategory();
-                $roomTypeCategory->setTitle($roomTypeCategoryTitle);
-                $roomTypeCategory->setHotel($hotel);
-                $dm->persist($roomTypeCategory);
+                $roomType = $roomTypeRepository->findOneBy(['title' => $roomTypeName, 'hotel.id' => $hotel->getId()]);
+                if (!$roomType) {
+                    $roomType = new RoomType();
+                    $roomType->setHotel($hotel);
+                    $roomType->setTitle($roomTypeName);
+                    $roomType->setCategory($roomTypeCategory);
+                    $dm->persist($roomType);
+                }
+
+                $package->setRoomType($roomType);
             }
-
-            $roomType = $roomTypeRepository->findOneBy(['title' => $roomTypeName, 'hotel.id' => $hotel->getId()]);
-            if (!$roomType) {
-                $roomType = new RoomType();
-                $roomType->setHotel($hotel);
-                $roomType->setTitle($roomTypeName);
-                $roomType->setCategory($roomTypeCategory);
-                $dm->persist($roomType);
-            }
-
-            $package->setRoomType($roomType);
-
-            $baseTariff = $tariffRepository->fetchBaseTariff($hotel);
-            $package->setTariff($baseTariff);
 
             $dm->persist($order);
             $dm->persist($package);
@@ -275,6 +281,14 @@ class OrderExportCommand extends ContainerAwareCommand
             }
 
             $packages[] = $package;
+
+
+            $hotelManager->updateFixture($hotel);
+            $baseTariff = $tariffRepository->fetchBaseTariff($hotel);
+            if ($baseTariff) {
+                $package->setTariff($baseTariff);
+            }
+            $dm->flush();
         }
 
         /*foreach($packages as $package) {

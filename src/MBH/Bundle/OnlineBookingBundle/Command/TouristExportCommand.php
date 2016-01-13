@@ -67,12 +67,10 @@ class TouristExportCommand extends ContainerAwareCommand
         fgetcsv($resources, null, "\t");
         fgetcsv($resources, null, "\t");
         $i = 4;
-        while (($rowData = fgetcsv($resources, null, "\t")) !== false) {
+        while (($rowData = fgetcsv($resources, 2000, "\t")) !== false) {
             $i++;
-            //$output->write($i.' ');
             $tourist = $this->rowToTourist($rowData, $i);
 
-            //dump($rowData);
             if($tourist) {
                 $dm->persist($tourist);
                 $dm->persist($tourist->getDocumentRelation());
@@ -81,6 +79,7 @@ class TouristExportCommand extends ContainerAwareCommand
                 $dm->flush();
                 $dm->clear();
             }
+            //dump($i . ' - '. $rowData[0]);
         }
 
         $dm->flush();
