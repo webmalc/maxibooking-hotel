@@ -64,6 +64,19 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
     protected $title;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String(name="description")
+     * @Assert\Length(
+     *      min=2,
+     *      minMessage="validator.document.roomType.min_description",
+     *      max=1000,
+     *      maxMessage="validator.document.roomType.max_description"
+     * )
+     */
+    protected $description;
+
+    /**
      * @var RoomType[]|ArrayCollection
      * @ODM\ReferenceMany(targetDocument="\MBH\Bundle\HotelBundle\Document\RoomType", mappedBy="category")
      */
@@ -164,5 +177,28 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
             $places = max($roomType->getAdditionalPlaces(), $places);
         }
         return $places;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string $description
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
     }
 }
