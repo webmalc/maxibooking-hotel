@@ -40,6 +40,11 @@ class SearchMultipleDates implements SearchInterface
     protected $dates;
 
     /**
+     * @var RoomTypeManager
+     */
+    private $manager;
+
+    /**
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
@@ -48,6 +53,7 @@ class SearchMultipleDates implements SearchInterface
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
         $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
         $this->dates = $this->config && $this->config->getSearchDates() ? $this->config->getSearchDates() : 0;
+        $this->manager = $container->get('mbh.hotel.room_type_manager');
     }
 
     /**
@@ -80,6 +86,15 @@ class SearchMultipleDates implements SearchInterface
                     $this->container->get('mbh.helper')->toIds($hotel->getRoomTypes()), $roomTypes
                 );
             }
+        } elseif ($this->manager->useCategories) {
+            $roomTypes = [];
+            foreach ($query->roomTypes as $catId) {
+                $cat = $this->dm->getRepository('MBHHotelBundle:RoomTypeCategory')->find($catId);
+                if ($cat) {
+                    $roomTypes = array_merge($this->container->get('mbh.helper')->toIds($cat->getTypes()), $roomTypes);
+                }
+            }
+            $query->roomTypes = count($roomTypes) ? $roomTypes : [0];
         }
 
         $tariff = $query->tariff;
