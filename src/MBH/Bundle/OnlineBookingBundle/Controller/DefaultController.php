@@ -319,7 +319,7 @@ class DefaultController extends BaseController
                 'confirmed' => false
             ];
             $payment = $formData['payment'];
-            $cash = [];
+            $cash = ['total' => 0];
             $total = (int)$formData['total'];
             //todo pass $formData['promotion']
             if ($payment != 'in_hotel') {
@@ -341,7 +341,7 @@ class DefaultController extends BaseController
             $this->sendNotifications($order);
 
             $payButtonHtml = '';
-            if (($payment != 'in_hotel' || $payment != 'by_receipt') && $clientConfig->getPaymentSystem()) {
+            if ($payment != 'in_hotel' && $payment != 'by_receipt' && $clientConfig->getPaymentSystem()) {
                 $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
                     'data' => array_merge([
                         'test' => false,
