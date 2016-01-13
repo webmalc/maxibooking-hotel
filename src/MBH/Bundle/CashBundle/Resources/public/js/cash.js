@@ -1,20 +1,14 @@
 /*global window, $, alert, document, Routing, deleteLink, mbh */
 var cashDocumentConfirmation = function (link) {
     'use strict';
-    var icon = link.find('i'),
-        number = link.closest('tr').find('div.cash-number');
+    var icon = link.find('i');
     $('#entity-delete-confirmation').modal('hide');
     icon.attr('class', 'fa fa-spin fa-spinner');
     $.ajax({
         url: link.attr('href'),
         success: function (response) {
             if (!response.error) {
-                if (number.length) {
-                    number.removeClass('text-danger');
-                    number.find('br').remove();
-                    number.find('small').remove();
-                    $('#cash-table').dataTable().fnDraw();
-                }
+                $('#cash-table').dataTable().fnDraw();
             } else {
                 alert('Error: ' + response.message);
             }
