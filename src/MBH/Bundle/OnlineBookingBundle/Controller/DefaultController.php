@@ -194,8 +194,8 @@ class DefaultController extends BaseController
                         $uniqid .= $searchResult->getBegin()->format('dmY').$searchResult->getEnd()->format('dmY');
                         if (
                             !array_key_exists($uniqid, $filterSearchResults) ||
-                            $searchResult->getPrice($searchResult->getAdults(), $searchResult->getChildren()) <
-                            $filterSearchResults[$uniqid]->getPrice($filterSearchResults[$uniqid]->getAdults(), $filterSearchResults[$uniqid]->getChildren())) {
+                            $searchResult->getRoomType()->getTotalPlaces() <
+                            $filterSearchResults[$uniqid]->getRoomType()->getTotalPlaces()) {
                             $filterSearchResults[$uniqid] = $searchResult;
                             //unset($searchResults[$k]['results'][$i]);
                         }
