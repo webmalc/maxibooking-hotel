@@ -155,7 +155,13 @@ class DefaultController extends BaseController
                     }
                 }*/
             } elseif ($formData['hotel']) {
-                $searchQuery->addHotel($formData['hotel']);
+                if ($this->get('mbh.hotel.room_type_manager')->useCategories) {
+                    foreach ($formData['hotel']->getRoomTypesCategories() as $cat) {
+                        $searchQuery->addRoomType($cat->getId());
+                    }
+                } else {
+                    $searchQuery->addHotel($formData['hotel']);
+                }
             }
 
             $searchQuery->begin = $formData['begin'];
@@ -179,18 +185,18 @@ class DefaultController extends BaseController
                 ->search($searchQuery);
 
             foreach($searchResults as $k => $item) {
-                $dd = [];
+                $previousTotals = [];
                 /** @var SearchResult[] $results */
                 $results = $item['results'];
                 foreach($results as $i => $searchResult) {
                     if ($searchResult->getRoomType()->getCategory()) {
-                        $c = $searchResult->getRoomType()->getCategory()->getId();
-                        $c .= $searchResult->getTariff()->getId();
-                        $c .= $searchResult->getBegin()->format('dmY') . ' ' . $searchResult->getEnd()->format('dmY');
-                        if (in_array($c, $dd)) {
+                        $uniqid = $searchResult->getRoomType()->getCategory()->getId().$searchResult->getTariff()->getId();
+                        $uniqid .= $searchResult->getBegin()->format('dmY').$searchResult->getEnd()->format('dmY');
+                        $total = $searchQuery->getTotalPlaces();
+                        if (array_key_exists($uniqid, $previousTotals) && $total < $previousTotals[$uniqid]) {
                             unset($searchResults[$k]['results'][$i]);
                         } else {
-                            $dd[] = $c;
+                            $previousTotals[$uniqid] = $total;
                         }
                     }
                 }
@@ -365,6 +371,12 @@ class DefaultController extends BaseController
             if (!$roomType) {
                 throw $this->createNotFoundException('Room type is not exists');
             }
+
+            $roomTypeCategory = null;
+            if ($this->get('mbh.hotel.room_type_manager')->useCategories) {
+                $roomTypeCategory = $roomType->getCategory();
+            }
+
             /** @var Tariff $tariff */
             $tariff = $this->dm->getRepository(Tariff::class)->find($tariffID);
             if (!$tariff) {
@@ -383,6 +395,7 @@ class DefaultController extends BaseController
                 'requestSearchUrl' => $requestSearchUrl,
                 'form' => $form->createView(),
                 'roomType' => $roomType,
+                'roomTypeCategory' => $roomTypeCategory,
                 'tariff' => $tariff,
                 'data' => $data,
                 'days' => $days,
