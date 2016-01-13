@@ -185,21 +185,23 @@ class DefaultController extends BaseController
                 ->search($searchQuery);
 
             foreach($searchResults as $k => $item) {
-                $previousTotals = [];
+                $filterSearchResults = [];
                 /** @var SearchResult[] $results */
                 $results = $item['results'];
                 foreach($results as $i => $searchResult) {
                     if ($searchResult->getRoomType()->getCategory()) {
                         $uniqid = $searchResult->getRoomType()->getCategory()->getId().$searchResult->getTariff()->getId();
                         $uniqid .= $searchResult->getBegin()->format('dmY').$searchResult->getEnd()->format('dmY');
-                        $total = $searchQuery->getTotalPlaces();
-                        if (array_key_exists($uniqid, $previousTotals) && $total < $previousTotals[$uniqid]) {
-                            unset($searchResults[$k]['results'][$i]);
-                        } else {
-                            $previousTotals[$uniqid] = $total;
+                        if (
+                            !array_key_exists($uniqid, $filterSearchResults) ||
+                            $searchResult->getPrice($searchResult->getAdults(), $searchResult->getChildren()) <
+                            $filterSearchResults[$uniqid]->getPrice($filterSearchResults[$uniqid]->getAdults(), $filterSearchResults[$uniqid]->getChildren())) {
+                            $filterSearchResults[$uniqid] = $searchResult;
+                            //unset($searchResults[$k]['results'][$i]);
                         }
                     }
                 }
+                $searchResults[$k]['results'] = $filterSearchResults;
             }
         }
 
