@@ -66,19 +66,26 @@ class DefaultController extends BaseController
             ])
             ->add('begin', 'date', [
                 'label' => 'Заезд',
-                'required' => false,
                 'widget' => 'single_text',
+                'required' => false,
                 'format' => 'dd.MM.yyyy',
+                'constraints' => [
+                    new NotBlank()
+                ],
             ])
             ->add('end', 'date', [
                 'label' => 'Выезд',
-                'required' => false,
                 'widget' => 'single_text',
+                'required' => false,
                 'format' => 'dd.MM.yyyy',
+                'constraints' => [
+                    new NotBlank()
+                ],
             ])
             ->add('adults', 'integer', [
                 'label' => 'Взрослые',
                 'attr' => ['min' => 1],
+                'data' => 1,
             ])
             ->add('children', 'integer', [
                 'label' => 'Дети',
@@ -341,7 +348,7 @@ class DefaultController extends BaseController
             $this->sendNotifications($order);
 
             $payButtonHtml = '';
-            if ($payment != 'in_hotel' && $payment != 'by_receipt' && $clientConfig->getPaymentSystem()) {
+            if (!in_array($payment, ['in_hotel','by_receipt', 'in_office']) && $clientConfig->getPaymentSystem()) {
                 $payButtonHtml = $this->renderView('MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
                     'data' => array_merge([
                         'test' => false,

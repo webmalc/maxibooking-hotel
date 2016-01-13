@@ -70,6 +70,9 @@ $rangeInput.on('apply.daterangepicker', function(ev, picker) {
     $endInput.val(picker.endDate.format('DD.MM.YYYY'));
 });
 
+$beginInput.val($rangeInput.data('daterangepicker').startDate.format('DD.MM.YYYY'));
+$endInput.val($rangeInput.data('daterangepicker').endDate.format('DD.MM.YYYY'));
+
 $rangeInput.on('cancel.daterangepicker', function(ev, picker) {
     $beginInput.val('');
     $endInput.val('');

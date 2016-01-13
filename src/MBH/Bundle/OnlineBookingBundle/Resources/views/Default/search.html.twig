@@ -101,7 +101,7 @@
 {% endfor %}
 </div>
 
-{% if not searchResults %}
+{% if searchResults|length == 0 %}
     <div style="background-color: #FFFFFF; padding: 15px">
         <strong><i class="fa fa-exclamation"></i> По вашему запросу ничего не найдено</strong>
     </div>
