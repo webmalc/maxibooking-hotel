@@ -2,8 +2,8 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\PriceBundle\Validator\Constraints\Tariff;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -24,7 +24,7 @@ class PriceCacheGeneratorType extends AbstractType
 
         if ($options['hotel']) {
             foreach ($options['hotel']->getRoomTypes() as $roomType) {
-                if ($options['categories']) {
+                if ($options['useCategories']) {
                     if ($roomType->getCategory() && $roomType->getCategory()->getIsIndividualAdditionalPrices() && $roomType->getAdditionalPlaces() > $isIndividualAdditionalPrices) {
                         $isIndividualAdditionalPrices = $roomType->getAdditionalPlaces();
                     }
@@ -38,7 +38,7 @@ class PriceCacheGeneratorType extends AbstractType
             }
         }
 
-        $repo = $options['categories'] ? 'MBHHotelBundle:RoomTypeCategory' : 'MBHHotelBundle:RoomType';
+        $repo = $options['useCategories'] ? 'MBHHotelBundle:RoomTypeCategory' : 'MBHHotelBundle:RoomType';
 
         $pricePlaceHolder = 'Укажите сумму или процент (15%) от цены';
 
@@ -270,7 +270,7 @@ class PriceCacheGeneratorType extends AbstractType
         $resolver->setDefaults([
             'weekdays' => [],
             'hotel' => null,
-            'categories' => false,
+            'useCategories' => false,
             'constraints' => new Callback([$this, 'checkDates'])
         ]);
     }
