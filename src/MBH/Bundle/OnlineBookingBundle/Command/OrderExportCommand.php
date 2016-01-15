@@ -43,9 +43,16 @@ class OrderExportCommand extends ContainerAwareCommand
 
     protected function getPathTouristsCsv()
     {
-        return $this->getContainer()->get('file_locator')->locate('@MBHOnlineBookingBundle/Resources/data/FullReportsTourists(1).csv');
+        return $this->getContainer()->get('file_locator')->locate('@MBHOnlineBookingBundle/Resources/data/FullReportsTourists(2).csv');
     }
 
+    /**
+     * mongoimport --db mbh --collection report_tourists --headerline --type csv --file "src/MBH/Bundle/OnlineBookingBundle/Resources/data/FullReportsTourists(2).csv"
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         /** @var DocumentManager $dm */
@@ -81,14 +88,11 @@ class OrderExportCommand extends ContainerAwareCommand
         $packages = [];
 
         while (($data = fgetcsv($resource, 2000, ",")) !== false) {
-            $data = array_map(function ($item) {
-                return iconv("WINDOWS-1251", "UTF-8", $item);
-            }, $data);
-
             if (!count($data) > 34) {
                 continue;
             }
 
+            $data = array_map('trim', $data);
 
             $index = $data[0];
             $number = $data[1];
@@ -255,9 +259,10 @@ class OrderExportCommand extends ContainerAwareCommand
                 ]);
                 if (!$roomTypeCategory) {
                     $roomTypeCategory = new RoomTypeCategory();
-                    $roomTypeCategory->setTitle($roomTypeCategoryTitle);
+                    $roomTypeCategory->setTitle($roomTypeCategoryTitle)->setFullTitle($roomTypeCategoryTitle);
                     $roomTypeCategory->setHotel($hotel);
                     $dm->persist($roomTypeCategory);
+                    $output->writeln('Добавлна новая категория "'. $roomTypeCategory->getTitle() . '"');
                 }
 
                 $roomType = $roomTypeRepository->findOneBy(['title' => $roomTypeName, 'hotel.id' => $hotel->getId()]);
@@ -267,6 +272,7 @@ class OrderExportCommand extends ContainerAwareCommand
                     $roomType->setTitle($roomTypeName);
                     $roomType->setCategory($roomTypeCategory);
                     $dm->persist($roomType);
+                    $output->writeln('Добавлна новый тип номеров "'. $roomTypeCategory->getTitle() . '". Не забудте добавить количесво мест.');
                 }
 
                 $package->setRoomType($roomType);
@@ -295,7 +301,7 @@ class OrderExportCommand extends ContainerAwareCommand
             $dm->persist($package);
         }*/
 
-        $this->recountRoomCache($packages);
+        $this->recountRoomCache($packages, $output);
 
         $output->writeln('Done');
     }
@@ -303,8 +309,9 @@ class OrderExportCommand extends ContainerAwareCommand
 
     /**
      * @param Package[] $packages
+     * @param OutputInterface $output
      */
-    private function recountRoomCache($packages)
+    private function recountRoomCache($packages, $output)
     {
         $minDate = null;
         $maxDate = null;
@@ -329,8 +336,9 @@ class OrderExportCommand extends ContainerAwareCommand
         /** @var RoomCache[] $roomCaches */
         $roomCaches = $roomCacheRepository->findBy(['date' => ['$gte' => $minDate, '$lte' => $maxDate]]);
 
+        $output->writeln('Пересчёт номеров в продаже. ' . $minDate->format('d.m.Y'). ' - ' . $maxDate->format('d.m.Y'). '. ' . count($roomCaches));
+
         foreach ($roomCaches as $i => $roomCache) {
-            dump($i);
             $packageCount = 0;
             $tariff = null;
             foreach ($packages as $package) {

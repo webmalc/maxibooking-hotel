@@ -32,8 +32,8 @@
                 {% endif %}
             </div>
             <div class="col-xs-8">
-                <div>{{ roomType.hotel }}</div>
-                <div>{{ roomTypeCategory }}</div>
+                <div>{{ roomType.hotel.fullTitle }}</div>
+                <div>{{ roomTypeCategory.fullTitle }}</div>
             </div>
         </div>
         <div class="date-info row">
@@ -64,7 +64,7 @@
         </div>
         <div class="guests">
             <div>Гости: {{ data.adults }} взрослых {{ data.children }} ребёнок</div>
-            <div>Тариф: {{ tariff }}</div>
+            <div>Тариф: {{ tariff.fullTitle }}</div>
         </div>
 
         {#<div class="title" style="margin-top: 15px">Стоимость</div>

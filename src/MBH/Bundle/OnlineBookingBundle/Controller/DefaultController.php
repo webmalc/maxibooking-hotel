@@ -37,7 +37,7 @@ class DefaultController extends BaseController
         $hotelIds = [];
         foreach ($roomTypes as $roomType) {
             $hotelIds[$roomType->getId()] = $roomType->getHotel()->getId();
-            $roomTypeList[$roomType->getId()] = $roomType->__toString();
+            $roomTypeList[$roomType->getId()] = $roomType->getFullTitle();
         }
 
         return $this->createFormBuilder([], [
@@ -48,7 +48,8 @@ class DefaultController extends BaseController
                 'label' => 'Отель',
                 'required' => false,
                 'empty_value' => '',
-                'class' => Hotel::class
+                'class' => Hotel::class,
+                'property' => 'fullTitle'
             ])
             ->add('roomType', 'choice', [
                 'label' => 'Тип номера',

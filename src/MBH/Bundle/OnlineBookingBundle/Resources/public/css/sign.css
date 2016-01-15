@@ -39,6 +39,10 @@
     font-size: 14px;
 }
 
+#info .item .col-xs-4 {
+    padding: 0;
+}
+
 #info .item div:last-child {
     color: #364052;
     font-size: 12px;
@@ -46,6 +50,7 @@
 
 #info .title {
     margin-bottom: 5px;
+    margin-right: 5px;
 }
 
 #info .date-info {
