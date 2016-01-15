@@ -313,7 +313,7 @@ $(document).ready(function () {
 
 
     var sendForm = function () {
-        if (!$('#s_begin').val() || !$('#s_end').val()) {
+        if (!$('#s_begin').val() || !$('#s_end').val() || createDate($('#s_begin')) >= createDate($('#s_end'))){
             return;
         }
         //var wrapper = $('#package-search-results-wrapper');
