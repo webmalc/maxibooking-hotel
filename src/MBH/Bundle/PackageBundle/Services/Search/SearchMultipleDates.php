@@ -142,7 +142,7 @@ class SearchMultipleDates implements SearchInterface
     public function getDates(\DateTime $begin, \DateTime $end, RoomType $roomType = null, Tariff $tariff = null, $count = null)
     {
         $count = is_numeric($count) ? $count : $this->dates;
-
+        $result = [];
         /**
          * @param $date
          * @param $count

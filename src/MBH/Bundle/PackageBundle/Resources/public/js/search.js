@@ -108,8 +108,8 @@ $(document).ready(function () {
         ulPrices.find('li.' + touristVal + '_price').show();
         ulPrices.show();
         var oldHref = this.$packageSearchBook.prop('href')
-                .replace(/&adults=.*?(?=(&|$))/, '')
-                .replace(/&children=.*?(?=(&|$))/, '')
+            .replace(/&adults=.*?(?=(&|$))/, '')
+            .replace(/&children=.*?(?=(&|$))/, '')
             ;
 
         this.$packageSearchBook.prop('href', oldHref + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
@@ -313,7 +313,7 @@ $(document).ready(function () {
 
 
     var sendForm = function () {
-        if (!$('#s_begin').val() || !$('#s_end').val()) {
+        if (!$('#s_begin').val() || !$('#s_end').val() || createDate($('#s_begin')) >= createDate($('#s_end'))){
             return;
         }
         //var wrapper = $('#package-search-results-wrapper');

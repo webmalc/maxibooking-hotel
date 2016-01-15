@@ -1,5 +1,11 @@
 /*global window, document, Routing, console, str, $, select2, localStorage */
 
+var createDate = function (input) {
+    'use strict';
+    var parts = input.val().split(".");
+    return new Date(parts[2], parts[1] - 1, parts[0]);
+};
+
 var select2Text = function (el) {
     'use strict';
 
@@ -18,31 +24,18 @@ var select2Text = function (el) {
 var RangeInputs = function($begin, $end) {
     this.$begin = $begin;
     this.$end = $end;
-
-    this.updateValue();
     this.bindEventListeners();
 }
 
-RangeInputs.prototype.updateValue = function()
-{
-    if (!this.$begin.hasClass('not-set-date')) {
-        this.$begin.datepicker('setEndDate', this.$end.datepicker('getDate'));
-    }
-    if (!this.$end.hasClass('not-set-date')) {
-        this.$end.datepicker('setStartDate', this.$begin.datepicker('getDate'));
-    }
-}
 RangeInputs.prototype.bindEventListeners = function()
 {
     var that = this;
     this.$begin.change(function () {
-        that.updateValue();
         if (!that.$end.val()) {
             that.$end.focus();
         }
     });
     this.$end.change(function () {
-        that.updateValue();
         if (!that.$begin.val()) {
             that.$begin.focus();
         }
@@ -140,15 +133,15 @@ $.fn.mbhOrganizationSelectPlugin = function() {
                 }
             },
             /*initSelection: function (element, callback) {
-                var id = $(element).val();
-                if (id !== "") {
-                    $.ajax(Routing.generate('organization_json_list', {id: id}), {
-                        dataType: "json"
-                    }).done(function (data) {
-                        console.log(data);
-                    });
-                }
-            },*/
+             var id = $(element).val();
+             if (id !== "") {
+             $.ajax(Routing.generate('organization_json_list', {id: id}), {
+             dataType: "json"
+             }).done(function (data) {
+             console.log(data);
+             });
+             }
+             },*/
             dropdownCssClass: "bigdrop"
         });
     })
