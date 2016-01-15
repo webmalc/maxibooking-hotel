@@ -3,9 +3,12 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -244,18 +247,22 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         $sessionFormData = [];
         if($request->getSession()->has('priceCacheGeneratorForm')) {
             $sessionFormData = $request->getSession()->get('priceCacheGeneratorForm');
-            foreach($sessionFormData['roomTypes'] as $r) {
-                $this->dm->persist($r);
+            foreach($sessionFormData['roomTypes'] as $key => $r) {
+                if (is_object($r)) {
+                    $sessionFormData['roomTypes'][$key] = $this->dm->getRepository($this->manager->useCategories ? RoomTypeCategory::class : RoomType::class)->find($r->getId());
+                }
             }
-            foreach($sessionFormData['tariffs'] as $r) {
-                $this->dm->persist($r);
+            foreach($sessionFormData['tariffs'] as $key => $r) {
+                if (is_object($r)) {
+                    $sessionFormData['tariffs'][$key] = $this->dm->getRepository(Tariff::class)->find($r->getId());
+                }
             }
         }
 
         $form = $this->createForm(new PriceCacheGeneratorType(), $sessionFormData, [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $this->hotel,
-            'categories' => $this->manager->useCategories,
+            'useCategories' => $this->manager->useCategories,
         ]);
 
         return [
@@ -276,7 +283,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         $form = $this->createForm(new PriceCacheGeneratorType(), [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $this->hotel,
-            'categories' => $this->manager->useCategories
+            'useCategories' => $this->manager->useCategories
         ]);
 
         $form->submit($request);
