@@ -261,7 +261,6 @@ class ClientConfig extends Base
     public function getPaymentSystemDoc()
     {
         $paymentSystem = $this->getPaymentSystem();
-        dump($paymentSystem);
         if (!empty($paymentSystem) && !empty($this->$paymentSystem)) {
             return $this->$paymentSystem;
         }

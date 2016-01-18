@@ -88,7 +88,7 @@ class YandexMoney implements PaymentSystemInterface
             'customerNumber' => $request->get('customerNumber'),
             'shopPassword' => $this->getYandexmoneypassword(),
         ];
-        return md5(implode(';', $params));
+        return mb_strtoupper(md5(implode(';', $params)));
     }
 
     /**
