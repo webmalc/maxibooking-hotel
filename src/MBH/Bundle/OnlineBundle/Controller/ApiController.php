@@ -96,74 +96,79 @@ class ApiController extends Controller
         //save cashDocument
         $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($response['doc']);
 
-        if ($cashDocument && !$cashDocument->getIsPaid()) {
-            $cashDocument->setIsPaid(true);
-            $dm->persist($cashDocument);
-            $dm->flush();
-        }
-
-        //save commission
-        if (isset($response['commission']) && is_numeric($response['commission'])) {
-            $commission = clone $cashDocument;
-            $commissionTotal = (float) $response['commission'];
-            if (isset($response['commissionPercent']) && $response['commissionPercent']) {
-                $commissionTotal = $commissionTotal * $cashDocument->getTotal();
+        if ($cashDocument) {
+            if (!$cashDocument->getIsPaid()) {
+                $cashDocument->setIsPaid(true);
+                $dm->persist($cashDocument);
+                $dm->flush();
             }
-            $commission->setTotal($commissionTotal)
-                       ->setOperation('fee')
-            ;
-            $dm->persist($commission);
-            $dm->flush();
+
+            //save commission
+            if (isset($response['commission']) && is_numeric($response['commission'])) {
+                $commission = clone $cashDocument;
+                $commissionTotal = (float) $response['commission'];
+                if (isset($response['commissionPercent']) && $response['commissionPercent']) {
+                    $commissionTotal = $commissionTotal * $cashDocument->getTotal();
+                }
+                $commission->setTotal($commissionTotal)
+                    ->setOperation('fee')
+                ;
+                $dm->persist($commission);
+                $dm->flush();
+            }
+
+            //send notifications
+            $order = $cashDocument->getOrder();
+            if($order) {
+                $package = $order->getPackages()[0];
+                $params = [
+                    '%cash%' => $cashDocument->getTotal(),
+                    '%order%' => $order->getId(),
+                    '%payer%' => $order->getPayer() ? $order->getPayer()->getName() : '-'
+                ];
+
+                $notifier = $this->get('mbh.notifier');
+                $message = $notifier::createMessage();
+                $message
+                    ->setText('mailer.online.payment.backend')
+                    ->setFrom('online')
+                    ->setSubject('mailer.online.payment.subject')
+                    ->setTranslateParams($params)
+                    ->setType('success')
+                    ->setCategory('notification')
+                    ->setHotel($cashDocument->getHotel())
+                    ->setAutohide(false)
+                    ->setEnd(new \DateTime('+10 minute'))
+                    ->setLink($this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()]))
+                    ->setLinkText('mailer.to_order')
+                ;
+
+                //send to backend
+                $notifier
+                    ->setMessage($message)
+                    ->notify()
+                ;
+            }
+
+            //send to user
+            if ($order && $order->getPayer() && $order->getPayer()->getEmail()) {
+                $message
+                    ->addRecipient($order->getPayer())
+                    ->setText('mailer.online.payment.user')
+                    ->setLink('hide')
+                    ->setLinkText(null)
+                    ->setTranslateParams($params)
+                    ->setAdditionalData([
+                        'fromText' => $order->getFirstHotel()
+                    ])
+                ;
+                $this->get('mbh.notifier.mailer')
+                    ->setMessage($message)
+                    ->notify()
+                ;
+            }
         }
 
-        //send notifications
-        $order = $cashDocument->getOrder();
-        $package = $order->getPackages()[0];
-        $params = [
-            '%cash%' => $cashDocument->getTotal(),
-            '%order%' => $order->getId(),
-            '%payer%' => $order->getPayer() ? $order->getPayer()->getName() : '-'
-        ];
-
-        $notifier = $this->get('mbh.notifier');
-        $message = $notifier::createMessage();
-        $message
-            ->setText('mailer.online.payment.backend')
-            ->setFrom('online')
-            ->setSubject('mailer.online.payment.subject')
-            ->setTranslateParams($params)
-            ->setType('success')
-            ->setCategory('notification')
-            ->setHotel($cashDocument->getHotel())
-            ->setAutohide(false)
-            ->setEnd(new \DateTime('+10 minute'))
-            ->setLink($this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()]))
-            ->setLinkText('mailer.to_order')
-        ;
-
-        //send to backend
-        $notifier
-            ->setMessage($message)
-            ->notify()
-        ;
-
-        //send to user
-        if ($order && $order->getPayer() && $order->getPayer()->getEmail()) {
-            $message
-                ->addRecipient($order->getPayer())
-                ->setText('mailer.online.payment.user')
-                ->setLink('hide')
-                ->setLinkText(null)
-                ->setTranslateParams($params)
-                ->setAdditionalData([
-                    'fromText' => $order->getFirstHotel()
-                ])
-            ;
-            $this->get('mbh.notifier.mailer')
-                ->setMessage($message)
-                ->notify()
-            ;
-        }
 
         $logger->info('OK. '.$logText);
 

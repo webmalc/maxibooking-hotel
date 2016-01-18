@@ -60,7 +60,8 @@ class YandexMoney implements PaymentSystemInterface
             'shopId' => $this->yandexmoneyshopId,
             'scid' => $this->yandexmoneyscid,
             'sum' => $cashDocument->getTotal(),
-            'customerNumber' => $cashDocument->getId()
+            'customerNumber' => $cashDocument->getPayer()->getId(),
+            'orderNumber' => $cashDocument->getId(),
         ];
     }
 
