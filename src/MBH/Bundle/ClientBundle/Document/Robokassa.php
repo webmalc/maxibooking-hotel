@@ -98,7 +98,27 @@ class Robokassa  implements PaymentSystemInterface
 
     public function getFormData(CashDocument $cashDocument, $url = null , $checkUrl = null)
     {
+        $payer = $cashDocument->getPayer();
+        $createdAt = clone $cashDocument->getCreatedAt();
+        $createdAt->modify('+30 minutes');
 
+        return [
+            'action' => 'https://auth.robokassa.ru/Merchant/Index.aspx',
+            'testAction' => 'https://auth.robokassa.ru/Merchant/Index.aspx',
+            'shopId' => $this->getRobokassaMerchantLogin(),
+            'total' => $cashDocument->getTotal(),
+            'orderId' => (int) preg_replace('/[^0-9]/', '', $cashDocument->getNumber()),
+            'orderIdRaw' => $cashDocument->getId(),
+            'touristId' => $cashDocument->getId(),
+            'cardId' => $cashDocument->getOrder()->getId(),
+            'url' => $url,
+            'time' => 60 * 30,
+            'disabled' => $createdAt <= new \DateTime(),
+            'touristEmail' => $payer ? $payer->getEmail() : null,
+            'touristPhone' => $payer ? $payer->getPhone(true) : null,
+            'comment' => 'Order # ' . $cashDocument->getOrder()->getId() . '. CashDocument #' . $cashDocument->getId(),
+            'signature' => $this->getSignature($cashDocument, $url),
+        ];
     }
 
     /**
@@ -106,11 +126,39 @@ class Robokassa  implements PaymentSystemInterface
      */
     public function getSignature(CashDocument $cashDocument, $url = null)
     {
-        return '';
+        return
+            md5(
+                $this->getRobokassaMerchantLogin() . ":" .                // MerchantLogin
+                $cashDocument->getTotal() . ":" .                      // OutSum
+                (int) preg_replace('/[^0-9]/', '', $cashDocument->getNumber()) . ":" . // InvId                                   // InvId
+                $this->getRobokassaMerchantPass1() . ":" .                                          // Pass1
+                'Shp_id=' . $cashDocument->getId()         // Shp_id
+
+        );
     }
 
     public function checkRequest(Request $request)
     {
+        $cashDocumentId = $request->get('Shp_id');
+        $invId = $request->get('InvId');
+        $total = $request->get('OutSum');
+        $requestSignature = $request->get('SignatureValue');
 
+        if (!$cashDocumentId) {
+            return false;
+        }
+        $signature = $total . ':' . $invId . ':' .  $this->getRobokassaMerchantPass2() . ':Shp_id=' . $cashDocumentId;
+        $signature = md5($signature);
+
+        if ($signature != $requestSignature) {
+            return false;
+        }
+
+        return [
+            'doc' => $cashDocumentId,
+            //'commission' => self::COMMISSION,
+            //'commissionPercent' => true,
+            'text' => 'OK' . $invId
+        ];
     }
 }

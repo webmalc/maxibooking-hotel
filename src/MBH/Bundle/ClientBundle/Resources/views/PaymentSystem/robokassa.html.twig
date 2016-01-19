@@ -1,7 +1,14 @@
-<form method="post" action="{{ data.test is defined ? data.testAction|default('') : data.action|default('') }}">
+<form method="post" action="{{ data.test is defined and data.test ? data.testAction|default('') : data.action|default('') }}">
     <input type="hidden" name="MrchLogin" value="{{ data.shopId|default('') }}">
     <input type="hidden" name="OutSum" value="{{ data.total|default('') }}">
     <input type="hidden" name="InvId" value="{{ data.orderId|default('') }}">
     <input type="hidden" name="SignatureValue" value="{{ data.signature|default('')}}">
+    <input type="hidden" name="Encoding" value="utf-8">
+    <input type="hidden" name="Shp_id" value="{{ data.orderIdRaw|default('') }}">
+    <input type="hidden" name="Culture" value="ru">
+
+    {% if data.test is defined and data.test %}
+        <input type="hidden" name="IsTest" value="1">
+    {% endif %}
     {% include 'MBHClientBundle:PaymentSystem:button.html.twig' with {'data': data} %}
 </form>
