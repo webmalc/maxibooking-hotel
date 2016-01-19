@@ -236,9 +236,12 @@ class OrganizationType extends AbstractType
 
                     $organizations = $queryBuilder->getQuery()->execute();
                     $exceptHotelIDs = [];
-                    foreach ($organizations->getMongoCursor() as $organization) {
-                        if (array_key_exists('hotels', $organization)) {
-                            $exceptHotelIDs += array_column($organization['hotels'], '$id');
+                    foreach ($organizations as $organization) {
+                        if (count($organization->getHotels())) {
+                            foreach ($organization->getHotels() as $hotel) {
+                                $exceptHotelIDs = array_merge($exceptHotelIDs, [$hotel->getId()]);
+                            }
+
                         }
                     }
 
