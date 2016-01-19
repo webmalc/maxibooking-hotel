@@ -148,7 +148,7 @@ class Robokassa  implements PaymentSystemInterface
             return false;
         }
         $signature = $total . ':' . $invId . ':' .  $this->getRobokassaMerchantPass2() . ':Shp_id=' . $cashDocumentId;
-        $signature = md5($signature);
+        $signature = strtoupper(md5($signature));
 
         if ($signature != $requestSignature) {
             return false;
