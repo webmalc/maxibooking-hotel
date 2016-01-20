@@ -74,7 +74,7 @@ class PromotionType extends AbstractType
                 'group' => 'form.promotionType.group.conditions',
                 'choices' => array_combine($conditions, $conditions),
                 'choice_label' => function($value, $label) {
-                    return 'form.promotionType.choice_label.condition.'.$label;
+                    return 'form.promotionType.choice_label.condition.'.$value;
                 }
             ])
             ->add('condition_quantity', 'number', [
