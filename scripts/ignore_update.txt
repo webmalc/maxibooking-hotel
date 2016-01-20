@@ -5,8 +5,7 @@ node_modules/
 .git
 .git*
 app/config/parameters.yml
-src/MBH/Bundle/OnlineBundle/Resources/views/Api/form.css.twig
-src/MBH/Bundle/OnlineBundle/Resources/views/Api/results.css.twig
+src/MBH/Bundle/OnlineBundle/Resources/views/Api/*
 var/logs/
 var/logs/*
 var/cache/

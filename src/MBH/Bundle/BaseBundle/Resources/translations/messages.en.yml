@@ -30,7 +30,7 @@ mailer.online.user.append: We hope your visit will be successful and stay in our
 mailer.online.user.signature: Sincerely,<br>Booking Department of «%hotel%» hotel.
 
 mailer.online.backend.subject: New online booking is submitted
-mailer.online.backend.text: online.backend.text
+mailer.online.backend.text: "Поступил новый заказ #%orderID% с вашего сайта."
 mailer.online.backend.prepend: online.backend.prepend
 mailer.online.backend.append: online.backend.append
 mailer.online.backend.signature: online.backend.signature
