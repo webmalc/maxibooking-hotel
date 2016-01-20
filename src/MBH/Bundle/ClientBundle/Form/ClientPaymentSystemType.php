@@ -54,6 +54,7 @@ class ClientPaymentSystemType extends AbstractType
                     [
                         'label' => 'form.clientPaymentSystemType.payment_system',
                         'choices' => $options['paymentTypes'],
+                        'group' => 'form.clientPaymentSystemType.payment_system_group',
                         'empty_value' => '',
                         'data' => $default,
                         'required' => true
@@ -68,6 +69,7 @@ class ClientPaymentSystemType extends AbstractType
                     'label' => 'form.clientPaymentSystemType.shop_login',
                     'required' => false,
                     'attr' => ['class' => 'payment-system-params robokassa'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $robokassaMerchantLogin
                 ]
@@ -79,6 +81,7 @@ class ClientPaymentSystemType extends AbstractType
                     'label' => 'form.clientPaymentSystemType.password_one',
                     'required' => false,
                     'attr' => ['class' => 'payment-system-params robokassa'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $robokassaMerchantPass1
                 ]
@@ -90,6 +93,7 @@ class ClientPaymentSystemType extends AbstractType
                     'label' => 'form.clientPaymentSystemType.password_two',
                     'required' => false,
                     'attr' => ['class' => 'payment-system-params robokassa'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $robokassaMerchantPass2
                 ]
@@ -101,6 +105,7 @@ class ClientPaymentSystemType extends AbstractType
                     'label' => 'form.clientPaymentSystemType.extended_account_number',
                     'required' => false,
                     'attr' => ['class' => 'payment-system-params payanyway'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $payanywayMntId
                 ]
@@ -112,6 +117,7 @@ class ClientPaymentSystemType extends AbstractType
                     'label' => 'form.clientPaymentSystemType.data_integrity_code',
                     'required' => false,
                     'attr' => ['class' => 'payment-system-params payanyway'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $payanywayKey
                 ]
@@ -123,6 +129,7 @@ class ClientPaymentSystemType extends AbstractType
                     'label' => 'form.clientPaymentSystemType.moneymail_shop_id',
                     'required' => false,
                     'attr' => ['class' => 'payment-system-params moneymail'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $moneymailShopIDP
                 ]
@@ -134,6 +141,7 @@ class ClientPaymentSystemType extends AbstractType
                     'label' => 'form.clientPaymentSystemType.moneymail_key',
                     'required' => false,
                     'attr' => ['class' => 'payment-system-params moneymail'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $moneymailKey
                 ]
@@ -145,6 +153,7 @@ class ClientPaymentSystemType extends AbstractType
                     'label' => 'form.clientPaymentSystemType.uniteller_shop_id',
                     'required' => false,
                     'attr' => ['class' => 'payment-system-params uniteller'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $unitellerShopIDP
                 ]
@@ -156,6 +165,7 @@ class ClientPaymentSystemType extends AbstractType
                     'label' => 'form.clientPaymentSystemType.uniteller_password',
                     'required' => false,
                     'attr' => ['class' => 'payment-system-params uniteller'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $unitellerPassword
                 ]
@@ -167,6 +177,7 @@ class ClientPaymentSystemType extends AbstractType
                     'label' => 'form.clientPaymentSystemType.rbk_eshop_id',
                     'required' => false,
                     'attr' => ['class' => 'payment-system-params rbk'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $rbkEshopId
                 ]
@@ -178,10 +189,32 @@ class ClientPaymentSystemType extends AbstractType
                     'label' => 'form.clientPaymentSystemType.rbk_secret_key',
                     'required' => false,
                     'attr' => ['class' => 'payment-system-params rbk'],
+                    'group' => 'form.clientPaymentSystemType.payment_system_group',
                     'mapped' => false,
                     'data' => $rbkSecretKey
                 ]
-            );
+            )
+            ->add(
+                'successUrl',
+                'text',
+                [
+                    'label' => 'form.clientPaymentSystemType.successUrl',
+                    'help' => 'form.clientPaymentSystemType.successUrlDesc',
+                    'group' => 'form.clientPaymentSystemType.payment_system_group_links',
+                    'required' => false,
+                ]
+            )
+            ->add(
+                'failUrl',
+                'text',
+                [
+                    'label' => 'form.clientPaymentSystemType.failUrl',
+                    'help' => 'form.clientPaymentSystemType.failUrlDesc',
+                    'group' => 'form.clientPaymentSystemType.payment_system_group_links',
+                    'required' => false,
+                ]
+            )
+        ;
 
     }
 

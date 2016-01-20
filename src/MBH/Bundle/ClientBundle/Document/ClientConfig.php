@@ -113,6 +113,22 @@ class ClientConfig extends Base
     protected $rbk;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     * @Assert\Url()
+     */
+    protected $successUrl;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     * @Assert\Url()
+     */
+    protected $failUrl;
+
+    /**
      * Set sendSms
      *
      * @param boolean $isSendSms
@@ -346,6 +362,42 @@ class ClientConfig extends Base
     public function setSearchWindows($searchWindows)
     {
         $this->searchWindows = $searchWindows;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSuccessUrl()
+    {
+        return $this->successUrl;
+    }
+
+    /**
+     * @param string $successUrl
+     * @return ClientConfig
+     */
+    public function setSuccessUrl($successUrl)
+    {
+        $this->successUrl = $successUrl;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFailUrl()
+    {
+        return $this->failUrl;
+    }
+
+    /**
+     * @param string $failUrl
+     * @return ClientConfig
+     */
+    public function setFailUrl($failUrl)
+    {
+        $this->failUrl = $failUrl;
+        return $this;
     }
 
 

@@ -77,6 +77,37 @@ class ApiController extends Controller
     }
 
     /**
+     * Success URL redirect
+     * @Route("/success/url", name="api_success_url")
+     * @Method({"POST", "GET"})
+     */
+    public function successUrlAction()
+    {
+        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
+        if (!$config || !$config->getSuccessUrl()) {
+            return $this->createNotFoundException();
+        }
+
+        return $this->redirect($config->getSuccessUrl());
+    }
+
+    /**
+     * Fail URL redirect
+     * @Route("/fail/url", name="api_fail_url")
+     * @Method({"POST", "GET"})
+     */
+    public function failUrlAction()
+    {
+        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
+        if (!$config || !$config->getFailUrl()) {
+            return $this->createNotFoundException();
+        }
+        return $this->redirect($config->getFailUrl());
+    }
+
+    /**
      * Results js
      * @Route("/order/check", name="online_form_check_order")
      * @Method({"POST", "GET"})

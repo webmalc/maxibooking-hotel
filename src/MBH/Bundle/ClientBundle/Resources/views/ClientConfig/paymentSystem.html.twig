@@ -17,7 +17,11 @@
             {% endif %}
             {{ form_end(form) }}
 
-            <div class="alert alert-warning">URL для уведомлений: {{ url('online_form_check_order') }}</div>
+            <div class="bg-gray color-palette alert">
+                URL для уведомлений: {{ url('online_form_check_order') }}</br>
+                URL успешной оплаты: {{ url('api_success_url') }}</br>
+                URL неуспешной оплаты: {{ url('api_fail_url') }}
+            </div>
 
             {% if entity %}
                 {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
