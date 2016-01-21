@@ -2,24 +2,12 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
-use MBH\Bundle\OnlineBundle\Document\HighwayRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class HotelType extends AbstractType
 {
-    /**
-     * @var HighwayRepository
-     */
-    protected $highwayRepository;
-
-    public function __construct(HighwayRepository $highwayRepository)
-    {
-        $this->highwayRepository = $highwayRepository;
-    }
-
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $logoHelp = 'Загрузите файл';
@@ -56,22 +44,10 @@ class HotelType extends AbstractType
             ->add('description', 'textarea', [
                 'label' => 'form.hotelType.description',
                 'group' => 'form.hotelType.general_info',
-                'attr' => ['class' => 'tinymce'],
+                //'attr' => ['class' => 'tinymce'],
                 'required' => false
             ])
-            ->add('MKADdistance', 'number', [
-                'label' => 'form.hotelType.MKADdistance',
-                'group' => 'form.hotelType.general_info',
-                'required' => false
-            ]);
-        $highwayList = $this->highwayRepository->getList();
-        $builder
-            ->add('highway', 'choice', [
-                'label' => 'form.hotelType.highway',
-                'group' => 'form.hotelType.general_info',
-                'required' => false,
-                'choices' => array_combine($highwayList, $highwayList)
-            ]);
+        ;
         $builder
             ->add('file', 'file', [
                 'label' => 'form.hotelType.logo',
@@ -89,12 +65,24 @@ class HotelType extends AbstractType
                 'required' => false,
                 'help' => 'form.hotelType.hostel_hotel_or_not'
             ])
-            ->add('isDefault', 'checkbox', [
-                'label' => 'form.hotelType.is_default',
+            ->add('isHostel', 'checkbox', [
+                'label' => 'form.hotelType.hostel',
                 'group' => 'form.hotelType.settings',
                 'value' => true,
                 'required' => false,
-                'help' => 'form.hotelType.is_default_maxibooking'
+                'help' => 'form.hotelType.hostel_hotel_or_not'
+            ])
+            ->add('is_enabled', 'checkbox', [
+                'label' => 'form.hotelType.is_enabled',
+                'group' => 'form.hotelType.settings',
+                'value' => true,
+                'required' => false
+            ])
+            ->add('isRecommend', 'checkbox', [
+                'label' => 'form.hotelType.is_recommend',
+                'group' => 'form.hotelType.settings',
+                'value' => true,
+                'required' => false
             ]);
     }
 

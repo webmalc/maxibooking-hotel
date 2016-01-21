@@ -59,8 +59,7 @@
                     Отель {% if hotel and hotel.name %}<strong>"{{ hotel.name }}"</strong>{% else %}____________________{% endif %},
                     адрес: {% if hotel and hotel.country and hotel.city and hotel.street %}
                     {{ hotel.country.title }}, {% if hotel.region %}{{ hotel.region.title }},{% endif %} г. {{ hotel.city.title }}{% if hotel.settlement %}, {{ hotel.settlement }}{% endif %}, {{ hotel.street }},
-                    {% if hotel.house %} д. {{ hotel.house }}{% endif %}{% if hotel.corpus %}, кор. {{ hotel.corpus }}{% endif %}{% if hotel.flat %}, кв. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %},
-                    ИНН {% if hotel and hotel.organization and hotel.organization.inn %}{{ hotel.organization.inn }}{% else %}________________________{% endif %}
+                    {% if hotel.house %} д. {{ hotel.house }}{% endif %}{% if hotel.corpus %}, кор. {{ hotel.corpus }}{% endif %}{% if hotel.flat %}, кв. {{ hotel.flat }}{% endif %}{% else %}_________________________________________{% endif %}
                 </td>
             </tr>
             <tr>
@@ -125,76 +124,15 @@
                 <td align="right"><strong>Заказано:</strong></td>
                 <td align="right" style="width: 120px;"><strong>{{ total|number_format(2) }}</strong></td>
             </tr>
-        </table>
-
-        <p>Всего заказано услуг {{ counter }}, на сумму {{ total|number_format(2) }} {{ currency().text }}<br>
-            <strong>{{ total|num2str|capitalize }}</strong></p>
-
-
-        <table border="1" width="100%" cellpadding="0" cellspacing="0" class="cash" style="margin-top: 30px">
-            <thead>
             <tr>
-                <th>№</th>
-                <th>{{ "package.pdf.date"|trans({}, "MBHPackageBundle") }}</th>
-                <th>{{ "package.pdf.method"|trans({}, "MBHPackageBundle") }}</th>
-                <th>{{ "package.pdf.total"|trans({}, "MBHPackageBundle") }}</th>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
             </tr>
-            </thead>
-            <tbody>
-            {% set counter = 0 %}
-            {% set paidTotal = 0 %}
-            {% for cashDocument in cashDocuments %}
-                {% set counter = counter + 1 %}
-                <tr>
-                    <td align="center">{{ counter }}</td>
-                    <td align="center">{{ cashDocument.paidDate|date('d.m.Y') }}</td>
-                    <td align="center">{{ ('cashDocument.method.' ~ cashDocument.method)|trans({}, 'MBHCashBundle') }}</td>
-                    <td align="right">{{ cashDocument.operation in ['fee', 'out'] ? '-' : '+' }}{{ cashDocument.total|number_format(2) }}</td>
-                </tr>
-                {% if cashDocument.operation in ['fine', 'in'] %}
-                    {% set paidTotal = paidTotal + cashDocument.total %}
-                {% else %}
-                {% endif %}
-            {% endfor %}
-            </tbody>
-        </table>
-
-        <table width="100%" cellpadding="0" cellspacing="0">
-            <thead>
-            </thead>
-            <tbody>
-                <tr>
-                    <td align="right"><strong>Оплачено:</strong></td>
-                    <td align="right" style="width: 120px;"><strong>+{{ paidTotal|number_format(2) }}</strong></td>
-                </tr>
-            </tbody>
-        </table>
-
-        {% if paidTotal > 0 %}
-            <p>Всего оплечено услуг на сумму {{ paidTotal|number_format(2) }} {{ currency().text }}<br>
-                <strong>{{ paidTotal|num2str|capitalize }}</strong></p>
-        {% endif %}
-
-
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin: 20px 0">
-            <thead>
-            </thead>
-            <tbody>
-            <tr style="font-size: 20px">
-                <td align="right">
-                    <strong>Итог:</strong>
-                </td>
-                <td align="right" style="width: 160px;"><strong>{{ (paidTotal - order.price)|number_format(2) }}</strong></td>
+            <tr>
+                <td align="right"><strong>К оплате:</strong></td>
+                <td align="right" style="width: 120px;"><strong>{{ (total * percents / 100)|number_format(2) }}</strong></td>
             </tr>
-            </tbody>
         </table>
-
-
-        <div style="margin-top: 70px">
-            <div class="ib">Дежурный администратор</div>
-            <div class="ib" style="border-bottom: 1px solid #000; width: 300px;"></div>
-            <div class="ib" style="width: 150px">{% if user is defined and user %}{{ user|initial }}{% endif %}</div>
-        </div>
     </div>
 {% endblock %}
 

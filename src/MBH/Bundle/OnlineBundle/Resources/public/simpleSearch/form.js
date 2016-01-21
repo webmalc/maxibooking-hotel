@@ -11,6 +11,7 @@ jQuery(document).ready(function () {
         nights = jQuery('#mbh-form-nights'),
         adults = jQuery('#mbh-form-adults'),
         children = jQuery('#mbh-form-children'),
+        highway = jQuery('#mbh-form-highway'),
         button = jQuery('#mbh-form-submit'),
         options = {
             minDate: 0
@@ -47,14 +48,15 @@ jQuery(document).ready(function () {
 
     }
     var urlVars = getUrlVars();
-    for(var key in urlVars) {
+    /*for(var key in urlVars) {
         var value = urlVars[key];
         wrapper.find('input[name="' + key + '"]').val(value);
         wrapper.find('select[name="' + key + '"]').val(value);
-    }
+    }*/
     /*setValue(begin, query.begin);
     setValue(end, query.end);
     setValue(jQuery('#mbh-form-roomType'), query.roomType);
+    setValue(highway, query.highway);
     setValue(jQuery('#mbh-form-hotel'), query.hotel);
     setValue(adults, query.adults);
     setValue(children, query.children);
@@ -126,5 +128,11 @@ jQuery(document).ready(function () {
     if (!begin.val() || !end.val()) {
         button.prop('disabled', true);
     }
+
+    jQuery('.mbh-results-list-descr').readmore({
+        collapsedHeight: 80,
+        moreLink: '<a href="#">Подробнее</a>',
+        lessLink: '<a href="#">Скрыть</a>'
+    });
 })
 

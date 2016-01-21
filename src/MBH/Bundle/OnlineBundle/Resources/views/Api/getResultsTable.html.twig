@@ -20,10 +20,10 @@
         <table id="mbh-results-table" class="table table-striped">
             <thead>
             <tr>
-                <th id="mbh-results-table-th-roomType">{{ 'views.api.getResultsTable.room_type'|trans({}, 'MBHOnlineBundle') }}</th>
+                <th id="mbh-results-table-th-roomType" style="width:50%;">{{ 'views.api.getResultsTable.room_type'|trans({}, 'MBHOnlineBundle') }}</th>
                 <th id="mbh-results-table-th-tourist">{{ 'views.api.getResultsTable.guests'|trans({}, 'MBHOnlineBundle') }}</th>
                 <th id="mbh-results-table-th-price">{{ 'views.api.getResultsTable.price'|trans({}, 'MBHOnlineBundle') }}</th>
-                <th id="mbh-results-table-th-amount">{{ 'views.api.getResultsTable.rooms_amount'|trans({}, 'MBHOnlineBundle') }}</th>
+                <th id="mbh-results-table-th-amount"></th>
             </tr>
             </thead>
 
@@ -34,12 +34,18 @@
                         <span class="mbh-results-tariff"
                               data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
                         {% if result.roomType.getMainImage is not empty %}
-                            <img class="mbh-roomType-image" src="{{ url('_welcome')|replace({'app_dev.php/': ''}) }}{{ result.roomType.getMainImage.getWebPath }}">
+                        <a class="fancybox" title="{{ result.roomType }}" href="{{ asset(result.roomType.getMainImage.path, null, true) }}">
+                            <img class="mbh-roomType-image" src="{{ asset(result.roomType.getMainImage.path, null, true) }}">
+                        </a>
                         {% endif %}
-                        <span class="mbh-results-roomType"
-                              data-id="{{ result.roomType.id }}">{{ result.roomType.fullTitle }}</span>
+                        <span class="mbh-results-roomType" data-id="{{ result.roomType.id }}">{{ result.roomType.fullTitle }}</span>
+                        <div class="mbh-results-list-facilities">
+                            {% for facility in result.roomType.facilities|slice(0, 7) %}
+                                <i title="{{ facilities[facility] }}" class="mbf-{{ facility }} available"></i>
+                            {% endfor %}
+                        </div>
                         {% if hotels|length > 1 %}<span class="mbh-results-hotel" data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span>{% endif %}
-                        {% if result.roomType.description is not empty %}
+                        {% if result.roomType.description is not empty or result.roomType.images is not empty %}
                             <div class="mbh-results-roomType-description-wrappper">
                                 <a href="#" class="mbh-results-roomType-description-link"> <i
                                             class="fa fa-angle-right "> </i> {{ 'views.api.getResultsTable.room_description'|trans({}, 'MBHOnlineBundle') }}</a>
@@ -75,24 +81,36 @@
 
 
                     </td>
-                    <td class="mbh-center">
-                        <select class="mbh-results-packages-count select2">
-                            {% if  result.roomsCount > config.packages_max %}
-                                {% set max = config.packages_max %}
-                            {% else %}
-                                {% set max = result.roomsCount %}
-                            {% endif %}
-                            <option value="0" selected="selected">0</option>
-                            {% for i in 1..max %}
-                                <option value="{{ i }}">{{ i }}</option>
-                            {% endfor %}
-                        </select>
+                    <td class="mbh-right" style="width:150px;">
+                        <button class="btn btn-sm btn-primary booking-button"><i class="fa fa-check"></i> Выбрать</button>
+                        <span class="hide">
+                            <select class="mbh-results-packages-count select2" style="width: 120px">
+                                {% if  result.roomsCount > config.packages_max %}
+                                    {% set max = config.packages_max %}
+                                {% else %}
+                                    {% set max = result.roomsCount %}
+                                {% endif %}
+                                <option value="0" selected="selected">Нет {{ 'choice.room_number'|transchoice(0) }}</option>
+                                {% for i in 1..max %}
+                                    <option value="{{ i }}">{{ i }} {{ 'choice.room_number'|transchoice(i) }}</option>
+                                {% endfor %}
+                            </select>
+                        </span>
                     </td>
                 </tr>
-                {% if result.roomType.description is not empty%}
+                {% if result.roomType.description is not empty or result.roomType.images is not empty %}
                 <tr class="mbh-left mbh-results-roomType-description-tr">
                     <td class="mbh-left mbh-results-roomType-description" colspan="5" >
-                        {{ result.roomType.description|raw }}
+                        <div class="room-type-photos">
+                            {% for photo in result.roomType.images|slice(0, 10) %}
+                                {% if not photo.isMain %}
+                                    <a class="fancybox" rel="group_{{ result.roomType.id }}" title="{{ result.roomType }}" href="{{ asset(photo.path, null, true) }}">
+                                        <img title="{{ result.roomType }}" src="{{ photo.path|imagine_filter('zamkadom_thumb') }}" data-title="{{ result.roomType }}">
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <p>{{ result.roomType.description|raw }}</p>
                     </td>
                 </tr>
                 {% endif %}
@@ -102,12 +120,18 @@
        </div>
                         
         <div id="mbh-results-actions">
-            <span id="mbh-results-packages-total"> {{ 'views.api.getResultsTable.rooms'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
-            <span id="mbh-results-services-total"> {{ 'views.api.getResultsTable.services'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-services-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
-            <span id="mbh-results-total">{{ 'views.api.getResultsTable.result'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span>
-            <button id="mbh-results-next" class="btn btn-primary"> {{ 'views.api.getResultsTable.continue'|trans({}, 'MBHOnlineBundle') }}
-                <small><i class="fa fa-chevron-right "></i></small>
-            </button>
+                <span id="mbh-results-packages-total"> {{ 'views.api.getResultsTable.rooms'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
+                <span id="mbh-results-services-total"> {{ 'views.api.getResultsTable.services'|trans({}, 'MBHOnlineBundle') }}<span id="mbh-results-total-services-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span> &nbsp;
+                <span id="mbh-results-total">{{ 'views.api.getResultsTable.result'|trans({}, 'MBHOnlineBundle') }} <span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>&nbsp;<span class="mbh-results-total-sum">{{ currency().text }}</span></span>
+            {% if userID %}
+                <button id="mbh-results-next" class="btn btn-primary"> {{ 'views.api.getResultsTable.continue'|trans({}, 'MBHOnlineBundle') }}
+                    <small><i class="fa fa-chevron-right "></i></small>
+                </button>
+            {% else %}
+                <div class="alert alert-info">
+                    <strong><a href="/enter.html">Войдите в систему</a>, чтобы произвести бронирование</strong>
+                </div>
+            {% endif %}
         </div>
     {% else %}
         {% if tariffResults|length > 0 %}
@@ -119,3 +143,25 @@
             </div>
     {% endif %}
 {% endspaceless %}
+
+
+<script>
+    setTimeout(function() {$(".fancybox").fancybox({'openEffect': 'elastic'});}, 1000);
+
+    $('.booking-button').each(function() {
+        var $button = $(this);
+        var $selectWrapper = $button.siblings('span');
+        var $select = $selectWrapper.find('select');
+        $button.on('click', function() {
+            $button.hide();
+            $selectWrapper.removeClass('hide');
+            $select.val(1).trigger("change").trigger("click");
+        });
+        $select.on('change', function() {
+            if($select.val() == 0) {
+                $button.show();
+                $selectWrapper.addClass('hide');
+            };
+        });
+    })
+</script>

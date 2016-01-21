@@ -20,6 +20,8 @@ form.hotelExtendedType.integration: Интеграция
 form.hotelExtendedType.hotel_type: Тип отеля
 form.hotelExtendedType.hotel_theme: Тема отеля
 form.hotelExtendedType.hotel_amenities: Удобства отеля
+form.hotelExtendedType.panorama: Путь до панорамы
+form.hotelExtendedType.scheme: Схема проезда
 form.hotelExtendedType.vega_address_id: ID адреса для ПК "Вега"
 form.hotelExtendedType.vega_address_id_help: ID адреса для ПК "Вега"
 form.hotelType.name: Название
@@ -35,6 +37,7 @@ form.hotelType.prefix: Префикс
 form.hotelType.description: Описание
 form.hotelType.MKADdistance: Расстояние до МКАД
 form.hotelType.highway: Шоссе
+form.hotelType.district: Район
 form.hotelType.document_use_name: Название для использования в документах
 form.hotelType.sale_days_amount: Количество дней продажи
 form.hotelType.settings: Настройки
@@ -42,6 +45,8 @@ form.hotelType.how_long_sale_opened_since_today: На сколько дней о
 form.hotelType.hostel: Хостел?
 form.hotelType.hostel_hotel_or_not: Хостел или нет?
 form.hotelType.is_default: Выбран по умолчанию?
+form.hotelType.is_enabled: Включен?
+form.hotelType.is_recommend: Рекомендуемый отель
 form.hotelType.logo: Логотип
 form.hotelType.is_default_maxibooking: Выбран по умолчанию при входе в MaxiBooking
 form.roomType.name: Название

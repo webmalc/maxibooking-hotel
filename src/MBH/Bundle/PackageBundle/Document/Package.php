@@ -51,7 +51,14 @@ class Package extends Base implements JsonSerializable
      * @Assert\NotNull(message= "validator.document.package.tariff_not_selected")
      */
     protected $tariff;
-    
+
+    /**
+     * @var integer
+     * @Gedmo\Versioned
+     * @ODM\Integer()
+     */
+    protected $frontUser;
+
     /** 
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomType")
@@ -333,6 +340,24 @@ class Package extends Base implements JsonSerializable
         public function getTariff()
     {
         return $this->tariff;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getFrontUser()
+    {
+        return $this->frontUser;
+    }
+
+    /**
+     * @param integer $frontUser
+     * @return self
+     */
+    public function setFrontUser($frontUser)
+    {
+        $this->frontUser = $frontUser;
+        return $this;
     }
 
     /**

@@ -2,8 +2,12 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
+use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
 /**
  * Mailer service
@@ -126,19 +130,29 @@ class Mailer implements \SplObserver
                 throw new \Exception($error);
             }
 
-            $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy(
-                [$data['category'] . 's' => true, 'enabled' => true, 'locked' => false]
-            );
+            if ($data['hotel']) {
+                $dm = $this->container->get('doctrine_mongodb')->getManager();
+                $userRepository = $dm->getRepository(User::class);
+                $objectIdentity = ObjectIdentity::fromDomainObject($data['hotel']);
+                $aclProvider = $this->container->get('security.acl.provider');
+                $acl = $aclProvider->findAcl($objectIdentity);
 
-            if (!count($recipients)) {
-                throw new \Exception($error);
+                $users = $userRepository->findAll();
+                $authorizationChecker = $this->container->get('security.authorization_checker');
+                foreach($users as $user) {
+                    $securityIdentity = new UserSecurityIdentity($user, 'MBH\Bundle\UserBundle\Document\User');
+                    if ($user->getEmail() && ($authorizationChecker->isGranted('ROLE_ADMIN') || $acl->isGranted([MaskBuilder::MASK_MASTER], [$securityIdentity]))) {
+                        $recipients[] = $user;
+                    };
+                }
             }
+
         }
         (empty($data['subject'])) ? $data['subject'] = $this->params['subject'] : $data['subject'];
         $message = \Swift_Message::newInstance();
         empty($template) ? $template = $this->params['template'] : $template;
 
-        $data['hotelName'] = 'MaxiBooking';
+        $data['hotelName'] = 'Zamkadom24';
         $data = $this->addImages($data, $message, $template);
         $translator = $this->container->get('translator');
 

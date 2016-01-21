@@ -44,6 +44,17 @@ channelManager.booking.notification.delete: Удален заказ %order% из
 channelManager.booking.notification.error.subject: Ошибка Booking.com
 channelManager.booking.notification.error: Ошибка при обработке заказа Booking.com. Информация: %info%
 
+
+zamkadom.booking.notification.new: Новый заказ %order% из Zamkadom24. Номера броней: %packages%v
+zamkadom.booking.notification.edit: Изменен заказ %order% из Zamkadom24. Номера броней: %packages%
+zamkadom.booking.notification.delete: Удален заказ %order% из Zamkadom24. Номера броней: %packages%
+zamkadom.booking.notification.error.subject: Ошибка Zamkadom24
+zamkadom.booking.notification.error: Ошибка при обработке заказа Zamkadom24. Информация: %info%
+zamkadom.booking.notification.subject.new: Новый заказ Zamkadom24
+zamkadom.booking.notification.subject.edit: Изменен заказ Zamkadom24
+zamkadom.booking.notification.subject.delete: Удален заказ Zamkadom24
+
+
 channelManager.myallocator.notification.subject.new: Новый заказ Myallocator.com
 channelManager.myallocator.notification.subject.edit: Изменен заказ Myallocator.com
 channelManager.myallocator.notification.subject.delete: Удален заказ Myallocator.com

@@ -101,6 +101,10 @@ class SearchQuery
      * @var string
      */
     public $sort;
+    /**
+     * @var int
+     */
+    public $asc;
 
     /**
      * @var int
@@ -116,6 +120,11 @@ class SearchQuery
      * @var string Hotel ID
      */
     public $hotel;
+
+    /**
+     * @var String
+     */
+    public $district;
 
     public function addExcludeRoomType($id)
     {

@@ -107,6 +107,16 @@ $(document).ready(function () {
         }
 
     var dataTableOptions = {
+        "dom": 'T<"clear">lfrtip',
+        "tableTools": {
+            "sSwfPath": "/assets/vendor/datatables-tabletools/swf/copy_csv_xls.swf"
+        },
+        "aButtons": [
+            {
+                sExtends: "csv",
+                sFieldSeperator: ";"
+            }
+        ],
         "processing": true,
         "serverSide": true,
         "ordering": true,
@@ -124,6 +134,7 @@ $(document).ready(function () {
             null, // out
             null, //operation
             {"bSortable": false}, // payer
+            null, // hotel
             null, // date
             null, // isPaid
             null, // user

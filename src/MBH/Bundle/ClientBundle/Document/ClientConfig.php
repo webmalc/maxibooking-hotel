@@ -59,7 +59,7 @@ class ClientConfig extends Base
      * @var string
      * @Gedmo\Versioned
      * @ODM\String()
-     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller"})
+     * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "yandexmoney"})
      */
     protected $paymentSystem;
 
@@ -86,6 +86,12 @@ class ClientConfig extends Base
      * @ODM\EmbedOne(targetDocument="Uniteller")
      */
     protected $uniteller;
+
+    /**
+     * @var YandexMoney
+     * @ODM\EmbedOne(targetDocument="YandexMoney")
+     */
+    protected $yandexmoney;
 
     /**
      * Set sendSms
@@ -211,6 +217,24 @@ class ClientConfig extends Base
     public function getUniteller()
     {
         return $this->uniteller;
+    }
+
+    /**
+     * @return YandexMoney
+     */
+    public function getYandexMoney()
+    {
+        return $this->yandexmoney;
+    }
+
+    /**
+     * @param YandexMoney $yandexMoney
+     * @return self
+     */
+    public function setYandexMoney(YandexMoney $yandexmoney = null)
+    {
+        $this->yandexmoney = $yandexmoney;
+        return $this;
     }
 
     /**

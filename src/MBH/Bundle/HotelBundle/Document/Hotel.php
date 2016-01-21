@@ -301,16 +301,42 @@ class Hotel extends Base implements \JsonSerializable
     protected $MKADdistance;
 
     /**
+     * @ODM\Collection()
+     * @var string[]
+     */
+    protected $highway;
+
+    /**
      * @ODM\String()
      * @var string
      */
-    protected $highway;
+    protected $panorama;
 
     /**
      * @var float
      * @ODM\Float()
      */
     protected $rate = 0.0;
+
+    /**
+     * @ODM\String()
+     * @var String
+     */
+    protected $district;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @var boolean
+     */
+    protected $isRecommend;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\String()
+     * @var string
+     */
+    protected $scheme;
 
     public function __construct()
     {
@@ -1257,6 +1283,24 @@ class Hotel extends Base implements \JsonSerializable
     }
 
     /**
+     * @return string
+     */
+    public function getPanorama()
+    {
+        return $this->panorama;
+    }
+
+    /**
+     * @param string $panorama
+     */
+    public function setPanorama($panorama)
+    {
+        $this->panorama = $panorama;
+    }
+
+
+
+    /**
      * @return float
      */
     public function getRate()
@@ -1270,5 +1314,53 @@ class Hotel extends Base implements \JsonSerializable
     public function setRate($rate)
     {
         $this->rate = $rate;
+    }
+
+    /**
+     * @return String
+     */
+    public function getDistrict()
+    {
+        return $this->district;
+    }
+
+    /**
+     * @param String $district
+     */
+    public function setDistrict($district)
+    {
+        $this->district = $district;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsRecommend()
+    {
+        return $this->isRecommend;
+    }
+
+    /**
+     * @param mixed $isRecommend
+     */
+    public function setIsRecommend($isRecommend)
+    {
+        $this->isRecommend = $isRecommend;
+    }
+
+    /**
+     * @return string
+     */
+    public function getScheme()
+    {
+        return $this->scheme;
+    }
+
+    /**
+     * @param string $scheme
+     */
+    public function setScheme($scheme)
+    {
+        $this->scheme = $scheme;
     }
 }

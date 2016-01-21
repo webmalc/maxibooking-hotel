@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\HotelBundle\Form;
 
+use MBH\Bundle\OnlineBundle\Document\DistrictRepository;
+use MBH\Bundle\OnlineBundle\Document\HighwayRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use Symfony\Component\Form\AbstractType;
@@ -10,11 +12,24 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class HotelExtendedType extends AbstractType
 {
+    /**
+     * @var DocumentManager
+     */
     private $dm;
+    /**
+     * @var HighwayRepository
+     */
+    protected $highwayRepository;
+    /**
+     * @var DistrictRepository
+     */
+    protected $districtRepository;
 
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, HighwayRepository $highwayRepository, DistrictRepository $districtRepository)
     {
         $this->dm = $dm;
+        $this->highwayRepository = $highwayRepository;
+        $this->districtRepository = $districtRepository;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -29,6 +44,32 @@ class HotelExtendedType extends AbstractType
                     'placeholder' => 'form.hotelExtendedType.city',
                 ]
             ])
+        ;
+        $districtList = $this->districtRepository->getList();
+        $builder
+            ->add('district', 'choice', [
+                'label' => 'form.hotelType.district',
+                'group' => 'form.hotelExtendedType.address',
+                'required' => false,
+                'choices' => array_combine($districtList, $districtList)
+            ]);
+        $highwayList = $this->highwayRepository->getList();
+        $builder
+            ->add('highway', 'choice', [
+                'label' => 'form.hotelType.highway',
+                'group' => 'form.hotelExtendedType.address',
+                'required' => false,
+                'choices' => array_combine($highwayList, $highwayList),
+                'multiple' => true,
+            ]);
+        $builder
+            ->add('MKADdistance', 'number', [
+                'label' => 'form.hotelType.MKADdistance',
+                'group' => 'form.hotelExtendedType.address',
+                'required' => false
+            ])
+        ;
+        $builder
             ->add('settlement', 'text', [
                 'label' => 'form.hotelExtendedType.settlement',
                 'group' => 'form.hotelExtendedType.address',
@@ -94,7 +135,18 @@ class HotelExtendedType extends AbstractType
                 'label' => 'form.hotelExtendedType.hotel_amenities',
                 'group' => 'form.hotelExtendedType.parameters',
                 'required' => false,
-            ]);
+            ])
+            ->add('panorama', 'text', [
+                'label' => 'form.hotelExtendedType.panorama',
+                'group' => 'form.hotelExtendedType.parameters',
+                'required' => false,
+            ])
+            ->add('scheme', 'text', [
+                'label' => 'form.hotelExtendedType.scheme',
+                'group' => 'form.hotelExtendedType.parameters',
+                'required' => false,
+            ])
+    ;
 
         $builder->add('vega_address_id', 'number', [
             'label' => 'form.hotelExtendedType.vega_address_id',

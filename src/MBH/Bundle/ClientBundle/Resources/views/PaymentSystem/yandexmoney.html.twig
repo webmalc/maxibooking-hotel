@@ -1,0 +1,7 @@
+<form class="payment-system-form" {{ data.formId is defined ? 'id="' ~ data.formId ~'"'}}method="post" action="{{ data.action }}">
+    <input name="shopId" value="{{ data.shopId }}" type="hidden"/>
+    <input name="scid" value="{{ data.scid }}" type="hidden"/>
+    <input name="sum" value="{{ data.sum }}" type="hidden">
+    <input name="customerNumber" value="{{ data.sum }}" type="hidden"/>
+    {% include 'MBHClientBundle:PaymentSystem:button.html.twig' with {'data': data} %}
+</form>

@@ -11,6 +11,7 @@ order.cash.paid_price: Оплачено/Цена:
 order.cash.paid: оплачен
 order.cash.not_paid: не оплачен
 order.cash.payer: Плательщик
+order.cash.hotel: Отель
 order.cash.income: Приход
 order.cash.outcome: Расход
 order.cash.is_paid: Оплачен

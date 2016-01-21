@@ -7,8 +7,11 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\DocumentGenerator\Template\Extended\BillTemplateGenerator;
+use MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\UserBundle\Document\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -93,74 +96,79 @@ class ApiController extends Controller
         //save cashDocument
         $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($response['doc']);
 
-        if ($cashDocument && !$cashDocument->getIsPaid()) {
-            $cashDocument->setIsPaid(true);
-            $dm->persist($cashDocument);
-            $dm->flush();
-        }
-
-        //save commission
-        if (isset($response['commission']) && is_numeric($response['commission'])) {
-            $commission = clone $cashDocument;
-            $commissionTotal = (float) $response['commission'];
-            if (isset($response['commissionPercent']) && $response['commissionPercent']) {
-                $commissionTotal = $commissionTotal * $cashDocument->getTotal();
+        if ($cashDocument) {
+            if (!$cashDocument->getIsPaid()) {
+                $cashDocument->setIsPaid(true);
+                $dm->persist($cashDocument);
+                $dm->flush();
             }
-            $commission->setTotal($commissionTotal)
-                       ->setOperation('fee')
-            ;
-            $dm->persist($commission);
-            $dm->flush();
+
+            //save commission
+            if (isset($response['commission']) && is_numeric($response['commission'])) {
+                $commission = clone $cashDocument;
+                $commissionTotal = (float) $response['commission'];
+                if (isset($response['commissionPercent']) && $response['commissionPercent']) {
+                    $commissionTotal = $commissionTotal * $cashDocument->getTotal();
+                }
+                $commission->setTotal($commissionTotal)
+                    ->setOperation('fee')
+                ;
+                $dm->persist($commission);
+                $dm->flush();
+            }
+
+            //send notifications
+            $order = $cashDocument->getOrder();
+            if($order) {
+                $package = $order->getPackages()[0];
+                $params = [
+                    '%cash%' => $cashDocument->getTotal(),
+                    '%order%' => $order->getId(),
+                    '%payer%' => $order->getPayer() ? $order->getPayer()->getName() : '-'
+                ];
+
+                $notifier = $this->get('mbh.notifier');
+                $message = $notifier::createMessage();
+                $message
+                    ->setText('mailer.online.payment.backend')
+                    ->setFrom('online')
+                    ->setSubject('mailer.online.payment.subject')
+                    ->setTranslateParams($params)
+                    ->setType('success')
+                    ->setCategory('notification')
+                    ->setHotel($cashDocument->getHotel())
+                    ->setAutohide(false)
+                    ->setEnd(new \DateTime('+10 minute'))
+                    ->setLink($this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()]))
+                    ->setLinkText('mailer.to_order')
+                ;
+
+                //send to backend
+                $notifier
+                    ->setMessage($message)
+                    ->notify()
+                ;
+            }
+
+            //send to user
+            if ($order && $order->getPayer() && $order->getPayer()->getEmail()) {
+                $message
+                    ->addRecipient($order->getPayer())
+                    ->setText('mailer.online.payment.user')
+                    ->setLink('hide')
+                    ->setLinkText(null)
+                    ->setTranslateParams($params)
+                    ->setAdditionalData([
+                        'fromText' => $order->getFirstHotel()
+                    ])
+                ;
+                $this->get('mbh.notifier.mailer')
+                    ->setMessage($message)
+                    ->notify()
+                ;
+            }
         }
 
-        //send notifications
-        $order = $cashDocument->getOrder();
-        $package = $order->getPackages()[0];
-        $params = [
-            '%cash%' => $cashDocument->getTotal(),
-            '%order%' => $order->getId(),
-            '%payer%' => $order->getPayer() ? $order->getPayer()->getName() : '-'
-        ];
-
-        $notifier = $this->get('mbh.notifier');
-        $message = $notifier::createMessage();
-        $message
-            ->setText('mailer.online.payment.backend')
-            ->setFrom('online')
-            ->setSubject('mailer.online.payment.subject')
-            ->setTranslateParams($params)
-            ->setType('success')
-            ->setCategory('notification')
-            ->setHotel($cashDocument->getHotel())
-            ->setAutohide(false)
-            ->setEnd(new \DateTime('+10 minute'))
-            ->setLink($this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()]))
-            ->setLinkText('mailer.to_order')
-        ;
-
-        //send to backend
-        $notifier
-            ->setMessage($message)
-            ->notify()
-        ;
-
-        //send to user
-        if ($order && $order->getPayer() && $order->getPayer()->getEmail()) {
-            $message
-                ->addRecipient($order->getPayer())
-                ->setText('mailer.online.payment.user')
-                ->setLink('hide')
-                ->setLinkText(null)
-                ->setTranslateParams($params)
-                ->setAdditionalData([
-                    'fromText' => $order->getFirstHotel()
-                ])
-            ;
-            $this->get('mbh.notifier.mailer')
-                ->setMessage($message)
-                ->notify()
-            ;
-        }
 
         $logger->info('OK. '.$logText);
 
@@ -228,13 +236,16 @@ class ApiController extends Controller
 
         $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
 
-
+        $userID = $request->get('userID');
+        $facilitiesRepository = $this->get('mbh.facility_repository');
 
         return [
             'results' => $results,
             'config' => $this->container->getParameter('mbh.online.form'),
+            'facilities' => $facilitiesRepository->getAll(),
             'hotels' => $hotels,
-            'tariffResults' => $tariffResults
+            'tariffResults' => $tariffResults,
+            'userID' => $userID
         ];
     }
 
@@ -246,12 +257,23 @@ class ApiController extends Controller
      */
     public function getUserFormAction(Request $request)
     {
-        $request = json_decode($request->getContent());
+        $requestContent = json_decode($request->getContent());
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
+
+        $firstName = $requestContent->firstName;
+        $lastName = $requestContent->lastName;
+        $phone = $requestContent->phone;
+        $email = $requestContent->email;
+        $userID = $requestContent->userID;;
 
         return [
             'arrival' => $this->container->getParameter('mbh.package.arrival.time'),
-            'request' => $request
+            'request' => $requestContent,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'phone' => $phone,
+            'email' => $email,
+            'userID' => $userID,
         ];
     }
 
@@ -285,13 +307,13 @@ class ApiController extends Controller
      */
     public function createPackagesAction(Request $request)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
         $request = json_decode($request->getContent());
         $this->addAccessControlAllowOriginHeaders($this->container->getParameter('mbh.online.form')['sites']);
 
         //Create packages
-        $order = $this->createPackages($request, $request->paymentType != 'in_hotel');
+        $hasCash = $request->paymentType != 'online_full';
+        $order = $this->createPackages($request, $hasCash);
+        $this->get('logger')->info('INFO. Order "' . $order->getId() . '" must ' . ($hasCash ? '' : 'not') . ' have cash .'. 'Have ' . count($order->getCashDocuments()) . ' quantity\'s document');
 
         if (empty($order)) {
             return new JsonResponse([
@@ -300,31 +322,38 @@ class ApiController extends Controller
             ]);
         }
         $packages = iterator_to_array($order->getPackages());
-        $this->sendNotifications($order, $request->arrival . ':00', $request->departure . ':00');
+        $this->sendNotifications($order, $request->paymentType, $request->arrival . ':00', $request->departure . ':00', $hasCash);
 
+        $translator = $this->get('translator');
         if (count($packages) > 1) {
-            $roomStr = $this->get('translator')->trans('controller.apiController.reservations_made_success');
-            $packageStr = $this->get('translator')->trans('controller.apiController.your_reservations_numbers');
+            $roomStr = $translator->trans('controller.apiController.reservations_made_success');
+            $packageStr = $translator->trans('controller.apiController.your_reservations_numbers');
         } else {
-            $roomStr = $this->get('translator')->trans('controller.apiController.room_reservation_made_success');
-            $packageStr = $this->get('translator')->trans('controller.apiController.your_reservation_number');
+            $roomStr = $translator->trans('controller.apiController.room_reservation_made_success');
+            $packageStr = $translator->trans('controller.apiController.your_reservation_number');
         }
-        $message = $this->get('translator')->trans('controller.apiController.thank_you').$roomStr.$this->get('translator')->trans('controller.apiController.we_will_call_you_back_soon');
-        $message .= $this->get('translator')->trans('controller.apiController.your_order_number').$order->getId().'. ';
+        $message =
+            $translator->trans('controller.apiController.thank_you')
+            .$roomStr
+            //.$translator->trans('controller.apiController.we_will_call_you_back_soon')
+        ;
+        $message .= $translator->trans('controller.apiController.your_order_number').$order->getId().'. ';
         $message .= $packageStr.': '.implode(', ', $packages).'.';
 
-        $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $message .= '<br><br><a href="" onclick="window.document.location.reload()">Выбрать ещё номер</a><br> <a href="/lk.html">Личный кабинет.</a>';
 
-        if ($request->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
+        if ($request->paymentType == 'in_hotel' || $request->paymentType == 'bank' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
             $form = false;
         } else {
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig', [
                     'data' => array_merge(['test' => false,
-                        'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
-                            ['%total%' => number_format($request->total, 2), '%order_id%' => $order->getId()],
+                        'buttonText' => $translator->trans('views.api.make_payment_for_order_id',
+                            ['%total%' => number_format((int)$request->total, 2), '%order_id%' => $order->getId()],
                             'MBHOnlineBundle')
-                    ], $clientConfig->getFormData($order->getCashDocuments()[0],
+                    ], (array) $clientConfig->getFormData($order->getCashDocuments()[0],
                         $this->container->getParameter('online_form_result_url'),
                         $this->generateUrl('online_form_check_order', [], true)))
                 ]
@@ -340,7 +369,7 @@ class ApiController extends Controller
      * @param null $departure
      * @return bool
      */
-    private function sendNotifications(Order $order, $arrival = null, $departure = null)
+    private function sendNotifications(Order $order, $paymentType, $arrival = null, $departure = null, $hasCash)
     {
         try {
 
@@ -398,20 +427,83 @@ class ApiController extends Controller
 
                 $params = $this->container->getParameter('mailer_user_arrival_links');
 
-                if (!empty($params['map'])) {
+                /*if (!empty($params['map'])) {
                     $message->setLink($params['map'])
                         ->setLinkText($tr->trans('mailer.online.user.map'))
                     ;
-                }
+                }*/
 
                 $notifier
                     ->setMessage($message)
                     ->notify()
                 ;
+
+                if ($hasCash) {
+                    $percents = 0;
+                    if ($paymentType == 'in_hotel' || $paymentType == 'bank') {
+                        $percents = 100;
+                    } elseif ($paymentType == 'online_twenty_percent') {
+                        $percents = 80;
+                    }
+
+                    $templateFactory = $this->get('mbh.package.document_tempalte_factory');
+                    /** @var BillTemplateGenerator $templateGenerator */
+                    $templateGenerator = $templateFactory->createGeneratorByType(TemplateGeneratorFactory::TYPE_BILL);
+
+                    $packages = $order->getPackages();
+                    if (count($packages) == 0) {
+                        throw new \InvalidArgumentException('Order has not one package');
+                    }
+                    $formData = [
+                        'package' => $packages[0],
+                        'percents' => $percents
+                    ];
+
+                    $template = $templateGenerator->getTemplate($formData);
+                    $uniqudFileName = uniqid().'.pdf';
+                    $pdfPath = sys_get_temp_dir().'/'.$uniqudFileName;
+                    $this->get('knp_snappy.pdf')->generateFromHtml($template, $pdfPath);
+
+                    $message
+                        ->setFrom('online_form')
+                        ->setSubject('Счёт на оплату')
+                        ->setType('info')
+                        ->setCategory('notification')
+                        ->setOrder($order)
+                        ->setAdditionalData([
+                            'prependText' => 'Счёт на оплату в приложении',
+                            //'appendText' => 'mailer.online.user.append',
+                            'fromText' => $hotel->getName()
+                        ])
+                        ->setHotel($hotel)
+                        ->setTemplate('MBHBaseBundle:Mailer:base.html.twig')
+                        ->setAutohide(false)
+                        ->setEnd(new \DateTime('+1 minute'))
+                        ->addRecipient($order->getMainTourist())
+                        ->setLink('hide')
+                        ->setSignature('mailer.online.user.signature')
+                    ;
+
+                    $swiftMessage = new \Swift_Message(
+                        'Счёт на оплату заказанных услуг',
+                        '<h1>Счёт на оплату Zamkadom24</h1><p>Уважаемый клиент! Счёт на оплату заказанных Вами номеров был сформирован и приложен к этому письму.</p><p>Благодарим за пользование услугами нашего портала.</p><p>------------<br>Zamkadom24</p>', 'text/html'
+                    );
+                    $swiftMessage->addTo($order->getPayer()->getEmail());
+                    $swiftMessage->setFrom([$this->getParameter('mailer_user') => $this->getParameter('mailer_user')]);
+                    $swiftMessage->attach(\Swift_Attachment::fromPath($pdfPath));
+                    $this->get('mailer')->send($swiftMessage);
+
+                    $spool = $this->get('mailer')->getTransport()->getSpool();
+                    $transport = $this->container->get('swiftmailer.transport.real');
+                    $spool->flushQueue($transport);
+
+                    //$notifier->setMessage($message)->notify();
+                }
             }
 
-        } catch (\Exception $e) {
 
+        } catch (\Exception $e) {
+            //dump($e);
             return false;
         }
     }
@@ -433,6 +525,7 @@ class ApiController extends Controller
                 'children' => $info->children,
                 'roomType' => $info->roomType->id,
                 'tariff' => $info->tariff->id,
+                'frontUser' => $request->userID,
                 'isOnline' => true
             ];
         }

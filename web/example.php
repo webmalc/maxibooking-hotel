@@ -17,8 +17,8 @@
     <link href='http://fonts.googleapis.com/css?family=Lato:300,400,300italic,400italic' rel='stylesheet'
           type='text/css'>
     <!-- Global CSS
-    <link rel="stylesheet" href="http://zamkadom24.sites.maxibooking.ru/assets/css/fonts.css">
-    <link rel="stylesheet" href="http://zamkadom24.sites.maxibooking.ru/assets/css/bootstrap.css">
+    <link rel="stylesheet" href="http://zamkadom24.ru/assets/css/fonts.css">
+    <link rel="stylesheet" href="http://zamkadom24.ru/assets/css/bootstrap.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
     -->
@@ -28,14 +28,14 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link href="https://fontastic.s3.amazonaws.com/GStFyxubGrYyFFErfmqjZm/icons.css" rel="stylesheet">
     <!-- Theme CSS -->
-    <link id="theme-style" rel="stylesheet" href="http://zamkadom24.sites.maxibooking.ru/assets/css/styles.css">
+    <link id="theme-style" rel="stylesheet" href="http://zamkadom24.ru/assets/css/styles.css">
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <script src="http://zamkadom24.sites.maxibooking.ru/assets/js/jquery-1.11.3.min.js"></script>
+    <script src="http://zamkadom24.ru/assets/js/jquery-1.11.3.min.js"></script>
 </head>
 <body>
 
@@ -47,7 +47,7 @@
             <div class="col-xs-3">
                 <div class="navbar-header">
                     <div class="navbar-brand"><a href="/example.php"><img
-                                src="http://zamkadom24.sites.maxibooking.ru/logo.png"></a></div>
+                                src="http://zamkadom24.ru/logo.png"></a></div>
                 </div>
             </div>
             <div class="col-xs-9">
@@ -154,7 +154,7 @@
                 </div>
                 <div class="panel-body">
                     <div id="mbh-form-wrapper" style="overflow: hidden; height: auto;">
-                        <?php echo file_get_contents('http://mbh.h/app_dev.php/simplesearch/ajax/form') ?>
+                        <?php echo file_get_contents('http://mbh.h/app_dev.php/simplesearch/ajax/form?'. http_build_query($_GET)) ?>
                     </div>
                 </div>
             </div>
@@ -270,10 +270,10 @@
 </div>
 
 
-<script src="http://zamkadom24.sites.maxibooking.ru/assets/js/bootstrap.min.js"></script>
-<script src="http://zamkadom24.sites.maxibooking.ru/assets/plugins/galleria/galleria-1.4.2.min.js"></script>
+<script src="http://zamkadom24.ru/assets/js/bootstrap.min.js"></script>
+<script src="http://zamkadom24.ru/assets/plugins/galleria/galleria-1.4.2.min.js"></script>
 
-<script src="http://zamkadom24.sites.maxibooking.ru/assets/js/scripts.js"></script>
+<script src="http://zamkadom24.ru/assets/js/scripts.js"></script>
 
 
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>

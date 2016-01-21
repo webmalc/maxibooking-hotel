@@ -37,7 +37,7 @@ twig:
     base_template_class: MBH\Bundle\BaseBundle\Twig\Template
     globals:
         meta_title: 'Система бронирования "MaxiBooking".'
-        project_title: 'MaxiBooking'
+        project_title: 'Zamkadom24'
         months:
           1: 'Январь'
           2: 'Февраль'
@@ -213,7 +213,14 @@ liip_imagine:
             quality: 100
             filters:
               thumbnail: { size: [10, 10], mode: outbound, allow_upscale: true }
-
+        zamkadom_thumb:
+            quality: 75
+            filters:
+                thumbnail: { size: [120, 90], mode: outbound }
+        zamkadom:
+            quality: 75
+            filters:
+                thumbnail: { size: [1200, 900], mode: outbound }
 
         scaler:
             quality: 100

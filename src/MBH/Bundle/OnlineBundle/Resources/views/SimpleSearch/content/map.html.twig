@@ -6,7 +6,7 @@
     </div>
 </div>
 
-<script src="http://zamkadom24.sites.maxibooking.ru/assets/js/jquery-1.11.3.min.js"></script>
+<script src="http://zamkadom24.ru/assets/js/jquery-1.11.3.min.js"></script>
 <script>
     var map;
     var marker;
@@ -25,7 +25,7 @@
             marker{{ hotel.id }} = new google.maps.Marker({
                 position: position,
                 map: map,
-                title: '{{ hotel.fullTitle }}'
+                title: '{{ hotel.fullTitle|e('js') }}'
             });
             var infowindow{{ hotel.id }} = new google.maps.InfoWindow({
                 content: '<a href="{{ path('simple_search_view', {id: hotel.id}) }}">{{ hotel.fullTitle }}</a>'

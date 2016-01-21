@@ -3,6 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
@@ -28,6 +30,8 @@ class Search
      * @var \DateTime
      */
     public $now;
+
+    protected $lastSortHotelIDs = [];
 
     public function __construct(ContainerInterface $container)
     {
@@ -68,10 +72,16 @@ class Search
             $hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
 
             $qb = $hotelRepository->createQueryBuilder();
-            if($query->city) {
-                $qb->field('city.id')->equals($query->city);
-            } elseif($query->highway) {
+
+            $qb->field('isEnabled')->equals(true);
+
+            if($query->highway) {
                 $qb->field('highway')->equals($query->highway);
+            } elseif($query->city) {
+                $qb->field('city.id')->equals($query->city);
+            }
+            if($query->district) {
+                $qb->field('district')->equals($query->district);
             }
 
             if ($query->distance) {
@@ -79,7 +89,12 @@ class Search
             }
 
             if($query->sort) {
-                $qb->sort($query->sort, -1);
+                $asc = 1;
+                if (in_array($query->asc, [-1, 1])) {
+                    $asc = $query->asc;
+                }
+
+                $qb->sort($query->sort, $asc);
             }
 
             if($query->skip) {
@@ -95,7 +110,9 @@ class Search
 
             $hotels = $qb->getQuery()->execute();
 
+            $this->lastSortHotelIDs = [];
             foreach($hotels as $hotel) {
+                $this->lastSortHotelIDs[] = $hotel->getID();
                 $query->roomTypes = array_merge($helper->toIds($hotel->getRoomTypes()), $query->roomTypes);
             }
 
@@ -352,6 +369,8 @@ class Search
                 $results[$hotelID]['roomTypes'][] = $result->getRoomType();
             }
         }
+
+        $results = Helper::sortArrayByArray($results, $this->lastSortHotelIDs);
 
         return $results;
     }

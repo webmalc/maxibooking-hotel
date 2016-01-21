@@ -170,7 +170,7 @@ parameters:
     #mailer
     mbh.mailer:
       fromText: 'MaxiBooking'
-      fromMail: robot@maxi-booking.ru
+      fromMail: %mailer_user% #robot@maxi-booking.ru
       subject: 'Сообщение от MaxiBooking'
       template: 'MBHBaseBundle:Mailer:base.html.twig'
 
@@ -188,9 +188,11 @@ parameters:
             url: %online_form_result_url%
           payment_types:
             in_hotel: 'Оплата при заселении'
+            bank: 'Оплата наличными в офисе или в представительстве'
+            # online_first_day: 'Онлайн оплата (одни сутки)'
+            online_twenty_percent: 'Онлайн оплата (20%)'
+            # online_half: 'Онлайн оплата (50%)'
             online_full: 'Онлайн оплата (100%)'
-            online_first_day: 'Онлайн оплата (одни сутки)'
-            online_half: 'Онлайн оплата (50%)'
 
     #платежные системы
     mbh.payment_systems:
@@ -198,6 +200,7 @@ parameters:
       robokassa: 'Robokassa'
       payanyway: 'PayAnyWay'
       uniteller: 'Uniteller'
+      yandexmoney: 'YandexMoney'
     mbh.payment_systems.default: uniteller
     mbh.payment_systems.change: %mbh_payment_systems_change%
 

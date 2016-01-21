@@ -53,7 +53,7 @@ class HotelController extends Controller
      *
      * @Route("/", name="hotel")
      * @Method("GET")
-     * @Security("is_granted('ROLE_HOTEL_VIEW')")
+     * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Template()
      */
     public function indexAction()
@@ -79,11 +79,27 @@ class HotelController extends Controller
     public function newAction()
     {
         $entity = new Hotel();
-        $form = $this->createForm(new HotelType($this->get('mbh.online.highway_repository')), $entity);
+        $form = $this->createForm($this->getHotelType(), $entity);
 
         return array(
             'form' => $form->createView(),
         );
+    }
+
+    /**
+     * @return HotelType
+     */
+    public function getHotelType()
+    {
+        return new HotelType();
+    }
+
+    /**
+     * @return HotelExtendedType
+     */
+    public function getHotelExtendedType()
+    {
+        return new HotelExtendedType($this->dm, $this->get('mbh.online.highway_repository'), $this->get('mbh.online.district_repository'));
     }
 
     /**
@@ -97,7 +113,7 @@ class HotelController extends Controller
     public function createAction(Request $request)
     {
         $entity = new Hotel();
-        $form = $this->createForm(new HotelType($this->get('mbh.online.highway_repository')), $entity);
+        $form = $this->createForm($this->getHotelType(), $entity);
         $form->submit($request);
 
         if ($form->isValid()) {
@@ -135,7 +151,7 @@ class HotelController extends Controller
      */
     public function updateAction(Request $request, Hotel $entity)
     {
-        $form = $this->createForm(new HotelType($this->get('mbh.online.highway_repository')), $entity);
+        $form = $this->createForm($this->getHotelType(), $entity);
         $form->submit($request);
 
         if ($form->isValid()) {
@@ -169,7 +185,7 @@ class HotelController extends Controller
      */
     public function editAction(Hotel $entity)
     {
-        $form = $this->createForm(new HotelType($this->get('mbh.online.highway_repository')), $entity, [
+        $form = $this->createForm($this->getHotelType(), $entity, [
             'imageUrl' => $entity->getLogoUrl(),
             'removeImageUrl' => $this->generateUrl('hotel_delete_logo', ['id' => $entity->getId()])
         ]);
@@ -213,7 +229,7 @@ class HotelController extends Controller
      */
     public function extendedAction(Hotel $entity)
     {
-        $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
+        $form = $this->createForm($this->getHotelExtendedType(), $entity, [
             'city' => $entity->getCity(),
             'config' => $this->container->getParameter('mbh.hotel')
         ]);
@@ -237,7 +253,7 @@ class HotelController extends Controller
      */
     public function extendedUpdateAction(Request $request, Hotel $entity)
     {
-        $form = $this->createForm(new HotelExtendedType($this->dm), $entity, [
+        $form = $this->createForm($this->getHotelExtendedType(), $entity, [
             'city' => $entity->getCity(),
             'config' => $this->container->getParameter('mbh.hotel'),
             'method' => Request::METHOD_PUT

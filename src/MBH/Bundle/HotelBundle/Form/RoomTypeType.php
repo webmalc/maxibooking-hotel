@@ -48,7 +48,7 @@ class RoomTypeType extends AbstractType
                 'help' => 'form.roomTypeType.online_reservation_room_description',
                 'required' => false,
                 'group' => 'form.roomTypeType.general_info',
-                'attr' => ['class' => 'big roomTypeTypeEditor tinymce']
+                'attr' => ['class' => 'big roomTypeTypeEditor']
             ])
             ->add('color', 'text', [
                 'label' => 'form.roomTypeType.color',

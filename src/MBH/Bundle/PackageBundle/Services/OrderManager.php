@@ -253,7 +253,7 @@ class OrderManager
         $query->tariff = !empty($data['tariff']) ? $data['tariff'] : null;
         $query->isOnline = !empty($data['isOnline']);
         $query->addRoomType($data['roomType']);
-        $query->accommodations = (boolean)$data['accommodation'];
+        $query->accommodations = isset($data['accommodation']) ? (boolean)$data['accommodation'] : false;
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
@@ -273,6 +273,7 @@ class OrderManager
             ->setAdults($results[0]->getAdults())
             ->setChildren($results[0]->getChildren())
             ->setTariff($results[0]->getTariff())
+            ->setFrontUser(isset($data['frontUser']) ? $data['frontUser'] : null)
             ->setRoomType($results[0]->getRoomType())
             ->setNote(!empty($data['note']) ? $data['note'] : null)
             ->setArrivalTime(!empty($data['arrivalTime']) ? $data['arrivalTime'] : null)
