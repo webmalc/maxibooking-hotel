@@ -60,7 +60,7 @@ class YandexMoney implements PaymentSystemInterface
             'shopId' => $this->yandexmoneyshopId,
             'scid' => $this->yandexmoneyscid,
             'sum' => $cashDocument->getTotal(),
-            'customerNumber' => $cashDocument->getPayer()->getId(),
+            'customerNumber' => $cashDocument->getOrder()->getId(),
             'orderNumber' => $cashDocument->getId(),
         ];
     }
@@ -99,14 +99,23 @@ class YandexMoney implements PaymentSystemInterface
     public function checkRequest(Request $request)
     {
         $doc = $request->get('orderNumber');//customerNumber
+        $shopId = $request->get('shopId');
+        $invoiceId = $request->get('invoiceId');
+
         $md5 = $this->getCheckSignature($request);
         if ($md5 != $request->get('md5')) {
             return false;
         };
+        $date = new \DateTime('midnight');
+
+        $text = '<?xml version="1.0" encoding="UTF-8"?>
+<checkOrderResponse performedDatetime="' . $date->format('Y-m-d') . 'T' . $date->format('H:i:s') . '.000+04:00"
+code="0" invoiceId="' . $invoiceId .  '"
+shopId="' . $shopId . '"/>';
 
         return [
             'doc' => $doc,
-            'text' => 'OK'
+            'text' => $text
         ];
     }
 
