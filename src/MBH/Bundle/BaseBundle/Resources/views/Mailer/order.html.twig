@@ -40,7 +40,7 @@
                     <small style="color:#888;">{{ package.nights }} {{ 'nights'|transchoice(package.nights) }}</small>
                 </td>
                 <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
-                    {{ isSomeLanguage is not defined or isSomeLanguage ? package.roomType.title : package.roomType.internationalTitle }}
+                    {{ isSomeLanguage is not defined or isSomeLanguage or not package.roomType.internationalTitle ? package.roomType.name : package.roomType.internationalTitle }}
                     <br>
                     <small style="color:#888;">
                         {{ '%hotel%'|trans(transParams) }}
@@ -156,7 +156,7 @@
                         {{ 'mailer.order.arrival_time'|trans(transParams) }}:
                     </td>
                     <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;width:58%;">
-                        {{ arrivalTime|date('d.m.Y') }}
+                        {{ arrivalTime|date('H:i') }}
                     </td>
                 </tr>
             {% endif %}
@@ -166,7 +166,7 @@
                         {{ 'mailer.order.departure_time'|trans(transParams) }}:
                     </td>
                     <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:58%;">
-                        {{ departureTime|date('d.m.Y') }}
+                        {{ departureTime|date('H:i') }}
                     </td>
                 </tr>
             {% endif %}

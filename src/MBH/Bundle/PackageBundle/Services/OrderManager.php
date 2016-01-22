@@ -181,7 +181,7 @@ class OrderManager
                 throw new Exception('Create order error: validation errors.');
             }
 
-            if ($this->container->get('security.authorization_checker')->isGranted('ROLE_ORDER_AUTO_CONFIRMATION') ||
+            if (($data['status'] == 'offline' && $this->container->get('security.authorization_checker')->isGranted('ROLE_ORDER_AUTO_CONFIRMATION')) ||
                 ($user instanceof User && in_array('ROLE_ORDER_AUTO_CONFIRMATION', $user->getRoles()))
             ) {
                 $order->setConfirmed(true);
