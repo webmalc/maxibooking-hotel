@@ -101,6 +101,7 @@ class YandexMoney implements PaymentSystemInterface
         $doc = $request->get('orderNumber');//customerNumber
         $shopId = $request->get('shopId');
         $invoiceId = $request->get('invoiceId');
+        $action = $request->get('action');
 
         $md5 = $this->getCheckSignature($request);
         if ($md5 != $request->get('md5')) {
@@ -108,10 +109,17 @@ class YandexMoney implements PaymentSystemInterface
         };
         $date = new \DateTime('midnight');
 
-        $text = '<?xml version="1.0" encoding="UTF-8"?>
+        if ($action == 'paymentAviso') {
+            $text = '<?xml version="1.0" encoding="UTF-8"?>
+<paymentAvisoResponse performedDatetime="' . $date->format('Y-m-d') . 'T' . $date->format('H:i:s') . '.000+04:00"
+code="0" invoiceId="' . $invoiceId .  '"
+shopId="' . $shopId . '"/>';
+        } else {
+            $text = '<?xml version="1.0" encoding="UTF-8"?>
 <checkOrderResponse performedDatetime="' . $date->format('Y-m-d') . 'T' . $date->format('H:i:s') . '.000+04:00"
 code="0" invoiceId="' . $invoiceId .  '"
 shopId="' . $shopId . '"/>';
+        }
 
         return [
             'doc' => $doc,

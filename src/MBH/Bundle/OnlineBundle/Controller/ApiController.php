@@ -93,6 +93,10 @@ class ApiController extends Controller
             throw $this->createNotFoundException();
         }
 
+        if ($request->get('action') == 'paymentAviso') {
+            return new Response($response['text']);
+        }
+
         //save cashDocument
         $cashDocument = $dm->getRepository('MBHCashBundle:CashDocument')->find($response['doc']);
 
