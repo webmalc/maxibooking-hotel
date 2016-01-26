@@ -51,7 +51,7 @@
                         <option></option>
                         {% for i in 0..23 %}
                             <option value="{{ i }}"
-                                    {% if i == arrival %}selected="selected"{% endif %}>{{ "%02d"|format(i) }}:00
+                                    {% if i == departure %}selected="selected"{% endif %}>{{ "%02d"|format(i) }}:00
                             </option>
                         {% endfor %}
                     </select>

@@ -297,6 +297,7 @@ class ApiController extends Controller
 
         return [
             'arrival' => $this->container->getParameter('mbh.package.arrival.time'),
+            'departure' => $this->container->getParameter('mbh.package.departure.time'),
             'request' => $requestJson
         ];
     }

@@ -256,8 +256,9 @@ parameters:
         humanitarian: Гуманитарная
         other: Другая
 
-    #Время заезда по умолчанию
+    #Время заезда/выезда по умолчанию
     mbh.package.arrival.time: %mbh_package_arrival_time%
+    mbh.package.departure.time: %mbh_package_departure_time%
     
     #Просроченные брони
     mbh.package.notpaid.time: '%mbh_package_notpaid_time%'
