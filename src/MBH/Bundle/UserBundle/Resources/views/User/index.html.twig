@@ -18,10 +18,11 @@
             </tr>
         </thead>
         <tbody>
-            {% for entity in entities %}
+            {% for entity in entities  if entity.username != 'mb' or app.user.username == 'mb' %}
                 <tr {% if entity.isEnabled != true or entity.isLocked == true %}class="warning"{% endif %}>
                     <td class="text-center table-icon"><i class="fa fa-user"></i></td>
                     <td>
+                        {% if entity.username == 'mb' %}<small><i class="fa fa-cog"></i></small>&nbsp;{% endif %}
                         {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'user', 'action': 'username'} %}{% endembed %}
                     </td>
                     <td>
