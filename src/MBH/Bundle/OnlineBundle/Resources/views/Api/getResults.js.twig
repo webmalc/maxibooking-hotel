@@ -1,4 +1,10 @@
-/*global window */
+    /*global window */
+    jQuery.fn.digits = function(){
+        return this.each(function(){
+            $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") );
+        })
+    }
+
 jQuery(document).ready(function () {
     var wrapper = jQuery('#mbh-results-wrapper'),
         requestParams = {},
@@ -217,9 +223,9 @@ jQuery(document).ready(function () {
 
                         total = totalServices + totalPackages
 
-                        jQuery('#mbh-results-total-sum').html(total);
-                        jQuery('#mbh-results-total-packages-sum').html(totalPackages);
-                        jQuery('#mbh-results-total-services-sum').html(totalServices);
+                        jQuery('#mbh-results-total-sum').html(total).digits();
+                        jQuery('#mbh-results-total-packages-sum').html(totalPackages).digits();
+                        jQuery('#mbh-results-total-services-sum').html(totalServices).digits();
                         if(totalPackages > 0) {
                             nextButton.prop('disabled', false);
                         }
