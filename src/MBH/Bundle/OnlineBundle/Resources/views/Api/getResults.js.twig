@@ -395,9 +395,9 @@ jQuery(document).ready(function () {
                                     crossDomain: true,
                                     success: function(data) {
 
-                                        var total = requestParams.total,
-                                            totalPackages = requestParams.totalPackages,
-                                            totalServices = requestParams.totalServices
+                                        var total = requestParams.total.replace(/,/g,''),
+                                            totalPackages = requestParams.totalPackages.replace(/,/g,''),
+                                            totalServices = requestParams.totalServices.replace(/,/g,'')
                                             ;
                                         wrapper.html('{{ styles|escape("js") }}' + data);
 

@@ -35,11 +35,11 @@
                         <p> {{ 'views.api.getPaymentType.reservation_guarantee_whole_sum'|trans({}, 'MBHOnlineBundle') }}</p>
                     {% endif %}
                     {% if paymentType == 'online_first_day' %}
-                        <div class="mbh-payment-type-row-total">{{ (request.total/request.nights)|round }} {{ currency().text }}</div>
+                        <div class="mbh-payment-type-row-total">{{ (request.total|replace({',': ''})/request.nights)|round|number_format() }} {{ currency().text }}</div>
                         <p> {{ 'views.api.getPaymentType.reservation_guarantee_first_night'|trans({}, 'MBHOnlineBundle') }}</p>
                     {% endif %}
                     {% if paymentType == 'online_half' %}
-                        <div class="mbh-payment-type-row-total">{{ (request.total/2)|round }} {{ currency().text }}</div>
+                        <div class="mbh-payment-type-row-total">{{ (request.total|replace({',': ''})/2)|round|number_format() }} {{ currency().text }}</div>
                         <p> {{ 'views.api.getPaymentType.reservation_guarantee_half'|trans({}, 'MBHOnlineBundle') }}</p>
                     {% endif %}
                 </div>
