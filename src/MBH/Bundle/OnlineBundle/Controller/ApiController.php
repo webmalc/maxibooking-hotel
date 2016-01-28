@@ -255,10 +255,10 @@ class ApiController extends Controller
         } else {
             $results = $this->get('mbh.package.search')->search($query);
 
-            if(empty($results)) {
+            /*if(empty($results)) {
                 $query->adults = $query->children = 0;
                 $results = $this->get('mbh.package.search')->search($query);
-            }
+            }*/
 
             $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
         }

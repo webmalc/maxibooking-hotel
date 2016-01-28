@@ -405,6 +405,28 @@ class OrderManager
             $this->dm->flush();
         }
 
+        //add infants
+        if (!empty($data['infants']) && (int)$data['infants'] > 0) {
+            $service = $this->dm->getRepository('MBHPriceBundle:Service')->findOneByCode($package->getTariff(), 'Infant');
+
+            if ($service) {
+                $infantService = new PackageService();
+                $infantService
+                    ->setAmount(1)
+                    ->setNights($package->getNights())
+                    ->setPersons((int)$data['infants'])
+                    ->setService($service)
+                    ->setPackage($package)
+                    ->setPrice($service->getPrice())
+                ;
+                $package->addService($infantService);
+                $this->dm->persist($package);
+                $this->dm->persist($infantService);
+                $this->dm->flush();
+            }
+
+        }
+
         return $package;
     }
 

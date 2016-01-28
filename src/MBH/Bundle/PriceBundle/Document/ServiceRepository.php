@@ -12,6 +12,26 @@ use MBH\Bundle\PackageBundle\Document\Package;
 class ServiceRepository extends DocumentRepository
 {
     /**
+     * @param Tariff $tariff
+     * @param $code
+     * @return null|Service
+     */
+    public function findOneByCode(Tariff $tariff, $code)
+    {
+        $services = $this->getAvailableServicesForTariff($tariff);
+
+        foreach ($services as $cat) {
+            foreach ($cat as $service) {
+                if ($service->getCode() == $code) {
+                    return $service;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param Package $package
      * @return \Doctrine\Common\Collections\Collection|Service[]
      */

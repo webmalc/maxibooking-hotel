@@ -81,6 +81,8 @@ class SearchResult
 
     protected $forceBooking = false;
 
+    protected $infants = 0;
+
     /**
      * @return \DateTime
      */
@@ -454,6 +456,24 @@ class SearchResult
     public function setForceBooking($forceBooking)
     {
         $this->forceBooking = $forceBooking;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInfants()
+    {
+        return $this->infants;
+    }
+
+    /**
+     * @param int $infants
+     * @return SearchResult
+     */
+    public function setInfants($infants)
+    {
+        $this->infants = $infants;
         return $this;
     }
 

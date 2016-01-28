@@ -284,6 +284,7 @@ class Search implements SearchInterface
                     foreach ($query->childrenAges as $age) {
                         if ($age <= $tariff->getInfantAge()) {
                             $query->children -= 1;
+                            $query->infants += 1;
                         }
                     }
                 }
@@ -323,6 +324,7 @@ class Search implements SearchInterface
                     ->setChildren($tourists['children'])
                     ->setUseCategories($useCategories)
                     ->setForceBooking($query->forceBooking)
+                    ->setInfants($query->infants)
                 ;
 
                 //prices

@@ -107,7 +107,8 @@
                         tariff: result.tariff.id,
                         begin: result.begin|date('d.m.Y'),
                         end: result.end|date('d.m.Y'),
-                        forceBooking: result.forceBooking
+                        forceBooking: result.forceBooking,
+                        infants: result.infants
                     })) }}"
                        target="_blank"
                        class="btn btn-success btn-xs package-search-book {{ is_granted('ROLE_PACKAGE_NEW') is empty ? 'hidden' }}"

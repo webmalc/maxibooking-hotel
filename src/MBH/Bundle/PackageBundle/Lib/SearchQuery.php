@@ -103,6 +103,8 @@ class SearchQuery
      * @var bool
      */
     public $forceBooking = false;
+
+    public $infants = 0;
     
     public function addExcludeRoomType($id)
     {
