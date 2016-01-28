@@ -416,7 +416,7 @@ class PackageService extends Base
         if ($service->getCalcType() == 'per_stay') {
             $this->setNights(1);
         }
-        if ($service->getCalcType() == 'not_applicable') {
+        if (in_array($service->getCalcType(),  ['not_applicable', 'day_percent'])) {
             $this->setNights(1);
             $this->setPersons(1);
         }

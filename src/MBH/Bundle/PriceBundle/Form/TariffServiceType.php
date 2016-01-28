@@ -16,6 +16,13 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class TariffServiceType extends AbstractType
 {
+    private $services;
+
+    public function __construct(array $services)
+    {
+        $this->services = $services;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -23,7 +30,6 @@ class TariffServiceType extends AbstractType
                 'label' => 'form.packageServiceType.service',
                 'class' => 'MBHPriceBundle:Service',
                 'empty_value' => '',
-                'group_by' => 'category',
                 'attr' => [
                     'style' => 'width:250px',
                     'placeholder' => 'Выберите услугу',
@@ -31,41 +37,39 @@ class TariffServiceType extends AbstractType
                 'choice_attr' => function(Service $service) {
                     return ['data-type' => $service->getCalcType()];
                 },
+                'choices' => $this->services,
                 'group' => 'form.packageServiceType.add_service',
                 'help' => 'form.packageServiceType.reservation_add_service'
             ])
-            ->add('nights', 'text', [
+            ->add('nights', 'number', [
                 'label' => 'form.packageServiceType.nights_amount',
-                'required' => true,
+                'required' => false,
                 'attr' => [
                     'style' => 'width:80px',
-                    'placeholder' => 'Кол. ночей',
+                    'placeholder' => 'Весь срок',
                 ],
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
-                'constraints' => new NotBlank()
             ])
-            ->add('persons', 'text', [
+            ->add('persons', 'number', [
                 'label' => 'form.packageServiceType.guests_amount',
-                'required' => true,
+                'required' => false,
                 'attr' => [
                     'style' => 'width:80px',
-                    'placeholder' => 'Кол. персон',
+                    'placeholder' => 'На всех',
                 ],
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
-                'constraints' => new NotBlank(),
             ])
-            ->add('amount', 'text', [
+            ->add('amount', 'number', [
                 'label' => 'form.packageServiceType.amount',
                 'required' => true,
                 'attr' => [
                     'style' => 'width:80px',
-                    'placeholder' => 'Кол.',
+                    'placeholder' => 'Кол-во',
                 ],
                 'group' => 'form.packageServiceType.add_service',
                 'error_bubbling' => true,
-                'constraints' => new NotBlank(),
                 'help' => '-'
             ])
         ;
@@ -74,7 +78,7 @@ class TariffServiceType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MBH\Bundle\PriceBundle\Document\TariffService'
+            'data_class' => 'MBH\Bundle\PriceBundle\Document\TariffService',
         ]);
     }
 

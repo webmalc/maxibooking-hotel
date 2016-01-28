@@ -296,8 +296,7 @@ class OrderManager
             )
             ->setPricesByDate($results[0]->getPricesByDate($results[0]->getAdults(), $results[0]->getChildren()))
             ->setPrices($results[0]->getPackagePrices($results[0]->getAdults(), $results[0]->getChildren()))
-            ->setIsForceBooking($results[0]->getForceBooking())
-        ;
+            ->setIsForceBooking($results[0]->getForceBooking());
 
         //accommodation
         if ($query->accommodations) {
@@ -342,20 +341,24 @@ class OrderManager
             throw new PackageCreationException($order, 'Create package error: validation errors.');
         }
 
-        foreach($package->getTariff()->getDefaultServices() as $tariffService)
-        {
+        foreach ($package->getTariff()->getDefaultServices() as $tariffService) {
+
+            $tariffService->getPersons() ?
+                $persons = $tariffService->getPersons() : $persons = $package->getAdults() + $package->getChildren();
+
+            $tariffService->getNights() ?
+                $nights = $tariffService->getNights() : $nights = $package->getNights();
+
             //transform TariffService to PackageService
             $packageService = new PackageService();
             $packageService
                 ->setService($tariffService->getService())
                 ->setAmount($tariffService->getAmount())
-                ->setPersons($tariffService->getPersons())
-                ->setNights($tariffService->getNights())
+                ->setPersons($persons)
+                ->setNights($nights)
                 ->setPrice(0)
-                //->setPrice($packageService->getService()->getPrice())
                 ->setPackage($package)
-                ->setNote('Услуга по умолчанию')
-            ;
+                ->setNote('Услуга по умолчанию');
 
             $package->addService($packageService);
             $this->dm->persist($packageService);

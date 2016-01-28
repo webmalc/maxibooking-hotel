@@ -17,7 +17,15 @@ class ServiceRepository extends DocumentRepository
      */
     public function getAvailableServicesForPackage(Package $package)
     {
-        $tariff = $package->getTariff();
+        return $this->getAvailableServicesForTariff($package->getTariff());
+    }
+
+    /**
+     * @param Tariff $tariff
+     * @return \Doctrine\Common\Collections\Collection|Service[]
+     */
+    public function getAvailableServicesForTariff(Tariff $tariff)
+    {
         $services = iterator_to_array($tariff->getServices());
         if (count($services) == 0) {
             $serviceCategories = $tariff->getHotel()->getServicesCategories();
@@ -26,9 +34,9 @@ class ServiceRepository extends DocumentRepository
             }
         }
 
-        /*$services = array_filter($services, function($service) {
+        $services = array_filter($services, function($service) {
             return $service->getIsEnabled();
-        });*/
+        });
 
         $results = [];
         foreach($services as $service) {

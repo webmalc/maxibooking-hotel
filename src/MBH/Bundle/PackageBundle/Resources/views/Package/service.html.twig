@@ -57,7 +57,7 @@
                             <td class="text-center table-icon"><i class="fa fa-plug"></i></td>
                             <td>{{ service.service }}</td>
                             <td class="text-center">{{ service.calcType == 'per_night' ? service.nights : '' }}</td>
-                            <td class="text-center">{{ service.calcType != 'not_applicable' ? service.persons : '' }}</td>
+                            <td class="text-center">{{ service.calcType != 'not_applicable' and service.calcType != 'day_percent' ? service.persons : '' }}</td>
                             <td class="text-center">{{ service.amount }}</td>
                             <td class="text-center">{{ service.service.date ? service.begin|date('d.m.Y') : ''  }}</td>
                             <td class="text-center">

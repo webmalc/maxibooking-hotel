@@ -126,8 +126,8 @@ $(document).ready(function () {
         }
         if (this.calcType == 'per_night') { //за cутки
             //this.$nightsInput.val(this.$nightsInput.val());// || services.package_guests);
-            this.$nightsInput.removeClass('hide').attr('required', true);
-            this.$personsInput.removeClass('hide').attr('required', true);
+            this.$nightsInput.removeClass('hide').attr('required', false);
+            this.$personsInput.removeClass('hide').attr('required', false);
         }
         if (this.calcType == 'day_percent') { // за услугу (% от цены за сутки)
         }

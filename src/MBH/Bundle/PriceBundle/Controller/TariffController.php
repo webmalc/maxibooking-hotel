@@ -36,8 +36,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             ->field('hotel.id')->equals($this->get('mbh.hotel.selector')->getSelected()->getId())
             ->sort('fullTitle', 'asc')
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
 
         return [
             'entities' => $entities
@@ -86,8 +85,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $this->get('mbh.mongo')->copy('RoomCache', $query, $update);
 
         $request->getSession()->getFlashBag()
-            ->set('success', 'Тариф успешно скопирован.')
-        ;
+            ->set('success', 'Тариф успешно скопирован.');
 
         return $this->redirect($this->generateUrl('tariff_edit', ['id' => $new->getId()]));
     }
@@ -101,7 +99,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      * @Template()
      */
     public function newAction()
-    {   
+    {
         $entity = new Tariff();
         $form = $this->createForm(new TariffType(), $entity);
 
@@ -122,7 +120,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     {
         $entity = new Tariff();
         $entity->setHotel($this->get('mbh.hotel.selector')->getSelected());
-        
+
         $form = $this->createForm(new TariffType(), $entity);
         $form->submit($request);
 
@@ -131,8 +129,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()
-                    ->set('success', 'Тариф успешно создан. Теперь необходимо заполнить цены.')
-            ;
+                ->set('success', 'Тариф успешно создан. Теперь необходимо заполнить цены.');
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
 
@@ -141,7 +138,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             'form' => $form->createView(),
         ];
     }
-    
+
     /**
      * Edits an existing entity.
      *
@@ -165,7 +162,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
-            
+
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
 
@@ -215,9 +212,11 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $form = $this->createForm(new TariffPromotionsType(), $tariff);
 
         $form->handleRequest($request);
-        if($form->isValid()) {
+        if ($form->isValid()) {
             $this->dm->persist($tariff);
             $this->dm->flush();
+
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('tariff_promotions_edit', ['id' => $tariff->getId()]) :
@@ -243,12 +242,16 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffServicesType(), $tariff);
+        $form = $this->createForm(new TariffServicesType(), $tariff, [
+            'services' => $this->dm->getRepository('MBHPriceBundle:Service')->getAvailableServicesForTariff($tariff)
+        ]);
 
         $form->handleRequest($request);
-        if($form->isValid()) {
+        if ($form->isValid()) {
             $this->dm->persist($tariff);
             $this->dm->flush();
+
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('tariff_services_edit', ['id' => $tariff->getId()]) :
