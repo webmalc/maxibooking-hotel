@@ -6,6 +6,7 @@ node_modules/
 .git*
 app/config/parameters.yml
 src/MBH/Bundle/OnlineBundle/Resources/views/Api/*
+src/MBH/Bundle/BaseBundle/Resources/views/Mailer/*
 var/logs/
 var/logs/*
 var/cache/
