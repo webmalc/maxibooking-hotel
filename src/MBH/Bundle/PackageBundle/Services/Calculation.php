@@ -89,8 +89,10 @@ class Calculation
     {
         $total = 0;
 
-        $services = iterator_to_array($package->getServices());
-
+        $services = $package->getServices();
+        if ($services instanceof \Traversable) {
+            $services = iterator_to_array($services);
+        }
         if ($newDoc) {
             $services[] = $newDoc;
         }
