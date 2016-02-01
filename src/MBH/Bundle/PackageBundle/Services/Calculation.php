@@ -89,7 +89,7 @@ class Calculation
     {
         $total = 0;
 
-        $services = $package->getServices();
+        $services = iterator_to_array($package->getServices());
 
         if ($newDoc) {
             $services[] = $newDoc;
