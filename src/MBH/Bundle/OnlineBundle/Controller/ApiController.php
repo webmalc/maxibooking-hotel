@@ -447,7 +447,9 @@ class ApiController extends Controller
                     ->setAdditionalData([
                         'prependText' => 'mailer.online.user.prepend',
                         'appendText' => 'mailer.online.user.append',
-                        'fromText' => $hotel->getName()
+                        'fromText' => $hotel->getName(),
+                        'arrivalTime' => $arrival,
+                        'departureTime' => $departure,
                     ])
                     ->setHotel($hotel)
                     ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
