@@ -17,27 +17,27 @@ var select2Text = function (el) {
 };
 
 /**
- * @author Arofikin Aleksandr
  * @param $begin
  * @param $end
  */
-var RangeInputs = function($begin, $end) {
+var RangeInputs = function ($begin, $end) {
+    'use strict';
     this.$begin = $begin;
     this.$end = $end;
     this.bindEventListeners();
-}
+};
 
-RangeInputs.prototype.bindEventListeners = function()
-{
+RangeInputs.prototype.bindEventListeners = function () {
+    'use strict';
     var that = this;
     this.$begin.change(function () {
         if (!that.$end.val()) {
-            that.$end.focus();
+            //that.$end.focus();
         }
     });
     this.$end.change(function () {
         if (!that.$begin.val()) {
-            that.$begin.focus();
+           //that.$begin.focus();
         }
     });
 }
@@ -59,10 +59,10 @@ $.fn.serializeObject = function () {
     return o;
 };
 
-$.fn.mbhGuestSelectPlugin = function() {
-    this.each(function(){
+$.fn.mbhGuestSelectPlugin = function () {
+    this.each(function () {
         var $this = $(this);
-        if($this.is('input')) {
+        if ($this.is('input')) {
             $this = select2Text($this);
         }
         $this.select2({
@@ -101,10 +101,10 @@ $.fn.mbhGuestSelectPlugin = function() {
     return this;
 }
 
-$.fn.mbhOrganizationSelectPlugin = function() {
-    this.each(function(){
+$.fn.mbhOrganizationSelectPlugin = function () {
+    this.each(function () {
         var $this = $(this);
-        if($this.is('input')) {
+        if ($this.is('input')) {
             $this = select2Text($this);
         }
         $this.select2({
@@ -149,8 +149,7 @@ $.fn.mbhOrganizationSelectPlugin = function() {
     return this;
 }
 
-mbh.payerSelect = function($payerSelect, $organizationPayerInput, $touristPayerInput)
-{
+mbh.payerSelect = function ($payerSelect, $organizationPayerInput, $touristPayerInput) {
     this.$payerSelect = $payerSelect;
     this.$organizationPayerInput = $organizationPayerInput;
     this.$touristPayerInput = $touristPayerInput;
@@ -164,12 +163,13 @@ mbh.payerSelect = function($payerSelect, $organizationPayerInput, $touristPayerI
     if (this.$payerSelect.val()) {
         var value = this.$payerSelect.val().split('_');
         this.update(value[0], value[1]);
-    };
+    }
+    ;
 
     this.bindEventHandlers();
 }
 
-mbh.payerSelect.prototype.bindEventHandlers = function() {
+mbh.payerSelect.prototype.bindEventHandlers = function () {
     var that = this;
     this.$payerSelect.on('change', function () {
         /** @type String */
@@ -182,8 +182,8 @@ mbh.payerSelect.prototype.bindEventHandlers = function() {
     });
 }
 
-mbh.payerSelect.prototype.update = function(type, value) {
-    if (type === 'org'){
+mbh.payerSelect.prototype.update = function (type, value) {
+    if (type === 'org') {
         this.$organizationPayerInput.val(value);
     } else if (type === 'tourist') {
         this.$touristPayerInput.val(value);
@@ -311,11 +311,11 @@ var docReadyForms = function () {
 
     }).attr("autocomplete", "off");
 
-    //datepiker select
+    //datepicker select
     (function () {
-        var select = $('select.datepiker-period-select'),
-            begin = $('.begin-datepiker'),
-            end = $('.end-datepiker'),
+        var select = $('select.datepicker-period-select'),
+            begin = $('.begin-datepicker'),
+            end = $('.end-datepicker'),
             setDates = function () {
                 var period = begin.val() + '-' + end.val();
                 if (!select.val()) {
@@ -330,12 +330,71 @@ var docReadyForms = function () {
         if (!select.length || !begin.length || !end.length) {
             return;
         }
-        $('.datepiker-period-select').css('width', '130px');
+        $('.datepicker-period-select').css('width', '130px');
         select.on('change', setDates);
         setDates();
     }());
 
-    new RangeInputs($('.begin-datepiker'), $('.end-datepiker'));
+    new RangeInputs($('.begin-datepicker'), $('.end-datepicker'));
+
+    //Daterangepickers
+    (function () {
+        var begin = $('.begin-datepicker.mbh-daterangepicker'),
+            wrapper = begin.parent('div'),
+            end = $('.end-datepicker.mbh-daterangepicker'),
+            range = $('<input type="text" required="required" class="daterangepicker-input form-control input-sm" autocomplete="off">');
+            ;
+
+        console.log(begin.length);
+        if (!begin.length || !end.length || !wrapper.length) {
+            return;
+        }
+
+        begin.after(range);
+        range.daterangepicker({
+            'dateLimit': 365,
+            'showDropdowns': true,
+            'autoApply': true,
+            'autoUpdateInput': true,
+            "locale": {
+                "format": "ll",
+                "separator": " - ",
+                "daysOfWeek": [
+                    "Вс",
+                    "Пн",
+                    "Вт",
+                    "Ср",
+                    "Чт",
+                    "Пт",
+                    "Сб"
+                ],
+                "monthNames": [
+                    "Январь",
+                    "Февраль",
+                    "Март",
+                    "Апрель",
+                    "Май",
+                    "Июнь",
+                    "Июль",
+                    "Август",
+                    "Сентябрь",
+                    "Октябрь",
+                    "Ноябрь",
+                    "Декабрь"
+                ],
+                "firstDay": 1
+            },
+        }).on('apply.daterangepicker', function(ev, picker) {
+            begin.val(picker.startDate.format('DD.MM.YYYY'));
+            end.val(picker.endDate.format('DD.MM.YYYY'));
+            begin.trigger('change');
+        });
+        if (begin.datepicker("getDate") && end.datepicker("getDate")) {
+            range.data('daterangepicker').setStartDate(begin.datepicker("getDate"));
+            range.data('daterangepicker').setEndDate(end.datepicker("getDate"));
+        }
+    }());
+
 
     //form group collapse
     (function () {
@@ -742,34 +801,34 @@ var discountInit = function ($discountInput, $isPercentDiscountCheckbox) {
  * @param iDelay
  * @returns {jQuery.fn.dataTableExt.oApi}
  */
-jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function ( oSettings, iDelay ) {
+jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
     var _that = this;
 
-    if ( iDelay === undefined ) {
+    if (iDelay === undefined) {
         iDelay = 250;
     }
 
-    this.each( function ( i ) {
+    this.each(function (i) {
         $.fn.dataTableExt.iApiIndex = i;
         var
             oTimerId = null,
             sPreviousSearch = null,
-            anControl = $( 'input', _that.fnSettings().aanFeatures.f );
+            anControl = $('input', _that.fnSettings().aanFeatures.f);
 
-        anControl.unbind( 'keyup search input' ).bind( 'keyup search input', function() {
+        anControl.unbind('keyup search input').bind('keyup search input', function () {
 
             if (sPreviousSearch === null || sPreviousSearch != anControl.val()) {
                 window.clearTimeout(oTimerId);
                 sPreviousSearch = anControl.val();
-                oTimerId = window.setTimeout(function() {
+                oTimerId = window.setTimeout(function () {
                     $.fn.dataTableExt.iApiIndex = i;
-                    _that.fnFilter( anControl.val() );
+                    _that.fnFilter(anControl.val());
                 }, iDelay);
             }
         });
 
         return this;
-    } );
+    });
     return this;
 };
 

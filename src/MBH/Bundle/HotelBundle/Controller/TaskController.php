@@ -91,13 +91,13 @@ class TaskController extends Controller
                 'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year input-sm'],
+                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker input-sm'],
             ])
             ->add('end', 'date', [
                 'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
-                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker-year input-sm'],
+                'attr' => ['data-date-format' => 'dd.mm.yyyy', 'class' => 'input-small datepicker input-sm'],
             ])
             ->add('status', 'choice', [
                 'empty_value' => '',

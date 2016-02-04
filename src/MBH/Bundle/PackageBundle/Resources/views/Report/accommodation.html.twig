@@ -9,11 +9,11 @@
         <form id="accommodation-report-filter" class="form-inline filter-form remember" role="form">
             <div class="input">
                 <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
-                <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-5 days")|date('d.m.Y') : app.request.get('begin') }}">
+                <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-5 days")|date('d.m.Y') : app.request.get('begin') }}">
             </div>
-            <div class="input">
+            <div class="input hidden">
                 - &nbsp
-                <input type="text" name="end" id="accommodation-report-filter-end" class="datepicker accommodation-report-filter end-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ? 'now'|date_modify("+40 days")|date('d.m.Y') : app.request.get('end') }}">
+                <input type="text" name="end" id="accommodation-report-filter-end" class="datepicker accommodation-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ? 'now'|date_modify("+40 days")|date('d.m.Y') : app.request.get('end') }}">
             </div>
 
             <div class="input">

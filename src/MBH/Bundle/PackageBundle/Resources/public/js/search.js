@@ -245,7 +245,6 @@ $(document).ready(function () {
         if (searchProcess) {
             return;
         }
-
         $.ajax({
             url: Routing.generate('package_search_results'),
             data: query,
@@ -330,12 +329,16 @@ $(document).ready(function () {
                 $('#s_' + name).val(hashes[key]).trigger('change');
             }
         }
+        if ($('.daterangepicker-input').length && hashes['s[begin]'] && hashes['s[end]']) {
+            $('.daterangepicker-input').data('daterangepicker').setStartDate(moment(hashes['s[begin]'], 'DD.MM.YYYY'));
+            $('.daterangepicker-input').data('daterangepicker').setEndDate(moment(hashes['s[end]'], 'DD.MM.YYYY'));
+        }
         window.location.hash = '';
     }
 
     sendForm();
 
-    $packageSearchForm.find('input, select').on('change switchChange.bootstrapSwitch', sendForm);
+    $packageSearchForm.find('input, select').not('.daterangepicker-input').on('change switchChange.bootstrapSwitch', sendForm);
 
     $packageSearchForm.on('submit', function (e) {
         e.preventDefault();

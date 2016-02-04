@@ -41,7 +41,7 @@ class TariffType extends AbstractType
                     'help' => 'С какого числа используется тариф?',
                     'required' => false,
                     'attr' => array(
-                        'class' => 'datepicker begin-datepiker input-small',
+                        'class' => 'datepicker begin-datepicker input-small',
                         'data-date-format' => 'dd.mm.yyyy',
                         'placeholder' => 'Не ограничен'
                     ),
@@ -58,7 +58,7 @@ class TariffType extends AbstractType
                     'help' => 'По какое число используется тариф?',
                     'required' => false,
                     'attr' => array(
-                        'class' => 'datepicker end-datepiker input-small',
+                        'class' => 'datepicker end-datepicker input-small',
                         'data-date-format' => 'dd.mm.yyyy',
                         'placeholder' => 'Не ограничен'
                     ),

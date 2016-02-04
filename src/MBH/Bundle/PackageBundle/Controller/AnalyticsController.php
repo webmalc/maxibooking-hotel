@@ -599,9 +599,9 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     {
         $roomTypesIds = $this->getRoomTypes(true);
 
-        $period = iterator_to_array($this->getInterval());
-        $begin = reset($period);
-        $end = end($period);
+        $period = $this->getInterval();
+        $begin = $period->getStartDate();
+        $end = $period->getEndDate();
         $end->modify('+1 day');
 
         $qb = $this->dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('q');

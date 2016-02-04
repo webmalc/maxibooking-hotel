@@ -10,8 +10,8 @@
             {{ form_start(form, {attr: {class: 'form-inline filter-form icon-label-form', id: 'tourist-form'}}) }}
             <div class="form-group">
                 <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
-                {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepiker'}}) }} -
-                {{ form_widget(form.end, {attr: {class: 'datepicker end-datepiker'}}) }}
+                {{ form_widget(form.begin, {attr: {class: 'datepicker begin-datepicker'}}) }} -
+                {{ form_widget(form.end, {attr: {class: 'datepicker end-datepicker'}}) }}
             </div>
             <div class="form-group">
                 {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}

@@ -9,20 +9,20 @@
     {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {id: 'room-type-table-filter-widget'} %}
         {% block content %}
         <form id="filling-table-filter" class="form-inline icon-label-form">
-            <div class="form-group">
+            <div class="form-group input">
                 <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
-                <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y') }}">
+                <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y') }}">
             </div>
-            <div class="form-group">
+            <div class="form-group input">
                 <label> - </label>
-                <input type="text" name="end" id="accommodation-report-filter-end" class="datepicker accommodation-report-filter end-datepiker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
+                <input type="text" name="end" id="accommodation-report-filter-end" class="datepicker accommodation-report-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
             </div>
 
-            <div class="form-group">
+            <div class="form-group input">
                 {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
             </div>
 
-            <div class="form-group">
+            <div class="form-group input">
                 <label><i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i></label>
                 <select name="roomType" data-placeholder="Тип номера" id="filling-report-filter-roomType" class="form-control input-sm">
                     <option></option>

@@ -25,7 +25,7 @@ class RestrictionGeneratorType extends AbstractType
                 'group' => 'Настройки',
                 'data' => new \DateTime('midnight'),
                 'required' => true,
-                'attr' => array('class' => 'datepicker begin-datepiker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
+                'attr' => array('class' => 'datepicker begin-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new NotBlank(), new Date()],
             ))
             ->add('end', 'date', array(
@@ -34,7 +34,7 @@ class RestrictionGeneratorType extends AbstractType
                 'format' => 'dd.MM.yyyy',
                 'group' => 'Настройки',
                 'required' => true,
-                'attr' => array('class' => 'datepicker end-datepiker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
+                'attr' => array('class' => 'datepicker end-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new NotBlank(), new Date()],
             ))
             ->add('weekdays', 'choice', [

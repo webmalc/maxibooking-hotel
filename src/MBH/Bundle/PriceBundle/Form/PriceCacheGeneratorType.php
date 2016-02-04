@@ -51,7 +51,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'data' => new \DateTime('midnight'),
                 'required' => true,
                 'attr' => [
-                    'class' => 'datepicker begin-datepiker input-remember',
+                    'class' => 'datepicker begin-datepicker input-remember',
                     'data-date-format' => 'dd.mm.yyyy'
                 ],
                 'constraints' => [new NotBlank(), new Date()],
@@ -63,7 +63,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'Настройки',
                 'required' => true,
                 'attr' => [
-                    'class' => 'datepicker end-datepiker input-remember',
+                    'class' => 'datepicker end-datepicker input-remember',
                     'data-date-format' => 'dd.mm.yyyy'
                 ],
                 'constraints' => [new NotBlank(), new Date()],

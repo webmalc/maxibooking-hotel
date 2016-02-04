@@ -81,7 +81,7 @@ class SearchType extends AbstractType
                 'data' => new \DateTime(),
                 'required' => true,
                 'error_bubbling' => true,
-                'attr' => array('class' => 'datepicker begin-datepiker', 'data-date-format' => 'dd.mm.yyyy'),
+                'attr' => array('class' => 'datepicker begin-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new NotBlank(['message' => 'form.searchType.check_in_date_not_filled']), new Date()]
             ))
             ->add('end', 'date', array(
@@ -91,7 +91,7 @@ class SearchType extends AbstractType
                 'data' => new \DateTime('+ 1 day'),
                 'required' => true,
                 'error_bubbling' => true,
-                'attr' => array('class' => 'datepicker end-datepiker', 'data-date-format' => 'dd.mm.yyyy'),
+                'attr' => array('class' => 'datepicker end-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new NotBlank(['message' => 'form.searchType.check_out_date_not_filled']), new Date()]
             ))
             ->add('adults', 'integer', [

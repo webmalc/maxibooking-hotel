@@ -31,7 +31,7 @@ class PackageMainType extends AbstractType
                 'required' => true,
                 'error_bubbling' => true,
                 'attr' => array(
-                    'class' => 'datepicker begin-datepiker input-small',
+                    'class' => 'datepicker begin-datepicker input-small',
                     'data-date-format' => 'dd.mm.yyyy'
                 )
             ])
@@ -43,7 +43,7 @@ class PackageMainType extends AbstractType
                 'required' => true,
                 'error_bubbling' => true,
                 'attr' => array(
-                    'class' => 'datepicker end-datepiker input-small',
+                    'class' => 'datepicker end-datepicker input-small',
                     'data-date-format' => 'dd.mm.yyyy'
                 )
             ])

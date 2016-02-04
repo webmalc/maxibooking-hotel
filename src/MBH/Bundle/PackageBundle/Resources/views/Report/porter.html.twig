@@ -13,14 +13,14 @@
             <div class="input">
                 <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
                 <input type="text" name="begin" id="porter-report-filter-begin"
-                       class="datepicker porter-report-filter begin-datepiker not-set-date form-control input-sm"
+                       class="datepicker porter-report-filter begin-datepicker not-set-date form-control input-sm"
                        data-date-format="dd.mm.yyyy"
                        value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
             </div>
             <div class="input">
                 - &nbsp
                 <input type="text" name="end" id="porter-report-filter-end"
-                       class="datepicker porter-report-filter end-datepiker not-set-date form-control input-sm"
+                       class="datepicker porter-report-filter end-datepicker not-set-date form-control input-sm"
                        data-date-format="dd.mm.yyyy"
                        value="{{ app.request.get('end') is empty ?  'now'|date('d.m.Y') : app.request.get('end') }}">
             </div>

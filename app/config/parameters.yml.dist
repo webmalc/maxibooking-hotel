@@ -28,6 +28,7 @@ parameters:
 
   #Packages
   mbh_package_arrival_time: 12
+  mbh_package_departure_time: 14
   mbh_package_notpaid_time: '-5 days'
 
   #Mailer

@@ -25,7 +25,7 @@ class SearchType extends AbstractType
                 'data' => new \DateTime(),
                 'required' => true,
                 'error_bubbling' => true,
-                'attr' => array('class' => 'datepicker begin-datepiker', 'data-date-format' => 'dd.mm.yyyy'),
+                'attr' => array('class' => 'datepicker begin-datepicker', 'data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new NotBlank(), new Date()]
             ))
             ->add('end', 'date', array(
@@ -35,7 +35,7 @@ class SearchType extends AbstractType
                 'data' => null,
                 'required' => true,
                 'error_bubbling' => true,
-                'attr' => array('class' => 'datepicker end-datepiker', 'data-date-format' => 'dd.mm.yyyy'),
+                'attr' => array('class' => 'datepicker end-datepicker', 'data-date-format' => 'dd.mm.yyyy'),
                 'constraints' => [new NotBlank(), new Date()]
             ))
             ->add('sort', 'choice', [

@@ -24,7 +24,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'format' => 'dd.MM.yyyy',
                     'data' => new \DateTime('midnight'),
                     'required' => true,
-                    'attr' => array('class' => 'datepicker begin-datepiker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
+                    'attr' => array('class' => 'datepicker begin-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
                     'constraints' => [new NotBlank(), new Date()],
                 ))
                 ->add('end', 'date', array(
@@ -32,7 +32,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
                     'required' => true,
-                    'attr' => array('class' => 'datepicker end-datepiker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
+                    'attr' => array('class' => 'datepicker end-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'),
                     'constraints' => [new NotBlank(), new Date()],
                 ))
                 ->add('weekdays', 'choice', [
