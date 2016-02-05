@@ -104,7 +104,6 @@ class TaskType extends AbstractType
             $builder->add('rooms', 'document', [
                 'label' => 'form.task.rooms',
                 'group' => $generalGroup,
-                'group_by' => 'roomType',
                 'class' => 'MBH\Bundle\HotelBundle\Document\Room',
                 'required' => true,
                 'multiple' => true,

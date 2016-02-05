@@ -128,7 +128,7 @@ class Search implements SearchInterface
                     $skip = true;
                 }
 
-                if ($skip || ($roomCache->getLeftRooms() > 0 && $roomCache->getRoomType()->getTotalPlaces() >= $query->getTotalPlaces() && !$roomCache->getIsClosed())) {
+                if ($skip || ($roomCache->getLeftRooms() > 0 /*&& $roomCache->getRoomType()->getTotalPlaces() >= $query->getTotalPlaces()*/ && !$roomCache->getIsClosed())) {
                     $groupedCaches['room'][$roomCache->getHotel()->getId()][$roomCache->getRoomType()->getId()][] = $roomCache;
                 }
             }
@@ -271,6 +271,31 @@ class Search implements SearchInterface
                 continue;
             }
 
+
+            $adults = $query->adults;
+            $children = $query->children;
+            $infants = $query->infants;
+
+            //filter infants
+            if (!empty($query->childrenAges)) {
+                foreach ($query->childrenAges as $age) {
+                    if ($age <= $tariff->getInfantAge()) {
+                        $children -= 1;
+                        $infants += 1;
+                    }
+                }
+            }
+
+            //filter children
+            if (!empty($query->childrenAges)) {
+                foreach ($query->childrenAges as $age) {
+                    if ($age > $tariff->getChildAge()) {
+                        $children -= 1;
+                        $adults += 1;
+                    }
+                }
+            }
+
             foreach ($hotelArray as $roomTypeId => $caches) {
 
                 $min = $cachesMin[$hotelId][$roomTypeId];
@@ -279,30 +304,14 @@ class Search implements SearchInterface
                     $min = $tariffMin[$hotelId][$roomTypeId];
                 }
 
-                //filter infants
-                if (!empty($query->childrenAges)) {
-                    foreach ($query->childrenAges as $age) {
-                        if ($age <= $tariff->getInfantAge()) {
-                            $query->children -= 1;
-                            $query->infants += 1;
-                        }
-                    }
-                }
-
-                //filter children
-                if (!empty($query->childrenAges)) {
-                    foreach ($query->childrenAges as $age) {
-                        if ($age > $tariff->getChildAge()) {
-                            $query->children -= 1;
-                            $query->adults += 1;
-                        }
-                    }
+                if ($caches[0]->getRoomType()->getTotalPlaces() < $adults + $children) {
+                    continue;
                 }
 
                 $roomType = $caches[0]->getRoomType();
                 $useCategories = $query->isOnline && $this->config && $this->config->getUseRoomTypeCategory();
                 $result = new SearchResult();
-                $tourists = $roomType->getAdultsChildrenCombination($query->adults, $query->children);
+                $tourists = $roomType->getAdultsChildrenCombination($adults, $children);
 
                 if ($query->accommodations) {
                     $groupedRooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
@@ -324,7 +333,7 @@ class Search implements SearchInterface
                     ->setChildren($tourists['children'])
                     ->setUseCategories($useCategories)
                     ->setForceBooking($query->forceBooking)
-                    ->setInfants($query->infants)
+                    ->setInfants($infants)
                 ;
 
                 //prices

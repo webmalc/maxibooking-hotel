@@ -159,7 +159,6 @@ class TaskController extends Controller
             if(is_object($tasks)) {
                 $tasks = iterator_to_array($tasks);
             }
-            dump($tasks);
             $recordsTotal = $taskRepository->getCountByCriteria($queryCriteria);
         }
 
