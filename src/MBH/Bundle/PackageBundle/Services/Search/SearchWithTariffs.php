@@ -74,26 +74,36 @@ class SearchWithTariffs implements SearchInterface
     {
         // sort RoomTypes
         usort($groupedResult, function ($prev, $next) {
-            if (empty($prev['results'][0])) {
+            if (!isset($prev['results'][0])) {
                 return 1;
             }
-            if (empty($next['results'][0])) {
+            if (!isset($next['results'][0])) {
                 return -1;
             }
-            $prevFirstPrices = array_values($prev['results'][0]->getPrices());
-            $nextFirstPrices = array_values($next['results'][0]->getPrices());
 
-            if (empty($prevFirstPrices[0])) {
+            $getPrice = function (array $results) {
+                foreach ($results['results'] as $result) {
+                    if ($result->getTariff()->getIsDefault() && isset(array_values($result->getPrices())[0])) {
+                        return array_values($result->getPrices())[0];
+                    }
+                }
+                return null;
+            };
+
+            $prevPrice = $getPrice($prev);
+            $nextPrice = $getPrice($next);
+
+            if ($prevPrice === null) {
                 return 1;
             }
-            if (empty($nextFirstPrices[0])) {
+            if ($nextPrice === null) {
                 return -1;
             }
-            if ($prevFirstPrices[0] == $nextFirstPrices[0]) {
+            if ($prevPrice == $nextPrice) {
                 return 0;
             }
 
-            return ($prevFirstPrices[0] < $nextFirstPrices[0]) ? -1 : 1;
+            return ($prevPrice < $nextPrice) ? -1 : 1;
         });
 
         // sort tariffs
@@ -103,10 +113,10 @@ class SearchWithTariffs implements SearchInterface
                 $prevFirstPrices = array_values($prev->getPrices());
                 $nextFirstPrices = array_values($next->getPrices());
 
-                if (empty($prevFirstPrices[0])) {
+                if (!isset($prevFirstPrices[0])) {
                     return 1;
                 }
-                if (empty($nextFirstPrices[0])) {
+                if (!isset($nextFirstPrices[0])) {
                     return -1;
                 }
                 if ($prevFirstPrices[0] == $nextFirstPrices[0]) {
