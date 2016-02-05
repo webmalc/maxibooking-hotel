@@ -316,7 +316,7 @@ class ApiController extends Controller
 
         //Create packages
         $hasCash = $request->paymentType != 'online_full';
-        $order = $this->createPackages($request, $hasCash);
+        $order = $this->createPackages($request, !in_array($request->paymentType, ['in_hotel', 'bank']));
         $this->get('logger')->info('INFO. Order "' . $order->getId() . '" must ' . ($hasCash ? '' : 'not') . ' have cash .'. 'Have ' . count($order->getCashDocuments()) . ' quantity\'s document');
 
         if (empty($order)) {
