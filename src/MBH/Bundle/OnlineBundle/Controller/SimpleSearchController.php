@@ -437,8 +437,6 @@ class SimpleSearchController extends Controller
         $userRepository = $this->dm->getRepository(User::class);
 
         $username = $hotel->getCreatedBy();
-        /** @var User $user */
-        $user = $userRepository->findOneBy(['username' => $username]);
 
         $translator = $this->get('translator');
 
@@ -455,7 +453,6 @@ class SimpleSearchController extends Controller
             ->setHotel($hotel)
             ->setTemplate('MBHBaseBundle:Mailer:base.html.twig')
             ->setAutohide(false)
-            ->addRecipient($user)
             ->setEnd(new \DateTime('+1 minute'))
         ;
 
