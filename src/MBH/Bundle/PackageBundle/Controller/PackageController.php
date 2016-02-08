@@ -155,6 +155,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'confirmed' => $request->get('confirmed'),
         ];
 
+        if ($this->get('security.authorization_checker')->isGranted('ROLE_SUPER_ADMIN')) {
+            unset($data['hotel']);
+        }
+
         //quick links
         switch ($request->get('quick_link')) {
             case 'begin-today':
