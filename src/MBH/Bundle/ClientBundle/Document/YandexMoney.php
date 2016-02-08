@@ -34,7 +34,7 @@ class YandexMoney implements PaymentSystemInterface
      */
     protected $yandexmoneyscid;
 
-    private $dev = true;
+    private $dev = false;
 
     /*public function __construct()
     {
