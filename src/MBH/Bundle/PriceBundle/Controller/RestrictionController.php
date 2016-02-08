@@ -8,6 +8,7 @@ use MBH\Bundle\PriceBundle\Form\RestrictionGeneratorType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
@@ -17,6 +18,19 @@ use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
  */
 class RestrictionController extends Controller implements CheckHotelControllerInterface
 {
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @Route("/in/out/json", name="restriction_in_out_json", options={"expose"=true}, defaults={"_format": "json"})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_RESTRICTION_VIEW')")
+     */
+    public function inOutJsonAction(Request $request)
+    {
+        return new JsonResponse($this->dm->getRepository('MBHPriceBundle:Restriction')->fetchInOut());
+    }
+
     /**
      * @Route("/", name="restriction_overview")
      * @Method("GET")

@@ -1,4 +1,47 @@
-/*global window, document, Routing, console, str, $, select2, localStorage */
+/*global window, document, Routing, fole, str, $, select2, localStorage, mbh */
+
+mbh.datarangepicker = {
+    options: {
+        'dateLimit': 365,
+        'showDropdowns': true,
+        'autoApply': true,
+        'autoUpdateInput': true,
+        "locale": {
+            "format": "ll",
+            "separator": " - ",
+            "daysOfWeek": [
+                "Вс",
+                "Пн",
+                "Вт",
+                "Ср",
+                "Чт",
+                "Пт",
+                "Сб"
+            ],
+            "monthNames": [
+                "Январь",
+                "Февраль",
+                "Март",
+                "Апрель",
+                "Май",
+                "Июнь",
+                "Июль",
+                "Август",
+                "Сентябрь",
+                "Октябрь",
+                "Ноябрь",
+                "Декабрь"
+            ],
+            "firstDay": 1
+        }
+    },
+    on: function (begin, end, picker) {
+        'use strict'
+        begin.val(picker.startDate.format('DD.MM.YYYY'));
+        end.val(picker.endDate.format('DD.MM.YYYY'));
+        begin.trigger('change');
+    }
+};
 
 var createDate = function (input) {
     'use strict';
@@ -37,7 +80,7 @@ RangeInputs.prototype.bindEventListeners = function () {
     });
     this.$end.change(function () {
         if (!that.$begin.val()) {
-           //that.$begin.focus();
+            //that.$begin.focus();
         }
     });
 }
@@ -343,51 +386,16 @@ var docReadyForms = function () {
             wrapper = begin.parent('div'),
             end = $('.end-datepicker.mbh-daterangepicker'),
             range = $('<input type="text" required="required" class="daterangepicker-input form-control input-sm" autocomplete="off">');
-            ;
+        ;
 
-        console.log(begin.length);
+
         if (!begin.length || !end.length || !wrapper.length) {
             return;
         }
 
         begin.after(range);
-        range.daterangepicker({
-            'dateLimit': 365,
-            'showDropdowns': true,
-            'autoApply': true,
-            'autoUpdateInput': true,
-            "locale": {
-                "format": "ll",
-                "separator": " - ",
-                "daysOfWeek": [
-                    "Вс",
-                    "Пн",
-                    "Вт",
-                    "Ср",
-                    "Чт",
-                    "Пт",
-                    "Сб"
-                ],
-                "monthNames": [
-                    "Январь",
-                    "Февраль",
-                    "Март",
-                    "Апрель",
-                    "Май",
-                    "Июнь",
-                    "Июль",
-                    "Август",
-                    "Сентябрь",
-                    "Октябрь",
-                    "Ноябрь",
-                    "Декабрь"
-                ],
-                "firstDay": 1
-            },
-        }).on('apply.daterangepicker', function(ev, picker) {
-            begin.val(picker.startDate.format('DD.MM.YYYY'));
-            end.val(picker.endDate.format('DD.MM.YYYY'));
-            begin.trigger('change');
+        range.daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
+            mbh.datarangepicker.on(begin, end, picker);
         });
         if (begin.datepicker("getDate") && end.datepicker("getDate")) {
             range.data('daterangepicker').setStartDate(begin.datepicker("getDate"));

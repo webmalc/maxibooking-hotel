@@ -9,6 +9,47 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 class RestrictionRepository extends DocumentRepository
 {
     /**
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function fetchInOut()
+    {
+        $data = $hotels = [];
+        $qb = $this->createQueryBuilder('q');
+        $qb
+            ->field('date')->gte(new \DateTime('midnight'))
+            ->field('date')->lte(new \DateTime('midnight +365 days'))
+            ->field('isEnabled')->equals(true)
+            ->addOr($qb->expr()->field('closed')->equals(true))
+            ->addOr(
+                $qb->expr()
+                    ->field('closedOnArrival')->equals(true)
+                    ->field('closedOnDeparture')->equals(true)
+            );
+
+        foreach ($qb->getQuery()->execute() as $restriction)
+        {
+            if ($restriction->getTariff()->getIsDefault()) {
+                $dateStr = $restriction->getDate()->format('d.m.Y');
+                $hotel = $restriction->getRoomType()->getHotel();
+
+                $data[$restriction->getRoomType()->getId()][$dateStr] = $dateStr;
+                $data['allrooms_' . $hotel->getId()][$dateStr] = $dateStr;
+                $hotels[$hotel->getId()] = $hotel;
+            }
+        };
+
+        foreach ($hotels as $hotel) {
+            foreach ($hotel->getRoomTypes() as $roomType) {
+                isset($data[$roomType->getId()]) ? $dates = $data[$roomType->getId()] : $dates = [];
+                $data['allrooms_' . $hotel->getId()] = array_intersect($data['allrooms_' . $hotel->getId()], $dates);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * @param \DateTime $begin
      * @param \DateTime $end
      * @param Hotel $hotel
@@ -22,7 +63,8 @@ class RestrictionRepository extends DocumentRepository
         Hotel $hotel = null,
         array $roomTypes = [],
         array $tariffs = []
-    ) {
+    )
+    {
         $qb = $this->createQueryBuilder('q');
 
         // hotel
@@ -63,8 +105,7 @@ class RestrictionRepository extends DocumentRepository
         $qb
             ->field('date')->equals($date)
             ->field('tariff.id')->equals($tariff->getId())
-            ->field('roomType.id')->equals($roomType->getId());
-        ;
+            ->field('roomType.id')->equals($roomType->getId());;
 
         return $qb->getQuery()->getSingleResult();
     }
@@ -85,7 +126,8 @@ class RestrictionRepository extends DocumentRepository
         array $roomTypes = [],
         array $tariffs = [],
         $grouped = false
-    ) {
+    )
+    {
         $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs)->getQuery()->execute();
 
         if (!$grouped) {

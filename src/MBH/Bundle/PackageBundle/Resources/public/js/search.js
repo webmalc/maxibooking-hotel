@@ -1,4 +1,4 @@
-/*global window, $, Routing, document */
+/*global window, $, Routing, document, mbh */
 
 var setSearchDatepickers = function (date) {
     'use strict';
@@ -9,6 +9,33 @@ var setSearchDatepickers = function (date) {
 
 $(document).ready(function () {
     'use strict';
+
+    (function () {
+
+        $.ajax(Routing.generate('restriction_in_out_json'), {})
+            .done(function (response) {
+
+                if ($.isEmptyObject(response)) {
+                    return false;
+                }
+                var options = mbh.datarangepicker.options;
+                options.isInvalidDate = function (day) {
+                    var roomType = $('#s_roomType').val();
+                    if (!roomType || roomType.length !== 1) {
+                        return false;
+                    }
+                    if (response[roomType[0]] && response[roomType[0]][day.format('DD.MM.YYYY')]) {
+                        return true;
+                    }
+                    return false;
+                };
+                $('.daterangepicker-input').daterangepicker(options).on('apply.daterangepicker', function (ev, picker) {
+                    mbh.datarangepicker.on($('.begin-datepicker.mbh-daterangepicker'), $('.end-datepicker.mbh-daterangepicker'), picker);
+                });
+            });
+
+
+    }());
 
     $('#add-guest').on('click', function (e) {
         var guestModal = $('#add-guest-modal'),
