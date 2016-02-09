@@ -13,6 +13,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Zend\Stdlib\JsonSerializable;
+use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 
 /**
  * @ODM\Document(collection="Packages", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageRepository")
@@ -1228,6 +1229,14 @@ class Package extends Base implements JsonSerializable
     public function getMainTourist()
     {
         return $this->getOrder()->getMainTourist();
+    }
+
+    /**
+     * @return PayerInterface|null
+     */
+    public function getPayer()
+    {
+        return $this->getOrder()->getPayer();
     }
 
     /**
