@@ -52,7 +52,6 @@ class Organization implements PayerInterface, RecipientInterface
     protected $accountantFio;
     /**
      * @ODM\String
-     * @Assert\NotBlank
      */
     protected $phone;
     /**
@@ -68,7 +67,6 @@ class Organization implements PayerInterface, RecipientInterface
     protected $inn;
     /**
      * @ODM\String
-     * @Assert\NotBlank
      * @Assert\Length(min=9,max=9)
      * @Assert\Type(type="digit", message="Значение должно быть числом")
      */

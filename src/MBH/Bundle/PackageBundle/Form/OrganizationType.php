@@ -83,6 +83,7 @@ class OrganizationType extends AbstractType
             'group' => $group,
             'label' => 'form.organizationType.phone',
             'attr' => ['class' => 'input-small'],
+            'required' => false,
         ]);
 
         $builder->add('email', 'email', [
@@ -100,6 +101,7 @@ class OrganizationType extends AbstractType
             'group' => $isFull ? $registerGroup : $addGroup,
             'label' => 'form.organizationType.kpp',
             'attr' => ['class' => 'input-small'],
+            'required' => false
         ]);
 
         if ($isFull) {
@@ -156,11 +158,13 @@ class OrganizationType extends AbstractType
         $builder->add('street', 'text', [
             'group' => $group,
             'label' => 'form.organizationType.street',
+            'required' => false
         ]);
         $builder->add('house', 'text', [
             'group' => $group,
             'label' => 'form.organizationType.house',
             'attr' => ['class' => 'input-xs'],
+            'required' => false
         ]);
 
         if ($isFull) {
