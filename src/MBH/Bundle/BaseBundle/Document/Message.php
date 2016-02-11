@@ -53,6 +53,12 @@ class Message extends Base implements \JsonSerializable
      */
     protected $isSend = false;
 
+
+    /**
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="roomTypes")
+     */
+    protected $hotel;
+
     /**
      * Set text
      *
@@ -217,5 +223,28 @@ class Message extends Base implements \JsonSerializable
     public function getIsSend()
     {
         return $this->isSend;
+    }
+
+    /**
+     * Get hotel
+     *
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     */
+    public function getHotel()
+    {
+        return $this->hotel;
+    }
+
+    /**
+     * Set hotel
+     *
+     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     * @return self
+     */
+    public function setHotel(\MBH\Bundle\HotelBundle\Document\Hotel $hotel)
+    {
+        $this->hotel = $hotel;
+
+        return $this;
     }
 }

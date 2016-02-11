@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
 use MBH\Bundle\BaseBundle\Document\Message;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -35,7 +36,7 @@ class Messenger implements \SplObserver
         $message = $notifier->getMessage();
 
         $this->send($message->getText(), $message->getFrom(), $message->getType(), $message->getAutohide(),
-            $message->getEnd(), $message->getCategory());
+            $message->getEnd(), $message->getCategory(), $message->getHotel());
 
     }
 
@@ -46,11 +47,12 @@ class Messenger implements \SplObserver
      * @param bool $autohide
      * @param null $end
      * @param null $category
+     * @param Hotel|null $hotel
      * @return Messenger
      */
-    public function send($text, $from = 'system', $type = 'info', $autohide = false, $end = null, $category = null)
+    public function send($text, $from = 'system', $type = 'info', $autohide = false, $end = null, $category = null, Hotel $hotel = null)
     {
-        return $this->add($text, $from, $type, $autohide, $end, $category);
+        return $this->add($text, $from, $type, $autohide, $end, $category, $hotel);
     }
 
     /**
@@ -61,13 +63,19 @@ class Messenger implements \SplObserver
         $messages = $this->dm->getRepository('MBHBaseBundle:Message')->findAll();
         $session = $this->container->get('session');
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $permissions = $this->container->get('mbh.hotel.selector');
 
         foreach ($messages as $message) {
 
 
             $method = 'get' . ucfirst($message->getCategory()) . 's';
 
-            if (!$message->getCategory() || !$user || !method_exists($user, $method)  || $user->$method()) {
+            if (!$message->getCategory() || !$user || !method_exists($user, $method) || $user->$method()) {
+
+                if ($message->getHotel() && !$permissions->checkPermissions($message->getHotel())) {
+                    continue;
+                }
+
                 $key[0] = $message->getType();
                 $key[1] = $message->getAutohide();
                 $session->getFlashBag()->add(implode('|', $key), $message->getText());
@@ -80,16 +88,16 @@ class Messenger implements \SplObserver
     }
 
     /**
-     * Add message
      * @param $text
      * @param string $from
      * @param string $type
      * @param bool $autohide
      * @param null $end
      * @param null $category
+     * @param Hotel|null $hotel
      * @return $this
      */
-    public function add($text, $from = 'system', $type = 'info', $autohide = false, $end = null, $category = null)
+    public function add($text, $from = 'system', $type = 'info', $autohide = false, $end = null, $category = null, Hotel $hotel = null)
     {
         $message = new Message();
         $message->setFrom($from)
@@ -98,7 +106,8 @@ class Messenger implements \SplObserver
             ->setAutohide($autohide)
             ->setEnd($end)
             ->setCategory($category)
-            ;
+            ->setHotel($hotel)
+        ;
         $this->dm->persist($message);
         $this->dm->flush();
 

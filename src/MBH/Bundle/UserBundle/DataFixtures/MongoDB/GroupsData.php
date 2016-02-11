@@ -14,6 +14,17 @@ class GroupsData implements FixtureInterface, ContainerAwareInterface
             'title' => 'Администратор системы',
             'roles' => ['ROLE_ADMIN']
         ],
+        'hotel_admin' => [
+            'title' => 'Администратор отеля',
+            'roles' => [
+                'ROLE_HOTEL', 'ROLE_CITY', 'ROLE_LOGS', 'ROLE_CASH', 'ROLE_CLIENT_CONFIG',
+                'ROLE_DOCUMENT_TEMPLATE', 'ROLE_HOUSING', 'ROLE_ROOM', 'ROLE_ROOM_TYPE', 'ROLE_TASK_MANAGER',
+                'ROLE_MANAGER', 'ROLE_OVERVIEW', 'ROLE_PRICE_CACHE', 'ROLE_RESTRICTION', 'ROLE_ROOM_CACHE',
+                'ROLE_SERVICE', 'ROLE_SERVICE_CATEGORY', 'ROLE_TARIFF', 'ROLE_CHANNEL_MANAGER',
+                'ROLE_ONLINE_FORM', 'ROLE_POLLS', 'ROLE_REPORTS', 'ROLE_PACKAGE', 'ROLE_SOURCE', 'ROLE_PROMOTION',
+                'ROLE_ROOM_TYPE_CATEGORY', 'ROLE_WORK_SHIFT'
+            ]
+        ],
         'analytics' => [
             'title' => 'Аналитик',
             'roles' => [

@@ -46,6 +46,7 @@ class RoomType extends Base implements RoomTypeInterface
 
     use RoomTypeTrait;
     use InternableDocument;
+
     /**
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="roomTypes")
      * @Assert\NotNull(message="Не выбран отель")
