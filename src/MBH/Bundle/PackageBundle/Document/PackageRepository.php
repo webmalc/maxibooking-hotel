@@ -416,9 +416,9 @@ class PackageRepository extends DocumentRepository
             foreach ($data['hotel']->getRoomTypes() as $roomType) {
                 $roomTypesIds[] = $roomType->getId();
             }
-            if (count($roomTypesIds)) {
-                $qb->field('roomType.id')->in($roomTypesIds);
-            }
+
+            $qb->field('roomType.id')->in($roomTypesIds);
+
         }
         //order
         if (isset($data['packageOrder']) && !empty($data['packageOrder'])) {

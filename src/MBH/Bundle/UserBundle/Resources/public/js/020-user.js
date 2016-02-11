@@ -8,7 +8,7 @@ $(document).ready(function () {
             verdicts: ["Плохой", "Обычный", "Хороший", "Отличный", "Супер"]
         },
         common: {
-            minChar: 8
+            minChar: 1
         }
     });
 

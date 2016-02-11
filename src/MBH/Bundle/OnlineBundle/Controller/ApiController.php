@@ -255,11 +255,6 @@ class ApiController extends Controller
         } else {
             $results = $this->get('mbh.package.search')->search($query);
 
-            /*if(empty($results)) {
-                $query->adults = $query->children = 0;
-                $results = $this->get('mbh.package.search')->search($query);
-            }*/
-
             $tariffResults = $this->get('mbh.package.search')->searchTariffs($query);
         }
 
@@ -410,7 +405,7 @@ class ApiController extends Controller
             $notifier = $this->container->get('mbh.notifier');
             $tr = $this->get('translator');
             $message = $notifier::createMessage();
-            $hotel = $order->getPackages()[0]->getRoomType()->getHotel();
+            $hotel = $order->getFirstHotel();
             $message
                 ->setText($tr->trans('mailer.online.backend.text', ['%orderID%' => $order->getId()]))
                 ->setTranslateParams(['%orderID%' => $order->getId()])

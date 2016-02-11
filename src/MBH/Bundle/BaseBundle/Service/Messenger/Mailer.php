@@ -2,6 +2,9 @@
 
 namespace MBH\Bundle\BaseBundle\Service\Messenger;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\BaseBundle\Service\HotelSelector;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -40,6 +43,11 @@ class Mailer implements \SplObserver
      */
     private $locale;
 
+    /**
+     * @var HotelSelector
+     */
+    private $permissions;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -48,6 +56,7 @@ class Mailer implements \SplObserver
         $this->params = $container->getParameter('mbh.mailer');
         $this->dm = $this->container->get('doctrine_mongodb');
         $this->locale = $this->container->getParameter('locale');
+        $this->permissions = $this->container->get('mbh.hotel.selector');
     }
 
     /**
@@ -110,6 +119,37 @@ class Mailer implements \SplObserver
     }
 
     /**
+     * @param null $category
+     * @param Hotel|null $hotel
+     * @return mixed
+     * @throws Exception
+     */
+    public function getSystemRecipients($category = null, Hotel $hotel = null)
+    {
+        $error = 'Не удалось отправить письмо. Нет ни одного получателя.';
+
+        if (empty($category)) {
+            throw new Exception($error);
+        }
+
+        $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy(
+            [$category . 's' => true, 'enabled' => true, 'locked' => false]
+        );
+
+        if ($hotel) {
+            $recipients = array_filter($recipients, function ($recipient) use ($hotel) {
+                return $this->permissions->checkPermissions($hotel, $recipient);
+            });
+        }
+
+        if (!count($recipients)) {
+            throw new Exception($error);
+        }
+
+        return $recipients;
+    }
+
+    /**
      * @param RecipientInterface[] $recipients
      * @param array $data
      * @param null $template
@@ -120,19 +160,10 @@ class Mailer implements \SplObserver
     {
         if (empty($recipients)) {
 
-            $error = 'Не удалось отправить письмо. Нет ни одного получателя.';
-
-            if (empty($data['category'])) {
-                throw new \Exception($error);
-            }
-
-            $recipients = $this->dm->getRepository('MBHUserBundle:User')->findBy(
-                [$data['category'] . 's' => true, 'enabled' => true, 'locked' => false]
+            $recipients = $this->getSystemRecipients(
+                isset($data['category']) ? $data['category'] : null,
+                isset($data['hotel']) ? $data['hotel'] : null
             );
-
-            if (!count($recipients)) {
-                throw new \Exception($error);
-            }
         }
         (empty($data['subject'])) ? $data['subject'] = $this->params['subject'] : $data['subject'];
         $message = \Swift_Message::newInstance();

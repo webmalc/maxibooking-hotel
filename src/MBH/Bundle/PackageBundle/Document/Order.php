@@ -808,9 +808,19 @@ class Order extends Base
      */
     public function getFirstHotel()
     {
+        $package = $this->getFirstPackage();
+
+        return $package ? $package->getHotel() : null;
+    }
+
+    /**
+     * @return Package;
+     */
+    public function getFirstPackage()
+    {
         foreach ($this->getPackages() as $package) {
             if (!$package->getDeletedAt()) {
-                return $package->getRoomType()->getHotel();
+                return $package;
             }
         }
 

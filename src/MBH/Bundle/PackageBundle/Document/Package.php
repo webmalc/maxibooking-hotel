@@ -378,6 +378,14 @@ class Package extends Base implements JsonSerializable
     }
 
     /**
+     * @return \MBH\Bundle\HotelBundle\Document\Hotel
+     */
+    public function getHotel()
+    {
+        return $this->getRoomType()->getHotel();
+    }
+
+    /**
      * Set accommodation
      *
      * @param \MBH\Bundle\HotelBundle\Document\Room $accommodation

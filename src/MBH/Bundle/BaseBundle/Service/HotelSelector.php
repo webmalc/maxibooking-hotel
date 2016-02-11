@@ -2,8 +2,16 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use MBH\Bundle\BaseBundle\MBHBaseBundle;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
+use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
+use Symfony\Component\Security\Acl\Exception\NoAceFoundException;
+use Symfony\Component\Security\Acl\Permission\MaskBuilder;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 /**
  * HotelSelector service
@@ -12,7 +20,7 @@ class HotelSelector
 {
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface 
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
 
@@ -21,19 +29,40 @@ class HotelSelector
         $this->container = $container;
     }
 
-
     /**
      * @param Hotel $hotel
+     * @param User|null $user
      * @return bool
      */
-    public function checkPermissions(Hotel $hotel)
+    public function checkPermissions(Hotel $hotel, User $user = null)
     {
-        $securityContext = $this->container->get('security.context');
-        if ($securityContext->isGranted('ROLE_ADMIN')) {
+        if (!$user && !$this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             return true;
         }
 
-        return $securityContext->isGranted('EDIT', $hotel);
+        $user ?: $user = $this->container->get('security.token_storage')->getToken()->getUser();
+
+        // Is admin?
+        $token = new UsernamePasswordToken($user, 'none', 'none', $user->getRoles());
+        if ($this->container->get('security.access.decision_manager')->decide($token, array('ROLE_ADMIN'))) {
+            return true;
+        }
+
+        // Can edit hotel?
+        $objectIdentity = ObjectIdentity::fromDomainObject($hotel);
+        $securityIdentity = new UserSecurityIdentity($user, 'MBH\Bundle\UserBundle\Document\User');
+        $aclProvider = $this->container->get('security.acl.provider');
+
+        try {
+            $acl = $aclProvider->findAcl($objectIdentity);
+        } catch (AclNotFoundException $e) {
+            return false;
+        }
+        try {
+            return $acl->isGranted([MaskBuilder::MASK_MASTER], [$securityIdentity], false);
+        } catch (NoAceFoundException $e) {
+            return false;
+        }
     }
 
     /**
@@ -59,12 +88,11 @@ class HotelSelector
         $hotels = $hotelRepository->createQueryBuilder('s')
             ->sort('isDefault', 'desc')
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
 
         foreach ($hotels as $hotel) {
             if ($hotel && $this->checkPermissions($hotel)) {
-                $session->set('selected_hotel_id', (string) $hotel->getId());
+                $session->set('selected_hotel_id', (string)$hotel->getId());
                 return $hotel;
             }
         }
@@ -80,16 +108,16 @@ class HotelSelector
     {
         $session = $this->container->get('session');
         $session->remove('selected_hotel_id');
-        
+
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         $hotel = $dm->getRepository('MBHHotelBundle:Hotel')->find($id);
 
         if ($hotel && $this->checkPermissions($hotel)) {
-            $session->set('selected_hotel_id', (string) $hotel->getId());
+            $session->set('selected_hotel_id', (string)$hotel->getId());
             return $hotel;
         }
-        
+
         return null;
     }
 
@@ -110,8 +138,7 @@ class HotelSelector
         $packages = $dm->getRepository('MBHPackageBundle:Package')->createQueryBuilder('s')
             ->field('roomType.id')->in($this->container->get('mbh.helper')->toIds($hotel->getRoomTypes()))
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
         $dm->getFilterCollection()->enable('softdeleteable');
 
         return $packages;
