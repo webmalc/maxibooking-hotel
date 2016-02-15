@@ -65,7 +65,14 @@ class PromotionType extends AbstractType
                     'class' => 'spinner',
                 ],
             ])
-        ;
+            ->add('childrenDiscount', 'number', [
+                'label' => 'form.promotionType.label.childrenDiscount',
+                'group' => 'form.promotionType.group.main',
+                'required' => false,
+                'attr' => [
+                    'class' => 'percent-spinner',
+                ],
+            ]);
         $conditions = PromotionConditionFactory::getAvailableConditions();
         $builder
             ->add('condition', 'choice', [
@@ -73,8 +80,8 @@ class PromotionType extends AbstractType
                 'required' => false,
                 'group' => 'form.promotionType.group.conditions',
                 'choices' => array_combine($conditions, $conditions),
-                'choice_label' => function($value, $label) {
-                    return 'form.promotionType.choice_label.condition.'.$value;
+                'choice_label' => function ($value, $label) {
+                    return 'form.promotionType.choice_label.condition.' . $value;
                 }
             ])
             ->add('condition_quantity', 'number', [
@@ -85,8 +92,7 @@ class PromotionType extends AbstractType
                 'attr' => [
                     'class' => 'spinner',
                 ],
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -95,10 +101,14 @@ class PromotionType extends AbstractType
             'data_class' => Promotion::class,
             'constraints' => [
                 new Callback([
-                    'callback' => function(Promotion $promotion, ExecutionContextInterface $executionContext) {
-                        if (!$promotion->getDiscount() && !$promotion->getFreeChildrenQuantity() && !$promotion->getFreeAdultsQuantity()) {
+                    'callback' => function (Promotion $promotion, ExecutionContextInterface $executionContext) {
+                        if (!$promotion->getDiscount() &&
+                            !$promotion->getFreeChildrenQuantity() &&
+                            !$promotion->getFreeAdultsQuantity() &&
+                            !$promotion->getChildrenDiscount()
+                        ) {
                             $executionContext->buildViolation('Заполните поля "Скидка" или "Количество детей бесплатно" или "Количество взрослых бесплатно"')
-                            ->addViolation();
+                                ->addViolation();
                             return false;
                         }
                         return false;

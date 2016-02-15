@@ -189,7 +189,7 @@ class Calculation
             $dayPrices = $packagePrices = [];
             foreach ($caches as $day => $cache) {
                 $promoConditions = PromotionConditionFactory::checkConditions(
-                    $promotion, $duration, $combination['adults'] + $combination['children']
+                    $promotion, $duration, $combination['adults'], $combination['children']
                 );
 
                 if ($cache->getTariff()->getId() != $tariff->getId()) {
@@ -204,6 +204,7 @@ class Calculation
                     $totalAdults -= (int)$promotion->getFreeAdultsQuantity();
                     $totalAdults = $totalAdults >= 1 ? $totalAdults : 1;
                     $totalChildren = $totalChildren >= 0 ? $totalChildren : 0;
+                    $childrenDiscount = $promotion->getChildrenDiscount();
                 }
 
                 $all = $totalAdults + $totalChildren;
@@ -242,10 +243,14 @@ class Calculation
                     $dayPrice += $cache->getSinglePrice();
                 } elseif ($cache->getIsPersonPrice()) {
                     if ($roomType->getIsChildPrices() && $cache->getChildPrice() !== null) {
-                        $dayPrice += $mainAdults * $cache->getPrice() + $mainChildren * $cache->getChildPrice();
+                        $childrenPrice = $mainChildren * $cache->getChildPrice();
                     } else {
-                        $dayPrice += ($mainAdults + $mainChildren) * $cache->getPrice();
+                        $childrenPrice = $mainChildren * $cache->getPrice();
                     }
+                    if ($promoConditions && $childrenDiscount) {
+                        $childrenPrice  = $childrenPrice * (100 - $childrenDiscount) / 100;
+                    }
+                    $dayPrice += $mainAdults * $cache->getPrice() + $childrenPrice;
                 } else {
                     $dayPrice += $cache->getPrice();
                 }
@@ -274,9 +279,20 @@ class Calculation
                     };
 
                     $addsPrice += $additionalCalc($addsAdults, $cache->getAdditionalPrices(), $cache->getAdditionalPrice());
-                    $addsPrice += $additionalCalc($addsChildren, $cache->getAdditionalChildrenPrices(), $cache->getAdditionalChildrenPrice());
+                    $addsChildrenPrice = $additionalCalc($addsChildren, $cache->getAdditionalChildrenPrices(), $cache->getAdditionalChildrenPrice());
+
+                    if ($promoConditions && $childrenDiscount) {
+                        $addsChildrenPrice = $addsChildrenPrice * (100 - $childrenDiscount) / 100;
+                    }
+                    $addsPrice += $addsChildrenPrice;
                 } else {
-                    $addsPrice = $addsAdults * $cache->getAdditionalPrice() + $addsChildren * $cache->getAdditionalChildrenPrice();
+                    $addsChildrenPrice = $addsChildren * $cache->getAdditionalChildrenPrice();
+
+                    if ($promoConditions && $childrenDiscount) {
+                        $addsChildrenPrice = $addsChildrenPrice * (100 - $childrenDiscount) / 100;
+                    }
+
+                    $addsPrice = $addsAdults * $cache->getAdditionalPrice() + $addsChildrenPrice;
                 }
 
                 $dayPrice += $addsPrice;
@@ -294,7 +310,7 @@ class Calculation
             }
 
             $promoConditions = PromotionConditionFactory::checkConditions(
-                $promotion, $duration, $combination['adults'] + $combination['children']
+                $promotion, $duration, $combination['adults'], $combination['children']
             );
 
             if ($promoConditions) {

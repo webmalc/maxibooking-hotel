@@ -27,8 +27,10 @@
                 {% endif %}
             </td>
             <td>
-                {{ promotion.discount }}
-                {{ promotion.isPercentDiscount ? '%' : ('<i class="' ~ currency().icon ~ '"></i>')|raw }}
+                {% if promotion.discount %}
+                    {{ promotion.discount }}
+                    {{ promotion.isPercentDiscount ? '%' : ('<i class="' ~ currency().icon ~ '"></i>')|raw }}
+                {% endif %}
             </td>
             <td>
                 {{ promotion.freeAdultsQuantity }}

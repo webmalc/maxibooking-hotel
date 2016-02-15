@@ -111,6 +111,14 @@ class Promotion extends Base
     protected $freeAdultsQuantity;
 
     /**
+     * @ODM\Integer()
+     * @var integer
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min="1", max="100")
+     */
+    protected $childrenDiscount;
+
+    /**
      * @ODM\String()
      * @var string
      * @Assert\Choice(callback={"MBH\Bundle\PriceBundle\Services\PromotionConditionFactory", "getAvailableConditions"})
@@ -290,6 +298,24 @@ class Promotion extends Base
     {
         $this->conditionQuantity = $conditionQuantity;
 
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getChildrenDiscount()
+    {
+        return $this->childrenDiscount;
+    }
+
+    /**
+     * @param int $childrenDiscount
+     * @return Promotion
+     */
+    public function setChildrenDiscount($childrenDiscount)
+    {
+        $this->childrenDiscount = $childrenDiscount;
         return $this;
     }
 

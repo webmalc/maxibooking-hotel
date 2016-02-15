@@ -11,6 +11,7 @@ form:
             freeAdultsQuantity: Количество взрослых бесплатно
             condition: Условие
             condition_quantity: Количество
+            childrenDiscount: Скидка на ребёнка
         group:
             main: Основная информация
             conditions: Условия и ограничения
@@ -20,3 +21,5 @@ form:
                 max_accommodation: Максимальная длина брони
                 min_tourists: Минимальное количество гостей
                 max_tourists: Максимальное количество гостей
+                max_adults: Максимальное количество взрослых
+                min_adults: Минимальное количество взрослых
