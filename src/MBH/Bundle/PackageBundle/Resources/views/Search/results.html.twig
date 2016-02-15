@@ -2,6 +2,7 @@
 
     {% if results is not empty %}
 
+
     <table class="package-search-table table table-striped table-hover table-condensed table-icons table-actions">
         <thead>
         <tr>
@@ -55,7 +56,12 @@
                     <small>{{ result.nights }} {{ 'nights'|transchoice(result.nights) }}</small>
                 </td>
                 <td>
-                    {{ result.tariff }}<br>
+
+                    {% if result.priceTariffs|length > 1 %}
+                        {{ result.priceTariffs|join(' / ') }}
+                    {% else %}
+                        {{ result.tariff }}
+                    {% endif %}<br>
                     <small>
                         {{ result.roomType.isHostel ? "search.results.total_beds"|trans({}, "MBHPackageBundle") : "search.results.total_rooms"|trans({}, "MBHPackageBundle") }}
                         :

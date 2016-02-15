@@ -477,5 +477,21 @@ class SearchResult
         return $this;
     }
 
+    /**
+     * @return SplObjectStorage
+     */
+    public function getPriceTariffs()
+    {
+        $tariffs = new \SplObjectStorage();
 
+        if (!count($this->packagePrices)) {
+            return $tariffs;
+        }
+
+        foreach (array_values($this->packagePrices)[0] as $packagePrice) {
+            $tariffs->attach($packagePrice->getTariff());
+        }
+
+        return $tariffs;
+    }
 }
