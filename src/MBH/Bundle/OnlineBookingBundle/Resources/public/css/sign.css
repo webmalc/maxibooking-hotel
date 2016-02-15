@@ -1,0 +1,184 @@
+#right-column {
+}
+
+
+
+#sign-page ul li {
+    color: red;
+}
+
+#form_payment .iradio_flat-red {
+    float: left;
+    margin-right: 10px;
+}
+
+
+#sign-page, #info {
+    background-color: #FFFFFF;
+    padding: 15px;
+}
+
+#info {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+#info .title {
+    font-weight: bold;
+    color: #364052;
+    font-size: 16px;
+}
+
+#info .item {
+    margin-bottom: 5px;
+}
+
+#info .item div:first-child {
+    font-weight: bold;
+    color: #364052;
+    font-size: 14px;
+}
+
+#info .item .col-xs-4 {
+    padding: 0;
+}
+
+#info .item div:last-child {
+    color: #364052;
+    font-size: 12px;
+}
+
+#info .title {
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+#info .date-info {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 5px;
+    max-width: 220px;
+}
+
+#info .date-info .arrival {
+    padding: 0;
+}
+
+#info .date-info .departure {
+    padding: 0;
+}
+
+#info .date-info .arrival div {
+    float: right;
+}
+
+#info .date-info .departure div {
+    float: left;
+}
+
+#info .date-info .arrival div:first-child {
+    font-weight: bold;
+    color: #10a3ed;
+}
+
+#info .date-info .departure div:first-child {
+    font-weight: bold;
+    color: #10a3ed;
+}
+
+#info .date-info .arrival .date {
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #c0c0c0;
+}
+
+#info .date-info .departure .date {
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #c0c0c0;
+}
+
+#info .date-info .days {
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 12px;
+    color: #e8cc3a;
+    padding: 0 3px;
+}
+
+#info .guests {
+    border-top: 1px solid #f4f4f4;
+    border-bottom: 1px solid #f4f4f4;
+    padding: 5px 0;
+
+    text-transform: uppercase;
+    color: #c0c0c0;
+}
+
+#info .price-info {
+
+}
+
+#info .price-info .price-item {
+    border-top: 1px solid #f4f4f4;
+    padding: 7px 0;
+    text-transform: uppercase;
+
+    font-size: 12px;
+    font-weight: bold;
+}
+
+#info .price-info .price-item div {
+    display: inline-block;
+}
+
+#info .price-info .price-item div:first-child {
+    color: #10a3ed;
+}
+
+#info .price-info .price-item div:last-child {
+    color: #c0c0c0;
+}
+
+#info .price-info .price-item:last-child {
+    border-bottom: 1px solid #f4f4f4;
+}
+
+#questions {
+    width: 100%;
+    margin-top: 15px;
+    background-color: #FFFFFF;
+    padding: 15px;
+}
+
+#questions .title {
+    font-weight: bold;
+    color: #364052;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+#questions .description {
+    margin-bottom: 10px;
+}
+
+#questions .description p, #questions .email {
+    font-weight: bold;
+    font-size: 12px;
+    color: #c0c0c0;
+    margin-bottom: 0;
+}
+
+#questions .phone {
+    margin-bottom: 10px;
+}
+
+#questions .phone span {
+    margin-left: 5px;
+    color: #10a3ed;
+    font-weight: bold;
+    font-size: 20px;
+}

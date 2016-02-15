@@ -203,6 +203,11 @@ liip_imagine:
             filters:
               thumbnail: { size: [95, 80], mode: outbound, allow_upscale: true }
 
+        thumb_275x270:
+            quality: 100
+            filters:
+              thumbnail: { size: [275, 270], mode: outbound, allow_upscale: true }
+
         stamp:
             data_loader: protected
             quality: 100

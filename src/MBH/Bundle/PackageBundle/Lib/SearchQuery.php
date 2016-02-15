@@ -130,14 +130,10 @@ class SearchQuery
             return $this;
         }
         $roomTypes = $hotel->getRoomTypes();
-
-        if(count($roomTypes)) {
-            foreach ($hotel->getRoomTypes() as $roomType) {
-                $this->addRoomType($roomType->getId());
-            }
-        } else {
-            $this->addRoomType($hotel->getId() . ': empty roomTypes');
+        foreach ($roomTypes as $roomType) {
+            $this->addRoomType($roomType->getId());
         }
+
         return $this;
     }
 

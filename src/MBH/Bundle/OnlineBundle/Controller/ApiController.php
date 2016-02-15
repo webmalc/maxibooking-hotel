@@ -375,6 +375,7 @@ class ApiController extends Controller
         if ($requestJson->paymentType == 'in_hotel' || !$clientConfig || !$clientConfig->getPaymentSystem()) {
             $form = false;
         } else {
+
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig', [
                     'data' => array_merge(['test' => false,
@@ -393,8 +394,8 @@ class ApiController extends Controller
 
     /**
      * @param Order $order
-     * @param null $arrival
-     * @param null $departure
+     * @param string $arrival
+     * @param string $departure
      * @return bool
      */
     private function sendNotifications(Order $order, $arrival = null, $departure = null)

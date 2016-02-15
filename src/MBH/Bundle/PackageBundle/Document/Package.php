@@ -79,7 +79,14 @@ class Package extends Base implements JsonSerializable
      * @ODM\Int()
      */
     protected $number;
-    
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\String()
+     */
+    protected $externalNumber;
+
     /**
      * @var int
      * @Gedmo\Versioned
@@ -440,6 +447,24 @@ class Package extends Base implements JsonSerializable
     {
         return $this->number;
     }
+
+    /**
+     * @return string
+     */
+    public function getExternalNumber()
+    {
+        return $this->externalNumber;
+    }
+
+    /**
+     * @param string $externalNumber
+     */
+    public function setExternalNumber($externalNumber)
+    {
+        $this->externalNumber = $externalNumber;
+    }
+
+
 
     /**
      * Set numberWithPrefix

@@ -1,0 +1,284 @@
+<div id="online-booking-search">
+{% for result in searchResults %}
+<div class="row oneblock room-type-row">
+    <!--<div class="sale"></div>-->
+
+    <div class="col-md-4 logo">
+        {% set renderedImage = false %}
+        {% for searchResult in result.results if not renderedImage %}
+            {% if searchResult.roomType.mainImage %}
+                <a class="fancybox" href="{{ asset(searchResult.roomType.mainImage.path, null, true) }}">
+                    <img class="oblimg" src="{{ searchResult.roomType.mainImage.path|imagine_filter('thumb_275x270') }}">
+                </a>
+                {% set renderedImage = true %}
+            {% endif %}
+        {% endfor %}
+        {% if not renderedImage %}
+            <div class="placeholder-logo" style="background:url(images/logo-placeholder.png)no-repeat;background-size:cover;"></div>
+        {% endif %}
+    </div>
+    <div class="col-md-8 right-info">
+        <div class="row">
+            <div class="col-md-5 col-sm-6 col-xs-12" style="padding:0px;">
+                <div class="title">{{ result.roomType.fullTitle }}</div>
+                <div class="subtitle">{{ result.roomType.hotel.fullTitle }}</div>
+            </div>
+            <div class="col-md-7 col-sm-6 col-xs-12 prices">
+                {#<div class="col-md-7 col-sm-7 col-xs-7 newprice">забронируй сейчас<br><span>&#8381;56 344</span></div>#}
+                {% set searchResult = result.results|first %}
+                <div class="oldprice pull-right">
+                    <span>{{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}</span>
+                    <i class="fa fa-2x fa-ruble"></i>
+                </div>
+            </div>
+        </div>
+        <div class="descr col-xs-12">
+            {{ searchResult.roomTypeInterfaceObject.description|raw }}
+        </div>
+
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr>
+                <th>
+                    <i class="fa fa-tag"></i>
+                    Тариф
+                </th>
+                <th style="width: 75px">
+                    <i class="fa fa-users"></i>
+                    Гости
+                </th>
+                <th>
+                    <i class="fa fa-calendar"></i>
+                    Дата
+                </th>
+                <th>
+                    <i class="fa fa-ruble"></i>
+                    Цена
+                </th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for searchResult in result.results %}
+            <tr class="tariff-row" data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}">
+                <td>{{ searchResult.tariff.fullTitle }}</td>
+                <td>
+                    {{ searchResult.adults }} взр{% if searchResult.children %} + {{ searchResult.children }} реб{% endif %}
+                </td>
+                <td>
+                    {% if searchResult.begin|date('Y') == 'now'|date('Y') %}
+                        {% set format = 'd MMM' %}
+                    {% else %}
+                        {% set format = 'd MMM y' %}
+                    {% endif %}
+                    {{ searchResult.begin|localizeddate('medium', 'none', 'ru', null, format) }}
+                    -
+                    {% if searchResult.end|date('Y') == 'now'|date('Y') %}
+                        {% set format = 'd MMM' %}
+                    {% else %}
+                        {% set format = 'd MMM y' %}
+                    {% endif %}
+                    {{ searchResult.end|localizeddate('medium', 'none', 'ru', null, format) }}
+                </td>
+                <td>
+                    {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}
+                </td>
+                <td>
+                    <input type="radio" name="booking-{{ searchResult.roomType.id }}">
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="btmactions">
+            <a href="#" class="pull-right" style="margin-top: 10px" title="Купить Online">
+                <a href="#" class="btn btn-booking">Забронировать</a>
+            </a>
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+
+{% if searchResults|length == 0 %}
+    <div style="background-color: #FFFFFF; padding: 15px">
+        <strong><i class="fa fa-exclamation"></i> По вашему запросу ничего не найдено</strong>
+    </div>
+{% endif %}
+
+
+{#% for result in searchResults %}
+<div class="row" id="online-booking-search">
+    <div class="well col-lg-12 room-type-row">
+        <h4></h4>
+        <div class="row">
+            <div class="col-md-10">
+                {% for searchResult in result.results %}
+                <div class="row tariff-row" data-url="{{ requestSearchUrl }}?step=2&form[adults]={{ searchResult.adults }}&form[children]={{ searchResult.children }}&form[begin]={{ searchResult.begin|date('d.m.Y') }}&form[end]={{ searchResult.end|date('d.m.Y') }}&form[roomType]={{ searchResult.roomType.id }}&form[tariff]={{ searchResult.tariff.id }}&form[total]={{ searchResult.getPrice(searchResult.adults, searchResult.children) }}">
+                    <div class="col-md-4" style="font-weight: bold">Тариф: {{ searchResult.tariff }}</div>
+                    <div class="col-md-4">
+                        Взрослых: <br>
+                        Даты: <br>
+                        Количество комнат: {{ searchResult.roomsCount }}<br>
+                        Цена: {{ searchResult.getPrice(searchResult.adults, searchResult.children)|number_format(2) }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="pull-right">
+            <a class="btn btn-success btn-sm" href="">Бронировать</a>
+        </div>
+    </div>
+</div>
+{% endfor %#}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
+
+<script>
+    var RoomTypeRow = function($row) {
+        this.$row = $row;
+        this.$bookingButton = $row.find('.btn-booking');
+        this.tariffRows = [];
+        this.selectedTariffRow = null;
+    }
+
+    /*RoomTypeRow.prototype.isSelected = function()
+    {
+        return this.selectedTariffRow;
+    }*/
+
+    RoomTypeRow.prototype.update = function()
+    {
+        this.notAlreadyBooking();
+        this.tariffRows.forEach(function(t) {
+            t.update();
+        })
+    }
+
+    RoomTypeRow.prototype.init = function()
+    {
+        this.bindEventHandlers();
+        this.initTariff();
+        this.update();
+    }
+
+    RoomTypeRow.prototype.bindEventHandlers = function()
+    {
+
+    }
+
+    RoomTypeRow.prototype.initTariff = function()
+    {
+        var that = this;
+        this.$row.find('.tariff-row').each(function() {
+            var tariffRow = new TariffRow($(this), that);
+            tariffRow.init();
+            that.tariffRows.push(tariffRow);
+        })
+    }
+
+    RoomTypeRow.prototype.notAlreadyBooking = function()
+    {
+        this.$bookingButton.addClass('disabled').attr('href', '');
+        /*this.tariffRows.forEach(function(index, t) {
+            tariffRow.notSelected();
+        })*/
+    }
+
+    RoomTypeRow.prototype.alreadyBooking = function(tariffRow)
+    {
+        this.tariffRows.forEach(function(t) {
+            if (t != tariffRow) {
+                t.notSelected()
+            }
+        })
+
+        this.reBuildHref();
+    }
+
+    RoomTypeRow.prototype.reBuildHref = function()
+    {
+        var href = this.selectedTariffRow.bookingHref;
+        if (this.selectedTariffRow.$promotionSelect.val()) {
+            href = href + '&form[promotion]=' + this.selectedTariffRow.$promotionSelect.val();
+        }
+        this.$bookingButton.removeClass('disabled').attr('href', href);
+    }
+
+    var TariffRow = function($row, roomTypeRow) {
+        this.$row = $row;
+        this.$radiobutton = this.$row.find('input[type=radio]');
+        this.bookingHref = this.$row.data('url');
+        this.$promotionSelect = $row.find('select');
+        this.roomTypeRow = roomTypeRow;
+    }
+
+    TariffRow.prototype.init = function()
+    {
+        this.bindEventHandlers();
+    }
+
+    TariffRow.prototype.isSelected = function()
+    {
+        return this.$radiobutton.is(':checked');
+    }
+
+    TariffRow.prototype.update = function()
+    {
+        if (this.isSelected()) {
+            this.selected();
+        }
+    }
+
+    TariffRow.prototype.bindEventHandlers = function()
+    {
+        var that = this;
+        this.$radiobutton.on('ifChanged', function() {
+            that.selected();
+        })
+        this.$promotionSelect.on('change', function() {
+            that.roomTypeRow.selectedTariffRow = that;
+            that.roomTypeRow.reBuildHref();
+        })
+    }
+
+    TariffRow.prototype.selected = function()
+    {
+        this.roomTypeRow.selectedTariffRow = this;
+        //this.$promotionSelect.removeClass('hide');
+        this.$radiobutton.iCheck('check');
+        this.roomTypeRow.alreadyBooking(this);
+    }
+
+    TariffRow.prototype.notSelected = function()
+    {
+        this.$promotionSelect.addClass('hide');
+        //this.$radiobutton.attr('checked', false);
+    }
+
+    var $onlineBookingSearch = $('#online-booking-search');
+    $onlineBookingSearch.ready(function() {
+        $onlineBookingSearch.find('.fancybox').fancybox();
+
+        var $roomTypeRows = $onlineBookingSearch.find('.room-type-row');
+        $roomTypeRows.each(function() {
+            var roomTypeRow = new RoomTypeRow($(this));
+            roomTypeRow.init();
+
+            roomTypeRow.tariffRows.forEach(function(tariffRow) {
+                tariffRow.$row.on('click', function() {
+                    tariffRow.selected();
+                });
+            })
+        });
+    });
+</script>
+
+<style>
+    #online-booking-search .right-info .table tbody tr {
+        cursor: pointer;
+    }
+</style>

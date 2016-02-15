@@ -58,6 +58,7 @@ class Search implements SearchInterface
      */
     public function search(SearchQuery $query)
     {
+
         $results = $groupedCaches = $deletedCaches = $cachesMin = $tariffMin = [];
 
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_FORCE_BOOKING')) {
