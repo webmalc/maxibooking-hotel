@@ -29,37 +29,7 @@ class TouristExportCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-
-        /*$tourists = [];
-        $mongoDate = new \MongoDate(time());
-        for($i = 1; $i < 45000; $i ++) {
-            $tourists[] = [
-                "firstName" => "$i",
-                "lastName" => "$i Рочева",
-                "patronymic" => "$i Федоровна",
-                "fullName" => "$i Рочева $i Федоровна",
-                "birthday" => $mongoDate,
-                "sex" => "male",
-                "note" => "32299, Рочева Валентина Федоровна, 18.02.1963, Паспорт гражданина РФ, 5507, 050705, 22.02.2008, Нет, Рочева Валентина Федоровна, Нет, Клиенты, Нет, Рочева Валентина Федоровна, Паспорт гражданина РФ, 22.02.2008, , 18.02.1963, ОФМС России по НАО, , 050705, Нет, Женский, Паспорт гражданина РФ, серия: 5507, № 050705, выдан: 22 февраля 2008 года, ОФМС России по НАО, 5507, , Нет",
-                "documentRelation" => [
-                            "type" => "vega_russian_passport",
-                    "series" => "5507",
-                    "number" => "050705",
-                    "issued" => $mongoDate
-                ],
-                "communicationLanguage" => "ru",
-                "isUnwelcome"  => false,
-                "isEnabled" => true,
-                "createdAt" => $mongoDate,
-                "updatedAt" => $mongoDate,
-                "createdBy" => "admin",
-                "updatedBy" => "admin"
-            ];
-        }
-        $this->getContainer()->get('mbh.mongo')->batchInsert('Tourists', $tourists);
-        return;*/
-
-
+        $user = $dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin']);
         $path = $this->getPathTouristsCsv();
         $resources = fopen($path, 'r');
         $columns = fgetcsv($resources, null, "\t");
@@ -70,37 +40,39 @@ class TouristExportCommand extends ContainerAwareCommand
         $i = 5;
         while (($rowData = fgetcsv($resources, null, "\t")) !== false) {
             $i++;
-            /*$tourist = $this->rowToTourist($rowData, $i);
+            $tourist = $this->rowToTourist($rowData, $i, $user);
 
             if($tourist) {
                 $dm->persist($tourist);
                 $dm->persist($tourist->getDocumentRelation());
+            } else {
+                $output->writeln(
+                    '<error>Error: tourist == null row: ' . $i . ' Data: ' . implode('; ', $rowData) .'</error>'
+                );
             }
-            if ($i%1000 == 0) {
+            if ($i % 1000 == 0) {
                 $dm->flush();
                 $dm->clear();
             }
-            dump($i . ' - '. $rowData[0]);*/
         }
 
         $dm->flush();
-
         $output->writeln('Done. Total: ' . $i);
     }
 
     /**
-     * @param array $rowData
+     * @param $rowData
+     * @param $i
+     * @param $user
      * @return Tourist
+     *
      */
-    protected function rowToTourist($rowData, $i)
+    protected function rowToTourist($rowData, $i, $user)
     {
         $tourist = new Tourist();
-        //preg_match('~([А-Яа-я]+) ([А-Яа-я]+) ([А-Яа-я]+)~')
         $fio = array_values(array_filter(explode(' ' , trim($rowData[0]))));
 
         if(count($fio) < 1) {
-            dump($i);
-            dump($rowData);
             return null;
         }
         $lastName = $fio[0];
@@ -112,12 +84,15 @@ class TouristExportCommand extends ContainerAwareCommand
         } catch(\Exception $e) {
             dump($i. ' ' . $e->getMessage());
         }
-        $sex = null;
+        $sex = 'unknown';
         if(isset($rowData[20])) {
-            $sex = $rowData[20] == 'Женский' ? 'female' : $rowData[20] == 'Мужской' ? 'male' : null;
+            if ($rowData[20] == 'Женский') {
+                $sex = 'female';
+            }
+            if ($rowData[20] == 'Мужской') {
+                $sex = 'male';
+            }
         }
-        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-        $user = $dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin']);
 
         $tourist->setLastName($lastName);
         $tourist->setFirstName($firstName);
@@ -144,23 +119,8 @@ class TouristExportCommand extends ContainerAwareCommand
             }
             $document->setType($type);
         }
-        /*if(isset($rowData[16]) && $rowData[16]) {
-            $document->setAuthorityOrgan()
-        }*/
-        //$document->setType($type);
-        $tourist->setDocumentRelation($document);
 
-
-        $violationList = $this->getContainer()->get('validator')->validate($tourist);
-        if ($violationList->count() > 0) {
-            //dump($i . ' ' .$violationList->get(0));
-        }
-
-        $tourist->setNote($i. ', ' .implode(', ', $rowData));
-
-        //dump($rowData);
-        //dump($tourist);
-        //die();
+        $tourist->setNote('1C Export. Data: ' . $i. '; ' .implode('; ', $rowData));
 
         return $tourist;
     }
