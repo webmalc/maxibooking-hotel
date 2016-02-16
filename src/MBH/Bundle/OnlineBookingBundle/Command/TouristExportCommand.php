@@ -62,14 +62,15 @@ class TouristExportCommand extends ContainerAwareCommand
 
         $path = $this->getPathTouristsCsv();
         $resources = fopen($path, 'r');
-        $column = fgetcsv($resources, null, "\t");
+        $columns = fgetcsv($resources, null, "\t");
         fgetcsv($resources, null, "\t");
         fgetcsv($resources, null, "\t");
         fgetcsv($resources, null, "\t");
-        $i = 4;
-        while (($rowData = fgetcsv($resources, 2000, "\t")) !== false) {
+        fgetcsv($resources, null, "\t");
+        $i = 5;
+        while (($rowData = fgetcsv($resources, null, "\t")) !== false) {
             $i++;
-            $tourist = $this->rowToTourist($rowData, $i);
+            /*$tourist = $this->rowToTourist($rowData, $i);
 
             if($tourist) {
                 $dm->persist($tourist);
@@ -79,12 +80,12 @@ class TouristExportCommand extends ContainerAwareCommand
                 $dm->flush();
                 $dm->clear();
             }
-            //dump($i . ' - '. $rowData[0]);
+            dump($i . ' - '. $rowData[0]);*/
         }
 
         $dm->flush();
 
-        $output->writeln('Done');
+        $output->writeln('Done. Total: ' . $i);
     }
 
     /**
