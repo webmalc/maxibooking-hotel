@@ -119,6 +119,7 @@ class TouristExportCommand extends ContainerAwareCommand
             }
             $document->setType($type);
         }
+        $tourist->setDocumentRelation($document);
 
         $tourist->setNote('1C Export. Data: ' . $i. '; ' .implode('; ', $rowData));
 
