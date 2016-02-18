@@ -120,10 +120,11 @@ class Calculation
      * @param \DateTime $end
      * @param int $adults
      * @param int $children
-     * @param Promotion $promotion
-     * @return array|bool
+     * @param Promotion|null $promotion
+     * @param bool $useCategories
+     * @return array
      */
-    public function calcPrices(RoomType $roomType, Tariff $tariff, \DateTime $begin, \DateTime $end, $adults = 0, $children = 0, Promotion $promotion = null)
+    public function calcPrices(RoomType $roomType, Tariff $tariff, \DateTime $begin, \DateTime $end, $adults = 0, $children = 0, Promotion $promotion = null, $useCategories = false)
     {
         $prices = [];
         $places = $roomType->getPlaces();
@@ -179,7 +180,7 @@ class Calculation
 
         //places
         if ($adults == 0 & $children == 0) {
-            $combinations = $roomType->getAdultsChildrenCombinations();
+            $combinations = $roomType->getAdultsChildrenCombinations($useCategories);
         } else {
             $combinations = [0 => ['adults' => $adults, 'children' => $children]];
         }
