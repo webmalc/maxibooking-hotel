@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class HotelManager
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class HotelManager
 {

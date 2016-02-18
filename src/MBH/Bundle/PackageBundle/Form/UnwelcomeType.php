@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Class UnwelcomeItem
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class UnwelcomeType extends AbstractType
 {

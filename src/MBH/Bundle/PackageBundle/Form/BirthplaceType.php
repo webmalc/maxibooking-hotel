@@ -10,7 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class BirthplaceType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class BirthplaceType extends AbstractType
 {

@@ -14,7 +14,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Class Invite
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  *
  * @ODM\Document()
  * @Gedmo\Loggable

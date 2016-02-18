@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class PackageAccommodationType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class PackageAccommodationType extends AbstractType
 {

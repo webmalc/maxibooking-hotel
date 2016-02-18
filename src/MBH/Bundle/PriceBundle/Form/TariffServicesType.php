@@ -10,7 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class TariffServicesType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class TariffServicesType extends AbstractType
 {

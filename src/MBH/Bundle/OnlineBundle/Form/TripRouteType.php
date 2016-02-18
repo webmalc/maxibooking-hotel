@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class TripRouteType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class TripRouteType extends AbstractType
 {

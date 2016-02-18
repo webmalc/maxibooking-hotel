@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
  * Class RangeValidator
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class RangeValidator extends ConstraintValidator
 {

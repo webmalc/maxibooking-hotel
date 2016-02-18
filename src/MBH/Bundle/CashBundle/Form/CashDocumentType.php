@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Class CashDocumentType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class CashDocumentType extends AbstractType
 {

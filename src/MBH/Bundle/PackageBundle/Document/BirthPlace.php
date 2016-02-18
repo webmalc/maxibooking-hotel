@@ -8,7 +8,7 @@ use MBH\Bundle\VegaBundle\Document\VegaState;
 
 /**
  * @ODM\EmbeddedDocument
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class BirthPlace
 {

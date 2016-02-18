@@ -89,6 +89,12 @@ class Search implements SearchInterface
         $beforeArrival = $today->diff($query->begin)->format('%a');
         $helper = $this->container->get('mbh.helper');
 
+        if (!PromotionConditionFactory::checkConditions(
+            $query->tariff, $duration, $query->adults, $query->children
+        )) {
+            return $results;
+        }
+
         //roomTypes
         if (empty($query->roomTypes)) {
             $query->roomTypes = [];

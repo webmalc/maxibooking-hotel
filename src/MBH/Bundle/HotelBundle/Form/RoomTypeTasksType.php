@@ -11,7 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class RoomTypeTasksType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class RoomTypeTasksType extends AbstractType
 {

@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class TariffServiceType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class TariffServiceType extends AbstractType
 {

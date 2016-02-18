@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class TaskRepository
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class TaskRepository extends DocumentRepository
 {

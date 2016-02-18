@@ -92,7 +92,7 @@ class Extension extends \Twig_Extension
      * @param \MongoDate $mongoDate
      * @return \DateTime
      *
-     * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
      */
     public function convertMongoDate(\MongoDate $mongoDate)
     {

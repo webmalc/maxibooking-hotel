@@ -5,7 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 /**
  * Class UnwelcomeHistory
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class UnwelcomeHistory
 {

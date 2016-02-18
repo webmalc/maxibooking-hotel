@@ -9,6 +9,7 @@ form:
             comment: Комментарий
             freeChildrenQuantity: Количество детей бесплатно
             freeAdultsQuantity: Количество взрослых бесплатно
+            add_condition: Доп. условие
             condition: Условие
             condition_quantity: Количество
             childrenDiscount: Скидка на ребёнка
@@ -23,3 +24,5 @@ form:
                 max_tourists: Максимальное количество гостей
                 max_adults: Максимальное количество взрослых
                 min_adults: Минимальное количество взрослых
+                max_children: Максимальное количество детей
+                min_children: Минимальное количество детей

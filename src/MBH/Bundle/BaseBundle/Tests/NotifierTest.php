@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Router;
 
 /**
  * Class NotifierTest
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class NotifierTest extends WebTestCase
 {

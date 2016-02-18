@@ -6,7 +6,7 @@ use MBH\Bundle\PackageBundle\DocumentGenerator\DocumentResponseGeneratorInterfac
 
 /**
  * Interface DocumentTemplateGeneratorInterface
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 interface TemplateGeneratorInterface extends DocumentResponseGeneratorInterface
 {

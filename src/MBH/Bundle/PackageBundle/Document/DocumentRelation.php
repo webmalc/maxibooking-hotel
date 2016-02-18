@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Class DocumentRelation
  * @ODM\EmbeddedDocument
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  *
  * @ODM\HasLifecycleCallbacks()
  */

@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
@@ -10,6 +11,9 @@ class TariffType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+
+        $conditions = PromotionConditionFactory::getAvailableConditions();
+
         $builder
             ->add('fullTitle', 'text', [
                 'label' => 'Название',
@@ -35,7 +39,7 @@ class TariffType extends AbstractType
                 'date',
                 array(
                     'label' => 'Начало',
-                    'group' => 'Срок действия тарифа',
+                    'group' => 'Условия и ограничения',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
                     'help' => 'С какого числа используется тариф?',
@@ -52,7 +56,7 @@ class TariffType extends AbstractType
                 'date',
                 array(
                     'label' => 'Конец',
-                    'group' => 'Срок действия тарифа',
+                    'group' => 'Условия и ограничения',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
                     'help' => 'По какое число используется тариф?',
@@ -63,7 +67,46 @@ class TariffType extends AbstractType
                         'placeholder' => 'Не ограничен'
                     ),
                 )
-            )
+            );
+        $conditions = PromotionConditionFactory::getAvailableConditions();
+        $builder
+            ->add('condition', 'choice', [
+                'label' => 'form.promotionType.label.condition',
+                'required' => false,
+                'group' => 'Условия и ограничения',
+                'choices' => array_combine($conditions, $conditions),
+                'choice_label' => function ($value, $label) {
+                    return 'form.promotionType.choice_label.condition.' . $value;
+                }
+            ])
+            ->add('condition_quantity', 'number', [
+                'label' => 'form.promotionType.label.condition_quantity',
+                'group' => 'Условия и ограничения',
+                'required' => false,
+                'error_bubbling' => false,
+                'attr' => [
+                    'class' => 'spinner',
+                ],
+            ])
+            ->add('additional_condition', 'choice', [
+                'label' => 'form.promotionType.label.add_condition',
+                'required' => false,
+                'group' => 'Условия и ограничения',
+                'choices' => array_combine($conditions, $conditions),
+                'choice_label' => function ($value, $label) {
+                    return 'form.promotionType.choice_label.condition.' . $value;
+                }
+            ])
+            ->add('additional_condition_quantity', 'number', [
+                'label' => 'form.promotionType.label.condition_quantity',
+                'group' => 'Условия и ограничения',
+                'required' => false,
+                'error_bubbling' => false,
+                'attr' => [
+                    'class' => 'spinner',
+                ],
+            ]);
+        $builder
             ->add('isOnline', 'checkbox', [
                 'label' => 'Онлайн?',
                 'group' => 'Настройки',

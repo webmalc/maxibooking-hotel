@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class DocumentTemplateController
  *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  * @Route("/templates")
  */
 class DocumentTemplateController extends BaseController

@@ -11,7 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class HousingType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class HousingType extends AbstractType
 {

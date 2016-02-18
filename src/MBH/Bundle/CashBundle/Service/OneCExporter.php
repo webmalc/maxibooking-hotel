@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class OneCExporter
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class OneCExporter
 {

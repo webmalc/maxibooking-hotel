@@ -6,7 +6,7 @@ use MBH\Bundle\BaseBundle\Document\AbstractQueryCriteria;
 
 /**
  * Class RoomTypeReportCriteria
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class RoomTypeReportCriteria extends AbstractQueryCriteria
 {

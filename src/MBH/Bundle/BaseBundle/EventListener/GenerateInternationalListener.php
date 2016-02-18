@@ -10,7 +10,7 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 
 /**
  * Class GenerateInternationalListener
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class GenerateInternationalListener implements EventSubscriber
 {

@@ -23,7 +23,7 @@ use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
  * @Route("/")
  * @Method("GET")
  *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class DocumentsController extends Controller implements CheckHotelControllerInterface, DeletableControllerInterface
 {

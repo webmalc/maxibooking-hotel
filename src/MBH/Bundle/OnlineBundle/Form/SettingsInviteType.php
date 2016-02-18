@@ -8,7 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class InviteType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class SettingsInviteType extends AbstractType
 {

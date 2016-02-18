@@ -10,7 +10,7 @@ use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 
 /**
  * Class RoomTypeManager
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class RoomTypeManager
 {

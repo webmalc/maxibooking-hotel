@@ -15,7 +15,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
 
 /**
  * Class DocumentTemplate
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  *
  * @ODM\Document(collection="DocumentTemplate")
  * @Gedmo\Loggable

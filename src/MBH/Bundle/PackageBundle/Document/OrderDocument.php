@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ODM\EmbeddedDocument
  * @ODM\HasLifecycleCallbacks
  *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class OrderDocument
 {

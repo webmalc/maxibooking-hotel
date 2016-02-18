@@ -95,7 +95,7 @@ class CashDocumentRepository extends DocumentRepository
      * @param CashDocumentQueryCriteria $criteria
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      *
-     * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
      */
     private function queryCriteriaToBuilder(CashDocumentQueryCriteria $criteria)
     {
@@ -175,7 +175,7 @@ class CashDocumentRepository extends DocumentRepository
      * @param CashDocument $document
      * @return string
      *
-     * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
      */
     public function generateNewNumber(CashDocument $document)
     {
@@ -193,7 +193,7 @@ class CashDocumentRepository extends DocumentRepository
      * @param bool $byDays
      * @return CashDocument[]|array
      *
-     * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
      */
     public function findByCriteria(CashDocumentQueryCriteria $criteria, $byDays = false)
     {
@@ -210,7 +210,7 @@ class CashDocumentRepository extends DocumentRepository
      * @param Builder $builder
      * @return array
      *
-     * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
      */
     public function getByDays(Builder $builder)
     {

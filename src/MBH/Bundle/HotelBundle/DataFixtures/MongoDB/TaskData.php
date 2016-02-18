@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class TaskData
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class TaskData implements FixtureInterface, ContainerAwareInterface
 {

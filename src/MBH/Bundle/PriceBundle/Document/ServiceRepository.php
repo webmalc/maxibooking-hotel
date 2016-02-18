@@ -7,7 +7,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 
 /**
  * Class ServiceRepository
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class ServiceRepository extends DocumentRepository
 {

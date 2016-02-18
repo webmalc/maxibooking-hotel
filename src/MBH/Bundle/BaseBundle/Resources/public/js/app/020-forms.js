@@ -588,7 +588,7 @@ var select2TemplateResult = {
 
 /**
  * tagsSelectWidget
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 (function ($) {
     var mainClass = 'tags-select-widget';

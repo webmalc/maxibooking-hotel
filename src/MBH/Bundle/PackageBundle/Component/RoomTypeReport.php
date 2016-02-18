@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class RoomTypeReport
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class RoomTypeReport
 {

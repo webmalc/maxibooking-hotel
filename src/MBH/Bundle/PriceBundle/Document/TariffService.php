@@ -10,7 +10,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * Class TariffService
  * @ODM\EmbeddedDocument()
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class TariffService extends Base
 {

@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\Form;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
@@ -13,7 +14,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Class PromotionType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class PromotionType extends AbstractType
 {
@@ -92,7 +93,26 @@ class PromotionType extends AbstractType
                 'attr' => [
                     'class' => 'spinner',
                 ],
-            ]);
+            ])
+            ->add('additional_condition', 'choice', [
+                'label' => 'form.promotionType.label.add_condition',
+                'required' => false,
+                'group' => 'form.promotionType.group.conditions',
+                'choices' => array_combine($conditions, $conditions),
+                'choice_label' => function ($value, $label) {
+                    return 'form.promotionType.choice_label.condition.' . $value;
+                }
+            ])
+            ->add('additional_condition_quantity', 'number', [
+                'label' => 'form.promotionType.label.condition_quantity',
+                'group' => 'form.promotionType.group.conditions',
+                'required' => false,
+                'error_bubbling' => false,
+                'attr' => [
+                    'class' => 'spinner',
+                ],
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

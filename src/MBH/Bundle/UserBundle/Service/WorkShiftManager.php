@@ -11,7 +11,7 @@ use MBH\Bundle\UserBundle\Document\WorkShift;
 
 /**
  * Class WorkShiftManager
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class WorkShiftManager
 {

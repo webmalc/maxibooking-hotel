@@ -12,7 +12,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 /**
  * Class NewCashDocumentType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class NewCashDocumentType extends CashDocumentType
 {

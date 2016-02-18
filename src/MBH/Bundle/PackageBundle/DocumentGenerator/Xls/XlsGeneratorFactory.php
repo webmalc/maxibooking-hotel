@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Class DocumentXlsGeneratorFactory
  *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class XlsGeneratorFactory implements GeneratorFactoryInterface
 {

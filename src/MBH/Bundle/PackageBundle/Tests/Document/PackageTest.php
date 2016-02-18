@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Class PackageTest
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class PackageTest extends WebTestCase
 {

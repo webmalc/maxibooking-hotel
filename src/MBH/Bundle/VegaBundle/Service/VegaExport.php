@@ -18,7 +18,7 @@ use Symfony\Component\Validator\ValidatorBuilder;
  * Class VegaExport
  * @package MBH\Bundle\VegaBundle\Services
  *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class VegaExport
 {

@@ -17,7 +17,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 /**
  * Class OrganizationType
  *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class OrganizationType extends AbstractType
 {

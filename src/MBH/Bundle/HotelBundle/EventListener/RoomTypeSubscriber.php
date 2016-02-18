@@ -10,7 +10,7 @@ use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
 
 /**
  * Class RoomTypeSubscriber
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class RoomTypeSubscriber implements EventSubscriber
 {

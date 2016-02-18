@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class PayerRepository
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class PayerRepository
 {

@@ -8,7 +8,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Class InternableDocument
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 trait InternableDocument
 {

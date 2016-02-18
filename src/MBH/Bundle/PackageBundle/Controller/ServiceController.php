@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Class ServiceController
  * @package MBH\Bundle\PackageBundle\Controller
  *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class ServiceController extends BaseController
 {

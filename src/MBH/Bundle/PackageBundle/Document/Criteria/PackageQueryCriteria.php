@@ -9,7 +9,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 
 /**
  * Class PackageQueryCriteria
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class PackageQueryCriteria extends AbstractQueryCriteria
 {
