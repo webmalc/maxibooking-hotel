@@ -129,6 +129,8 @@ class Calculation
         $prices = [];
         $places = $roomType->getPlaces();
         $hotel = $roomType->getHotel();
+        $useCategories ? $isChildPrices = $roomType->getCategory()->getIsChildPrices() : $isChildPrices = $this->getIsChildPrices();
+        $useCategories ? $isIndividualAdditionalPrices = $roomType->getCategory()->getIsIndividualAdditionalPrices() : $isIndividualAdditionalPrices = $roomType->getIsIndividualAdditionalPrices();
         $endPlus = clone $end;
         $endPlus->modify('+1 day');
 
@@ -243,7 +245,7 @@ class Calculation
                 ) {
                     $dayPrice += $cache->getSinglePrice();
                 } elseif ($cache->getIsPersonPrice()) {
-                    if ($roomType->getIsChildPrices() && $cache->getChildPrice() !== null) {
+                    if ($isChildPrices && $cache->getChildPrice() !== null) {
                         $childrenPrice = $mainChildren * $cache->getChildPrice();
                     } else {
                         $childrenPrice = $mainChildren * $cache->getPrice();
@@ -264,7 +266,7 @@ class Calculation
                     continue 2;
                 }
 
-                if ($roomType->getIsIndividualAdditionalPrices() and ($addsChildren + $addsAdults) > 1) {
+                if ($isIndividualAdditionalPrices and ($addsChildren + $addsAdults) > 1) {
                     $addsPrice = 0;
                     $additionalCalc = function ($num, $prices, $price, $start = 0) {
                         $result = 0;
