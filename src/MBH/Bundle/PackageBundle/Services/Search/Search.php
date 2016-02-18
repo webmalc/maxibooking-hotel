@@ -90,6 +90,12 @@ class Search implements SearchInterface
         $beforeArrival = $today->diff($query->begin)->format('%a');
         $helper = $this->container->get('mbh.helper');
 
+        if (!PromotionConditionFactory::checkConditions(
+            $query->tariff, $duration, $query->adults, $query->children
+        )) {
+            return $results;
+        }
+
         //roomTypes
         if (empty($query->roomTypes)) {
             $query->roomTypes = [];
@@ -312,7 +318,7 @@ class Search implements SearchInterface
                 $roomType = $caches[0]->getRoomType();
                 $useCategories = $query->isOnline && $this->config && $this->config->getUseRoomTypeCategory();
                 $result = new SearchResult();
-                $tourists = $roomType->getAdultsChildrenCombination($adults, $children);
+                $tourists = $roomType->getAdultsChildrenCombination($adults, $children, $this->manager->useCategories);
 
                 if ($query->accommodations) {
                     $groupedRooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
@@ -338,7 +344,10 @@ class Search implements SearchInterface
                 ;
 
                 //prices
-                $prices = $calc->calcPrices($roomType, $tariff, $query->begin, $end, $tourists['adults'], $tourists['children'], $promotion);
+                $prices = $calc->calcPrices(
+                    $roomType, $tariff, $query->begin, $end,
+                    $tourists['adults'], $tourists['children'], $promotion, $this->manager->useCategories
+                );
 
                 if (!$prices || (($query->adults + $query->children) != 0 && !isset($prices[$tourists['adults'] . '_' . $tourists['children']]))) {
                     continue;

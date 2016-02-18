@@ -1,5 +1,5 @@
 /*
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 /*global $, window,console, document*/
 (function ($) {

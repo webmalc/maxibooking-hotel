@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 /**
  * Class UnwelcomeRepositoryTest
  * @package MBH\Bundle\PackageBundle\Tests\Document
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class UnwelcomeRepositoryTest extends WebTestCase
 {

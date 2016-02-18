@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * Class ReportRoomTypeStatusTest
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class RoomTypeReportTest extends WebTestCase
 {

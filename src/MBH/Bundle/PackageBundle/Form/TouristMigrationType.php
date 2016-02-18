@@ -9,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class TouristMigrationType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class TouristMigrationType extends AbstractType
 {

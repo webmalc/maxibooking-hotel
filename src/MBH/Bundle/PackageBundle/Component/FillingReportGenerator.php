@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class FillingReportGenerator
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class FillingReportGenerator
 {

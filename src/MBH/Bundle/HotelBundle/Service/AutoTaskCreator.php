@@ -17,7 +17,7 @@ use MBH\Bundle\HotelBundle\Document\Task;
 
 /**
  * Class AutoTaskCreator
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class AutoTaskCreator
 {

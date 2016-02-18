@@ -7,7 +7,7 @@ use MBH\Bundle\PriceBundle\Document\Service;
 
 /**
  * Class PackageServiceGroupByService
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class PackageServiceGroupByService extends PackageServiceGroup
 {

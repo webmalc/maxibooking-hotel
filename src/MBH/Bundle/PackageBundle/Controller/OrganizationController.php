@@ -24,7 +24,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
  *
  * @Route("/organizations")
  *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class OrganizationController extends Controller
 {

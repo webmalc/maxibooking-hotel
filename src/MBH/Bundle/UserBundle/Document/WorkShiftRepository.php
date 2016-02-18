@@ -7,7 +7,7 @@ use MBH\Bundle\UserBundle\Document\User;
 
 /**
  * Class WorkShiftRepository
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class WorkShiftRepository extends DocumentRepository
 {

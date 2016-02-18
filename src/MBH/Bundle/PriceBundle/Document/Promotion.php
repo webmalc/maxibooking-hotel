@@ -4,6 +4,8 @@ namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\PriceBundle\Lib\ConditionsInterface;
+use MBH\Bundle\PriceBundle\Document\Traits\ConditionsTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -20,7 +22,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @todo add validator
  * @see Package::isDiscountValid
  */
-class Promotion extends Base
+class Promotion extends Base implements ConditionsInterface
 {
     /**
      * Hook timestampable behavior
@@ -39,6 +41,8 @@ class Promotion extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
+    use ConditionsTrait;
 
     /**
      * @var string
@@ -117,21 +121,6 @@ class Promotion extends Base
      * @Assert\Range(min="1", max="100")
      */
     protected $childrenDiscount;
-
-    /**
-     * @ODM\String()
-     * @var string
-     * @Assert\Choice(callback={"MBH\Bundle\PriceBundle\Services\PromotionConditionFactory", "getAvailableConditions"})
-     */
-    protected $condition;
-
-    /**
-     * @ODM\Integer()
-     * @var integer
-     * @Assert\Type(type="numeric")
-     * @Assert\Range(min="1", max="10")
-     */
-    protected $conditionQuantity;
 
     /**
      * @return string
@@ -262,45 +251,6 @@ class Promotion extends Base
     }
 
 
-
-    /**
-     * @return mixed
-     */
-    public function getCondition()
-    {
-        return $this->condition;
-    }
-
-    /**
-     * @param mixed $condition
-     * @return Promotion
-     */
-    public function setCondition($condition)
-    {
-        $this->condition = $condition;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getConditionQuantity()
-    {
-        return $this->conditionQuantity;
-    }
-
-    /**
-     * @param int $conditionQuantity
-     * @return Promotion
-     */
-    public function setConditionQuantity($conditionQuantity)
-    {
-        $this->conditionQuantity = $conditionQuantity;
-
-        return $this;
-    }
-
     /**
      * @return int
      */
@@ -318,6 +268,4 @@ class Promotion extends Base
         $this->childrenDiscount = $childrenDiscount;
         return $this;
     }
-
-
 }

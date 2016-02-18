@@ -13,7 +13,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * Class DailyTaskSettings
  * @ODM\EmbeddedDocument()
  * @Gedmo\Loggable
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class DailyTaskSetting
 {

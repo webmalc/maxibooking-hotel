@@ -10,7 +10,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  * Class UnwelcomeHistoryRepository
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class UnwelcomeRepository
 {

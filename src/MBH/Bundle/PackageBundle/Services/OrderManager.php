@@ -475,7 +475,7 @@ class OrderManager
 
 /**
  * Class PackageCreationException
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class PackageCreationException extends Exception
 {

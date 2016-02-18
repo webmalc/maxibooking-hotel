@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class NoticeStayPlaceXlsGeneratorTest
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class NoticeStayPlaceXlsGeneratorTest extends WebTestCase
 {

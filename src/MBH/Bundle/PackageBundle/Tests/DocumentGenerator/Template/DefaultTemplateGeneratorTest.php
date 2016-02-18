@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 /**
  * Class DefaultTemplateGeneratorTest
  * @package MBH\Bundle\PackageBundle\Tests\DocumentGenerator\Template
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class DefaultTemplateGeneratorTest extends WebTestCase
 {

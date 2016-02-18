@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints\Type;
 /**
  * Class DocumentRelationType
  * @package MBH\Bundle\PackageBundle\Form
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class DocumentRelationType extends AbstractType
 {

@@ -9,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class TaskTypeCategoryType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class TaskTypeCategoryType extends AbstractType
 {

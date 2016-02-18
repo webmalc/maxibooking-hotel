@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints\Date;
 /**
  * Class SearchType
  * @package MBH\Bundle\CashBundle\Form
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class SearchType extends AbstractType
 {

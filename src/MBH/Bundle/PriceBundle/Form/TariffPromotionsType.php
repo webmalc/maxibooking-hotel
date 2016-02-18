@@ -8,7 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class TariffPromotionsType
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class TariffPromotionsType extends AbstractType
 {

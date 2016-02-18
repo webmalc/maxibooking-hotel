@@ -9,7 +9,7 @@ use MBH\Bundle\UserBundle\Document\User;
 
 /**
  * Class TaskQueryCriteria
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class TaskQueryCriteria extends AbstractQueryCriteria
 {

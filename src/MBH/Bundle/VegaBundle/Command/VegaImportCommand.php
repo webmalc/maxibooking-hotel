@@ -18,7 +18,7 @@ use MBH\Bundle\VegaBundle\Service\FriendlyFormatter;
 /**
  * Class VegaImportCommand
  * @package MBH\Bundle\BaseBundle\Command
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class VegaImportCommand extends ContainerAwareCommand
 {

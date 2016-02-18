@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  * Class EntityToIdTransformer
  *
  * @link https://gist.github.com/bjo3rnf/4061232
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class EntityToIdTransformer implements DataTransformerInterface
 {

@@ -9,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Class DocumentTemplateType
  *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class DocumentTemplateType extends AbstractType
 {

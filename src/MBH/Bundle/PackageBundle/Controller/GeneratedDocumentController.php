@@ -21,7 +21,7 @@ use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
  * @Route("/document/generated")
  * @Method("GET")
  *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class GeneratedDocumentController extends Controller implements CheckHotelControllerInterface
 {

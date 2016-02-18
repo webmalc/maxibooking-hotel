@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Class TouristSubscriber
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class TouristSubscriber implements EventSubscriber
 {

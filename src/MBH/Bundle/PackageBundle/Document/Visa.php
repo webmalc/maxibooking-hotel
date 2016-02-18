@@ -15,7 +15,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @Gedmo\Loggable
  * @MBHAssert\Range(firstProperty="arrivalTime", secondProperty="departureTime")
  *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class Visa extends Base
 {

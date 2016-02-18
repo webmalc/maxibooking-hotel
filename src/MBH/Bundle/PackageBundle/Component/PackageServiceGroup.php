@@ -6,7 +6,7 @@ use MBH\Bundle\PackageBundle\Document\PackageService;
 
 /**
  * Class PackageServiceGroup
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class PackageServiceGroup// extends PackageService
 {

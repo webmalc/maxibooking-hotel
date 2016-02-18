@@ -41,7 +41,7 @@ var docReadyCash = function () {
 };
 
 /**
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 (function ($) {
     docReadyCash();

@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class RoomTypeCategoryController
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  * @Route("/room_type/category")
  */
 class RoomTypeCategoryController extends BaseController

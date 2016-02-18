@@ -339,13 +339,18 @@ $(document).ready(function () {
 
 
     var sendForm = function () {
-        if (!$('#s_begin').val() || !$('#s_end').val() || createDate($('#s_begin')) >= createDate($('#s_end'))){
-            return;
-        }
-        //var wrapper = $('#package-search-results-wrapper');
-        window.location.hash = $packageSearchForm.serialize();
-        $wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
-        send($packageSearchForm.serialize());
+
+        setTimeout(
+            function()
+            {
+                if (!$('#s_begin').val() || !$('#s_end').val() || createDate($('#s_begin')) >= createDate($('#s_end'))){
+                    return;
+                }
+                //var wrapper = $('#package-search-results-wrapper');
+                window.location.hash = $packageSearchForm.serialize();
+                $wrapper.html('<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i> Подождите...</div>');
+                send($packageSearchForm.serialize());
+            }, 500);
     }
 
     if (window.location.hash) {

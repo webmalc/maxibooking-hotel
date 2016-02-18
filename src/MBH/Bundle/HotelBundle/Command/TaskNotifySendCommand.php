@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 /**
  * Class NotificationSenderCommand
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class TaskNotifySendCommand extends ContainerAwareCommand
 {

@@ -5,6 +5,8 @@ namespace MBH\Bundle\PriceBundle\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PriceBundle\Lib\ConditionsInterface;
+use MBH\Bundle\PriceBundle\Document\Traits\ConditionsTrait;
 use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -22,7 +24,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="Такой тариф уже существует")
  * @ODM\HasLifecycleCallbacks
  */
-class Tariff extends Base
+class Tariff extends Base implements ConditionsInterface
 {
 
     /**
@@ -42,6 +44,8 @@ class Tariff extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
+    use ConditionsTrait;
     
     /** 
      * @Gedmo\Versioned

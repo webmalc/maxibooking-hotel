@@ -7,7 +7,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Class DictionaryProvider
  * Provide Vega dictionary as array
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class DictionaryProvider
 {

@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraint;
 
 /**
  * Class Range
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  *
  * @Annotation
  */

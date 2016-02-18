@@ -11,7 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * Class Migration
  * @ODM\EmbeddedDocument
  * @Gedmo\Loggable
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class Migration extends Base
 {

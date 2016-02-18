@@ -327,11 +327,14 @@ class RoomType extends Base implements RoomTypeInterface
      * Convert children to adults
      * @param $adults
      * @param $children
+     * @param boolean $useCategories
      * @return array
      */
-    public function getAdultsChildrenCombination($adults, $children)
+    public function getAdultsChildrenCombination($adults, $children, $useCategories = false)
     {
-        if ($this->getIsChildPrices()) {
+        $useCategories ? $isChildPrices = $this->getCategory()->getIsChildPrices() : $isChildPrices = $this->getIsChildPrices();
+
+        if ($isChildPrices) {
             return ['adults' => $adults, 'children' => $children];
         }
 
@@ -432,15 +435,17 @@ class RoomType extends Base implements RoomTypeInterface
     }
 
     /**
+     * @param boolean $useCategories
      * @return array
      */
-    public function getAdultsChildrenCombinations()
+    public function getAdultsChildrenCombinations($useCategories = false)
     {
         $result = [];
+        $useCategories ? $isChildPrices = $this->getCategory()->getIsChildPrices() : $isChildPrices = $this->getIsChildPrices();
 
         $total = $this->getTotalPlaces();
-        $this->getIsChildPrices() ? $additional = $this->getTotalPlaces() : $additional = $this->getAdditionalPlaces();
-        $this->getIsChildPrices() ? $places = 1 : $places = $this->getPlaces();
+        $isChildPrices ? $additional = $this->getTotalPlaces() : $additional = $this->getAdditionalPlaces();
+        $isChildPrices ? $places = 1 : $places = $this->getPlaces();
 
         for ($i = 1; $i <= $total; $i++) {
             $result[] = ['adults' => $i, 'children' => 0];

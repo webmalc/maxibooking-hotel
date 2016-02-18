@@ -318,7 +318,7 @@ class Task extends Base
 
     /**
      * @Assert\Callback
-     * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
      */
     public function validate(ExecutionContextInterface $context)
     {
@@ -361,7 +361,7 @@ class Task extends Base
      * Validate status order. Consider previous status and current status
      * @return boolean
      *
-     * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
      */
     private function isStatusChainValid()
     {

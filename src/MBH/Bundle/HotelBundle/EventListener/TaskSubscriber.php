@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class TaskSubscriber
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class TaskSubscriber implements EventSubscriber
 {

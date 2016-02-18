@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class InviteController
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  *
  * @Route("/invite")
  */

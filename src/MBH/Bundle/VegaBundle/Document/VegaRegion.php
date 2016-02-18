@@ -11,7 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ODM\Document(collection="vega_region")
  * @Gedmo\Loggable
  * @package MBH\Bundle\VegaBundle\Document
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class VegaRegion extends Base
 {

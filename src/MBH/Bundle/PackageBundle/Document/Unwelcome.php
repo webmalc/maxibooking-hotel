@@ -6,7 +6,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  * Class Unwelcome
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class Unwelcome implements \JsonSerializable
 {

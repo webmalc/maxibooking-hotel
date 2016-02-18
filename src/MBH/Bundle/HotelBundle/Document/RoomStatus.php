@@ -14,7 +14,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
 
 /**
  * Class RoomStatus
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  *
  * @ODM\Document()
  * @Gedmo\Loggable

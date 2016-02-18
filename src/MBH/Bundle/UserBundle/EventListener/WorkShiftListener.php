@@ -20,7 +20,7 @@ use Symfony\Component\Translation\Translator;
 
 /**
  * Class WorkShiftListener
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class WorkShiftListener
 {

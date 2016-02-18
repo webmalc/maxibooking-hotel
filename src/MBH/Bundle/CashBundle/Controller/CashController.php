@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class CashController
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class CashController extends Controller
 {

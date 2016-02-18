@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints\Length;
 /**
  * Class OrderDocumentType
  * @package MBH\Bundle\PackageBundle\Form
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class OrderDocumentType extends AbstractType
 {

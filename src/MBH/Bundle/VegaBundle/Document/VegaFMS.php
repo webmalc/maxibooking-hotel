@@ -12,7 +12,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *
  * @ODM\Document(collection="vega_fms")
  * @Gedmo\Loggable
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class VegaFMS extends Base
 {

@@ -6,7 +6,7 @@ namespace MBH\Bundle\PackageBundle\Lib;
  * Interface PayerInterface
  * @package MBH\Bundle\PackageBundle\Lib
  *
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 interface PayerInterface
 {

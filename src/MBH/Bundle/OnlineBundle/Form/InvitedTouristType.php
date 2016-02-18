@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 /**
  * Class InvitedTouristType
  * @package MBH\Bundle\OnlineBundle\Form
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class InvitedTouristType extends AbstractType
 {

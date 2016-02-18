@@ -7,7 +7,7 @@ use Symfony\Component\Process\Process;
 
 /**
  * Class ConsoleAutoTaskCreator
- * @author Aleksandr Arofikin <sashaaro@gmail.com>
+
  */
 class ConsoleAutoTaskCreator extends AutoTaskCreator
 {
