@@ -6,10 +6,12 @@
 
         <room id="{{ roomId }}">
             {% for rateId, rate in rates %}
-                <date from ="{{ 'now'|date('Y-m-d') }}" to="{{ 'now'|date_modify("+5 years")|date('Y-m-d') }}">
-                    <rate id="{{ rateId }}" />
-                    <closed>1</closed>
-                </date>
+                {% if rate.rooms is empty or roomId in rate.rooms %}
+                    <date from ="{{ 'now'|date('Y-m-d') }}" to="{{ 'now'|date_modify("+5 years")|date('Y-m-d') }}">
+                        <rate id="{{ rateId }}" />
+                        <closed>1</closed>
+                    </date>
+                {% endif %}
             {% endfor %}
         </room>
     {% endfor %}

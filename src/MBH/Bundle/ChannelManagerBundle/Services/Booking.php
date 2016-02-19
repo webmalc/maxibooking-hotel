@@ -112,17 +112,25 @@ class Booking extends Base
             'MBHChannelManagerBundle:Booking:get.xml.twig',
             ['config' => $config, 'params' => $this->params]
         );
+
         $response = $this->sendXml(static::BASE_URL . 'roomrates', $request);
 
-        //$this->log($response->asXML());
-
         foreach ($response->room as $room) {
+
             foreach ($room->rates->rate as $rate) {
+
+                if (isset($result[(string)$rate['id']]['rooms'])) {
+                    $rooms = $result[(string)$rate['id']]['rooms'];
+                } else {
+                    $rooms = [];
+                }
+                $rooms[(string)$room['id']] = (string)$room['id'];
 
                 $result[(string)$rate['id']] = [
                     'title' => (string)$rate['rate_name'],
                     'readonly' => empty((int)$rate['readonly']) ? false : true,
                     'is_child_rate' => empty((int)$rate['is_child_rate']) ? false : true,
+                    'rooms' => $rooms
                 ];
             }
         }
@@ -261,6 +269,10 @@ class Booking extends Base
                             continue;
                         }
 
+                        if (!empty($serviceTariffs[$tariff['syncId']]['rooms']) && !in_array($roomTypeInfo['syncId'], $serviceTariffs[$tariff['syncId']]['rooms'])) {
+                            continue;
+                        }
+
                         if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
                             $info = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
@@ -346,6 +358,10 @@ class Booking extends Base
                     foreach ($tariffs as $tariffId => $tariff) {
 
                         if (!isset($serviceTariffs[$tariff['syncId']]) || $serviceTariffs[$tariff['syncId']]['readonly'] || $serviceTariffs[$tariff['syncId']]['is_child_rate']) {
+                            continue;
+                        }
+
+                        if (!empty($serviceTariffs[$tariff['syncId']]['rooms']) && !in_array($roomTypeInfo['syncId'], $serviceTariffs[$tariff['syncId']]['rooms'])) {
                             continue;
                         }
 
