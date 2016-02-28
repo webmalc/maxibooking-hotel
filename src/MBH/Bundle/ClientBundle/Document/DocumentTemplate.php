@@ -6,6 +6,7 @@ namespace MBH\Bundle\ClientBundle\Document;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\Organization;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -26,6 +27,9 @@ class DocumentTemplate extends Base
     use TimestampableDocument;
     use SoftDeleteableDocument;
     use BlameableDocument;
+
+    const ORIENTATION_PORTRAIT = 'portrait';
+    const ORIENTATION_LANDSCAPE =  'landscape';
 
     /**
      * @var string
@@ -53,9 +57,9 @@ class DocumentTemplate extends Base
      * @ODM\String()
      *
      * @Assert\NotNull()
-     * @Assert\Type(type="string")
+     * @Assert\Choice(callback="getOrientations")
      */
-    protected $orientation;
+    protected $orientation = self::ORIENTATION_PORTRAIT;
 
     /**
      * @var Hotel|null
@@ -63,6 +67,13 @@ class DocumentTemplate extends Base
      * @ODM\ReferenceOne(targetDocument="\MBH\Bundle\HotelBundle\Document\Hotel")
      */
     protected $hotel;
+
+    /**
+     * @var Organization
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="\MBH\Bundle\PackageBundle\Document\Organization")
+     */
+    protected $organization;
 
     /**
      * @return string
@@ -127,4 +138,34 @@ class DocumentTemplate extends Base
     {
         $this->hotel = $hotel;
     }
+
+    /**
+     * @return array
+     */
+    public static function getOrientations()
+    {
+        return [
+            self::ORIENTATION_PORTRAIT => self::ORIENTATION_PORTRAIT,
+            self::ORIENTATION_LANDSCAPE => self::ORIENTATION_LANDSCAPE
+        ];
+    }
+
+    /**
+     * @return Organization|null
+     */
+    public function getOrganization()
+    {
+        return $this->organization;
+    }
+
+    /**
+     * @param Organization $organization|null
+     * @return DocumentTemplate
+     */
+    public function setOrganization(Organization $organization = null)
+    {
+        $this->organization = $organization;
+        return $this;
+    }
+
 }

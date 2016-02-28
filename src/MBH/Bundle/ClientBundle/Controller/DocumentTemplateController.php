@@ -27,7 +27,7 @@ class DocumentTemplateController extends BaseController
     /**
      * @Route("/", name="document_templates")
      * @Method("GET")
-     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATE_VIEW')")
+     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -42,7 +42,7 @@ class DocumentTemplateController extends BaseController
     /**
      * @Route("/new", name="document_templates_new")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATE_NEW')")
+     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_NEW')")
      * @Template()
      */
     public function newAction(Request $request)
@@ -50,15 +50,14 @@ class DocumentTemplateController extends BaseController
         $entity = new DocumentTemplate();
         $form = $this->createForm(new DocumentTemplateType(), $entity);
 
-        if($request->isMethod(Request::METHOD_POST)) {
-            $form->submit($request);
-            if($form->isValid()) {
-                $entity->setHotel($this->hotel);
-                $this->dm->persist($entity);
-                $this->dm->flush();
+        $form->handleRequest($request);
 
-                return $this->afterSaveRedirect('document_templates', $entity->getId());
-            }
+        if ($form->isValid()) {
+            $this->dm->persist($entity);
+            $this->dm->flush();
+
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
+            return $this->afterSaveRedirect('document_templates', $entity->getId());
         }
 
         return [
@@ -70,7 +69,7 @@ class DocumentTemplateController extends BaseController
     /**
      * @Route("/edit/{id}", name="document_templates_edit")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATE_EDIT')")
+     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_EDIT')")
      * @Template()
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
      */
@@ -98,9 +97,10 @@ class DocumentTemplateController extends BaseController
     /**
      * @Route("/preview/{id}", name="document_templates_preview")
      * @Method("GET")
-     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATE_VIEW')")
+     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_VIEW')")
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
      * @return Response
+     * @deprecated
      */
     public function previewAction(DocumentTemplate $documentTemplate)
     {
@@ -115,7 +115,7 @@ class DocumentTemplateController extends BaseController
     /**
      * @Route("/delete/{id}", name="document_templates_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATE_DELETE')")
+     * @Security("is_granted('ROLE_DOCUMENT_TEMPLATES_DELETE')")
      * @Template()
      * @ParamConverter(class="\MBH\Bundle\ClientBundle\Document\DocumentTemplate")
      */

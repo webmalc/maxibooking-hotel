@@ -1,37 +1,15 @@
 {% extends 'MBHClientBundle:DocumentTemplate:layout.html.twig' %}
 
 {% set small_title = 'views.documentTempalte.edit'|trans({}, 'MBHClientBundle') %}
+{% set layout = "box" %}
 
 {% block content %}
 
-    {{ form_start(form, {'attr': {'class': 'form-horizontal' }}) }}
+    {{ form_start(form, {'action': path('document_templates_edit', {'id': entity.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'save_close' : false} %}
-
-    <a target="_blank" href="{{ path('document_templates_preview', {id : entity.id}) }}" class="btn btn-info btn-sm"><i class="fa fa-eye"></i> Превью</a>
-
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'route': 'hotel' } %}
     {{ form_end(form) }}
 
-    {% if entity %}
-        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
-    {% endif %}
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
 
-{% endblock %}
-
-{% block scripts %}
-    {{ parent() }}
-    <script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
-
-    <script>
-        tinymce.init({
-            selector: "#{{ form.content.vars.id }}",
-            //language: "{{ app.request.locale }}",
-            plugins: [
-                "advlist autolink lists link image charmap print preview anchor",
-                "searchreplace visualblocks code fullscreen",
-                "insertdatetime media table contextmenu paste"
-            ],
-            toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent"
-        });
-    </script>
 {% endblock %}

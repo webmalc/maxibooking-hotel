@@ -55,11 +55,11 @@ ROLE_CLIENT_CONFIG: Параметры
 ROLE_CLIENT_CONFIG_VIEW: Просмотр параметров
 ROLE_CLIENT_CONFIG_EDIT: Редактирование параметров
 
-ROLE_DOCUMENT_TEMPLATE: Шаблоны документов
-ROLE_DOCUMENT_TEMPLATE_VIEW: Просмотр шаблонов документов
-ROLE_DOCUMENT_TEMPLATE_NEW: Создание шаблонов документов
-ROLE_DOCUMENT_TEMPLATE_EDIT: Редактирование шаблонов документов
-ROLE_DOCUMENT_TEMPLATE_DELETE: Удаление шаблонов документов
+ROLE_DOCUMENT_TEMPLATES: Шаблоны документов
+ROLE_DOCUMENT_TEMPLATES_VIEW: Просмотр шаблонов документов
+ROLE_DOCUMENT_TEMPLATES_NEW: Создание шаблонов документов
+ROLE_DOCUMENT_TEMPLATES_EDIT: Редактирование шаблонов документов
+ROLE_DOCUMENT_TEMPLATES_DELETE: Удаление шаблонов документов
 
 ROLE_HOUSING: Корпуса
 ROLE_HOUSING_VIEW: Просмотр корпусов

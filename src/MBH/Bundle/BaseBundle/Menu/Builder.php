@@ -283,6 +283,9 @@ class Builder extends ContainerAware
         $menu['configs']->addChild('sources', ['route' => 'package_source', 'label' => 'Источники'])
              ->setAttributes(['icon' => 'fa fa-compass'])
         ;
+        $menu['configs']->addChild('document_templates', ['route' => 'document_templates', 'label' => 'Шаблоны документов'])
+            ->setAttributes(['icon' => 'fa fa-file'])
+        ;
         $menu['configs']->addChild('config', ['route' => 'client_config', 'label' => 'Параметры'])
             ->setAttributes(['icon' => 'fa fa-cog'])
         ;
