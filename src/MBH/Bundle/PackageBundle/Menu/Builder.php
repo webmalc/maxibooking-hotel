@@ -173,5 +173,32 @@ class Builder extends ContainerAware
                 ->setAttribute('icon', 'fa fa-print')
                 ->setLinkAttribute('target', '_blank');
         }
+
+        $customDocs = $this->container
+            ->get('doctrine_mongodb')
+            ->getRepository('MBHClientBundle:DocumentTemplate')
+            ->findBy(['deletedAt' => null], ['title' => 'asc'])
+        ;
+
+        if (!count($customDocs)) {
+            return true;
+        }
+        $menu->addChild('Additional docs header', [
+            'label' => 'Шаблоны документов'
+        ])
+        ->setAttribute('dropdown_header', true);
+        foreach ($customDocs as $doc) {
+            $menu->addChild('doc_' . $doc->getId(), [
+                'label' => $doc->getName(),
+                'route' => 'document_templates_show',
+                'routeParameters' => [
+                    'id' => $doc->getId(),
+                    'packageId' => $package->getId()
+                ]
+            ])
+                ->setAttribute('icon', 'fa fa-print')
+                ->setLinkAttribute('target', '_blank')
+            ;
+        }
     }
 }

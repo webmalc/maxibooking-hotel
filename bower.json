@@ -39,6 +39,7 @@
     "admin-lte": "~2.3.0",
     "ionicons": "~2.0.0",
     "select2": "~4.0.0",
-    "bootstrap-daterangepicker": "^2.1.17"
+    "bootstrap-daterangepicker": "^2.1.17",
+    "codemirror": "^5.12.0"
   }
 }

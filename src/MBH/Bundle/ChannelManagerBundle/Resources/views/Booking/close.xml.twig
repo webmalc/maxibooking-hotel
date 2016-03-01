@@ -2,16 +2,16 @@
 <request>
     {% include 'MBHChannelManagerBundle:Booking:credentials.xml.twig' with {'config': config } %}
 
-    {% for roomId, room in rooms %}
-
-        <room id="{{ roomId }}">
-            {% for rateId, rate in rates %}
-                <date from ="{{ 'now'|date('Y-m-d') }}" to="{{ 'now'|date_modify("+5 years")|date('Y-m-d') }}">
-                    <rate id="{{ rateId }}" />
-                    <closed>1</closed>
-                </date>
-            {% endfor %}
-        </room>
+    {% for rateId, rate in rates %}
+        {% for roomId, room in rooms %}
+            {% if rate.rooms is empty or roomId in rate.rooms %}
+                <room id="{{ roomId }}">
+                    <date from ="{{ 'now'|date('Y-m-d') }}" to="{{ 'now'|date_modify("+5 years")|date('Y-m-d') }}">
+                        <rate id="{{ rateId }}" />
+                        <closed>1</closed>
+                    </date>
+                </room>
+            {% endif %}
+        {% endfor %}
     {% endfor %}
-
 </request>
