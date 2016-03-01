@@ -129,7 +129,7 @@ class Calculation
         $prices = [];
         $places = $roomType->getPlaces();
         $hotel = $roomType->getHotel();
-        $useCategories ? $isChildPrices = $roomType->getCategory()->getIsChildPrices() : $isChildPrices = $this->getIsChildPrices();
+        $useCategories ? $isChildPrices = $roomType->getCategory()->getIsChildPrices() : $isChildPrices = $roomType->getIsChildPrices();
         $useCategories ? $isIndividualAdditionalPrices = $roomType->getCategory()->getIsIndividualAdditionalPrices() : $isIndividualAdditionalPrices = $roomType->getIsIndividualAdditionalPrices();
         $endPlus = clone $end;
         $endPlus->modify('+1 day');

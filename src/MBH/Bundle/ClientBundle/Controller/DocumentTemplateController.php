@@ -128,6 +128,7 @@ class DocumentTemplateController extends BaseController
     public function showAction(DocumentTemplate $doc, Package $package)
     {
         $env = new \Twig_Environment(new \Twig_Loader_String());
+        $env->addExtension($this->get('mbh.twig.extension'));
 
         $order = $package->getOrder();
         $hotel = $doc->getHotel() ? $doc->getHotel() : $package->getRoomType()->getHotel();
