@@ -17,6 +17,7 @@ use MBH\Bundle\HotelBundle\Service\HotelManager;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
+use MBH\Bundle\PackageBundle\Document\PackageSource;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\TouristRepository;
 use MBH\Bundle\PriceBundle\Document\PackageInfo;
@@ -49,6 +50,7 @@ class OrderExportCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $startTime = new \DateTime();
         /** @var DocumentManager $dm */
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
         /** @var Helper $helper */
@@ -89,7 +91,6 @@ class OrderExportCommand extends ContainerAwareCommand
             }
             $data = array_map('trim', $data);
 
-
             $index = $data[0];
             $number = $data[1];
             $date = $data[2];
@@ -110,11 +111,14 @@ class OrderExportCommand extends ContainerAwareCommand
             $arrivalTime = $data[27];
             $departureTime = $data[34];
             $manager = $data[41];
+            $sourceTitle = $data[42];
 
             $order = new Order();
             $order->setStatus('offline');
             $order->setIsEnabled(true);
             $order->setTotalOverwrite($finalTotal);
+            $order->setPrice($finalTotal);
+            $order->setConfirmed(true);
 
             $tourist = null;
             if ($fio) {
@@ -136,7 +140,7 @@ class OrderExportCommand extends ContainerAwareCommand
                     $tourist = new Tourist();
                     $tourist->setFirstName($firstName);
                     $tourist->setLastName($lastName);
-                    $tourist->setPatronymic($patronymic);
+                    $tourist->setPatronymic($patronymic)->setCreatedBy('import');
                     //$dm->persist($tourist);
                     //$dm->flush();
                     //$tourist = $touristRepository->fetchOrCreate($lastName, $firstName, $patronymic);
@@ -144,12 +148,10 @@ class OrderExportCommand extends ContainerAwareCommand
                 $order->setMainTourist($tourist);
                 $dm->persist($tourist);
             } else {
-                dump($rowNum);
-                dump($data); exit();
                 //throw new \Exception('Fio is not exists');
                 continue;
             }
-            continue;
+
             if (!$number) {
                 continue;
             }
@@ -159,15 +161,16 @@ class OrderExportCommand extends ContainerAwareCommand
             $user = null;
             if ($manager) {
                 list ($lastName, $firstName) = explode(' ', trim($manager));
-                if ($lastName && $finalTotal) {
+                if ($lastName && $firstName) {
                     $user = $userRepository->findOneBy(['firstName' => $firstName, 'lastName' => $lastName]);
                     if (!$user) {
                         $user = new User();
                         $user->setFirstName($firstName);
                         $user->setLastName($lastName);
                         $user->setPlainPassword('12345');
-                        $user->setUsername(Helper::translateToLat($firstName . '_' . $lastName));
+                        $user->setUsername(Helper::translateToLat($firstName . '_' . $lastName))->setCreatedBy('import');
                         $dm->persist($user);
+                        $dm->flush();
                     }
 
                     $order->setCreatedBy($user->getUsername());
@@ -209,7 +212,8 @@ class OrderExportCommand extends ContainerAwareCommand
 
             $order->addPackage($package);
             $package->setOrder($order);
-            $package->setTotalOverwrite($total);
+            $package->setTotalOverwrite($finalTotal);
+            $package->setPrice($finalTotal);
             $package->setAdults($adults);
             $package->setChildren($children);
 
@@ -250,7 +254,7 @@ class OrderExportCommand extends ContainerAwareCommand
             $hotel = $hotelRepository->findOneBy(['title' => $hotelTitle]);
             if (!$hotel) {
                 $hotel = new Hotel();
-                $hotel->setTitle($hotelTitle)->setFullTitle($hotelTitle);
+                $hotel->setTitle($hotelTitle)->setFullTitle($hotelTitle)->setCreatedBy('import');
                 //$hotelManager->create($hotel);
                 $dm->persist($hotel);
                 //$dm->flush();
@@ -264,19 +268,19 @@ class OrderExportCommand extends ContainerAwareCommand
                 if (!$roomTypeCategory) {
                     $roomTypeCategory = new RoomTypeCategory();
                     $roomTypeCategory->setTitle($roomTypeCategoryTitle)->setFullTitle($roomTypeCategoryTitle);
-                    $roomTypeCategory->setHotel($hotel);
+                    $roomTypeCategory->setHotel($hotel)->setCreatedBy('import');
                     $dm->persist($roomTypeCategory);
-                    $output->writeln('Добавлна новая категория "'. $roomTypeCategory->getTitle() . '"');
+                    $output->writeln('Добавлена новая категория "'. $roomTypeCategory->getTitle() . '"');
                 }
 
                 $roomType = $roomTypeRepository->findOneBy(['title' => $roomTypeName, 'hotel.id' => $hotel->getId()]);
                 if (!$roomType) {
                     $roomType = new RoomType();
                     $roomType->setHotel($hotel);
-                    $roomType->setTitle($roomTypeName);
-                    $roomType->setCategory($roomTypeCategory);
+                    $roomType->setTitle($roomTypeName)->setFullTitle($roomTypeName);
+                    $roomType->setCategory($roomTypeCategory)->setCreatedBy('import');
                     $dm->persist($roomType);
-                    $output->writeln('Добавлна новый тип номеров "'. $roomTypeCategory->getTitle() . '". Не забудте добавить количесво мест.');
+                    $output->writeln('Добавлен новый тип номера "'. $roomTypeCategory->getTitle() . '". Не забудте добавить количесво мест.');
                 }
 
                 $package->setRoomType($roomType);
@@ -299,13 +303,35 @@ class OrderExportCommand extends ContainerAwareCommand
                 $package->setTariff($baseTariff);
             }
             $dm->flush();
+
+            //Source
+            $source = $dm->getRepository('MBHPackageBundle:PackageSource')->findOneBy(['title' => $sourceTitle]);
+            if (!$source) {
+                $source = new PackageSource();
+                $source
+                    ->setTitle($sourceTitle)
+                    ->setFullTitle($sourceTitle)
+                    ->setCreatedBy('import')
+                    ->setIsEnabled(true)
+                ;
+                $dm->persist($source);
+                $dm->flush();
+            }
+            $order->setSource($source);
+
+
+            /*if ($rowNum > 10) {
+                break;
+            }*/
         }
 
         /*foreach($packages as $package) {
             $dm->persist($package);
         }*/
 
-        $output->writeln('Done');
+        $endTime = new \DateTime();
+
+        $output->writeln('Done. Time: ' . $endTime->diff($startTime)->format('%H:%I:%S'));
     }
 
 }
