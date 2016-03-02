@@ -43,16 +43,10 @@ class OrderExportCommand extends ContainerAwareCommand
 
     protected function getPathTouristsCsv()
     {
-        return $this->getContainer()->get('file_locator')->locate('@MBHOnlineBookingBundle/Resources/data/FullReportsTourists(2).csv');
+        return $this->getContainer()->get('file_locator')->locate('@MBHOnlineBookingBundle/Resources/data/FullReportsTourists.csv');
     }
 
-    /**
-     * mongoimport --db mbh --collection report_tourists --headerline --type csv --file "src/MBH/Bundle/OnlineBookingBundle/Resources/data/FullReportsTourists(2).csv"
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @throws \Exception
-     */
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         /** @var DocumentManager $dm */
@@ -87,12 +81,14 @@ class OrderExportCommand extends ContainerAwareCommand
 
         $packages = [];
 
-        while (($data = fgetcsv($resource, 2000, ",")) !== false) {
+        $rowNum=0;
+        while (($data = fgetcsv($resource, null, ",")) !== false) {
+            $rowNum++;
             if (!count($data) > 34) {
                 continue;
             }
-
             $data = array_map('trim', $data);
+
 
             $index = $data[0];
             $number = $data[1];
@@ -122,7 +118,12 @@ class OrderExportCommand extends ContainerAwareCommand
 
             $tourist = null;
             if ($fio) {
-                list ($lastName, $firstName, $patronymic) = explode(' ', trim($fio));
+                // list ($lastName, $firstName, $patronymic) = explode(' ', trim($fio));
+                $fioData = explode(' ', trim($fio));
+                $lastName = $fioData[0];
+                $firstName = $fioData[1];
+                $patronymic = isset($fioData[2]) ? $fioData[2] : null;
+
 
                 $tourist = $touristRepository->createQueryBuilder()
                     ->field('firstName')->equals($firstName)
@@ -143,9 +144,12 @@ class OrderExportCommand extends ContainerAwareCommand
                 $order->setMainTourist($tourist);
                 $dm->persist($tourist);
             } else {
+                dump($rowNum);
+                dump($data); exit();
                 //throw new \Exception('Fio is not exists');
                 continue;
             }
+            continue;
             if (!$number) {
                 continue;
             }
@@ -301,80 +305,7 @@ class OrderExportCommand extends ContainerAwareCommand
             $dm->persist($package);
         }*/
 
-        $this->recountRoomCache($packages, $output);
-
         $output->writeln('Done');
     }
 
-
-    /**
-     * @param Package[] $packages
-     * @param OutputInterface $output
-     */
-    private function recountRoomCache($packages, $output)
-    {
-        $minDate = null;
-        $maxDate = null;
-        foreach ($packages as $package) {
-            if (!$minDate || $minDate > $package->getBegin()) {
-                $minDate = $package->getBegin();
-            }
-            if ($maxDate < $package->getEnd()) {
-                $maxDate = $package->getEnd();
-            }
-        }
-
-        /** @var DocumentManager $dm */
-        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-
-        /** @var RoomCacheRepository $roomCacheRepository */
-        $roomCacheRepository = $dm->getRepository(RoomCache::class);
-
-        /** @var PackageRepository $packageRepository */
-        $packageRepository = $dm->getRepository(Package::class);
-
-        /** @var RoomCache[] $roomCaches */
-        $roomCaches = $roomCacheRepository->findBy(['date' => ['$gte' => $minDate, '$lte' => $maxDate]]);
-
-        $output->writeln('Пересчёт номеров в продаже. ' . $minDate->format('d.m.Y'). ' - ' . $maxDate->format('d.m.Y'). '. ' . count($roomCaches));
-
-        foreach ($roomCaches as $i => $roomCache) {
-            $packageCount = 0;
-            $tariff = null;
-            foreach ($packages as $package) {
-                if ($package->getBegin()->getTimestamp() <= $roomCache->getDate()->getTimestamp() && $package->getEnd()->getTimestamp() > $roomCache->getDate()->getTimestamp() && $package->getRoomType()->getId() == $roomCache->getRoomType()->getId()) {
-                    $packageCount++;
-                    $tariff = $package->getTariff();
-                }
-            }
-            /*$packageCount = $packageRepository->createQueryBuilder()
-                ->field('begin')->lte($roomCache->getDate())
-                ->field('end')->gt($roomCache->getDate())
-                ->field('roomType.id')->equals($roomCache->getRoomType()->getId())
-                ->getQuery()->count();
-            ;*/
-
-            $roomCache->setPackagesCount($packageCount);
-            $roomCache->setLeftRooms($roomCache->getTotalRooms() - $roomCache->getPackagesCount());
-
-            $packageInfo = new PackageInfo();
-            if ($tariff) {
-                //$tariff = $dm->getRepository(Tariff::class)->find($tariff->getId());
-                $packageInfo->setTariff($tariff);
-                //$dm->persist($tariff);
-            }
-            $packageInfo->setPackagesCount($packageCount);
-            $roomCache->addPackageInfo($packageInfo);
-
-            $dm->persist($packageInfo);
-            $dm->persist($roomCache);
-
-            $dm->flush();
-
-            $dm->clear($packageInfo);
-            $dm->clear($roomCache);
-            //gc_collect_cycles();
-        }
-        //$dm->flush();
-    }
 }
