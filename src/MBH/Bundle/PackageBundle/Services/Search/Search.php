@@ -89,11 +89,6 @@ class Search implements SearchInterface
         $beforeArrival = $today->diff($query->begin)->format('%a');
         $helper = $this->container->get('mbh.helper');
 
-        if (!PromotionConditionFactory::checkConditions(
-            $query->tariff, $duration, $query->adults, $query->children
-        )) {
-            return $results;
-        }
 
         //roomTypes
         if (empty($query->roomTypes)) {
@@ -274,6 +269,12 @@ class Search implements SearchInterface
             }
             // check hotel permission
             if (!$query->isOnline && !$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
+                continue;
+            }
+
+            if (!PromotionConditionFactory::checkConditions(
+                $tariff, $duration, $query->adults, $query->children
+            )) {
                 continue;
             }
 
