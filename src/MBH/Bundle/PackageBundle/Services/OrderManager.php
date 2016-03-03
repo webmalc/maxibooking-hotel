@@ -343,6 +343,10 @@ class OrderManager
 
         foreach ($package->getTariff()->getDefaultServices() as $tariffService) {
 
+            if (!$tariffService->getService() || !$tariffService->getAmount()) {
+                continue;
+            }
+
             $tariffService->getPersons() ?
                 $persons = $tariffService->getPersons() : $persons = $package->getAdults() + $package->getChildren();
 
