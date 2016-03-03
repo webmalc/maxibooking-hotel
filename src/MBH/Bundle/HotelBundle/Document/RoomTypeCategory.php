@@ -96,11 +96,14 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
     }
 
     /**
-     * @param Hotel $hotel
+     * @param \MBH\Bundle\HotelBundle\Document\Hotel $hotel
+     * @return $this
      */
     public function setHotel(Hotel $hotel)
     {
         $this->hotel = $hotel;
+
+        return $this;
     }
 
     /**
