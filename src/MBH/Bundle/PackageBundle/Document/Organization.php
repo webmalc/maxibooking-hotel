@@ -61,7 +61,7 @@ class Organization implements PayerInterface, RecipientInterface
     /**
      * @ODM\String
      * @Assert\NotBlank
-     * @Assert\Length(min=10,max=12)
+     * @Assert\Length(min=8,max=12)
      * @Assert\Type(type="digit", message="Значение должно быть числом")
      */
     protected $inn;
