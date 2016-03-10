@@ -144,16 +144,18 @@
             {% set counter = 0 %}
             {% set paidTotal = 0 %}
             {% for cashDocument in cashDocuments %}
-                {% set counter = counter + 1 %}
-                <tr>
-                    <td align="center">{{ counter }}</td>
-                    <td align="center">{{ cashDocument.paidDate|date('d.m.Y') }}</td>
-                    <td align="center">{{ ('cashDocument.method.' ~ cashDocument.method)|trans({}, 'MBHCashBundle') }}</td>
-                    <td align="right">{{ cashDocument.operation in ['fee', 'out'] ? '-' : '+' }}{{ cashDocument.total|number_format(2) }}</td>
-                </tr>
-                {% if cashDocument.operation in ['fine', 'in'] %}
-                    {% set paidTotal = paidTotal + cashDocument.total %}
-                {% else %}
+                {% if cashDocument.isPaid %}
+                    {% set counter = counter + 1 %}
+                    <tr>
+                        <td align="center">{{ counter }}</td>
+                        <td align="center">{{ cashDocument.paidDate|date('d.m.Y') }}</td>
+                        <td align="center">{{ ('cashDocument.method.' ~ cashDocument.method)|trans({}, 'MBHCashBundle') }}</td>
+                        <td align="right">{{ cashDocument.operation in ['fee', 'out'] ? '-' : '+' }}{{ cashDocument.total|number_format(2) }}</td>
+                    </tr>
+                    {% if cashDocument.operation in ['fine', 'in'] %}
+                        {% set paidTotal = paidTotal + cashDocument.total %}
+                    {% else %}
+                    {% endif %}
                 {% endif %}
             {% endfor %}
             </tbody>
