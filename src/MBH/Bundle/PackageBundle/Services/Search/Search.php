@@ -3,10 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
-use MBH\Bundle\PriceBundle\Services\Restriction;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
