@@ -1,0 +1,4 @@
+MBH\Bundle\PackageBundle\Document\Organization:
+  properties:
+    inn:
+      - NotBlank: ~

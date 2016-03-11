@@ -5,6 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
+use MBH\Bundle\PackageBundle\Document\Partials\InnTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\VegaBundle\Document\VegaState;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -40,6 +41,8 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
+    use InnTrait;
 
     /**
      * @ODM\ReferenceMany(targetDocument="Order", nullable="true", mappedBy="mainTourist")
@@ -160,7 +163,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
      * @Assert\Length(
      *      min=2,
      *      minMessage= "validator.document.Tourist.min_note",
-     *      max=100,
+     *      max=1000,
      *      maxMessage= "validator.document.Tourist.max_note"
      * )
      */

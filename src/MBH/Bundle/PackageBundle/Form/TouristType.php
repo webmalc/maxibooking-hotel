@@ -53,6 +53,13 @@ class TouristType extends AbstractType
                 'group' => 'form.touristType.general_info',
                 //'expanded' => true
             ])
+            ->add('inn', 'text', [
+                'label' => 'form.tourist.inn.label',
+                'group' => 'form.touristType.general_info',
+                'required' => false,
+                'attr' => ['class' => 'inn'],
+                'translation_domain' => 'individual'
+            ])
             ->add('phone', 'text', [
                 'label' => 'form.touristType.phone',
                 'group' => 'form.touristType.contact_info',

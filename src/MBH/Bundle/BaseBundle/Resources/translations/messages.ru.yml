@@ -108,7 +108,7 @@ mailer.closedTasks.number: Номер
 mailer.closedTasks.performer: Исполнитель
 mailer.closedTasks.closed: Закрыта
 
-mailer.userArrival.greet: Здравствуйте, {name}!
+mailer.userArrival.greet: 'Здравствуйте, {name}!'
 mailer.userArrival.reminder: Спешим напомнить, что для вас зарезервирован номер в нашем отеле на ЗАВТРА {begin} Пожалуйста, свяжитесь с нами в случае изменения времени прибытия или параметров пребывания в нашем отеле.
 mailer.userArrival.reminder2: По комплектации вашего номера, условиям заселения, а также о дополнительных услугах нашего отеля вы можете узнать на нашем сайте.
 mailer.userArrival.about_hotel: Об отеле

@@ -94,8 +94,9 @@ class OrganizationType extends AbstractType
 
         $builder->add('inn', 'text', [
             'group' => $group,
-            'label' => 'form.organizationType.inn',
+            'label' => 'form.organization.inn.label',
             'attr' => ['class' => 'input-small'],
+            'translation_domain' => 'individual'
         ]);
         $builder->add('kpp', 'text', [
             'group' => $isFull ? $registerGroup : $addGroup,

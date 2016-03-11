@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\HotelBundle\Document\City;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\Partials\InnTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -29,6 +30,8 @@ class Organization implements PayerInterface, RecipientInterface
 {
     use TimestampableDocument;
     use BlameableDocument;
+    use InnTrait;
+
     /**
      * @ODM\Id
      */
@@ -58,13 +61,7 @@ class Organization implements PayerInterface, RecipientInterface
      * @ODM\String
      */
     protected $email;
-    /**
-     * @ODM\String
-     * @Assert\NotBlank
-     * @Assert\Length(min=8,max=12)
-     * @Assert\Type(type="digit", message="Значение должно быть числом")
-     */
-    protected $inn;
+
     /**
      * @ODM\String
      * @Assert\Length(min=9,max=9)
@@ -296,22 +293,6 @@ class Organization implements PayerInterface, RecipientInterface
     public function setEmail($email)
     {
         $this->email = $email;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getInn()
-    {
-        return $this->inn;
-    }
-
-    /**
-     * @param mixed $inn
-     */
-    public function setInn($inn)
-    {
-        $this->inn = $inn;
     }
 
     /**
