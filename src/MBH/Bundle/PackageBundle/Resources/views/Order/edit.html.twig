@@ -76,6 +76,17 @@
                                     <small class="text-danger"><i class="fa fa-times"> </i> {{ 'order.edit.is_confirmed_no'|trans({}, 'MBHPackageBundle') }}</small>
                                 {% endif %}
                             </td>
+
+                            {% if entity.creditCard and is_granted('ROLE_ADMIN') %}
+                            <tr>
+                                <td>
+                                <strong>{{ 'order.edit.card'|trans({}, 'MBHPackageBundle') }}</strong>
+                                </td>
+                                <td>
+                                {{ entity.creditCard|nl2br }}
+                                </td>
+                            </tr>
+                            {% endif %}
                         </tr>
                     </tbody>
                 </table>
