@@ -1,7 +1,7 @@
     /*global window */
     jQuery.fn.digits = function(){
         return this.each(function(){
-            $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") );
+            jQuery(this).text( jQuery(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "jQuery1,") );
         })
     }
 
@@ -37,7 +37,7 @@ jQuery(document).ready(function () {
         query = getUrlVars()
     ;
     //var errorHtml = '<div class="mbh-results-error"><i class="fa fa-exclamation-circle"></i> Не выбраны даты заезда и выезда!</div>';
-    var errorHtml = $('#mbh-date-error').clone().removeClass('hide').attr('id', '');
+    var errorHtml = jQuery('#mbh-date-error').clone().removeClass('hide').attr('id', '');
     if (!query.begin || !query.end) {
         wrapper.html(errorHtml);
         return false;

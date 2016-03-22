@@ -6,7 +6,7 @@ trait InnTrait {
 
     /**
      * @ODM\String
-     * @Assert\Length(min=8,max=12)
+     * @Assert\Length(min=7,max=12)
      * @Assert\Type(type="digit", message="Значение должно быть числом")
      */
     protected $inn;
