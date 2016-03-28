@@ -49,7 +49,7 @@ var docReadyTables = function () {
         }
     });
 
-    $('table.table-striped').not('.not-auto-datatable').dataTable();
+    $('table.table-striped').not('.not-auto-datatable').dataTable(mbh.datatablesOptions);
     /*
      *  https://www.datatables.net/plug-ins/sorting/date-euro
      *  https://github.com/DataTables/Plugins/blob/master/sorting/date-euro.js

@@ -39,7 +39,8 @@
     "liuggio/excelbundle": "^2.0@dev",
     "ornicar/gravatar-bundle": "^1.1@dev",
     "doctrine/doctrine-fixtures-bundle": "^2.2@dev",
-    "myallocator/myallocator-php-sdk": "dev-master"
+    "myallocator/myallocator-php-sdk": "dev-master",
+    "leafo/scssphp": "^0.6.3"
   },
   "require-dev": {
     "sensio/generator-bundle": "~2.3"
