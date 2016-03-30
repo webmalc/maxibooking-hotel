@@ -32,6 +32,14 @@
                 %}
                 <link rel="stylesheet" href="{{ asset_url }}"/>
                 {% endstylesheets %}
+
+                {% stylesheets filter='cssrewrite, uglifycss, scssphp'
+                    'assets/vendor/datatables-buttons/css/common.scss'
+                    'assets/vendor/datatables-buttons/css/mixins.scss'
+                    'assets/vendor/datatables-buttons/css/buttons.bootstrap.scss'
+                %}
+                <link rel="stylesheet" href="{{ asset_url }}"/>
+                {% endstylesheets %}
                 <link rel="stylesheet" href="{{ asset('assets/vendor/admin-lte/plugins/iCheck/all.css') }}">
             {% endblock %}
         </head>
@@ -91,7 +99,20 @@
                 'assets/vendor/moment/moment.js'
                 'assets/vendor/moment/locale/ru.js'
                 'assets/vendor/bootstrap-daterangepicker/daterangepicker.js'
-                '@MBHBaseBundle/Resources/public/js/app/*'
+            %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+
+            <script src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
+            <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js"></script>
+            <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+            <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+            <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+            <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js"></script>
+            <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js"></script>
+
+            {% javascripts filter='uglifyjs2'
+            '@MBHBaseBundle/Resources/public/js/app/*'
             %}
             <script type="text/javascript" src="{{ asset_url }}"></script>
             {% endjavascripts %}

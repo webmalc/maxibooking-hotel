@@ -347,7 +347,7 @@ class CashDocument extends Base
     {
         $order = $this->getOrder();
 
-        return $order ? $order->getPackages()[0]->getRoomType()->getHotel() : null;
+        return $order && count($order->getPackages()) ? $order->getPackages()[0]->getRoomType()->getHotel() : null;
     }
 
 

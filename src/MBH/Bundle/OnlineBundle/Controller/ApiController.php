@@ -141,20 +141,20 @@ class ApiController extends Controller
             $cashDocument->setIsPaid(true);
             $dm->persist($cashDocument);
             $dm->flush();
-        }
 
-        //save commission
-        if (isset($response['commission']) && is_numeric($response['commission'])) {
-            $commission = clone $cashDocument;
-            $commissionTotal = (float) $response['commission'];
-            if (isset($response['commissionPercent']) && $response['commissionPercent']) {
-                $commissionTotal = $commissionTotal * $cashDocument->getTotal();
+            //save commission
+            if (isset($response['commission']) && is_numeric($response['commission'])) {
+                $commission = clone $cashDocument;
+                $commissionTotal = (float) $response['commission'];
+                if (isset($response['commissionPercent']) && $response['commissionPercent']) {
+                    $commissionTotal = $commissionTotal * $cashDocument->getTotal();
+                }
+                $commission->setTotal($commissionTotal)
+                    ->setOperation('fee')
+                ;
+                $dm->persist($commission);
+                $dm->flush();
             }
-            $commission->setTotal($commissionTotal)
-                       ->setOperation('fee')
-            ;
-            $dm->persist($commission);
-            $dm->flush();
         }
 
         //send notifications

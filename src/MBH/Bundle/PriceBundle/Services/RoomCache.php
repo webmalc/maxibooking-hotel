@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\Services;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\PackageInfo;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
@@ -82,15 +83,15 @@ class RoomCache
         $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
 
         $process = new Process(
-            'nohup php ' . $console . 'mbh:cache:recalculate --no-debug ' . $env . $begin . $end . $roomTypes .  ' > /dev/null 2>&1 &'
+            'nohup php ' . $console . 'mbh:cache:recalculate --no-debug ' . $env . $begin . $end . $roomTypes . ' > /dev/null 2>&1 &'
         );
 
         $process->run();
     }
 
     /**
-     * @param \DateTime $begin|null
-     * @param \DateTime $end|null
+     * @param \DateTime $begin |null
+     * @param \DateTime $end |null
      * @param array $roomTypes array of ids
      * @return int
      */
@@ -104,6 +105,7 @@ class RoomCache
         $caches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
             $begin, $end, null, $roomTypes
         );
+
         $num = 0;
         $batchSize = 3;
 
@@ -114,17 +116,28 @@ class RoomCache
                 ->field('begin')->lte($cache->getDate())
                 ->field('end')->gt($cache->getDate())
                 ->field('deletedAt')->equals(null)
-                ->field('roomType.id')->equals($cache->getRoomType()->getId())
-            ;
+                ->field('roomType.id')->equals($cache->getRoomType()->getId());
             if ($cache->getTariff()) {
                 $qb->field('tariff.id')->equals($cache->getTariff()->getId());
             }
+
             $total = $qb->getQuery()->count();
+
             if ($total != $cache->getPackagesCount()) {
                 $cache->setPackagesCount($total);
-                $this->dm->persist($cache);
-                $num += 1;
             }
+            if (!count($cache->getPackageInfo()) && $total) {
+
+                $packages = $qb->getQuery()->execute();
+                foreach ($packages as $package) {
+                    $tariff = $package->getTariff();
+                    $cache->soldRefund($tariff);
+                }
+            }
+
+            $this->dm->persist($cache);
+            $num += 1;
+
             if (($num % $batchSize) === 0) {
                 $this->dm->flush();
                 $this->dm->clear();
@@ -155,7 +168,8 @@ class RoomCache
         array $availableRoomTypes = [],
         array $tariffs = [],
         array $weekdays = []
-    ) {
+    )
+    {
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
         $roomCaches = $updateCaches = $updates = $remove = [];

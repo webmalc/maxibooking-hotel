@@ -84,7 +84,23 @@ mbh.alert = {
     hide: function() {
         this.$alert.modal('hide');
     }
-}
+};
+
+mbh.datatablesOptions = {
+    dom: 'Blfrtip',
+    buttons: [
+        {
+            extend: 'excel',
+            text: '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
+            className: 'btn btn-default btn-sm'
+        },
+        {
+            extend: 'pdf',
+            text: '<i class="fa fa-file-pdf-o" title="PDF" data-toggle="tooltip" data-placement="bottom"></i>',
+            className: 'btn btn-default btn-sm'
+        }
+    ]
+};
 
 $('#work-shift-lock').on('click', function(e) {
     e.preventDefault();

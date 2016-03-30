@@ -2,10 +2,9 @@
 
 namespace MBH\Bundle\PackageBundle\Services\Search;
 
-use MBH\Bundle\HotelBundle\Document\RoomType;
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
-use MBH\Bundle\PriceBundle\Services\Restriction;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
@@ -121,8 +120,12 @@ class Search implements SearchInterface
         foreach ($roomCaches as $roomCache) {
             if ($roomCache->getTariff()) {
 
-                if ((!empty($query->tariff) && $roomCache->getTariff()->getId() == $query->tariff->getId()) || (empty($query->tariff) && $roomCache->getTariff()->getIsDefault())) {
-                    $groupedCaches['tariff'][$roomCache->getHotel()->getId()][$roomCache->getRoomType()->getId()][] = $roomCache;
+                try {
+                    if ((!empty($query->tariff) && $roomCache->getTariff()->getId() == $query->tariff->getId()) || (empty($query->tariff) && $roomCache->getTariff()->getIsDefault())) {
+                        $groupedCaches['tariff'][$roomCache->getHotel()->getId()][$roomCache->getRoomType()->getId()][] = $roomCache;
+                    }
+                } catch (DocumentNotFoundException $e) {
+
                 }
             } else {
                 $skip = false;

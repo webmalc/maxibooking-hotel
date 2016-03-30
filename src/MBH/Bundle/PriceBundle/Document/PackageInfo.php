@@ -37,9 +37,6 @@ class PackageInfo
     public function setPackagesCount($packagesCount)
     {
         $this->packagesCount = (int) $packagesCount;
-        if ($this->packagesCount < 0) {
-            $this->packagesCount = 0;
-        }
         return $this;
     }
 
