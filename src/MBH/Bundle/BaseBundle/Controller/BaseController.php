@@ -24,12 +24,18 @@ class BaseController extends Controller
      */
     protected $hotel;
 
+    /**
+     * @var \MBH\Bundle\BaseBundle\Service\Helper
+     */
+    protected $helper;
+
     public function setContainer(ContainerInterface $container = null)
     {
         parent::setContainer($container);
 
         $this->dm = $this->get('doctrine_mongodb')->getManager();
         $this->hotel = $this->get('mbh.hotel.selector')->getSelected();
+        $this->helper = $this->get('mbh.helper');
     }
 
     /**
