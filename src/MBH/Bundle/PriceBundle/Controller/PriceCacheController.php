@@ -245,17 +245,14 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
     public function generatorAction(Request $request)
     {
         $sessionFormData = [];
-        if($request->getSession()->has('priceCacheGeneratorForm')) {
+        if ($request->getSession()->has('priceCacheGeneratorForm')) {
             $sessionFormData = $request->getSession()->get('priceCacheGeneratorForm');
-            foreach($sessionFormData['roomTypes'] as $key => $r) {
-                if (is_object($r)) {
-                    $sessionFormData['roomTypes'][$key] = $this->dm->getRepository($this->manager->useCategories ? RoomTypeCategory::class : RoomType::class)->find($r->getId());
-                }
+            foreach ($sessionFormData['roomTypes'] as $id) {
+                $sessionFormData['roomTypes'][$id] = $this->dm->getRepository($this->manager->useCategories ? RoomTypeCategory::class : RoomType::class)->find($id);
+
             }
-            foreach($sessionFormData['tariffs'] as $key => $r) {
-                if (is_object($r)) {
-                    $sessionFormData['tariffs'][$key] = $this->dm->getRepository(Tariff::class)->find($r->getId());
-                }
+            foreach ($sessionFormData['tariffs'] as $id) {
+                $sessionFormData['tariffs'][$id] = $this->dm->getRepository(Tariff::class)->find($id);
             }
         }
 
@@ -292,8 +289,13 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             $data = $form->getViewData();
 
             $session = $request->getSession();
-            if($data['saveForm']) {
-                $session->set('priceCacheGeneratorForm', $data);
+
+            if ($data['saveForm']) {
+
+                $session->set('priceCacheGeneratorForm', array_merge($data, [
+                    'roomTypes' => $this->helper->toIds($data['roomTypes']),
+                    'tariffs' => $this->helper->toIds($data['tariffs'])
+                ]));
             } else {
                 $session->remove('priceCacheGeneratorForm');
             }
