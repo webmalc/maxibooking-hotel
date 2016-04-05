@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 class HousingController extends BaseController
 {
     /**
-     * @Route("/", name="housings")
+     * @Route("/", name="housing")
      * @Security("is_granted('ROLE_HOUSING_VIEW')")
      * @Template()
      */
@@ -73,7 +73,7 @@ class HousingController extends BaseController
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.corpus.created_success'));
 
-            return $this->afterSaveRedirect('housings', $entity->getId());
+            return $this->afterSaveRedirect('housing', $entity->getId());
         }
 
         return [
@@ -117,7 +117,7 @@ class HousingController extends BaseController
             $request->getSession()->getFlashBag()
                 ->set('success', $this->get('translator')->trans('controller.corpus.updated_success'));
 
-            return $this->afterSaveRedirect('housings', $entity->getId());
+            return $this->afterSaveRedirect('housing', $entity->getId());
         }
 
         return [
@@ -136,6 +136,6 @@ class HousingController extends BaseController
     {
         $this->dm->remove($housing);
         $this->dm->flush();
-        return $this->redirectToRoute('housings');
+        return $this->redirectToRoute('housing');
     }
 }
