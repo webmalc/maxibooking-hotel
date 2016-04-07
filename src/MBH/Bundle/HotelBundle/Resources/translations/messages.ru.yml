@@ -75,6 +75,7 @@ form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: Неко
 form.roomTypeGenerateRoomsType.too_many_generation_numbers: Слишком большое количество записей для генерации.
 form.roomTypeGenerateRoomsType.housing: Корпус
 form.roomTypeGenerateRoomsType.floor: Этаж
+form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: 'sdsdsd'
 
 # RoomTypeType
 form.roomTypeType.name: Название
