@@ -756,7 +756,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'earlyCheckInServiceIsEnabled' => $earlyCheckInServiceIsEnabled,
             'lateCheckOutServiceIsEnabled' => $lateCheckOutServiceIsEnabled,
             'form' => $form->createView(),
-            'logs' => $this->logs($package)
+            'logs' => $this->logs($package),
+            'optGroupRooms' => $optGroupRooms
         ];
     }
 

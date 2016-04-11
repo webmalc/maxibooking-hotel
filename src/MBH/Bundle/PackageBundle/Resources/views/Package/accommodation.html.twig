@@ -34,6 +34,32 @@
                 </div>
             {% endif %}
 
+                {% if optGroupRooms|length  %}
+                    <table id="accommodation-select-table" class="table table-bordered table-striped table-hover table-condensed mbh-grid">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for roomTypeName, rooms in optGroupRooms %}
+
+                                {% for room in rooms %}
+                                    <tr>
+                                        <td>{{ room }}</td>
+                                        <td></td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else  %}
+                    <div class="alert alert-warning">
+                        Номера для размещения не найдены.
+                    </div>
+                {% endif %}
+
                 {{ form_start(form, {'action': path('package_accommodation', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
                 {{ form_widget(form) }}
                 {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_ACCOMMODATION'} %}
