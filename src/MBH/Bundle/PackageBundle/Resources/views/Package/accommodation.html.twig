@@ -16,13 +16,14 @@
     {% endif %}
 
     <div class="tab-content">
-        <div class="tab-pane active" id="home">
             {% if package.accommodation %}
                 <div class="bg-gray color-palette alert">
-                    <i class="fa fa-bed"> </i> {{ 'package.accommodation.placement'|trans({}, 'MBHPackageBundle') }} {{ package.accommodation.name(true, true) }}, {{ 'package.accommodation.guests'|trans({}, 'MBHPackageBundle') }} {{ package.isCheckIn ? '' : 'не ' }} {{ 'package.accommodation.stopped'|trans({}, 'MBHPackageBundle') }}
+                    <i class="fa fa-bed"> </i> {{ 'package.accommodation.placement'|trans({}, 'MBHPackageBundle') }} {{ package.accommodation.name(true, true) }}
+                    , {{ 'package.accommodation.guests'|trans({}, 'MBHPackageBundle') }} {{ package.isCheckIn ? '' : 'не ' }} {{ 'package.accommodation.stopped'|trans({}, 'MBHPackageBundle') }}
                     {% if package.deletedAt is empty and is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                         <div class="pull-right">
-                            <a href="{{ path('package_accommodation_delete', { 'id': package.id }) }}" class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
+                            <a href="{{ path('package_accommodation_delete', { 'id': package.id }) }}"
+                               class="btn btn-danger btn-xs delete-link " title="Удаление записи" data-toggle="tooltip">
                                 <i class="fa fa-trash-o"></i>
                             </a>
                         </div>
@@ -34,21 +35,94 @@
                 </div>
             {% endif %}
 
-                {{ form_start(form, {'action': path('package_accommodation', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
-                {{ form_widget(form) }}
-                {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_ACCOMMODATION'} %}
-                {{ form_end(form) }}
+            {% if optGroupRooms|length %}
+            <div class="box box-default box-solid">
+                <div class="box-header with-border"><h3 class="box-title">Выбор размещения</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
+                                id="mbh_bundle_packagebundle_package_accommodation_table"><i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table id="accommodation-select-table"
+                           class="table table-actions table-striped table-hover table-actions table-condensed">
+                        <thead>
+                        <tr>
+                            <th class="td-xs"></th>
+                            <th>#</th>
+                            <th>Тип номера</th>
+                            <th class="td-md">Корпус</th>
+                            <th class="td-sm">Этаж</th>
+                            <th class="td-sm">Статус</th>
+                            <th>Удобства</th>
+                            <th class="td-xs"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for roomTypeName, rooms in optGroupRooms %}
 
-            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': package, 'logs': logs, 'delete_route': 'package_delete' } %}
-        </div>
+                            {% for room in rooms %}
+                                <tr class="{% if  package.accommodation and room.id == package.accommodation.id %}info{% elseif room.status %}warning{% elseif room.roomType.id == package.roomType.id %}success{% endif %}">
+                                    <td><i class="fa fa-bed"></i></td>
+                                    <td><strong>{{ room }}</strong></td>
+                                    <td>{{ room.roomType }}</td>
+                                    <td>{{ room.housing }}</td>
+                                    <td>{{ room.floor }}</td>
+                                    <td>{{ room.status }}</td>
+                                    <td>
+                                        {% for facility in room.allFacilities %}
+                                            <i style="margin-left: 3px" data-toggle="tooltip"
+                                               data-title="{{ facilities[facility] }}"
+                                               class="fa mbf-{{ facility }}"></i>
+                                        {% endfor %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if  package.accommodation and room.id == package.accommodation.id %}
+                                            <a href="{{ path('package_accommodation_delete', { 'id': package.id }) }}"
+                                               class="btn btn-danger btn-xs delete-link " title="Удаление записи"
+                                               data-toggle="tooltip">
+                                                <i class="fa fa-trash-o"></i>
+                                            </a>
+                                        {% else %}
+                                            <a href="{{ path('package_accommodation_set', { 'id': package.id, 'roomId': room.id }) }}"
+                                               class="btn btn-success btn-xs" title="Разместить в этом номере"
+                                               data-toggle="tooltip">
+                                                <i class="fa fa-check"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-warning">
+                Номера для размещения не найдены.
+            </div>
+        {% endif %}
+
+        {{ form_start(form, {'action': path('package_accommodation', {'id': package.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include 'MBHPackageBundle:Package:actions.html.twig' with {'entity': package, 'role': 'ROLE_PACKAGE_ACCOMMODATION'} %}
+        {{ form_end(form) }}
+
+        {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': package, 'logs': logs, 'delete_route': 'package_delete' } %}
+    </div>
     </div>
 
     <script>
         var Package = {
-            begin: new Date({{ package.begin.timestamp }} * 1000),
-            end: new Date({{ package.end.timestamp }} * 1000),
-            debt: {{ package.debt }}
-        };
+            begin: new Date({{ package.begin.timestamp }} * 1000
+        ),
+        end: new Date({{ package.end.timestamp }} * 1000
+        ),
+        debt: {{ package.debt }}
+                }
+        ;
         var earlyCheckInServiceIsEnabled = {{ earlyCheckInServiceIsEnabled|json_encode }};
         var lateCheckOutServiceIsEnabled = {{ lateCheckOutServiceIsEnabled|json_encode }};
     </script>

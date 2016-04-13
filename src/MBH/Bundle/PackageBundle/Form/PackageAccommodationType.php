@@ -32,7 +32,7 @@ class PackageAccommodationType extends AbstractType
         }
 
         $builder
-            ->add('accommodation', 'document', [
+            /*->add('accommodation', 'document', [
                 'label' => 'form.packageAccommodationType.room',
                 'required' => true,
                 'empty_value' => '',
@@ -48,7 +48,7 @@ class PackageAccommodationType extends AbstractType
                     return $status ? ['data-icon' => 'mbf-'.$roomStatusIcons[$status->getCode()]] : [];
                 },
                 'constraints' => new NotBlank()
-            ])
+            ])*/
             ->add('purposeOfArrival', 'choice', [
                 'label' => 'form.packageMainType.arrival_purpose',
                 'required' => false,
