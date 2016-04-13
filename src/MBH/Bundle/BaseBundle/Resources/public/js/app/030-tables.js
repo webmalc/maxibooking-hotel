@@ -1,4 +1,4 @@
-/*global $, window, document, $,  deleteLink, dangerTr */
+/*global $, window, document, $,  deleteLink, dangerTr, mbh */
 
 var docReadyTables = function () {
     'use strict';
@@ -50,6 +50,7 @@ var docReadyTables = function () {
     });
 
     $('table.table-striped').not('.not-auto-datatable').dataTable(mbh.datatablesOptions);
+    
     /*
      *  https://www.datatables.net/plug-ins/sorting/date-euro
      *  https://github.com/DataTables/Plugins/blob/master/sorting/date-euro.js

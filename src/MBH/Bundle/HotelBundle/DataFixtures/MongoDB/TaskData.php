@@ -51,7 +51,6 @@ class TaskData implements FixtureInterface, ContainerAwareInterface
         foreach ($hotels as $hotel) {
             $this->persistForHotel($manager, $hotel);
         }
-        $manager->flush();
     }
 
     public function persistForHotel(ObjectManager $manager, Hotel $hotel)
@@ -109,5 +108,6 @@ class TaskData implements FixtureInterface, ContainerAwareInterface
         ) {
             $manager->persist($taskType);
         }
+        $manager->flush();
     }
 }

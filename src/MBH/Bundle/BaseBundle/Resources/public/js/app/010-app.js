@@ -87,7 +87,7 @@ mbh.alert = {
 };
 
 mbh.datatablesOptions = {
-    dom: "<'row'<'col-sm-6'l><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
+    dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
     buttons: [
         {
             extend: 'excel',
