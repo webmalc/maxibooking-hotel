@@ -170,6 +170,24 @@ class Tariff extends Base implements ConditionsInterface
      */
     protected $defaultServices;
 
+    /**
+     * @var TariffChildOptions
+     * @ODM\EmbedOne(targetDocument="TariffChildOptions")
+     */
+    protected $childOptions;
+
+    /** Tariff[]
+     * @ODM\ReferenceMany(targetDocument="Tariff", mappedBy="parent")
+     */
+    protected $children;
+
+    /**
+     * @var Tariff
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="Tariff", inversedBy="children")
+     */
+    protected $parent;
+
     public function __construct()
     {
         $this->promotions = new ArrayCollection();
@@ -497,5 +515,23 @@ class Tariff extends Base implements ConditionsInterface
     public function setDefaultServices($defaultServices)
     {
         $this->defaultServices = $defaultServices;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param mixed $parent
+     * @return TariffChildOptions
+     */
+    public function setParent($parent)
+    {
+        $this->parent = $parent;
+        return $this;
     }
 }

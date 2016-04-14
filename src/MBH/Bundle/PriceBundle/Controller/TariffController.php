@@ -44,6 +44,36 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
+     * Extend tariff
+     *
+     * @Route("/{id}/inherit", name="tariff_extend")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_TARIFF_EDIT')")
+     * @Template()
+     * @ParamConverter(class="MBHPriceBundle:Tariff")
+     * @param Request $request
+     * @param Tariff $parent
+     * @return array
+     */
+    public function extendAction(Request $request, Tariff $parent)
+    {
+        $tariff = new Tariff();
+        $tariff
+            ->setFullTitle($parent->getFullTitle() . '-дочерний тариф')
+            ->setHotel($parent->getHotel())
+            ->setParent($parent)
+            ->setIsEnabled(false)
+        ;
+        $this->dm->persist($tariff);
+        $this->dm->flush();
+
+        $request->getSession()->getFlashBag()
+            ->set('success', 'Дочерний тариф успешно создан.');
+
+        return $this->redirect($this->generateUrl('tariff_edit', ['id' => $tariff->getId()]));
+    }
+
+    /**
      * Copy tariff
      *
      * @Route("/{id}/copy", name="tariff_copy")
@@ -227,6 +257,42 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             'entity' => $tariff,
             'form' => $form->createView(),
             'logs' => $this->logs($tariff)
+        ];
+    }
+
+    /**
+     * @Route("/edit/{id}/inheritance", name="tariff_inheritance_edit")
+     * @Method({"GET", "POST"})
+     * @Template()
+     * @ParamConverter(class="MBHPriceBundle:Tariff")
+     * @param  Request $request
+     * @param Tariff $tariff
+     * @return array
+     */
+    public function editInheritanceAction(Request $request, Tariff $tariff)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel()) || !$tariff->getParent()) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createForm(new TariffInheritanceType(), $tariff);
+
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $this->dm->persist($tariff);
+            $this->dm->flush();
+
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+
+            return $this->isSavedRequest() ?
+                $this->redirectToRoute('tariff_inheritance_edit', ['id' => $tariff->getId()]) :
+                $this->redirectToRoute('tariff');
+        }
+
+        return [
+            'tariff' => $tariff,
+            'form' => $form->createView(),
+            'logs' => $this->logs($tariff),
         ];
     }
 

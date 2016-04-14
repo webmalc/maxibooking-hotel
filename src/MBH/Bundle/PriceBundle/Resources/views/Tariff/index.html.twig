@@ -10,6 +10,7 @@
         <tr>
             <th class="td-xs"></th>
             <th>Название</th>
+            <th>База</th>
             <th class="td-xs text-center">Ребенок</th>
             <th class="td-xs text-center">Инфант</th>
             <th class="td-md text-center">Сроки</th>
@@ -24,6 +25,9 @@
                 <td class="text-center table-icon"><i class="fa fa-sliders"></i></td>
                 <td>
                     {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'tariff'} %}{% endembed %}
+                </td>
+                <td>
+                    <small>{{ entity.parent }}</small>
                 </td>
                 <td class="text-center">
                     {{ entity.childAge }}
@@ -50,6 +54,13 @@
                 </td>
                 <td class="table-actions-td text-right">
                     {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'tariff', 'copy': true} %}
+                        {% block additional_buttons %}
+                            {% if entity.parent is empty and is_granted('ROLE_TARIFF_NEW') %}
+                                <a href='{{ path('tariff_extend', { 'id': entity.id }) }}' class='btn btn-default btn-xs' title='Создать дочерний тариф' data-toggle='tooltip'>
+                                    <i class='fa fa-arrow-circle-right'></i>
+                                </a>
+                            {% endif %}
+                        {% endblock %}
                     {% endembed %}
                 </td>
             </tr>
