@@ -3,6 +3,8 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PriceBundle\Document\TariffChildOptions;
+use MBH\Bundle\PriceBundle\Form\TariffInheritanceType;
 use MBH\Bundle\PriceBundle\Form\TariffPromotionsType;
 use MBH\Bundle\PriceBundle\Form\TariffServicesType;
 use MBH\Bundle\PriceBundle\Form\TariffServiceType;
@@ -275,10 +277,14 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new TariffInheritanceType(), $tariff);
+
+        $options = $tariff->getChildOptions() ? $tariff->getChildOptions() : new TariffChildOptions() ;
+        $form = $this->createForm(new TariffInheritanceType(), $options, ['parent' => $tariff->getParent()]);
 
         $form->handleRequest($request);
+
         if ($form->isValid()) {
+            $tariff->setChildOptions($options);
             $this->dm->persist($tariff);
             $this->dm->flush();
 
