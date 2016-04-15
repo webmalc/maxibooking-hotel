@@ -108,7 +108,7 @@ class HotelController extends Controller
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()
-                    ->set('success', $this->get('translator')->trans('controller.hotelController.record_created_success'))
+                ->set('success', $this->get('translator')->trans('controller.hotelController.record_created_success'))
             ;
 
             //todo: create services

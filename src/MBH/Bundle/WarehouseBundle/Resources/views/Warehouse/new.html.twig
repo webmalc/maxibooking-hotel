@@ -1,0 +1,12 @@
+{% extends 'MBHWarehouseBundle:Warehouse:layout.html.twig' %}
+
+{% set small_title = 'warehouse.cat.new'|trans() %}
+{% set layout = 'box' %}
+
+{% block content %}
+    {{ form_start(form, {'action': path('warehouse_category_create'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+    {{ form_end(form) }}
+{% endblock %}
+

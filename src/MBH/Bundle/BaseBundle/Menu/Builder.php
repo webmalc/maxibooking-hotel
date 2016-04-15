@@ -157,7 +157,6 @@ class Builder extends ContainerAware
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
             ->setAttributes(['icon' => 'fa fa-file-archive-o']);*/
 
-
         return $this->filter($menu, $factory, $options);
     }
 
@@ -292,6 +291,9 @@ class Builder extends ContainerAware
 
         $menu['configs']->addChild('tasktype', ['route' => 'tasktype', 'label' => 'Типы задач'])
             ->setAttributes(['icon' => 'fa fa-cog']);
+
+        $menu['configs']->addChild('warehouse', ['route' => 'warehouse_category', 'label' => 'Склад'])
+			->setAttributes(['icon' => 'fa fa-book']) ;
 
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])

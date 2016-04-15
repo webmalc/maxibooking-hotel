@@ -50,7 +50,7 @@
                                 <th class="td-md">Цена</th>
                                 <th class="td-sm">Тип расчета</th>
                                 <th class="td-sm">Дата</th>
-                                <th class="td-sm">Влкючена</th>
+                                <th class="td-sm">Включена</th>
                                 <th class="td-md"></th>
                             </tr>
                         </thead>
@@ -96,7 +96,7 @@
                             {% if is_granted('ROLE_SERVICE_EDIT') %}
                                 <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить изменения</button></li>
                             {% endif %}
-                            {% if is_granted('ROLE_SERVICE_CATEGOTY_NEW') %}
+                            {% if is_granted('ROLE_SERVICE_CATEGORY_NEW') %}
                                 <li><button onclick="location.href = '{{ path('price_service_category_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> Добавить новую категорию</button></li>
                             {% endif %}
                         </ul>
