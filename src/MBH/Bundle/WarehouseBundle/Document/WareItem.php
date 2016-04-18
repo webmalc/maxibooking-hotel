@@ -19,7 +19,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  *
  * @ODM\HasLifecycleCallbacks
  */
-class WareItems extends Base
+class WareItem extends Base
 {
     /**
      * Hook timestampable behavior

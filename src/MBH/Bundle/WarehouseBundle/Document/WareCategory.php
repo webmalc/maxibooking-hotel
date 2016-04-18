@@ -11,7 +11,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 
 /**
- * @ODM\Document(collection="WareCategory")
+ * @ODM\Document(collection="WareCategories")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
@@ -34,7 +34,7 @@ class WareCategory extends Base
     use BlameableDocument;
     
 
-    /** @ODM\ReferenceMany(targetDocument="WareItems", mappedBy="category") */
+    /** @ODM\ReferenceMany(targetDocument="WareItem", mappedBy="category") */
     protected $items;    
     
     /**
@@ -82,9 +82,9 @@ class WareCategory extends Base
     /**
      * Add item
      *
-     * @param \MBH\Bundle\WarehouseBundle\Document\WareItems $item
+     * @param \MBH\Bundle\WarehouseBundle\Document\WareItem $item
      */
-    public function addItem(\MBH\Bundle\WarehouseBundle\Document\WareItems $item)
+    public function addItem(\MBH\Bundle\WarehouseBundle\Document\WareItem $item)
     {
         $this->items[] = $item;
     }
@@ -92,9 +92,9 @@ class WareCategory extends Base
     /**
      * Remove item
      *
-     * @param \MBH\Bundle\WarehouseBundle\Document\WareItems $item
+     * @param \MBH\Bundle\WarehouseBundle\Document\WareItem $item
      */
-    public function removeItem(\MBH\Bundle\WarehouseBundle\Document\WareItems $item)
+    public function removeItem(\MBH\Bundle\WarehouseBundle\Document\WareItem $item)
     {
         $this->items->removeElement($item);
     }
@@ -102,7 +102,7 @@ class WareCategory extends Base
     /**
      * Get services
      *
-     * @return \MBH\Bundle\WarehouseBundle\Document\WareItems[] $items
+     * @return \MBH\Bundle\WarehouseBundle\Document\WareItem[] $items
      */
     public function getItems()
     {

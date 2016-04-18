@@ -9,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 /**
  * Class ServiceType
  */
-class WareItemsType extends AbstractType
+class WareItemType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -52,13 +52,13 @@ class WareItemsType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MBH\Bundle\WarehouseBundle\Document\WareItems',
+            'data_class' => 'MBH\Bundle\WarehouseBundle\Document\WareItem',
         ]);
     }
 
     public function getName()
     {
-        return 'mbh_bundle_warehousebundle_wareitems_type';
+        return 'mbh_bundle_warehousebundle_wareitem_type';
     }
 
 }

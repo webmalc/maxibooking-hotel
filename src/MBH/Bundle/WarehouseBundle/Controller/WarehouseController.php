@@ -4,10 +4,10 @@ namespace MBH\Bundle\WarehouseBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
-use MBH\Bundle\WarehouseBundle\Document\WareItems;
+use MBH\Bundle\WarehouseBundle\Document\WareItem;
 use MBH\Bundle\WarehouseBundle\Document\WareCategory;
 use MBH\Bundle\WarehouseBundle\Form\WareCategoryType;
-use MBH\Bundle\WarehouseBundle\Form\WareItemsType;
+use MBH\Bundle\WarehouseBundle\Form\WareItemType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -53,7 +53,7 @@ class WarehouseController extends Controller
     public function saveChangesAction(Request $request)
     {
         $entries = $request->get('entries');
-        $serviceRepository = $this->dm->getRepository('MBHWarehouseBundle:WareItems');
+        $serviceRepository = $this->dm->getRepository('MBHWarehouseBundle:WareItem');
 
         foreach ($entries as $id => $data) {
             $entity = $serviceRepository->find($id);
@@ -83,8 +83,8 @@ class WarehouseController extends Controller
      */
     public function newEntryAction(WareCategory $entity)
     {
-        $entry = new WareItems();
-        $form = $this->createForm(new WareItemsType(), $entry);
+        $entry = new WareItem();
+        $form = $this->createForm(new WareItemType(), $entry);
 
         return [
             'entry' => $entry,
@@ -104,18 +104,15 @@ class WarehouseController extends Controller
      */
     public function createEntryAction(Request $request, WareCategory $entity)
     {
-        $entry = new WareItems();
+        $entry = new WareItem();
         $entry->setCategory($entity);
 
-        $form = $this->createForm(new WareItemsType(), $entry);
+        $form = $this->createForm(new WareItemType(), $entry);
 
         $form->submit($request);
 
         if ($form->isValid()) {
-            if (!empty($request->get("mbh_bundle_warehousebundle_wareitems_type")["time"])) {
-                $date = date_create();
-                $entry->setDate(date_format($date, 'U = H:i:s'));
-            }
+			
             $this->dm->persist($entry);
             $this->dm->flush();
 
@@ -139,11 +136,11 @@ class WarehouseController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_WAREHOUSE_ITEMS_EDIT')")
      * @Template()
-     * @ParamConverter(class="MBHWarehouseBundle:WareItems")
+     * @ParamConverter(class="MBHWarehouseBundle:WareItem")
      */
-    public function editEntryAction(WareItems $entry)
+    public function editEntryAction(WareItem $entry)
     {
-        $form = $this->createForm(new WareItemsType(), $entry);
+        $form = $this->createForm(new WareItemType(), $entry);
 
         return [
             'entry' => $entry,
@@ -160,11 +157,11 @@ class WarehouseController extends Controller
      * @Method("PUT")
      * @Security("is_granted('ROLE_WAREHOUSE_ITEMS_EDIT')")
      * @Template("MBHWarehouseBundle:Warehouse:editEntry.html.twig")
-     * @ParamConverter(class="MBHWarehouseBundle:WareItems")
+     * @ParamConverter(class="MBHWarehouseBundle:WareItem")
      */
-    public function updateEntryAction(Request $request, WareItems $entry)
+    public function updateEntryAction(Request $request, WareItem $entry)
     {
-        $form = $this->createForm(new WareItemsType(), $entry);
+        $form = $this->createForm(new WareItemType(), $entry);
 
         $form->submit($request);
 		
@@ -310,9 +307,9 @@ class WarehouseController extends Controller
      * @Route("/{id}/entry/delete", name="warehouse_category_entry_delete")
      * @Method("GET")
      * @Security("is_granted('ROLE_WAREHOUSE_ITEMS_DELETE')")
-     * @ParamConverter(class="MBHWarehouseBundle:WareItems")
+     * @ParamConverter(class="MBHWarehouseBundle:WareItem")
      */
-    public function deleteEntryAction(Request $request, WareItems $entity)
+    public function deleteEntryAction(Request $request, WareItem $entity)
     {
         try {
             $catId = $entity->getCategory()->getId();
