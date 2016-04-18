@@ -726,6 +726,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         );
         $optGroupRooms = $roomRepository->optGroupRooms($groupedRooms);
 
+        $name = $package->getRoomType()->getName();
+        uksort($optGroupRooms, function ($a, $b) use ($name) {
+            if ($a == $name) {
+                return -1;
+            }
+
+            return 1;
+        });
+
         $this->dm->getFilterCollection()->enable('softdeleteable');
 
         if (!$package->getArrivalTime()) {

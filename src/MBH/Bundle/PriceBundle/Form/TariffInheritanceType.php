@@ -16,26 +16,26 @@ class TariffInheritanceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
 
-        $group = 'Наследование из тарифа <' . $options['parent'] . '>';
+        $group = 'Наследование от тарифа <' . $options['parent'] . '>';
 
         $builder
             ->add('inheritPrices', 'checkbox', [
                 'label' => 'Цены',
                 'group' => $group,
                 'required' => false,
-                'help' => 'Наследовать ли цены из родительского тарифа'
+                'help' => 'Наследовать ли цены от родительского тарифа'
             ])
             ->add('inheritRestrictions', 'checkbox', [
                 'label' => 'Условия и ограничения',
                 'group' => $group,
                 'required' => false,
-                'help' => 'Наследовать ли условия и ограничения из родительского тарифа'
+                'help' => 'Наследовать ли условия и ограничения от родительского тарифа'
             ])
             ->add('inheritRooms', 'checkbox', [
                 'label' => 'Квоты',
                 'group' => $group,
                 'required' => false,
-                'help' => 'Наследовать ли квоты номеров из родительского тариф'
+                'help' => 'Наследовать ли квоты номеров от родительского тариф'
             ])
         ;
     }
