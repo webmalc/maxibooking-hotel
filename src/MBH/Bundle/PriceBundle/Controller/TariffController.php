@@ -86,6 +86,10 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      */
     public function copyAction(Request $request, Tariff $parent)
     {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($parent->getHotel()) || $parent->getParent()) {
+            throw $this->createNotFoundException();
+        }
+
         $new = clone $parent;
         $this->dm->persist($new);
         $this->dm->flush();

@@ -65,7 +65,7 @@ class RestrictionGeneratorType extends AbstractType
                 'multiple' => true,
                 'class' => 'MBHPriceBundle:Tariff',
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
-                    return $dr->fetchQueryBuilder($options['hotel']);
+                    return $dr->fetchChildTariffsQuery($options['hotel'], 'rooms');
                 },
                 'help' => 'Тарифы для готорых будет произведена генерация цен',
                 'attr' => array('placeholder' => $options['hotel'].': все тарифы'),
