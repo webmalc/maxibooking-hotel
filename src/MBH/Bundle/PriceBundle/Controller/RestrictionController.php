@@ -20,13 +20,12 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
 {
 
     /**
-     * @param Request $request
      * @return Response
      * @Route("/in/out/json", name="restriction_in_out_json", options={"expose"=true}, defaults={"_format": "json"})
      * @Method("GET")
      * @Security("is_granted('ROLE_RESTRICTION_VIEW')")
      */
-    public function inOutJsonAction(Request $request)
+    public function inOutJsonAction()
     {
         return new JsonResponse($this->dm->getRepository('MBHPriceBundle:Restriction')->fetchInOut());
     }

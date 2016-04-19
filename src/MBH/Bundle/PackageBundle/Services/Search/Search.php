@@ -118,9 +118,13 @@ class Search implements SearchInterface
         //group caches
         foreach ($roomCaches as $roomCache) {
             if ($roomCache->getTariff()) {
-
+                // collect quotes
                 try {
-                    if ((!empty($query->tariff) && $roomCache->getTariff()->getId() == $query->tariff->getId()) || (empty($query->tariff) && $roomCache->getTariff()->getIsDefault())) {
+                    $quotesTariff = $query->tariff;
+                    if ($quotesTariff && $quotesTariff->getParent() && $quotesTariff->getChildOptions()->isInheritRooms()) {
+                        $quotesTariff = $quotesTariff->getParent();
+                    }
+                    if ((!empty($quotesTariff) && $roomCache->getTariff()->getId() == $quotesTariff->getId()) || (empty($query->tariff) && $roomCache->getTariff()->getIsDefault())) {
                         $groupedCaches['tariff'][$roomCache->getHotel()->getId()][$roomCache->getRoomType()->getId()][] = $roomCache;
                     }
                 } catch (DocumentNotFoundException $e) {
@@ -190,10 +194,15 @@ class Search implements SearchInterface
             foreach ($restrictions as $restriction) {
                 $delete = false;
 
-                if ($query->tariff && $query->tariff->getId() != $restriction->getTariff()->getId()) {
+                $restrictionsTariff = $query->tariff;
+                if ($restrictionsTariff && $restrictionsTariff->getParent() && $restrictionsTariff->getChildOptions()->isInheritRestrictions()) {
+                    $restrictionsTariff = $restrictionsTariff->getParent();
+                }
+
+                if ($restrictionsTariff && $restrictionsTariff->getId() != $restriction->getTariff()->getId()) {
                     continue;
                 }
-                if (!$query->tariff && !$restriction->getTariff()->getIsDefault()) {
+                if (!$restrictionsTariff && !$restriction->getTariff()->getIsDefault()) {
                     continue;
                 }
 
@@ -275,9 +284,11 @@ class Search implements SearchInterface
                 continue;
             }
 
-            if (!PromotionConditionFactory::checkConditions(
+            $check = PromotionConditionFactory::checkConditions(
                 $tariff, $duration, $query->adults, $query->children
-            )) {
+            );
+
+            if (!$check) {
                 continue;
             }
 

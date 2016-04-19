@@ -536,7 +536,7 @@ class Tariff extends Base implements ConditionsInterface
     }
 
     /**
-     * @return mixed
+     * @return TariffChildOptions
      */
     public function getChildOptions()
     {

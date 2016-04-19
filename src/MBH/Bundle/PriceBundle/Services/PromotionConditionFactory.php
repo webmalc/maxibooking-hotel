@@ -86,7 +86,10 @@ class PromotionConditionFactory
             return true;
         }
         $guests = $adults + $children;
-        if (!$guests) {
+        if (!$guests && !in_array($condition, [
+                self::CONDITION_MAX_ACCOMMODATION,
+                self::CONDITION_MIN_ACCOMMODATION
+            ])) {
             return true;
         }
 
@@ -150,7 +153,6 @@ class PromotionConditionFactory
         if (!$promotion) {
             return false;
         }
-
         $main = self::checkCondition(
             $promotion->getCondition(), $promotion->getConditionQuantity(), $adults, $children, $length
         );
