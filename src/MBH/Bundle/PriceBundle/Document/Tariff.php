@@ -540,7 +540,7 @@ class Tariff extends Base implements ConditionsInterface
      */
     public function getChildOptions()
     {
-        return $this->childOptions;
+        return $this->childOptions ?: new TariffChildOptions();
     }
 
     /**
