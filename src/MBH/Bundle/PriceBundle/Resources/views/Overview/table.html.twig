@@ -50,8 +50,11 @@
                             {% if roomCaches[roomType.id][0][date|date('d.m.Y')] is defined %}
                                 {% set roomCache = roomCaches[roomType.id][0][date|date('d.m.Y')] %}
                             {% endif %}
-                            {% if tariffRoomCaches[roomType.id][tariff.id][date|date('d.m.Y')] is defined %}
+                            {% if (tariff.parent is empty or tariff.childOptions.inheritRooms is empty) and tariffRoomCaches[roomType.id][tariff.id][date|date('d.m.Y')] is defined %}
                                 {% set tariffRoomCache = tariffRoomCaches[roomType.id][tariff.id][date|date('d.m.Y')] %}
+                            {% endif %}
+                            {% if tariff.parent and tariff.childOptions.inheritRooms and tariffRoomCaches[roomType.id][tariff.parent.id][date|date('d.m.Y')] is defined %}
+                                {% set tariffRoomCache = tariffRoomCaches[roomType.id][tariff.parent.id][date|date('d.m.Y')] %}
                             {% endif %}
 
                             {% set roomTypeId = roomType.id %}
@@ -63,12 +66,20 @@
                                 {% endif %}
                             {% endif %}
 
-                            {% if priceCaches[roomTypeId][tariff.id][date|date('d.m.Y')] is defined %}
+                            {% if (tariff.parent is empty or tariff.childOptions.inheritPrices is empty) and priceCaches[roomTypeId][tariff.id][date|date('d.m.Y')] is defined %}
                                 {% set priceCache = priceCaches[roomTypeId][tariff.id][date|date('d.m.Y')] %}
                             {% endif %}
-                            {% if restrictions[roomType.id][tariff.id][date|date('d.m.Y')] is defined %}
+                            {% if tariff.parent and tariff.childOptions.inheritPrices and priceCaches[roomTypeId][tariff.parent.id][date|date('d.m.Y')] is defined %}
+                                {% set priceCache = priceCaches[roomTypeId][tariff.parent.id][date|date('d.m.Y')] %}
+                            {% endif %}
+
+                            {% if (tariff.parent is empty or tariff.childOptions.inheritRestrictions is empty) and restrictions[roomType.id][tariff.id][date|date('d.m.Y')] is defined %}
                                 {% set restriction = restrictions[roomType.id][tariff.id][date|date('d.m.Y')] %}
                             {% endif %}
+                            {% if tariff.parent and tariff.childOptions.inheritRestrictions and restrictions[roomType.id][tariff.parent.id][date|date('d.m.Y')] is defined %}
+                                {% set restriction = restrictions[roomType.id][tariff.parent.id][date|date('d.m.Y')] %}
+                            {% endif %}
+
 
                             {% if roomCache or tariffRoomCache %}
                                 {% set cell = true %}

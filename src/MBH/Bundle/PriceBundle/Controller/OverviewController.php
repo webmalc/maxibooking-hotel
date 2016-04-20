@@ -97,26 +97,19 @@ class OverviewController extends Controller implements CheckHotelControllerInter
         $tariffRoomCaches = $dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch(
                 $begin, $end, $hotel,
-                $request->get('roomTypes') && !$manager->useCategories ? $request->get('roomTypes') : [],
-                $request->get('tariffs') ? $request->get('tariffs') : [],
-                true)
-        ;
+                $request->get('roomTypes') && !$manager->useCategories ? $request->get('roomTypes') : [], [], true);
+        
         //get priceCaches
         $priceCaches = $dm->getRepository('MBHPriceBundle:PriceCache')
             ->fetch(
                 $begin, $end, $hotel,
-                $request->get('roomTypes') ? $request->get('roomTypes') : [],
-                $request->get('tariffs') ? $request->get('tariffs') : [],
-                true, $manager->useCategories)
-        ;
+                $request->get('roomTypes') ? $request->get('roomTypes') : [], [], true, $manager->useCategories);
+        
         //get restrictions
         $restrictions = $dm->getRepository('MBHPriceBundle:Restriction')
             ->fetch(
                 $begin, $end, $hotel,
-                $request->get('roomTypes') ? $request->get('roomTypes') : [],
-                $request->get('tariffs') ? $request->get('tariffs') : [],
-                true)
-        ;
+                $request->get('roomTypes') ? $request->get('roomTypes') : [], [], true);
 
         return array_merge($response, [
             'roomTypes' => $roomTypes,

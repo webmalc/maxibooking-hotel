@@ -22,7 +22,7 @@
         <tbody>
         {% for entity in entities %}
             <tr {% if entity.isEnabled is empty %} class="danger"{% endif %}>
-                <td class="text-center table-icon"><i class="fa fa-sliders"></i></td>
+                <td class="text-center table-icon {{ entity.parent ? 'text-primary' }}"><i class="fa fa-sliders"></i></td>
                 <td>
                     {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'tariff'} %}{% endembed %}
                 </td>
@@ -53,7 +53,7 @@
                     {% endif %}
                 </td>
                 <td class="table-actions-td text-right">
-                    {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'tariff', 'copy': true} %}
+                    {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'tariff', 'copy': entity.parent is empty } %}
                         {% block additional_buttons %}
                             {% if entity.parent is empty and is_granted('ROLE_TARIFF_NEW') %}
                                 <a href='{{ path('tariff_extend', { 'id': entity.id }) }}' class='btn btn-default btn-xs' title='Создать дочерний тариф' data-toggle='tooltip'>

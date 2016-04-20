@@ -20,13 +20,12 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
 {
 
     /**
-     * @param Request $request
      * @return Response
      * @Route("/in/out/json", name="restriction_in_out_json", options={"expose"=true}, defaults={"_format": "json"})
      * @Method("GET")
      * @Security("is_granted('ROLE_RESTRICTION_VIEW')")
      */
-    public function inOutJsonAction(Request $request)
+    public function inOutJsonAction()
     {
         return new JsonResponse($this->dm->getRepository('MBHPriceBundle:Restriction')->fetchInOut());
     }
@@ -43,7 +42,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
 
         return [
             'roomTypes' => $hotel->getRoomTypes(),
-            'tariffs' => $hotel->getTariffs(),
+            'tariffs' => $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'restrictions'),
         ];
     }
 
@@ -133,6 +132,9 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $validator = $this->get('validator');
         (empty($request->get('updateRestrictions'))) ? $updateData = [] : $updateData = $request->get('updateRestrictions');
         (empty($request->get('newRestrictions'))) ? $newData = [] : $newData = $request->get('newRestrictions');
+        $availableTariffs = $this->helper->toIds(
+            $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'restrictions')
+        );
 
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
@@ -142,7 +144,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             }
             foreach ($roomTypeArray as $tariffId => $tariffArray) {
                 $tariff = $dm->getRepository('MBHPriceBundle:Tariff')->find($tariffId);
-                if (!$tariff || $tariff->getHotel() != $hotel) {
+                if (!$tariff || $tariff->getHotel() != $hotel || !in_array($tariffId, $availableTariffs)) {
                     continue;
                 }
                 foreach ($tariffArray as $date => $values) {
