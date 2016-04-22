@@ -141,8 +141,8 @@ class OrderExportCommand extends ContainerAwareCommand
                     $tourist->setFirstName($firstName);
                     $tourist->setLastName($lastName);
                     $tourist->setPatronymic($patronymic)->setCreatedBy('import');
-                    //$dm->persist($tourist);
-                    //$dm->flush();
+                    $dm->persist($tourist);
+                    $dm->flush();
                     //$tourist = $touristRepository->fetchOrCreate($lastName, $firstName, $patronymic);
                 }
                 $order->setMainTourist($tourist);
@@ -238,13 +238,13 @@ class OrderExportCommand extends ContainerAwareCommand
             $hotelTitle = null;
             switch ($prefix) {
                 case 1:
-                    $hotelTitle = 'Азовский';
+                    $hotelTitle = 'Пансионат Азовский';
                     break;
                 case 2:
-                    $hotelTitle = 'АзовЛенд';
+                    $hotelTitle = 'Пансионат АзовЛенд';
                     break;
                 case 3:
-                    $hotelTitle = 'РИО';
+                    $hotelTitle = 'Парк - отель "РИО"';
                     break;
                 default:
                     throw new \Exception('hotel is not defined');
@@ -257,7 +257,7 @@ class OrderExportCommand extends ContainerAwareCommand
                 $hotel->setTitle($hotelTitle)->setFullTitle($hotelTitle)->setCreatedBy('import');
                 //$hotelManager->create($hotel);
                 $dm->persist($hotel);
-                //$dm->flush();
+                $dm->flush();
             }
 
             if ($hotel->getId()) {

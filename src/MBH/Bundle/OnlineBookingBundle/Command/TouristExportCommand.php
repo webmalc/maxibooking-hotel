@@ -105,8 +105,12 @@ class TouristExportCommand extends ContainerAwareCommand
         $document = new DocumentRelation();
         $document->setSeries(isset($rowData[3]) ? $rowData[3] : null);
         $document->setNumber(isset($rowData[4]) ? $rowData[4] : null);
-        $issued = isset($rowData[5]) && $rowData[5] ? new \DateTime($rowData[5]) : null;
-        $document->setIssued($issued);
+        try {
+            $issued = isset($rowData[5]) && $rowData[5] ? new \DateTime($rowData[5]) : null;
+            $document->setIssued($issued);
+        } catch(\Exception $e) {
+            dump($i. ' ' . $e->getMessage());
+        }
         if(isset($rowData[12])) {
             $rowData[12] = trim($rowData[12]);
             $type = null;
