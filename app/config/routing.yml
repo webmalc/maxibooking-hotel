@@ -1,7 +1,7 @@
 mbh_warehouse:
     resource: "@MBHWarehouseBundle/Controller/"
     type:     annotation
-    prefix:   /management/warehouse
+    prefix:   /
 
 JMSTranslationBundle_ui:
     resource: @JMSTranslationBundle/Controller/

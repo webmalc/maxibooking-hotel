@@ -76,6 +76,7 @@ class WareItem extends Base
 
     /**
      * @var float
+     * @Gedmo\Versioned
      * @ODM\Float(name="price")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -108,7 +109,6 @@ class WareItem extends Base
      */
     protected $system = false;
 
-    
     /**
      * Set category
      *
@@ -178,7 +178,7 @@ class WareItem extends Base
     /**
      * Set price
      *
-     * @param int $price
+     * @param float $price
      * @return self
      */
     public function setPrice($price)
@@ -190,7 +190,7 @@ class WareItem extends Base
     /**
      * Get price
      *
-     * @return int $price
+     * @return float $price
      */
     public function getPrice()
     {

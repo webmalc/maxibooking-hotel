@@ -54,7 +54,7 @@ class WarehouseData implements FixtureInterface, ContainerAwareInterface
 			
 			$wcat = new WareCategory();
 			
-			$wcat->setTitle($cat);
+			$wcat->setFullTitle($cat);
 			
 			$manager->persist($wcat);
 		}
@@ -71,7 +71,7 @@ class WarehouseData implements FixtureInterface, ContainerAwareInterface
 	 */
 	function checkExistance($existingCats, $cat) {
 		foreach ($existingCats as $v) {
-			if ($v->getTitle() == $cat) {
+			if ($v->getFullTitle() == $cat) {
 				return true;
 			}
 		}

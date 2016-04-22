@@ -1,0 +1,63 @@
+{% extends 'MBHWarehouseBundle:Record:layout.html.twig' %}
+
+{% set small_title = 'warehouse.common.subtitle'|trans %}
+{% set layout = "box" %}
+
+{% block content %}
+
+	
+{#	{% for hotel in hotels() %}
+		<p>{{ hotel.name }}</p>
+	{% endfor %}
+#}
+	
+    <table class="tariffs-table table table-striped table-hover table-condensed table-icons table-actions">
+        <thead>
+        <tr>
+            <th class="td-xs"></th>
+            <th class="td-sm">Дата</th>
+            <th class="td-sm">Operation</th>
+            <th class="td-md">Hotel</th>
+            <th>Название</th>
+            <th class="td-xs text-right">Кол</th>
+            <th class="td-md text-center">Ед. изм.</th>
+            <th class="td-xs text-center">{{ 'warehouse.items.price'|trans }}</th>
+            <th class="td-md text-right">Amount</th>
+            <th class="td-sm"></th>
+        </tr>
+		</thead>
+		
+		<tbody>
+			{% for entity in entities %}
+				<tr {% if entity.isEnabled is empty %} class="danger"{% endif %}>
+					<td class="text-center table-icon"><i class="fa fa-book"></i></td>
+					<td class="text-center">{{ entity.recordDate|date('d.m.Y') }}</td>
+					<td class="text-center">{{ entity.operation }}</td>
+					<td class="">{{ entity.hotel }}</td>
+					<td>
+						{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'warehouse_record'} %}{% endembed %}
+					</td>
+					<td class="text-right">
+						{{ entity.qtty }}
+					</td>
+					<td class="text-center">
+						{{ entity.wareItem.unit }}
+					</td>
+					<td class="text-right">
+						{{ entity.price }}
+					</td>
+					<td class="text-right">
+						{{ entity.amount }}
+					</td>
+					<td class="table-actions-td text-right">
+						{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'warehouse_record'} %}{% endembed %}
+					</td>
+				</tr>
+			{% endfor %}
+        </tbody>
+    </table>
+
+
+	{% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'warehouse_record_new', 'role': 'WAREHOUSE_RECORD'} %}
+
+{% endblock %} 

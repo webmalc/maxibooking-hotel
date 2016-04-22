@@ -15,8 +15,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
+
 /**
- * @Route("items")
+ * @Route("management/warehouse")
  */
 class WarehouseController extends Controller
 {
@@ -187,7 +188,7 @@ class WarehouseController extends Controller
     }
 
     /**
-     * Displays a form to create a new entity.
+     * Displays a form to create a new category.
      *
      * @Route("/new", name="warehouse_category_new")
      * @Method("GET")
@@ -323,4 +324,5 @@ class WarehouseController extends Controller
 
         return $this->redirectToRoute('warehouse_category', ['tab' => $catId]);
     }
+	
 }

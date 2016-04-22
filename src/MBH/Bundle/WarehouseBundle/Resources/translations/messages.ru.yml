@@ -14,8 +14,9 @@ warehouse:
     field:
         price: Цена
         unit: Ед. изм.
-        unitPlaceholder: шт., литр...        
+        unitPlaceholder: шт., литр…
     cat:
+        title: Категория
         edit: редактирование категории
         new: создание категории товара
         newcattitle: Новая категория товара
@@ -25,6 +26,7 @@ warehouse:
         newSuccess: Категория успешно создана
         editSuccess: Категория успешно отредактирована   
     items:
+        title: Товар
         edit: редактирование товара в категории
         edit1: Редактировать категорию товара
         new: создание товара в категории
@@ -32,7 +34,7 @@ warehouse:
         add: Добавить товар
         notused: Товар не используется
         staple: Основные товары
-        placeholder: Мыло туалетное с гибискусом, фирменное...
+        placeholder: Мыло туалетное с гибискусом, фирменное…
         placeholderShort: Мыло
         maxiTitle: Название для использования внутри MaxiBooking
         availability: Доступен ли товар для продажи
@@ -40,3 +42,14 @@ warehouse:
         newSuccess: Товар успешно создан
         editSuccess: Товар успешно отредактирован
         delSuccess: Товар успешно удалён
+        price: Цена
+    record:
+        new: создание новой записи
+        newSuccess: Новая запись успешно создана
+        generalInfo: Данные
+        quantity: Количество
+        operation: Вид операции
+        edit: редактирование записи
+        editSuccess: Запись успешно отредактирована
+        amount: Сумма
+        recordDate: Дата

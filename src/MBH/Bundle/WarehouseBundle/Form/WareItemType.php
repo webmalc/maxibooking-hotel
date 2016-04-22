@@ -28,7 +28,7 @@ class WareItemType extends AbstractType
                 'help' => 'warehouse.items.maxiTitle'
             ])
             ->add('price', 'text', [
-                'label' => 'Цена',
+                'label' => 'warehouse.items.price',
                 'group' => 'warehouse.common.info',
                 'required' => false,
                 'attr' => ['placeholder' => 'warehouse.items.notused', 'class' => 'spinner price-spinner'],

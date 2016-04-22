@@ -220,13 +220,18 @@ ROLE_WORK_SHIFT: Рабочие смены
 ROLE_WORK_SHIFT_VIEW: Просмотр отчёта по рабочим сменам
 ROLE_WORK_SHIFT_CLOSE: Закрывать рабочие смены
 
-ROLE_WAREHOUSE_CAT: Склад - категории
-ROLE_WAREHOUSE_CAT_VIEW: Склад - просмотр категорий
-ROLE_WAREHOUSE_CAT_NEW: Склад - добавление категорий
-ROLE_WAREHOUSE_CAT_EDIT: Склад - редактирование категорий
-ROLE_WAREHOUSE_CAT_DELETE: Склад - удаление категорий
-ROLE_WAREHOUSE_ITEMS: Склад - Справочники
-ROLE_WAREHOUSE_ITEMS_VIEW: Склад - просмотр справочников
-ROLE_WAREHOUSE_ITEMS_NEW: Склад - добавление записей в справочниках
-ROLE_WAREHOUSE_ITEMS_EDIT: Склад - редактирование записей в справочниках
-ROLE_WAREHOUSE_ITEMS_DELETE: Склад - удаление данных в справочниках
+ROLE_WAREHOUSE_CAT: Склад — категории
+ROLE_WAREHOUSE_CAT_VIEW: Просмотр категорий
+ROLE_WAREHOUSE_CAT_NEW: Добавление категорий
+ROLE_WAREHOUSE_CAT_EDIT: Редактирование категорий
+ROLE_WAREHOUSE_CAT_DELETE: Удаление категорий
+ROLE_WAREHOUSE_ITEMS: Склад — Справочники
+ROLE_WAREHOUSE_ITEMS_VIEW: Просмотр справочников
+ROLE_WAREHOUSE_ITEMS_NEW: Добавление записей в справочниках
+ROLE_WAREHOUSE_ITEMS_EDIT: Редактирование записей в справочниках
+ROLE_WAREHOUSE_ITEMS_DELETE: Удаление данных в справочниках
+ROLE_WAREHOUSE_RECORD: Склад — занесение данных
+ROLE_WAREHOUSE_RECORD_VIEW: Просмотр данных
+ROLE_WAREHOUSE_RECORD_NEW: Добавление данных
+ROLE_WAREHOUSE_RECORD_EDIT: Редактирование данных
+ROLE_WAREHOUSE_RECORD_DELETE: Удаление данных

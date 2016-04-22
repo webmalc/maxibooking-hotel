@@ -109,6 +109,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                 $query->setChildrenAges($childrenAges);
 
                 $hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
+				
                 foreach ($data['roomType'] as $id) {
                     if (mb_stripos($id, 'allrooms_') !== false) {
                         $hotel = $hotelRepository->find(str_replace('allrooms_', '', $id));

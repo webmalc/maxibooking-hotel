@@ -97,6 +97,7 @@ class Builder extends ContainerAware
         $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
 
         $taskAttributes = ['icon' => 'fa fa-tasks'];
+		
         if ($openTaskCount > 0) {
             $taskAttributes += [
                 'badge' => true,
@@ -127,6 +128,9 @@ class Builder extends ContainerAware
         $menu->addChild('cash', ['route' => 'cash', 'label' => 'Касса'])
             ->setAttribute('icon', $this->container->get('mbh.currency')->info()['icon'])
         ;
+
+        // warehouse
+        $menu->addChild('warehouse_record', ['route' => 'warehouse_record', 'label' => 'Склад'])->setAttributes(['icon' => 'fa fa-book']);
 
         // report
         $menu->addChild('reports', ['route' => '_welcome', 'label' => 'Отчеты'])
@@ -292,7 +296,8 @@ class Builder extends ContainerAware
         $menu['configs']->addChild('tasktype', ['route' => 'tasktype', 'label' => 'Типы задач'])
             ->setAttributes(['icon' => 'fa fa-cog']);
 
-        $menu['configs']->addChild('warehouse', ['route' => 'warehouse_category', 'label' => 'Склад'])
+		// Warehouse link
+        $menu['configs']->addChild('warehouse_category', ['route' => 'warehouse_category', 'label' => 'Склад'])
 			->setAttributes(['icon' => 'fa fa-book']) ;
 
         //Services links

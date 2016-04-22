@@ -346,3 +346,7 @@ parameters:
     mbh.languages:
         - en
         - ru
+        
+    mbh.warehouse.operations:
+        in: "Приход"
+        out: "Расход"

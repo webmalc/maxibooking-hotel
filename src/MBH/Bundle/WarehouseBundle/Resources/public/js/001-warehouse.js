@@ -25,6 +25,7 @@ $(document).ready(function () {
     });
 	
 	$('.table-actions').DataTable({
+		retrieve: true,
 		"columns": [
 			{"orderable": false},
 			null,

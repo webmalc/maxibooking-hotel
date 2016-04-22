@@ -15,7 +15,7 @@ use Gedmo\Blameable\Traits\BlameableDocument;
  * @ODM\Document(collection="Groups")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="name", message="Такой группа уже существует")
+ * @MongoDBUnique(fields="name", message="Такая группа уже существует")
  */
 class Group extends BaseGroup
 {
@@ -78,6 +78,5 @@ class Group extends BaseGroup
         $this->code = $code;
         return $this;
     }
-
 
 }
