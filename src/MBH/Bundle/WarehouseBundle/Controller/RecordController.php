@@ -180,7 +180,7 @@ class RecordController extends Controller
 	private function getForm(Record $entity) {
 		
         return $this->createForm(new RecordType(), $entity, [
-            'operations' => $this->container->getParameter('mbh.warehouse.operations'),
+//            'operations' => $this->container->getParameter('mbh.warehouse.operations'),
         ]);
 	}
 

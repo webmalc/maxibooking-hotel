@@ -17,13 +17,6 @@ class RecordType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('operation', 'choice', [
-                'label' => 'warehouse.record.operation',
-                'required' => true,
-                'multiple' => false,
-                'expanded' => true,
-                'choices' => $options['operations'],
-            ])
             ->add('recordDate', 'date', [
                 'label' => 'warehouse.record.recordDate',
                 'widget' => 'single_text',
@@ -32,15 +25,10 @@ class RecordType extends AbstractType
                 'attr' => [
                     'class' => 'datepicker begin-datepicker input-small',
                     'data-date-format' => 'dd.mm.yyyy',
-                ]
-            ])
-            ->add('hotel', 'document', [
-                'label' => 'form.hotelType.placeholder_hotel',
-                'required' => false,
-                'class' => Hotel::class,
+                ],
             ])
 			->add('wareItem', 'document', [
-				'required' => false,
+				'required' => true,
 				'class' => WareItem::class,
 				'label' => 'warehouse.items.title',
 				'group_by' => 'category',
@@ -48,23 +36,24 @@ class RecordType extends AbstractType
             ->add('qtty', 'text', [
                 'label' => 'warehouse.record.quantity',
                 'required' => true,
-                'attr' => ['class' => 'spinner price-spinner'],
+                'attr' => ['class' => 'spinner spinner-0f',],
             ])
             ->add('unit', 'text', [
                 'label' => 'warehouse.field.unit',
                 'mapped' => false,
 				'required' => false,
 				'disabled' => true,
-				'attr' => ['class' => 'input-small'],
+				'attr' => ['class' => 'input-small',],
             ])
             ->add('price', 'text', [
                 'label' => 'warehouse.items.price',
                 'required' => true,
-                'attr' => ['class' => 'spinner price-spinner'],
+                'attr' => ['class' => 'spinner price-spinner',],
             ])
             ->add('amount', 'text', [
                 'label' => 'warehouse.record.amount',
-				'required' => false,
+				'required' => true,
+				'attr' => ['class' => 'spinner price-spinner',],
             ])
 		;
     }
@@ -73,7 +62,7 @@ class RecordType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\WarehouseBundle\Document\Record',
-            'operations' => [],
+//            'operations' => [],
         ]);
     }
 

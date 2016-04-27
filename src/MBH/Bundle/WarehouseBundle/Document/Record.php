@@ -30,7 +30,12 @@ class Record extends Base
      * @ODM\Boolean()
      */
     protected $isSystem;
-
+    /** 
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="Invoice", inversedBy="records")
+     * @Assert\NotNull(message="validator.warehouse.cat.notchosen")
+     */
+    protected $invoice;
     /**
      * @var \DateTime
      * @Gedmo\Versioned
@@ -38,26 +43,7 @@ class Record extends Base
      * @Assert\Date()
      * @Assert\NotNull()
      */
-    protected $recordDate;
-    
-    /**
-     * @var string
-     * @Gedmo\Versioned
-     * @ODM\String()
-     * @Assert\Choice(
-     *      choices = {"in", "out"},
-     *      message = "validator.warehouse.record.wrongOperation"
-     * )
-     */
-    protected $operation;
-
-    /**
-     * @var Hotel
-     * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
-     */
-    protected $hotel;
-
+    protected $recordDate;    
     /**
      * @var WareItem
      * @Gedmo\Versioned
@@ -65,7 +51,6 @@ class Record extends Base
      * @Assert\NotNull()
      */
     protected $wareItem;
-
     /**
      * @var float
      * @ODM\Float(name="price")
@@ -76,8 +61,7 @@ class Record extends Base
      *      minMessage="validator.negativeprice"
      * )
      */
-    protected $price;
-    
+    protected $price;    
     /**
      * @var float
      * @ODM\Float(name="qtty")
@@ -88,8 +72,7 @@ class Record extends Base
      *      minMessage="validator.warehouse.record.negative"
      * )
      */
-    protected $qtty;
-	
+    protected $qtty;	
     /**
      * @var float
      * @ODM\Float(name="amount")
@@ -108,6 +91,26 @@ class Record extends Base
      */
     public function __toString() {
         return $this->wareItem->getName();
+    }
+
+    /**
+     * Set invoice
+     *
+     * @param Invoice $param
+     * @return self
+     */
+    public function setInvoice(Invoice $param) {
+        $this->invoice = $param;
+        return $this;
+    }
+
+    /**
+     * Get invoice
+     *
+     * @return Invoice $invoice
+     */
+    public function getInvoice() {
+        return $this->invoice;
     }
 
 	/**
@@ -129,7 +132,7 @@ class Record extends Base
 	/**
      * @return boolean
      */
-    public function getisSystem() {
+    public function getIsSystem() {
         return $this->isSystem;
     }
 
@@ -139,43 +142,6 @@ class Record extends Base
      */
     public function setIsSystem($isSystem) {
         $this->isSystem = $isSystem;
-        return $this;
-    }
-
-    /**
-     * Set operation
-     *
-     * @param string $operation
-     * @return self
-     */
-    public function setOperation($operation) {
-        $this->operation = $operation;
-
-        return $this;
-    }
-
-    /**
-     * Get operation
-     *
-     * @return string $operation
-     */
-    public function getOperation() {
-        return $this->operation;
-    }
-
-    /**
-     * @return Hotel|null
-     */
-    public function getHotel() {
-        return $this->hotel;
-    }
-
-    /**
-     * @param Hotel|null $hotel
-     * @return self
-     */
-    public function setHotel(Hotel $hotel = null) {
-        $this->hotel = $hotel;
         return $this;
     }
 

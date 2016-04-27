@@ -78,24 +78,22 @@ class WareCategory extends Base
     {
         $this->items = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
-     * Add item
+     * Add an item
      *
-     * @param \MBH\Bundle\WarehouseBundle\Document\WareItem $item
+     * @param WareItem $item
      */
-    public function addItem(\MBH\Bundle\WarehouseBundle\Document\WareItem $item)
-    {
-        $this->items[] = $item;
+    public function addItem(WareItem $item) {
+        $this->items->add($item);
     }
 
     /**
      * Remove item
      *
-     * @param \MBH\Bundle\WarehouseBundle\Document\WareItem $item
+     * @param WareItem $item
      */
-    public function removeItem(\MBH\Bundle\WarehouseBundle\Document\WareItem $item)
-    {
+    public function removeItem(WareItem $item) {
         $this->items->removeElement($item);
     }
 

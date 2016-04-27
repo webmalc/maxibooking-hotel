@@ -1,0 +1,17 @@
+{% extends 'MBHWarehouseBundle:Record:layout.html.twig' %}
+
+{% set small_title = 'warehouse.record.new'|trans %}
+{% set layout = 'box' %}
+
+{% block content %}
+    {{ form_start(form, {'action': path('warehouse_record_create'), 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% include 'MBHWarehouseBundle:Record:recordScripts.html.twig' with {'entity': entity} %}
+{% endblock %}

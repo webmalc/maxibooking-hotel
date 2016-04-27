@@ -13,7 +13,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Blameable\Traits\BlameableDocument;
 
 /**
- * @ODM\Document(collection="Wareitems")
+ * @ODM\Document(collection="WareItems")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  *
@@ -112,10 +112,10 @@ class WareItem extends Base
     /**
      * Set category
      *
-     * @param \MBH\Bundle\WarehouseBundle\Document\WareCategory $category
+     * @param WareCategory $category
      * @return self
      */
-    public function setCategory(\MBH\Bundle\WarehouseBundle\Document\WareCategory $category)
+    public function setCategory(WareCategory $category)
     {
         $this->category = $category;
         return $this;
@@ -124,7 +124,7 @@ class WareItem extends Base
     /**
      * Get category
      *
-     * @return \MBH\Bundle\WarehouseBundle\Document\WareCategory $category
+     * @return WareCategory $category
      */
     public function getCategory()
     {

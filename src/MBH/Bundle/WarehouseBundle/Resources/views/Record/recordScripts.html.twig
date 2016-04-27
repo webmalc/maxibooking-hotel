@@ -11,17 +11,17 @@
 	$(function() {
 		// on page (having this form) load
 		if (typeof $('#mbh_bundle_warehousebundle_recordtype_qtty').val() !== "undefined") {
-//			var qtty = $('#mbh_bundle_warehousebundle_recordtype_qtty').val();
-//			var price = $('#mbh_bundle_warehousebundle_recordtype_price').val();			
-//			var amount = qtty * price;
-			var unit = "";
 			{% if entity.wareItem.unit is defined %}
 				unit = "{{ entity.wareItem.unit }}";
+			{% else %}
+				var id = $('#mbh_bundle_warehousebundle_recordtype_wareItem').val();
+				var price = allitems[id].price;
+				$('#mbh_bundle_warehousebundle_recordtype_price').val(price);
+				unit = allitems[id].unit;
 			{% endif %}
-//			$('#mbh_bundle_warehousebundle_recordtype_amount').val(amount);
+				
 			$('#mbh_bundle_warehousebundle_recordtype_unit').val(unit);
-			
-			$( "#mbh_bundle_warehousebundle_recordtype_recordDate" ).datepicker("setDate", new Date());
+			$("#mbh_bundle_warehousebundle_recordtype_recordDate").datepicker("setDate", new Date());
 		}
 		
 		// Item select or change
@@ -30,26 +30,38 @@
 			$('#mbh_bundle_warehousebundle_recordtype_amount').val('');
 			var id = $(this).val();			
 			var price = allitems[id].price;			
-			$('#mbh_bundle_warehousebundle_recordtype_price').val(price);
+			$('#mbh_bundle_warehousebundle_recordtype_price').val(price.toFixed(2));
 			$('#mbh_bundle_warehousebundle_recordtype_unit').val(allitems[id].unit);
 		});
 		
-		
+		// Quantity change
 		$('#mbh_bundle_warehousebundle_recordtype_qtty').change(function() {
 			var qtty = $(this).val();			
 			var price = $('#mbh_bundle_warehousebundle_recordtype_price').val();			
 			var amount = qtty * price;			
-			$('#mbh_bundle_warehousebundle_recordtype_amount').val(amount);
+			$('#mbh_bundle_warehousebundle_recordtype_amount').val(amount.toFixed(2));
 		});
 		
-		
+		// Price change
 		$('#mbh_bundle_warehousebundle_recordtype_price').change(function() {
 			var qtty = $('#mbh_bundle_warehousebundle_recordtype_qtty').val();			
 			var price = $(this).val();
 			var amount = qtty * price;			
-			$('#mbh_bundle_warehousebundle_recordtype_amount').val(amount);
+			$('#mbh_bundle_warehousebundle_recordtype_amount').val(amount.toFixed(2));
 		});
 		
-		
+		// Total (amount) change
+		$('#mbh_bundle_warehousebundle_recordtype_amount').change(function() {
+			var amount = $(this).val();			
+			var qtty = $('#mbh_bundle_warehousebundle_recordtype_qtty').val() * 1;
+			if (! qtty) {
+				alert('Ошибка. Количество не может быть нулевым!');
+				$(this).val('');
+				return;
+			}
+			var price = amount / qtty;
+			$('#mbh_bundle_warehousebundle_recordtype_price').val(price.toFixed(2));
+		});
+				
 	});
 </script>

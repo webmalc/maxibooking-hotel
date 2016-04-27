@@ -6,8 +6,8 @@ $(document).ready(function () {
     $('.price-spinner').TouchSpin({
         min: 0,
         max: 9007199254740992,
-        //boostat: 50,
         stepinterval: 50,
+		forcestepdivisibility: 'none',
         decimals: 2,
         step: 0.5,
         maxboostedstep: 10000000,
@@ -18,9 +18,9 @@ $(document).ready(function () {
         min: 0,
         max: 9007199254740992,
         step: 0.5,
-        //boostat: 50,
         decimals: 2,
         stepinterval: 50,
+		forcestepdivisibility: 'none',
         maxboostedstep: 10000000
     });
 	

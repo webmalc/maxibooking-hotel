@@ -59,7 +59,7 @@ class WarehouseController extends Controller
         foreach ($entries as $id => $data) {
             $entity = $serviceRepository->find($id);
             $price = (float) $data['price'];
-            isset($data['enabled']) && $data['enabled'] ? $isEnabled = true : $isEnabled = false;
+            $isEnabled = isset($data['enabled']) && $data['enabled'] ? true : false;
 
             $entity->setPrice((empty($price)) ? null : (float)$price)
                 ->setIsEnabled($isEnabled)
