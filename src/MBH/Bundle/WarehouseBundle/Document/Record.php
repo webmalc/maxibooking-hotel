@@ -37,14 +37,6 @@ class Record extends Base
      */
     protected $invoice;
     /**
-     * @var \DateTime
-     * @Gedmo\Versioned
-     * @ODM\Date()
-     * @Assert\Date()
-     * @Assert\NotNull()
-     */
-    protected $recordDate;    
-    /**
      * @var WareItem
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\WarehouseBundle\Document\WareItem")
@@ -111,22 +103,6 @@ class Record extends Base
      */
     public function getInvoice() {
         return $this->invoice;
-    }
-
-	/**
-     * @return \DateTime
-     */
-    public function getRecordDate() {
-        return $this->recordDate;
-    }
-
-    /**
-     * @param \DateTime $recordDate
-     * @return self
-     */
-    public function setRecordDate(\DateTime $recordDate) {
-        $this->recordDate = $recordDate;
-        return $this;
     }
 
 	/**

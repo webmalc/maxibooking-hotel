@@ -235,3 +235,8 @@ ROLE_WAREHOUSE_RECORD_VIEW: Просмотр данных
 ROLE_WAREHOUSE_RECORD_NEW: Добавление данных
 ROLE_WAREHOUSE_RECORD_EDIT: Редактирование данных
 ROLE_WAREHOUSE_RECORD_DELETE: Удаление данных
+ROLE_WAREHOUSE_INVOICE: Склад — товарная накладная
+ROLE_WAREHOUSE_INVOICE_VIEW: Просмотр накладной
+ROLE_WAREHOUSE_INVOICE_NEW: Добавление накладной
+ROLE_WAREHOUSE_INVOICE_EDIT: Редактирование накладной
+ROLE_WAREHOUSE_INVOICE_DELETE: Удаление накладной

@@ -17,16 +17,6 @@ class RecordType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('recordDate', 'date', [
-                'label' => 'warehouse.record.recordDate',
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'required' => true,
-                'attr' => [
-                    'class' => 'datepicker begin-datepicker input-small',
-                    'data-date-format' => 'dd.mm.yyyy',
-                ],
-            ])
 			->add('wareItem', 'document', [
 				'required' => true,
 				'class' => WareItem::class,

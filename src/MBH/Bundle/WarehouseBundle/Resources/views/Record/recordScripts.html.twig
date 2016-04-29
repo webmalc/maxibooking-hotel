@@ -3,7 +3,7 @@
 		{% for item in items %}
 			"{{ item.id}}": {
 				"price": {{ item.price }},
-				"unit":  "{{ item.unit }}"
+				"unit": "{{ item.unit }}"
 			},
 		{% endfor %}
     };
@@ -62,6 +62,6 @@
 			var price = amount / qtty;
 			$('#mbh_bundle_warehousebundle_recordtype_price').val(price.toFixed(2));
 		});
-				
+	
 	});
 </script>

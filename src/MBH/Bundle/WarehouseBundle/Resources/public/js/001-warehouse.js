@@ -1,7 +1,6 @@
 /*global window, $, document, mbh */
-$(document).ready(function () {
-    'use strict';
-
+function initDpSpEtc() {
+	
     //spinners
     $('.price-spinner').TouchSpin({
         min: 0,
@@ -23,7 +22,13 @@ $(document).ready(function () {
 		forcestepdivisibility: 'none',
         maxboostedstep: 10000000
     });
+}
+
+$(document).ready(function () {
+    'use strict';
 	
+	initDpSpEtc();
+
 	$('.table-actions').DataTable({
 		retrieve: true,
 		"columns": [

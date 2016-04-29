@@ -54,6 +54,8 @@ class InvoiceType extends AbstractType
 				'entry_type' => RecordType::class,
 				'by_reference' => false,
 				'allow_add' => true,
+				'allow_delete' => true,
+                'prototype' => true,
 			]);
 		;
     }

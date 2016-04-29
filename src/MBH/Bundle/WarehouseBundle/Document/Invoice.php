@@ -73,7 +73,7 @@ class Invoice extends Base
      */
     protected $hotel;
     /** 
-	 * @ODM\ReferenceMany(targetDocument="Record", mappedBy="invoice") 
+	 * @ODM\ReferenceMany(targetDocument="Record", mappedBy="invoice", cascade={"persist", "remove"}) 
 	 */
     protected $records;
     
@@ -86,7 +86,7 @@ class Invoice extends Base
      * @return string
      */
     public function __toString() {
-        return $this->wareItem->getName();
+        return $this->docNumber;
     }
 
 	/**
@@ -153,7 +153,7 @@ class Invoice extends Base
      * @param \DateTime $param
      * @return self
      */
-    public function setRecordDate(\DateTime $param) {
+    public function setInvoiceDate(\DateTime $param) {
         $this->invoiceDate = $param;
         return $this;
     }
@@ -202,10 +202,12 @@ class Invoice extends Base
     /**
      * Add a record
      *
-     * @param Record $param
+     * @param Record $record
      */
-    public function addRecord(Record $param) {
-        $this->records->add($param);
+    public function addRecord(Record $record) {
+		$record->setInvoice($this);
+		
+        $this->records->add($record);
     }
 
     /**
@@ -213,7 +215,7 @@ class Invoice extends Base
      *
      * @param Record $param
      */
-    public function removeItem(Record $param) {
+    public function removeRecord(Record $param) {
         $this->records->removeElement($param);
     }
 

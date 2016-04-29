@@ -1,0 +1,125 @@
+<script>
+    var allitems = {
+		{% for item in items %}
+			"{{ item.id}}": {
+				"price": {{ item.price }},
+				"unit": "{{ item.unit }}"
+			},
+		{% endfor %}
+    };
+	
+	function initRemove() {
+		// handle the removal, just for this example
+		$('.remove').click(function(e) {
+			e.preventDefault();
+
+			$(this).parentsUntil('tbody').remove();
+		});
+	}
+
+	function addTagForm($collectionHolder) {
+		// Get the data-prototype explained earlier
+		var prototype = $collectionHolder.data('prototype');
+
+		// get the new index
+		var index = $collectionHolder.data('index');
+
+		// Replace '$$name$$' in the prototype's HTML to
+		// instead be a number based on how many items we have
+		var newForm = prototype.replace(/__name__/g, index);
+
+		var old = index;
+
+		// increase the index with one for the next item
+		$collectionHolder.data('index', index + 1);
+
+		// Display the form in the page in an li, before the "Add a tag" link li
+		$('#tbl1 tbody').append(newForm);
+
+		//$("#mbh_bundle_warehousebundle_invoicetype_records_"+old+"_recordDate").datepicker("setDate", new Date());
+
+		var id = $("#mbh_bundle_warehousebundle_invoicetype_records_"+old+"_wareItem").val();
+		var price = allitems[id].price;
+		$("#mbh_bundle_warehousebundle_invoicetype_records_"+old+"_price").val(price);
+		var unit = allitems[id].unit;
+		$("#mbh_bundle_warehousebundle_invoicetype_records_"+old+"_unit").val(unit);
+
+		initRemove(); // created
+
+		initDpSpEtc(); // init datepicker, spinners etc.
+
+		initCalculations();
+	}
+
+	initRemove(); // existing at page load
+
+	function initCalculations() {
+		// Item select or change
+		$("select[name*='wareItem']").change(function() {
+			$p = $(this).parents('tr');
+
+			$("input[name*='qtty']", $p).val('');
+			$("input[name*='amount']", $p).val('');
+			var id = $(this).val();			
+			var price = allitems[id].price;			
+			$("input[name*='price']", $p).val(price.toFixed(2));
+			$("input[name*='unit']", $p).val(allitems[id].unit);
+		});
+
+		// Quantity change
+		$("input[name*='qtty']").change(function() {
+			$p = $(this).parents('tr');
+
+			var qtty = $(this).val();			
+			var price = $("input[name*='price']", $p).val();			
+			var amount = qtty * price;			
+			$("input[name*='amount']", $p).val(amount.toFixed(2));
+		});
+
+		// Price change
+		$("input[name*='price']").change(function() {
+			$p = $(this).parents('tr');
+
+			var qtty = $("input[name*='qtty']", $p).val();			
+			var price = $(this).val();
+			var amount = qtty * price;			
+			$("input[name*='amount']", $p).val(amount.toFixed(2));
+		});
+
+		// Total (amount) change
+		$("input[name*='amount']").change(function() {
+			$p = $(this).parents('tr');
+
+			var amount = $(this).val();			
+			var qtty = $("input[name*='qtty']", $p).val() * 1;
+			if (! qtty) {
+				alert('Ошибка. Количество не может быть нулевым!');
+				$(this).val('');
+				return;
+			}
+			var price = amount / qtty;
+			$("input[name*='price']", $p).val(price.toFixed(2));
+		});
+	}
+
+	jQuery(document).ready(function() {
+		// Get the ul that holds the collection of tags
+	   var $collectionHolder = $('div.records');
+
+		// count the current form inputs we have (e.g. 2), use that as the new
+		// index when inserting a new item (e.g. 2)
+		$collectionHolder.data('index', $('#tbl1 tbody tr').length);
+
+		$('#addRow').on('click', function(e) {
+			// add a new tag form (see code block below)
+			addTagForm($collectionHolder);
+		});
+
+		initCalculations();
+		
+		$("#mbh_bundle_warehousebundle_invoicetype_invoiceDate").datepicker("setDate", new Date());
+		
+	});
+
+		
+</script>

@@ -1,10 +1,10 @@
-{% extends 'MBHWarehouseBundle:Invoice:layout.html.twig' %}
+{% extends 'MBHWarehouseBundle:Record:layout.html.twig' %}
 
-{% set small_title = 'создание новой товарной накладной' %}
+{% set small_title = 'редактирование накладной #' ~ entity.id %}
 {% set layout = 'box' %}
 
 {% block content %}
-		
+
 	{% set tmp = '<tr><td style="width:300px;">' ~ form_widget(form.records.vars.prototype.wareItem) ~ '</td><td>' ~ form_widget(form.records.vars.prototype.qtty) ~ '</td><td>' ~ form_widget(form.records.vars.prototype.unit) ~ '</td><td>' ~ form_widget(form.records.vars.prototype.price) ~ '</td><td>' ~ form_widget(form.records.vars.prototype.amount) ~ '</td><td><a class="remove" href="#"><i class="fa fa-trash-o"></i></a></td></tr>' %}
 	
 	<div class="records" data-prototype="{{ tmp|e }}"></div>
