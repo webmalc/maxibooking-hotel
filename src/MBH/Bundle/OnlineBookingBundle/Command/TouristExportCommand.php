@@ -40,14 +40,18 @@ class TouristExportCommand extends ContainerAwareCommand
         $i = 5;
         while (($rowData = fgetcsv($resources, null, "\t")) !== false) {
             $i++;
-            $tourist = $this->rowToTourist($rowData, $i, $user);
+            $tourist = $this->rowToTourist($rowData, $i, $user, $dm);
+
+            $output->writeln(
+                '<info> Row process: ' . $i  . ' </info>'
+            );
 
             if($tourist) {
                 $dm->persist($tourist);
                 $dm->persist($tourist->getDocumentRelation());
             } else {
                 $output->writeln(
-                    '<error>Error: tourist == null row: ' . $i . ' Data: ' . implode('; ', $rowData) .'</error>'
+                    '<error> ' . $i  . ' Error: tourist == null row  || tourist exists: ' . $i . ' Data: ' . implode('; ', $rowData) .'</error>'
                 );
             }
             if ($i % 1000 == 0) {
@@ -67,7 +71,7 @@ class TouristExportCommand extends ContainerAwareCommand
      * @return Tourist
      *
      */
-    protected function rowToTourist($rowData, $i, $user)
+    protected function rowToTourist($rowData, $i, $user, $dm)
     {
         $tourist = new Tourist();
         $fio = array_values(array_filter(explode(' ' , trim($rowData[0]))));
@@ -101,6 +105,23 @@ class TouristExportCommand extends ContainerAwareCommand
         $tourist->setSex($sex);
         $tourist->setCreatedBy($user->getUsername());
         $tourist->setUpdatedBy($user->getUsername());
+
+        $criteria = [
+            'lastName' => $tourist->getLastName(),
+        ];
+        if ($tourist->getFirstName()) {
+            $criteria['firstName'] = $tourist->getFirstName();
+        }
+        if ($tourist->getPatronymic()) {
+            $criteria['patronymic'] = $tourist->getPatronymic();
+        }
+        if ($tourist->getBirthday()) {
+            $criteria['birthday'] = $tourist->getBirthday();
+        }
+
+        if ($dm->getRepository('MBHPackageBundle:Tourist')->findOneBy($criteria)) {
+            return null;
+        }
 
         $document = new DocumentRelation();
         $document->setSeries(isset($rowData[3]) ? $rowData[3] : null);
