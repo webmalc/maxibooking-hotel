@@ -51,7 +51,8 @@ class ApiController extends Controller
             ->createQueryBuilder()
             ->field('updatedAt')->gte($begin)
             ->field('updatedAt')->lte($end)
-            ->field('roomType.id')->in($this->get('mbh.helper')->toIds($hotel->getRoomTypes()));
+            ->field('roomType.id')->in($this->get('mbh.helper')->toIds($hotel->getRoomTypes()))
+            ->sort('updatedAt', 'desc');
         ;
 
         return [

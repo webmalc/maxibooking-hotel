@@ -38,7 +38,7 @@
             <!-- плательщик брони -->
             {%  set payer = package.order.payer %}
 
-            {% if payer %}
+            {% if payer and payer.firstName is defined %}
             <payer guest_id="{{ payer.id }}">
                 <!-- ФИО -->
                 <first_name>{{ payer.firstName }}</first_name>
@@ -60,6 +60,9 @@
                 <!-- email -->
                 <email>{{ payer.email }}</email>
             </payer>
+            {% elseif payer and payer.firstName is not defined %}
+            <payer></payer>
+            <payer_organization>{{ payer }}</payer_organization>
             {% else %}
             <payer></payer>
             {% endif %}
@@ -79,7 +82,7 @@
                     <phone>{{ guest.phone }}</phone>
                     <email>{{ guest.email }}</email>
                     <!-- плательщик брони да/нет (1/0) -->
-                    <is_payer>{{ guest.id == payer.id ? 1 : 0 }}</is_payer>
+                    <is_payer>{{ payer and guest.id == payer.id ? 1 : 0 }}</is_payer>
                 </guest>
                 {% endfor %}
             </guests>
