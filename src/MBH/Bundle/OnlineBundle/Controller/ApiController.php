@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -25,6 +26,39 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
  */
 class ApiController extends Controller
 {
+
+    /**
+     * Orders xml
+     * @Route("/orders/{begin}/{end}/{id}/{sign}", name="online_orders", defaults={"_format"="xml", "id"=null})
+     * @Method("GET")
+     * @ParamConverter("begin", options={"format": "Y-m-d"})
+     * @ParamConverter("end", options={"format": "Y-m-d"})
+     * @ParamConverter("hotel", class="MBH\Bundle\HotelBundle\Document\Hotel")
+     * @Template("")
+     */
+    public function ordersAction(\DateTime $begin, \DateTime $end, Hotel $hotel, $sign)
+    {
+        if (
+            empty($this->container->getParameter('mbh_modules')['online_export']) ||
+            $sign != $this->container->getParameter('secret')
+        ) {
+            throw $this->createNotFoundException();
+        }
+
+        $this->dm->getFilterCollection()->disable('softdeleteable');
+
+        $qb = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->createQueryBuilder()
+            ->field('updatedAt')->gte($begin)
+            ->field('updatedAt')->lte($end)
+            ->field('roomType.id')->in($this->get('mbh.helper')->toIds($hotel->getRoomTypes()));
+        ;
+
+        return [
+            'packages' => $qb->getQuery()->execute()
+        ];
+    }
+
     /**
      * Online form js
      * @Route("/form/{id}", name="online_form_get", defaults={"_format"="js", "id"=null})
@@ -119,18 +153,18 @@ class ApiController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $logger = $this->get('mbh.online.logger');
-        $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP'.$request->getClientIp().'. Post data: '.implode('; ',
-                $_POST).' . Keys: ' .implode('; ', array_keys($_POST));
+        $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP' . $request->getClientIp() . '. Post data: ' . implode('; ',
+                $_POST) . ' . Keys: ' . implode('; ', array_keys($_POST));
 
 
         if (!$clientConfig) {
-            $logger->info('FAIL. '.$logText. ' .Not found config');
+            $logger->info('FAIL. ' . $logText . ' .Not found config');
             throw $this->createNotFoundException();
         }
         $response = $clientConfig->checkRequest($request);
 
         if (!$response) {
-            $logger->info('FAIL. '.$logText . ' .Bad signature');
+            $logger->info('FAIL. ' . $logText . ' .Bad signature');
             throw $this->createNotFoundException();
         }
 
@@ -145,13 +179,12 @@ class ApiController extends Controller
             //save commission
             if (isset($response['commission']) && is_numeric($response['commission'])) {
                 $commission = clone $cashDocument;
-                $commissionTotal = (float) $response['commission'];
+                $commissionTotal = (float)$response['commission'];
                 if (isset($response['commissionPercent']) && $response['commissionPercent']) {
                     $commissionTotal = $commissionTotal * $cashDocument->getTotal();
                 }
                 $commission->setTotal($commissionTotal)
-                    ->setOperation('fee')
-                ;
+                    ->setOperation('fee');
                 $dm->persist($commission);
                 $dm->flush();
             }
@@ -179,14 +212,12 @@ class ApiController extends Controller
             ->setAutohide(false)
             ->setEnd(new \DateTime('+10 minute'))
             ->setLink($this->generateUrl('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()]))
-            ->setLinkText('mailer.to_order')
-        ;
+            ->setLinkText('mailer.to_order');
 
         //send to backend
         $notifier
             ->setMessage($message)
-            ->notify()
-        ;
+            ->notify();
 
         //send to user
         if ($order && $order->getPayer() && $order->getPayer()->getEmail()) {
@@ -198,15 +229,13 @@ class ApiController extends Controller
                 ->setTranslateParams($params)
                 ->setAdditionalData([
                     'fromText' => $order->getFirstHotel()
-                ])
-            ;
+                ]);
             $this->get('mbh.notifier.mailer')
                 ->setMessage($message)
-                ->notify()
-            ;
+                ->notify();
         }
 
-        $logger->info('OK. '.$logText);
+        $logger->info('OK. ' . $logText);
 
         return new Response($response['text']);
     }
@@ -366,9 +395,9 @@ class ApiController extends Controller
             $roomStr = $translator->trans('controller.apiController.room_reservation_made_success');
             $packageStr = $translator->trans('controller.apiController.your_reservation_number');
         }
-        $message = $translator->trans('controller.apiController.thank_you').$roomStr.$translator->trans('controller.apiController.we_will_call_you_back_soon');
-        $message .= $translator->trans('controller.apiController.your_order_number').$order->getId().'. ';
-        $message .= $packageStr.': '.implode(', ', $packages).'.';
+        $message = $translator->trans('controller.apiController.thank_you') . $roomStr . $translator->trans('controller.apiController.we_will_call_you_back_soon');
+        $message .= $translator->trans('controller.apiController.your_order_number') . $order->getId() . '. ';
+        $message .= $packageStr . ': ' . implode(', ', $packages) . '.';
 
         $clientConfig = $dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
@@ -376,7 +405,7 @@ class ApiController extends Controller
             $form = false;
         } else {
             $form = $this->container->get('twig')->render(
-                'MBHClientBundle:PaymentSystem:'.$clientConfig->getPaymentSystem().'.html.twig', [
+                'MBHClientBundle:PaymentSystem:' . $clientConfig->getPaymentSystem() . '.html.twig', [
                     'data' => array_merge(['test' => false,
                         'buttonText' => $this->get('translator')->trans('views.api.make_payment_for_order_id',
                             ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],
@@ -421,12 +450,10 @@ class ApiController extends Controller
                 ->setHotel($hotel)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setAutohide(false)
-                ->setEnd(new \DateTime('+1 minute'))
-            ;
+                ->setEnd(new \DateTime('+1 minute'));
             $notifier
                 ->setMessage($message)
-                ->notify()
-            ;
+                ->notify();
 
             //user
             $payer = $order->getPayer();
@@ -452,21 +479,18 @@ class ApiController extends Controller
                     ->setEnd(new \DateTime('+1 minute'))
                     ->addRecipient($payer)
                     ->setLink('hide')
-                    ->setSignature('mailer.online.user.signature')
-                ;
+                    ->setSignature('mailer.online.user.signature');
 
                 $params = $this->container->getParameter('mailer_user_arrival_links');
 
                 if (!empty($params['map'])) {
                     $message->setLink($params['map'])
-                        ->setLinkText($tr->trans('mailer.online.user.map'))
-                    ;
+                        ->setLinkText($tr->trans('mailer.online.user.map'));
                 }
 
                 $notifier
                     ->setMessage($message)
-                    ->notify()
-                ;
+                    ->notify();
             }
 
         } catch (\Exception $e) {
