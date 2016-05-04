@@ -1,4 +1,4 @@
-{% extends 'MBHWarehouseBundle:Record:layout.html.twig' %}
+{% extends 'MBHWarehouseBundle:Invoice:layout.html.twig' %}
 
 {% set small_title = 'редактирование накладной #' ~ entity.id %}
 {% set layout = 'box' %}
@@ -9,7 +9,7 @@
 	
 	<div class="records" data-prototype="{{ tmp|e }}"></div>
 
-	<form method="post" role="form" class="are-you-sure form-horizontal" action="{{ path('warehouse_invoice_create') }}">   
+	<form method="post" role="form" class="are-you-sure form-horizontal" action="{{ path('warehouse_invoice_update', {'id': entity.id}) }}">   
 		
 		{{ form_row(form.operation) }}
 		{{ form_row(form.docNumber) }}
@@ -51,7 +51,7 @@
 			
 		<input type="hidden" id="mbh_bundle_warehousebundle_invoicetype__token" name="mbh_bundle_warehousebundle_invoicetype[_token]" value="{{ form._token.vars.value }}" />
 			
-		{% include 'MBHBaseBundle:Actions:new.html.twig' %}
+		{% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'warehouse_invoice_delete' } %}
 	</form>
 {% endblock %}
 

@@ -34,7 +34,7 @@
 					<td class="">{{ entity.docNumber }}</td>
 					<td>{{ entity.organization }}</td>
 					<td class="text-left">{{ entity.hotel }}</td>
-					<td class="text-right">Amount here…</td>
+					<td class="text-right">{{ amounts[entity.id] }}</td>
 					<td class="table-actions-td text-right">
 						{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'warehouse_invoice'} %}{% endembed %}
 					</td>

@@ -36,9 +36,24 @@ class InvoiceController extends Controller
             ->getQuery()
             ->execute();
 		
+		$res = $this->dm->getRepository('MBHWarehouseBundle:Record')->createQueryBuilder('q')
+			->map('function() { emit(this.invoice, this.amount); }')
+			->reduce('function(k, v) {				
+				return Array.sum(v);
+			}')
+			->getQuery()
+			->execute();
+		
+		$amounts = [];
+		
+		foreach ($res as $v) {
+			$amounts[$v['_id']['$id']->{'$id'}] = $v['value'];
+		}
+		
         return [
             'entities' => $entities,
-            'config' => $this->container->getParameter('mbh.services')
+            'config' => $this->container->getParameter('mbh.services'),
+			'amounts' => $amounts,
         ];
     }
 
@@ -91,7 +106,7 @@ class InvoiceController extends Controller
 			$this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'warehouse.record.newSuccess');
+            $request->getSession()->getFlashBag()->set('success', 'Новая накладная успешно создана');
 
             return $this->afterSaveRedirect('warehouse_invoice', $entity->getId()/*, ['tab' => $entity->getId()]*/);
 		}
@@ -131,26 +146,43 @@ class InvoiceController extends Controller
     /**
      * Edits an existing record.
      *
-     * @Route("/{id}", name="warehouse_invoice_update")
-     * @Method("PUT")
+     * @Route("/{id}/update", name="warehouse_invoice_update")
+     * @Method("POST")
      * @Security("is_granted('ROLE_WAREHOUSE_INVOICE_EDIT')")
      * @Template("MBHWarehouseBundle:Invoice:edit.html.twig")
      * @ParamConverter(class="MBHWarehouseBundle:Invoice")
      */
     public function updateAction(Request $request, Invoice $entity) {
-        $form = $this->getForm($entity);
-		
+        $form = $this->createForm(new InvoiceType(), $entity, [
+            'operations' => $this->container->getParameter('mbh.warehouse.operations'),
+        ]);
+				
 		$items = $this->dm->getRepository('MBHWarehouseBundle:WareItem')->findAll();
+		
+		$invoices = $this->dm->getRepository('MBHWarehouseBundle:Invoice')->find($entity->getId());
+		$originalRecords = new \Doctrine\Common\Collections\ArrayCollection();
+		
+		foreach ($invoices->getRecords() as $rec) {
+			$originalRecords->add($rec);
+		}
 		
         $form->submit($request);
 
         if ($form->isValid()) {
+			foreach ($originalRecords as $rec) {
+				if ($entity->getRecords()->contains($rec) === false) {
+					$entity->removeRecord($rec);
+					
+					$this->dm->persist($rec);
+				}
+			}
+			
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $request->getSession()->getFlashBag()->set('success', 'warehouse.record.editSuccess');
+            $request->getSession()->getFlashBag()->set('success', 'Накладная сохранена');
 
-            return $this->afterSaveRedirect('warehouse_record', $entity->getId()/*, ['tab' => $entity->getId()]*/);
+            return $this->afterSaveRedirect('warehouse_invoice', $entity->getId());
         }
 
         return [
@@ -168,25 +200,12 @@ class InvoiceController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_WAREHOUSE_INVOICE_DELETE')")
      */
-    public function deleteAction(Record $category) {
-        if ($category->getIsSystem()) {
+    public function deleteAction(Invoice $invoice) {
+        if ($invoice->getIsSystem()) {
             throw $this->createNotFoundException();
         }
 
-        return $this->deleteEntity($category->getId(), 'MBHWarehouseBundle:Record', 'warehouse_record');
+        return $this->deleteEntity($invoice->getId(), 'MBHWarehouseBundle:Invoice', 'warehouse_invoice');
     }
 	
-	/**
-	 * Aux for this controller.
-	 * 
-	 * @param Record $entity
-	 * @return Form
-	 */
-	private function getForm(Record $entity) {
-		
-        return $this->createForm(new RecordType(), $entity, [
-//            'operations' => $this->container->getParameter('mbh.warehouse.operations'),
-        ]);
-	}
-
 }

@@ -15,9 +15,6 @@
         <thead>
         <tr>
             <th class="td-xs"></th>
-            <th class="td-sm">Дата</th>
-            <th class="td-sm">Operation</th>
-            <th class="td-md">Hotel</th>
             <th>Название</th>
             <th class="td-xs text-right">Кол</th>
             <th class="td-md text-center">Ед. изм.</th>
@@ -31,9 +28,6 @@
 			{% for entity in entities %}
 				<tr {% if entity.isEnabled is empty %} class="danger"{% endif %}>
 					<td class="text-center table-icon"><i class="fa fa-book"></i></td>
-					<td class="text-center">{{ entity.recordDate|date('d.m.Y') }}</td>
-					<td class="text-center">{{ entity.operation }}</td>
-					<td class="">{{ entity.hotel }}</td>
 					<td>
 						{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'warehouse_record'} %}{% endembed %}
 					</td>
