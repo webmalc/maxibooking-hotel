@@ -85,14 +85,22 @@ class OrderExportCommand extends ContainerAwareCommand
 
         $rowNum=0;
         while (($data = fgetcsv($resource, null, ",")) !== false) {
+            $output->writeln('<info>Row #' . $rowNum. '</info>');
             $rowNum++;
-            if (!count($data) > 34) {
+            if (count($data) < 34) {
                 continue;
             }
-            $data = array_map('trim', $data);
 
+            $data = array_map('trim', $data);
             $index = $data[0];
             $number = $data[1];
+
+            if ($dm->getRepository('MBHPackageBundle:Package')->findOneBy(
+                ['$or' => [['externalNumber' => $number], ['numberWithPrefix' => $number]]])
+            ) {
+                continue;
+            }
+
             $date = $data[2];
             $fio = $data[3];
             $total = floatval(str_replace(' ', '', $data[13]));
@@ -145,6 +153,7 @@ class OrderExportCommand extends ContainerAwareCommand
                     $dm->flush();
                     //$tourist = $touristRepository->fetchOrCreate($lastName, $firstName, $patronymic);
                 }
+
                 $order->setMainTourist($tourist);
                 $dm->persist($tourist);
             } else {
