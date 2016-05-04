@@ -82,7 +82,7 @@ class TouristExportCommand extends ContainerAwareCommand
         try {
             $birthDay = empty($rowData[1]) ? null : new \DateTime($rowData[1]);
         } catch(\Exception $e) {
-            dump($i. ' ' . $e->getMessage());
+            var_dump($i. ' ' . $e->getMessage());
         }
         $sex = 'unknown';
         if(isset($rowData[20])) {
@@ -109,7 +109,7 @@ class TouristExportCommand extends ContainerAwareCommand
             $issued = isset($rowData[5]) && $rowData[5] ? new \DateTime($rowData[5]) : null;
             $document->setIssued($issued);
         } catch(\Exception $e) {
-            dump($i. ' ' . $e->getMessage());
+            var_dump($i. ' ' . $e->getMessage());
         }
         if(isset($rowData[12])) {
             $rowData[12] = trim($rowData[12]);
