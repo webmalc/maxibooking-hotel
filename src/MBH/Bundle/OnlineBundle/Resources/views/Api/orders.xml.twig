@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<response>
+    <orders>
+        {% for package in packages %}
+        <!-- бронь id - номер брони order_id - номер заказа (в заказе может быть несколько броней) -->
+        <order id="56d5605b627f13162b8b45aa" order_id="1234">
+            <hotel>{{ package.roomType.hotel }}</hotel>
+            <roomType>{{ package.roomType }}</roomType>
+
+            <!-- даты заезда/выезда в формат YYYY-MM-DD -->
+            <begin>{{ package.begin|date('Y-m-d') }}</begin>
+            <end>{{ package.end|date('Y-m-d') }}</end>
+
+            <!-- Количество врозлых и детей в брони -->
+            <adults>{{ package.adults }}</adults>
+            <children>{{ package.children }}</children>
+
+            <!-- если бронь удалена (отменена), то здесь будет дата и время в формате YYYY-MM-DD hh:mm (2014-09-23 12:34) -->
+            <deleted_at>{{ package.deletedAt ? package.deletedAt|date('Y-m-d H:i')  }}</deleted_at>
+
+            <!-- дата создания/обновления брони-->
+            <created_at>{{ package.createdAt|date('Y-m-d H:i') }}</created_at>
+            <updated_at>{{ package.updatedAt|date('Y-m-d H:i') }}</updated_at>
+
+            <!-- бронь оплачена да/нет -->
+            <is_paid>{{ package.isPaid ? 1 : 0 }}</is_paid>
+
+            <!-- тариф -->
+            <rate id="{{ package.tariff.id }}">{{ package.tariff }}</rate>
+
+            <!-- Услуги брони -->
+            <services>
+                {% for service in package.services %}
+                <service id="{{ service.id }}">{{ service.service }}</service>
+                {% endfor %}
+            </services>
+
+            <!-- плательщик брони -->
+            {%  set payer = package.order.payer %}
+
+            {% if payer and payer.firstName is defined %}
+            <payer guest_id="{{ payer.id }}">
+                <!-- ФИО -->
+                <first_name>{{ payer.firstName }}</first_name>
+                <last_name>{{ payer.lastName }}</last_name>
+                <patronymic>{{ payer.patronymic }}</patronymic>
+
+                <!-- пол ("male", "female", "unknown")-->
+                <gender>{{ payer.sex }}</gender>
+
+                <!-- гражданство -->
+                <citizenship {% if payer.citizenship %}id="{{ payer.citizenship.id }}"{% endif %}>{{ payer.citizenship }}</citizenship>
+
+                <!-- день рождения в формат YYYY-MM-DD -->
+                <birthday>{{ payer.birthday ? payer.birthday|date('Y-m-d') }}</birthday>
+
+                <!-- телефон -->
+                <phone>{{ payer.phone }}</phone>
+
+                <!-- email -->
+                <email>{{ payer.email }}</email>
+            </payer>
+            {% elseif payer and payer.firstName is not defined %}
+            <payer></payer>
+            <payer_organization>{{ payer }}</payer_organization>
+            {% else %}
+            <payer></payer>
+            {% endif %}
+
+            <!-- гости, поля анологичны плательщику !!! здесь может быть и плательщик => payer guest_id == guest guest_id !!! -->
+            <guests>
+                {% for guest in package.tourists %}
+                <guest guest_id="{{ guest.id }}">
+                    <first_name>{{ guest.firstName }}</first_name>
+                    <last_name>{{ guest.lastName }}</last_name>
+                    <patronymic>{{ guest.patronymic }}</patronymic>
+                    <gender>{{ guest.sex }}</gender>
+                    <citizenship {% if guest.citizenship %}id="{{ guest.citizenship.id }}"{% endif %}>
+                        {{ guest.citizenship }}
+                    </citizenship>
+                    <birthday>{{ guest.birthday ? guest.birthday|date('Y-m-d') }}</birthday>
+                    <phone>{{ guest.phone }}</phone>
+                    <email>{{ guest.email }}</email>
+                    <!-- плательщик брони да/нет (1/0) -->
+                    <is_payer>{{ payer and guest.id == payer.id ? 1 : 0 }}</is_payer>
+                </guest>
+                {% endfor %}
+            </guests>
+        </order>
+        {% endfor %}
+    </orders>
+</response>
