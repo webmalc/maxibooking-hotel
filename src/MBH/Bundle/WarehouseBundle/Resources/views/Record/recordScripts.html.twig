@@ -11,13 +11,9 @@
 	$(function() {
 		// on page (having this form) load
 		if (typeof $('#mbh_bundle_warehousebundle_recordtype_qtty').val() !== "undefined") {
+			var unit = "";
 			{% if entity.wareItem.unit is defined %}
 				unit = "{{ entity.wareItem.unit }}";
-			{% else %}
-				var id = $('#mbh_bundle_warehousebundle_recordtype_wareItem').val();
-				var price = allitems[id].price;
-				$('#mbh_bundle_warehousebundle_recordtype_price').val(price);
-				unit = allitems[id].unit;
 			{% endif %}
 				
 			$('#mbh_bundle_warehousebundle_recordtype_unit').val(unit);

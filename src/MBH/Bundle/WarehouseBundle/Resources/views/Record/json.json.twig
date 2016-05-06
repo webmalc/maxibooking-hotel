@@ -1,0 +1,20 @@
+{
+    "draw" : "{{ draw }}",
+    "recordsTotal": "{{ total }}",
+    "recordsFiltered": "{{ total }}",
+    "data": [
+        {% for record in records %}
+            {% set package = null %} [
+                "<i class='fa fa-book'></i>",				
+                "{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': record, 'route': 'warehouse_record'} %}{% endembed %}",
+				"{{ record.recordDate|date('d.m.Y') }}",				
+				"{% if record.operation == 'in' %}<span class='text-success'>{{ 'warehouse.record.in'|trans }}</span>{% else %}<span class='text-danger'>{{ 'warehouse.record.out'|trans }}</span>{% endif %}",					
+				"{{ record.hotel }}",				
+				"<div class='text-right'>{{ record.qtty }}</div>",
+				"{{ record.wareItem.unit }}",
+				"<div class='text-right'>{{ record.price }}</div>",
+				"<div class='text-right'>{{ record.amount }}</div>",
+				"<div class='btn-list'>{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': record, 'route': 'warehouse_record'} %}{% endembed %}</div>"
+            ]{% if loop.index != records|length %},{% endif %}
+        {% endfor %}
+]}

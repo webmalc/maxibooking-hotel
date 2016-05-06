@@ -15,32 +15,30 @@ use Gedmo\Blameable\Traits\BlameableDocument;
 
 
 /**
- * @ODM\Document(collection="WareRecords", repositoryClass="MBH\Bundle\WarehouseBundle\Document\RecordRepository")
+ * @ODM\Document(collection="WareRecords")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class Record extends Base
+class RecordFilter extends Base
 {
     use TimestampableDocument;
     use SoftDeleteableDocument;
     use BlameableDocument;
 	
     /**
-     * @var bool
-     * @ODM\Boolean()
-     */
-    protected $isSystem;
-    /**
      * @var \DateTime
-     * @Gedmo\Versioned
      * @ODM\Date()
      * @Assert\Date()
-     * @Assert\NotNull()
      */
-    protected $recordDate;    
+    protected $recordDateFrom;    
+    /**
+     * @var \DateTime
+     * @ODM\Date()
+     * @Assert\Date()
+     */
+    protected $recordDateTo;    
     /**
      * @var string
-     * @Gedmo\Versioned
      * @ODM\String()
      * @Assert\Choice(
      *      choices = {"in", "out"},
@@ -50,53 +48,22 @@ class Record extends Base
     protected $operation;
     /**
      * @var Hotel
-     * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
      */
     protected $hotel;
     /**
      * @var WareItem
-     * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\WarehouseBundle\Document\WareItem")
      * @Assert\NotNull()
      */
     protected $wareItem;
-    /**
-     * @var float
-     * @ODM\Float(name="price")
-     * @Assert\Type(type="numeric")
-     * @Gedmo\Versioned
-     * @Assert\Range(
-     *      min=0,
-     *      minMessage="validator.negativeprice"
-     * )
-     */
-    protected $price;    
-    /**
-     * @var float
-     * @ODM\Float(name="qtty")
-     * @Assert\Type(type="numeric")
-     * @Gedmo\Versioned
-     * @Assert\Range(
-     *      min=0,
-     *      minMessage="validator.warehouse.record.negative"
-     * )
-     */
-    protected $qtty;	
-    /**
-     * @var float
-     * @ODM\Float(name="amount")
-     * @Assert\Type(type="numeric")
-     * @Gedmo\Versioned
-     * @Assert\Range(
-     *      min=0,
-     *      minMessage="validator.warehouse.record.negativeSum"
-     * )
-     */
-    protected $amount;
-	
-    
-    /**
+	protected $search;
+	public $sortBy;
+	public $sortDirection;
+
+
+
+	/**
      * @return string
      */
     public function __toString() {
@@ -106,32 +73,33 @@ class Record extends Base
 	/**
      * @return \DateTime
      */
-    public function getRecordDate() {
-        return $this->recordDate;
+    public function getRecordDateFrom() {
+        return $this->recordDateFrom;
     }
 
     /**
      * @param \DateTime $recordDate
      * @return self
      */
-    public function setRecordDate(\DateTime $recordDate) {
-        $this->recordDate = $recordDate;
+    public function setRecordDateFrom(\DateTime $recordDate =  null) {
+        $this->recordDateFrom = $recordDate;
+		
         return $this;
     }
 
 	/**
-     * @return boolean
+     * @return \DateTime
      */
-    public function getisSystem() {
-        return $this->isSystem;
+    public function getRecordDateTo() {
+        return $this->recordDateTo;
     }
 
     /**
-     * @param boolean $isSystem
+     * @param \DateTime $recordDate
      * @return self
      */
-    public function setIsSystem($isSystem) {
-        $this->isSystem = $isSystem;
+    public function setRecordDateTo(\DateTime $recordDate = null) {
+        $this->recordDateTo = $recordDate;
         return $this;
     }
 
@@ -188,64 +156,14 @@ class Record extends Base
         return $this;
     }
 
-    /**
-     * Set price
-     *
-     * @param float $price
-     * @return self
-     */
-    public function setPrice($price) {
-        $this->price = $price;
+    public function getSearch() {
+        return $this->search;
+    }
+
+    public function setSearch($param = null) {
+        $this->search = $param;
+		
         return $this;
-    }
-
-    /**
-     * Get price
-     *
-     * @return float $price
-     */
-    public function getPrice() {
-        return $this->price;
-    }
-
-    /**
-     * Set quantity
-     *
-     * @param float $param
-     * @return self
-     */
-    public function setQtty($param) {
-        $this->qtty = $param;
-        return $this;
-    }
-
-    /**
-     * Get quantity
-     *
-     * @return float $param
-     */
-    public function getQtty() {
-        return $this->qtty;
-    }
-
-    /**
-     * Set amount.
-     *
-     * @param float $param
-     * @return self
-     */
-    public function setAmount($param) {
-        $this->amount = $param;
-        return $this;
-    }
-
-    /**
-     * Get amount.
-     *
-     * @return float $param
-     */
-    public function getAmount() {
-        return $this->amount;
     }
 
 }

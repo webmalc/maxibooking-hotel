@@ -90,7 +90,7 @@ class WarehouseController extends Controller
         return [
             'entry' => $entry,
             'entity' => $entity,
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ];
     }
 

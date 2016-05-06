@@ -48,8 +48,13 @@ warehouse:
         newSuccess: Новая запись успешно создана
         generalInfo: Данные
         quantity: Количество
-        operation: Вид операции
+        operation: Операция
         edit: редактирование записи
         editSuccess: Запись успешно отредактирована
         amount: Сумма
         recordDate: Дата
+        title: Наименование
+        hotel: Отель
+        in: приход
+        out: расход
+        list: список приходов-расходов

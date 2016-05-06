@@ -3,16 +3,16 @@
 namespace MBH\Bundle\WarehouseBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\WarehouseBundle\Document\Record;
-use MBH\Bundle\WarehouseBundle\Document\WareCategory;
 use MBH\Bundle\WarehouseBundle\Document\WareItem;
-use MBH\Bundle\WarehouseBundle\Form\WareCategoryType;
 use MBH\Bundle\WarehouseBundle\Form\RecordType;
+use MBH\Bundle\WarehouseBundle\Form\RecordFilterType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
@@ -23,7 +23,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 class RecordController extends Controller
 {
 	/**
-     * Lists all records.
+     * Lists all records. Simple display using Ajax jsonAction.
      *
      * @Route("/", name="warehouse_record")
      * @Security("is_granted('ROLE_WAREHOUSE_RECORD_VIEW')")
@@ -32,14 +32,68 @@ class RecordController extends Controller
      */
     public function indexAction()
     {
-        $entities = $this->dm->getRepository('MBHWarehouseBundle:Record')->createQueryBuilder('q')
-            ->sort('fullTitle', 'asc')
-            ->getQuery()
-            ->execute();
+		$form = $this->createForm(new RecordFilterType());
 		
         return [
-            'entities' => $entities,
-            'config' => $this->container->getParameter('mbh.services')
+			'form' => $form->createView(),
+        ];
+    }
+
+    /**
+     * Lists all entities as json.
+     *
+     * @Route("/json", name="records_json", defaults={"_format"="json"}, options={"expose"=true})
+     * @Method("POST")
+     * @Security("is_granted('ROLE_WAREHOUSE_RECORD_VIEW')")
+     * @Template()
+     */
+    public function jsonAction(Request $request)
+    {
+        $tableParams = ClientDataTableParams::createFromRequest($request);
+		
+// TODO:
+		$tableParams->setSortColumnFields([
+            1 => 'fullTitle',
+            2 => 'recordDate',
+            3 => 'operation',
+            4 => 'hotel',
+            5 => 'amount',
+            6 => 'qtty',
+            7 => 'price',
+            8 => 'amount',
+            9 => 'bar',
+        ]);
+
+//
+		
+        $formData = (array) $request->get('form');
+		
+        $form = $this->createForm(new RecordFilterType());
+        $formData['search'] = $tableParams->getSearch();
+
+        $form->submit($formData);
+		
+        $criteria = $form->getData();
+
+        if ($getFirstSort = $tableParams->getFirstSort()) {
+            $criteria->sortBy = [$getFirstSort[0]];
+            $criteria->sortDirection = [$getFirstSort[1]];
+        }
+		
+//		'order' => $request->get('order')['0']['column'],
+//        'dir' => $request->get('order')['0']['dir'],
+		
+        $records = $this->dm->getRepository('MBHWarehouseBundle:Record')
+			->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
+		
+//		var_dump($request->get('order')['0']);
+		
+		//var_dump($criteria->sortBy);
+		
+        return [
+            'records' => iterator_to_array($records),
+            'total' => count($records),
+            'draw' => $request->get('draw'),
         ];
     }
 
@@ -90,7 +144,7 @@ class RecordController extends Controller
 
             $request->getSession()->getFlashBag()->set('success', 'warehouse.record.newSuccess');
 
-            return $this->afterSaveRedirect('warehouse_record', $entity->getId()/*, ['tab' => $entity->getId()]*/);
+            return $this->afterSaveRedirect('warehouse_record', $entity->getId());
         }
 
         return [
@@ -126,7 +180,7 @@ class RecordController extends Controller
     /**
      * Edits an existing record.
      *
-     * @Route("/{id}", name="warehouse_record_update")
+     * @Route("/{id}/update", name="warehouse_record_update")
      * @Method("PUT")
      * @Security("is_granted('ROLE_WAREHOUSE_RECORD_EDIT')")
      * @Template("MBHWarehouseBundle:Record:edit.html.twig")
@@ -145,7 +199,7 @@ class RecordController extends Controller
 
             $request->getSession()->getFlashBag()->set('success', 'warehouse.record.editSuccess');
 
-            return $this->afterSaveRedirect('warehouse_record', $entity->getId()/*, ['tab' => $entity->getId()]*/);
+            return $this->afterSaveRedirect('warehouse_record', $entity->getId());
         }
 
         return [
@@ -180,7 +234,7 @@ class RecordController extends Controller
 	private function getForm(Record $entity) {
 		
         return $this->createForm(new RecordType(), $entity, [
-//            'operations' => $this->container->getParameter('mbh.warehouse.operations'),
+            'operations' => $this->container->getParameter('mbh.warehouse.operations'),
         ]);
 	}
 
