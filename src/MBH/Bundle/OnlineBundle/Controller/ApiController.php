@@ -11,6 +11,7 @@ use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -289,6 +290,33 @@ class ApiController extends Controller
         }
 
         $hotels = $services = [];
+
+        // sort results
+        usort($results, function ($prev, $next) {
+
+            $getPrice = function (SearchResult $result) {
+                if ($result->getTariff()->getIsDefault() && isset(array_values($result->getPrices())[0])) {
+                    return array_values($result->getPrices())[0];
+                }
+                return null;
+            };
+
+            $prevPrice = $getPrice($prev);
+            $nextPrice = $getPrice($next);
+
+            if ($prevPrice === null) {
+                return 1;
+            }
+            if ($nextPrice === null) {
+                return -1;
+            }
+            if ($prevPrice == $nextPrice) {
+                return 0;
+            }
+
+            return ($prevPrice < $nextPrice) ? -1 : 1;
+        });
+
         foreach ($results as $result) {
             $hotel = $result->getRoomType()->getHotel();
             $hotels[$hotel->getId()] = $hotel;
