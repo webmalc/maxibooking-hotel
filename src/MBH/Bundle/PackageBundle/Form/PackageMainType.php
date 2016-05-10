@@ -130,6 +130,11 @@ class PackageMainType extends AbstractType
                 ]);
         }
         $builder
+            ->add('numberWithPrefix', 'text', [
+                'label' => 'Номер брони',
+                'group' => 'Информация',
+                'required' => true,
+            ])
             ->add('note', 'textarea', [
                 'label' => 'form.packageMainType.comment',
                 'group' => 'Информация',
