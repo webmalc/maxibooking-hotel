@@ -1,0 +1,47 @@
+{% extends 'MBHWarehouseBundle:Record:layout.html.twig' %}
+
+{% set small_title = 'warehouse.record.inventory'|trans %}
+{% set layout = "tab" %}
+
+{% block content %}
+    {% if app.request.isxmlhttprequest is empty %}
+        {% include 'MBHWarehouseBundle:Record:tabs.html.twig' with {'active': 2} %}
+    {% endif %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+
+			{% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'inventory-filter-form-widget' } %}
+
+			{{ form_start(form, {attr: {class: 'form-inline filter-form remember', id: 'inventory-filter-form'}}) }}
+				<div class="input">
+					<i class="fa fa-home" title='{{ 'warehouse.record.hotels'|trans }}' data-toggle="tooltip"></i>&nbsp;
+					{{ form_widget(form.hotel) }}
+				</div>
+
+				<div class="input">
+					<i class="fa fa-book" title='{{ 'warehouse.record.goods'|trans }}' data-toggle="tooltip"></i>&nbsp;
+					{{ form_widget(form.wareItem) }}
+				</div>
+
+			{{ form_end(form, {render_rest: false}) }}		
+			</div></div>
+			
+			<table id="inventory-table" class="tariffs-table table table-striped table-hover table-condensed table-icons table-actions">
+				<thead>
+				<tr>
+					<th class="td-xs"></th>
+					<th class="td-md">{{ 'warehouse.record.title'|trans }}</th>
+					<th class="td-md">{{ 'warehouse.record.hotel'|trans }}</th>
+					<th class="td-xs text-right">{{ 'warehouse.record.quantity'|trans }}</th>
+					<th class="td-md">{{ 'warehouse.field.unit'|trans }}</th>
+				</tr>
+				</thead>
+
+				<tbody>
+				</tbody>
+			</table>
+
+        </div>
+    </div>
+{% endblock %} 

@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Class, used for search form filling with db data only.
+ * No submittance, no validation etc.
+ */
+
 namespace MBH\Bundle\WarehouseBundle\Document;
 
 use MBH\Bundle\WarehouseBundle\Document\WareCategory;
@@ -57,9 +62,21 @@ class RecordFilter extends Base
      * @Assert\NotNull()
      */
     protected $wareItem;
+	/**
+	 * No correspondence to db fields; form entry only
+	 * @var string
+	 */
 	protected $search;
-	public $sortBy;
-	public $sortDirection;
+	/**
+	 * No correspondence to db fields; table sort usage only
+	 * @var string
+	 */
+	protected $sortBy;
+	/**
+	 * No correspondence to db fields; table sort usage only
+	 * @var int
+	 */
+	protected $sortDirection;
 
 
 
@@ -162,6 +179,26 @@ class RecordFilter extends Base
 
     public function setSearch($param = null) {
         $this->search = $param;
+		
+        return $this;
+    }
+
+    public function getSortBy() {
+        return $this->sortBy;
+    }
+
+    public function setSortBy($param = null) {
+        $this->sortBy = $param;
+		
+        return $this;
+    }
+
+    public function getSortDirection() {
+        return $this->sortDirection;
+    }
+
+    public function setSortDirection($param = null) {
+        $this->sortDirection = $param;
 		
         return $this;
     }

@@ -1,0 +1,15 @@
+{
+    "draw" : "{{ draw }}",
+    "recordsTotal": "{{ total }}",
+    "recordsFiltered": "{{ total }}",
+    "data": [
+        {% for record in inventory %}[
+                "<i class='fa fa-book'></i>",				
+                "{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': record, 'route': 'warehouse_record'} %}{% endembed %}",
+				"{{ record.hotel }}",				
+				"<div class='text-right'>{{ record.qtty }}</div>",
+				"{{ record.wareItem.unit }}"
+            ]{% if loop.index != inventory|length %},{% endif %}
+        {% endfor %}
+]}
+

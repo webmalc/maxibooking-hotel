@@ -100,7 +100,7 @@ class Record extends Base
      * @return string
      */
     public function __toString() {
-        return $this->wareItem->getName();
+        return (string) $this->wareItem;
     }
 
 	/**

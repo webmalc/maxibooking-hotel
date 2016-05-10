@@ -1,56 +1,65 @@
 {% extends 'MBHWarehouseBundle:Record:layout.html.twig' %}
 
 {% set small_title = 'warehouse.record.list'|trans %}
-{% set layout = "box" %}
+{% set layout = "tab" %}
 
 {% block content %}
-	{% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'records-filter-form-widget' } %}
-	
-	{{ form_start(form, {attr: {class: 'form-inline filter-form remember', id: 'records-filter-form'}}) }}
-		<div class="input">
-			<i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp;
-			{{ form_widget(form.recordDateFrom) }} —
-			{{ form_widget(form.recordDateTo) }}
-		</div>
-		
-		<div class="input">
-			<i class="fa fa-arrows-v" title='{{ 'warehouse.record.operation'|trans }}' data-toggle="tooltip"></i>&nbsp;
-			{{ form_widget(form.operation) }}
-		</div>
-		
-		<div class="input">
-			<i class="fa fa-home" title='Отели' data-toggle="tooltip"></i>&nbsp;
-			{{ form_widget(form.hotel) }}
-		</div>
-		
-		<div class="input">
-			<i class="fa fa-book" title='Товары' data-toggle="tooltip"></i>&nbsp;
-			{{ form_widget(form.wareItem) }}
-		</div>
-		
-	{{ form_end(form, {render_rest: false}) }}		
-    </div></div>
+    {% if app.request.isxmlhttprequest is empty %}
+        {% include 'MBHWarehouseBundle:Record:tabs.html.twig' with {'active': 1} %}
+    {% endif %}
 
-	<table id="records-table" class="tariffs-table table table-striped table-hover table-condensed table-icons table-actions">
-        <thead>
-        <tr>
-            <th class="td-xs"></th>
-            <th class="td-md">{{ 'warehouse.record.title'|trans }}</th>
-            <th class="td-sm">{{ 'warehouse.record.recordDate'|trans }}</th>
-            <th class="td-sm">{{ 'warehouse.record.operation'|trans }}</th>
-            <th class="td-md">{{ 'warehouse.record.hotel'|trans }}</th>
-            <th class="td-xs text-right">{{ 'warehouse.record.quantity'|trans }}</th>
-            <th class="td-md">{{ 'warehouse.field.unit'|trans }}</th>
-            <th class="td-xs text-right">{{ 'warehouse.items.price'|trans }}</th>
-            <th class="td-md text-right">{{ 'warehouse.record.amount'|trans }}</th>
-            <th class="td-sm"></th>
-        </tr>
-		</thead>
-		
-		<tbody>
-		</tbody>
-    </table>
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
 
-	{% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'warehouse_record_new', 'role': 'WAREHOUSE_RECORD'} %}
+			{% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'records-filter-form-widget' } %}
+
+			{{ form_start(form, {attr: {class: 'form-inline filter-form remember', id: 'records-filter-form'}}) }}
+				<div class="input">
+					<i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp;
+					{{ form_widget(form.recordDateFrom) }} —
+					{{ form_widget(form.recordDateTo) }}
+				</div>
+
+				<div class="input">
+					<i class="fa fa-arrows-v" title='{{ 'warehouse.record.operation'|trans }}' data-toggle="tooltip"></i>&nbsp;
+					{{ form_widget(form.operation) }}
+				</div>
+
+				<div class="input">
+					<i class="fa fa-home" title='{{ 'warehouse.record.hotels'|trans }}' data-toggle="tooltip"></i>&nbsp;
+					{{ form_widget(form.hotel) }}
+				</div>
+
+				<div class="input">
+					<i class="fa fa-book" title='{{ 'warehouse.record.goods'|trans }}' data-toggle="tooltip"></i>&nbsp;
+					{{ form_widget(form.wareItem) }}
+				</div>
+
+			{{ form_end(form, {render_rest: false}) }}		
+			</div></div>
+
+			<table id="records-table" class="tariffs-table table table-striped table-hover table-condensed table-icons table-actions">
+				<thead>
+				<tr>
+					<th class="td-xs"></th>
+					<th class="td-md">{{ 'warehouse.record.title'|trans }}</th>
+					<th class="td-sm">{{ 'warehouse.record.recordDate'|trans }}</th>
+					<th class="td-sm">{{ 'warehouse.record.operation'|trans }}</th>
+					<th class="td-md">{{ 'warehouse.record.hotel'|trans }}</th>
+					<th class="td-xs text-right">{{ 'warehouse.record.quantity'|trans }}</th>
+					<th class="td-md">{{ 'warehouse.field.unit'|trans }}</th>
+					<th class="td-xs text-right">{{ 'warehouse.items.price'|trans }}</th>
+					<th class="td-md text-right">{{ 'warehouse.record.amount'|trans }}</th>
+					<th class="td-sm"></th>
+				</tr>
+				</thead>
+
+				<tbody>
+				</tbody>
+			</table>
+
+			{% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'warehouse_record_new', 'role': 'WAREHOUSE_RECORD'} %}
+        </div>
+    </div>
 
 {% endblock %} 

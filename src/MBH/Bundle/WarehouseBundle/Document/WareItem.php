@@ -198,17 +198,6 @@ class WareItem extends Base
     }
 
     /**
-     * @return string
-     */
-    public function getName()
-    {
-        if (!empty($this->title)) {
-            return $this->title;
-        }
-        return $this->fullTitle;
-    }
-
-    /**
      * Set system
      *
      * @param boolean $system

@@ -55,6 +55,12 @@ warehouse:
         recordDate: Дата
         title: Наименование
         hotel: Отель
+        hotels: Отели
+        goods: Товары
         in: приход
         out: расход
         list: список приходов-расходов
+        inventory: остатки
+        tabs:
+            list: Записи
+            inventory: Остатки

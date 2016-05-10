@@ -51,20 +51,18 @@ class RecordController extends Controller
     {
         $tableParams = ClientDataTableParams::createFromRequest($request);
 		
-// TODO:
 		$tableParams->setSortColumnFields([
-            1 => 'fullTitle',
+			0 => 'createdAt',
+            1 => 'wareItem',
             2 => 'recordDate',
             3 => 'operation',
             4 => 'hotel',
-            5 => 'amount',
-            6 => 'qtty',
+            5 => 'qtty',
+            6 => 'unit',
             7 => 'price',
             8 => 'amount',
-            9 => 'bar',
+            9 => 'foo',
         ]);
-
-//
 		
         $formData = (array) $request->get('form');
 		
@@ -76,22 +74,76 @@ class RecordController extends Controller
         $criteria = $form->getData();
 
         if ($getFirstSort = $tableParams->getFirstSort()) {
-            $criteria->sortBy = [$getFirstSort[0]];
-            $criteria->sortDirection = [$getFirstSort[1]];
+            $criteria->setSortBy($getFirstSort[0]);
+            $criteria->setSortDirection($getFirstSort[1]); // 1 or -1
         }
-		
-//		'order' => $request->get('order')['0']['column'],
-//        'dir' => $request->get('order')['0']['dir'],
 		
         $records = $this->dm->getRepository('MBHWarehouseBundle:Record')
 			->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
 		
-//		var_dump($request->get('order')['0']);
-		
-		//var_dump($criteria->sortBy);
-		
         return [
             'records' => iterator_to_array($records),
+            'total' => count($records),
+            'draw' => $request->get('draw'),
+        ];
+    }
+
+	/**
+     * Lists inventory.
+     *
+     * @Route("/inventory", name="warehouse_record_inventory")
+     * @Security("is_granted('ROLE_WAREHOUSE_RECORD_VIEW')")
+     * @Method("GET")
+     * @Template()
+     */
+    public function inventoryAction()
+    {
+		$form = $this->createForm(new RecordFilterType());
+		
+        return [
+			'form' => $form->createView(),
+        ];
+    }
+
+    /**
+     * Lists goods balance.
+     *
+     * @Route("/inventory/json", name="inventory_json", defaults={"_format"="json"}, options={"expose"=true})
+     * @Method("POST")
+     * @Security("is_granted('ROLE_WAREHOUSE_RECORD_VIEW')")
+     * @Template()
+     */
+    public function jsonInventoryAction(Request $request)
+    {
+        $tableParams = ClientDataTableParams::createFromRequest($request);
+		
+		$tableParams->setSortColumnFields([
+			0 => 'createdAt',
+            1 => 'wareItem',
+            2 => 'hotel',
+            3 => 'qtty',
+            4 => 'unit',
+        ]);
+		
+        $formData = (array) $request->get('form');
+		
+        $form = $this->createForm(new RecordFilterType());
+        $formData['search'] = $tableParams->getSearch();
+
+        $form->submit($formData);
+		
+        $criteria = $form->getData();
+
+        if ($getFirstSort = $tableParams->getFirstSort()) {
+            $criteria->setSortBy($getFirstSort[0]);
+            $criteria->setSortDirection($getFirstSort[1]); // 1 or -1
+        }
+		
+        $records = $this->dm->getRepository('MBHWarehouseBundle:Record')
+			->findInventoryByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
+		
+        return [
+            'inventory' => iterator_to_array($records),
             'total' => count($records),
             'draw' => $request->get('draw'),
         ];

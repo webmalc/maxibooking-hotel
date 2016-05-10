@@ -1,0 +1,26 @@
+{% set menu = [
+    {
+        'route': 'warehouse_record',
+        'title': 'warehouse.record.tabs.list'|trans
+    },
+    {
+        'route': 'warehouse_record_inventory',
+        'title': 'warehouse.record.tabs.inventory'|trans
+    },
+] %}
+
+<ul class="nav nav-tabs" role="tablist" id="record-tabs">
+    {% for item in menu %}
+        <li {% if loop.index == active %}
+			class="active"{% endif %}>
+            <a{% if loop.index == active %}
+				href="{{ path(item.route) }}" role="tab" data-toggle="tab"
+			{% else %}
+				href="{{ path(item.route) }}"
+			{% endif %}>
+			{{ item.title|raw }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+

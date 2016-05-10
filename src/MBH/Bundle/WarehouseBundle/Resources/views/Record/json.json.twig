@@ -3,8 +3,7 @@
     "recordsTotal": "{{ total }}",
     "recordsFiltered": "{{ total }}",
     "data": [
-        {% for record in records %}
-            {% set package = null %} [
+        {% for record in records %}[
                 "<i class='fa fa-book'></i>",				
                 "{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': record, 'route': 'warehouse_record'} %}{% endembed %}",
 				"{{ record.recordDate|date('d.m.Y') }}",				
