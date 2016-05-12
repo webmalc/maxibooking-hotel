@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 
 /**
@@ -73,7 +73,7 @@ class VashotelConfig extends Base implements BaseInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="hotelId")
+     * @ODM\Field(type="string", name="hotelId")
      * @Assert\NotNull(message="validator.document.vashotelConfig.no_hotel_id_specified")
      */
     protected $hotelId;

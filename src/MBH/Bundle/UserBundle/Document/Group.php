@@ -9,7 +9,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 /**
  * @ODM\Document(collection="Groups")
@@ -27,7 +27,7 @@ class Group extends BaseGroup
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     protected $code;
 

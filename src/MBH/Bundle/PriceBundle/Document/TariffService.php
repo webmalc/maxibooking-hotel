@@ -25,7 +25,7 @@ class TariffService extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
@@ -38,7 +38,7 @@ class TariffService extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
@@ -50,7 +50,7 @@ class TariffService extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,

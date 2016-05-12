@@ -12,7 +12,7 @@ class Tariff
 {
     /**
      * @var string $tariffId
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\NotNull()
      */
     protected $tariffId;

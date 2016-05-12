@@ -22,7 +22,7 @@ class PackagePrice
 
     /**
      * @var float
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)

@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 /**
  * @ODM\Document(collection="Service", repositoryClass="ServiceRepository")
@@ -49,7 +49,7 @@ class Service extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="fullTitle")
+     * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
@@ -63,7 +63,7 @@ class Service extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="title")
+     * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
      *      minMessage="Слишком короткое имя",
@@ -76,7 +76,7 @@ class Service extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="description")
+     * @ODM\Field(type="string", name="description")
      * @Assert\Length(
      *      min=2,
      *      minMessage="Слишком короткое описание",
@@ -88,7 +88,7 @@ class Service extends Base
 
     /**
      * @var int
-     * @ODM\Float(name="price")
+     * @ODM\Field(type="float", name="price")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -109,7 +109,7 @@ class Service extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\NotNull()
      * @Assert\Choice(choices = {"per_stay", "per_night", "not_applicable", "day_percent"})
      */
@@ -118,7 +118,7 @@ class Service extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="code")
+     * @ODM\Field(type="string", name="code")
      */
     protected $code;
     

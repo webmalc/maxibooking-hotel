@@ -12,7 +12,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 
 /**
@@ -59,7 +59,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="fullTitle")
+     * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
@@ -73,7 +73,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="title")
+     * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.roomType.min_name",
@@ -87,7 +87,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="description")
+     * @ODM\Field(type="string", name="description")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.roomType.min_description",
@@ -100,7 +100,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="color")
+     * @ODM\Field(type="string", name="color")
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=6,
@@ -114,7 +114,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int(name="places")
+     * @ODM\Integer(name="places")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -127,7 +127,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int(name="additionalPlaces")
+     * @ODM\Integer(name="additionalPlaces")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -141,14 +141,14 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="roomSpace")
+     * @ODM\Field(type="string", name="roomSpace")
      */
     protected $roomSpace;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $image;
 

@@ -18,21 +18,21 @@ class VegaFMS extends Base
 {
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Gedmo\Versioned
      */
     protected $code;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Gedmo\Versioned
      */
     protected $name;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Gedmo\Versioned
      */
     protected $originalName;

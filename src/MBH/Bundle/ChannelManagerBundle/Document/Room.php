@@ -20,7 +20,7 @@ Room
 
     /**
      * @var string
-     * @ODM\String(name="roomId")
+     * @ODM\Field(type="string", name="roomId")
      * @Assert\NotNull()
      */
     protected $roomId;

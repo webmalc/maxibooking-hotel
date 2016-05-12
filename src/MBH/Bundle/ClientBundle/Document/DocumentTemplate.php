@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 
 /**
@@ -34,7 +34,7 @@ class DocumentTemplate extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      *
      * @Assert\NotNull()
      * @Assert\Type(type="string")
@@ -44,7 +44,7 @@ class DocumentTemplate extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      *
      * @Assert\NotNull()
      * @Assert\Type(type="string")
@@ -54,7 +54,7 @@ class DocumentTemplate extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      *
      * @Assert\NotNull()
      * @Assert\Choice(callback="getOrientations")

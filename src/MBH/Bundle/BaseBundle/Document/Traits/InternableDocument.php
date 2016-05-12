@@ -15,7 +15,7 @@ trait InternableDocument
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.hotel.min_name",
