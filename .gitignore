@@ -28,6 +28,7 @@ nbproject/
 /parameters.yml
 parameters.yml
 /protectedUpload/orderDocuments/*
+/protectedUpload/1C/*
 /protectedUpload/vegaDocuments/*
 !/protectedUpload/orderDocuments/.gitkeep
 web/assets
