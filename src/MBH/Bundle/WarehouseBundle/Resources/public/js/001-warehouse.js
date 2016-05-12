@@ -29,16 +29,17 @@ $(document).ready(function () {
 	
 	initDpSpEtc();
 
-	$('.table-actions').DataTable({
-		retrieve: true,
-		"columns": [
-			{"orderable": false},
-			null,
-			null,
-			null,
-			{"orderable": false},
-			{"orderable": false},
-		]
-	});
+	if (document.getElementById('warehouse-table')) {
+		$('.warehouse-table').DataTable($.extend(mbh.datatablesOptions, {
+			"columns": [
+				{"orderable": false},
+				null,
+				null,
+				null,
+				{"orderable": false},
+				{"orderable": false},
+			]
+		}));
+	}
 	
 });

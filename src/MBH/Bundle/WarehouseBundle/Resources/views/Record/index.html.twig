@@ -1,7 +1,7 @@
 {% extends 'MBHWarehouseBundle:Record:layout.html.twig' %}
 
 {% set small_title = 'warehouse.record.list'|trans %}
-{% set layout = "tab" %}
+{% set layout = "tabs" %}
 
 {% block content %}
     {% if app.request.isxmlhttprequest is empty %}
@@ -38,7 +38,7 @@
 			{{ form_end(form, {render_rest: false}) }}		
 			</div></div>
 
-			<table id="records-table" class="tariffs-table table table-striped table-hover table-condensed table-icons table-actions">
+			<table id="records-table" class="records-table table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable">
 				<thead>
 				<tr>
 					<th class="td-xs"></th>

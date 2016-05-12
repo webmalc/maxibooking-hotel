@@ -5,11 +5,15 @@
 var docReadyRecords = function () {
     'use strict';
 
+	if (! document.getElementById('records-table')) {
+		return;
+	}
+	
     var $recordsTable = $('#records-table');
 	
-	$recordsTable.dataTable().fnDestroy();
+	var prefix = '#mbh_warehousebundle_recordfiltertype_';
 	
-    $recordsTable.dataTable({
+    $recordsTable.dataTable($.extend(mbh.datatablesOptions, {
         processing: true,
         serverSide: true,
         ordering: true,
@@ -18,23 +22,23 @@ var docReadyRecords = function () {
             url: Routing.generate('records_json'),
             data: function (requestData) {
                 requestData.form = {
-                    recordDateFrom: $('#mbh_warehousebundle_recordfiltertype_recordDateFrom').val(),
-                    recordDateTo: $('#mbh_warehousebundle_recordfiltertype_recordDateTo').val(),
-                    operation: $('#mbh_warehousebundle_recordfiltertype_operation').val(),
-                    hotel: $('#mbh_warehousebundle_recordfiltertype_hotel').val(),
-                    wareItem: $('#mbh_warehousebundle_recordfiltertype_wareItem').val(),
-					_token: $('#mbh_warehousebundle_recordfiltertype__token').val()
+                    recordDateFrom: $(prefix+'recordDateFrom').val(),
+                    recordDateTo: $(prefix+'recordDateTo').val(),
+                    operation: $(prefix+'operation').val(),
+                    hotel: $(prefix+'hotel').val(),
+                    wareItem: $(prefix+'wareItem').val(),
+					_token: $(prefix+'_token').val()
                 };
 				
                 return requestData;
-            },
+            }
         },
-        "columnDefs": [
-			{ "orderable": false, "targets": 0 },
-			{ "orderable": false, "targets": 6 },
-			{ "orderable": false, "targets": -1 }
+        columnDefs: [
+			{ orderable: false, targets: 0 },
+			{ orderable: false, targets: 6 },
+			{ orderable: false, targets: -1 },
 		]
-    });
+    }));
 	
     $recordsTable.dataTable().fnSetFilteringDelay();
 
@@ -47,11 +51,15 @@ var docReadyRecords = function () {
 var docReadyInventory = function () {
     'use strict';
 
+	if (! document.getElementById('inventory-table')) {
+		return;
+	}
+	
     var $inventoryTable = $('#inventory-table');
 	
-	$inventoryTable.dataTable().fnDestroy();
+	var prefix = '#mbh_warehousebundle_recordfiltertype_';
 	
-    $inventoryTable.dataTable({
+    $inventoryTable.dataTable($.extend(mbh.datatablesOptions, {
         processing: true,
         serverSide: true,
         ordering: true,
@@ -60,19 +68,18 @@ var docReadyInventory = function () {
             url: Routing.generate('inventory_json'),
             data: function (requestData) {
                 requestData.form = {
-                    hotel: $('#mbh_warehousebundle_recordfiltertype_hotel').val(),
-                    wareItem: $('#mbh_warehousebundle_recordfiltertype_wareItem').val(),
-					_token: $('#mbh_warehousebundle_recordfiltertype__token').val()
+                    hotel: $(prefix+'hotel').val(),
+                    wareItem: $(prefix+'wareItem').val(),
+					_token: $(prefix+'_token').val()
                 };
 				
                 return requestData;
-            },
+            }
         },
-        "columnDefs": [
-			{ "orderable": false, "targets": 0 },
-			{ "orderable": false, "targets": -1 }
+        columnDefs: [
+			{ orderable: false, targets: 0 },
 		]
-    });
+    }));
 	
     $inventoryTable.dataTable().fnSetFilteringDelay();
 
@@ -86,8 +93,8 @@ var docReadyInventory = function () {
 $(document).ready(function () {
     'use strict';
 
-    docReadyRecords();
-	docReadyInventory();
+	docReadyRecords();
+	docReadyInventory();	
 });
 
 

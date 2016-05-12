@@ -1,7 +1,7 @@
 {% extends 'MBHWarehouseBundle:Record:layout.html.twig' %}
 
 {% set small_title = 'warehouse.record.inventory'|trans %}
-{% set layout = "tab" %}
+{% set layout = "tabs" %}
 
 {% block content %}
     {% if app.request.isxmlhttprequest is empty %}
@@ -27,13 +27,13 @@
 			{{ form_end(form, {render_rest: false}) }}		
 			</div></div>
 			
-			<table id="inventory-table" class="tariffs-table table table-striped table-hover table-condensed table-icons table-actions">
+			<table id="inventory-table" class="inventory-table table table-striped table-hover table-condensed table-icons table-actions not-auto-datatable">
 				<thead>
 				<tr>
 					<th class="td-xs"></th>
 					<th class="td-md">{{ 'warehouse.record.title'|trans }}</th>
-					<th class="td-md">{{ 'warehouse.record.hotel'|trans }}</th>
-					<th class="td-xs text-right">{{ 'warehouse.record.quantity'|trans }}</th>
+					<th class="td-md">{{ 'warehouse.cat.title'|trans }}</th>
+					<th class="td-xs text-right">{{ 'warehouse.record.tabs.inventory'|trans }}</th>
 					<th class="td-md">{{ 'warehouse.field.unit'|trans }}</th>
 				</tr>
 				</thead>

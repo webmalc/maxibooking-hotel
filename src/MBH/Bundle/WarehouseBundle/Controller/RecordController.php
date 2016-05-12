@@ -65,17 +65,22 @@ class RecordController extends Controller
         ]);
 		
         $formData = (array) $request->get('form');
+        $formData['search'] = $tableParams->getSearch();
 		
         $form = $this->createForm(new RecordFilterType());
-        $formData['search'] = $tableParams->getSearch();
 
         $form->submit($formData);
 		
         $criteria = $form->getData();
-
+		
         if ($getFirstSort = $tableParams->getFirstSort()) {
             $criteria->setSortBy($getFirstSort[0]);
-            $criteria->setSortDirection($getFirstSort[1]); // 1 or -1
+			
+			if ($getFirstSort[0] == 'createdAt') { // at page load w/o settings made by user
+				$criteria->setSortDirection(-1);
+			} else {
+				$criteria->setSortDirection($getFirstSort[1]); // 1 or -1
+			}
         }
 		
         $records = $this->dm->getRepository('MBHWarehouseBundle:Record')
@@ -118,33 +123,42 @@ class RecordController extends Controller
         $tableParams = ClientDataTableParams::createFromRequest($request);
 		
 		$tableParams->setSortColumnFields([
-			0 => 'createdAt',
-            1 => 'wareItem',
-            2 => 'hotel',
+			0 => 'foo',
+            1 => 'fullTitle',
+            2 => 'category',
             3 => 'qtty',
             4 => 'unit',
         ]);
 		
         $formData = (array) $request->get('form');
+        $formData['search'] = $tableParams->getSearch();
 		
         $form = $this->createForm(new RecordFilterType());
-        $formData['search'] = $tableParams->getSearch();
 
         $form->submit($formData);
 		
         $criteria = $form->getData();
 
-        if ($getFirstSort = $tableParams->getFirstSort()) {
-            $criteria->setSortBy($getFirstSort[0]);
-            $criteria->setSortDirection($getFirstSort[1]); // 1 or -1
+        if ($getFirstSort = $tableParams->getFirstSort()) {			
+			if ($getFirstSort[0] == 'foo') { // at page load w/o settings made by user
+				$criteria->setSortBy('fullTitle');
+			} else {
+				$criteria->setSortDirection($getFirstSort[1]); // 1 or -1
+			}
+			
+			$criteria->setSortBy($getFirstSort[0]);
         }
 		
-        $records = $this->dm->getRepository('MBHWarehouseBundle:Record')
-			->findInventoryByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength());
+		$repository = $this->dm->getRepository('MBHWarehouseBundle:Record');
+		
+		// this step could be hidden, but is left here to see what is going on
+        $summary = $repository->fetchSummary($criteria);
+		
+		$items = $repository->getItemsByIds($criteria, $summary, $tableParams->getStart(), $tableParams->getLength());
 		
         return [
-            'inventory' => iterator_to_array($records),
-            'total' => count($records),
+            'inventory' => $items,
+            'total' => count($summary),
             'draw' => $request->get('draw'),
         ];
     }
