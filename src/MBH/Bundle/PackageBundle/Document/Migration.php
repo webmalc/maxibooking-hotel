@@ -17,23 +17,23 @@ class Migration extends Base
 {
     /**
      * @var int
-     * @ODM\Int()
+     * @ODM\Integer()
      */
     protected $series;
     /**
      * @var int
-     * @ODM\Int()
+     * @ODM\Integer()
      */
     protected $number;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $representative;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $address;
 

@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\ChannelManagerBundle\Lib\CurrencyConfigInterface;
@@ -59,14 +59,14 @@ class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInt
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $hotelId;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="token")
+     * @ODM\Field(type="string", name="token")
      */
     protected $token;
 
@@ -85,14 +85,14 @@ class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInt
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $currency;
 
     /**
      * @var float
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      */
     protected $currencyDefaultRatio;
 

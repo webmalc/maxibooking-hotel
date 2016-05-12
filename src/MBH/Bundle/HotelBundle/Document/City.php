@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 /**
  * @ODM\Document(collection="City")
@@ -53,7 +53,7 @@ class City extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="title")
+     * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.city.min_name",

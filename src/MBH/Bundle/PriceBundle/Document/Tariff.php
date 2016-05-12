@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 
@@ -57,7 +57,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="fullTitle")
+     * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
@@ -71,7 +71,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="title")
+     * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
      *      minMessage="Слишком короткое имя",
@@ -84,7 +84,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="description")
+     * @ODM\Field(type="string", name="description")
      * @Assert\Length(
      *      min=2,
      *      minMessage="Слишком короткое описание",
@@ -131,7 +131,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0, max=18)
      */
@@ -140,7 +140,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0, max=18)
      */

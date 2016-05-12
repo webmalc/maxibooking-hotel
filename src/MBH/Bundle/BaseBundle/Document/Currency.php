@@ -21,21 +21,21 @@ class Currency
 
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\NotNull()
      */
     protected $title;
 
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\NotNull()
      */
     protected $code;
 
     /**
      * @var float
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      */

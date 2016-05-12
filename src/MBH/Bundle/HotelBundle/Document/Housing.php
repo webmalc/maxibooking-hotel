@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 /**
@@ -34,7 +34,7 @@ class Housing extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Assert\NotNull()
      */
     protected $name;
@@ -42,7 +42,7 @@ class Housing extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $internalName;
 
@@ -55,41 +55,41 @@ class Housing extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $settlement;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $street;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $house;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $corpus;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $flat;
 
     /**
      * @var int
-     * @ODM\Int
+     * @ODM\Integer()
      * @Assert\Type(type="numeric")
      */
     protected $vegaAddressId;

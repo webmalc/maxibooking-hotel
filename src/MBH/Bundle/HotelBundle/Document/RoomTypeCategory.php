@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
 
@@ -39,7 +39,7 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="fullTitle")
+     * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
@@ -53,7 +53,7 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="title")
+     * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.roomType.min_name",
@@ -66,7 +66,7 @@ class RoomTypeCategory extends Base implements RoomTypeInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="description")
+     * @ODM\Field(type="string", name="description")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.roomType.min_description",

@@ -14,13 +14,13 @@ class Payanyway implements PaymentSystemInterface
 {
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $payanywayMntId;
 
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $payanywayKey;
 

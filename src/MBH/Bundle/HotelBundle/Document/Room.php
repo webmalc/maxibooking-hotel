@@ -9,7 +9,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 /**
  * @ODM\Document(collection="Room", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomRepository")
@@ -55,7 +55,7 @@ class Room extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="fullTitle")
+     * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=1,
@@ -69,7 +69,7 @@ class Room extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="title")
+     * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=1,
      *      minMessage="validator.document.room.min_name",
@@ -88,7 +88,7 @@ class Room extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="floor")
+     * @ODM\Field(type="string", name="floor")
      * @Assert\Length(
      *      min=1,
      *      minMessage="validator.document.room.min_floor",

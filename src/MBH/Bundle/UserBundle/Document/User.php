@@ -13,7 +13,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\UserBundle\Validator\Constraints as MBHValidator;
 
 
@@ -38,7 +38,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="firstName", type="string")
+     * @ODM\Field(type="string", name="firstName", type="string")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.user.min_name",
@@ -51,7 +51,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="lastName", type="string")
+     * @ODM\Field(type="string", name="lastName", type="string")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.user.min_surname",
@@ -64,7 +64,7 @@ class User extends BaseUser implements RecipientInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="patronymic")
+     * @ODM\Field(type="string", name="patronymic")
      * @Assert\Length(
      *      min=2,
      *      max=100

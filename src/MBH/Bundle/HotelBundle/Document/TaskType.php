@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 
 /**
@@ -28,7 +28,7 @@ class TaskType extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="title")
+     * @ODM\Field(type="string", name="title")
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min=2,
@@ -53,7 +53,7 @@ class TaskType extends Base
     protected $category;
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $code;
 

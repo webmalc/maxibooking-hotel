@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 /**
  * @ODM\Document(collection="Order", repositoryClass="MBH\Bundle\PackageBundle\Document\OrderRepository")
@@ -72,7 +72,7 @@ class Order extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -84,7 +84,7 @@ class Order extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -96,7 +96,7 @@ class Order extends Base
     /**
      * @var float
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -108,7 +108,7 @@ class Order extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -136,7 +136,7 @@ class Order extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="status")
+     * @ODM\Field(type="string", name="status")
      * @Assert\Choice(
      *      choices = {"offline", "online", "channel_manager"},
      *      message = "validator.document.order.wrong_status"
@@ -147,7 +147,7 @@ class Order extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="onlinePaymentType")
+     * @ODM\Field(type="string", name="onlinePaymentType")
      * @Assert\Choice(
      *      callback = "getOnlinePaymentTypesList",
      *      message = "validator.document.package.wrong_online_payment_type"
@@ -158,7 +158,7 @@ class Order extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="channelManagerType")
+     * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
      *      choices = {"vashotel", "booking", "myallocator"},
      *      message = "validator.document.package.wrong_channel_manager_type"
@@ -169,49 +169,49 @@ class Order extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="channelManagerId")
+     * @ODM\Field(type="string", name="channelManagerId")
      */
     protected $channelManagerId;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $channelManagerHumanId;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $channelManagerHumanText;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $channelManagerEditDateTime;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $channelManagerStatus;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="note")
+     * @ODM\Field(type="string", name="note")
      */
     protected $note;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $card;
 

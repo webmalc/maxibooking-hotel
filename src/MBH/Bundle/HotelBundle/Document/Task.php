@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
@@ -55,7 +55,7 @@ class Task extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Assert\NotNull()
      * @Assert\Choice(choices = {"open", "closed", "process"})
      */
@@ -75,7 +75,7 @@ class Task extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="description")
+     * @ODM\Field(type="string", name="description")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.task.min_description",
@@ -101,7 +101,7 @@ class Task extends Base
 
     /**
      * @var int
-     * @ODM\Int()
+     * @ODM\Integer()
      */
     protected $priority;
 

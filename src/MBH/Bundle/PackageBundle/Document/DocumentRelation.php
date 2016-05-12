@@ -17,7 +17,7 @@ class DocumentRelation implements \JsonSerializable
 {
     /**
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $type;
     /**
@@ -27,27 +27,27 @@ class DocumentRelation implements \JsonSerializable
     protected $authorityOrgan;
     /**
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $authorityOrganText;
     /**
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $authorityOrganCode;
     /**
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $authority;
     /**
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $series;
     /**
      * @var String
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\Type(type="numeric")
      */
     protected $number;
@@ -65,7 +65,7 @@ class DocumentRelation implements \JsonSerializable
     protected $expiry;
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $relation;
 
@@ -239,7 +239,7 @@ class DocumentRelation implements \JsonSerializable
     }
 
     /**
-     * @Assert\True(message = "The start date must be beforproe the end date")
+     * @Assert\IsTrue(message = "The start date must be beforproe the end date")
      */
     public function isDateRangeValid()
     {

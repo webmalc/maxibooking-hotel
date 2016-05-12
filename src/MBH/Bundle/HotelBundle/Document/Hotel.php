@@ -15,7 +15,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 
 /**
@@ -49,7 +49,7 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="fullTitle")
+     * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
@@ -63,7 +63,7 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="title")
+     * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.hotel.min_name",
@@ -76,7 +76,7 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="prefix")
+     * @ODM\Field(type="string", name="prefix")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.hotel.min_prefix",
@@ -107,7 +107,7 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * @var float
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric", message= "validator.document.hotel.wrong_latitude")
      */
     protected $latitude;
@@ -115,7 +115,7 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * @var float
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric", message="validator.document.hotel.wrong_longitude")
      */
     protected $longitude;
@@ -144,7 +144,7 @@ class Hotel extends Base implements \JsonSerializable
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
@@ -208,33 +208,33 @@ class Hotel extends Base implements \JsonSerializable
 
     /**
      * @Gedmo\Versioned
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     protected $settlement;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     protected $street;
 
     /**
      * @Gedmo\Versioned
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     protected $house;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     protected $corpus;
 
     /**
      * @Gedmo\Versioned
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     protected $flat;
 
@@ -257,7 +257,7 @@ class Hotel extends Base implements \JsonSerializable
     protected $file;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      * @var string
      */
     protected $logo;
@@ -270,13 +270,13 @@ class Hotel extends Base implements \JsonSerializable
 
     /**
      * @var int
-     * @ODM\Int
+     * @ODM\Integer
      * @Assert\Type(type="numeric")
      */
     protected $vegaAddressId;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string")
      * @var string
      */
     protected $description;

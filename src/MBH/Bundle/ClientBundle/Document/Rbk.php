@@ -17,13 +17,13 @@ class Rbk implements PaymentSystemInterface
 
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $rbkEshopId;
 
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $rbkSecretKey;
 
