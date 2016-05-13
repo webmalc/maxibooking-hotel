@@ -20,13 +20,13 @@ class Uniteller implements PaymentSystemInterface
 
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $unitellerShopIDP;
 
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $unitellerPassword;
 

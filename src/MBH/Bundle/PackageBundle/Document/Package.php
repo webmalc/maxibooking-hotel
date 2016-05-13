@@ -10,10 +10,11 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Zend\Stdlib\JsonSerializable;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 /**
  * @ODM\Document(collection="Packages", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageRepository")
@@ -21,6 +22,7 @@ use MBH\Bundle\PackageBundle\Lib\PayerInterface;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
+ * @MongoDBUnique(fields="numberWithPrefix", message="Такой номер брони уже существует")
  */
 class Package extends Base implements JsonSerializable
 {
@@ -76,21 +78,22 @@ class Package extends Base implements JsonSerializable
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      */
     protected $number;
     
+
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\String(name="numberWithPrefix")
+     * @ODM\Field(type="string", name="numberWithPrefix")
      */
     protected $numberWithPrefix;
 
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int(name="adults")
+     * @ODM\Integer(name="adults")
      * @Assert\NotNull(message="Количество взрослых не указано")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -104,7 +107,7 @@ class Package extends Base implements JsonSerializable
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int(name="children")
+     * @ODM\Integer(name="children")
      * @Assert\NotNull(message="Количество детей не указано")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -143,14 +146,14 @@ class Package extends Base implements JsonSerializable
      * @var float
      * @Gedmo\Versioned
      * @deprecated
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      */
     protected $promotionTotal = 0;
 
     /**
      * @var float
      * @Gedmo\Versioned
-     * @ODM\Float(name="price")
+     * @ODM\Field(type="float", name="price")
      * @Assert\NotNull(message= "validator.document.package.price_not_specified")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -163,7 +166,7 @@ class Package extends Base implements JsonSerializable
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -175,7 +178,7 @@ class Package extends Base implements JsonSerializable
     /**
      * @var float
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -202,7 +205,7 @@ class Package extends Base implements JsonSerializable
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Float(name="servicesPrice")
+     * @ODM\Field(type="float", name="servicesPrice")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -214,14 +217,14 @@ class Package extends Base implements JsonSerializable
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="note")
+     * @ODM\Field(type="string", name="note")
      */
     protected $note;
 
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="purposeOfArrival")
+     * @ODM\Field(type="string", name="purposeOfArrival")
      * @Assert\Choice(
      *      choices = {"service", "tourism", "business", "study", "work", "private", "residence", "humanitarian", "other"},
      *      message = "validator.document.package.wrong_arrival_purpose"
@@ -232,7 +235,7 @@ class Package extends Base implements JsonSerializable
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="channelManagerType")
+     * @ODM\Field(type="string", name="channelManagerType")
      * @Assert\Choice(
      *      choices = {"vashotel", "booking"},
      *      message = "validator.document.package.wrong_channel_manager_type"
@@ -243,7 +246,7 @@ class Package extends Base implements JsonSerializable
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="channelManagerId")
+     * @ODM\Field(type="string", name="channelManagerId")
      */
     protected $channelManagerId;
 
@@ -266,7 +269,7 @@ class Package extends Base implements JsonSerializable
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\Type(type="numeric")
      * Assert\Range(
      *      min=1,
@@ -280,7 +283,7 @@ class Package extends Base implements JsonSerializable
     /**
      * @var bool
      * @Gedmo\Versioned
-     * @ODM\Bool()
+     * @ODM\Boolean()
      * @Assert\NotNull()
      */
     protected $isPercentDiscount = true;

@@ -14,19 +14,19 @@ class Robokassa  implements PaymentSystemInterface
 {
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $robokassaMerchantLogin;
 
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $robokassaMerchantPass1;
 
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $robokassaMerchantPass2;
 

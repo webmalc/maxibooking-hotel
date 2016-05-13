@@ -31,6 +31,39 @@ class TariffRepository extends DocumentRepository
 
     /**
      * @param Hotel $hotel
+     * @param array $type 'rooms', 'restrictions', 'prices'
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function fetchChildTariffsQuery(Hotel $hotel, $type)
+    {
+        $types = [
+            'rooms' =>'inheritRooms', 'restrictions' => 'inheritRestrictions', 'prices' => 'inheritPrices'
+        ];
+
+        $qb = $this->createQueryBuilder();
+        $qb->field('hotel.id')->equals($hotel->getId())
+            ->addOr($qb->expr()->field('parent')->equals(null))
+            ->addOr($qb->expr()->field('parent')->exists(false))
+            ->addOr($qb->expr()->field('childOptions.' . $types[$type])->equals(false))
+        ;
+
+        return $qb;
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @param array $type 'rooms', 'restrictions', 'prices'
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function fetchChildTariffs(Hotel $hotel, $type)
+    {
+        return $this->fetchChildTariffsQuery($hotel, $type)->getQuery()->execute();
+    }
+
+    /**
+     * @param Hotel $hotel
      * @param mixed $online
      * @return array|null|object
      */

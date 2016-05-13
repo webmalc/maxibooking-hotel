@@ -23,7 +23,8 @@
     "doctrine/mongodb": "*@stable",
     "doctrine/mongodb-odm": "*@stable",
     "doctrine/mongodb-odm-bundle": "*@stable",
-    "stof/doctrine-extensions-bundle": "*@stable",
+    "gedmo/doctrine-extensions": "2.4.13@dev",
+    "stof/doctrine-extensions-bundle": "dev-master",
     "friendsofsymfony/user-bundle": "*@dev",
     "friendsofsymfony/jsrouting-bundle": "*@stable",
     "knplabs/knp-menu": "*@stable",
@@ -40,7 +41,8 @@
     "ornicar/gravatar-bundle": "^1.1@dev",
     "doctrine/doctrine-fixtures-bundle": "^2.2@dev",
     "myallocator/myallocator-php-sdk": "dev-master",
-    "leafo/scssphp": "^0.6.3"
+    "leafo/scssphp": "^0.6.3",
+    "alcaeus/mongo-php-adapter": "^1.0"
   },
   "require-dev": {
     "sensio/generator-bundle": "~2.3"

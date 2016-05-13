@@ -12,7 +12,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 trait ConditionsTrait
 {
     /**
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @var string
      * @Assert\Choice(callback={"MBH\Bundle\PriceBundle\Services\PromotionConditionFactory", "getAvailableConditions"})
      */
@@ -27,7 +27,7 @@ trait ConditionsTrait
     protected $conditionQuantity;
 
     /**
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @var string
      * @Assert\Choice(callback={"MBH\Bundle\PriceBundle\Services\PromotionConditionFactory", "getAvailableConditions"})
      */

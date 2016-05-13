@@ -17,14 +17,14 @@ class VegaRegion extends Base
 {
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Gedmo\Versioned
      */
     protected $name;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Gedmo\Versioned
      */
     protected $originalName;

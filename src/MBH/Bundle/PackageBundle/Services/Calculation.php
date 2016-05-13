@@ -142,7 +142,9 @@ class Calculation
         } else {
             $roomTypeId = $roomType->getId();
         }
-
+        if ($tariff->getParent() && $tariff->getChildOptions()->isInheritPrices()) {
+            $tariff = $tariff->getParent();
+        }
         $tariffId = $tariff->getId();
         $duration = $end->diff($begin)->format('%a') + 1;
         $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')

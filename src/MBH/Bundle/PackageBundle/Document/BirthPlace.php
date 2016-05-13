@@ -20,25 +20,25 @@ class BirthPlace
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $city;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $mainRegion;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $district;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $settlement;
 

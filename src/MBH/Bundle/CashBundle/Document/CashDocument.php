@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\CashBundle\Validator\Constraints as MBHValidator;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBBundleUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
@@ -58,7 +58,7 @@ class CashDocument extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\Type(type="string")
      * @Assert\Length(max=40)
      *
@@ -68,7 +68,7 @@ class CashDocument extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\Choice(
      *      choices = {"cash", "cashless", "electronic"},
      *      message = "validator.document.cashDocument.wrong_tariff_type"
@@ -79,7 +79,7 @@ class CashDocument extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0.1,
@@ -91,7 +91,7 @@ class CashDocument extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\Choice(
      *      choices = {"in", "out", "fine", "fee"},
      *      message = "validator.document.cashDocument.wrong_tariff_type"
@@ -102,7 +102,7 @@ class CashDocument extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $note;
 
@@ -475,7 +475,7 @@ class CashDocument extends Base
     }
 
     /**
-     * @Assert\True(message = "validator.document.cashDocument.wrong_valid_date")
+     * @Assert\IsTrue(message = "validator.document.cashDocument.wrong_valid_date")
      */
     public function isValidDate()
     {

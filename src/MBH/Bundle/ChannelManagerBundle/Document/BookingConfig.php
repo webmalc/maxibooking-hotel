@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\ChannelManagerBundle\Validator\Constraints as MBHValidator;
@@ -59,7 +59,7 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\NotNull(message="validator.document.bookingConfig.no_hotel_id_specified")
      */
     protected $hotelId;
@@ -67,14 +67,14 @@ class BookingConfig extends Base implements BaseInterface, CurrencyConfigInterfa
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $currency;
 
     /**
      * @var float
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      */
     protected $currencyDefaultRatio;
 

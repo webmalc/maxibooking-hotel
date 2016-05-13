@@ -178,7 +178,20 @@ var docReadyPackages = function () {
     }());
 
     //package datatable
-    var pTable = $('#package-table').dataTable($.extend(mbh.datatablesOptions, {
+    var pTable = $('#package-table').dataTable({
+        dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="fa fa-table" title="Excel" data-toggle="tooltip" data-placement="bottom"></i>',
+                className: 'btn btn-default btn-sm'
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fa fa-file-pdf-o" title="PDF" data-toggle="tooltip" data-placement="bottom"></i>',
+                className: 'btn btn-default btn-sm'
+            }
+        ],
         "processing": true,
         "serverSide": true,
         "ordering": true,
@@ -222,7 +235,7 @@ var docReadyPackages = function () {
             $('#package-summary-nights').html(settings.json.package_summary_nights ||  '-');
             $('#package-summary-guests').html(settings.json.package_summary_guests ||  '-');
         }
-    }));
+    });
 
     // package datatable filter
     (function () {

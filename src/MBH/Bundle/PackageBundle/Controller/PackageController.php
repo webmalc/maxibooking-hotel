@@ -3,7 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
-use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -15,12 +15,11 @@ use MBH\Bundle\PriceBundle\Document\Promotion;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Form\PackageMainType;
-use MBH\Bundle\PackageBundle\Form\PackageGuestType;
 use MBH\Bundle\PackageBundle\Form\PackageAccommodationType;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Tourist;
@@ -225,7 +224,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
         $summary = $this->dm->getRepository('MBHPackageBundle:Package')->fetchSummary($data);
-
+        
         return [
             'entities' => $entities,
             'total' => $entities->count(),
@@ -663,6 +662,43 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     }
 
     /**
+     * @Route("/{id}/accommodation/set/{roomId}", name="package_accommodation_set")
+     * @Method({"GET"})
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or (is_granted('VIEW', package) and is_granted('ROLE_PACKAGE_VIEW'))")
+     * @ParamConverter("package", class="MBHPackageBundle:Package")
+     * @ParamConverter("room", class="MBHHotelBundle:Room", options={"id" = "roomId"})
+     *
+     * @param Request $request
+     * @param Package $package
+     * @param Room $room
+     * @return RedirectResponse
+     */
+    public function accommodationSetAction(Request $request, Package $package, Room $room)
+    {
+        if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
+            throw $this->createNotFoundException();
+        }
+
+        $availableRooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
+            $package->getBegin(), $package->getEnd(),
+            $this->hotel, null, null, $package->getId(), false
+        );
+        $flash = $request->getSession()->getFlashBag();
+
+        if(!in_array($room->getId(), $this->helper->toIds($availableRooms))) {
+            $flash->set('danger', $this->get('translator')->trans('controller.packageController.record_edited_fail_accommodation'));
+        } else {
+            $package->setAccommodation($room);
+            $this->dm->persist($package);
+            $this->dm->flush();
+
+            $flash->set('success', $this->get('translator')->trans('controller.packageController.placement_saved_success'));
+        }
+
+        return $this->redirectToRoute('package_accommodation', ['id' => $package->getId()]);
+    }
+
+    /**
      * Accommodation
      *
      * @Route("/{id}/accommodation", name="package_accommodation")
@@ -689,6 +725,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             $this->hotel, null, null, $package->getId(), true
         );
         $optGroupRooms = $roomRepository->optGroupRooms($groupedRooms);
+
+        $name = $package->getRoomType()->getName();
+        uksort($optGroupRooms, function ($a, $b) use ($name) {
+            if ($a == $name) {
+                return -1;
+            }
+
+            return 1;
+        });
 
         $this->dm->getFilterCollection()->enable('softdeleteable');
 
@@ -756,7 +801,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'earlyCheckInServiceIsEnabled' => $earlyCheckInServiceIsEnabled,
             'lateCheckOutServiceIsEnabled' => $lateCheckOutServiceIsEnabled,
             'form' => $form->createView(),
-            'logs' => $this->logs($package)
+            'logs' => $this->logs($package),
+            'optGroupRooms' => $optGroupRooms,
+            'facilities' => $this->get('mbh.facility_repository')->getAll(),
         ];
     }
 

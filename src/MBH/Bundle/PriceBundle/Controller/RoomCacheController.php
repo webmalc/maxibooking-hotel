@@ -30,7 +30,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
         return [
             'roomTypes' => $hotel->getRoomTypes(),
-            'tariffs' => $hotel->getTariffs(),
+            'tariffs' => $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms'),
         ];
     }
 
@@ -137,6 +137,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $validator = $this->get('validator');
         (empty($request->get('updateRoomCaches'))) ? $updateData = [] : $updateData = $request->get('updateRoomCaches');
         (empty($request->get('newRoomCaches'))) ? $newData = [] : $newData = $request->get('newRoomCaches');
+        $availableTariffs = $this->helper->toIds(
+            $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms')
+        );
 
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
@@ -149,6 +152,10 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             foreach ($roomTypeArray as $tariffId => $tariffArray) {
 
                 if ($tariffId) {
+                    if (!in_array($tariffId, $availableTariffs)) {
+                        continue;
+                    }
+
                     $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($tariffId);
                     if (!$tariff || $tariff->getHotel() != $hotel) {
                         continue;

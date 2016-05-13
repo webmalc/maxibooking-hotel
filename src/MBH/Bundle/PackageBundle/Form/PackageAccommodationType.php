@@ -17,38 +17,7 @@ class PackageAccommodationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $optGroupRooms = $options['optGroupRooms'];
-        $roomStatusIcons = $options['roomStatusIcons'];
-
-        if ($options['roomType']) {
-            $name = $options['roomType']->getName();
-            uksort($optGroupRooms, function ($a, $b) use ($name) {
-                if ($a == $name) {
-                    return -1;
-                }
-
-                return 1;
-            });
-        }
-
         $builder
-            ->add('accommodation', 'document', [
-                'label' => 'form.packageAccommodationType.room',
-                'required' => true,
-                'empty_value' => '',
-                'class' => 'MBHHotelBundle:Room',
-                'group' => 'form.packageAccommodationType.choose_placement',
-                'choices' => $optGroupRooms,
-                'property' => 'name',
-                'attr' => [
-                    'class' => 'plain-html'
-                ],
-                'choice_attr' => function(Room $room) use($roomStatusIcons) {
-                    $status = $room->getStatus();
-                    return $status ? ['data-icon' => 'mbf-'.$roomStatusIcons[$status->getCode()]] : [];
-                },
-                'constraints' => new NotBlank()
-            ])
             ->add('purposeOfArrival', 'choice', [
                 'label' => 'form.packageMainType.arrival_purpose',
                 'required' => false,

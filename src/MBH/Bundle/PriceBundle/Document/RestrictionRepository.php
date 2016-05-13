@@ -14,11 +14,28 @@ class RestrictionRepository extends DocumentRepository
      */
     public function fetchInOut()
     {
+
+        $tariffsIds = $hotelIds = $roomTypeIds = [];
+        foreach ($this->dm->getRepository('MBHPriceBundle:Tariff')->findBy(['deletedAt' => null]) as $tariff) {
+            $tariffsIds[] = $tariff->getId();
+        }
+
+        foreach ($this->dm->getRepository('MBHHotelBundle:Hotel')->findBy(['deletedAt' => null]) as $hotel) {
+            $hotelIds[] = $hotel->getId();
+        }
+
+        foreach ($this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['deletedAt' => null]) as $roomType) {
+            $roomTypeIds[] = $roomType->getId();
+        }
+
         $data = $hotels = [];
         $qb = $this->createQueryBuilder('q');
         $qb
             ->field('date')->gte(new \DateTime('midnight'))
             ->field('date')->lte(new \DateTime('midnight +365 days'))
+            ->field('tariff.id')->in($tariffsIds)
+            ->field('hotel.id')->in($hotelIds)
+            ->field('roomType.id')->in($roomTypeIds)
             ->field('isEnabled')->equals(true)
             ->addOr($qb->expr()->field('closed')->equals(true))
             ->addOr(

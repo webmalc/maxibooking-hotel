@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 
 /**
@@ -47,7 +47,7 @@ class Promotion extends Base implements ConditionsInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="fullTitle")
+     * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
@@ -61,7 +61,7 @@ class Promotion extends Base implements ConditionsInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="title")
+     * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.document.hotel.min_name",
@@ -72,28 +72,28 @@ class Promotion extends Base implements ConditionsInterface
     protected $title;
 
     /**
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @var int
      * @Assert\Range(min=0)
      */
     protected $discount;
 
     /**
-     * @ODM\Bool()
+     * @ODM\Boolean()
      * @var bool
      * @Assert\Type(type="boolean")
      */
     protected $isPercentDiscount;
 
     /**
-     * @ODM\Bool()
+     * @ODM\Boolean()
      * @var bool
      * @Assert\Type(type="boolean")
      */
     protected $isIndividual;
 
     /**
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @var string
      */
     protected $comment;

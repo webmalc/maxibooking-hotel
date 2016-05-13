@@ -3,6 +3,8 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\PriceBundle\Document\TariffChildOptions;
+use MBH\Bundle\PriceBundle\Form\TariffInheritanceType;
 use MBH\Bundle\PriceBundle\Form\TariffPromotionsType;
 use MBH\Bundle\PriceBundle\Form\TariffServicesType;
 use MBH\Bundle\PriceBundle\Form\TariffServiceType;
@@ -44,6 +46,36 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     }
 
     /**
+     * Extend tariff
+     *
+     * @Route("/{id}/inherit", name="tariff_extend")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_TARIFF_EDIT')")
+     * @Template()
+     * @ParamConverter(class="MBHPriceBundle:Tariff")
+     * @param Request $request
+     * @param Tariff $parent
+     * @return array
+     */
+    public function extendAction(Request $request, Tariff $parent)
+    {
+        $tariff = new Tariff();
+        $tariff
+            ->setFullTitle($parent->getFullTitle() . '-дочерний тариф')
+            ->setHotel($parent->getHotel())
+            ->setParent($parent)
+            ->setIsEnabled(false)
+        ;
+        $this->dm->persist($tariff);
+        $this->dm->flush();
+
+        $request->getSession()->getFlashBag()
+            ->set('success', 'Дочерний тариф успешно создан.');
+
+        return $this->redirect($this->generateUrl('tariff_edit', ['id' => $tariff->getId()]));
+    }
+
+    /**
      * Copy tariff
      *
      * @Route("/{id}/copy", name="tariff_copy")
@@ -54,6 +86,10 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      */
     public function copyAction(Request $request, Tariff $parent)
     {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($parent->getHotel()) || $parent->getParent()) {
+            throw $this->createNotFoundException();
+        }
+
         $new = clone $parent;
         $this->dm->persist($new);
         $this->dm->flush();
@@ -227,6 +263,46 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             'entity' => $tariff,
             'form' => $form->createView(),
             'logs' => $this->logs($tariff)
+        ];
+    }
+
+    /**
+     * @Route("/edit/{id}/inheritance", name="tariff_inheritance_edit")
+     * @Method({"GET", "POST"})
+     * @Template()
+     * @ParamConverter(class="MBHPriceBundle:Tariff")
+     * @param  Request $request
+     * @param Tariff $tariff
+     * @return array
+     */
+    public function editInheritanceAction(Request $request, Tariff $tariff)
+    {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($tariff->getHotel()) || !$tariff->getParent()) {
+            throw $this->createNotFoundException();
+        }
+
+
+        $options = $tariff->getChildOptions() ? $tariff->getChildOptions() : new TariffChildOptions() ;
+        $form = $this->createForm(new TariffInheritanceType(), $options, ['parent' => $tariff->getParent()]);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $tariff->setChildOptions($options);
+            $this->dm->persist($tariff);
+            $this->dm->flush();
+
+            $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
+
+            return $this->isSavedRequest() ?
+                $this->redirectToRoute('tariff_inheritance_edit', ['id' => $tariff->getId()]) :
+                $this->redirectToRoute('tariff');
+        }
+
+        return [
+            'tariff' => $tariff,
+            'form' => $form->createView(),
+            'logs' => $this->logs($tariff),
         ];
     }
 

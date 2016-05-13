@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
@@ -37,33 +37,33 @@ class Organization implements PayerInterface, RecipientInterface
      */
     protected $id;
     /**
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Assert\NotBlank
      */
     protected $name;
     /**
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $shortName;
     /**
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $directorFio;
     /**
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $accountantFio;
     /**
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $phone;
     /**
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $email;
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Assert\Length(min=9,max=9)
      * @Assert\Type(type="digit", message="Значение должно быть числом")
      */
@@ -78,27 +78,27 @@ class Organization implements PayerInterface, RecipientInterface
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $registrationNumber;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $activityCode;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $okpoCode;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $writerFio;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $reason;
     /**
@@ -118,56 +118,56 @@ class Organization implements PayerInterface, RecipientInterface
     protected $city;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $street;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $house;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $corpus;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $flat;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $index;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $bank;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $bankBik;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $bankAddress;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $correspondentAccount;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $checkingAccount;
     /**
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Assert\NotBlank
      * @Assert\Choice(
      *      choices = {"contragents", "my"}
@@ -180,7 +180,7 @@ class Organization implements PayerInterface, RecipientInterface
      */
     protected $hotels;
     /**
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $comment;
 

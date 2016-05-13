@@ -141,7 +141,8 @@ class DocumentTemplateController extends BaseController
                     'order' => $order,
                     'hotel' => $hotel,
                     'payer' => $order->getPayer(),
-                    'organization' => $organization
+                    'organization' => $organization,
+                    'user' => $this->getUser()
                 ]
             )
         );

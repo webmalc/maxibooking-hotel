@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 
@@ -57,7 +57,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="fullTitle")
+     * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
@@ -71,7 +71,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="title")
+     * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
      *      minMessage="Слишком короткое имя",
@@ -84,7 +84,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="description")
+     * @ODM\Field(type="string", name="description")
      * @Assert\Length(
      *      min=2,
      *      minMessage="Слишком короткое описание",
@@ -131,7 +131,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0, max=18)
      */
@@ -140,7 +140,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0, max=18)
      */
@@ -169,6 +169,24 @@ class Tariff extends Base implements ConditionsInterface
      * @ODM\EmbedMany(targetDocument="TariffService")
      */
     protected $defaultServices;
+
+    /**
+     * @var TariffChildOptions
+     * @ODM\EmbedOne(targetDocument="TariffChildOptions")
+     */
+    protected $childOptions;
+
+    /** Tariff[]
+     * @ODM\ReferenceMany(targetDocument="Tariff", mappedBy="parent")
+     */
+    protected $children;
+
+    /**
+     * @var Tariff
+     * @Gedmo\Versioned
+     * @ODM\ReferenceOne(targetDocument="Tariff", inversedBy="children")
+     */
+    protected $parent;
 
     public function __construct()
     {
@@ -498,4 +516,60 @@ class Tariff extends Base implements ConditionsInterface
     {
         $this->defaultServices = $defaultServices;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param mixed $parent
+     * @return TariffChildOptions
+     */
+    public function setParent($parent)
+    {
+        $this->parent = $parent;
+        return $this;
+    }
+
+    /**
+     * @return TariffChildOptions
+     */
+    public function getChildOptions()
+    {
+        return $this->childOptions ?: new TariffChildOptions();
+    }
+
+    /**
+     * @param mixed $childOptions
+     * @return Tariff
+     */
+    public function setChildOptions($childOptions)
+    {
+        $this->childOptions = $childOptions;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param mixed $children
+     * @return Tariff
+     */
+    public function setChildren($children)
+    {
+        $this->children = $children;
+        return $this;
+    }
+    
+    
 }

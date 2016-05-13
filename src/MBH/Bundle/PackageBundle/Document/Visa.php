@@ -21,17 +21,17 @@ class Visa extends Base
 {
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $type;
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $series;
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\Type(type="numeric")
      */
     protected $number;
@@ -47,7 +47,7 @@ class Visa extends Base
     protected $expiry;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $profession;
     /**

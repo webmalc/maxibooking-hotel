@@ -8,7 +8,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ODM\EmbeddedDocument
  */
-class Room
+class 
+Room
 {
     /**
      * @var \MBH\Bundle\HotelBundle\Document\RoomType
@@ -19,7 +20,7 @@ class Room
 
     /**
      * @var string
-     * @ODM\String(name="roomId")
+     * @ODM\Field(type="string", name="roomId")
      * @Assert\NotNull()
      */
     protected $roomId;

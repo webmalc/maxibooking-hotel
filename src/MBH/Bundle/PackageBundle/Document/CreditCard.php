@@ -18,13 +18,13 @@ class CreditCard implements \JsonSerializable
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     public $type;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Assert\NotNull(message= "validator.document.card.number")
      * @Assert\Type(type="numeric")
      * @Assert\Length(
@@ -38,7 +38,7 @@ class CreditCard implements \JsonSerializable
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Assert\NotNull(message= "validator.document.card.cardholder")
      */
     public $cardholder;
@@ -46,14 +46,14 @@ class CreditCard implements \JsonSerializable
     /**
      * Date format MM/YYYY
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Assert\NotNull(message= "validator.document.card.date")
      */
     public $date;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Assert\Type(type="numeric")
      */
     public $cvc;

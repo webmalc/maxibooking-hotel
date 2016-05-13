@@ -18,14 +18,14 @@ class OrderPollQuestion
 
     /**
      * @var mixed
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\NotNull()
      */
     public $code;
 
     /**
      * @var mixed
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\NotNull()
      */
     public $value;

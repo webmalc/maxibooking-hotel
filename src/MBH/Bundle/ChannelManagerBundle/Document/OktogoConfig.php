@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
 
 /**
@@ -72,7 +72,7 @@ class OktogoConfig extends Base implements BaseInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\NotNull(message="validator.document.oktogoConfig.no_login_specified")
      */
     protected $login;
@@ -80,7 +80,7 @@ class OktogoConfig extends Base implements BaseInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\NotNull(message="validator.document.oktogoConfig.no_username_specified")
      */
     protected $username;
@@ -88,7 +88,7 @@ class OktogoConfig extends Base implements BaseInterface
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\NotNull(message="validator.document.oktogoConfig.no_password_specified")
      */
     protected $password;
