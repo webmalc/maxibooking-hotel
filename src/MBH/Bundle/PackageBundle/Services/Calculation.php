@@ -22,12 +22,12 @@ class Calculation
 {
 
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface 
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
 
     /**
-     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry 
+     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry
      */
     protected $dm;
 
@@ -163,17 +163,38 @@ class Calculation
             $defaultTariff = $tariff;
         }
 
+        # mergingTariffs
+        $mergingTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')->findBy([
+            'defaultForMerging' => true, 'isDefault' => false]);
+
+        $mergingTariffsPrices = $this->dm->getRepository('MBHPriceBundle:PriceCache')
+            ->fetch(
+                $begin, $end, $hotel, [$roomTypeId],
+                $this->container->get('mbh.helper')->toIds($mergingTariffs),
+                true, $this->manager->useCategories
+            );
+
+
         if (!isset($priceCaches[$roomTypeId][$tariffId])) {
             return false;
         }
 
         $caches = [];
         foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $endPlus) as $cacheDay) {
-            $cacheDayStr =  $cacheDay->format('d.m.Y');
+            $cacheDayStr = $cacheDay->format('d.m.Y');
 
             if (isset($priceCaches[$roomTypeId][$tariffId][$cacheDayStr])) {
                 $caches[$cacheDayStr] = $priceCaches[$roomTypeId][$tariffId][$cacheDayStr];
-            } elseif (isset($defaultPriceCaches[$roomTypeId][$defaultTariff->getId()][$cacheDayStr])) {
+            } else {
+                foreach ($mergingTariffs as $mergingTariff) {
+                    if (isset($mergingTariffsPrices[$roomTypeId][$mergingTariff->getId()][$cacheDayStr])) {
+                        $caches[$cacheDayStr] = $mergingTariffsPrices[$roomTypeId][$mergingTariff->getId()][$cacheDayStr];
+                        break;
+                    }
+                }
+            }
+
+            if (empty($caches[$cacheDayStr]) && isset($defaultPriceCaches[$roomTypeId][$defaultTariff->getId()][$cacheDayStr])) {
                 $caches[$cacheDayStr] = $defaultPriceCaches[$roomTypeId][$defaultTariff->getId()][$cacheDayStr];
             }
         }
@@ -253,7 +274,7 @@ class Calculation
                         $childrenPrice = $mainChildren * $cache->getPrice();
                     }
                     if ($promoConditions && $childrenDiscount) {
-                        $childrenPrice  = $childrenPrice * (100 - $childrenDiscount) / 100;
+                        $childrenPrice = $childrenPrice * (100 - $childrenDiscount) / 100;
                     }
                     $dayPrice += $mainAdults * $cache->getPrice() + $childrenPrice;
                 } else {
