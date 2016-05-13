@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 
 /**
@@ -41,7 +41,7 @@ class Record extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\Choice(
      *      choices = {"in", "out"},
      *      message = "validator.warehouse.record.wrongOperation"
@@ -63,7 +63,7 @@ class Record extends Base
     protected $wareItem;
     /**
      * @var float
-     * @ODM\Float(name="price")
+     * @ODM\Field(type="float", name="price")
      * @Assert\Type(type="numeric")
      * @Gedmo\Versioned
      * @Assert\Range(
@@ -74,7 +74,7 @@ class Record extends Base
     protected $price;    
     /**
      * @var float
-     * @ODM\Float(name="qtty")
+     * @ODM\Field(type="float", name="qtty")
      * @Assert\Type(type="numeric")
      * @Gedmo\Versioned
      * @Assert\Range(
@@ -85,7 +85,7 @@ class Record extends Base
     protected $qtty;	
     /**
      * @var float
-     * @ODM\Float(name="amount")
+     * @ODM\Field(type="float", name="amount")
      * @Assert\Type(type="numeric")
      * @Gedmo\Versioned
      * @Assert\Range(

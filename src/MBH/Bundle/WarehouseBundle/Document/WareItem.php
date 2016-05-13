@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 /**
  * @ODM\Document(collection="WareItems")
@@ -50,7 +50,7 @@ class WareItem extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="fullTitle")
+     * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
@@ -64,7 +64,7 @@ class WareItem extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="title")
+     * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.tooshortname",
@@ -77,7 +77,7 @@ class WareItem extends Base
     /**
      * @var float
      * @Gedmo\Versioned
-     * @ODM\Float(name="price")
+     * @ODM\Field(type="float", name="price")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -89,7 +89,7 @@ class WareItem extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="unit")
+     * @ODM\Field(type="string", name="unit")
      * @Assert\Length(
      *      min=2,
      *      minMessage="validator.tooshorttitle",
