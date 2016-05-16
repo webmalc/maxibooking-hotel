@@ -42,7 +42,8 @@
     "ornicar/gravatar-bundle": "^1.1@dev",
     "doctrine/doctrine-fixtures-bundle": "^2.2@dev",
     "myallocator/myallocator-php-sdk": "dev-master",
-    "leafo/scssphp": "^0.6.3"
+    "leafo/scssphp": "^0.6.3",
+    "alcaeus/mongo-php-adapter": "^1.0"
   },
   "require-dev": {
     "sensio/generator-bundle": "~2.3"

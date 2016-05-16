@@ -14,6 +14,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Zend\Stdlib\JsonSerializable;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 /**
  * @ODM\Document(collection="Packages", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageRepository")
@@ -21,6 +22,7 @@ use MBH\Bundle\PackageBundle\Lib\PayerInterface;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
+ * @MongoDBUnique(fields="numberWithPrefix", message="Такой номер брони уже существует")
  */
 class Package extends Base implements JsonSerializable
 {
@@ -86,6 +88,8 @@ class Package extends Base implements JsonSerializable
      * @ODM\Field(type="string")
      */
     protected $externalNumber;
+
+    
 
     /**
      * @var int

@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Form;
 
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -140,6 +141,15 @@ class TariffType extends AbstractType
                     'help' => 'До какого возраста клиент считается инфантом?'
                 ]
             )
+            ->add('defaultForMerging', CheckboxType::class, [
+                'label' => 'Основной для комбинорования?',
+                'group' => 'Настройки',
+                'value' => true,
+                'required' => false,
+                'help' =>
+                    'Использовать для комбинирования тарифов в переходных периодах?<br>
+                     По-молчанию спец. тарифы комбинируются с основным тарифом'
+            ])
             ->add('isEnabled', 'checkbox', [
                 'label' => 'Включен?',
                 'group' => 'Настройки',

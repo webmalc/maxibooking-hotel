@@ -188,6 +188,15 @@ class Tariff extends Base implements ConditionsInterface
      */
     protected $parent;
 
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $defaultForMerging = false;
+
     public function __construct()
     {
         $this->promotions = new ArrayCollection();
@@ -568,6 +577,25 @@ class Tariff extends Base implements ConditionsInterface
     public function setChildren($children)
     {
         $this->children = $children;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isDefaultForMerging(): bool
+    {
+        return $this->defaultForMerging;
+    }
+
+    /**
+     * @param boolean $defaultForMerging
+     * @return Tariff
+     */
+    public function setDefaultForMerging(bool $defaultForMerging)
+    {
+        $this->defaultForMerging = $defaultForMerging;
+
         return $this;
     }
     

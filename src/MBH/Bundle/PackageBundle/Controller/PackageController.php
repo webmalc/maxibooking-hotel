@@ -224,7 +224,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
         $entities = $this->dm->getRepository('MBHPackageBundle:Package')->fetch($data);
         $summary = $this->dm->getRepository('MBHPackageBundle:Package')->fetchSummary($data);
-
+        
         return [
             'entities' => $entities,
             'total' => $entities->count(),

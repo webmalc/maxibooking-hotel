@@ -4,9 +4,72 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "03d2007456ac13ff8d127eb437337227",
-    "content-hash": "9031a80e21c0bb9c388705618affff87",
+    "hash": "bfbba81f84ea3078b0e1a35750106bf8",
+    "content-hash": "7270441a45b679c1a71a34dbcdfb93ea",
     "packages": [
+        {
+            "name": "alcaeus/mongo-php-adapter",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/alcaeus/mongo-php-adapter.git",
+                "reference": "25bee0fa35a95db0c954653b636ff98c5af4373a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/alcaeus/mongo-php-adapter/zipball/25bee0fa35a95db0c954653b636ff98c5af4373a",
+                "reference": "25bee0fa35a95db0c954653b636ff98c5af4373a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-hash": "*",
+                "mongodb/mongodb": "^1.0.1",
+                "php": "^5.5 || ^7.0"
+            },
+            "provide": {
+                "ext-mongo": "1.6.13"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8 || ^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Mongo": "lib/Mongo"
+                },
+                "psr-4": {
+                    "Alcaeus\\MongoDbAdapter\\": "lib/Alcaeus/MongoDbAdapter"
+                },
+                "files": [
+                    "lib/Mongo/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "alcaeus",
+                    "email": "alcaeus@alcaeus.org"
+                },
+                {
+                    "name": "Olivier Lechevalier",
+                    "email": "olivier.lechevalier@gmail.com"
+                }
+            ],
+            "description": "Adapter to provide ext-mongo interface on top of mongo-php-libary",
+            "keywords": [
+                "database",
+                "mongodb"
+            ],
+            "time": "2016-04-18 14:44:33"
+        },
         {
             "name": "behat/transliterator",
             "version": "dev-master",
@@ -2576,135 +2639,64 @@
             "time": "2014-12-01 08:29:51"
         },
         {
-            "name": "mongofill/mongofill",
+            "name": "mongodb/mongodb",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/mongofill/mongofill.git",
-                "reference": "c2a16b7cb6c8fa94aa4c286acd8b4a90c3a843f5"
+                "url": "https://github.com/mongodb/mongo-php-library.git",
+                "reference": "9e443408328d7e28df3f02a1cefbd9e190a6c977"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mongofill/mongofill/zipball/c2a16b7cb6c8fa94aa4c286acd8b4a90c3a843f5",
-                "reference": "c2a16b7cb6c8fa94aa4c286acd8b4a90c3a843f5",
+                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/9e443408328d7e28df3f02a1cefbd9e190a6c977",
+                "reference": "9e443408328d7e28df3f02a1cefbd9e190a6c977",
                 "shasum": ""
             },
-            "provide": {
-                "ext-mongo": "*"
-            },
-            "require-dev": {
-                "athletic/athletic": "dev-master",
-                "phpunit/phpunit": "~4.7.7"
+            "require": {
+                "ext-mongodb": "^1.1.0",
+                "php": ">=5.4"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
             "autoload": {
-                "classmap": [
-                    {
-                        "Mongofill": "src/"
-                    },
-                    {
-                        "Mongo": "src/Mongo.php"
-                    },
-                    {
-                        "MongoBinData": "src/MongoBinData.php"
-                    },
-                    {
-                        "MongoClient": "src/MongoClient.php"
-                    },
-                    {
-                        "MongoCode": "src/MongoCode.php"
-                    },
-                    {
-                        "MongoCollection": "src/MongoCollection.php"
-                    },
-                    {
-                        "MongoConnectionException": "src/MongoConnectionException.php"
-                    },
-                    {
-                        "MongoCursor": "src/MongoCursor.php"
-                    },
-                    {
-                        "MongoCursorException": "src/MongoCursorException.php"
-                    },
-                    {
-                        "MongoCursorTimeoutException": "src/MongoCursorTimeoutException.php"
-                    },
-                    {
-                        "MongoDB": "src/MongoDB.php"
-                    },
-                    {
-                        "MongoDBRef": "src/MongoDBRef.php"
-                    },
-                    {
-                        "MongoDate": "src/MongoDate.php"
-                    },
-                    {
-                        "MongoException": "src/MongoException.php"
-                    },
-                    {
-                        "MongoGridFS": "src/MongoGridFS.php"
-                    },
-                    {
-                        "MongoGridFSFile": "src/MongoGridFSFile.php"
-                    },
-                    {
-                        "MongoGridFSException": "src/MongoGridFSException.php"
-                    },
-                    {
-                        "MongoGridFSCursor": "src/MongoGridFSCursor.php"
-                    },
-                    {
-                        "MongoId": "src/MongoId.php"
-                    },
-                    {
-                        "MongoInt32": "src/MongoInt32.php"
-                    },
-                    {
-                        "MongoInt64": "src/MongoInt64.php"
-                    },
-                    {
-                        "MongoLog": "src/MongoLog.php"
-                    },
-                    {
-                        "MongoMaxKey": "src/MongoMaxKey.php"
-                    },
-                    {
-                        "MongoMinKey": "src/MongoMinKey.php"
-                    },
-                    {
-                        "MongoRegex": "src/MongoRegex.php"
-                    },
-                    {
-                        "MongoResultException": "src/MongoResultException.php"
-                    },
-                    {
-                        "MongoTimestamp": "src/MongoTimestamp.php"
-                    }
-                ],
+                "psr-4": {
+                    "MongoDB\\": "src/"
+                },
                 "files": [
                     "src/functions.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "Apache-2.0"
             ],
             "authors": [
                 {
-                    "name": "Jakub Husák",
-                    "email": "husak.j@gmail.com"
+                    "name": "Jeremy Mikola",
+                    "email": "jmikola@gmail.com"
                 },
                 {
-                    "name": "Mongofill Community",
-                    "homepage": "https://github.com/mongofill/mongofill/graphs/contributors"
+                    "name": "Hannes Magnusson",
+                    "email": "bjori@mongodb.com"
                 },
                 {
-                    "name": "Máximo Cuadros",
-                    "email": "mcuadros@gmail.com"
+                    "name": "Derick Rethans",
+                    "email": "github@derickrethans.nl"
                 }
             ],
-            "description": "Polyfill of PECL Mongo extension",
-            "time": "2015-08-22 21:39:36"
+            "description": "MongoDB driver library",
+            "homepage": "https://jira.mongodb.org/browse/PHPLIB",
+            "keywords": [
+                "database",
+                "driver",
+                "mongodb",
+                "persistence"
+            ],
+            "time": "2016-04-01 14:27:47"
         },
         {
             "name": "monolog/monolog",
@@ -4550,7 +4542,6 @@
         "symfony/monolog-bundle": 0,
         "sensio/distribution-bundle": 0,
         "incenteev/composer-parameter-handler": 0,
-        "mongofill/mongofill": 20,
         "doctrine/mongodb": 0,
         "doctrine/mongodb-odm": 0,
         "doctrine/mongodb-odm-bundle": 0,
