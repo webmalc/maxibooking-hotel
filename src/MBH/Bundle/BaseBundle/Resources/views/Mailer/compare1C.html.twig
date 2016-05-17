@@ -2,7 +2,14 @@
 
 {% block text %}
 
-    <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+    {% if error is defined %}
+        <p style="font-size: 32px; color: maroon; font-weight: bold; text-align: center;">
+            Ошибка!<br>
+            {{ error }}
+        </p>
+    {% endif %}
+
+    <!--<table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
     <thead>
     <tr>
         <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:12%;">
@@ -46,5 +53,6 @@
             </tr>
         </tbody>
     <tbody>
+    </table>-->
 
 {% endblock %}

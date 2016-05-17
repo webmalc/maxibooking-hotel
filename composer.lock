@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "bfbba81f84ea3078b0e1a35750106bf8",
-    "content-hash": "7270441a45b679c1a71a34dbcdfb93ea",
+    "hash": "c5e353f58468093efc6e42fe066904f0",
+    "content-hash": "d9762c6e6b3f92ebd41a8d6d0bd9d751",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -743,7 +743,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/90b2128806bfde671b6952ab8bea493942c1fdae",
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/803a2ed9fea02f9ca47cd45395089fe78769a392",
                 "reference": "90b2128806bfde671b6952ab8bea493942c1fdae",
                 "shasum": ""
             },
@@ -1207,7 +1207,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/c85b5d9e48c0f2918ac6161e268d6f981a24c875",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/abb35b94ed8ec78a504c9e1a2cd803d85d3ffad9",
                 "reference": "3efbc08a97f218d0a4524dee926fc4381e3d0947",
                 "shasum": ""
             },
@@ -1266,30 +1266,29 @@
         },
         {
             "name": "gedmo/doctrine-extensions",
-            "version": "v2.4.13",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Atlantic18/DoctrineExtensions.git",
-                "reference": "5f4b6c848f0d6834a434a62a09a0935d147082e1"
+                "reference": "38761d38a636dac5dacc9e138fd02ebda1985cc9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Atlantic18/DoctrineExtensions/zipball/5f4b6c848f0d6834a434a62a09a0935d147082e1",
-                "reference": "5f4b6c848f0d6834a434a62a09a0935d147082e1",
+                "url": "https://api.github.com/repos/Atlantic18/DoctrineExtensions/zipball/38761d38a636dac5dacc9e138fd02ebda1985cc9",
+                "reference": "38761d38a636dac5dacc9e138fd02ebda1985cc9",
                 "shasum": ""
             },
             "require": {
                 "behat/transliterator": "~1.0",
                 "doctrine/common": "~2.4",
-                "php": ">=5.3.2"
+                "php": ">=5.4"
             },
             "require-dev": {
                 "doctrine/common": ">=2.5.0",
                 "doctrine/mongodb-odm": ">=1.0.2",
                 "doctrine/orm": ">=2.5.0",
-                "phpunit/phpunit": "~4.4",
-                "phpunit/phpunit-mock-objects": "~2.3",
-                "symfony/yaml": "~2.6"
+                "phpunit/phpunit": "*",
+                "symfony/yaml": "~2.6|~3.0"
             },
             "suggest": {
                 "doctrine/mongodb-odm": "to use the extensions with the MongoDB ODM",
@@ -1298,7 +1297,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.4.x-dev"
+                    "dev-master": "3.0.x-dev"
                 }
             },
             "autoload": {
@@ -1341,7 +1340,7 @@
                 "tree",
                 "uploadable"
             ],
-            "time": "2016-02-18 15:33:43"
+            "time": "2016-05-13 09:56:03"
         },
         {
             "name": "guzzle/guzzle",
@@ -2697,6 +2696,137 @@
                 "persistence"
             ],
             "time": "2016-04-01 14:27:47"
+        },
+        {
+            "name": "mongofill/mongofill",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mongofill/mongofill.git",
+                "reference": "c2a16b7cb6c8fa94aa4c286acd8b4a90c3a843f5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mongofill/mongofill/zipball/c2a16b7cb6c8fa94aa4c286acd8b4a90c3a843f5",
+                "reference": "c2a16b7cb6c8fa94aa4c286acd8b4a90c3a843f5",
+                "shasum": ""
+            },
+            "provide": {
+                "ext-mongo": "*"
+            },
+            "require-dev": {
+                "athletic/athletic": "dev-master",
+                "phpunit/phpunit": "~4.7.7"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    {
+                        "Mongofill": "src/"
+                    },
+                    {
+                        "Mongo": "src/Mongo.php"
+                    },
+                    {
+                        "MongoBinData": "src/MongoBinData.php"
+                    },
+                    {
+                        "MongoClient": "src/MongoClient.php"
+                    },
+                    {
+                        "MongoCode": "src/MongoCode.php"
+                    },
+                    {
+                        "MongoCollection": "src/MongoCollection.php"
+                    },
+                    {
+                        "MongoConnectionException": "src/MongoConnectionException.php"
+                    },
+                    {
+                        "MongoCursor": "src/MongoCursor.php"
+                    },
+                    {
+                        "MongoCursorException": "src/MongoCursorException.php"
+                    },
+                    {
+                        "MongoCursorTimeoutException": "src/MongoCursorTimeoutException.php"
+                    },
+                    {
+                        "MongoDB": "src/MongoDB.php"
+                    },
+                    {
+                        "MongoDBRef": "src/MongoDBRef.php"
+                    },
+                    {
+                        "MongoDate": "src/MongoDate.php"
+                    },
+                    {
+                        "MongoException": "src/MongoException.php"
+                    },
+                    {
+                        "MongoGridFS": "src/MongoGridFS.php"
+                    },
+                    {
+                        "MongoGridFSFile": "src/MongoGridFSFile.php"
+                    },
+                    {
+                        "MongoGridFSException": "src/MongoGridFSException.php"
+                    },
+                    {
+                        "MongoGridFSCursor": "src/MongoGridFSCursor.php"
+                    },
+                    {
+                        "MongoId": "src/MongoId.php"
+                    },
+                    {
+                        "MongoInt32": "src/MongoInt32.php"
+                    },
+                    {
+                        "MongoInt64": "src/MongoInt64.php"
+                    },
+                    {
+                        "MongoLog": "src/MongoLog.php"
+                    },
+                    {
+                        "MongoMaxKey": "src/MongoMaxKey.php"
+                    },
+                    {
+                        "MongoMinKey": "src/MongoMinKey.php"
+                    },
+                    {
+                        "MongoRegex": "src/MongoRegex.php"
+                    },
+                    {
+                        "MongoResultException": "src/MongoResultException.php"
+                    },
+                    {
+                        "MongoTimestamp": "src/MongoTimestamp.php"
+                    }
+                ],
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jakub Husák",
+                    "email": "husak.j@gmail.com"
+                },
+                {
+                    "name": "Mongofill Community",
+                    "homepage": "https://github.com/mongofill/mongofill/graphs/contributors"
+                },
+                {
+                    "name": "Máximo Cuadros",
+                    "email": "mcuadros@gmail.com"
+                }
+            ],
+            "description": "Polyfill of PECL Mongo extension",
+            "time": "2015-08-22 21:39:36"
         },
         {
             "name": "monolog/monolog",
@@ -4281,7 +4411,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/f167cc0a65ab0a2a53558c9385b4a324c1a36b02",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/71ad9ff322e9ef99465ccc26f704d706d76e0eea",
                 "reference": "db93842e80d758f6c74c3e1f1f088badb3fc84f0",
                 "shasum": ""
             },
@@ -4532,7 +4662,14 @@
             "time": "2015-05-05 01:52:20"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "2.4.13",
+            "alias_normalized": "2.4.13.0",
+            "version": "9999999-dev",
+            "package": "gedmo/doctrine-extensions"
+        }
+    ],
     "minimum-stability": "dev",
     "stability-flags": {
         "symfony/symfony": 0,
@@ -4542,6 +4679,7 @@
         "symfony/monolog-bundle": 0,
         "sensio/distribution-bundle": 0,
         "incenteev/composer-parameter-handler": 0,
+        "mongofill/mongofill": 20,
         "doctrine/mongodb": 0,
         "doctrine/mongodb-odm": 0,
         "doctrine/mongodb-odm-bundle": 0,

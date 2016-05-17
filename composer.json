@@ -24,7 +24,7 @@
     "doctrine/mongodb": "*@stable",
     "doctrine/mongodb-odm": "*@stable",
     "doctrine/mongodb-odm-bundle": "*@stable",
-    "gedmo/doctrine-extensions": "2.4.13@dev",
+    "gedmo/doctrine-extensions": "dev-master as 2.4.13",
     "stof/doctrine-extensions-bundle": "dev-master",
     "friendsofsymfony/user-bundle": "*@dev",
     "friendsofsymfony/jsrouting-bundle": "*@stable",
