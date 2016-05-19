@@ -13,10 +13,12 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
     const FILE_PATH = '/../protectedUpload/1C/';
 
     const HOTELS = [
-        1 => 'Пансионат АзовЛенд',
-        2 => 'Пансионат Азовский',
+        1 => 'Пансионат Азовский',
+        2 => 'Пансионат АзовЛенд',
         3 => 'Парк - отель "РИО"'
     ];
+
+    private $result = [];
 
     protected function configure()
     {
@@ -30,11 +32,16 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
     {
         $start = new \DateTime();
 
-        $result = $this->compare();
+        $completed = $this->compare();
 
         $time = $start->diff(new \DateTime());
         $output->writeln(
-            sprintf('Compare %s. Elapsed time: %s', $result ? 'complete' : 'aborted', $time->format('%H:%I:%S'))
+            sprintf(
+                'Compare %s. Elapsed time: %s. Errors: %s',
+                $completed ? 'completed' : 'aborted',
+                $time->format('%H:%I:%S'),
+                count($this->result)
+                )
         );
     }
 
@@ -43,7 +50,6 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
         $path = $uploadedPath = $this->getContainer()->get('kernel')->getRootDir() . '/../protectedUpload/1C/1c_compare.xml';
         $helper = $this->getContainer()->get('mbh.helper');
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-
 
         if (!file_exists($path) || !is_readable($path)) {
             $this->sendMessage([
@@ -71,12 +77,13 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
             }
 
             $hotel = $dm->getRepository('MBHHotelBundle:Hotel')->findOneBy([
+                'deletedAt' => null,
                 '$or' => [['title' => self::HOTELS[(int)$hotelXml->ID]], ['fullTitle' => self::HOTELS[(int)$hotelXml->ID]]]
             ]);
 
             if (!$hotel) {
                 $this->sendMessage([
-                    'error' => 'Не найден отель <' + $hotel + '>.'
+                    'error' => 'Не найден отель <' + $hotelXml->TITLE + '>.'
                 ]);
 
                 return false;
@@ -89,9 +96,46 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
                 $roomType = $dm->getRepository('MBHHotelBundle:RoomType')->findOneBy([
                     '$or' => [['title' => (string)$roomXml->TITLE], ['fullTitle' => (string)$roomXml->TITLE]]
                 ]);
-                dump((string)$roomXml->TITLE);
+
+                if (!$roomType) {
+                    $this->sendMessage([
+                        'error' => 'Не найден тип номера <' + $roomXml->TITLE + '>.'
+                    ]);
+                }
+
+                foreach ($roomXml->ENTRY as $entryXml) {
+                    $entry = new \stdClass();
+                    $date = (string)$entryXml->DATE;
+                    $entry->date = $helper->getDateFromString($date);
+                    $entry->roomType = $roomType;
+                    $entry->total = (int)$entryXml->TOTAL;
+                    $entry->sold = (int)$entryXml->SOLD;
+                    $entry->remain = (int)$entryXml->REMAIN;
+
+                    if (!$entry->total){
+                        continue;
+                    }
+
+                    if (empty($caches[$roomType->getId()][0][$date])) {
+                        $entry->totalMB = 0;
+                        $entry->soldMB = 0;
+                        $entry->remainMB = 0;
+                        $this->result[] = $entry;
+                    } else {
+                        $cache = $caches[$roomType->getId()][0][$date];
+
+                        if ($cache->getleftRooms() != $entry->remain) {
+                            $entry->totalMB = $cache->getTotalRooms();
+                            $entry->soldMB = $cache->getPackagesCount();
+                            $entry->remainMB = $cache->getleftRooms();
+                            $this->result[] = $entry;
+                        }
+                    }
+                }
             }
         }
+
+        $this->sendMessage(['result' => $this->result]);
 
         return true;
     }
