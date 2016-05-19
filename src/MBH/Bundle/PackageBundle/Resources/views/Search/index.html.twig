@@ -52,10 +52,19 @@
                     </a>
                 </small>
             </div>
+            {% if config and not config.isInstantSearch %}
+                <div class="input">
+                    <button class="btn btn-primary" id="search-submit-button">
+                        <i class="fa fa-search"></i> Найти
+                    </button>
+                </div>
+            {% endif %}
 
             <div class="hide">
                 {{ form_end(form) }}
             </div>
+
+
         {% endblock content %}
     {% endembed %}
 
