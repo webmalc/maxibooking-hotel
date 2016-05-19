@@ -135,8 +135,8 @@ $(document).ready(function () {
         ulPrices.find('li.' + touristVal + '_price').show();
         ulPrices.show();
         var oldHref = this.$packageSearchBook.prop('href')
-            .replace(/&adults=.*?(?=(&|$))/, '')
-            .replace(/&children=.*?(?=(&|$))/, '')
+                .replace(/&adults=.*?(?=(&|$))/, '')
+                .replace(/&children=.*?(?=(&|$))/, '')
             ;
 
         this.$packageSearchBook.prop('href', oldHref + '&adults=' + touristArr[0] + '&children=' + touristArr[1]);
@@ -317,33 +317,11 @@ $(document).ready(function () {
         }
     };
 
-    if (icon.length) {
-        icon.popover({
-            html: true,
-            placement: 'top',
-            trigger: 'manual',
-            content: ''
-        });
-        icon.on('shown.bs.popover', function () {
-            $('.children_age').change(sendForm);
-        });
-        icon.on('hidden.bs.popover', function () {
-            sendForm();
-        });
-        childrenInput.change(function () {
-            changePopover();
-            $('.children_age').change(sendForm);
-        });
-        changePopover();
-    }
-
-
     var sendForm = function () {
 
         setTimeout(
-            function()
-            {
-                if (!$('#s_begin').val() || !$('#s_end').val() || createDate($('#s_begin')) >= createDate($('#s_end'))){
+            function () {
+                if (!$('#s_begin').val() || !$('#s_end').val() || createDate($('#s_begin')) >= createDate($('#s_end'))) {
                     return;
                 }
                 //var wrapper = $('#package-search-results-wrapper');
@@ -368,10 +346,31 @@ $(document).ready(function () {
         window.location.hash = '';
     }
 
-    sendForm();
 
-    $packageSearchForm.find('input, select').not('.daterangepicker-input').on('change switchChange.bootstrapSwitch', sendForm);
+    if (icon.length) {
+        icon.popover({
+            html: true,
+            placement: 'top',
+            trigger: 'manual',
+            content: ''
+        });
+        changePopover();
+    }
 
+    if (!$('#search-submit-button').length) {
+        sendForm();
+        $packageSearchForm.find('input, select').not('.daterangepicker-input').on('change switchChange.bootstrapSwitch', sendForm);
+        icon.on('shown.bs.popover', function () {
+            $('.children_age').change(sendForm);
+        });
+        icon.on('hidden.bs.popover', function () {
+            sendForm();
+        });
+        childrenInput.change(function () {
+            changePopover();
+            $('.children_age').change(sendForm);
+        });
+    }
     $packageSearchForm.on('submit', function (e) {
         e.preventDefault();
         sendForm()

@@ -129,6 +129,15 @@ class ClientConfig extends Base
     protected $failUrl;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isInstantSearch = true;
+
+    /**
      * Set sendSms
      *
      * @param boolean $isSendSms
@@ -400,5 +409,23 @@ class ClientConfig extends Base
         return $this;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isIsInstantSearch()
+    {
+        return $this->isInstantSearch;
+    }
 
+    /**
+     * @param boolean $isInstantSearch
+     * @return ClientConfig
+     */
+    public function setIsInstantSearch($isInstantSearch)
+    {
+        $this->isInstantSearch = $isInstantSearch;
+        return $this;
+    }
+
+    
 }
