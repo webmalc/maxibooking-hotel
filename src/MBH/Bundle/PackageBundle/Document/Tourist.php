@@ -611,13 +611,13 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     }
 
     /**
-     * Get age
-     * @return int
+     * @param \DateTime|null $date
+     * @return int|null
      */
-    public function getAge()
+    public function getAge(\DateTime $date = null)
     {
         if ($this->getBirthday()) {
-            $now = new \DateTime();
+            $now = $date ?? new \DateTime();
             $diff = $now->diff($this->getBirthday());
 
             return $diff->y;

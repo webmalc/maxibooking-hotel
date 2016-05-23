@@ -17,6 +17,7 @@ use MBH\Bundle\HotelBundle\Service\HotelManager;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\PackageSource;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\TouristRepository;
@@ -47,6 +48,71 @@ class OrderExportCommand extends ContainerAwareCommand
         return $this->getContainer()->get('file_locator')->locate('@MBHOnlineBookingBundle/Resources/data/FullReportsTourists.csv');
     }
 
+    /**
+     * @param string $number
+     * @param string $name
+     * @param \DateTime $birthday
+     * @param string|null $email
+     * @param string|null $phone
+     * @param string|null $address
+     * @return bool
+     */
+    private function addTouristToPackage(
+        string $number,
+        string $name,
+        \DateTime $birthday,
+        string $email = null,
+        string $phone = null,
+        string $address = null): bool
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
+        $package = $dm->getRepository('MBHPackageBundle:Package')->findOneBy(
+            ['$or' => [['externalNumber' => $number], ['numberWithPrefix' => $number]]]);
+
+        if (empty($package)) {
+            return false;
+        }
+        $fioData = explode(' ', trim($name));
+        $lastName = $fioData[0];
+        $firstName = $fioData[1] ?? 'none';
+        $patronymic = $fioData[2] ?? null;
+
+
+        $tourist = $dm->getRepository(Tourist::class)->fetchOrCreate(
+            $lastName, $firstName, $patronymic, $birthday, $email, $phone);
+
+        $tariff = $dm->getRepository(Tariff::class)->fetchBaseTariff($package->getRoomType()->getHotel());
+
+        if ($tourist->getAge($package->getBegin()) < $tariff->getInfantAge()) {
+            //add infants
+            $service = $dm->getRepository('MBHPriceBundle:Service')->findOneByCode($package->getTariff(), 'Infant');
+
+            if ($service) {
+                $infantService = new PackageService();
+                $infantService
+                    ->setAmount(1)
+                    ->setNights($package->getNights())
+                    ->setPersons(1)
+                    ->setService($service)
+                    ->setPackage($package)
+                    ->setPrice($service->getPrice());
+                $package->addService($infantService);
+                $dm->persist($package);
+                $dm->persist($infantService);
+            }
+        }
+
+        if ($address) {
+            $tourist->setNote($tourist->getNote() . "\n" . $address);
+            $dm->persist($tourist);
+        }
+
+        $package->addTourist($tourist);
+        $dm->persist($package);
+        $dm->flush();
+
+        return true;
+    }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -80,13 +146,15 @@ class OrderExportCommand extends ContainerAwareCommand
 
         $minDate = null;
         $maxDate = null;
+        $prevNumber = null;
 
         $packages = [];
 
-        $rowNum=0;
+        $rowNum = 0;
         while (($data = fgetcsv($resource, null, ",")) !== false) {
-            $output->writeln('<info>Row #' . $rowNum. '</info>');
+            $output->writeln('<info>Row #' . $rowNum . '</info>');
             $rowNum++;
+
             if (count($data) < 34) {
                 continue;
             }
@@ -94,6 +162,16 @@ class OrderExportCommand extends ContainerAwareCommand
             $data = array_map('trim', $data);
             $index = $data[0];
             $number = $data[1];
+
+            $guest = $data['7'];
+
+            if (!empty($guest)) {
+                $this->addTouristToPackage(
+                    $number, $guest, new \DateTime($data['11']),
+                    $data['9'] ?? null, $data['10'] ?? null, $data['8'] ?? null
+                );
+                continue;
+            }
 
             if ($dm->getRepository('MBHPackageBundle:Package')->findOneBy(
                 ['$or' => [['externalNumber' => $number], ['numberWithPrefix' => $number]]])
@@ -279,7 +357,7 @@ class OrderExportCommand extends ContainerAwareCommand
                     $roomTypeCategory->setTitle($roomTypeCategoryTitle)->setFullTitle($roomTypeCategoryTitle);
                     $roomTypeCategory->setHotel($hotel)->setCreatedBy('import');
                     $dm->persist($roomTypeCategory);
-                    $output->writeln('Добавлена новая категория "'. $roomTypeCategory->getTitle() . '"');
+                    $output->writeln('Добавлена новая категория "' . $roomTypeCategory->getTitle() . '"');
                 }
 
                 $roomType = $roomTypeRepository->findOneBy(['title' => $roomTypeName, 'hotel.id' => $hotel->getId()]);
@@ -289,7 +367,7 @@ class OrderExportCommand extends ContainerAwareCommand
                     $roomType->setTitle($roomTypeName)->setFullTitle($roomTypeName);
                     $roomType->setCategory($roomTypeCategory)->setCreatedBy('import');
                     $dm->persist($roomType);
-                    $output->writeln('Добавлен новый тип номера "'. $roomTypeCategory->getTitle() . '". Не забудте добавить количесво мест.');
+                    $output->writeln('Добавлен новый тип номера "' . $roomTypeCategory->getTitle() . '". Не забудте добавить количесво мест.');
                 }
 
                 $package->setRoomType($roomType);
@@ -299,7 +377,7 @@ class OrderExportCommand extends ContainerAwareCommand
             $dm->persist($package);
             $dm->flush();
             $dm->clear($order);
-            if(isset($cashDocument)) {
+            if (isset($cashDocument)) {
                 $dm->clear($cashDocument);
             }
 
@@ -321,8 +399,7 @@ class OrderExportCommand extends ContainerAwareCommand
                     ->setTitle($sourceTitle)
                     ->setFullTitle($sourceTitle)
                     ->setCreatedBy('import')
-                    ->setIsEnabled(true)
-                ;
+                    ->setIsEnabled(true);
                 $dm->persist($source);
                 $dm->flush();
             }
