@@ -16,13 +16,13 @@ class TripRoute implements \JsonSerializable
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $address;
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $hotel;
 

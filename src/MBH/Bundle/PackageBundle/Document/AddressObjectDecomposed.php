@@ -21,17 +21,17 @@ class AddressObjectDecomposed
     protected $country;
     /**
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $city;
     /**
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $zipCode;
     /**
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $district;
 
@@ -44,41 +44,41 @@ class AddressObjectDecomposed
     /**
      * Населенный пункт
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $settlement;
     /**
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $urbanArea;
     /**
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $street;
 
     /**
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $corpus;
 
     /**
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $house;
 
     /**
      * @var String
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $flat;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $addressObject;
 

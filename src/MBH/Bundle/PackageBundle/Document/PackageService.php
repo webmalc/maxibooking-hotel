@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 /**
  * @ODM\Document(collection="PackageService")
@@ -55,7 +55,7 @@ class PackageService extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\NotNull()
      * @Assert\Range(
@@ -68,7 +68,7 @@ class PackageService extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      */
     protected $total;
@@ -77,7 +77,7 @@ class PackageService extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
@@ -89,7 +89,7 @@ class PackageService extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
@@ -102,7 +102,7 @@ class PackageService extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
@@ -114,7 +114,7 @@ class PackageService extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
@@ -151,7 +151,7 @@ class PackageService extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="note")
+     * @ODM\Field(type="string", name="note")
      */
     protected $note;
 

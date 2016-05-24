@@ -56,7 +56,7 @@ class PriceCache extends Base
 
     /**
      * @var int
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\NotNull()
      * @Assert\Range(min=0)
@@ -65,7 +65,7 @@ class PriceCache extends Base
 
     /**
      * @var int
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
      */
@@ -81,7 +81,7 @@ class PriceCache extends Base
 
     /**
      * @var int
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
      */
@@ -96,7 +96,7 @@ class PriceCache extends Base
 
     /**
      * @var int
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
      */
@@ -111,7 +111,7 @@ class PriceCache extends Base
 
     /**
      * @var int
-     * @ODM\Float()
+     * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
      */

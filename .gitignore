@@ -27,6 +27,7 @@ nbproject/
 .idea/
 /parameters.yml
 parameters.yml
+/protectedUpload/1C/*
 /protectedUpload/orderDocuments/*
 /protectedUpload/vegaDocuments/*
 !/protectedUpload/orderDocuments/.gitkeep

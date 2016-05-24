@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Zend\Stdlib\JsonSerializable;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 
@@ -59,7 +59,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="firstName")
+     * @ODM\Field(type="string", name="firstName")
      * @Assert\NotNull(message= "validator.document.Tourist.name_required")
      * @Assert\Length(
      *      min=2,
@@ -72,7 +72,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="lastName")
+     * @ODM\Field(type="string", name="lastName")
      * @Assert\NotNull(message= "validator.document.Tourist.surname_required")
      * @Assert\Length(
      *      min=2,
@@ -85,7 +85,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="patronymic")
+     * @ODM\Field(type="string", name="patronymic")
      * @Assert\Length(
      *      min=2,
      *      minMessage= "validator.document.Tourist.min_second_name",
@@ -97,7 +97,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="fullName")
+     * @ODM\Field(type="string", name="fullName")
      * @ODM\Index()
      */
     protected $fullName;
@@ -112,7 +112,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * @var \string
      * @Gedmo\Versioned
-     * @ODM\String(name="sex")
+     * @ODM\Field(type="string", name="sex")
      * @Assert\Choice(
      *      choices = {"male", "female", "unknown"},
      *      message =  "validator.document.Tourist.wrong_gender"
@@ -122,7 +122,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="phone")
+     * @ODM\Field(type="string", name="phone")
      * @Assert\Length(
      *      min=2,
      *      minMessage= "validator.document.Tourist.min_phone",
@@ -134,7 +134,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\Length(
      *      min=2,
      *      minMessage= "validator.document.Tourist.min_phone",
@@ -146,20 +146,20 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $messenger;
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="email")
+     * @ODM\Field(type="string", name="email")
      * @Assert\Email()
      */
     protected $email;
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String(name="note")
+     * @ODM\Field(type="string", name="note")
      * @Assert\Length(
      *      min=2,
      *      minMessage= "validator.document.Tourist.min_note",
@@ -185,7 +185,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
     protected $addressObjectDecomposed;
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $addressObjectCombined;
     /**
@@ -206,7 +206,7 @@ class Tourist extends Base implements JsonSerializable, PayerInterface, Recipien
 
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $communicationLanguage;
 

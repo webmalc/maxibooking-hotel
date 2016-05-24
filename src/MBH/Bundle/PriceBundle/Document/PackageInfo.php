@@ -21,7 +21,7 @@ class PackageInfo
 
     /**
      * @var int
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)

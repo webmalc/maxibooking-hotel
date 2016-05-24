@@ -14,13 +14,13 @@ class Moneymail implements PaymentSystemInterface
 {
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $moneymailShopIDP;
 
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $moneymailKey;
 

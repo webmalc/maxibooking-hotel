@@ -5,7 +5,7 @@ namespace MBH\Bundle\PackageBundle\Document\Partials;
 trait InnTrait {
 
     /**
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Assert\Length(min=7,max=12)
      * @Assert\Type(type="digit", message="Значение должно быть числом")
      */

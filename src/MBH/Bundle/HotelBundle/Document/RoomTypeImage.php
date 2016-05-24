@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 /**
  * @ODM\EmbeddedDocument
@@ -24,13 +24,13 @@ class RoomTypeImage
 
     /**
      * @Gedmo\Versioned
-     * @ODM\String(name="name")
+     * @ODM\Field(type="string", name="name")
      */
     public $name;
 
     /**
      * @Gedmo\Versioned
-     * @ODM\String(name="path")
+     * @ODM\Field(type="string", name="path")
      */
     public $path;
 
@@ -40,7 +40,7 @@ class RoomTypeImage
      *  maxSize = "5M",
      *  maxSizeMessage = "Размер изображения не должен превышать 5MB.")
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      */
     protected $image;
 
@@ -53,13 +53,13 @@ class RoomTypeImage
 
     /**
      * @Gedmo\Versioned
-     * @ODM\String(name="width")
+     * @ODM\Field(type="string", name="width")
      */
     public $width;
 
     /**
      * @Gedmo\Versioned
-     * @ODM\String(name="height")
+     * @ODM\Field(type="string", name="height")
      */
     public $height;
 

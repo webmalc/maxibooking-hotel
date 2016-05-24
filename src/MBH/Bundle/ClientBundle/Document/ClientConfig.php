@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 /**
  * @ODM\Document(collection="ClientConfig", repositoryClass="MBH\Bundle\ClientBundle\Document\ClientConfigRepository")
@@ -58,7 +58,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Int()
+     * @ODM\Integer()
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0, max=20)
@@ -77,7 +77,7 @@ class ClientConfig extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\Choice(choices = {"robokassa", "payanyway", "moneymail", "uniteller", "rbk"})
      */
     protected $paymentSystem;
@@ -115,7 +115,7 @@ class ClientConfig extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\Url()
      */
     protected $successUrl;
@@ -123,10 +123,19 @@ class ClientConfig extends Base
     /**
      * @var string
      * @Gedmo\Versioned
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\Url()
      */
     protected $failUrl;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean()
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isInstantSearch = true;
 
     /**
      * Set sendSms
@@ -400,5 +409,23 @@ class ClientConfig extends Base
         return $this;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isIsInstantSearch()
+    {
+        return $this->isInstantSearch;
+    }
 
+    /**
+     * @param boolean $isInstantSearch
+     * @return ClientConfig
+     */
+    public function setIsInstantSearch($isInstantSearch)
+    {
+        $this->isInstantSearch = $isInstantSearch;
+        return $this;
+    }
+
+    
 }

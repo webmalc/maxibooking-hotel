@@ -19,7 +19,7 @@ class Service
 
     /**
      * @var string
-     * @ODM\String()
+     * @ODM\Field(type="string")
      * @Assert\NotNull()
      */
     protected $serviceId;

@@ -3,7 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Gedmo\Blameable\Traits\BlameableDocument;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -22,32 +22,32 @@ class OrderDocument
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      * @Assert\NotNull(message="validator.document.OrderDocument.type")
      */
     protected $type;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $scanType;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $name;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $originalName;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $comment;
 
@@ -86,14 +86,14 @@ class OrderDocument
     /**
      * Client Original Extension
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $extension;
 
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string") 
      */
     protected $mimeType;
 
