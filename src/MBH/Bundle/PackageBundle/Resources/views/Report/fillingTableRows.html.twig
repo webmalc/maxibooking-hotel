@@ -16,6 +16,22 @@
 </tr>
 <tr>
     <td>
+        <small>Номерной фонд</small>
+    </td>
+    {% for date in rangeDateList %}
+        {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+        <td class="content">
+            {{ row.hotelRooms|default(0) }}
+        </td>
+    {% endfor %}
+    <td class="content-total">
+        <strong>
+            {{ tableData.totals.hotelRooms|default(0)|number_format(2) }}
+        </strong>
+    </td>
+</tr>
+<tr>
+    <td>
         <small>Забронировано номеров</small>
     </td>
     {% for date in rangeDateList %}
