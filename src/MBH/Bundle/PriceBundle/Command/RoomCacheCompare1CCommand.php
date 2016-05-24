@@ -117,6 +117,8 @@ class RoomCacheCompare1CCommand extends ContainerAwareCommand
                     }
 
                     if (empty($caches[$roomType->getId()][0][$date])) {
+                        continue;
+                        // TODO: remove after 1C export fix
                         $entry->totalMB = 0;
                         $entry->soldMB = 0;
                         $entry->remainMB = 0;
