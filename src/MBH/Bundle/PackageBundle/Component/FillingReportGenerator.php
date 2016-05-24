@@ -143,11 +143,14 @@ class FillingReportGenerator
                 'totals' => [],
             ];
 
+            $roomTypeRooms = count($roomType->getRooms());
+
             /** @var array $rows packages info by day, keys is dates (format d.m.Y) */
             $rows = [];
             $totals = $emptyPackageRowData + $emptyRoomCacheRow + [
                 'uniqueNotPaidRooms' => 0,
                 'uniqueGuests' => 0,
+                'hotelRooms' => 0
             ];
 
             $uniqueAdults = [];
@@ -241,6 +244,8 @@ class FillingReportGenerator
                 $packageRowData['maxIncomePercent'] = $packageRowData['maxIncome'] > 0 ? $packageRowData['packagePrice'] / $packageRowData['maxIncome'] * 100 : 0;
                 $rowDate = $packageRowData + $roomCacheRow;
 
+                $rowDate['hotelRooms'] = $roomTypeRooms;
+
                 $rows[$date->format('d.m.Y')] = $rowDate;
 
                 foreach($rowDate as $kay => $value) {
@@ -261,6 +266,7 @@ class FillingReportGenerator
             $totals['packagesCountPercent'] = $totals['packagesCountPercent'] / $columnCount;
             $totals['paidPercent'] = $totals['paidPercent'] / $columnCount;
             $totals['maxIncomePercent'] = $totals['maxIncomePercent'] / $columnCount;
+            $totals['hotelRooms'] = $roomTypeRooms;
 
             $tableDataByRoomType[$roomTypeID] = [
                 'rows' => $rows,
@@ -292,6 +298,7 @@ class FillingReportGenerator
                         'notPaidRooms' => 0,
                         'totalRooms' => 0,
                         'packagesCount' => 0,
+                        'hotelRooms' => 0
                     ];
                 }
 
@@ -306,6 +313,7 @@ class FillingReportGenerator
                 $totalRows[$date]['roomGuests'] += $row['roomGuests'];
                 $totalRows[$date]['notPaidRooms'] += $row['notPaidRooms'];
                 $totalRows[$date]['totalRooms'] += $row['totalRooms'];
+                $totalRows[$date]['hotelRooms'] += $row['hotelRooms'];
                 $totalRows[$date]['packagesCount'] += $row['packagesCount'];
 
                 $totalRows[$date]['packagesCountPercent'] = $totalRows[$date]['totalRooms'] ? $totalRows[$date]['packagesCount'] / $totalRows[$date]['totalRooms'] * 100 : 0;//+= $row['packagesCountPercent'] / $roomTypeCount;
