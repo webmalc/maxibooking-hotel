@@ -142,7 +142,7 @@ class TariffType extends AbstractType
                 ]
             )
             ->add('defaultForMerging', CheckboxType::class, [
-                'label' => 'Основной для комбинорования?',
+                'label' => 'Использовать для комбинирования?',
                 'group' => 'Настройки',
                 'value' => true,
                 'required' => false,

@@ -167,13 +167,20 @@ class Calculation
         $mergingTariffs = $this->dm->getRepository('MBHPriceBundle:Tariff')->findBy([
             'defaultForMerging' => true, 'isDefault' => false]);
 
-        $mergingTariffsPrices = $this->dm->getRepository('MBHPriceBundle:PriceCache')
-            ->fetch(
-                $begin, $end, $hotel, [$roomTypeId],
-                $this->container->get('mbh.helper')->toIds($mergingTariffs),
-                true, $this->manager->useCategories
-            );
-
+        $mergingTariffsPrices = [];
+        foreach ($mergingTariffs as $mergingTariff) {
+            if ($mergingTariff->getParent() && $mergingTariff->getChildOptions()->isInheritPrices()) {
+                $ids = [$mergingTariff->getParent()->getId()];
+            } else {
+                $ids = [$mergingTariff->getId()];
+            }
+            $mergingTariffsPrices += $this->dm->getRepository('MBHPriceBundle:PriceCache')
+                ->fetch(
+                    $begin, $end, $hotel, [$roomTypeId],
+                    $ids,
+                    true, $this->manager->useCategories
+                );
+        }
 
         if (!isset($priceCaches[$roomTypeId][$tariffId])) {
             return false;
