@@ -15,10 +15,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class PackageSubscriber implements EventSubscriber
 {
     /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface 
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
-    
+
 
     public function __construct(ContainerInterface $container)
     {
@@ -93,12 +93,13 @@ class PackageSubscriber implements EventSubscriber
                         ->setPrice($changes['price'][1])
                         ->setNights($changes['nights'][1])
                         ->setPersons($changes['persons'][1])
-                        ->setService(empty($changes['persons'][1]) ? $changes['persons'][1] : $doc->getService())
+                        ->setService(!empty($changes['service'][1]) ? $changes['service'][1] : $doc->getService())
                     ;
 
                     $this->container->get('mbh.calculation')->setServicesPrice($package, $new, $doc);
-                    $meta = $dm->getClassMetadata(get_class($package));
-                    $uow->recomputeSingleDocumentChangeSet($meta, $package);
+                    $order = $package->getOrder()->calcPrice();
+                    $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($package)), $package);
+                    $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($order)), $order);
                 } catch (\Exception $e) {
 
                 }
