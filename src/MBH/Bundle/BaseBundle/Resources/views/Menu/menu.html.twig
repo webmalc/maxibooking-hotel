@@ -127,11 +127,11 @@
  
 {% block label %}<span>{% if item.label == '&nbsp;' %}&nbsp;{% else %}{{ item.label|trans }}</span>
     {% if item.attribute('badge_left') is defined %}
-        <small {% if item.attribute('badge_id_left') is defined %}id="{{ item.attribute('badge_id_left') }}"{% endif %}
+        <small {% if item.attribute('badge_title_left') is defined %}data-toggle="tooltip" data-placement="top" title="{{ item.attribute('badge_title_left') }}"{% endif %}  {% if item.attribute('badge_id_left') is defined %}id="{{ item.attribute('badge_id_left') }}"{% endif %}
                class="label pull-right {% if item.attribute('badge_class_left') is defined %}{{ item.attribute('badge_class_left') }}{% endif %}">{{ item.attribute('badge_value_left') }}</small>
     {% endif %}
     {% if item.attribute('badge') is defined %}
-        <small {% if item.attribute('badge_id_right') is defined %}id="{{ item.attribute('badge_id_right') }}"{% endif %}
+        <small {% if item.attribute('badge_title_right') is defined %}data-toggle="tooltip" data-placement="top" title="{{ item.attribute('badge_title_right') }}"{% endif %} {% if item.attribute('badge_id_right') is defined %}id="{{ item.attribute('badge_id_right') }}"{% endif %}
                class="label pull-right {% if item.attribute('badge_class_right') is defined %}{{ item.attribute('badge_class_right') }}{% endif %}">{{ item.attribute('badge_value_right') }}</small>
     {% endif %}
 {% endif %}{% endblock %}
