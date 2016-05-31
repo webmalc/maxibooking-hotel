@@ -45,8 +45,8 @@ class Builder extends ContainerAware
         $menu->addChild('reservations', ['route' => 'package_search', 'label' => 'Подбор'])
             ->setAttributes(['icon' => 'fa fa-search']);
 
-        $arrivals = $dm->getRepository('MBHPackageBundle:Package')->countByType('arrivals', true);
-        $out = $dm->getRepository('MBHPackageBundle:Package')->countByType('out', true);
+        $arrivals = $dm->getRepository('MBHPackageBundle:Package')->countByType('arrivals', true, $hotel);
+        $out = $dm->getRepository('MBHPackageBundle:Package')->countByType('out', true, $hotel);
 
         $porterBadges = [];
         if ($arrivals) {
@@ -54,7 +54,8 @@ class Builder extends ContainerAware
                 'badge_left' => true,
                 'badge_class_left' => 'bg-red badge-sidebar-left badge-sidebar-margin',
                 'badge_id_left' => 'arrivals',
-                'badge_value_left' => $arrivals
+                'badge_value_left' => $arrivals,
+                'badge_title_left' => 'Количество заезжающих броней'
             ];
         }
         if ($out) {
@@ -62,7 +63,8 @@ class Builder extends ContainerAware
                 'badge_right' => true,
                 'badge_class_right' => 'bg-green badge-sidebar-right badge-sidebar-margin',
                 'badge_id_right' => 'out',
-                'badge_value_right' => $out
+                'badge_value_right' => $out,
+                'badge_title_right' => 'Количество выезжающих броней'
             ];
         }
 
