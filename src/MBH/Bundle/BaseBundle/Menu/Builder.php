@@ -55,7 +55,7 @@ class Builder extends ContainerAware
                 'badge_class_left' => 'bg-red badge-sidebar-left badge-sidebar-margin',
                 'badge_id_left' => 'arrivals',
                 'badge_value_left' => $arrivals,
-                'badge_title_left' => 'Количество заезжающих броней'
+                'badge_title_left' => 'Количество незаехавших броней'
             ];
         }
         if ($out) {
@@ -64,7 +64,7 @@ class Builder extends ContainerAware
                 'badge_class_right' => 'bg-green badge-sidebar-right badge-sidebar-margin',
                 'badge_id_right' => 'out',
                 'badge_value_right' => $out,
-                'badge_title_right' => 'Количество выезжающих броней'
+                'badge_title_right' => 'Количество невыехавших броней'
             ];
         }
 
@@ -73,13 +73,13 @@ class Builder extends ContainerAware
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-bell']  + $porterBadges);
 
         $menu['porter_links']->addChild('report_room_types', ['route' => 'report_room_types', 'label' => 'Номерной фонд'])
-        ->setAttributes(['icon' => 'fa fa-bed']);
+            ->setAttributes(['icon' => 'fa fa-bed']);
 
         $menu['porter_links']->addChild('report_porter', [
             'route' => 'report_porter',
             'label' => 'Заезд/Выезд',
         ])
-        ->setAttributes(['icon' => 'fa fa-exchange']);
+            ->setAttributes(['icon' => 'fa fa-exchange']);
         $menu['porter_links']->addChild('accommodations', ['route' => 'report_accommodation', 'label' => 'Шахматка'])
             ->setAttributes(['icon' => 'fa fa-table']);
 
@@ -151,9 +151,9 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-star']);
         //$token = $this->container->get('security.token_storage')->getToken();
         //if ($token && $token->getUser() instanceof User && $token->getUser()->getIsEnabledWorkShift()) {
-            $menu['reports']->addChild('report_work_shift',
-                ['route' => 'report_work_shift', 'label' => 'Рабочие смены'])
-                ->setAttributes(['icon' => 'fa fa-clock-o']);
+        $menu['reports']->addChild('report_work_shift',
+            ['route' => 'report_work_shift', 'label' => 'Рабочие смены'])
+            ->setAttributes(['icon' => 'fa fa-clock-o']);
         //}
 
         /*$menu['reports']->addChild('report_fms', ['route' => 'report_fms', 'label' => 'Для ФМС'])
@@ -258,13 +258,13 @@ class Builder extends ContainerAware
 
         //Hotels links
         $menu->addChild('hotels', ['route' => '_welcome', 'label' => 'Отели'])
-                ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-home']);
+            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-home']);
         $menu['hotels']->addChild('hotelsList', ['route' => 'hotel', 'label' => 'Отели'])
-                ->setAttributes(['icon' => 'fa fa-home']);
+            ->setAttributes(['icon' => 'fa fa-home']);
         $menu['hotels']->addChild('corpusList', ['route' => 'housing', 'label' => 'Корпуса'])
             ->setAttributes(['icon' => 'fa fa-building']);
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номерной фонд'])
-                ->setAttributes(['icon' => 'fa fa-bed']);
+            ->setAttributes(['icon' => 'fa fa-bed']);
 
         $config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
         if ($config && $config->getUseRoomTypeCategory()) {
@@ -283,7 +283,7 @@ class Builder extends ContainerAware
             ->setAttributes(['icon' => 'fa fa-users'])
         ;
         $menu['configs']->addChild('sources', ['route' => 'package_source', 'label' => 'Источники'])
-             ->setAttributes(['icon' => 'fa fa-compass'])
+            ->setAttributes(['icon' => 'fa fa-compass'])
         ;
         $menu['configs']->addChild('document_templates', ['route' => 'document_templates', 'label' => 'Шаблоны документов'])
             ->setAttributes(['icon' => 'fa fa-file'])
@@ -297,7 +297,7 @@ class Builder extends ContainerAware
 
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])
-             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa fa-arrows-h'])
+            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa fa-arrows-h'])
         ;
 
         if ($this->container->getParameter('mbh.environment') == 'prod') {
@@ -341,7 +341,7 @@ class Builder extends ContainerAware
         $menu->addChild('header', [])->setAttributes(['header' => 'Навигация']);
 
         $menu->addChild('create_hotel', ['route' => 'hotel_new', 'label' => 'Создать новый отель'])
-                ->setAttribute('icon', 'fa fa-plus')
+            ->setAttribute('icon', 'fa fa-plus')
         ;
 
         return $this->filter($menu, $factory, $options);;
