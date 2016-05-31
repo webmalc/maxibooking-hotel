@@ -20,7 +20,6 @@
     "sensio/distribution-bundle": "*@stable",
     "sensio/framework-extra-bundle": "~3.0",
     "incenteev/composer-parameter-handler": "*@stable",
-    "mongofill/mongofill": "dev-master",
     "doctrine/mongodb": "*@stable",
     "doctrine/mongodb-odm": "*@stable",
     "doctrine/mongodb-odm-bundle": "*@stable",
