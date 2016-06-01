@@ -1,0 +1,14 @@
+{
+    "draw" : "{{ draw }}",
+    "recordsTotal": "{{ total }}",
+    "recordsFiltered": "{{ total }}",
+    "data": [
+        {% for item in inventory %}[
+                "<i class='fa fa-book'></i>",				
+                "{{ item }}",
+                "{{ item.category }}",
+				"<div class='text-right'>{{ item.qtty }}</div>",
+				"{{ item.unit }}"
+            ]{% if loop.index != inventory|length %},{% endif %}
+        {% endfor %}
+]}

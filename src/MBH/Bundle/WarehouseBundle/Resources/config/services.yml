@@ -1,0 +1,6 @@
+services:
+    mbh.package.subscriber:
+        class: MBH\Bundle\WarehouseBundle\EventListener\WarehouseSubscriber
+        arguments: [@service_container]
+        tags:
+            - { name: doctrine_mongodb.odm.event_subscriber, connection: default}

@@ -1,0 +1,21 @@
+{% extends 'MBHWarehouseBundle:Record:layout.html.twig' %}
+
+{% set small_title = 'warehouse.record.edit'|trans ~ ' #' ~ entity.id %}
+{% set layout = 'box' %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('warehouse_record_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'warehouse_record_delete' } %}
+    {{ form_end(form) }}
+    
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'warehouse_record_delete' } %}
+    
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% include 'MBHWarehouseBundle:Record:recordScripts.html.twig' with {'entity': entity} %}
+{% endblock %}

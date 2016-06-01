@@ -1,0 +1,20 @@
+{% extends 'MBHWarehouseBundle:Warehouse:layout.html.twig' %}
+
+{% set small_title = 'warehouse.items.edit'|trans() ~" <" ~ entity.name ~ ">" %}
+{% set layout = 'box' %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('warehouse_category_entry_update', {'id': entry.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% if entry.system %}
+        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entry } %}
+    {% else %}
+        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entry, 'delete_route': 'warehouse_category_entry_delete' } %}
+    {% endif %}
+    
+    {{ form_end(form) }}
+    
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entry, 'logs': logs, 'delete_route': 'warehouse_category_entry_delete' } %}
+    
+{% endblock %}

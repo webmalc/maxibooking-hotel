@@ -21,13 +21,14 @@ class SearchType extends AbstractType
     {
         $dm = $options['dm'];
         if (!$dm) {
-            throw new Exception('Unable find Document Manager');
+            throw new Exception('Unable to find Document Manager');
         }
 
         $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->createQueryBuilder('h')
             ->sort('fullTitle', 'asc')
             ->getQuery()
             ->execute();
+		
         $roomTypes = [];
 
         foreach ($hotels as $hotel) {
@@ -37,6 +38,7 @@ class SearchType extends AbstractType
             }
 
             $roomTypes[$hotel->getName()]['allrooms_' . $hotel->getId()] = 'form.searchType.all_rooms';
+			
             foreach ($options['roomManager']->getRooms($hotel) as $roomType) {
                 $roomTypes[$hotel->getName()][$roomType->getId()] = $roomType->getName();
             }
@@ -64,7 +66,7 @@ class SearchType extends AbstractType
                 'required' => false,
                 'multiple' => true,
                 'error_bubbling' => true,
-                'choices' => $roomTypes
+                'choices' => $roomTypes,
             ])
             ->add('tariff', 'document', [
                 'label' => 'form.searchType.tariff',

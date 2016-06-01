@@ -9,5 +9,5 @@ services:
         arguments: [@service_container]
 
     mbh.cash:
-            class: MBH\Bundle\CashBundle\Service\Cash
-            arguments: [@service_container]
+        class: MBH\Bundle\CashBundle\Service\Cash
+        arguments: [@service_container]

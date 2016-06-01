@@ -7,7 +7,7 @@
     {% set role = 'ROLE_' ~route|upper ~ '_EDIT' %}
 {% endif %}
 
-{% if acrion is not defined %}
+{% if action is not defined %}
     {% set role = 'ROLE_' ~route|upper ~ '_EDIT' %}
 {% endif %}
 

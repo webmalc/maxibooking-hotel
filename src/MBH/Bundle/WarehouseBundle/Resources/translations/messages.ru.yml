@@ -1,0 +1,66 @@
+warehouse:
+    common:
+        title: Склад
+        subtitle: список
+        edit: Редактировать
+        del: Удалить
+        included: Включен
+        savechanges: Сохранить изменения
+        info: Общая информация
+        settings: Настройки
+    rec:
+        edit: Редактирование записи
+        del: Удаление записи
+    field:
+        price: Цена
+        unit: Ед. изм.
+        unitPlaceholder: шт., литр…
+    cat:
+        title: Категория
+        edit: редактирование категории
+        new: создание категории товара
+        newcattitle: Новая категория товара
+        del: Удалить категорию товара
+        nogoods: В этой категории нет ни одного товара.
+        addnew: Добавить новую категорию
+        newSuccess: Категория успешно создана
+        editSuccess: Категория успешно отредактирована   
+    items:
+        title: Товар
+        edit: редактирование товара в категории
+        edit1: Редактировать категорию товара
+        new: создание товара в категории
+        new1: Создать товар в категории
+        add: Добавить товар
+        notused: Товар не используется
+        staple: Основные товары
+        placeholder: Мыло туалетное с гибискусом, фирменное…
+        placeholderShort: Мыло
+        maxiTitle: Название для использования внутри MaxiBooking
+        availability: Доступен ли товар для продажи
+        saveSuccess: Изменения успешно сохранены
+        newSuccess: Товар успешно создан
+        editSuccess: Товар успешно отредактирован
+        delSuccess: Товар успешно удалён
+        price: Цена
+    record:
+        new: создание новой записи
+        newSuccess: Новая запись успешно создана
+        generalInfo: Данные
+        quantity: Количество
+        operation: Операция
+        edit: редактирование записи
+        editSuccess: Запись успешно отредактирована
+        amount: Сумма
+        recordDate: Дата
+        title: Наименование
+        hotel: Отель
+        hotels: Отели
+        goods: Товары
+        in: приход
+        out: расход
+        list: список приходов-расходов
+        inventory: остатки
+        tabs:
+            list: Записи
+            inventory: Остатки
