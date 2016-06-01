@@ -30,7 +30,7 @@
 
                 <!-- Tab actions -->
                 <div class="btn-list spacer-bottom text-right">
-                    {% if not entity.system and is_granted('ROLE_WAREHOUSE_CAT_EDIT') %}
+                    {% if is_granted('ROLE_WAREHOUSE_CAT_EDIT') %}
                         <a href="{{ path('warehouse_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="{{ 'warehouse.items.edit1'|trans ~ ' <' ~ entity.name}}>"><i class="fa fa-edit"></i> {{ 'warehouse.common.edit'|trans }}</a>
                     {% endif %}
                     {% if is_granted('ROLE_WAREHOUSE_CAT_NEW') %}
@@ -57,7 +57,7 @@
                             {% for entry in entity.items %}
                                 <tr>
                                     <td><i class="fa fa-book"></i></td>
-                                    <td><a href='{{ path('warehouse_category_entry_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entity.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
+                                    <td><a href='{{ path('warehouse_category_entry_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
                                     <td>
                                         <span class="hidden">{{ entry.price }}</span>
                                         <input name="entries[{{ entry.id }}][price]" class="form-control spinner-0f  input-sm" type="text" placeholder="{{ 'warehouse.items.notused'|trans }}" value="{{ entry.price }}">
@@ -73,7 +73,7 @@
                                                     <i class='fa fa-pencil-square-o'></i>
                                                 </a>
                                             {% endif %}
-                                            {% if not entity.system and is_granted('ROLE_WAREHOUSE_ITEMS_DELETE') %}
+                                            {% if not entry.system and is_granted('ROLE_WAREHOUSE_ITEMS_DELETE') %}
                                                 <a href='{{ path('warehouse_category_entry_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'warehouse.common.del'|trans }}' data-toggle='tooltip'>
                                                     <i class='fa fa-trash-o'></i>
                                                 </a>

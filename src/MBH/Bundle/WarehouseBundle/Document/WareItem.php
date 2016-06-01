@@ -4,8 +4,6 @@ namespace MBH\Bundle\WarehouseBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
-use MBH\Bundle\BaseBundle\Service\Helper;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -38,7 +36,6 @@ class WareItem extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
-    use InternableDocument;
 	
     /** 
      * @Gedmo\Versioned
@@ -100,7 +97,6 @@ class WareItem extends Base
     protected $unit;
 
     /**
-     * @todo rename isSystem
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -240,15 +236,4 @@ class WareItem extends Base
     {
         return $this->unit;
     }
-
-    /**
-     * @ODM\PreUpdate()
-     */
-    public function preUpdate()
-    {
-        if(!$this->internationalTitle && $this->fullTitle) {
-            $this->internationalTitle = Helper::translateToLat($this->fullTitle);
-        }
-    }
-
 }

@@ -44,7 +44,6 @@ class WareItemType extends AbstractType
                 'group' => 'warehouse.common.settings',
                 'value' => true,
                 'required' => false,
-                'help' => 'warehouse.items.availability'
             ])        
         ;
     }

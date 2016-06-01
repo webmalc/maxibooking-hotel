@@ -35,7 +35,7 @@ class WareCategory extends Base
     
 
     /** @ODM\ReferenceMany(targetDocument="WareItem", mappedBy="category") */
-    protected $items;    
+    private $items;    
     
     /**
      * @var string
@@ -49,7 +49,7 @@ class WareCategory extends Base
      *      maxMessage="validator.toolongname"
      * )
      */
-    protected $fullTitle;
+    private $fullTitle;
     
     /**
      * @var string
@@ -62,7 +62,7 @@ class WareCategory extends Base
      *      maxMessage="validator.toolongname"
      * )
      */
-    protected $title;    
+    private $title;    
     
     /**
      * @var boolean
@@ -71,7 +71,7 @@ class WareCategory extends Base
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
-    protected $system = false;
+    private $system = false;
 
 
     public function __construct()
@@ -150,17 +150,6 @@ class WareCategory extends Base
     {
         return $this->title;
     }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        if (!empty($this->title)) {
-            return $this->title;
-        }
-        return $this->fullTitle;
-    }
    
     /**
      * Set system
@@ -183,5 +172,4 @@ class WareCategory extends Base
     {
         return $this->system;
     }
-    
 }

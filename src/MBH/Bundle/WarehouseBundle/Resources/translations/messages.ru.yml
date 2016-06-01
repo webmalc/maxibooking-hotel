@@ -34,10 +34,9 @@ warehouse:
         add: Добавить товар
         notused: Товар не используется
         staple: Основные товары
-        placeholder: Мыло туалетное с гибискусом, фирменное…
+        placeholder: Основные товары
         placeholderShort: Мыло
         maxiTitle: Название для использования внутри MaxiBooking
-        availability: Доступен ли товар для продажи
         saveSuccess: Изменения успешно сохранены
         newSuccess: Товар успешно создан
         editSuccess: Товар успешно отредактирован

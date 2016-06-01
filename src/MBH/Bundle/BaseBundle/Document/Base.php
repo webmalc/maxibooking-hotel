@@ -64,10 +64,10 @@ class Base
     public function getName()
     {
         if (method_exists($this, 'getTitle') && !empty($this->getTitle())) {
-            return $this->getTitle();
+            return (string) $this->getTitle();
         }
         if (method_exists($this, 'getFullTitle') && !empty($this->getFullTitle())) {
-            return $this->getFullTitle();
+            return (string) $this->getFullTitle();
         }
 
         return (string) $this->getId();

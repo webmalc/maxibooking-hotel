@@ -47,16 +47,16 @@ class WarehouseData implements FixtureInterface, ContainerAwareInterface
 		$existingCats = $manager->getRepository('MBHWarehouseBundle:WareCategory')->findAll();
 		
 		// skip existing categories
-		foreach ($this->cats as $cat) {
-			if ($this->checkExistance($existingCats, $cat)) {
+		foreach ($this->cats as $name) {
+			if ($this->checkExistance($existingCats, $name)) {
 				continue;
 			}
 			
-			$wcat = new WareCategory();
-			
-			$wcat->setFullTitle($cat);
-			
-			$manager->persist($wcat);
+			$cat = new WareCategory();
+
+			$cat->setFullTitle($name)->setTitle($name)->setSystem(true);
+
+			$manager->persist($cat);
 		}
 				
 		$manager->flush();

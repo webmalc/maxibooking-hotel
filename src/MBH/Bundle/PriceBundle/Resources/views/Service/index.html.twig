@@ -58,7 +58,7 @@
                             {% for entry in entity.services %}
                                 <tr>
                                     <td><i class="fa fa-plug"></i></td>
-                                    <td><a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entity.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
+                                    <td><a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
                                     <td>
                                         <span class="hidden">{{ entry.price }}</span>
                                         <input name="entries[{{ entry.id }}][price]" class="form-control spinner-0f {{ entry.calcType == 'day_percent' ? 'percent-spinner' : 'price-spinner'}} input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}">
@@ -75,7 +75,7 @@
                                                     <i class='fa fa-pencil-square-o'></i>
                                                 </a>
                                             {% endif %}
-                                            {% if not entity.system and is_granted('ROLE_SERVICE_DELETE') %}
+                                            {% if not entry.system and is_granted('ROLE_SERVICE_DELETE') %}
                                                 <a href='{{ path('price_service_category_entry_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
                                                     <i class='fa fa-trash-o'></i>
                                                 </a>

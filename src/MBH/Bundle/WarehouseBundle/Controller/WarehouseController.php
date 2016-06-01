@@ -38,8 +38,7 @@ class WarehouseController extends Controller
             ->execute();
 		
         return [
-            'entities' => $entities,
-            'config' => $this->container->getParameter('mbh.services')
+            'entities' => $entities
         ];
     }
 
@@ -312,6 +311,10 @@ class WarehouseController extends Controller
      */
     public function deleteEntryAction(Request $request, WareItem $entity)
     {
+        if ($entity->getSystem()) {
+            throw $this->createNotFoundException();
+        }
+        
         try {
             $catId = $entity->getCategory()->getId();
             $this->dm->remove($entity);
