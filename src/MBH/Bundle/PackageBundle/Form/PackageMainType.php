@@ -60,6 +60,7 @@ class PackageMainType extends AbstractType
                 'query_builder' => function (DocumentRepository $dr) use ($options) {
                     return $dr->createQueryBuilder('q')
                         ->field('hotel.id')->equals($options['hotel']->getId())
+                        ->field('deletedAt')->equals(null)
                         ->sort(['fullTitle' => 'asc', 'title' => 'asc']);
                 },
                 'required' => true
