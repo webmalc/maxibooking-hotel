@@ -127,6 +127,7 @@ class RoomRepository extends AbstractBaseRepository
 
         // rooms
         $qb = $this->createQueryBuilder('r')->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
+             ->field('isEnabled')->equals(true)
              ->inToArray('roomType.id', $hotelRoomTypes)
              ->notInNotEmpty('id', $ids)
              ->inNotEmpty('id', $rooms)
@@ -155,7 +156,8 @@ class RoomRepository extends AbstractBaseRepository
      * @param mixed $floor
      * @param int $skip
      * @param int $limit
-     * @param boolean $group
+     * @param bool $group
+     * @param bool $isEnabled
      * @return array
      */
     public function fetch(
@@ -165,10 +167,11 @@ class RoomRepository extends AbstractBaseRepository
         $floor = null,
         $skip = null,
         $limit = null,
-        $group = false
+        $group = false,
+        $isEnabled = null
     )
     {
-        $result = $this->fetchQuery($hotel, $roomTypes, $housing, $floor, $skip, $limit)->getQuery()->execute();
+        $result = $this->fetchQuery($hotel, $roomTypes, $housing, $floor, $skip, $limit, $isEnabled)->getQuery()->execute();
 
         if ($group) {
             $grouped = [];
@@ -189,6 +192,7 @@ class RoomRepository extends AbstractBaseRepository
      * @param mixed $floor
      * @param int $skip
      * @param int $limit
+     * @param bool $isEnabled
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
     public function fetchQuery(
@@ -197,7 +201,8 @@ class RoomRepository extends AbstractBaseRepository
         $housing = null,
         $floor = null,
         $skip = null,
-        $limit = null
+        $limit = null,
+        $isEnabled = null
     ) {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $qb = $this->createQueryBuilder('s');
@@ -227,6 +232,11 @@ class RoomRepository extends AbstractBaseRepository
         if (!empty($floor)) {
             is_array($floor) ? $floor : $floor = [$floor];
             $qb->field('floor')->in($floor);
+        }
+        
+        //Is enabled
+        if ($isEnabled !== null) {
+            $qb->field('isEnabled')->equals($isEnabled);
         }
 
         //paging

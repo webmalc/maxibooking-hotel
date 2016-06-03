@@ -67,6 +67,8 @@ class RoomTypeReport
             $queryBuilder->field('floor')->equals($criteria->floor);
         }
 
+        $queryBuilder->field('isEnabled')->equals(true);
+
         /** @var Room[] $rooms */
         $rooms = $queryBuilder->getQuery()->execute();
 
