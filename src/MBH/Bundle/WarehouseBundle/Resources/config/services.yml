@@ -1,5 +1,5 @@
 services:
-    mbh.package.subscriber:
+    mbh.warehouse.subscriber:
         class: MBH\Bundle\WarehouseBundle\EventListener\WarehouseSubscriber
         arguments: [@service_container]
         tags:

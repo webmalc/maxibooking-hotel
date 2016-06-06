@@ -407,11 +407,16 @@ class Search implements SearchInterface
         if (!$this->config || !$this->config->getSearchWindows() || $result->getForceBooking()) {
             return true;
         }
+        
+        $tariff = $result->getTariff();
+        if ($tariff && $tariff->getParent() && $tariff->getChildOptions()->isInheritRestrictions()) {
+            $tariff = $tariff->getParent();
+        }
 
         $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')->findOneByDate(
             $result->getBegin(),
             $result->getRoomType(),
-            $result->getTariff()
+            $tariff
         );
 
         if (!$restriction || !$restriction->getMinStayArrival()) {
@@ -421,6 +426,7 @@ class Search implements SearchInterface
         if (!$this->checkWindow(
             $restriction->getMinStayArrival(),
             $result,
+            $tariff,
             true
         )) {
             return false;
@@ -428,6 +434,7 @@ class Search implements SearchInterface
         if (!$this->checkWindow(
             $restriction->getMinStayArrival(),
             $result,
+            $tariff,
             false
         )) {
             return false;
@@ -436,10 +443,10 @@ class Search implements SearchInterface
         return true;
     }
 
-    public function checkWindow($len, SearchResult $result, $right = false)
+    public function checkWindow($len, SearchResult $result, Tariff $tariff, $right = false)
     {
         $roomTypeId = $result->getRoomType()->getId();
-        $tariffId = $result->getTariff()->getId();
+        $tariffId = $tariff->getId();
         $middle = $result->getPackagesCount() + 1;
         $greater = 0;
         $less = 0;
