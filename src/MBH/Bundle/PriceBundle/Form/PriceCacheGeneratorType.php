@@ -87,7 +87,7 @@ class PriceCacheGeneratorType extends AbstractType
                     return $dr->fetchQueryBuilder($options['hotel']);
                 },
                 'help' => 'Типы номеров для готорых будет произведена генерация цен',
-                'attr' => array('placeholder' => $options['hotel'] . ': все типы номеров'),
+                'attr' => array('placeholder' => $options['hotel'] . ': все типы номеров', 'class' => 'select-all'),
             ])
             ->add('tariffs', 'document', [
                 'label' => 'Тарифы',
@@ -99,7 +99,7 @@ class PriceCacheGeneratorType extends AbstractType
                     return $dr->fetchChildTariffsQuery($options['hotel'], 'prices');
                 },
                 'help' => 'Тарифы для готорых будет произведена генерация цен',
-                'attr' => array('placeholder' => $options['hotel'] . ': все тарифы'),
+                'attr' => array('placeholder' => $options['hotel'] . ': все тарифы', 'class' => 'select-all'),
             ])
             ->add('price', 'text', [
                 'label' => 'Цена',

@@ -1,0 +1,5 @@
+validator.warehouse.cat.notchosen: Не выбрана категория
+#validator.warehouse.cat.deletionError: Невозможно удалить категорию с товарами
+validator.warehouse.record.negative: Количество не может быть отрицательным
+validator.warehouse.record.wrongOperation: Такой операции не существует
+validator.warehouse.record.negativeSum: Сумма не может быть отрицательной

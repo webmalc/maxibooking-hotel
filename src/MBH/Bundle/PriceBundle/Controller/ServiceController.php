@@ -352,6 +352,10 @@ class ServiceController extends Controller implements CheckHotelControllerInterf
      */
     public function deleteEntryAction(Request $request, Service $entity)
     {
+        if ($entity->getSystem()) {
+            throw $this->createNotFoundException();
+        }
+
         try {
             if ($entity->getSystem() || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
                 throw $this->createNotFoundException();

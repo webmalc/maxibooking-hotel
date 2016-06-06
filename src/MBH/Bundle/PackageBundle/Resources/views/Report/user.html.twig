@@ -14,7 +14,7 @@
                 <input type="text" name="begin" id="users-report-filter-begin" class="datepicker users-report-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-14 days")|date('d.m.Y') : app.request.get('begin')}}">
             </div>
             <div class="input">
-                - &nbsp
+                — &nbsp
                 <input type="text" name="end" id="users-report-filter-end" class="datepicker users-report-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ?  'now'|date_modify("+1 day")|date('d.m.Y') : app.request.get('end')}}">
             </div>
 

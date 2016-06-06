@@ -307,7 +307,10 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             $hotel,
             $request->get('roomType'),
             $request->get('housing'),
-            $request->get('floor')
+            $request->get('floor'),
+            null,
+            null,
+            true
         )->getQuery()->count();
 
         $rooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetch(
@@ -316,7 +319,9 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
             $request->get('housing'),
             $request->get('floor'),
             ($page - 1) * 30 ,
-            30
+            30,
+            false,
+            true
         );
 
         //packages

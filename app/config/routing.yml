@@ -3,6 +3,11 @@ mbh_online_booking:
     type:     annotation
     prefix:   /online_booking
 
+mbh_warehouse:
+    resource: "@MBHWarehouseBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 JMSTranslationBundle_ui:
     resource: @JMSTranslationBundle/Controller/
     type:     annotation

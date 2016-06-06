@@ -1,0 +1,62 @@
+{% extends 'MBHWarehouseBundle:Invoice:layout.html.twig' %}
+
+{% set small_title = 'редактирование накладной #' ~ entity.id %}
+{% set layout = 'box' %}
+
+{% block content %}
+
+	{% set tmp = '<tr><td style="width:300px;">' ~ form_widget(form.records.vars.prototype.wareItem) ~ '</td><td>' ~ form_widget(form.records.vars.prototype.qtty) ~ '</td><td>' ~ form_widget(form.records.vars.prototype.unit) ~ '</td><td>' ~ form_widget(form.records.vars.prototype.price) ~ '</td><td>' ~ form_widget(form.records.vars.prototype.amount) ~ '</td><td><a class="remove" href="#"><i class="fa fa-trash-o"></i></a></td></tr>' %}
+	
+	<div class="records" data-prototype="{{ tmp|e }}"></div>
+
+	<form method="post" role="form" class="are-you-sure form-horizontal" action="{{ path('warehouse_invoice_update', {'id': entity.id}) }}">   
+		
+		{{ form_row(form.operation) }}
+		{{ form_row(form.docNumber) }}
+		{{ form_row(form.invoiceDate) }}
+		{{ form_row(form.organization) }}
+		{{ form_row(form.hotel) }}
+
+		<h3>Records</h3>
+		
+		<table id="tbl1" class="table table-striped table-hover table-condensed service-tables not-auto-datatable">
+			<thead>
+				<tr>
+					<th style="width:300px;">Name</th>
+					<th>Qtty</th>
+					<th>Unit</th>
+					<th>Price</th>
+					<th>Amount</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<td colspan="6"><button id="addRow" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> Добавить</button></td>
+				</tr>
+			</tfoot>
+			<tbody>
+				{% for record in form.records %}
+					<tr>
+						<td>{{ form_widget(record.wareItem) }}</td>
+						<td>{{ form_widget(record.qtty) }}</td>
+						<td>{{ form_widget(record.unit) }}</td>
+						<td>{{ form_widget(record.price) }}</td>
+						<td>{{ form_widget(record.amount) }}</td>
+						<td><a class="remove" href="#"><i class='fa fa-trash-o'></i></a></td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+			
+		<input type="hidden" id="mbh_bundle_warehousebundle_invoicetype__token" name="mbh_bundle_warehousebundle_invoicetype[_token]" value="{{ form._token.vars.value }}" />
+			
+		{% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'warehouse_invoice_delete' } %}
+	</form>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% include 'MBHWarehouseBundle:Invoice:invoiceScripts.html.twig' with {'entity': entity} %}
+{% endblock %}

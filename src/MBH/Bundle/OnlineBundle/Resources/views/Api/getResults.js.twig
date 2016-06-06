@@ -1,7 +1,7 @@
     /*global window */
     jQuery.fn.digits = function(){
         return this.each(function(){
-            jQuery(this).text( jQuery(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "jQuery1,") );
+            jQuery(this).text( jQuery(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, ",") );
         })
     }
 

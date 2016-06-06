@@ -238,6 +238,23 @@ mbh.payerSelect.prototype.update = function (type, value) {
 var docReadyForms = function () {
     'use strict';
 
+    //select all
+    (function () {
+        $('select.select-all ').each(function () {
+            var elements = $('<div class="text-right"><small><a href="#" class="select-all-link">выбрать всё</a></small></div>');
+            var select = $(this);
+            $(this)
+                .closest('div.col-sm-6')
+                .prepend(elements);
+            $(elements).find('a').click(function (e) {
+                e.preventDefault();
+                select.children('option').prop('selected', true);
+                select.trigger('change');
+            });
+        });
+    }());
+
+
     $('form.remember input:not(.not-remember), form.remember select:not(.not-remember), form.remember textarea:not(.not-remember)').phoenix({
         webStorage: 'sessionStorage'
     });
