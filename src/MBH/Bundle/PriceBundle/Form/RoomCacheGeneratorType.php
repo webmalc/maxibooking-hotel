@@ -52,7 +52,7 @@ class RoomCacheGeneratorType extends AbstractType
                         return $dr->fetchQueryBuilder($options['hotel']);
                     },
                     'help' => 'Типы номеров для готорых будет произведена генерация наличия мест',
-                    'attr' => array('placeholder' => $options['hotel']. ': все типы номеров'),
+                    'attr' => array('placeholder' => $options['hotel']. ': все типы номеров', 'class' => 'select-all'),
                 ])
                 ->add('quotas', 'checkbox', [
                     'label' => 'Установить квоты?',

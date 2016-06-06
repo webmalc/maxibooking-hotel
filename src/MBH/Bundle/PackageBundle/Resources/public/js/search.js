@@ -357,6 +357,11 @@ $(document).ready(function () {
         changePopover();
     }
 
+    childrenInput.change(function () {
+        changePopover();
+        $('.children_age').change(sendForm);
+    });
+
     if (!$('#search-submit-button').length) {
         sendForm();
         $packageSearchForm.find('input, select').not('.daterangepicker-input').on('change switchChange.bootstrapSwitch', sendForm);
@@ -365,10 +370,6 @@ $(document).ready(function () {
         });
         icon.on('hidden.bs.popover', function () {
             sendForm();
-        });
-        childrenInput.change(function () {
-            changePopover();
-            $('.children_age').change(sendForm);
         });
     }
     $packageSearchForm.on('submit', function (e) {
