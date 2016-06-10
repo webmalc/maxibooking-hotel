@@ -404,6 +404,14 @@ class Search implements SearchInterface
 
     public function checkWindows(SearchResult $result)
     {
+        // TODO: complete windows (on UPDATE too)
+        
+        return true;
+        
+        if ($result->getBegin() <= new \DateTime('midnight')) {
+            return true;
+        }
+
         if (!$this->config || !$this->config->getSearchWindows() || $result->getForceBooking()) {
             return true;
         }
@@ -423,80 +431,42 @@ class Search implements SearchInterface
             return true;
         }
 
-        if (!$this->checkWindow(
-            $restriction->getMinStayArrival(),
-            $result,
-            $tariff,
-            true
-        )) {
-            return false;
-        }
-        if (!$this->checkWindow(
-            $restriction->getMinStayArrival(),
-            $result,
-            $tariff,
-            false
-        )) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function checkWindow($len, SearchResult $result, Tariff $tariff, $right = false)
-    {
+        $len = $restriction->getMinStayArrival();
         $roomTypeId = $result->getRoomType()->getId();
         $tariffId = $tariff->getId();
-        $middle = $result->getPackagesCount() + 1;
-        $greater = 0;
-        $less = 0;
 
-        if ($right) {
-            $from = clone $result->getEnd();
-            $to = clone $result->getEnd();
-            $to->modify('+ ' . $len . ' days');
-            $to->modify('-1 day');
-        } else {
+        $begin = clone $result->getBegin();
+        $begin->modify('-' . $len . ' days');
+        $end = clone $result->getEnd();
+        $end->modify('-1 day');
+        $end->modify('+' . $len . ' days');
 
-            if ($result->getBegin() <= new \DateTime('midnight')) {
-                return true;
-            }
-
-            $from = clone $result->getBegin();
-            $to = clone $result->getBegin();
-            $to->modify('-1 day');
-            $from->modify('- ' . $len . ' days');
-        }
-
-        $caches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-            $from, $to, null, [$roomTypeId], null
+        $caches = $caches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
+            $begin, $end, null, [$roomTypeId], null
         );
         $tariffCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-            $from, $to, null, [$roomTypeId], [$tariffId], true
+            $begin, $end, null, [$roomTypeId], [$tariffId], true
         );
 
         foreach ($caches as $cache) {
 
-            $strDate = $cache->getDate()->format('d.m.Y');
+            $date = $cache->getDate();
+            $strDate = $date->format('d.m.Y');
+
             if (isset($tariffCaches[$roomTypeId][$tariffId][$strDate])) {
                 $cache = $tariffCaches[$roomTypeId][$tariffId][$strDate];
             }
 
-            if (count($caches) < $len) {
-                return true;
+            $rooms = $cache->getLeftRooms();
+            $packages = $cache->getPackagesCount();
+
+
+            if ($date < $result->getEnd() && $date >= $result->getBegin()) {
+                $packages += 1;
             }
 
-            if ($cache->getPackagesCount() >= $middle) {
-                $greater += 1;
-            } else {
-                $less +=1;
-            }
+            dump($packages);
         }
-
-        if ($greater && $less) {
-            return false;
-        }
-
         return true;
     }
 

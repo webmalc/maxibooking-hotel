@@ -7,9 +7,6 @@
         <li><div class="bg-green disabled color-palette">3</div> - забронировано</li>
         <li><div class="bg-gray disabled color-palette">5</div> - осталось</li>
         <li><div class="mbh-graph-cell-danger"><i class="fa text-red fa-times"></i></div> - нет данных</li>
-        {% if client_config() and client_config().getSearchWindows() %}
-            <li><div class="bg-yellow disabled color-palette">5</div> - окно</li>
-        {% endif %}
     </ul>
 
     {% for roomType in data.roomTypes %}
