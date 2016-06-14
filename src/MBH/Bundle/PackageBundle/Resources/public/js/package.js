@@ -211,13 +211,16 @@ var docReadyPackages = function () {
         },
         "order": [[2, 'desc']],
         "aoColumns": [
-            {"bSortable": false}, // icon
-            null, // prefix
-            null, // created
-            null, // room
-            null, //dates
-            null, //tourists
-            null, // price
+            {"bSortable": false}, 
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
             {"bSortable": false} // actions
         ],
         "drawCallback": function (settings, json) {
