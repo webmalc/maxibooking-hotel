@@ -30,14 +30,21 @@ class ApiController extends Controller
 
     /**
      * Orders xml
-     * @Route("/orders/{begin}/{end}/{id}/{sign}", name="online_orders", defaults={"_format"="xml", "id"=null})
+     * @Route("/orders/{begin}/{end}/{id}/{sign}/{type}", name="online_orders", defaults={"_format"="xml", "id"=null})
      * @Method("GET")
      * @ParamConverter("begin", options={"format": "Y-m-d"})
      * @ParamConverter("end", options={"format": "Y-m-d"})
      * @ParamConverter("hotel", class="MBH\Bundle\HotelBundle\Document\Hotel")
      * @Template("")
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param Hotel $hotel
+     * @param $sign
+     * @param string $type
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function ordersAction(\DateTime $begin, \DateTime $end, Hotel $hotel, $sign)
+    public function ordersAction(\DateTime $begin, \DateTime $end, Hotel $hotel, $sign, $type = 'begin')
     {
         if (
             empty($this->container->getParameter('mbh_modules')['online_export']) ||
@@ -46,16 +53,20 @@ class ApiController extends Controller
             throw $this->createNotFoundException();
         }
 
+        if (!in_array($type, ['begin', 'updatedAt', 'end'])) {
+            $type = 'begin';
+        }
+
         $this->dm->getFilterCollection()->disable('softdeleteable');
 
         $qb = $this->dm->getRepository('MBHPackageBundle:Package')
             ->createQueryBuilder()
-            ->field('updatedAt')->gte($begin)
-            ->field('updatedAt')->lte($end)
+            ->field($type)->gte($begin)
+            ->field($type)->lte($end)
             ->field('roomType.id')->in($this->get('mbh.helper')->toIds($hotel->getRoomTypes()))
             ->sort('updatedAt', 'desc');
         ;
-
+        
         return [
             'packages' => $qb->getQuery()->execute()
         ];

@@ -3,7 +3,7 @@
     <orders>
         {% for package in packages %}
         <!-- бронь id - номер брони order_id - номер заказа (в заказе может быть несколько броней) -->
-        <order id="56d5605b627f13162b8b45aa" order_id="1234">
+        <order id="{{ package.id }}" order_id="{{ package.order.id }}">
             <hotel>{{ package.roomType.hotel }}</hotel>
             <roomType>{{ package.roomType }}</roomType>
 
@@ -34,6 +34,36 @@
                 <service id="{{ service.id }}">{{ service.service }}</service>
                 {% endfor %}
             </services>
+
+            <!-- Размещение
+                roomtype - тип номера;
+                room - комната;
+                floor - этаж;
+                building - корпус;
+                begin - дата и время заселения;
+                end - дата и время выезда;
+            -->
+            {% if package.accommodation %}
+                {% set accommodation = package.accommodation %}
+                <accommodation>
+                    <roomtype id="{{ accommodation.roomType.id }}">{{ accommodation.roomType }}</roomtype>
+                    <room id="{{ accommodation.id }}">{{ accommodation }}</room>
+                    {% if package.arrivalTime %}
+                        <begin>{{ package.arrivalTime|date('Y-m-d H:i') }}</begin>
+                    {% else %}
+                        <begin/>
+                    {% endif %}
+                    {% if package.departureTime %}
+                        <end>{{ package.departureTime|date('Y-m-d H:i') }}</end>
+                    {% else %}
+                        <end/>
+                    {% endif %}
+                    <floor>{{ accommodation.floor }}</floor>
+                    <building>{{ accommodation.housing }}</building>
+                </accommodation>
+            {% else %}
+                <accommodation/>
+            {% endif %}
 
             <!-- плательщик брони -->
             {%  set payer = package.order.payer %}
