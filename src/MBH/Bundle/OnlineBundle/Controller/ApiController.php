@@ -53,19 +53,27 @@ class ApiController extends Controller
             throw $this->createNotFoundException();
         }
 
-        if (!in_array($type, ['begin', 'updatedAt', 'end'])) {
-            $type = 'begin';
+        if (!in_array($type, ['begin', 'updatedAt', 'end', 'live'])) {
+            $type = 'live';
         }
 
         $this->dm->getFilterCollection()->disable('softdeleteable');
 
         $qb = $this->dm->getRepository('MBHPackageBundle:Package')
             ->createQueryBuilder()
-            ->field($type)->gte($begin)
-            ->field($type)->lte($end)
             ->field('roomType.id')->in($this->get('mbh.helper')->toIds($hotel->getRoomTypes()))
             ->sort('updatedAt', 'desc');
         ;
+
+        if ($type == 'live') {
+            $qb
+                ->field('begin')->lte($end)
+                ->field('end')->gte($begin);
+        } else {
+            $qb
+                ->field($type)->gte($begin)
+                ->field($type)->lte($end);
+        }
         
         return [
             'packages' => $qb->getQuery()->execute()
