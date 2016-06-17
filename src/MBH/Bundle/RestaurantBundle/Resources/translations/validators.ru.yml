@@ -1,0 +1,4 @@
+validator.document.ingredient.notunique: Такой ингредиент уже существует
+validator.document.ingredientcategory.notunique: Такая категория уже существует
+validator.document.ingredientcategory.min_name: Имя категории долдно быть больше 2-х символов
+validator.document.ingredientcategory.max_name: Превышено допустимое количество символов

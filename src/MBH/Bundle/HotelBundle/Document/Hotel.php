@@ -188,6 +188,9 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig", mappedBy="hotel") */
     protected $myallocatorConfig;
 
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\RestaurantBundle\Document\IngredientCategory", mappedBy="hotel") */
+    protected $ingredientCategories;
+
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Country")
@@ -1177,3 +1180,4 @@ class Hotel extends Base implements \JsonSerializable
         $this->description = $description;
     }
 }
+//TODO: Добавить в отель добавление и удаление категорий ингредиентов.

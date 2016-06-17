@@ -1,3 +1,4 @@
+
 mbh_warehouse:
     resource: "@MBHWarehouseBundle/Controller/"
     type:     annotation
@@ -80,3 +81,8 @@ mbh_vega:
     resource: "@MBHVegaBundle/Controller/"
     type:     annotation
     prefix:   /vega
+
+mbh_restaurant:
+    resource: "@MBHRestaurantBundle/Controller/"
+    type:     annotation
+    prefix:   /restaurant
