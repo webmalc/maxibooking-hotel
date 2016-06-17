@@ -5,10 +5,8 @@
   "description": "The \"Symfony Standard Edition\" distribution",
   "minimum-stability": "dev",
   "autoload": {
-    "psr-0": {
-      "": "src/",
-      "SymfonyStandard": "app/"
-    }
+    "psr-4": { "": "src/" },
+    "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
   },
   "require": {
     "php": ">=5.3.3",
