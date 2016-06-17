@@ -9,6 +9,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Class TariffService
+ * @Gedmo\Loggable()
  * @ODM\EmbeddedDocument()
 
  */
