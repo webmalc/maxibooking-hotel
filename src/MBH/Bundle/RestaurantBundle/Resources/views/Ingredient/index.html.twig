@@ -27,7 +27,6 @@
                 <div class="tab-pane {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}active{% endif %}" id="{{entity.id}}">
                     <!-- Tab actions -->
                     <div class="btn-list spacer-bottom text-right">
-                        таиббб
                         {% if is_granted('ROLE_RESTAURANT_CATEGORY_EDIT') %}
                             <a href="{{ path('restaurant_ingredient_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="Редактировать категорию услуг <{{entity.name}}>"><i class="fa fa-edit"></i> Редактировать</a>
                         {% endif %}
@@ -75,7 +74,7 @@
                                                     <i class='fa fa-pencil-square-o'></i>
                                                 </a>
                                             {% endif %}
-                                            {% if entry.system is defined and not entry.system and is_granted('ROLE_RESTAURANT_DELETE') %}
+                                            {% if is_granted('ROLE_RESTAURANT_DELETE') %}
                                                 <a href='{{ path('restaurant_ingredient_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
                                                     <i class='fa fa-trash-o'></i>
                                                 </a>

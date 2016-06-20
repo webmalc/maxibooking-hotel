@@ -255,7 +255,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('restaurant_ingredient_edit', ['id' => $ingredient->getId()]) :
-                $this->redirectToRoute('restaurant_ingredient', ['tab' => $entity->getId()]);
+                $this->redirectToRoute('restaurant_ingredient_category', ['tab' => $entity->getId()]);
         }
 
         return array(
@@ -321,7 +321,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
                 return $this->redirectToRoute('restaurant_ingredient_edit', ['id' => $ingredient->getId()]);
             }
 
-            return $this->redirectToRoute('restaurant_ingredient', ['tab' => $ingredient->getCategory()->getId()]);
+            return $this->redirectToRoute('restaurant_ingredient_category', ['tab' => $ingredient->getCategory()->getId()]);
         }
 
         return [
@@ -354,7 +354,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
             $request->getSession()->getFlashBag()->set('danger', $e->getMessage());
         }
 
-        return $this->redirectToRoute('restaurant_ingredient', ['tab' => $ingredient->getCategory()->getId()]);
+        return $this->redirectToRoute('restaurant_ingredient_category', ['tab' => $ingredient->getCategory()->getId()]);
     }
 
 }

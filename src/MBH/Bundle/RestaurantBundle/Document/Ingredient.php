@@ -98,18 +98,14 @@ class Ingredient extends Base
      * @ODM\Field(type="float", name="output")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
-     *      min=0,
+     *      min=1,
      *      max=100,
-     *      minMessage="Выход продукта не может быть меньше 0% и больше 100%"
+     *      minMessage="Выход продукта не может быть 0%",
+     *      maxMessage="Выход продукта не может быть больше 100%"
+     *
      * )
      */
-    protected $output;
-
-    /**
-     * @Gedmo\Versioned
-     * @ODM\Field(type="string")
-     * @Assert\NotNull()
-     */
+    protected $output = 100;
 
     //TODO: Включить валидацию для выбора единиц измерения товара. Посмотреть на тему как валидацию брать там же, где и в форму, т.е. getParameter('mbh.restaurant')
 

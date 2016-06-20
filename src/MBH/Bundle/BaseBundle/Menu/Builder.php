@@ -302,6 +302,9 @@ class Builder extends ContainerAware
         $menu['configs']->addChild('warehouse_category', ['route' => 'warehouse_category', 'label' => 'Склад'])
 			->setAttributes(['icon' => 'fa fa-book']) ;
 
+        $menu['configs']->addChild('restaurant', ['route'=>'restaurant_ingredient_category','label' => 'Ресторан'])
+            ->setAttributes(['icon' => 'fa fa-book']);
+
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa fa-arrows-h'])

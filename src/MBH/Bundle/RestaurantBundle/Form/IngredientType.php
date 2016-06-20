@@ -44,7 +44,7 @@ class IngredientType extends AbstractType
                 'multiple' => false,
                 'choices' => $options['calcTypes'],
             ])
-            ->add('output', PercentType::class, [
+            ->add('output', TextType::class, [
                 'label' => 'Выход',
                 'required' => true,
             ]);
