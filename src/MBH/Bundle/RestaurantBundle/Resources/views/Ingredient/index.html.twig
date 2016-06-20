@@ -20,72 +20,75 @@
         {% endif %}
     </ul>
 
-    <form method="post" role="form" class="are-you-sure form-inline" action="{{ path('price_service_category_save_prices') }}">
+    <form method="post" role="form" class="are-you-sure form-inline" action="{{ path('restaurant_category_save_prices') }}">
         <!-- Tabs content -->
         <div class="tab-content">
             {% for entity in entities %}
                 <div class="tab-pane {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}active{% endif %}" id="{{entity.id}}">
                     <!-- Tab actions -->
                     <div class="btn-list spacer-bottom text-right">
-                        {% if entity.system is defined and not entity.system and is_granted('ROLE_RESTAURANT_CATEGORY_EDIT') %}
-                            <a href="{{ path('price_service_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="Редактировать категорию услуг <{{entity.name}}>"><i class="fa fa-edit"></i> Редактировать</a>
+                        таиббб
+                        {% if is_granted('ROLE_RESTAURANT_CATEGORY_EDIT') %}
+                            <a href="{{ path('restaurant_ingredient_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="Редактировать категорию услуг <{{entity.name}}>"><i class="fa fa-edit"></i> Редактировать</a>
                         {% endif %}
                         {% if is_granted('ROLE_RESTAURANT_CATEGORY_NEW') %}
-                            <a href="{{ path('price_service_category_entry_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="Создать услугу в категории <{{entity.name}}>"><i class="fa fa-plus"></i> Добавить услугу</a>
+                            <a href="{{ path('restaurant_ingredient_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="Создать услугу в категории <{{entity.name}}>"><i class="fa fa-plus"></i> Добавить ингредиент</a>
                         {% endif %}
-                        {% if entity.system is defined and not entity.system and is_granted('ROLE_RESTAURANT_CATEGORY_DELETE') %}
-                            <a href="{{ path('price_service_category_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="Удалить категорию услуг <{{entity.name}}>"><i class="fa fa-trash-o"></i> Удалить</a>
+                        {% if is_granted('ROLE_RESTAURANT_CATEGORY_DELETE') %}
+                            <a href="{{ path('restaurant_ingredient_category_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="Удалить категорию услуг <{{entity.name}}>"><i class="fa fa-trash-o"></i> Удалить</a>
                         {% endif %}
                     </div>
 
-                    {#{% if entity.services.count %}#}
-                        {#<table class="table table-actions table-striped table-hover table-condensed service-tables not-auto-datatable">#}
-                            {#<thead>#}
-                            {#<tr>#}
-                                {#<th class="td-xs"></th>#}
-                                {#<th>Название</th>#}
-                                {#<th class="td-md">Цена</th>#}
-                                {#<th class="td-sm">Тип расчета</th>#}
-                                {#<th class="td-sm">Дата</th>#}
-                                {#<th class="td-sm">Включена</th>#}
-                                {#<th class="td-md"></th>#}
-                            {#</tr>#}
-                            {#</thead>#}
-                            {#<tbody>#}
-                            {#{% for entry in entity.services %}#}
-                                {#<tr>#}
-                                    {#<td><i class="fa fa-plug"></i></td>#}
-                                    {#<td><a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>#}
-                                    {#<td>#}
-                                        {#<span class="hidden">{{ entry.price }}</span>#}
-                                        {#<input name="entries[{{ entry.id }}][price]" class="form-control spinner-0f {{ entry.calcType == 'day_percent' ? 'percent-spinner' : 'price-spinner'}} input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}">#}
-                                    {#</td>#}
-                                    {#<td class="text-center">{{ config.calcTypes[entry.calcType]|default('Штука') }}</td>#}
-                                    {#<td class="text-center">{% if entry.date %}<i class="fa fa-check text-success"></i>{% endif %}</td>#}
-                                    {#<td class="text-center">#}
-                                        {#<input class="checkbox-mini" name="entries[{{ entry.id }}][enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">#}
-                                    {#</td>#}
-                                    {#<td class="text-center">#}
-                                        {#<div class='btn-list'>#}
-                                            {#{% if is_granted('ROLE_RESTAURANT_EDIT') %}#}
-                                                {#<a href='{{ path('price_service_category_entry_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>#}
-                                                    {#<i class='fa fa-pencil-square-o'></i>#}
-                                                {#</a>#}
-                                            {#{% endif %}#}
-                                            {#{% if not entry.system and is_granted('ROLE_RESTAURANT_DELETE') %}#}
-                                                {#<a href='{{ path('price_service_category_entry_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>#}
-                                                    {#<i class='fa fa-trash-o'></i>#}
-                                                {#</a>#}
-                                            {#{% endif %}#}
-                                        {#</div>#}
-                                    {#</td>#}
-                                {#</tr>#}
-                            {#{% endfor %}#}
-                            {#</tbody>#}
-                        {#</table>#}
-                    {#{% else %}#}
-                        {#<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> В этой категории нет ни одной услуги. <a href="{{ path('price_service_category_entry_new', {'id': entity.id }) }}">Добавить услугу?</a></div>#}
-                    {#{% endif %}#}
+                    {% if entity.ingredients.count %}
+                        <table class="table table-actions table-striped table-hover table-condensed service-tables not-auto-datatable">
+                            <thead>
+                            <tr>
+                                <th class="td-xs"></th>
+                                <th>Название</th>
+                                <th class="td-md">Цена</th>
+                                <th class="td-sm">ед.изм.</th>
+                                <th class="td-sm">выход</th>
+                                <th class="td-sm">Наличие</th>
+                                <th class="td-md"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for entry in entity.ingredients %}
+                                <tr>
+                                    <td><i class="fa fa-plug"></i></td>
+                                    <td><a href='{{ path('restaurant_ingredient_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system is defined and entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
+                                    <td>
+                                        <span class="hidden">{{ entry.price }}</span>
+                                        <input name="entries[{{ entry.id }}][price]" class="form-control spinner-0f {{ entry.calcType == 'day_percent' ? 'percent-spinner' : 'price-spinner'}} input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}">
+                                    </td>
+                                    <td class="text-center">{{ config.calcTypes[entry.calcType]|default('Штука') }}</td>
+                                    <td class="text-center">
+                                        <span>{{ entry.output }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input class="checkbox-mini" name="entries[{{ entry.id }}][enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
+                                    </td>
+                                    <td class="text-center">
+                                        <div class='btn-list'>
+                                            {% if is_granted('ROLE_RESTAURANT_EDIT') %}
+                                                <a href='{{ path('restaurant_ingredient_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
+                                                    <i class='fa fa-pencil-square-o'></i>
+                                                </a>
+                                            {% endif %}
+                                            {% if entry.system is defined and not entry.system and is_granted('ROLE_RESTAURANT_DELETE') %}
+                                                <a href='{{ path('restaurant_ingredient_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
+                                                    <i class='fa fa-trash-o'></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> В этой категории ни одного ингредиента. <a href="{{ path('restaurant_ingredient_new', {'id': entity.id }) }}">Добавить ингредиент?</a></div>
+                    {% endif %}
 
                     <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
                         <div class="container-fluid">

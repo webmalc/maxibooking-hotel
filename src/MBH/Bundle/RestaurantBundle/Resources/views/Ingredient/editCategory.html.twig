@@ -1,0 +1,15 @@
+{% extends 'MBHRestaurantBundle:Ingredient:layout.html.twig' %}
+
+{% set small_title = "редактирование категории ингредиентов #" ~ entity.id %}
+{% set layout = 'box' %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('restaurant_ingredient_category_update', {'id': entity.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': 'restaurant_ingredient_category_delete' } %}
+    {{ form_end(form) }}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs, 'delete_route': 'restaurant_ingredient_category_delete' } %}
+
+{% endblock %}

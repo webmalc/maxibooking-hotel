@@ -82,6 +82,7 @@ class Ingredient extends Base
 
     /**
      * @var int
+     * @Gedmo\Versioned()
      * @ODM\Field(type="float", name="price")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -93,6 +94,7 @@ class Ingredient extends Base
 
     /**
      * @var int
+     * @Gedmo\Versioned()
      * @ODM\Field(type="float", name="output")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -102,6 +104,39 @@ class Ingredient extends Base
      * )
      */
     protected $output;
+
+    /**
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     */
+
+    //TODO: Включить валидацию для выбора единиц измерения товара. Посмотреть на тему как валидацию брать там же, где и в форму, т.е. getParameter('mbh.restaurant')
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     * @Assert\Choice(choices = {"per_kg", "per_grm", "per_ml", "per_l"})
+     */
+    protected $calcType;
+
+    /**
+     * @return string
+     */
+    public function getCalcType()
+    {
+        return $this->calcType;
+    }
+
+    /**
+     * @param string $calcType
+     */
+    public function setCalcType($calcType)
+    {
+        $this->calcType = $calcType;
+    }
 
     /**
      * @return mixed
@@ -196,6 +231,10 @@ class Ingredient extends Base
         return $this->fullTitle;
     }
 
+    public function getHotel()
+    {
+        return $this->getCategory()->getHotel();
+    }
 
 
 

@@ -350,3 +350,11 @@ parameters:
     mbh.warehouse.operations:
         in: "Приход"
         out: "Расход"
+
+    #Ресторан
+    mbh.restaurant:
+      calcTypes:
+        per_kg: 'за килограмм'
+        per_grm: 'за грамм'
+        per_ml: 'за миллилитр'
+        per_l: 'за литр'
