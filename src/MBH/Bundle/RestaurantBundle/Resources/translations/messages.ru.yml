@@ -1,1 +1,4 @@
-restaurant.entity.name: ингредиент
+restaurant.entity.one: ингредиент
+restaurant.entity.many: ингредиентов
+restaurant.category: категория
+restaurant.category.new: новая категория

@@ -8,14 +8,14 @@
         {% for entity in entities %}
             <li {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}class="active"{% endif %}>
                 <a href="#{{entity.id}}" role="tab" data-toggle="tab">
-                    <i class="fa fa-lemon-o"></i> {{entity.name}}
+                    <i class="fa fa-spoon"></i> {{entity.name}}
                     {% if entity.system is defined and entity.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{% endif %}
                 </a>
             </li>
         {% endfor %}
         {% if is_granted('ROLE_RESTAURANT_CATEGORY_NEW') %}
             <li>
-                <a href="{{ path('restaurant_ingredient_category_new') }}"><i class="fa fa-plus"></i> Новая категория ингредиентов</a>
+                <a href="{{ path('restaurant_ingredient_category_new') }}"><i class="fa fa-plus"></i>Новая категория ингредиентов</a>
             </li>
         {% endif %}
     </ul>
@@ -45,8 +45,8 @@
                                 <th class="td-xs"></th>
                                 <th>Название</th>
                                 <th class="td-md">Цена</th>
+                                <th class="td-md">выход</th>
                                 <th class="td-sm">ед.изм.</th>
-                                <th class="td-sm">выход</th>
                                 <th class="td-sm">Наличие</th>
                                 <th class="td-md"></th>
                             </tr>
@@ -54,16 +54,17 @@
                             <tbody>
                             {% for entry in entity.ingredients %}
                                 <tr>
-                                    <td><i class="fa fa-plug"></i></td>
+                                    <td><i class="fa fa-spoon"></i></td>
                                     <td><a href='{{ path('restaurant_ingredient_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system is defined and entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
                                     <td>
                                         <span class="hidden">{{ entry.price }}</span>
-                                        <input name="entries[{{ entry.id }}][price]" class="form-control spinner-0f {{ entry.calcType == 'day_percent' ? 'percent-spinner' : 'price-spinner'}} input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}">
+                                        <input name="entries[{{ entry.id }}][price]" class="form-control spinner-0f price-spinner input-sm" type="text" placeholder="Услуга не используется" value="{{ entry.price }}">
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="hidden">{{ entry.output }}</span>
+                                        <input name="entries[{{ entry.id }}][output]" class="form-control  fix-percent-spinner input-sm" type="text"  value="{{ entry.output }}">
                                     </td>
                                     <td class="text-center">{{ config.calcTypes[entry.calcType]|default('Штука') }}</td>
-                                    <td class="text-center">
-                                        <span>{{ entry.output }}</span>
-                                    </td>
                                     <td class="text-center">
                                         <input class="checkbox-mini" name="entries[{{ entry.id }}][enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
                                     </td>

@@ -37,16 +37,18 @@ class IngredientType extends AbstractType
                 'required' => false,
                 'attr' => ['placeholder' => 'Услуга не используется', 'class' => 'spinner price-spinner'],
             ])
-            ->add('calcType', ChoiceType::class , [
+            ->add('calcType', ChoiceType::class, [
                 'label' => 'Единицы',
                 'required' => true,
                 'empty_value' => '',
                 'multiple' => false,
                 'choices' => $options['calcTypes'],
+
             ])
             ->add('output', TextType::class, [
                 'label' => 'Выход',
                 'required' => true,
+                'attr' => ['class' => 'fix-percent-spinner']
             ]);
     }
 

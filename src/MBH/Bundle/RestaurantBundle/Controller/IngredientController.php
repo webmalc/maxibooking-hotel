@@ -57,6 +57,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
         foreach ($entries as $id => $data) {
             $entity = $ingredientRepository->find($id);
             $price = (float) $data['price'];
+            $output = (float)$data['output'];
             isset($data['enabled']) && $data['enabled'] ? $isEnabled = true : $isEnabled = false;
 
             if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
@@ -64,6 +65,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
             }
 
             $entity->setPrice((empty($price)) ? null : (float)$price);
+            $entity->setOutput((empty($output)) ? null : (float)$output);
 
             $this->dm->persist($entity);
             $this->dm->flush();
