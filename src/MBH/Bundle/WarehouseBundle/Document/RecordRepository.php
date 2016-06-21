@@ -25,15 +25,12 @@ class RecordRepository extends DocumentRepository
     public function findByQueryCriteria($criteria, $offset = 0, $limit = 10)
     {
 		$qb = $this->createQueryBuilder('q');
-		
-		if ($criteria->getRecordDateFrom() && $criteria->getRecordDateTo()) {
-	        $qb->field('recordDate')->range($criteria->getRecordDateFrom(), $criteria->getRecordDateTo()->modify('+ 1 day'));
+
+		if ($criteria->getRecordDateFrom()) {
+			$qb->field('recordDate')->gte($criteria->getRecordDateFrom());
 		} 
-		elseif ($criteria->getRecordDateFrom()) {
-			$qb->field('recordDate')->equals($criteria->getRecordDateFrom());
-		} 
-		elseif ($criteria->getRecordDateTo()) {
-			$qb->field('recordDate')->equals($criteria->getRecordDateTo());
+		if ($criteria->getRecordDateTo()) {
+			$qb->field('recordDate')->lte($criteria->getRecordDateTo());
 		}
 		
 		if ($criteria->getOperation()) {
@@ -154,7 +151,7 @@ class RecordRepository extends DocumentRepository
 			$items[] = $v1;
 		}
 		
-		// use usort() for sortng array by qtty (asc or desc etc.)
+		// use usort() for sorting array by qtty (asc or desc etc.)
 		if ($criteria->getSortBy() == 'qtty') {
 			if ($criteria->getSortDirection() > 0) { // asc
 				usort($items, function ($a, $b) {

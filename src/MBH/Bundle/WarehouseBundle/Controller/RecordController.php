@@ -126,8 +126,7 @@ class RecordController extends Controller
 			0 => 'foo',
             1 => 'fullTitle',
             2 => 'category',
-            3 => 'qtty',
-            4 => 'unit',
+            3 => 'qtty'
         ]);
 		
         $formData = (array) $request->get('form');

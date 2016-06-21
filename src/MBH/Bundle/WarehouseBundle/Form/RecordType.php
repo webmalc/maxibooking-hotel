@@ -58,7 +58,7 @@ class RecordType extends AbstractType
             ])
             ->add('price', 'text', [
                 'label' => 'warehouse.items.price',
-                'required' => true,
+                'required' => false,
                 'attr' => ['class' => 'spinner price-spinner'],
             ])
             ->add('amount', 'text', [
