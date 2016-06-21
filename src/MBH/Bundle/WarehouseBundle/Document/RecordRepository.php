@@ -139,7 +139,7 @@ class RecordRepository extends DocumentRepository
 			->field('id')->in($this->wareItems)		
             ->skip($offset)
             ->limit($limit)
-			->sort($criteria->getSortBy(), $criteria->getSortDirection())
+			//->sort($criteria->getSortBy(), $criteria->getSortDirection())
 		;
 		
         $res = $qb->getQuery()->execute();

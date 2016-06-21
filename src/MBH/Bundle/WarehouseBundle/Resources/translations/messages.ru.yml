@@ -41,7 +41,7 @@ warehouse:
         newSuccess: Товар успешно создан
         editSuccess: Товар успешно отредактирован
         delSuccess: Товар успешно удалён
-        price: Цена
+        price: Цена за единицу
     record:
         new: создание новой записи
         newSuccess: Новая запись успешно создана
@@ -63,3 +63,7 @@ warehouse:
         tabs:
             list: Записи
             inventory: Остатки
+        th:
+          quantity: Кол-во
+          price: Цена
+

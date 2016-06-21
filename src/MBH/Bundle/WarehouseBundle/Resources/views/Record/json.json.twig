@@ -9,10 +9,9 @@
 				"{{ record.recordDate|date('d.m.Y') }}",				
 				"{% if record.operation == 'in' %}<span class='label label-success'>{{ 'warehouse.record.in'|trans }}</span>{% else %}<span class='label label-danger'>{{ 'warehouse.record.out'|trans }}</span>{% endif %}",					
 				"{{ record.hotel }}",				
-				"<div class='text-right'>{{ record.qtty }}</div>",
-				"{{ record.wareItem.unit }}",
-				"<div class='text-right'>{{ record.price|number_format(2) }}</div>",
-				"<div class='text-right'>{{ record.amount|number_format(2) }}</div>",
+				"<div class='text-center'>{{ record.qtty }} {{ record.wareItem.unit }}</div>",
+				"<div class='text-right padding-right-xs'>{{ record.price|number_format(2) }}</div>",
+				"<div class='text-right padding-right-xs'>{{ record.amount|number_format(2) }}</div>",
 				"<div class='btn-list text-right'>{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': record, 'route': 'warehouse_record'} %}{% endembed %}</div>"
             ]{% if loop.index != records|length %},{% endif %}
         {% endfor %}
