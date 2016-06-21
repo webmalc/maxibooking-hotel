@@ -16,6 +16,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class IngredientController extends BaseController implements CheckHotelControllerInterface
 {
@@ -227,11 +228,20 @@ class IngredientController extends BaseController implements CheckHotelControlle
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
-        //TODO: Вынести в настройки. Уточнить единицы измерения.
+        
         $ingredient = new Ingredient();
+
+        $calcTypes = [];
+        $translator = $this->get('translator');
+        $rawcalcTypes = $this->container->getParameter('mbh.restaurant')['calcTypes'];
+        foreach ($rawcalcTypes as $value) {
+            $calcTypes[$value] = $translator->trans('restaurant.units.'.$value);
+        }
+
         $form = $this->createForm(new IngredientForm(), $ingredient, [
-            'calcTypes' => $this->container->getParameter('mbh.restaurant')['calcTypes']
+            'calcTypes' => $calcTypes
         ]);
+
         return [
             'entry' => $ingredient,
             'entity' => $entity,

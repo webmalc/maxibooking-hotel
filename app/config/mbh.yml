@@ -354,8 +354,13 @@ parameters:
     #Ресторан
     mbh.restaurant:
       calcTypes:
-        per_kg: 'кг.'
-        per_piece: 'шт.'
-        per_grm: 'гр.'
-        per_l: 'л.'
-        per_ml: 'мл.'
+#        per_kg: 'кг.'
+#        per_piece: 'шт.'
+#        per_grm: 'гр.'
+#        per_l: 'л.'
+#        per_ml: 'мл.'
+        - per_kg
+        - per_piece
+        - per_grm
+        - per_l
+        - per_ml

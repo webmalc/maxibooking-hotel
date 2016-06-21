@@ -21,15 +21,15 @@ class IngredientCategoryType extends AbstractType
     {
         $builder
             ->add('fullTitle', TextType::class, [
-                'label' => 'Название',
+                'label' => 'restaurant.category.form.fullTitle.label',
                 'required' => true,
-                'attr' => ['placeholder' => 'Имя категории ингредиентов'],
-                'help' => 'Имя категории ингридиентов'
+                'attr' => ['placeholder' => 'restaurant.category.form.placeholder'],
+                'help' => 'restaurant.category.form.fullTitle.help'
             ])
             ->add('title', TextType::class, [
-                'label' => 'Внутреннее название',
+                'label' => 'restaurant.category.form.title.label',
                 'required' => false,
-                'help' => 'Название для использования внутри MaxiBooking'
+                'help' => 'restaurant.category.form.title.help'
             ])
 
         ;

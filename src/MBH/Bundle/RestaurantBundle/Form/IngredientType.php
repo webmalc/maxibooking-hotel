@@ -23,40 +23,40 @@ class IngredientType extends AbstractType
     {
         $builder
             ->add('fullTitle', TextType::class, [
-                'label' => 'Название',
+                'label' => 'restaurant.ingredient.form.fullTitle.label',
                 'required' => true,
-                'attr' => ['placeholder' => 'Название'],
-                'help' => 'Название ингредиента'
+                'attr' => ['placeholder' => 'restaurant.ingredient.form.fullTitle.placeholder'],
+                'help' => 'restaurant.ingredient.form.fullTitle.help'
 
             ])
             ->add('title', TextType::class, [
-                'label' => 'Внутреннее название',
+                'label' => 'restaurant.ingredient.form.title.label',
                 'required' => false,
-                'attr' => ['placeholder' => 'Название'],
-                'help' => 'Название для использования внутри MaxiBooking'
+                'attr' => ['placeholder' => 'restaurant.ingredient.form.title.placeholder'],
+                'help' => 'restaurant.ingredient.form.title.help'
             ])
             ->add('price', TextType::class, [
-                'label' => 'Цена',
+                'label' => 'restaurant.ingredient.form.price.label',
                 'required' => false,
-                'attr' => ['placeholder' => 'цена', 'class' => 'spinner price-spinner'],
-                'help' => 'Цена для ингредиента'
+                'attr' => ['class' => 'spinner price-spinner'],
+                'help' => 'restaurant.ingredient.form.price.help'
 
             ])
             ->add('calcType', ChoiceType::class, [
-                'label' => 'Единицы мер',
+                'label' => 'restaurant.ingredient.form.calcType.label',
                 'required' => true,
                 'empty_value' => '',
                 'multiple' => false,
                 'choices' => $options['calcTypes'],
-                'help' => 'Единицы меры ингредиента'
+                'help' => 'restaurant.ingredient.form.calcType.help'
 
 
             ])
             ->add('output', TextType::class, [
-                'label' => 'Процент выхода продукции',
+                'label' => 'restaurant.ingredient.form.output.label',
                 'required' => true,
                 'attr' => ['class' => 'fix-percent-spinner'],
-                'help' => 'Процент получаемый на выходе после обработки'
+                'help' => 'restaurant.ingredient.form.output.help'
 
             ]);
     }
