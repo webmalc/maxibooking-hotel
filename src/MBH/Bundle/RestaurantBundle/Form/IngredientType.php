@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class IngredientType extends AbstractType
@@ -24,35 +25,43 @@ class IngredientType extends AbstractType
             ->add('fullTitle', TextType::class, [
                 'label' => 'Название',
                 'required' => true,
-                'attr' => ['placeholder' => 'Яблоко']
+                'attr' => ['placeholder' => 'Название'],
+                'help' => 'Название ингредиента'
+
             ])
             ->add('title', TextType::class, [
                 'label' => 'Внутреннее название',
                 'required' => false,
-                'attr' => ['placeholder' => 'Яблоко санкционное, вкусное'],
+                'attr' => ['placeholder' => 'Название'],
                 'help' => 'Название для использования внутри MaxiBooking'
             ])
             ->add('price', TextType::class, [
                 'label' => 'Цена',
                 'required' => false,
-                'attr' => ['placeholder' => 'Услуга не используется', 'class' => 'spinner price-spinner'],
+                'attr' => ['placeholder' => 'цена', 'class' => 'spinner price-spinner'],
+                'help' => 'Цена для ингредиента'
+
             ])
             ->add('calcType', ChoiceType::class, [
-                'label' => 'Единицы',
+                'label' => 'Единицы мер',
                 'required' => true,
                 'empty_value' => '',
                 'multiple' => false,
                 'choices' => $options['calcTypes'],
+                'help' => 'Единицы меры ингредиента'
+
 
             ])
             ->add('output', TextType::class, [
-                'label' => 'Выход',
+                'label' => 'Процент выхода продукции',
                 'required' => true,
-                'attr' => ['class' => 'fix-percent-spinner']
+                'attr' => ['class' => 'fix-percent-spinner'],
+                'help' => 'Процент получаемый на выходе после обработки'
+
             ]);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
             [

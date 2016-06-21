@@ -8,14 +8,14 @@
         {% for entity in entities %}
             <li {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}class="active"{% endif %}>
                 <a href="#{{entity.id}}" role="tab" data-toggle="tab">
-                    <i class="fa fa-spoon"></i> {{entity.name}}
+                    <i class="fa fa-cutlery"></i>  {{entity.name}}
                     {% if entity.system is defined and entity.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{% endif %}
                 </a>
             </li>
         {% endfor %}
         {% if is_granted('ROLE_RESTAURANT_CATEGORY_NEW') %}
             <li>
-                <a href="{{ path('restaurant_ingredient_category_new') }}"><i class="fa fa-plus"></i>Новая категория ингредиентов</a>
+                <a href="{{ path('restaurant_ingredient_category_new') }}"><i class="fa fa-plus"></i> Новая категория ингредиентов</a>
             </li>
         {% endif %}
     </ul>
@@ -54,7 +54,7 @@
                             <tbody>
                             {% for entry in entity.ingredients %}
                                 <tr>
-                                    <td><i class="fa fa-spoon"></i></td>
+                                    <td><i class="fa fa-cutlery"></i></td>
                                     <td><a href='{{ path('restaurant_ingredient_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system is defined and entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
                                     <td>
                                         <span class="hidden">{{ entry.price }}</span>
@@ -70,12 +70,12 @@
                                     </td>
                                     <td class="text-center">
                                         <div class='btn-list'>
-                                            {% if is_granted('ROLE_RESTAURANT_EDIT') %}
+                                            {% if is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT') %}
                                                 <a href='{{ path('restaurant_ingredient_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
                                                     <i class='fa fa-pencil-square-o'></i>
                                                 </a>
                                             {% endif %}
-                                            {% if is_granted('ROLE_RESTAURANT_DELETE') %}
+                                            {% if is_granted('ROLE_RESTAURANT_INGREDIENT_DELETE') %}
                                                 <a href='{{ path('restaurant_ingredient_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
                                                     <i class='fa fa-trash-o'></i>
                                                 </a>
@@ -93,7 +93,7 @@
                     <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
                         <div class="container-fluid">
                             <ul class="nav navbar-nav">
-                                {% if is_granted('ROLE_RESTAURANT_EDIT') %}
+                                {% if is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT') %}
                                     <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить изменения</button></li>
                                 {% endif %}
                                 {% if is_granted('ROLE_RESTAURANT_CATEGORY_NEW') %}

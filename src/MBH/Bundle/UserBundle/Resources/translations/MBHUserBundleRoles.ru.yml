@@ -240,3 +240,14 @@ ROLE_WAREHOUSE_INVOICE_VIEW: Просмотр накладной
 ROLE_WAREHOUSE_INVOICE_NEW: Добавление накладной
 ROLE_WAREHOUSE_INVOICE_EDIT: Редактирование накладной
 ROLE_WAREHOUSE_INVOICE_DELETE: Удаление накладной
+
+ROLE_RESTAURANT: Ресторан
+ROLE_RESTAURANT_CATEGORY: Ресторан - категории
+ROLE_RESTAURANT_INGREDIENT: Ресторан - ингредиенты
+ROLE_RESTAURANT_CATEGORY_NEW: Создание категорий ингредиентов
+ROLE_RESTAURANT_CATEGORY_EDIT: Редактирование категорий ингредиентов
+ROLE_RESTAURANT_CATEGORY_DELETE: Удаление категорий ингредиентов
+ROLE_RESTAURANT_INGREDIENT_VIEW: Просмотр ингредиентов
+ROLE_RESTAURANT_INGREDIENT_NEW: Создание ингредиентов
+ROLE_RESTAURANT_INGREDIENT_EDIT: Редактирование ингредиентов
+ROLE_RESTAURANT_INGREDIENT_DELETE: Удаление ингредиентов

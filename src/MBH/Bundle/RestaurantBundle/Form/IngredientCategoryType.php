@@ -10,7 +10,9 @@ namespace MBH\Bundle\RestaurantBundle\Form;
 
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class IngredientCategoryType extends AbstractType
@@ -18,15 +20,15 @@ class IngredientCategoryType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('fullTitle', 'text', [
+            ->add('fullTitle', TextType::class, [
                 'label' => 'Название',
                 'required' => true,
-                'attr' => ['placeholder' => 'Имя категории ингредиентов']
+                'attr' => ['placeholder' => 'Имя категории ингредиентов'],
+                'help' => 'Имя категории ингридиентов'
             ])
-            ->add('title', 'text', [
+            ->add('title', TextType::class, [
                 'label' => 'Внутреннее название',
                 'required' => false,
-                'attr' => ['placeholder' => 'Овощи свежие'],
                 'help' => 'Название для использования внутри MaxiBooking'
             ])
 
@@ -34,7 +36,8 @@ class IngredientCategoryType extends AbstractType
 
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
             [
@@ -42,6 +45,7 @@ class IngredientCategoryType extends AbstractType
             ]
         );
     }
+
 
     public function getName()
     {

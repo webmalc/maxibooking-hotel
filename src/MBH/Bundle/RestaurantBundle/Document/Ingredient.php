@@ -107,14 +107,12 @@ class Ingredient extends Base
      */
     protected $output = 100;
 
-    //TODO: Включить валидацию для выбора единиц измерения товара. Посмотреть на тему как валидацию брать там же, где и в форму, т.е. getParameter('mbh.restaurant')
-
     /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      * @Assert\NotNull()
-     * @Assert\Choice(choices = {"per_kg", "per_grm", "per_ml", "per_l"})
+     * @Assert\Choice(choices = {"per_kg", "per_grm", "per_ml", "per_l", "per_piece"})
      */
     protected $calcType;
 
@@ -129,7 +127,7 @@ class Ingredient extends Base
     /**
      * @param string $calcType
      */
-    public function setCalcType($calcType)
+    public function setCalcType(string $calcType)
     {
         $this->calcType = $calcType;
     }
@@ -153,7 +151,7 @@ class Ingredient extends Base
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getFullTitle()
     {
@@ -173,7 +171,7 @@ class Ingredient extends Base
      */
     public function getTitle()
     {
-        return $this->title;
+        return $this->title?:$this->getFullTitle();
     }
 
     /**
@@ -185,53 +183,41 @@ class Ingredient extends Base
     }
 
     /**
-     * @return int
+     * @return float
      */
-    public function getPrice()
+    public function getPrice() :float
     {
         return $this->price;
     }
 
     /**
-     * @param int $price
+     * @param float $price
      */
-    public function setPrice($price)
+    public function setPrice(float $price)
     {
         $this->price = $price;
     }
 
     /**
-     * @return int
+     * @return float
      */
-    public function getOutput()
+    public function getOutput(): float
     {
         return $this->output;
     }
 
     /**
-     * @param int $output
+     * @param float $output
      */
-    public function setOutput($output)
+    public function setOutput(float $output)
     {
         $this->output = $output;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        if (!empty($this->title)) {
-            return $this->title;
-        }
-        return $this->fullTitle;
-    }
 
     public function getHotel()
     {
         return $this->getCategory()->getHotel();
     }
-
-
 
 }

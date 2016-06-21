@@ -23,14 +23,14 @@ class IngredientController extends BaseController implements CheckHotelControlle
      * List all ingredient category
      *
      * @Route("/", name="restaurant_ingredient_category")
-     * @Security("is_granted('ROLE_RESTAURANT_VIEW')")
+     * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_VIEW')")
      * @Method("GET")
      * @Template()
      */
     public function indexAction()
     {
         $entities = $this->dm->getRepository('MBHRestaurantBundle:IngredientCategory')->createQueryBuilder('q')
-            ->field('hotel.id')->equals($this->get('mbh.hotel.selector')->getSelected()->getId())
+            ->field('hotel.id')->equals($this->hotel->getId())
             ->sort('fullTitle', 'asc')
             ->getQuery()
             ->execute();
@@ -46,7 +46,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
      *
      * @Route("/", name="restaurant_category_save_prices")
      * @Method("POST")
-     * @Security("is_granted('ROLE_RESTAURANT_EDIT')")
+     * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT')")
      *
      */
     public function savePricesAction(Request $request)
@@ -54,9 +54,11 @@ class IngredientController extends BaseController implements CheckHotelControlle
         $entries = $request->get('entries');
         $ingredientRepository = $this->dm->getRepository('MBHRestaurantBundle:Ingredient');
 
+        $success = true;
+
         foreach ($entries as $id => $data) {
             $entity = $ingredientRepository->find($id);
-            $price = (float) $data['price'];
+            $price = (float)$data['price'];
             $output = (float)$data['output'];
             isset($data['enabled']) && $data['enabled'] ? $isEnabled = true : $isEnabled = false;
 
@@ -64,14 +66,27 @@ class IngredientController extends BaseController implements CheckHotelControlle
                 continue;
             }
 
-            $entity->setPrice((empty($price)) ? null : (float)$price);
-            $entity->setOutput((empty($output)) ? null : (float)$output);
+            $entity->setPrice($price);
+            $entity->setOutput($output);
+
+            //TODO: На самом деле spinner не дает вводить некорректные данные, но на случай изменения способа ввода проверяем.
+            $validator = $this->get('validator');
+            $errors = $validator->validate($entity);
+            if (count($errors) > 0) {
+                $success = false;
+                continue;
+            }
 
             $this->dm->persist($entity);
             $this->dm->flush();
         };
 
-        $request->getSession()->getFlashBag()->set('success', 'Цены успешно сохранены.');
+        $flashBag = $request->getSession()->getFlashBag();
+
+        $success ?
+            $flashBag->set('success', 'Цены успешно сохранены.'):
+            $flashBag->set('danger', 'Внимание, не все параметры сохранены успешно');
+
 
         return $this->redirectToRoute('restaurant_ingredient_category');
     }
@@ -202,7 +217,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
     /**
      * @Route("/{id}/new/ingredient", name="restaurant_ingredient_new")
      * @Method("GET")
-     * @Security("is_granted('ROLE_RESTAURANT_NEW')")
+     * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_NEW')")
      * @Template()
      * @ParamConverter(class="MBHRestaurantBundle:IngredientCategory")
      *
@@ -230,7 +245,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
      *
      * @Route("/{id}/create/ingredient", name="restaurant_ingredient_create")
      * @Method("POST")
-     * @Security("is_granted('ROLE_RESTAURANT_NEW')")
+     * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_NEW')")
      * @Template("MBHRestaurantBundle:Ingredient:newIngredient.html.twig")
      * @ParamConverter(class="MBHRestaurantBundle:IngredientCategory")
      */
@@ -271,7 +286,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
      *
      * @Route("/{id}/edit/ingredient", name="restaurant_ingredient_edit")
      * @Method("GET")
-     * @Security("is_granted('ROLE_RESTAURANT_EDIT')")
+     * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT')")
      * @Template()
      * @ParamConverter(class="MBHRestaurantBundle:Ingredient")
      */
@@ -338,7 +353,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
      * Delete entry.
      * @Route("/{id}/ingredient/delete", name="restaurant_ingredient_delete")
      * @Method("GET")
-     * @Security("is_granted('ROLE_RESTAURANT_DELETE')")
+     * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_DELETE')")
      * @ParamConverter(class="MBHRestaurantBundle:Ingredient")
      */
     public function deleteIngredientAction(Request $request, Ingredient $ingredient)
@@ -347,7 +362,6 @@ class IngredientController extends BaseController implements CheckHotelControlle
             if (!$this->container->get('mbh.hotel.selector')->checkPermissions($ingredient->getHotel())) {
                 throw $this->createNotFoundException();
             }
-            $catId = $ingredient->getCategory()->getId();
             $this->dm->remove($ingredient);
             $this->dm->flush($ingredient);
 

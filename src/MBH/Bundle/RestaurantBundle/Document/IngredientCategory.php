@@ -9,6 +9,7 @@
 namespace MBH\Bundle\RestaurantBundle\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -79,7 +80,7 @@ class IngredientCategory extends Base
     protected $hotel;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="Ingredient", mappedBy="category")
+     * @ODM\ReferenceMany(targetDocument="Ingredient", mappedBy="category", cascade={"remove"} )
      */
     protected $ingredients;
 
@@ -102,7 +103,7 @@ class IngredientCategory extends Base
     }
 
     /**
-     * @return ArrayCollection
+     * @return PersistentCollection
      */
     public function getIngredients()
     {
@@ -123,7 +124,7 @@ class IngredientCategory extends Base
      */
     public function setFullTitle($fullTitle)
     {
-        $this->fullTitle = $fullTitle;
+        $this->fullTitle = (string)$fullTitle;
         return $this;
     }
 
@@ -141,7 +142,7 @@ class IngredientCategory extends Base
      */
     public function setTitle($title)
     {
-        $this->title = $title;
+        $this->title = (string)$title;
         return $this;
     }
 
@@ -163,15 +164,4 @@ class IngredientCategory extends Base
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        if (!empty($this->title)) {
-            return $this->title;
-        }
-        return $this->fullTitle;
-    }
-    
 }

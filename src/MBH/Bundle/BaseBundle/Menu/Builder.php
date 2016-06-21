@@ -303,7 +303,7 @@ class Builder extends ContainerAware
 			->setAttributes(['icon' => 'fa fa-book']) ;
 
         $menu['configs']->addChild('restaurant', ['route'=>'restaurant_ingredient_category','label' => 'Ресторан'])
-            ->setAttributes(['icon' => 'fa fa-spoon']);
+            ->setAttributes(['icon' => 'fa fa-cutlery']);
 
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])

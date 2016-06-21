@@ -120,6 +120,12 @@ class GroupsData implements FixtureInterface, ContainerAwareInterface
                 'ROLE_STAFF'
             ]
         ],
+        'restaurant' => [
+            'title' => 'Ресторан',
+            'roles' => [
+                'ROLE_RESTAURANT'
+            ]
+        ]
     ];
 
     /**
