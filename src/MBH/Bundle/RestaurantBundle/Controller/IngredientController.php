@@ -38,7 +38,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
 
         return [
             'entities' => $entities,
-            'config' => $this->container->getParameter('mbh.restaurant')
+            'config' => $this->container->getParameter('mbh.units')
         ];
     }
 
@@ -232,14 +232,9 @@ class IngredientController extends BaseController implements CheckHotelControlle
         $ingredient = new Ingredient();
 
         $calcTypes = [];
-        $translator = $this->get('translator');
-        $rawcalcTypes = $this->container->getParameter('mbh.restaurant')['calcTypes'];
-        foreach ($rawcalcTypes as $value) {
-            $calcTypes[$value] = $translator->trans('restaurant.units.'.$value);
-        }
 
         $form = $this->createForm(new IngredientForm(), $ingredient, [
-            'calcTypes' => $calcTypes
+            'calcTypes' => $this->container->getParameter('mbh.units')
         ]);
 
         return [
@@ -269,7 +264,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
         $ingredient->setCategory($entity);
 
         $form = $this->createForm(new IngredientForm(), $ingredient, [
-            'calcTypes' => $this->container->getParameter('mbh.restaurant')['calcTypes']
+            'calcTypes' => $this->container->getParameter('mbh.units')['calcTypes']
         ]);
 
         $form->submit($request);
@@ -307,7 +302,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
         }
 
         $form = $this->createForm(new IngredientForm(), $ingredient, [
-            'calcTypes' => $this->container->getParameter('mbh.restaurant')['calcTypes']
+            'calcTypes' => $this->container->getParameter('mbh.units')['calcTypes']
         ]);
 
         return [
@@ -334,7 +329,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
         }
 
         $form = $this->createForm(new IngredientForm(), $ingredient, [
-            'calcTypes' => $this->container->getParameter('mbh.restaurant')['calcTypes']
+            'calcTypes' => $this->container->getParameter('mbh.units')['calcTypes']
         ]);
 
         $form->submit($request);

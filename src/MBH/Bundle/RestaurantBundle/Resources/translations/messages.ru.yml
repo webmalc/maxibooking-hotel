@@ -58,9 +58,4 @@ restaurant:
         placeholder:
         help:         Процент получаемый на выходе после обработки
 
-  units:
-    per_kg:     кг.
-    per_piece:  шт.
-    per_grm:    гр.
-    per_l:      л.
-    per_ml:     мл.
+
