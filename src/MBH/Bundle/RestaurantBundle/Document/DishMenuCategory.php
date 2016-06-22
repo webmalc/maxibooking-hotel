@@ -2,15 +2,15 @@
 /**
  * Created by PhpStorm.
  * User: zalex
- * Date: 17.06.16
- * Time: 12:10
+ * Date: 22.06.16
+ * Time: 15:11
  */
 
 namespace MBH\Bundle\RestaurantBundle\Document;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\PersistentCollection;
+
 use MBH\Bundle\BaseBundle\Document\Base;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -19,14 +19,15 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+
+
 /**
- * @ODM\Document(collection="IngredientCategories")
+ * @ODM\Document(collection="DishMenuCategory")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="fullTitle", message="validator.document.ingredientcategory.notunique")
+ * @MongoDBUnique(fields="fullTitle", message="validator.document.dishMenuCategory.notunique")
  */
-
-class IngredientCategory extends Base
+class DishMenuCategory extends Base
 {
     /**
      * Hook timestampable behavior
@@ -45,6 +46,7 @@ class IngredientCategory extends Base
      * createdBy&updatedBy fields
      */
     use BlameableDocument;
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -52,9 +54,9 @@ class IngredientCategory extends Base
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
-     *      minMessage="validator.document.ingredientcategory.min_name",
+     *      minMessage="validator.document.dishMenuCategory.min_name",
      *      max=100,
-     *      maxMessage="validator.document.ingredientcategory.max_name"
+     *      maxMessage="validator.document.dishMenuCategory.max_name"
      * )
      */
     protected $fullTitle;
@@ -71,49 +73,34 @@ class IngredientCategory extends Base
      * )
      */
     protected $title;
-
+    
+    //TODO: перевод для месаджей не забыть добавить
     /**
+     * @var Hotel
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="ingredientCategories")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="dishMenuCategories")
      * @Assert\NotNull(message="Не выбран отель")
      */
     protected $hotel;
 
     /**
-     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\Ingredient", mappedBy="category", cascade={"remove"} )
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\DishMenuItem", mappedBy="category", cascade={"remove"} )
      */
-    protected $ingredients;
+    protected $dishMenuItems;
 
     /**
-     * IngredientCategory constructor.
+     * DishMenuCategory constructor.
+     *
      */
     public function __construct()
     {
-        $this->ingredients = new ArrayCollection();
-    }
-
-    public function addIngredient(Ingredient $ingredient)
-    {
-        $this->ingredients->add($ingredient);
-    }
-
-    public function removeIngredient(Ingredient $ingredient)
-    {
-        $this->ingredients->removeElement($ingredient);
-    }
-
-    /**
-     * @return PersistentCollection
-     */
-    public function getIngredients()
-    {
-        return $this->ingredients;
+        $this->dishMenuItems = new ArrayCollection();
     }
 
     /**
      * @return string
      */
-    public function getFullTitle()
+    public function getFullTitle(): string
     {
         return $this->fullTitle;
     }
@@ -124,7 +111,7 @@ class IngredientCategory extends Base
      */
     public function setFullTitle($fullTitle)
     {
-        $this->fullTitle = (string)$fullTitle;
+        $this->fullTitle = $fullTitle;
         return $this;
     }
 
@@ -142,12 +129,12 @@ class IngredientCategory extends Base
      */
     public function setTitle($title)
     {
-        $this->title = (string)$title;
+        $this->title = $title;
         return $this;
     }
 
     /**
-     * @return Hotel
+     * @return mixed
      */
     public function getHotel()
     {
@@ -155,12 +142,31 @@ class IngredientCategory extends Base
     }
 
     /**
-     * @param Hotel $hotel
-     * @return self
+     * @param mixed $hotel
+     * @return $this
      */
+
     public function setHotel(Hotel $hotel)
     {
         $this->hotel = $hotel;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDishMenuItems()
+    {
+        return $this->dishMenuItems;
+    }
+
+    /**
+     * @param mixed $dishMenuItems
+     * @return $this
+     */
+    public function setDishMenuItems($dishMenuItems)
+    {
+        $this->dishMenuItems = $dishMenuItems;
         return $this;
     }
 

@@ -39,7 +39,7 @@ restaurant:
     form:
       fullTitle:
         label:        Название
-        placeholder:  Введие название
+        placeholder:  Введите название
         help:         Название ингредиента
       title:
         label:        Внутреннее название
@@ -57,5 +57,37 @@ restaurant:
         label:        Процент выхода продукции
         placeholder:
         help:         Процент получаемый на выходе после обработки
+
+  dishmenu:
+    category:
+      form:
+        fullTitle:
+          label:
+          placeholder:
+          help:
+        title:
+          label:
+          placeholder:
+          help:
+    item:
+      form:
+        fullTitle:
+          label:
+          placeholder:
+          help:
+        title:
+          label:
+          placeholder:
+          help:
+        price:
+          label:
+          help:
+        costprice:
+          label:
+          help:
+        description:
+          label:
+          placeholder:
+          help:
 
 

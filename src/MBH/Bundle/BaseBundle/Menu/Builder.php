@@ -275,6 +275,13 @@ class Builder extends ContainerAware
                 ->setAttributes(['icon' => 'fa fa-bed']);
         }
 
+        //Restaurant links
+        $menu->addChild('restaurant', ['route' => '_welcome', 'label' => 'Ресторан'])
+            ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-cutlery']);
+        $menu['restaurant']->addChild('ingredients', ['route'=>'restaurant_ingredient_category', 'label' => 'Ингредиенты'])
+            ->setAttributes(['icon'=> 'fa fa-cutlery']);
+
+
         //Users links
         $menu->addChild('configs', ['route' => '_welcome', 'label' => 'Настройки'])
             ->setAttributes(['dropdown' => true, 'icon' => 'fa fa-cogs'])
@@ -301,9 +308,6 @@ class Builder extends ContainerAware
 		// Warehouse link
         $menu['configs']->addChild('warehouse_category', ['route' => 'warehouse_category', 'label' => 'Склад'])
 			->setAttributes(['icon' => 'fa fa-book']) ;
-
-        $menu['configs']->addChild('restaurant', ['route'=>'restaurant_ingredient_category','label' => 'Ресторан'])
-            ->setAttributes(['icon' => 'fa fa-cutlery']);
 
         //Services links
         $menu->addChild('services', ['route' => '_welcome', 'label' => 'Взаимодействие'])

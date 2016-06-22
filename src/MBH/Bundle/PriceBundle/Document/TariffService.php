@@ -10,7 +10,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * Class TariffService
  * @ODM\EmbeddedDocument()
-
+ * @Gedmo\Loggable()
  */
 class TariffService extends Base
 {
