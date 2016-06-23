@@ -71,15 +71,6 @@ class Search implements SearchInterface
             $query->tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($query->tariff);
         }
 
-        //promotion
-        $promotion = $query->getPromotion();
-        if ($promotion === null && $query->tariff && $query->tariff->getDefaultPromotion()) {
-            $promotion = $query->tariff->getDefaultPromotion();
-        }
-        if (!$promotion) {
-            $promotion = null;
-        }
-
         // dates
         $end = clone $query->end;
         $end->modify('-1 day');
@@ -356,6 +347,15 @@ class Search implements SearchInterface
                     ->setForceBooking($query->forceBooking)
                     ->setInfants($infants)
                 ;
+
+                //promotion
+                $promotion = $query->getPromotion();
+                if ($promotion === null && $tariff->getDefaultPromotion()) {
+                    $promotion = $tariff->getDefaultPromotion();
+                }
+                if (!$promotion) {
+                    $promotion = null;
+                }
 
                 //prices
                 $prices = $calc->calcPrices(

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "41910fbfe3486c76f7f6cc60758c4a37",
+    "hash": "25fb80d7d21deb00d239ee628cbb9d33",
     "content-hash": "74ba0c47f5a4f139984f6279c564caba",
     "packages": [
         {
@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/alcaeus/mongo-php-adapter.git",
-                "reference": "25bee0fa35a95db0c954653b636ff98c5af4373a"
+                "reference": "065b3a6d720e11de118894c64459a8e8c5e9d30e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alcaeus/mongo-php-adapter/zipball/25bee0fa35a95db0c954653b636ff98c5af4373a",
-                "reference": "25bee0fa35a95db0c954653b636ff98c5af4373a",
+                "url": "https://api.github.com/repos/alcaeus/mongo-php-adapter/zipball/065b3a6d720e11de118894c64459a8e8c5e9d30e",
+                "reference": "065b3a6d720e11de118894c64459a8e8c5e9d30e",
                 "shasum": ""
             },
             "require": {
@@ -68,7 +68,7 @@
                 "database",
                 "mongodb"
             ],
-            "time": "2016-04-18 14:44:33"
+            "time": "2016-06-22 05:14:45"
         },
         {
             "name": "behat/transliterator",
@@ -2635,6 +2635,7 @@
                 "rest",
                 "web service"
             ],
+            "abandoned": true,
             "time": "2014-12-01 08:29:51"
         },
         {
