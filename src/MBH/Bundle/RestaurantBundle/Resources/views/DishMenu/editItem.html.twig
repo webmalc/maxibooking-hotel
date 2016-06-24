@@ -1,20 +1,53 @@
-{% extends 'MBHRestaurantBundle:Ingredient:layout.html.twig' %}
+{% extends 'MBHRestaurantBundle:DishMenu:layout.html.twig' %}
 
 {% set small_title = "редактирование блюда в категории <" ~ entity.name ~ ">" %}
 {% set layout = 'box' %}
 
 {% block content %}
-
-    {{ form_start(form, {'action': path('restaurant_dishmenu_category', {'id': entry.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
-    {{ form_widget(form) }}
+{% form_theme form '@MBHRestaurant/Form/amount.html.twig' %}
+    {{ form_start(form, {'action': path('restaurant_dishmenu_item_edit', {'id': entry.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_row(form.fullTitle) }}
+    {{ form_row(form.title) }}
+    {{ form_row(form.price) }}
+    {{ form_row(form.costPrice) }}
+    {{ form_row(form.description) }}
+    <div class="dish-item-ingredients form-group form-inline">
+        {{ form_label(form.dishIngredients) }}
+        <div class="col-sm-6">
+            <ul>
+                {% if form.dishIngredients|length %}
+                    {% for dishIngredient in form.dishIngredients %}
+                        <li>
+                            <div>
+                                <div> {{ form_widget(dishIngredient.amount) }} </div>
+                                <small>{{ dishIngredient.amount.vars.help }}</small>
+                            </div>
+                            <div>
+                                <div>{{ form_widget(dishIngredient.ingredient) }}</div>
+                            </div>
+                            <i class="fa fa-times"></i>
+                        </li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+            <a data-prototype="
+                {{ (
+            form_widget(form.dishIngredients.vars.prototype.amount) ~
+            form_widget(form.dishIngredients.vars.prototype.ingredient)
+            )|e }}{{ '<i class="fa fa-times"></i> '|e }}
+                " class="btn btn-xs btn-success"><i class="fa fa-plus"></i> Добавить</a>
+        </div>
+    </div>
     {% if entry.system is defined and entry.system %}
         {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entry } %}
     {% else %}
         {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entry, 'delete_route': 'restaurant_dishmenu_item_delete', 'delete_role':'ROLE_RESTAURANT_DISHMENU_ITEM_DELETE' } %}
     {% endif %}
 
-    {{ form_end(form) }}
+    {{ form_widget(form._token) }}
+    {{ form_end(form, {render_rest: false}) }}
 
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entry, 'logs': logs, 'delete_route': 'restaurant_dishmenu_item_delete' } %}
 
 {% endblock %}
+

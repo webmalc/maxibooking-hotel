@@ -147,9 +147,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
 
         $item = new DishMenuItem();
         $item->setCategory($entity);
-        $dishIngredient = new DishMenuIngredientEmbedded();
-        $dishIngredient->setAmount(100);
-        $item->addDishIngredients($dishIngredient);
+        
 
         $form = $this->createForm(new DishMenuItemForm(), $item);
         $form->handleRequest($request);

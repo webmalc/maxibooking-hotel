@@ -24,10 +24,17 @@ class DishMenuIngredientEmbeddedType extends AbstractType
     {
         $builder
             ->add('amount', TextType::class, [
-                'group' => 'Ингредиенты'
+                'help' => 'Количество',
+                'attr' => [
+                    'class' => 'amount amount-spinner',
+                    'placeholder' => 'Количество ингредиента'
+                ],
             ])
             ->add('ingredient', DocumentType::class, [
-                'class' => 'MBH\Bundle\RestaurantBundle\Document\Ingredient'
+                'class' => 'MBH\Bundle\RestaurantBundle\Document\Ingredient',
+                'attr' => [
+                    'class' => 'plain-html'
+                ]
             ])
         ;
     }

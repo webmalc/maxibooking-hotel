@@ -51,7 +51,7 @@ class DishMenuIngredientEmbedded
     }
 
     /**
-     * @return mixed
+     * @return Ingredient
      */
     public function getIngredient()
     {

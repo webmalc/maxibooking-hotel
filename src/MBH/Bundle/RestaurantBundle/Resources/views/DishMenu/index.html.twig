@@ -58,11 +58,11 @@
                                     <td><a href='{{ path('restaurant_dishmenu_item_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system is defined and entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
                                     <td>
                                         <span class="hidden">{{ entry.price }}</span>
-                                        <input name="entries[{{ entry.id }}][price]" class="form-control spinner-0f price-spinner input-sm" type="text" value="{{ entry.price }}">
+                                        <input name="entries[{{ entry.id }}][price]" class="form-control input-sm price-spinner" type="text" value="{{ entry.price }}">
                                     </td>
                                     <td class="text-center">
                                         <span class="hidden">{{ entry.costprice }}</span>
-                                        <input name="entries[{{ entry.id }}][costprice]" class="form-control  fix-percent-spinner input-sm" type="text"  value="{{ entry.costprice }}">
+                                        <input name="entries[{{ entry.id }}][costprice]" class="form-control costprice input-sm price-spinner" type="text"  value="{{ entry.costprice }}" disabled>
                                     </td>
                                     <td class="text-center">{{ entry.description }}</td>
                                     <td class="text-center">
@@ -71,12 +71,12 @@
                                     <td class="text-center">
                                         <div class='btn-list'>
                                             {% if is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_EDIT') %}
-                                                <a href='{{ path('restaurant_dishmenu_item_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='{{ 'restaurant.ingredient.edit'|trans|capitalize }}' data-toggle='tooltip'>
+                                                <a href='{{ path('restaurant_dishmenu_item_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='{{ 'restaurant.dishmenu.item.action.edit'|trans|capitalize }}' data-toggle='tooltip'>
                                                     <i class='fa fa-pencil-square-o'></i>
                                                 </a>
                                             {% endif %}
                                             {% if is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_DELETE') %}
-                                                <a href='{{ path('restaurant_dishmenu_item_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'restaurant.ingredient.delete'|trans|capitalize }}' data-toggle='tooltip'>
+                                                <a href='{{ path('restaurant_dishmenu_item_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'restaurant.dishmenu.item.action.delete'|trans|capitalize }}' data-toggle='tooltip'>
                                                     <i class='fa fa-trash-o'></i>
                                                 </a>
                                             {% endif %}

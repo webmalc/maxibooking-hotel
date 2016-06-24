@@ -94,16 +94,16 @@ class DishMenuItem extends Base
      */
     protected $price = 0;
 
-    /**
-     * @var int
-     * @Gedmo\Versioned()
-     * @ODM\Field(type="float", name="costPrice")
-     * @Assert\Type(type="numeric")
-     * @Assert\Range(
-     *      min=0,
-     *      minMessage="Цена не может быть меньше нуля"
-     * )
-     */
+//    /**
+//     * @var int
+//     * @Gedmo\Versioned()
+//     * @ODM\Field(type="float", name="costPrice")
+//     * @Assert\Type(type="numeric")
+//     * @Assert\Range(
+//     *      min=0,
+//     *      minMessage="Цена не может быть меньше нуля"
+//     * )
+//     */
     protected $costPrice = 0;
 
     /**
@@ -210,6 +210,13 @@ class DishMenuItem extends Base
      */
     public function getCostPrice()
     {
+
+        /** @var  DishMenuIngredientEmbedded $dish */
+        foreach ($this->getDishIngredients()->getValues() as $dish) {
+            $ingredientPrice = $dish->getIngredient()->getPrice();
+            $amount = $dish->getAmount();
+            $this->costPrice += $ingredientPrice*$amount;
+        }
         return $this->costPrice;
     }
 
@@ -247,7 +254,7 @@ class DishMenuItem extends Base
     }
 
     /**
-     * @return mixed
+     * @return ArrayCollection
      */
     public function getDishIngredients()
     {
@@ -269,6 +276,7 @@ class DishMenuItem extends Base
     {
         $this->dishIngredients->add($ingredient);
     }
+
 
 
 }

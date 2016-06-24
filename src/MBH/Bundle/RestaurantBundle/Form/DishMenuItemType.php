@@ -38,13 +38,13 @@ class DishMenuItemType extends AbstractType
             ->add('price', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.price.label',
                 'required' => false,
-                'attr' => ['class' => 'spinner price-spinner'],
+                'attr' => ['class' => 'price-spinner'],
                 'help' => 'restaurant.dishmenu.item.form.price.help'
             ])
-            ->add('cost_price', TextType::class, [
+            ->add('costPrice', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.costprice.label',
                 'required' => false,
-                'attr' => ['class' => 'spinner price-spinner'],
+                'attr' => ['class' => 'costprice price-spinner', 'disabled'=>true],
                 'help' => 'restaurant.dishmenu.item.form.costprice.help'
             ])
             ->add('description', TextareaType::class, [
