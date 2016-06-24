@@ -4,7 +4,7 @@
 {% set layout = 'box' %}
 
 {% block content %}
-{% form_theme form '@MBHRestaurant/Form/amount.html.twig' %}
+{#{% form_theme form '@MBHRestaurant/Form/amount.html.twig' %}#}
     {{ form_start(form, {'action': path('restaurant_dishmenu_item_edit', {'id': entry.id}), 'method': 'POST', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_row(form.fullTitle) }}
     {{ form_row(form.title) }}

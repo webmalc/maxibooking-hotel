@@ -5,40 +5,41 @@
 {% set layout = 'box' %}
 
 {% block content %}
-{% form_theme form.dishIngredients '@MBHRestaurant/Form/amount.html.twig' %}
+{% form_theme form '@MBHRestaurant/Form/amount.html.twig' %}
     {{ form_start(form, {'action': path('restaurant_dishmenu_item_new', {'id': entity.id}), 'method':'POST','attr': {'class': 'form-horizontal'}}) }}
     {{ form_row(form.fullTitle) }}
     {{ form_row(form.title) }}
     {{ form_row(form.price) }}
     {{ form_row(form.costPrice) }}
     {{ form_row(form.description) }}
-    <div class="dish-item-ingredients form-group form-inline">
-        {{ form_label(form.dishIngredients) }}
-        <div class="col-sm-6">
-            <ul>
-                {% if form.dishIngredients|length %}
-                    {% for dishIngredient in form.dishIngredients %}
-                        <li>
-                            <div>
-                                <div> {{ form_widget(dishIngredient.amount) }} </div>
-                                <small>{{ dishIngredient.amount.vars.help }}</small>
-                            </div>
-                            <div>
-                                <div>{{ form_widget(dishIngredient.ingredient) }} </div>
+    {{ form_row(form.dishIngredients) }}
+    {#<div class="dish-item-ingredients form-group form-inline">#}
+        {#{{ form_label(form.dishIngredients) }}#}
+        {#<div class="col-sm-6">#}
+            {#<ul>#}
+                {#{% if form.dishIngredients|length %}#}
+                    {#{% for dishIngredient in form.dishIngredients %}#}
+                        {#<li>#}
+                            {#<div>#}
+                                {#<div> {{ form_widget(dishIngredient.amount) }} </div>#}
+                                {#<small>{{ dishIngredient.amount.vars.help }}</small>#}
+                            {#</div>#}
+                            {#<div>#}
+                                {#<div>{{ form_widget(dishIngredient.ingredient) }} </div>#}
                                 {#<small>{{ dishIngredient.vars.value.ingredient.price ~ currency()['text']}}{{ ('unit.'~ dishIngredient.vars.value.ingredient.calcType)| trans }}</small>#}
-                            </div>
-                            <i class="fa fa-times"></i>
-                        </li>
-                    {% endfor %}
-                {% endif %}
-            </ul>
-            <a data-prototype="
-                {{ (
-            form_widget(form.dishIngredients.vars.prototype.amount) ~
-            form_widget(form.dishIngredients.vars.prototype.ingredient)
-            )|e }}{{ '<i class="fa fa-times"></i> '|e }}
-                " class="btn btn-xs btn-success"><i class="fa fa-plus"></i> Добавить</a>
-        </div>
+                            {#</div>#}
+                            {#<i class="fa fa-times"></i>#}
+                        {#</li>#}
+                    {#{% endfor %}#}
+                {#{% endif %}#}
+            {#</ul>#}
+            {#<a data-prototype="#}
+                {#{{ (#}
+            {#form_widget(form.dishIngredients.vars.prototype.amount) ~#}
+            {#form_widget(form.dishIngredients.vars.prototype.ingredient)#}
+            {#)|e }}{{ '<i class="fa fa-times"></i> '|e }}#}
+                {#" class="btn btn-xs btn-success"><i class="fa fa-plus"></i> Добавить</a>#}
+        {#</div>#}
     </div>
     {% include 'MBHBaseBundle:Actions:new.html.twig' %}
     {{ form_widget(form._token) }}
