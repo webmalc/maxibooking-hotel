@@ -1,6 +1,6 @@
-{% extends "MBHRestaurantBundle:Ingredient:layout.html.twig" %}
+{% extends "MBHRestaurantBundle:DishMenu:layout.html.twig" %}
 
-{% set small_title = 'restaurant.common.subtitle'|trans %}
+{% set small_title = 'restaurant.dishmenu.small_title'|trans %}
 {% set layout = "tabs" %}
 
 {% block content %}
@@ -13,9 +13,9 @@
                 </a>
             </li>
         {% endfor %}
-        {% if is_granted('ROLE_RESTAURANT_CATEGORY_NEW') %}
+        {% if is_granted('ROLE_RESTAURANT_DISHMENU_CATEGORY_NEW') %}
             <li>
-                <a href="{{ path('restaurant_ingredient_category_new') }}"><i class="fa fa-plus"></i> {{ 'restaurant.category.new'|trans|capitalize }}</a>
+                <a href="{{ path('restaurant_dishmenu_category_new') }}"><i class="fa fa-plus"></i> {{ 'restaurant.dishmenu.category.action.new'|trans|capitalize }}</a>
             </li>
         {% endif %}
     </ul>
@@ -28,55 +28,55 @@
                     <!-- Tab actions -->
                     <div class="btn-list spacer-bottom text-right">
                         {% if is_granted('ROLE_RESTAURANT_CATEGORY_EDIT') %}
-                            <a href="{{ path('restaurant_ingredient_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="{{ 'restaurant.category.edit'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-edit"></i> {{ 'restaurant.common.edit'|trans|capitalize }}</a>
+                            <a href="{{ path('restaurant_dishmenu_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="{{ 'restaurant.category.edit'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-edit"></i> {{ 'restaurant.dishmenu.common.edit'|trans|capitalize }}</a>
                         {% endif %}
-                        {% if is_granted('ROLE_RESTAURANT_CATEGORY_NEW') %}
-                            <a href="{{ path('restaurant_ingredient_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="{{ 'restaurant.ingredient.addincat'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-plus"></i> {{ 'restaurant.ingredient.add'|trans|capitalize }}</a>
+                        {% if is_granted('ROLE_RESTAURANT_DISHMENU_CATEGORY_NEW') %}
+                            <a href="{{ path('restaurant_dishmenu_item_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="{{ 'restaurant.dishmenu.item.helper.new'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-plus"></i> {{ 'restaurant.dishmenu.item.action.new'|trans|capitalize }}</a>
                         {% endif %}
-                        {% if is_granted('ROLE_RESTAURANT_CATEGORY_DELETE') %}
-                            <a href="{{ path('restaurant_ingredient_category_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="{{ 'restaurant.category.delete'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-trash-o"></i> {{ 'restaurant.common.delete'|trans|capitalize }}</a>
+                        {% if is_granted('ROLE_RESTAURANT_DISHMENU_CATEGORY_DELETE') %}
+                            <a href="{{ path('restaurant_dishmenu_category_delete', {'id': entity.id }) }}" class="btn btn-sm btn-danger delete-link" data-toggle="tooltip" data-placement="bottom" title="{{ 'restaurant.category.delete'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-trash-o"></i> {{ 'restaurant.dishmenu.common.delete'|trans|capitalize }}</a>
                         {% endif %}
                     </div>
 
-                    {% if entity.ingredients.count %}
+                    {% if entity.dishMenuItems.count %}
                         <table class="table table-actions table-striped table-hover table-condensed service-tables not-auto-datatable">
                             <thead>
                             <tr>
                                 <th class="td-xs"></th>
-                                <th>Название</th>
-                                <th class="td-md">{{ 'restaurant.ingredient.price'|trans|capitalize }}</th>
-                                <th class="td-md">{{ 'restaurant.ingredient.output'|trans|capitalize }}</th>
-                                <th class="td-sm">{{ 'restaurant.ingredient.units'|trans|capitalize }}</th>
-                                <th class="td-sm">{{ 'restaurant.ingredient.active'|trans|capitalize }}</th>
+                                <th class="td-md">Название</th>
+                                <th class="td-sm">{{ 'restaurant.dishmenu.item.form.price.label'|trans|capitalize }}</th>
+                                <th class="td-sm">{{ 'restaurant.dishmenu.item.form.costprice.label'|trans|capitalize }}</th>
+                                <th class="td-lg">{{ 'restaurant.dishmenu.item.form.description.label'|trans|capitalize }}</th>
+                                <th class="td-sm">{{ 'restaurant.dishmenu.item.active'|trans|capitalize }}</th>
                                 <th class="td-md"></th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for entry in entity.ingredients %}
+                            {% for entry in entity.dishMenuItems %}
                                 <tr>
                                     <td><i class="fa fa-cutlery"></i></td>
-                                    <td><a href='{{ path('restaurant_ingredient_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system is defined and entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
+                                    <td><a href='{{ path('restaurant_dishmenu_item_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system is defined and entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
                                     <td>
                                         <span class="hidden">{{ entry.price }}</span>
                                         <input name="entries[{{ entry.id }}][price]" class="form-control spinner-0f price-spinner input-sm" type="text" value="{{ entry.price }}">
                                     </td>
                                     <td class="text-center">
-                                        <span class="hidden">{{ entry.output }}</span>
-                                        <input name="entries[{{ entry.id }}][output]" class="form-control  fix-percent-spinner input-sm" type="text"  value="{{ entry.output }}">
+                                        <span class="hidden">{{ entry.costprice }}</span>
+                                        <input name="entries[{{ entry.id }}][costprice]" class="form-control  fix-percent-spinner input-sm" type="text"  value="{{ entry.costprice }}">
                                     </td>
-                                    <td class="text-center">{{ config.calcTypes[entry.calcType]|default('Штука') }}</td>
+                                    <td class="text-center">{{ entry.description }}</td>
                                     <td class="text-center">
                                         <input class="checkbox-mini" name="entries[{{ entry.id }}][enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
                                     </td>
                                     <td class="text-center">
                                         <div class='btn-list'>
-                                            {% if is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT') %}
-                                                <a href='{{ path('restaurant_ingredient_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='{{ 'restaurant.ingredient.edit'|trans|capitalize }}' data-toggle='tooltip'>
+                                            {% if is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_EDIT') %}
+                                                <a href='{{ path('restaurant_dishmenu_item_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='{{ 'restaurant.ingredient.edit'|trans|capitalize }}' data-toggle='tooltip'>
                                                     <i class='fa fa-pencil-square-o'></i>
                                                 </a>
                                             {% endif %}
-                                            {% if is_granted('ROLE_RESTAURANT_INGREDIENT_DELETE') %}
-                                                <a href='{{ path('restaurant_ingredient_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'restaurant.ingredient.delete'|trans|capitalize }}' data-toggle='tooltip'>
+                                            {% if is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_DELETE') %}
+                                                <a href='{{ path('restaurant_dishmenu_item_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'restaurant.ingredient.delete'|trans|capitalize }}' data-toggle='tooltip'>
                                                     <i class='fa fa-trash-o'></i>
                                                 </a>
                                             {% endif %}
@@ -87,17 +87,17 @@
                             </tbody>
                         </table>
                     {% else %}
-                        <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'restaurant.category.noingredients'|trans|capitalize }}. <a href="{{ path('restaurant_ingredient_new', {'id': entity.id }) }}">{{ 'restaurant.ingredient.add'|trans|capitalize }}?</a></div>
+                        <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'restaurant.dishmenu.category.noitems'|trans|capitalize }}. <a href="{{ path('restaurant_dishmenu_item_new', {'id': entity.id }) }}">{{ 'restaurant.dishmenu.item.action.new'|trans|capitalize }}?</a></div>
                     {% endif %}
 
                     <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
                         <div class="container-fluid">
                             <ul class="nav navbar-nav">
-                                {% if is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT') %}
+                                {% if is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_EDIT') %}
                                     <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> {{ 'restaurant.common.save'|trans|capitalize }}</button></li>
                                 {% endif %}
-                                {% if is_granted('ROLE_RESTAURANT_CATEGORY_NEW') %}
-                                    <li><button onclick="location.href = '{{ path('restaurant_ingredient_category_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> {{ 'restaurant.category.new'|trans|capitalize }}</button></li>
+                                {% if is_granted('ROLE_RESTAURANT_DISHMENU_CATEGORY_NEW') %}
+                                    <li><button onclick="location.href = '{{ path('restaurant_dishmenu_category_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> {{ 'restaurant.category.new'|trans|capitalize }}</button></li>
                                 {% endif %}
                             </ul>
                             <ul class="nav navbar-nav navbar-right">

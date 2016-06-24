@@ -1,93 +1,120 @@
 restaurant:
   common:
-    title:      ингредиенты
-    subtitle:   список
-    edit:       редактировать
-    add:        добавить
-    delete:     удалить
-    save:       сохранить изменения
+    title:                ингредиенты
+    small_title:             список
+    edit:                 редактировать
+    add:                  добавить
+    delete:               удалить
+    save:                 сохранить изменения
   category:
-    new:        создать новую категорию
-    edit:       редактировать категорию
-    delete:     удалить категорию
-    noingredients: в этой категории нет ни одного ингредиента
+    new:                  создать новую категорию
+    edit:                 редактировать категорию
+    delete:               удалить категорию
+    noingredients:        в этой категории нет ни одного ингредиента
     form:
       fullTitle:
-        label:        Название
-        placeholder:  Хлебобулочные изделия
-        help:         Имя категории ингредиентов
+        label:            Название
+        placeholder:      Хлебобулочные изделия
+        help:             Имя категории ингредиентов
       title:
-        label:        Внутреннее название
+        label:            Внутреннее название
         placeholder:
-        help:         Название для использования внутри MaxiBooking
+        help:             Название для использования внутри MaxiBooking
     newaction:
-      title:    создание категории ингредиентов
+      title:              создание категории ингредиентов
     editaction:
-      title:    редактирование категории ингредиентов
+      title:              редактирование категории ингредиентов
 
   ingredient:
-    price:      цена
-    output:     выход
-    units:      ед.изм
-    addincat:   создать ингредиент в категории
-    add:        добавить ингредиент
-    active:     наличие
-    edit:       редактирование ингредиента
-    delete:     удаление ингредиента
+    price:                цена
+    output:               выход
+    units:                ед.изм
+    addincat:             создать ингредиент в категории
+    add:                  добавить ингредиент
+    active:               наличие
+    edit:                 редактирование ингредиента
+    delete:               удаление ингредиента
     newaction:
-      small_title: создание ингредиента в категории
+      small_title:        создание ингредиента в категории
     form:
       fullTitle:
-        label:        Название
-        placeholder:  Введите название
-        help:         Название ингредиента
+        label:            Название
+        placeholder:      Введите название
+        help:             Название ингредиента
       title:
-        label:        Внутреннее название
-        placeholder:  Введите внутреннее название
-        help:         Название для использования внутри MaxiBooking
+        label:            Внутреннее название
+        placeholder:      Введите внутреннее название
+        help:             Название для использования внутри MaxiBooking
       price:
-        label:        Цена
+        label:            Цена
         placeholder:
-        help:         Установите цену для ингредиента
+        help:             Установите цену для ингредиента
       calcType:
-        label:        Единица меры
+        label:            Единица меры
         placeholder:
-        help:         Выберите единицу меры ингредиента
+        help:             Выберите единицу меры ингредиента
       output:
-        label:        Процент выхода продукции
+        label:            Процент выхода продукции
         placeholder:
-        help:         Процент получаемый на выходе после обработки
+        help:             Процент получаемый на выходе после обработки
 
   dishmenu:
+    title:                Меню блюд
+    small_title:          создание блюд в категории
+    common:
+      add:
+      edit:               редактировать
+      delete:             удалить
     category:
+      noitems:            в этой категории нет ни одного блюда
+      action:
+        new:              Новая категория блюд
+        edit:             редактировать категорию блюд
+        delete:           удалить категорию блюд
+      helper:
+        new:
+        edit:
+        delete:
       form:
         fullTitle:
-          label:
-          placeholder:
-          help:
+          label:          Название
+          placeholder:    введите название
+          help:           Имя категории блюд
         title:
-          label:
-          placeholder:
-          help:
+          label:          внутреннее название
+          placeholder:    введите название
+          help:           Название для использования внутри MaxiBooking
     item:
+      title:
+      small_title:
+      active:             активно
+      action:
+        new:              добавить новое блюдо
+        edit:             редактировать блюдо
+        delete:           удалить блюдо
+      helper:
+        new:              создать блюдо в категории
+        edit:
+        delete:
       form:
         fullTitle:
-          label:
-          placeholder:
-          help:
+          label:          Название
+          placeholder:    Введите название блюда
+          help:           Название блюда
         title:
-          label:
-          placeholder:
-          help:
+          label:          Внутреннее название
+          placeholder:    Введите внутреннее название блюда
+          help:           Название для использования внутри MaxiBooking
         price:
-          label:
-          help:
-        costprice:
-          label:
-          help:
-        description:
-          label:
+          label:          Цена
           placeholder:
-          help:
+          help:           Установите цену для блюда
+        costprice:
+          label:          Себестоимость
+          help:           Себестоимость блюда
+        description:
+          label:          Описание
+          placeholder:    Введите описание блюда
+          help:           Описание блюда
 
 

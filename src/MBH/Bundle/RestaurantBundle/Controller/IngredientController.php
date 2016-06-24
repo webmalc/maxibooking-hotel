@@ -230,8 +230,6 @@ class IngredientController extends BaseController implements CheckHotelControlle
         
         $ingredient = new Ingredient();
 
-        $calcTypes = [];
-
         $form = $this->createForm(new IngredientForm(), $ingredient, [
             'calcTypes' => $this->container->getParameter('mbh.units')
         ]);

@@ -9,8 +9,10 @@
 namespace MBH\Bundle\RestaurantBundle\Document;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\RestaurantBundle\Form\DishMenuIngredientEmbeddedType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -47,7 +49,7 @@ class DishMenuItem extends Base
 
     /**
      * @Gedmo\Versioned()
-     * @ODM\ReferenceOne()
+     * @ODM\ReferenceOne(targetDocument="DishMenuCategory", inversedBy="dishMenuItems")
      * @Assert\NotNull()
      */
     protected $category;
@@ -65,7 +67,7 @@ class DishMenuItem extends Base
      *      maxMessage="Слишком длинное название"
      * )
      */
-    protected $fullTitle;
+    protected $fullTitle = '';
 
     /**
      * @var string
@@ -78,7 +80,7 @@ class DishMenuItem extends Base
      *      maxMessage="Слишком длинное имя"
      * )
      */
-    protected $title;
+    protected $title = '';
 
     /**
      * @var int
@@ -116,6 +118,20 @@ class DishMenuItem extends Base
      * )
      */
     protected  $description;
+
+    /**
+     * @ODM\EmbedMany(targetDocument="DishMenuIngredientEmbedded")
+     */
+    protected $dishIngredients;
+
+    /**
+     * DishMenuItem constructor.
+     *
+     */
+    public function __construct()
+    {
+        $this->dishIngredients = new ArrayCollection();
+    }
 
     /**
      * @return mixed
@@ -229,4 +245,30 @@ class DishMenuItem extends Base
     {
         return $this->getCategory()->getHotel();
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDishIngredients()
+    {
+        return $this->dishIngredients;
+    }
+
+    /**
+     * @param mixed $dishIngredients
+     * @return $this
+     */
+    public function setDishIngredients(DishMenuIngredientEmbeddedType $dishIngredients)
+    {
+        $this->dishIngredients->add($dishIngredients);
+        return $this;
+    }
+
+
+    public function addDishIngredients(DishMenuIngredientEmbedded $ingredient)
+    {
+        $this->dishIngredients->add($ingredient);
+    }
+
+
 }

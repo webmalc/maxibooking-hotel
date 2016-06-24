@@ -1,0 +1,20 @@
+{% extends 'MBHRestaurantBundle:Ingredient:layout.html.twig' %}
+
+{% set small_title = "редактирование блюда в категории <" ~ entity.name ~ ">" %}
+{% set layout = 'box' %}
+
+{% block content %}
+
+    {{ form_start(form, {'action': path('restaurant_dishmenu_category', {'id': entry.id}), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+    {% if entry.system is defined and entry.system %}
+        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entry } %}
+    {% else %}
+        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entry, 'delete_route': 'restaurant_dishmenu_item_delete', 'delete_role':'ROLE_RESTAURANT_DISHMENU_ITEM_DELETE' } %}
+    {% endif %}
+
+    {{ form_end(form) }}
+
+    {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entry, 'logs': logs, 'delete_route': 'restaurant_dishmenu_item_delete' } %}
+
+{% endblock %}

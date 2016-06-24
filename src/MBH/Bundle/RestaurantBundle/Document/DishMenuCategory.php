@@ -59,7 +59,7 @@ class DishMenuCategory extends Base
      *      maxMessage="validator.document.dishMenuCategory.max_name"
      * )
      */
-    protected $fullTitle;
+    protected $fullTitle = '';
 
     /**
      * @var string

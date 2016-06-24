@@ -10,6 +10,7 @@ namespace MBH\Bundle\RestaurantBundle\Form;
 
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -51,6 +52,13 @@ class DishMenuItemType extends AbstractType
                 'required' => false,
                 'attr' => ['placeholder' => 'restaurant.dishmenu.item.form.description.placeholder'],
                 'help' => 'restaurant.dishmenu.item.form.description.help'
+            ])
+            ->add('dishIngredients', CollectionType::class, [
+                'entry_type' => DishMenuIngredientEmbeddedType::class,
+                'label' => 'Ингредиенты блюда',
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => true
             ])
         ;
 
