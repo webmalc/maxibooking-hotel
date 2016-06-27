@@ -10,6 +10,7 @@ namespace MBH\Bundle\RestaurantBundle\Form;
 
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -18,9 +19,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DishMenuItemType extends AbstractType 
 {
-    
+
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+
         $builder
             ->add('fullTitle', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.fullTitle.label',
@@ -38,14 +41,30 @@ class DishMenuItemType extends AbstractType
             ->add('price', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.price.label',
                 'required' => false,
-                'attr' => ['class' => 'price-spinner'],
-                'help' => 'restaurant.dishmenu.item.form.price.help'
+                'attr' => ['class' => 'price-spinner price'],
+                'help' => 'restaurant.dishmenu.item.form.price.help',
+                'disabled' => $options['is_margin']
             ])
             ->add('costPrice', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.costprice.label',
                 'required' => false,
                 'attr' => ['class' => 'costprice price-spinner', 'disabled'=>true],
                 'help' => 'restaurant.dishmenu.item.form.costprice.help'
+            ])
+            ->add('margin', TextType::class, [
+                'label' => 'restaurant.dishmenu.item.form.margin.label',
+                'disabled' => !$options['is_margin'],
+                'required' => false,
+                'attr' => [
+                    'class' => 'percent-margin'
+                ]
+            ])
+            ->add('is_margin', CheckboxType::class, [
+                'label' => 'Маржа',
+                'required' => false,
+                'attr' => [
+                    'class' => 'is_margin'
+                ]
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'restaurant.dishmenu.item.form.description.label',
@@ -73,7 +92,8 @@ class DishMenuItemType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => 'MBH\Bundle\RestaurantBundle\Document\DishMenuItem'
+                'data_class' => 'MBH\Bundle\RestaurantBundle\Document\DishMenuItem',
+                'is_margin' => false
             ]
         );
     }

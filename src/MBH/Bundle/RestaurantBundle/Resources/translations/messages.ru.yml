@@ -81,7 +81,7 @@ restaurant:
           placeholder:    введите название
           help:           Имя категории блюд
         title:
-          label:          внутреннее название
+          label:          Внутреннее название
           placeholder:    введите название
           help:           Название для использования внутри MaxiBooking
     item:
@@ -116,5 +116,5 @@ restaurant:
           label:          Описание
           placeholder:    Введите описание блюда
           help:           Описание блюда
-
-
+        margin:
+          label:          Процент маржи

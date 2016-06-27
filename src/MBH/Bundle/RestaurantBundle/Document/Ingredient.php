@@ -171,7 +171,7 @@ class Ingredient extends Base
      */
     public function getTitle()
     {
-        return $this->title?:$this->getFullTitle();
+        return $this->title;
     }
 
     /**

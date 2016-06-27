@@ -8,6 +8,15 @@ $(function () {
         maxboostedstep: 10000000,
         postfix: '%'
     });
+    $('.percent-margin').TouchSpin({
+        min: 0,
+        max: 90000000000000,
+        step: 1,
+        //boostat: 50,
+        stepinterval: 50,
+        maxboostedstep: 10000000,
+        postfix: '%'
+    });
     $('.price-spinner').TouchSpin({
         min: 0,
         max: 9007199254740992,
@@ -18,7 +27,9 @@ $(function () {
         maxboostedstep: 10000000,
         postfix: '<i class="' + mbh.currency.icon + '"></i>'
     });
+    
     amountSpin($('.amount'));
+    
     $(document).on('prototypeAdded', function(event, prototype) {
         amountSpin($(prototype).find('.amount'));
     });

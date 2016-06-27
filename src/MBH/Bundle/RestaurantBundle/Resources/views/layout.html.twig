@@ -4,7 +4,8 @@
     {{ parent() }}
 
     {% javascripts filter='uglifyjs2'
-        '@MBHRestaurantBundle/Resources/public/js/*'
+        '@MBHRestaurantBundle/Resources/public/js/001-add_dish_item.js'
+        '@MBHRestaurantBundle/Resources/public/js/003-spinners.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}

@@ -2,12 +2,14 @@
 
 namespace MBH\Bundle\RestaurantBundle\Controller;
 
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuIngredientEmbedded;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuItem;
+use MBH\Bundle\RestaurantBundle\Document\Ingredient;
 use MBH\Bundle\RestaurantBundle\Form\DishMenuCategoryType as DishMenuCategoryForm;
 use MBH\Bundle\RestaurantBundle\Form\DishMenuIngredientEmbeddedType;
 use MBH\Bundle\RestaurantBundle\Form\DishMenuItemType as DishMenuItemForm;
@@ -134,9 +136,9 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
      * @Route("/{id}/new/dishmenuitem", name="restaurant_dishmenu_item_new")
      * @Security("is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_NEW')")
      * @Template()
-     * @ParamConverter(class="MBHRestaurantBundle:DishMenuCategory")
-     * @param DishMenuCategory $entity
+     * @ParamConverter("entity", class="MBHRestaurantBundle:DishMenuCategory")
      * @param Request $request
+     * @param DishMenuCategory $entity
      * @return array
      */
     public function newItemAction(Request $request,DishMenuCategory $entity)
@@ -144,6 +146,8 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
             throw $this->createNotFoundException();
         }
+
+        $ingredients = $this->dm->getRepository('MBHRestaurantBundle:Ingredient')->findAll();
 
         $item = new DishMenuItem();
         $item->setCategory($entity);
@@ -166,7 +170,8 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
         return [
             'entry' => $item,
             'entity' => $entity,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'ingredients' => $ingredients
         ];
     }
 
@@ -188,7 +193,9 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new DishMenuItemForm(), $item);
+        $ingredients = $this->dm->getRepository('MBHRestaurantBundle:Ingredient')->findAll();
+
+        $form = $this->createForm(new DishMenuItemForm(), $item, ['is_margin' => $item->getIsMargin()]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -208,7 +215,8 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
             'entry' => $item,
             'entity' => $item->getCategory(),
             'form' => $form->createView(),
-            'logs' => $this->logs($item)
+            'logs' => $this->logs($item),
+            'ingredients' => $ingredients
         ];
     }
 
@@ -237,5 +245,55 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
 
         return $this->redirectToRoute('restaurant_dishmenu_category', ['tab' => $item->getCategory()->getId()]);
     }
-    
+
+    /**
+     * save entries prices
+     *
+     * @Route("/quicksave", name="restaurant_dishmenu_save_prices")
+     * @Method("POST")
+     * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT')")
+     *
+     */
+    public function savePricesAction(Request $request)
+    {
+        $entries = $request->get('entries');
+        $ingredientRepository = $this->dm->getRepository('MBHRestaurantBundle:DishMenuItem');
+
+        $success = true;
+
+        foreach ($entries as $id => $data) {
+            $entity = $ingredientRepository->find($id);
+            $price = $data['price'] ?? $entity->getPrice();
+            isset($data['enabled']) && $data['enabled'] ? $isEnabled = true : $isEnabled = false;
+
+            if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+                continue;
+            }
+
+            $entity->setPrice((float)$price);
+
+            //TODO: На самом деле spinner не дает вводить некорректные данные, но на случай изменения способа ввода проверяем.
+            $validator = $this->get('validator');
+            $errors = $validator->validate($entity);
+            if (count($errors) > 0) {
+                $success = false;
+                continue;
+            }
+
+            $this->dm->persist($entity);
+            $this->dm->flush();
+        };
+
+        $flashBag = $request->getSession()->getFlashBag();
+
+        $success ?
+            $flashBag->set('success', 'Цены успешно сохранены.'):
+            $flashBag->set('danger', 'Внимание, не все параметры сохранены успешно');
+
+
+        return $this->redirectToRoute('restaurant_dishmenu_category');
+    }
+
+
+
 }

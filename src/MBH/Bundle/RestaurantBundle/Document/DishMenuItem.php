@@ -94,17 +94,28 @@ class DishMenuItem extends Base
      */
     protected $price = 0;
 
-//    /**
-//     * @var int
-//     * @Gedmo\Versioned()
-//     * @ODM\Field(type="float", name="costPrice")
-//     * @Assert\Type(type="numeric")
-//     * @Assert\Range(
-//     *      min=0,
-//     *      minMessage="Цена не может быть меньше нуля"
-//     * )
-//     */
-    protected $costPrice = 0;
+    /**
+     * @var int
+     * @Gedmo\Versioned()
+     * @ODM\Field(type="float", name="margin")
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=0,
+     *      minMessage="Наценка не может быть меньше нуля"
+     * )
+     */
+    protected $margin = 30;
+
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean(name="isMargin")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isMargin = false;
+
 
     /**
      * @var string
@@ -210,25 +221,21 @@ class DishMenuItem extends Base
      */
     public function getCostPrice()
     {
-
-        /** @var  DishMenuIngredientEmbedded $dish */
-        foreach ($this->getDishIngredients()->getValues() as $dish) {
-            $ingredientPrice = $dish->getIngredient()->getPrice();
-            $amount = $dish->getAmount();
-            $this->costPrice += $ingredientPrice*$amount;
+        $costPrice = 0;
+        /** @var  DishMenuIngredientEmbedded $ingredients */
+        foreach ($this->getDishIngredients()->getValues() as $ingredients) {
+            $ingredientPrice = $ingredients->getIngredient()->getPrice();
+            $amount = $ingredients->getAmount();
+            $costPrice += $ingredientPrice*$amount;
         }
-        return $this->costPrice;
+        return $costPrice;
     }
 
-    /**
-     * @param mixed $costPrice
-     * @return $this
-     */
-    public function setCostPrice($costPrice)
+    public function setCostPrice($costPrice = null)
     {
-        $this->costPrice = $costPrice;
         return $this;
     }
+
 
     /**
      * @return string
@@ -275,6 +282,38 @@ class DishMenuItem extends Base
     public function addDishIngredients(DishMenuIngredientEmbedded $ingredient)
     {
         $this->dishIngredients->add($ingredient);
+    }
+
+    /**
+     * @return int
+     */
+    public function getMargin()
+    {
+        return $this->margin;
+    }
+
+    /**
+     * @param int $margin
+     */
+    public function setMargin($margin)
+    {
+        $this->margin = $margin;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsMargin()
+    {
+        return $this->isMargin;
+    }
+
+    /**
+     * @param boolean $isMargin
+     */
+    public function setIsMargin($isMargin)
+    {
+        $this->isMargin = $isMargin;
     }
 
 

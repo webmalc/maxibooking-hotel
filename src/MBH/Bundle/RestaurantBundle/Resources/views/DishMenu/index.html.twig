@@ -20,14 +20,14 @@
         {% endif %}
     </ul>
 
-    <form method="post" role="form" class="are-you-sure form-inline" action="{{ path('restaurant_category_save_prices') }}">
+    <form method="post" role="form" class="are-you-sure form-inline" action="{{ path('restaurant_dishmenu_save_prices') }}">
         <!-- Tabs content -->
         <div class="tab-content">
             {% for entity in entities %}
                 <div class="tab-pane {% if (loop.first and app.request.query.get('tab') is empty) or app.request.query.get('tab') == entity.id %}active{% endif %}" id="{{entity.id}}">
                     <!-- Tab actions -->
                     <div class="btn-list spacer-bottom text-right">
-                        {% if is_granted('ROLE_RESTAURANT_CATEGORY_EDIT') %}
+                        {% if is_granted('ROLE_RESTAURANT_DISHMENU_CATEGORY_EDIT') %}
                             <a href="{{ path('restaurant_dishmenu_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="{{ 'restaurant.category.edit'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-edit"></i> {{ 'restaurant.dishmenu.common.edit'|trans|capitalize }}</a>
                         {% endif %}
                         {% if is_granted('ROLE_RESTAURANT_DISHMENU_CATEGORY_NEW') %}
@@ -53,16 +53,23 @@
                             </thead>
                             <tbody>
                             {% for entry in entity.dishMenuItems %}
+                                {#TODO:Обратить внимание на составление формы вручную. Вероятно где то ошибки#}
                                 <tr>
                                     <td><i class="fa fa-cutlery"></i></td>
                                     <td><a href='{{ path('restaurant_dishmenu_item_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system is defined and entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
                                     <td>
-                                        <span class="hidden">{{ entry.price }}</span>
-                                        <input name="entries[{{ entry.id }}][price]" class="form-control input-sm price-spinner" type="text" value="{{ entry.price }}">
+                                        {% if entry.isMargin %}
+                                            <span class="hidden">{{ entry.margin }}</span>
+                                            <input name="entries[{{ entry.id }}][marginprice]" class="form-control input-sm price-spinner" type="text" value="{{ entry.margin }}" disabled>
+                                        {% else %}
+                                            <span class="hidden">{{ entry.price }}</span>
+                                            <input name="entries[{{ entry.id }}][price]" class="form-control input-sm price-spinner" type="text" value="{{ entry.price }}">
+                                        {% endif %}
+
                                     </td>
                                     <td class="text-center">
-                                        <span class="hidden">{{ entry.costprice }}</span>
-                                        <input name="entries[{{ entry.id }}][costprice]" class="form-control costprice input-sm price-spinner" type="text"  value="{{ entry.costprice }}" disabled>
+                                        <span class="hidden">{{ entry.costprice}}</span>
+                                        <input class="form-control input-sm price-spinner" type="text"  value="{{ entry.costprice}}" disabled>
                                     </td>
                                     <td class="text-center">{{ entry.description }}</td>
                                     <td class="text-center">

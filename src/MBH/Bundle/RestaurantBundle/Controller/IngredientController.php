@@ -17,6 +17,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class IngredientController
+ * @package MBH\Bundle\RestaurantBundle\Controller
+ * @Route("/ingredients")
+ */
 class IngredientController extends BaseController implements CheckHotelControllerInterface
 {
     /**
@@ -44,7 +49,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
     /**
      * save entries prices
      *
-     * @Route("/", name="restaurant_category_save_prices")
+     * @Route("/quicksave", name="restaurant_category_save_prices")
      * @Method("POST")
      * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT')")
      *
@@ -59,7 +64,6 @@ class IngredientController extends BaseController implements CheckHotelControlle
         foreach ($entries as $id => $data) {
             $entity = $ingredientRepository->find($id);
             $price = (float)$data['price'];
-            $output = (float)$data['output'];
             isset($data['enabled']) && $data['enabled'] ? $isEnabled = true : $isEnabled = false;
 
             if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
@@ -67,7 +71,6 @@ class IngredientController extends BaseController implements CheckHotelControlle
             }
 
             $entity->setPrice($price);
-            $entity->setOutput($output);
 
             //TODO: На самом деле spinner не дает вводить некорректные данные, но на случай изменения способа ввода проверяем.
             $validator = $this->get('validator');
@@ -261,7 +264,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
         $ingredient->setCategory($entity);
 
         $form = $this->createForm(new IngredientForm(), $ingredient, [
-            'calcTypes' => $this->container->getParameter('mbh.units')['calcTypes']
+            'calcTypes' => $this->container->getParameter('mbh.units')
         ]);
 
         $form->submit($request);
@@ -299,7 +302,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
         }
 
         $form = $this->createForm(new IngredientForm(), $ingredient, [
-            'calcTypes' => $this->container->getParameter('mbh.units')['calcTypes']
+            'calcTypes' => $this->container->getParameter('mbh.units')
         ]);
 
         return [
@@ -326,7 +329,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
         }
 
         $form = $this->createForm(new IngredientForm(), $ingredient, [
-            'calcTypes' => $this->container->getParameter('mbh.units')['calcTypes']
+            'calcTypes' => $this->container->getParameter('mbh.units')
         ]);
 
         $form->submit($request);
