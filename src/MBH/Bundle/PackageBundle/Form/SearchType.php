@@ -100,7 +100,7 @@ class SearchType extends AbstractType
                 'label' => 'form.searchType.adults',
                 'required' => true,
                 'error_bubbling' => true,
-                'data' => 0,
+                'data' => 1,
                 'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 10],
                 'constraints' => [
                     new Range(['min' => 0, 'minMessage' => 'form.searchType.adults_amount_less_zero']),
