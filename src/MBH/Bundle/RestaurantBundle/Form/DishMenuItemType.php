@@ -50,22 +50,22 @@ class DishMenuItemType extends AbstractType
                 'label' => 'restaurant.dishmenu.item.form.costprice.label',
                 'required' => false,
                 'attr' => ['class' => 'costprice price-spinner', 'disabled'=>true],
-                'help' => 'restaurant.dishmenu.item.form.costprice.help',
-                'mapped' => false
+                'help' => 'restaurant.dishmenu.item.form.costprice.help'
             ])
             ->add('margin', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.margin.label',
                 'required' => false,
                 'attr' => [
                     'class' => 'percent-margin'
-                ]
+                ],
+                'disabled' => true
             ])
             ->add('is_margin', CheckboxType::class, [
                 'label' => 'Маржа',
                 'required' => false,
                 'attr' => [
                     'class' => 'is_margin'
-                ]
+                ],
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'restaurant.dishmenu.item.form.description.label',
@@ -80,26 +80,46 @@ class DishMenuItemType extends AbstractType
                 'allow_delete' => true,
                 'by_reference' => true
             ])
-            //TODO: Тут возможно есть смысл сохранять при включенной марже текущую цену, если она была,
-            //чтоб при выключении маржи она показывалась иначе из за того что там форма disabled - цена ожидается, но ее нет.
-            //Или скорее лучше сделать все же проверку состояния включенной маржи и нужным полям формы задать disabledlo
-            /*->addEventListener(
+            ->addEventListener(
+                FormEvents::PRE_SET_DATA,
+                [
+                    $this, 'onPreSetData'
+                ]
+            )
+            ->addEventListener(
                 FormEvents::PRE_SUBMIT,
                 [
-                    $this, 'onPreSubmit'
+                    $this, 'onPreSubmitData'
                 ]
-            )*/
+            )
         ;
 
     }
 
-    /*public function onPreSubmit(FormEvent $event)
+    public function onPreSetData(FormEvent $event)
     {
-        $dishItem = $event->getData();
-        $form = $event->getForm();
-        return true;
-    }*/
+        if ($event->getData()->getIsMargin()) {
+            $this->isMarginDisabledAction($event);
+        }
+    }
 
+    public function onPreSubmitData(FormEvent $event)
+    {
+        $data = $event->getData();
+        if ($data['is_margin']??false) {
+            $this->isMarginDisabledAction($event);
+        }
+    }
+
+    private function isMarginDisabledAction(FormEvent $event)
+    {
+        $form = $event->getForm();
+        $priceOptions = $form->get('price')->getConfig()->getOptions();
+        $marginOptions = $form->get('margin')->getConfig()->getOptions();
+
+        $form->add('price', TextType::class, array_replace($priceOptions,['disabled' => true ]));
+        $form->add('margin', TextType::class, array_replace($marginOptions, ['disabled' => false]));
+    }
     /**
      * Configures the options for this type.
      *
