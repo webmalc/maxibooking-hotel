@@ -195,13 +195,13 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
 
         $ingredients = $this->dm->getRepository('MBHRestaurantBundle:Ingredient')->findAll();
 
-        $form = $this->createForm(new DishMenuItemForm(), $item, ['is_margin' => $item->getIsMargin()]);
+        $form = $this->createForm(new DishMenuItemForm(), $item);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            
             $this->dm->persist($item);
             $this->dm->flush();
-
             $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
 
             if ($request->get('save') !== null) {

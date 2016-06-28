@@ -128,7 +128,7 @@ class DishMenuItem extends Base
      *      maxMessage="Слишком длинное описание"
      * )
      */
-    protected  $description;
+    protected $description;
 
     /**
      * @ODM\EmbedMany(targetDocument="DishMenuIngredientEmbedded")
@@ -219,16 +219,16 @@ class DishMenuItem extends Base
     /**
      * @return mixed
      */
-    public function getCostPrice()
+    public function getCostPrice(): float
     {
         $costPrice = 0;
         /** @var  DishMenuIngredientEmbedded $ingredients */
         foreach ($this->getDishIngredients()->getValues() as $ingredients) {
             $ingredientPrice = $ingredients->getIngredient()->getPrice();
             $amount = $ingredients->getAmount();
-            $costPrice += $ingredientPrice*$amount;
+            $costPrice += $ingredientPrice * $amount;
         }
-        return $costPrice;
+        return (float) $costPrice;
     }
 
     public function setCostPrice($costPrice = null)
@@ -316,6 +316,13 @@ class DishMenuItem extends Base
         $this->isMargin = $isMargin;
     }
 
+    public function getMarginPrice()
+    {
+        $costPrice = $this->getCostPrice();
+        $margin = $this->margin;
+        $percent = $costPrice / 100 * $margin;
+        return $costPrice + $percent;
+    }
 
 
 }

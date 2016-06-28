@@ -60,7 +60,7 @@
                                     <td>
                                         {% if entry.isMargin %}
                                             <span class="hidden">{{ entry.margin }}</span>
-                                            <input name="entries[{{ entry.id }}][marginprice]" class="form-control input-sm price-spinner" type="text" value="{{ entry.margin }}" disabled>
+                                            <input name="entries[{{ entry.id }}][marginprice]" class="form-control input-sm price-spinner" type="text" value="{{ entry.marginPrice }}" disabled>
                                         {% else %}
                                             <span class="hidden">{{ entry.price }}</span>
                                             <input name="entries[{{ entry.id }}][price]" class="form-control input-sm price-spinner" type="text" value="{{ entry.price }}">

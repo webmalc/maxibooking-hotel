@@ -1,114 +1,122 @@
-/*global ingredients */
+/*global ingredients, $, console, document */
 $(function () {
-    var $costprice = $('#mbh_bundle_restaurantbundle_dishmenu_item_type_costPrice');
-    var $price = $('#mbh_bundle_restaurantbundle_dishmenu_item_type_price');
-    var $margin = $('#mbh_bundle_restaurantbundle_dishmenu_item_type_margin');
-    var $switcher = $('#mbh_bundle_restaurantbundle_dishmenu_item_type_is_margin');
+    'use strict';
+    var $price = $('#mbh_bundle_restaurantbundle_dishmenu_item_type_price'),
 
+        $costprice = $('#mbh_bundle_restaurantbundle_dishmenu_item_type_costPrice'),
 
-    if( !$costprice.length || !$price.length || !$margin.length) {
-        console.error('Нет обязательного селектора!');
-    }
+        $margin = $('#mbh_bundle_restaurantbundle_dishmenu_item_type_margin'),
 
-    //Калькуляция
-    $(document).on('keyup change', '.amount', function () {
-        updateCostPrice();
-    });
+        $switcher = $('#mbh_bundle_restaurantbundle_dishmenu_item_type_is_margin'),
 
-    updateCostPrice();
-    checkSwitcherStatus();
+    //Подсчет себестоимости
+        calculateCostPrice = function () {
+            var total = 0;
+            $.each($('.amount'), function () {
+                var amountValue = parseFloat($(this).val()),
+                    ingredientPrice = parseFloat(ingredients[$(this).closest('li').find('select').val()].price);
+                if (amountValue && ingredientPrice) {
+                    total += amountValue * ingredientPrice;
+                }
+            });
+            return total;
+        },
 
-    //Обработчики на существующие в коллекции ингредиенты
-    $('.dish-item-ingredients').find('select').on('change.ingredients', function () {
-        showIngredientPrice(this);
-        updateCostPrice();
-    });
+    //Вывести себестоимость
+        showCostPrice = function (price) {
+            $costprice.val(price).number(true, 2);
+            $costprice.trigger('change');
+        },
 
-    //Обработчик на добавленные ингредиенты
-    $(document).on('prototypeAdded', function(event, prototype) {
-        var selectField = $(prototype).find('select');
-        showIngredientPrice(selectField);
-        selectField.on('change.ingredients', function () {
-            showIngredientPrice(this);
-            updateCostPrice();
-        });
-    });
-    $(document).on('prototypeRemoved', function() {
-        updateCostPrice();
-    });
+    //Вывести себестоимость
+        updateCostPrice = function () {
+            showCostPrice(calculateCostPrice);
+        },
 
+    //Вывод цены под списком ингредиентов
+        updateIngredientPrice = function (ingredient) {
+            var $ingredient = $(ingredient),
+                ingredientId = $ingredient.val(),
+                ingredientPriceField = $ingredient.parent().siblings().find('small'),
+                ingredientData = ingredients[ingredientId],
+                html = ingredientData.price + ' ' + ingredientData.currency + ingredientData.units;
+            ingredientPriceField.empty().append(html).hide().fadeIn(300);
+        },
 
-    function showIngredientPrice(select) {
-        var ingredientId = $(select).val();
-        var priceFiled = $(select).parent().siblings().find('small');
-        var ingredient = ingredients[ingredientId];
-        var string = ingredient['price'] + ' ' + ingredient['currency'] + ingredient['units'];
-        priceFiled.empty().append(string).hide().fadeIn(300);
-    }
+    //Подсчет цены с маржой
+        calculateMarginPrice = function () {
+            var costprice = calculateCostPrice(),
+                margin = parseFloat($margin.val()),
+                percent = parseFloat(costprice / 100 * margin)
 
-    function updateCostPrice() {
-        $costprice.val(calculateCostPrice());
-    }
+            return costprice + percent;
+        },
 
-    function calculateCostPrice() {
-        var total = 0;
-        $.each($('.amount'), function () {
-            var amountValue = parseFloat($(this).val());
-            var ingredientPrice = ingredients[$(this).closest('li').find('select').val()]['price'];
-            if (amountValue && ingredientPrice) {
-                total += amountValue*ingredientPrice;
+        marginPriceUpdate = function () {
+            var price = calculateMarginPrice() || 0;
+            $price.val($.number(price, 2));
+        },
+
+        checkSwitcherStatus = function () {
+            if ($switcher.bootstrapSwitch('state')) {
+                $price.prop('disabled', true);
+                $margin.prop('disabled', false);
+                ingredients.dishMenuItem.price = $price.val();
+                marginPriceUpdate();
+                $costprice.on('change.ingredients', function () {
+                    marginPriceUpdate();
+                });
+            } else {
+                $price.prop('disabled', false);
+                $margin.prop('disabled', true);
+                $costprice.off('.ingredients');
+                //Возращаем сохраненное значение
+                $price.val(ingredients.dishMenuItem.price);
             }
-        });
-        return total;
-    }
+        },
 
-    function calculateMarginPrice() {
-        var costprice = calculateCostPrice();
-        var margin = parseFloat($margin.val());
-        var percent = parseFloat(costprice/100*margin);
-        var price = costprice + percent;
-        console.log(costprice + percent);
-        return price;
-    }
+        init = function () {
+            if (!$costprice.length || !$price.length || !$margin.length) {
+                console.error('Нет обязательного селектора!');
+            }
 
-    function setPrice(price) {
-        $price.val(price);
-    }
+            //Обработчики на существующие в коллекции ингредиенты
+            $('.dish-item-ingredients').find('select').on('change.ingredients', function () {
+                updateIngredientPrice(this);
+                updateCostPrice();
+            });
 
-    function marginPriceUpdate() {
-        var price = calculateMarginPrice();
-        if(!price) {
-            price = 0;
-        }
-        setPrice(price);
+            //Калькуляция
+            $(document).on('keyup change', '.amount', function () {
+                updateCostPrice();
+            });
 
-    }
+            //Обработчик на добавленные ингредиенты
+            $(document).on('prototypeAdded', function (event, prototype) {
+                var selectField = $(prototype).find('select');
+                updateIngredientPrice(selectField);
+                selectField.on('change.ingredients', function () {
+                    updateIngredientPrice(this);
+                    updateCostPrice();
+                });
+            });
+            $(document).on('prototypeRemoved', function () {
+                updateCostPrice();
+            });
 
-    function checkSwitcherStatus() {
-        if ($switcher.bootstrapSwitch('state')) {
-            $price.prop('disabled', true);
-            $margin.prop('disabled', false);
-            ingredients.dishMenuItem.price = $price.val();
-            marginPriceUpdate();
-            $margin.on('change.ingredients keyup.ingredients', function() {
+            $margin.on('change.ingredients keyup.ingredients', function () {
                 marginPriceUpdate();
             });
-            $costprice.on('change.ingredients', function() {
-                marginPriceUpdate();
+
+            $switcher.on('switchChange.bootstrapSwitch', function () {
+                checkSwitcherStatus();
             });
-        } else {
-            $price.prop('disabled', false);
-            $margin.prop('disabled', true);
-            $margin.off('.ingredients');
-            $costprice.off('.ingredients');
-            setPrice(ingredients.dishMenuItem.price);
-        }
-    }
-
-    //Изменение типа надбавки (маржа)
-    $switcher.on('switchChange.bootstrapSwitch', function () {
-        checkSwitcherStatus();
-    });
 
 
+        };
+
+    init();
+    checkSwitcherStatus();
+    updateCostPrice();
 });
+

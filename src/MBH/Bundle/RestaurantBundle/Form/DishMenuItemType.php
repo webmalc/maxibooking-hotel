@@ -15,6 +15,8 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DishMenuItemType extends AbstractType 
@@ -43,17 +45,16 @@ class DishMenuItemType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'price-spinner price'],
                 'help' => 'restaurant.dishmenu.item.form.price.help',
-                'disabled' => $options['is_margin']
             ])
             ->add('costPrice', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.costprice.label',
                 'required' => false,
                 'attr' => ['class' => 'costprice price-spinner', 'disabled'=>true],
-                'help' => 'restaurant.dishmenu.item.form.costprice.help'
+                'help' => 'restaurant.dishmenu.item.form.costprice.help',
+                'mapped' => false
             ])
             ->add('margin', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.margin.label',
-                'disabled' => !$options['is_margin'],
                 'required' => false,
                 'attr' => [
                     'class' => 'percent-margin'
@@ -79,9 +80,25 @@ class DishMenuItemType extends AbstractType
                 'allow_delete' => true,
                 'by_reference' => true
             ])
+            //TODO: Тут возможно есть смысл сохранять при включенной марже текущую цену, если она была,
+            //чтоб при выключении маржи она показывалась иначе из за того что там форма disabled - цена ожидается, но ее нет.
+            //Или скорее лучше сделать все же проверку состояния включенной маржи и нужным полям формы задать disabledlo
+            /*->addEventListener(
+                FormEvents::PRE_SUBMIT,
+                [
+                    $this, 'onPreSubmit'
+                ]
+            )*/
         ;
 
     }
+
+    /*public function onPreSubmit(FormEvent $event)
+    {
+        $dishItem = $event->getData();
+        $form = $event->getForm();
+        return true;
+    }*/
 
     /**
      * Configures the options for this type.
@@ -92,8 +109,7 @@ class DishMenuItemType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => 'MBH\Bundle\RestaurantBundle\Document\DishMenuItem',
-                'is_margin' => false
+                'data_class' => 'MBH\Bundle\RestaurantBundle\Document\DishMenuItem'
             ]
         );
     }
