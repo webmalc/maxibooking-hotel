@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class IngredientController extends BaseController implements CheckHotelControllerInterface
 {
+
     /**
      * List all ingredient category
      *

@@ -2,16 +2,13 @@
 
 namespace MBH\Bundle\RestaurantBundle\Controller;
 
-use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
-use MBH\Bundle\RestaurantBundle\Document\DishMenuIngredientEmbedded;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuItem;
 use MBH\Bundle\RestaurantBundle\Document\Ingredient;
 use MBH\Bundle\RestaurantBundle\Form\DishMenuCategoryType as DishMenuCategoryForm;
-use MBH\Bundle\RestaurantBundle\Form\DishMenuIngredientEmbeddedType;
 use MBH\Bundle\RestaurantBundle\Form\DishMenuItemType as DishMenuItemForm;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;

@@ -4,22 +4,16 @@
 {% set layout = 'box' %}
 
 {% block content %}
-{#{% form_theme form '@MBHRestaurant/Form/amount.html.twig' %}#}
-    {{ form_start(form, {'action': path('restaurant_dishmenu_item_new', {'id': entity.id}), 'method':'POST','attr': {'class': 'form-horizontal'}}) }}
-
-    {% include '@MBHRestaurant/DishMenu/dishItemsTemplate.html.twig' %}
-    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
-    {{ form_widget(form._token) }}
-    {{ form_end(form, {render_rest: false}) }}
-
+    {% include '@MBHRestaurant/DishMenu/dishItemFormTemplate.html.twig' with {'path': 'restaurant_dishmenu_item_new'} %}
 {% endblock %}
 
 {% block scripts %}
     {{ parent() }}
-    {% javascripts filter='uglifyjs2'
-    '@MBHRestaurantBundle/Resources/public/js/002-calculate-costprice.js'
-    %}
+
+    {% javascripts filter='uglifyjs2' '@MBHRestaurantBundle/Resources/public/js/002-calculate-costprice.js' %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
+
     {% include '@MBHRestaurant/DishMenu/dishMenuScripts.html.twig' with {'ingredients' : ingredients} %}
+
 {% endblock scripts %}

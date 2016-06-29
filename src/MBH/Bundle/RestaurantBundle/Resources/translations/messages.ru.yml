@@ -86,7 +86,8 @@ restaurant:
           help:           Название для использования внутри MaxiBooking
     item:
       title:
-      small_title:
+      small_title:        добавление блюда в категорию
+      edit_small_title:   редактирование блюда в категории
       active:             активно
       action:
         new:              добавить новое блюдо

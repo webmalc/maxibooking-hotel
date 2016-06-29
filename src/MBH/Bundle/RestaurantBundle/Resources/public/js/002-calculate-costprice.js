@@ -47,7 +47,7 @@ $(function () {
         calculateMarginPrice = function () {
             var costprice = calculateCostPrice(),
                 margin = parseFloat($margin.val()),
-                percent = parseFloat(costprice / 100 * margin)
+                percent = parseFloat(costprice / 100 * margin);
 
             return costprice + percent;
         },
@@ -111,8 +111,6 @@ $(function () {
             $switcher.on('switchChange.bootstrapSwitch', function () {
                 checkSwitcherStatus();
             });
-
-
         };
 
     init();

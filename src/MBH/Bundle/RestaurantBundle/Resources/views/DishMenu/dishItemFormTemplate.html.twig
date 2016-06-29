@@ -1,3 +1,5 @@
+{{ form_start(form, {'action': path( path , {'id': entry.id}), 'method': method|default('POST'), 'attr': {'class': 'form-horizontal'}}) }}
+
 {{ form_row(form.fullTitle) }}
 {{ form_row(form.title) }}
 {{ form_row(form.price) }}
@@ -5,6 +7,7 @@
 {{ form_row(form.costPrice) }}
 {{ form_row(form.is_margin) }}
 {{ form_row(form.description) }}
+
 <div class="dish-item-ingredients form-group form-inline">
     {{ form_label(form.dishIngredients) }}
     <div class="col-sm-6">
@@ -39,6 +42,12 @@
                     </span>
                 </div>
                 {{ '<i class="fa fa-times"></i> '|e }}"
-           class="btn btn-xs btn-success"><i class="fa fa-plus"></i> Добавить</a>
+           class="btn btn-xs btn-success"><i class="fa fa-plus"></i> {{ 'crud.add'|trans }}</a>
     </div>
 </div>
+
+{% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entry, 'delete_route': 'restaurant_dishmenu_item_delete', 'delete_role':'ROLE_RESTAURANT_DISHMENU_ITEM_DELETE' } %}
+
+{{ form_widget(form._token) }}
+{{ form_end(form, {render_rest: false}) }}
+
