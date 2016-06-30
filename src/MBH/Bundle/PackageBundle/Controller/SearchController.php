@@ -53,7 +53,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             'roomManager' => $this->manager
         ]);
         
-        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
         $tourist = new Tourist();
         $tourist->setDocumentRelation(new DocumentRelation());

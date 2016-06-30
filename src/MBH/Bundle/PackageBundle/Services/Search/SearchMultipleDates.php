@@ -51,7 +51,7 @@ class SearchMultipleDates implements SearchInterface
     {
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
-        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $this->dates = $this->config && $this->config->getSearchDates() ? $this->config->getSearchDates() : 0;
         $this->manager = $container->get('mbh.hotel.room_type_manager');
     }
@@ -172,7 +172,7 @@ class SearchMultipleDates implements SearchInterface
 
                 if ($tariff && $roomType) {
                     $restriction = $this->dm->getRepository('MBHPriceBundle:Restriction')
-                        ->findOneByDate($new, $roomType, $tariff);
+                        ->findOneByDate($new, $roomType, $tariff, $this->container->get('mbh.cache'));
 
                     if ($restriction) {
                         if ($restriction->getCLosed()) {

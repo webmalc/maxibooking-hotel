@@ -173,6 +173,12 @@ services:
         tags:
             - { name: doctrine_mongodb.odm.event_subscriber, connection: default}
 
+    mbh.cache:
+            class: MBH\Bundle\BaseBundle\Service\Cache
+            arguments: ['%mbh_cache%']
+            calls:
+                   - [setContainer, [@service_container]]
+
     #mbh.menu.voter.request:
     #    class: MBH\Bundle\BaseBundle\Menu\RequestContentIdentityVoter
     #    arguments:
