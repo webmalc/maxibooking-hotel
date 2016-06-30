@@ -112,7 +112,7 @@ class Ingredient extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      * @Assert\NotNull()
-     * @Assert\Choice(choices = {"per_kg", "per_grm", "per_ml", "per_l", "per_piece"})
+     * @Assert\Choice(callback = "getCalcTypes")
      */
     protected $calcType;
 
@@ -220,4 +220,19 @@ class Ingredient extends Base
         return $this->getCategory()->getHotel();
     }
 
+    public function getCalcTypes()
+    {
+        return [
+            "per_kg",
+            "per_grm",
+            "per_ml",
+            "per_l",
+            "per_piece"
+        ];
+    }
+
+    public function getCostPrice()
+    {
+        return $this->price*100/$this->output;
+    }
 }

@@ -10,12 +10,11 @@ namespace MBH\Bundle\RestaurantBundle\Form;
 
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class IngredientType extends AbstractType
 {
@@ -58,7 +57,14 @@ class IngredientType extends AbstractType
                 'attr' => ['class' => 'fix-percent-spinner'],
                 'help' => 'restaurant.ingredient.form.output.help'
 
-            ]);
+            ])
+            ->add('is_enabled', CheckboxType::class, [
+                'label' => 'restaurant.ingredient.form.is_enable.label',
+                'required' => false,
+                'value' => true,
+                'help' => 'restaurant.ingredient.form.is_enable.help'
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

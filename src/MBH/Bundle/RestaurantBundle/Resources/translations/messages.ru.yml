@@ -6,6 +6,7 @@ restaurant:
     add:                  добавить
     delete:               удалить
     save:                 сохранить изменения
+    doing:                действия
   category:
     new:                  создать новую категорию
     edit:                 редактировать категорию
@@ -50,9 +51,9 @@ restaurant:
         placeholder:
         help:             Установите цену для ингредиента
       calcType:
-        label:            Единица меры
+        label:            Единица измерения
         placeholder:
-        help:             Выберите единицу меры ингредиента
+        help:             Выберите единицу измерения ингредиента
       output:
         label:            Процент выхода продукции
         placeholder:

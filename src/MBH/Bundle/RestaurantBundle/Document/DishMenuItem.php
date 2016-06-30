@@ -222,11 +222,11 @@ class DishMenuItem extends Base
     public function getCostPrice(): float
     {
         $costPrice = 0;
-        /** @var  DishMenuIngredientEmbedded $ingredients */
-        foreach ($this->getDishIngredients()->getValues() as $ingredients) {
-            $ingredientPrice = $ingredients->getIngredient()->getPrice();
-            $amount = $ingredients->getAmount();
-            $costPrice += $ingredientPrice * $amount;
+        /** @var  DishMenuIngredientEmbedded $ingredient */
+        foreach ($this->getDishIngredients()->getValues() as $ingredient) {
+            $ingredientCostPrice = $ingredient->getIngredient()->getCostPrice();
+            $amount = $ingredient->getAmount();
+            $costPrice += $ingredientCostPrice * $amount;
         }
         return (float) $costPrice;
     }

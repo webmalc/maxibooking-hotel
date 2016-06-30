@@ -39,7 +39,7 @@
                     </div>
 
                     {% if entity.ingredients.count %}
-                        <table class="table table-actions table-striped table-hover table-condensed service-tables not-auto-datatable">
+                        <table class="table table-actions table-striped table-hover table-condensed">
                             <thead>
                             <tr>
                                 <th class="td-xs"></th>
@@ -48,7 +48,8 @@
                                 <th class="td-md">{{ 'restaurant.ingredient.output'|trans|capitalize }}</th>
                                 <th class="td-sm">{{ 'restaurant.ingredient.units'|trans|capitalize }}</th>
                                 <th class="td-sm">{{ 'restaurant.ingredient.active'|trans|capitalize }}</th>
-                                <th class="td-md"></th>
+                                <th class="td-md">{{ 'restaurant.common.doing'|trans|capitalize }}</th>
+
                             </tr>
                             </thead>
                             <tbody>
@@ -66,7 +67,7 @@
                                     </td>
                                     <td class="text-center">{{ config.calcTypes[entry.calcType]|default('Штука') }}</td>
                                     <td class="text-center">
-                                        <input class="checkbox-mini" name="entries[{{ entry.id }}][enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
+                                        <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
                                     </td>
                                     <td class="text-center">
                                         <div class='btn-list'>

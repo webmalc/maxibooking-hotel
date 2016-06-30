@@ -242,7 +242,7 @@ ROLE_WAREHOUSE_INVOICE_EDIT: Редактирование накладной
 ROLE_WAREHOUSE_INVOICE_DELETE: Удаление накладной
 
 ROLE_RESTAURANT: Ресторан
-ROLE_RESTAURANT_CATEGORY: Ресторан - категории
+ROLE_RESTAURANT_CATEGORY: Ресторан - категории ингредиентов
 ROLE_RESTAURANT_INGREDIENT: Ресторан - ингредиенты
 ROLE_RESTAURANT_CATEGORY_NEW: Создание категорий ингредиентов
 ROLE_RESTAURANT_CATEGORY_EDIT: Редактирование категорий ингредиентов
@@ -251,3 +251,12 @@ ROLE_RESTAURANT_INGREDIENT_VIEW: Просмотр ингредиентов
 ROLE_RESTAURANT_INGREDIENT_NEW: Создание ингредиентов
 ROLE_RESTAURANT_INGREDIENT_EDIT: Редактирование ингредиентов
 ROLE_RESTAURANT_INGREDIENT_DELETE: Удаление ингредиентов
+ROLE_RESTAURANT_DISHMENU_CATEGORY: Ресторан - категории блюд
+ROLE_RESTAURANT_DISHMENU_NEW: Создание категорий блюд
+ROLE_RESTAURANT_DISHMENU_CATEGORY_EDIT: Редактирование категорий блюд
+ROLE_RESTAURANT_DISHMENU_CATEGORY_DELETE: Удаление категорий блюд
+ROLE_RESTAURANT_DISHMENU_ITEM: Ресторан - блюда
+ROLE_RESTAURANT_DISHMENU_ITEM_VIEW: Просмотр блюд
+ROLE_RESTAURANT_DISHMENU_ITEM_NEW: Добавление блюд
+ROLE_RESTAURANT_DISHMENU_ITEM_EDIT: Редактирование блюд
+ROLE_RESTAURANT_DISHMENU_ITEM_DELETE: Удаление блюд

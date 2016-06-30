@@ -65,15 +65,15 @@ class IngredientController extends BaseController implements CheckHotelControlle
         foreach ($entries as $id => $data) {
             $entity = $ingredientRepository->find($id);
             $price = (float)$data['price'];
-            isset($data['enabled']) && $data['enabled'] ? $isEnabled = true : $isEnabled = false;
+            $isEnabled = $data['is_enabled'] ?? false;
 
             if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
                 continue;
             }
 
             $entity->setPrice($price);
+            $entity->setIsEnabled((boolean)$isEnabled);
 
-            //TODO: На самом деле spinner не дает вводить некорректные данные, но на случай изменения способа ввода проверяем.
             $validator = $this->get('validator');
             $errors = $validator->validate($entity);
             if (count($errors) > 0) {
