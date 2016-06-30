@@ -319,7 +319,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
      *
      * @Route("/{id}/ingredient/update", name="restaurant_ingredient_update")
      * @Method("PUT")
-     * @Security("is_granted('ROLE_RESTAURANT_EDIT')")
+     * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT')")
      * @Template("MBHRestaurantBundle:Ingredient:editIngredient.html.twig")
      * @ParamConverter(class="MBHRestaurantBundle:Ingredient")
      */

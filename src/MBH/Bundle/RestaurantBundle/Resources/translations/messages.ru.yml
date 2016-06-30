@@ -1,7 +1,7 @@
 restaurant:
   common:
     title:                ингредиенты
-    small_title:             список
+    small_title:          список
     edit:                 редактировать
     add:                  добавить
     delete:               удалить
@@ -60,7 +60,7 @@ restaurant:
 
   dishmenu:
     title:                Меню блюд
-    small_title:          создание блюд в категории
+    small_title:          список
     common:
       add:
       edit:               редактировать
@@ -119,3 +119,5 @@ restaurant:
           help:           Описание блюда
         margin:
           label:          Процент маржи
+
+

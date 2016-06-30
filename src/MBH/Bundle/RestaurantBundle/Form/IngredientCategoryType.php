@@ -23,7 +23,7 @@ class IngredientCategoryType extends AbstractType
             ->add('fullTitle', TextType::class, [
                 'label' => 'restaurant.category.form.fullTitle.label',
                 'required' => true,
-                'attr' => ['placeholder' => 'restaurant.category.form.placeholder'],
+                'attr' => ['placeholder' => 'restaurant.category.form.fullTitle.placeholder'],
                 'help' => 'restaurant.category.form.fullTitle.help'
             ])
             ->add('title', TextType::class, [
