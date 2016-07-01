@@ -213,6 +213,8 @@ class PackageSubscriber implements EventSubscriber
             } catch (\Exception $e) {
 
             }
+
+            $this->container->get('mbh.cache')->clear('accommodation_rooms');
         }
         return;
     }

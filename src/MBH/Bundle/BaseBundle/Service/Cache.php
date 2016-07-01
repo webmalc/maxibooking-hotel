@@ -2,15 +2,13 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Lsw\MemcacheBundle\Cache\MemcacheInterface;
 
 /**
  * Helper service
  */
 class Cache
 {
-    use ContainerAwareTrait;
-
     const LIFETIME = 60 * 60 * 24;
 
     /**
@@ -23,10 +21,35 @@ class Cache
      */
     private $isEnabled;
 
-    public function __construct(array $params)
+    /**
+     * @var MemcacheInterface
+     */
+    private $memcache;
+
+    public function __construct(array $params, MemcacheInterface $memcache)
     {
         $this->globalPrefix = $params['prefix'];
         $this->isEnabled = $params['is_enabled'];
+        $this->memcache = $memcache;
+    }
+
+    /**
+     * @param string|null $prefix
+     */
+    public function clear(string $prefix = null)
+    {
+        $memcached = new \Memcached();
+        $memcached->addServer('localhost', 11211);
+
+        $prefix = $this->globalPrefix . '_' . $prefix ?? $this->globalPrefix;
+        $keys = array_filter($memcached->getAllKeys(), function ($val) use ($prefix) {
+            $length = strlen($prefix);
+            return (substr($val, 0, $length) === $prefix);
+        });
+
+        array_walk($keys, function ($val) {
+            $this->memcache->delete($val);
+        });
     }
 
     /**
@@ -57,7 +80,7 @@ class Cache
 
         }
 
-        return $keyString;
+        return substr($keyString, 0, 250);
     }
 
     /**
@@ -72,8 +95,7 @@ class Cache
             return $this;
         }
 
-        $memcached = $this->container->get('memcache.default');
-        $memcached->set($this->generateKey($prefix, $keys), $value, 0, self::LIFETIME);
+        $this->memcache->set($this->generateKey($prefix, $keys), $value, 0, self::LIFETIME);
 
         return $this;
     }
@@ -88,8 +110,7 @@ class Cache
         if (!$this->isEnabled) {
             return false;
         }
-        $memcached = $this->container->get('memcache.default');
 
-        return $memcached->get($this->generateKey($prefix, $keys));
+        return $this->memcache->get($this->generateKey($prefix, $keys));
     }
 }
