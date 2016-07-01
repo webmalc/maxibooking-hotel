@@ -23,7 +23,6 @@ class CurrencyLoadCommand extends ContainerAwareCommand
     {
         $start = new \DateTime();
         $dm = $this->getContainer()->get('doctrine_mongodb')->getManager();
-        $validator = $this->getContainer()->get('validator');
         $date = new \DateTime('midnight');
         $xml = simplexml_load_file(self::SOURCE_LINK . $date->format('d/m/Y'));
 
@@ -41,10 +40,8 @@ class CurrencyLoadCommand extends ContainerAwareCommand
                 ->setTitle((string)$info->Name)
             ;
 
-            if (count($validator->validate($currency)) <= 0) {
-                $dm->persist($currency);
-                $dm->flush();
-            }
+            $dm->persist($currency);
+            $dm->flush();
         }
 
         $time = $start->diff(new \DateTime());

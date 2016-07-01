@@ -38,7 +38,7 @@ class RoomTypeManager
     {
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
-        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $this->useCategories = $this->config && $this->config ->getUseRoomTypeCategory();
     }
 

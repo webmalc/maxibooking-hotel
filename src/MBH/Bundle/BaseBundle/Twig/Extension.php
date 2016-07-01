@@ -117,7 +117,7 @@ class Extension extends \Twig_Extension
      */
     public function clientConfig()
     {
-        return $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        return $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
     }
 
     /**

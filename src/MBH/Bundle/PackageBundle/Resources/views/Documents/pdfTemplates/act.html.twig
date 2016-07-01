@@ -98,7 +98,7 @@
                         <td align="center">{{ data.nights }}</td>
                         <td align="center">{{ "package.pdf.night"|trans({}, "MBHPackageBundle") }}</td>
                         <td align="right">{{ data.price|number_format(2) }}</td>
-                        <td align="right">{{ (package.price)|number_format(2) }}</td>
+                        <td align="right">{{ (package.packagePrice)|number_format(2) }}</td>
                     </tr>
                 {% endfor %}
             {% endfor %}

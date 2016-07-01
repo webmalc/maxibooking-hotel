@@ -7,8 +7,7 @@
                 "<i class='fa fa-book'></i>",				
                 "{{ item }}",
                 "{{ item.category }}",
-				"<div class='text-right'>{{ item.qtty }}</div>",
-				"{{ item.unit }}"
+				"<div class='text-right {{ item.qtty > 0  ? 'text-success' : 'text-danger' }}'>{{ item.qtty }} {{ item.unit }}</div>"
             ]{% if loop.index != inventory|length %},{% endif %}
         {% endfor %}
 ]}

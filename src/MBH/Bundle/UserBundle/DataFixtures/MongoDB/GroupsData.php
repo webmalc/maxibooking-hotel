@@ -33,7 +33,7 @@ class GroupsData implements FixtureInterface, ContainerAwareInterface
                 'ROLE_TASK_VIEW', 'ROLE_TASK_OWN_VIEW', 'ROLE_SOURCE_VIEW', 'ROLE_ORGANIZATION_VIEW',
                 'ROLE_TOURIST_VIEW', 'ROLE_PACKAGE_VIEW', 'ROLE_LOGS',
                 'ROLE_HOTEL_VIEW', 'ROLE_CITY_VIEW', 'ROLE_CASH_VIEW',
-                'ROLE_DOCUMENT_TEMPLATE_VIEW', 'ROLE_ROOM_TYPE_VIEW', 'ROLE_ROOM_VIEW',
+                'ROLE_ROOM_TYPE_VIEW', 'ROLE_ROOM_VIEW',
                 'ROLE_ANALYTICS', 'ROLE_PORTER_REPORT', 'ROLE_ACCOMMODATION_REPORT', 'ROLE_SERVICES_REPORT', 'ROLE_MANAGERS_REPORT',
                 'ROLE_POLLS_REPORT', 'ROLE_ROOMS_REPORT', 'ROLE_ORGANIZATION_VIEW', 'ROLE_ORGANIZATION_VIEW'
             ]
@@ -120,6 +120,12 @@ class GroupsData implements FixtureInterface, ContainerAwareInterface
                 'ROLE_STAFF'
             ]
         ],
+        'warehouse' => [
+            'title' => 'Склад',
+            'roles' => [
+                'ROLE_WAREHOUSE'
+            ]
+        ]
     ];
 
     /**

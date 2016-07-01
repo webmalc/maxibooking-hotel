@@ -39,7 +39,7 @@ class SearchFactory implements SearchInterface
     {
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
-        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $this->search = $this->container->get('mbh.package.search_simple');
     }
 

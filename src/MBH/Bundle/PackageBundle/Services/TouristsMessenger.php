@@ -43,7 +43,7 @@ class TouristsMessenger
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->mailer = $container->get('mbh.mailer');
         $this->mbhs = $container->get('mbh.mbhs');
-        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
     }
 
     /**

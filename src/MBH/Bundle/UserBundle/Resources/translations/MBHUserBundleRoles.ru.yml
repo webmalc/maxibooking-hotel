@@ -240,3 +240,4 @@ ROLE_WAREHOUSE_INVOICE_VIEW: Просмотр накладной
 ROLE_WAREHOUSE_INVOICE_NEW: Добавление накладной
 ROLE_WAREHOUSE_INVOICE_EDIT: Редактирование накладной
 ROLE_WAREHOUSE_INVOICE_DELETE: Удаление накладной
+ROLE_WAREHOUSE: Склад
