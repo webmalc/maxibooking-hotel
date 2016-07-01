@@ -53,7 +53,6 @@
                             </thead>
                             <tbody>
                             {% for entry in entity.dishMenuItems %}
-                                {#TODO:Обратить внимание на составление формы вручную. Вероятно где то ошибки#}
                                 <tr>
                                     <td><i class="fa fa-cutlery"></i></td>
                                     <td><a href='{{ path('restaurant_dishmenu_item_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system is defined and entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>

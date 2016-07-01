@@ -23,7 +23,7 @@ class DishMenuCategoryType extends AbstractType
             ->add('full_title', TextType::class, [
                 'label' => 'restaurant.dishmenu.category.form.fullTitle.label',
                 'required' => true,
-                'attr' => ['placeholder' => 'restaurant.dishmenu.category.form.placeholder'],
+                'attr' => ['placeholder' => 'restaurant.dishmenu.category.form.fullTitle.placeholder'],
                 'help' => 'restaurant.dishmenu.category.form.fullTitle.help'
             ])
             ->add('title', TextType::class, [

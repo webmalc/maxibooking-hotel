@@ -28,6 +28,7 @@ restaurant:
 
   ingredient:
     price:                цена
+    costprice:            себестоимость
     output:               выход
     units:                ед.изм
     addincat:             создать ингредиент в категории
@@ -58,6 +59,9 @@ restaurant:
         label:            Процент выхода продукции
         placeholder:
         help:             Процент получаемый на выходе после обработки
+      is_enable:
+        label:            Наличие
+        help:             Доступен ли ингредиент
 
   dishmenu:
     title:                Меню блюд
@@ -79,7 +83,7 @@ restaurant:
       form:
         fullTitle:
           label:          Название
-          placeholder:    введите название
+          placeholder:    Введите название
           help:           Имя категории блюд
         title:
           label:          Внутреннее название

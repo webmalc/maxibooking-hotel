@@ -25,20 +25,23 @@ class IngredientType extends AbstractType
                 'label' => 'restaurant.ingredient.form.fullTitle.label',
                 'required' => true,
                 'attr' => ['placeholder' => 'restaurant.ingredient.form.fullTitle.placeholder'],
-                'help' => 'restaurant.ingredient.form.fullTitle.help'
+                'help' => 'restaurant.ingredient.form.fullTitle.help',
+                'group' => 'Общая информация'
 
             ])
             ->add('title', TextType::class, [
                 'label' => 'restaurant.ingredient.form.title.label',
                 'required' => false,
                 'attr' => ['placeholder' => 'restaurant.ingredient.form.title.placeholder'],
-                'help' => 'restaurant.ingredient.form.title.help'
+                'help' => 'restaurant.ingredient.form.title.help',
+                'group' => 'Общая информация'
             ])
             ->add('price', TextType::class, [
                 'label' => 'restaurant.ingredient.form.price.label',
                 'required' => false,
                 'attr' => ['class' => 'spinner price-spinner'],
-                'help' => 'restaurant.ingredient.form.price.help'
+                'help' => 'restaurant.ingredient.form.price.help',
+                'group' => 'Ценовая часть'
 
             ])
             ->add('calcType', ChoiceType::class, [
@@ -47,22 +50,31 @@ class IngredientType extends AbstractType
                 'empty_value' => '',
                 'multiple' => false,
                 'choices' => $options['calcTypes'],
-                'help' => 'restaurant.ingredient.form.calcType.help'
-
-
+                'help' => 'restaurant.ingredient.form.calcType.help',
+                'group' => 'Ценовая часть'
             ])
+
             ->add('output', TextType::class, [
                 'label' => 'restaurant.ingredient.form.output.label',
                 'required' => true,
                 'attr' => ['class' => 'fix-percent-spinner'],
-                'help' => 'restaurant.ingredient.form.output.help'
+                'help' => 'restaurant.ingredient.form.output.help',
+                'group' => 'Ценовая часть'
 
             ])
+            /*->add('costprice', TextType::class, [
+                'label' => 'restaurant.ingredient.form.costprice.label',
+                'mapped'=> false,
+                'attr' => [
+                    'disabled' => true
+                ]
+            ])*/
             ->add('is_enabled', CheckboxType::class, [
                 'label' => 'restaurant.ingredient.form.is_enable.label',
                 'required' => false,
                 'value' => true,
-                'help' => 'restaurant.ingredient.form.is_enable.help'
+                'help' => 'restaurant.ingredient.form.is_enable.help',
+                'group' => 'Доступность'
             ])
         ;
     }

@@ -10,11 +10,12 @@ namespace MBH\Bundle\RestaurantBundle\Form;
 
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
+//TODO: Выяснить момент такой, что если недоступно будет вдруг ингредиент, то как его отображать в списке
 class DishMenuIngredientEmbeddedType extends AbstractType
 {
     /**
@@ -32,9 +33,16 @@ class DishMenuIngredientEmbeddedType extends AbstractType
             ])
             ->add('ingredient', DocumentType::class, [
                 'class' => 'MBH\Bundle\RestaurantBundle\Document\Ingredient',
+                'query_builder' => function (DocumentRepository $repository) {
+                    return $repository->createQueryBuilder()
+                        ->field('isEnabled')
+                        ->equals(true);
+                },
                 'attr' => [
                     'class' => 'plain-html'
-                ]
+                ],
+                
+                'group_by' => 'category.name'
             ])
         ;
     }

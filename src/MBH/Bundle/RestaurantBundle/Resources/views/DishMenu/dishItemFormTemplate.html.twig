@@ -15,14 +15,14 @@
             {% if form.dishIngredients|length %}
                 {% for dishIngredient in form.dishIngredients %}
                     <li>
-                        <div>
+                        <div class='dish-ingredient-amount'>
                             <div> {{ form_widget(dishIngredient.amount) }} </div>
                             <small>{{ dishIngredient.amount.vars.help }}</small>
                         </div>
-                        <div>
+                        <div class='dish-ingredient-list-name'>
                             <div>{{ form_widget(dishIngredient.ingredient) }} </div>
                                 <span class="help-block">
-                                    <small class="currentprice">{{ dishIngredient.vars.value.ingredient.price ~ currency()['text']}}{{ ('unit.'~ dishIngredient.vars.value.ingredient.calcType)| trans }}</small>
+                                    <small class="currentprice">{{ dishIngredient.vars.value.ingredient.costprice ~ currency()['text']}}{{ ('unit.'~ dishIngredient.vars.value.ingredient.calcType)| trans }}</small>
                                 </span>
                         </div>
                         <i class="fa fa-times"></i>
@@ -31,11 +31,11 @@
             {% endif %}
         </ul>
         <a data-prototype="
-                <div>
+                <div class='dish-ingredient-amount'>
                     <div>{{ form_widget(form.dishIngredients.vars.prototype.amount)|e }}</div>
                     <small></small>
                 </div>
-                <div>
+                <div class='dish-ingredient-list-name'>
                     <div>{{ form_widget(form.dishIngredients.vars.prototype.ingredient)|e }}</div>
                     <span class='help-block'>
                         <small class='currentprice'></small>

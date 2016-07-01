@@ -19,7 +19,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 /**
- * @ODM\Document(collection="Ingredients")
+ * @ODM\Document(collection="Ingredients", repositoryClass="MBH\Bundle\RestaurantBundle\Document\IngredientRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="fullTitle", message="validator.document.ingredient.notunique")
@@ -52,6 +52,7 @@ class Ingredient extends Base
      * @Assert\NotNull()
      */
     protected $category;
+
 
     /**
      * @var string
@@ -116,6 +117,8 @@ class Ingredient extends Base
      */
     protected $calcType;
 
+
+    
     /**
      * @return string
      */
@@ -233,6 +236,7 @@ class Ingredient extends Base
 
     public function getCostPrice()
     {
-        return $this->price*100/$this->output;
+        $costPrice = (float) ($this->price*100/$this->output);
+        return round($costPrice, 2);
     }
 }

@@ -4,7 +4,8 @@
         '{{ ingredient.id }}' : {
             'price':{{ ingredient.price }},
             'units': '{{ ('unit.'~ingredient.calcType)|trans() }}',
-            'currency': '{{ currency()['text'] }}'
+            'currency': '{{ currency()['text'] }}',
+            'costprice': '{{ ingredient.costPrice }}'
         },
         {% endfor %}
         'dishMenuItem': {

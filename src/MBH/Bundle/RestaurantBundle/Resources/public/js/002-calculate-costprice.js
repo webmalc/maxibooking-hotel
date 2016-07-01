@@ -1,4 +1,4 @@
-/*global ingredients, $, console, document */
+/*global ingredients, $, console, document, select2 */
 $(function () {
     'use strict';
     var $price = $('#mbh_bundle_restaurantbundle_dishmenu_item_type_price'),
@@ -9,12 +9,12 @@ $(function () {
 
         $switcher = $('#mbh_bundle_restaurantbundle_dishmenu_item_type_is_margin'),
 
-    //Подсчет себестоимости
+            //Подсчет себестоимости
         calculateCostPrice = function () {
             var total = 0;
             $.each($('.amount'), function () {
                 var amountValue = parseFloat($(this).val()),
-                    ingredientPrice = parseFloat(ingredients[$(this).closest('li').find('select').val()].price);
+                    ingredientPrice = parseFloat(ingredients[$(this).closest('li').find('select').val()].costprice);
                 if (amountValue && ingredientPrice) {
                     total += amountValue * ingredientPrice;
                 }
@@ -22,7 +22,7 @@ $(function () {
             return total;
         },
 
-    //Вывести себестоимость
+            //Отрисовать себестоимость блюда
         showCostPrice = function (price) {
             $costprice.val(price).number(true, 2);
             $costprice.trigger('change');
@@ -39,7 +39,7 @@ $(function () {
                 ingredientId = $ingredient.val(),
                 ingredientPriceField = $ingredient.parent().siblings().find('small'),
                 ingredientData = ingredients[ingredientId],
-                html = ingredientData.price + ' ' + ingredientData.currency + ingredientData.units;
+                html = $.number(ingredientData.costprice, 2) + ' ' + ingredientData.currency + ingredientData.units;
             ingredientPriceField.empty().append(html).hide().fadeIn(300);
         },
 
@@ -74,7 +74,13 @@ $(function () {
                 $price.val(ingredients.dishMenuItem.price);
             }
         },
-
+        select2Activate = function ($selectedField) {
+            $selectedField.select2({
+                placeholder: "Сделайте выбор",
+                allowClear: false,
+                width: 'resolve'
+            });
+        },
         init = function () {
             if (!$costprice.length || !$price.length || !$margin.length) {
                 console.error('Нет обязательного селектора!');
@@ -86,6 +92,10 @@ $(function () {
                 updateCostPrice();
             });
 
+            $('.dish-item-ingredients').find('select').each(function () {
+                select2Activate($(this));
+            });
+
             //Калькуляция
             $(document).on('keyup change', '.amount', function () {
                 updateCostPrice();
@@ -93,9 +103,10 @@ $(function () {
 
             //Обработчик на добавленные ингредиенты
             $(document).on('prototypeAdded', function (event, prototype) {
-                var selectField = $(prototype).find('select');
-                updateIngredientPrice(selectField);
-                selectField.on('change.ingredients', function () {
+                var $selectField = $(prototype).find('select');
+                select2Activate($selectField);
+                updateIngredientPrice($selectField);
+                $selectField.on('change.ingredients', function () {
                     updateIngredientPrice(this);
                     updateCostPrice();
                 });

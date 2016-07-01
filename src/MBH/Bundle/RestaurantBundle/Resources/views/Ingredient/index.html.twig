@@ -43,9 +43,10 @@
                             <thead>
                             <tr>
                                 <th class="td-xs"></th>
-                                <th>Название</th>
+                                <th class="td-md">Название</th>
                                 <th class="td-md">{{ 'restaurant.ingredient.price'|trans|capitalize }}</th>
                                 <th class="td-md">{{ 'restaurant.ingredient.output'|trans|capitalize }}</th>
+                                <th class="td-md">{{ 'restaurant.ingredient.costprice'|trans|capitalize }}</th>
                                 <th class="td-sm">{{ 'restaurant.ingredient.units'|trans|capitalize }}</th>
                                 <th class="td-sm">{{ 'restaurant.ingredient.active'|trans|capitalize }}</th>
                                 <th class="td-md">{{ 'restaurant.common.doing'|trans|capitalize }}</th>
@@ -63,9 +64,13 @@
                                     </td>
                                     <td class="text-center">
                                         <span class="hidden">{{ entry.output }}</span>
-                                        <input name="entries[{{ entry.id }}][output]" class="form-control  fix-percent-spinner input-sm" type="text"  value="{{ entry.output }}">
+                                        <input name="entries[{{ entry.id }}][output]" class="form-control  fix-percent-spinner input-sm" type="text"  value="{{ entry.output }} " disabled>
                                     </td>
-                                    <td class="text-center">{{ config.calcTypes[entry.calcType]|default('Штука') }}</td>
+                                    <td class="text-center">
+                                        <span class="hidden">{{ entry.costprice }}</span>
+                                        <input name="entries[{{ entry.id }}][output]" class="form-control  price-spinner input-sm" type="text"  value="{{ entry.costprice }}"  disabled>
+                                    </td>
+                                    <td class="text-center">{{ ('unit.'~entry.calcType)|trans}}</td>
                                     <td class="text-center">
                                         <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
                                     </td>

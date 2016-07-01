@@ -1,7 +1,10 @@
+/* global $ */
 /**
+ *
  * Created by zalex on 24.06.16.
  */
 $(function () {
+    "use strict"
 // tariff service
     var $addDishItemButton = $('.dish-item-ingredients a');
     var prototype = $addDishItemButton.data('prototype');

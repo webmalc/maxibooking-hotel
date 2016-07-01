@@ -131,7 +131,7 @@ class DishMenuItem extends Base
     protected $description;
 
     /**
-     * @ODM\EmbedMany(targetDocument="DishMenuIngredientEmbedded")
+     * @ODM\EmbedMany(targetDocument="DishMenuIngredientEmbedded" )
      */
     protected $dishIngredients;
 

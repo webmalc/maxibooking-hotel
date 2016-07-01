@@ -14,9 +14,11 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DishMenuItemType extends AbstractType 
@@ -31,26 +33,37 @@ class DishMenuItemType extends AbstractType
                 'label' => 'restaurant.dishmenu.item.form.fullTitle.label',
                 'required' => true,
                 'attr' => ['placeholder' => 'restaurant.dishmenu.item.form.fullTitle.placeholder'],
-                'help' => 'restaurant.dishmenu.item.form.fullTitle.help'
+                'help' => 'restaurant.dishmenu.item.form.fullTitle.help',
+                'group' => 'Общая информация'
 
             ])
             ->add('title', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.title.label',
                 'required' => false,
                 'attr' => ['placeholder' => 'restaurant.dishmenu.item.form.title.placeholder'],
-                'help' => 'restaurant.dishmenu.item.form.title.help'
+                'help' => 'restaurant.dishmenu.item.form.title.help',
+                'group' => 'Общая информация'
+            ])
+            ->add('description', TextareaType::class, [
+                'label' => 'restaurant.dishmenu.item.form.description.label',
+                'required' => false,
+                'attr' => ['placeholder' => 'restaurant.dishmenu.item.form.description.placeholder'],
+                'help' => 'restaurant.dishmenu.item.form.description.help',
+                'group' => 'Общая информация'
             ])
             ->add('price', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.price.label',
                 'required' => false,
                 'attr' => ['class' => 'price-spinner price'],
                 'help' => 'restaurant.dishmenu.item.form.price.help',
+                'group' => 'Ценовая часть'
             ])
             ->add('costPrice', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.costprice.label',
                 'required' => false,
                 'attr' => ['class' => 'costprice price-spinner', 'disabled'=>true],
-                'help' => 'restaurant.dishmenu.item.form.costprice.help'
+                'help' => 'restaurant.dishmenu.item.form.costprice.help',
+                'group' => 'Ценовая часть'
             ])
             ->add('margin', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.margin.label',
@@ -58,7 +71,8 @@ class DishMenuItemType extends AbstractType
                 'attr' => [
                     'class' => 'percent-margin'
                 ],
-                'disabled' => true
+                'disabled' => true,
+                'group' => 'Ценовая часть'
             ])
             ->add('is_margin', CheckboxType::class, [
                 'label' => 'Маржа',
@@ -66,19 +80,16 @@ class DishMenuItemType extends AbstractType
                 'attr' => [
                     'class' => 'is_margin'
                 ],
+                'group' => 'Ценовая часть'
             ])
-            ->add('description', TextareaType::class, [
-                'label' => 'restaurant.dishmenu.item.form.description.label',
-                'required' => false,
-                'attr' => ['placeholder' => 'restaurant.dishmenu.item.form.description.placeholder'],
-                'help' => 'restaurant.dishmenu.item.form.description.help'
-            ])
+
             ->add('dishIngredients', CollectionType::class, [
                 'entry_type' => DishMenuIngredientEmbeddedType::class,
                 'label' => 'Ингредиенты блюда',
                 'allow_add' => true,
                 'allow_delete' => true,
-                'by_reference' => true
+                'by_reference' => true,
+                'group' => 'Состав блюд'
             ])
             ->addEventListener(
                 FormEvents::PRE_SET_DATA,
@@ -96,29 +107,40 @@ class DishMenuItemType extends AbstractType
 
     }
 
+    //Слушатели здесь потому, что при изменении формы на странице, нужно убирать атрибут disable с поля цена,
+    //поле is_enable при обработке формы должно быть включено всегда, не смотря на начальный вывод в форме.
     public function onPreSetData(FormEvent $event)
     {
+        $form = $event->getForm();
         if ($event->getData()->getIsMargin()) {
-            $this->isMarginDisabledAction($event);
+            $this->isMarginEnabledAction($form);
         }
     }
 
     public function onPreSubmitData(FormEvent $event)
     {
+        $form = $event->getForm();
         $data = $event->getData();
         if ($data['is_margin']??false) {
-            $this->isMarginDisabledAction($event);
+            $this->isMarginEnabledAction($form);
+        } else {
+            $this->isMarginDisabledAction($form);
         }
     }
 
-    private function isMarginDisabledAction(FormEvent $event)
+    private function isMarginEnabledAction(FormInterface $form)
     {
-        $form = $event->getForm();
         $priceOptions = $form->get('price')->getConfig()->getOptions();
         $marginOptions = $form->get('margin')->getConfig()->getOptions();
 
         $form->add('price', TextType::class, array_replace($priceOptions,['disabled' => true ]));
         $form->add('margin', TextType::class, array_replace($marginOptions, ['disabled' => false]));
+    }
+
+    private function isMarginDisabledAction(FormInterface $form)
+    {
+        $priceOptions = $form->get('price')->getConfig()->getOptions();
+        $form->add('price', TextType::class, array_replace($priceOptions,['disabled' => false ]));
     }
     /**
      * Configures the options for this type.
@@ -129,7 +151,8 @@ class DishMenuItemType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => 'MBH\Bundle\RestaurantBundle\Document\DishMenuItem'
+                'data_class' => 'MBH\Bundle\RestaurantBundle\Document\DishMenuItem',
+                'group' => null
             ]
         );
     }
