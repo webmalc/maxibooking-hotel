@@ -413,7 +413,8 @@ class Search implements SearchInterface
                 }
             }
         }
-        return $results;
+        
+        return array_values($results);;
     }
 
     public function checkWindows(SearchResult $result)
