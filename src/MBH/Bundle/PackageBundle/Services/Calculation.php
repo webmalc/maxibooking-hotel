@@ -336,7 +336,7 @@ class Calculation
 
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
                 $packagePrices[] = new PackagePrice(
-                    $cache->getDate(), $dayPrice, $cache->getTariff(), $promoConditions ? $promotion : null
+                    $cache->getDate(), $dayPrice, $tariff, $promoConditions ? $promotion : null
                 );
                 $total += $dayPrice;
             }
