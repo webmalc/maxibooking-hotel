@@ -83,8 +83,14 @@ $(document).ready(function () {
                 });
             }
         };
-    accommodationReportGet();
-    $('.accommodation-report-filter').change(function () {
+    if (!$('#accommodation-report-submit-button').length) {
+        accommodationReportGet();
+        $('.accommodation-report-filter').change(function () {
+            accommodationReportGet();
+        });
+    }
+    $('#accommodation-report-filter').on('submit', function (e) {
+        e.preventDefault();
         accommodationReportGet();
     });
 });

@@ -52,8 +52,6 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             'orderId' => $request->get('order'),
             'roomManager' => $this->manager
         ]);
-        
-        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
         $tourist = new Tourist();
         $tourist->setDocumentRelation(new DocumentRelation());
@@ -69,8 +67,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             'documentForm' => $this->createForm('mbh_document_relation', $tourist)
                 ->createView(),
             'addressForm' => $this->createForm('mbh_address_object_decomposed', $tourist->getAddressObjectDecomposed())
-                ->createView(),
-            'config' => $config
+                ->createView()
         ];
     }
 

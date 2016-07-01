@@ -52,7 +52,8 @@
                     </a>
                 </small>
             </div>
-            {% if config and not config.isInstantSearch %}
+            {% set clientConfig = client_config() %}
+            {% if not clientConfig or not clientConfig.isInstantSearch %}
                 <div class="input">
                     <button class="btn btn-primary" id="search-submit-button">
                         <i class="fa fa-search"></i> Найти
