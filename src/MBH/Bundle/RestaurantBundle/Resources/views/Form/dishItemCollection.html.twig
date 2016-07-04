@@ -1,0 +1,40 @@
+{% extends '@MBHBase/Form/fields.html.twig' %}
+{% block form_row %}
+    <div class="dish-item-ingredients form-group form-inline">
+        {{ form_label(form) }}
+        <div class="col-sm-6">
+            <ul>
+                {% if form|length %}
+                    {% for dishItem in form %}
+                        <li>
+                            <div class='dish-ingredient-amount'>
+                                <div> {{ form_widget(dishItem.amount) }} </div>
+                                <small>{{ dishItem.amount.vars.help }}</small>
+                            </div>
+                            <div class='dish-ingredient-list-name'>
+                                <div>{{ form_widget(dishItem.dish_menu_item) }} </div>
+                                <span class="help-block">
+                                    <small class="currentprice">{{ dishItem.vars.value.dishMenuItem.actualPrice ~ currency().text }}</small>
+                                </span>
+                            </div>
+                            <i class="fa fa-times"></i>
+                        </li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+            <a data-prototype="
+                <div class='dish-ingredient-amount'>
+                    <div>{{ form_widget(form.vars.prototype.amount)|e }}</div>
+                    <small></small>
+                </div>
+                <div class='dish-ingredient-list-name'>
+                    <div>{{ form_widget(form.vars.prototype.dish_menu_item)|e }}</div>
+                    <span class='help-block'>
+                        <small class='currentprice'></small>
+                    </span>
+                </div>
+                {{ '<i class="fa fa-times"></i> '|e }}"
+               class="btn btn-xs btn-success"><i class="fa fa-plus"></i> {{ 'crud.add'|trans }}</a>
+        </div>
+    </div>
+{% endblock %}

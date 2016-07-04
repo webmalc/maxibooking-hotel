@@ -54,7 +54,6 @@ class DishMenuItem extends Base
      */
     protected $category;
 
-    //TODO: перевод для месаджей не забыть добавить
     /**
      * @var string
      * @Gedmo\Versioned
@@ -217,6 +216,7 @@ class DishMenuItem extends Base
     }
 
     /**
+     * Себестоимость
      * @return mixed
      */
     public function getCostPrice(): float
@@ -323,6 +323,14 @@ class DishMenuItem extends Base
         $percent = $costPrice / 100 * $margin;
         return $costPrice + $percent;
     }
-
+    /* Вернуть актуальную цену */
+    public function getActualPrice()
+    {
+        if ($this->isMargin) {
+            return $this->getMarginPrice();
+        } else {
+            return $this->getPrice();
+        }
+    }
 
 }

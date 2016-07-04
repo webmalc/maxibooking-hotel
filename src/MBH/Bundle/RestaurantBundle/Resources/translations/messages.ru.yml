@@ -124,5 +124,45 @@ restaurant:
           help:           Описание блюда
         margin:
           label:          Процент маржи
+        amount:
+          placeholder:    Количество ингредиента
+        dishIngredients:
+          label:          Ингредиенты блюда
+  dishorder:
+    common:
+      title:              заказы
+      addsuccess:         заказ успешно создан
+      noitems:            заказов нет
+    table:
+      number:             № Заказа
+      table:              Столик
+      price:              Цена
+      freezed:            Оплачен
+      doing:              Действия
+    actions:
+      list:
+        small_title:      добавление заказа
+      add:                создать заказ
+      edit:
+      delete:
+      freezed:
+    form:
+      id:
+        label:            Номер заказа
+        noidplaceholder:  Номер заказа будет доступен после создания
+      table:
+        label:            Столик заказа
+        placeholder:      Введите номер столика заказа
+        help:             Поле выбора номера столика заказа
+      price:
+        label:            Стоимость заказа
+        placeholder:      Стоимость заказа считается автоматически
+        help:             Поле вывода стоимости заказа
+      amount:
+        placeholder:      Количество блюд
+      dishes:
+        label:            Список блюд
+        placeholder:
+        help:
 
 

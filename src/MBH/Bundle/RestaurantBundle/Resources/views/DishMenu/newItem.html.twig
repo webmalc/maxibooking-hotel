@@ -10,7 +10,10 @@
 {% block scripts %}
     {{ parent() }}
 
-    {% javascripts filter='uglifyjs2' '@MBHRestaurantBundle/Resources/public/js/002-calculate-costprice.js' %}
+    {% javascripts filter='uglifyjs2'
+    '@MBHRestaurantBundle/Resources/public/js/002-calculate-costprice.js'
+    '@MBHRestaurantBundle/Resources/public/js/001-add_dish_item.js'
+    %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 

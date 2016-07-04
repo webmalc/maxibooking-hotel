@@ -85,7 +85,7 @@ class DishMenuItemType extends AbstractType
 
             ->add('dishIngredients', CollectionType::class, [
                 'entry_type' => DishMenuIngredientEmbeddedType::class,
-                'label' => 'Ингредиенты блюда',
+                'label' => 'restaurant.dishmenu.item.form.dishIngredients.label',
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => true,

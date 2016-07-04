@@ -2,11 +2,11 @@
 /**
  * Created by PhpStorm.
  * User: zalex
- * Date: 23.06.16
- * Time: 15:47
+ * Date: 04.07.16
+ * Time: 11:38
  */
 
-namespace MBH\Bundle\RestaurantBundle\Form;
+namespace MBH\Bundle\RestaurantBundle\Form\DishOrder;
 
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
@@ -15,12 +15,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-//TODO: Выяснить момент такой, что если недоступно будет вдруг ингредиент, то как его отображать в списке
-class DishMenuIngredientEmbeddedType extends AbstractType
+
+class DishOrderItemEmmbeddedType extends AbstractType
 {
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -28,11 +25,11 @@ class DishMenuIngredientEmbeddedType extends AbstractType
                 'help' => 'Количество',
                 'attr' => [
                     'class' => 'amount amount-spinner',
-                    'placeholder' => 'restaurant.item.form.amount.placeholder'
-                ],
+                    'placeholder' => 'restaurant.dishorder.form.amount.placeholder'
+                ]
             ])
-            ->add('ingredient', DocumentType::class, [
-                'class' => 'MBH\Bundle\RestaurantBundle\Document\Ingredient',
+            ->add('dish_menu_item', DocumentType::class, [
+                'class' => 'MBH\Bundle\RestaurantBundle\Document\DishMenuItem',
                 'query_builder' => function (DocumentRepository $repository) {
                     return $repository->createQueryBuilder()
                         ->field('isEnabled')
@@ -41,29 +38,21 @@ class DishMenuIngredientEmbeddedType extends AbstractType
                 'attr' => [
                     'class' => 'plain-html'
                 ],
-                
                 'group_by' => 'category.name'
-            ])
-        ;
+            ]);
     }
 
-    /**
-     * Configures the options for this type.
-     *
-     * @param OptionsResolver $resolver The resolver for the options.
-     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver
             ->setDefaults([
-                'data_class' => 'MBH\Bundle\RestaurantBundle\Document\DishMenuIngredientEmbedded'
+                'data_class' => 'MBH\Bundle\RestaurantBundle\Document\DishOrderItemEmbedded'
             ]);
     }
 
     public function getName()
     {
-        return 'mbh_bundle_restaurantbundle_dishmenu_ingredientembedded_type';
+        return 'mbh_bundle_restaurantbundle_dishorder_dishitemembedded_type';
     }
-
 
 }

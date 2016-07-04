@@ -30,7 +30,7 @@
                         {% if is_granted('ROLE_RESTAURANT_DISHMENU_CATEGORY_EDIT') %}
                             <a href="{{ path('restaurant_dishmenu_category_edit', {'id': entity.id }) }}" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="bottom" title="{{ 'restaurant.category.edit'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-edit"></i> {{ 'restaurant.dishmenu.common.edit'|trans|capitalize }}</a>
                         {% endif %}
-                        {% if is_granted('ROLE_RESTAURANT_DISHMENU_CATEGORY_NEW') %}
+                        {% if is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_NEW') %}
                             <a href="{{ path('restaurant_dishmenu_item_new', {'id': entity.id }) }}" class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="bottom" title="{{ 'restaurant.dishmenu.item.helper.new'|trans|capitalize }} <{{entity.name}}>"><i class="fa fa-plus"></i> {{ 'restaurant.dishmenu.item.action.new'|trans|capitalize }}</a>
                         {% endif %}
                         {% if is_granted('ROLE_RESTAURANT_DISHMENU_CATEGORY_DELETE') %}

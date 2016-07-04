@@ -1,0 +1,21 @@
+{% extends 'MBHRestaurantBundle:DishOrder:layout.html.twig' %}
+
+{% set small_title = 'restaurant.dishorder.actions.add'|trans %}
+{%  set layout = 'box' %}
+
+{% block content %}
+    {% form_theme form.dishes '@MBHRestaurant/Form/dishItemCollection.html.twig'  %}
+    {{ form_start(form, {'action': path('restaurant_dishorder_new'), 'method': method|default('POST'), 'attr':{'class':'form-horizontal'}}) }}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': order, 'delete_route': 'restaurant_dishorder_delete', 'delete_role':'ROLE_RESTAURANT_ORDER_MANAGER_DELETE' } %}
+    {{ form(form) }}
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2'
+    '@MBHRestaurantBundle/Resources/public/js/001-add_dish_item.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock scripts %}
