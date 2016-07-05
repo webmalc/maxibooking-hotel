@@ -15,7 +15,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-//TODO: Выяснить момент такой, что если недоступно будет вдруг ингредиент, то как его отображать в списке
 class DishMenuIngredientEmbeddedType extends AbstractType
 {
     /**

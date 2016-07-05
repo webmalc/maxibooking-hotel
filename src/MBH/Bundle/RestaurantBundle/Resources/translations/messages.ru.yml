@@ -132,6 +132,7 @@ restaurant:
     common:
       title:              заказы
       addsuccess:         заказ успешно создан
+      editsuccess:        заказ успешно отредактирован
       noitems:            заказов нет
     table:
       number:             № Заказа
@@ -143,7 +144,7 @@ restaurant:
       list:
         small_title:      добавление заказа
       add:                создать заказ
-      edit:
+      edit:               редактирование заказа
       delete:
       freezed:
     form:
@@ -164,5 +165,9 @@ restaurant:
         label:            Список блюд
         placeholder:
         help:
+  table:
+    common:
+    table:
+      name:               Название
 
 

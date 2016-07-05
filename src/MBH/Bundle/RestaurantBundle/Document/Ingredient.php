@@ -237,6 +237,6 @@ class Ingredient extends Base
     public function getCostPrice()
     {
         $costPrice = (float) ($this->price*100/$this->output);
-        return round($costPrice, 2);
+        return number_format($costPrice,2);
     }
 }

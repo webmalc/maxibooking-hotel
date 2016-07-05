@@ -12,9 +12,9 @@
                                 <small>{{ dishItem.amount.vars.help }}</small>
                             </div>
                             <div class='dish-ingredient-list-name'>
-                                <div>{{ form_widget(dishItem.dish_menu_item) }} </div>
+                                <div>{{ form_widget(dishItem.dishMenuItem) }} </div>
                                 <span class="help-block">
-                                    <small class="currentprice">{{ dishItem.vars.value.dishMenuItem.actualPrice ~ currency().text }}</small>
+                                    <small class="currentprice"></small>
                                 </span>
                             </div>
                             <i class="fa fa-times"></i>
@@ -28,7 +28,7 @@
                     <small></small>
                 </div>
                 <div class='dish-ingredient-list-name'>
-                    <div>{{ form_widget(form.vars.prototype.dish_menu_item)|e }}</div>
+                    <div>{{ form_widget(form.vars.prototype.dishMenuItem)|e }}</div>
                     <span class='help-block'>
                         <small class='currentprice'></small>
                     </span>

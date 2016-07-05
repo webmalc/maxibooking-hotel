@@ -56,33 +56,40 @@ class DishOrderItemEmbedded
     }
 
     /**
-     * @return mixed
+     * @return DishMenuItem
      */
-    public function getDishMenuItem(): DishMenuItem
+    public function getDishMenuItem()
     {
         return $this->dishMenuItem;
     }
 
     /**
-     * @param mixed $dishMenuItem
+     * @param DishMenuItem $dishMenuItem
      */
-    public function addDishMenuItem(DishMenuItem $dishMenuItem)
+    public function setDishMenuItem(DishMenuItem $dishMenuItem)
     {
         $this->dishMenuItem = $dishMenuItem;
     }
+
 
     /**
      * @return mixed
      */
     public function getPrice()
     {
-        return $this->price;
+        return $this->price * $this->amount;
     }
 
-    /* Не используемый $price не ошибка, при обработке формы он нужен для того чтоб вызывался метод без ошибок*/
-    public function setPrice($price = 0)
+    //Этот метод вызываем в пост сабмит формы
+    public function setPrice()
     {
-        $this->price = $this->getDishMenuItem()->getActualPrice() * $this->amount;
+        $this->price = $this->getDishMenuItem()->getActualPrice();
+    }
+
+    //Этот метод вызывает "чистую цену" на момент установки ее при добавлении
+    public function getFixedPrice()
+    {
+        return $this->price;
     }
 
 

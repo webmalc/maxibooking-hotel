@@ -1,0 +1,68 @@
+{% extends "MBHRestaurantBundle:Table:layout.html.twig" %}
+{% set small_title = 'restaurant.table.actions.list.small_title'|trans %}
+{% set layout = "box" %}
+
+{% block content %}
+<div class="box-tools pull-rigth">
+    <div class="btn">
+        {% if is_granted('ROLE_RESTAURANT_TABLE_NEW') %}
+            <a href="{{ path('restaurant_table_new') }}" class="btn btn-sm btn-default" data-toggle="tooltip"
+               data-placement="bottom" title="{{ 'restaurant.table.actions.add'|trans|capitalize }}"><i
+                        class="fa fa-plus"></i> {{ 'restaurant.table.actions.add'|trans|capitalize }}</a>
+        {% endif %}
+    </div>
+</div>
+
+{% if entities.count %}
+<div class="box-body">
+    <table class="table table-actions table-striped table-hover table-condensed text-center">
+        <thead>
+        <tr>
+            <th class="td-xs"></th>
+            <th class="td-md">{{ 'restaurant.table.table.name'|trans }}</th>
+            <th class="td-xs">{{ 'restaurant.table.table.isEnable'|trans }}</th>
+            <th class="td-lg text-center">{{ 'restaurant.table.table.doing'|trans }}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for entry in entities %}
+            <tr>
+                <td><i class="fa fa-cutlery"></i></td>
+                <td>{{ entry.name }}</td>
+                <td>
+                    <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }}>
+                </td>
+                <td>
+                    <div class='btn-list text-center'>
+                        {% if is_granted('ROLE_RESTAURANT_TABLE_EDIT') %}
+                            <a href='{{ path('restaurant_table_edit', {'id': entry.id }) }}'
+                               class='btn btn-success btn-xs'
+                               title='{{ 'restaurant.table.actions.edit'|trans|capitalize }}' data-toggle='tooltip'>
+                                <i class='fa fa-pencil-square-o'></i>
+                            </a>
+                        {% endif %}
+                        {% if is_granted('ROLE_RESTAURANT_TABLE_DELETE') %}
+                            <a href='{{ path('restaurant_table_delete', {'id': entry.id }) }}'
+                               class='btn btn-danger btn-xs delete-link '
+                               title='{{ 'restaurant.dishmenu.item.action.delete'|trans|capitalize }}'
+                               data-toggle='tooltip'>
+                                <i class='fa fa-trash-o'></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+    {% else %}
+        <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'restaurant.table.common.noitems'|trans|capitalize }}. <a href="{{ path('restaurant_table_new') }}">{{ 'restaurant.table.actions.add'|trans|capitalize }}?</a></div>
+    {% endif %}
+
+</div> <!-- /.box-body -->
+
+{% endblock %}
+

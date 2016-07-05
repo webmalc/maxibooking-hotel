@@ -59,11 +59,14 @@ class DishOrderItem extends Base
     protected $hotel;
     
     /**
-     * @ODM\EmbedMany(targetDocument="DishMenuIngredientEmbedded" ) 
+     * @ODM\EmbedMany(targetDocument="DishOrderItemEmbedded" )
+     *
      */
     protected $dishes;
-    
-    /*TODO: Описание брони */
+
+    /**
+     * @ODM\EmbedOne(targetDocument="")
+     */
     protected $order;
 
     /**
@@ -74,8 +77,11 @@ class DishOrderItem extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isFreezed = false;
-    
-    /*TODO: Описание столика */
+
+    /**
+     * @ODM\EmbedOne(targetDocument="Table")
+     * @Gedmo\Versioned
+     */
     protected $table;
 
     public function __construct()
@@ -176,7 +182,7 @@ class DishOrderItem extends Base
         foreach ($this->getDishes() as $dish) {
             $price += $dish->getPrice();
         }
-        return $price;
+        return number_format($price,2);
     }
     
 

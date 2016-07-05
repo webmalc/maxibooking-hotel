@@ -196,6 +196,7 @@ class Hotel extends Base implements \JsonSerializable
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\DishMenuCategory", mappedBy="hotel") */
     protected $dishMenuCategories;
 
+
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="Country")

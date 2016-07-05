@@ -4,3 +4,9 @@ services:
     arguments: ["@service_container"]
     tags:
       - { name: doctrine_mongodb.odm.event_subscriber, connection: default }
+
+  mbh__restaurant.form_dish_order.dish_order_item_emmbedded_type:
+      class: MBH\Bundle\RestaurantBundle\Form\DishOrder\DishOrderItemEmmbeddedType
+      arguments: ['@request_stack']
+      tags:
+          - { name: form.type, alias: mbh_bundle_restaurantbundle_dishorder_dishitemembedded_type }
