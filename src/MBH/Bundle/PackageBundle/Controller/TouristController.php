@@ -39,7 +39,7 @@ class TouristController extends Controller
      *
      * @Route("/", name="tourist")
      * @Method("GET")
-     * @Security("is_granted('ROLE_TOURIST_VIEW')")
+     * @Security("is_granted('ROLE_TOURIST_REPORT')")
      * @Template()
      */
     public function indexAction()
@@ -88,7 +88,7 @@ class TouristController extends Controller
      *
      * @Route("/json", name="tourist_json", defaults={"_format"="json"}, options={"expose"=true})
      * @Method("POST")
-     * @Security("is_granted('ROLE_TOURIST_VIEW')")
+     * @Security("is_granted('ROLE_TOURIST_REPORT')")
      * @Template()
      */
     public function jsonAction(Request $request)

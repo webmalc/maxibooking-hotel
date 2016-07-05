@@ -113,8 +113,6 @@ class ServiceController extends BaseController
             8 => 'total',
         ]);
 
-        $queryBuilder->skip($tableParams->getStart())->limit($tableParams->getLength());
-
         if ($firstSort = $tableParams->getFirstSort()) {
             $queryBuilder->sort($firstSort[0], $firstSort[1]);
         }
@@ -126,6 +124,10 @@ class ServiceController extends BaseController
         if ($request->get('deleted') == 'on') {
             $this->dm->getFilterCollection()->disable('softdeleteable');
         }
+
+        $count = $queryBuilder->getQuery()->count();
+
+        $queryBuilder->skip($tableParams->getStart())->limit($tableParams->getLength());
 
         /** @var \MBH\Bundle\PackageBundle\Document\PackageService[] $results */
         $results = $queryBuilder->getQuery()->execute()->toArray();
@@ -158,7 +160,7 @@ class ServiceController extends BaseController
 
         return [
             'results' => $results,
-            'recordsFiltered' => count($results),
+            'recordsFiltered' => $count,
             'totals' => $totals,
             'config' => $this->container->getParameter('mbh.services'),
         ];
