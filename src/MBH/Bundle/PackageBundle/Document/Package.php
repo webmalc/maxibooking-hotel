@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -391,10 +392,10 @@ class Package extends Base implements JsonSerializable
     /**
      * Set accommodation
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Room $accommodation
+     * @param $accommodation
      * @return self
      */
-    public function setAccommodation(\MBH\Bundle\HotelBundle\Document\Room $accommodation)
+    public function setAccommodation($accommodation)
     {
         $this->accommodation = $accommodation;
         return $this;
@@ -1470,5 +1471,10 @@ class Package extends Base implements JsonSerializable
         return $this;
     }
 
-
+    public function clearServices()
+    {
+        $this->services = new ArrayCollection();
+        
+        return $this;
+    }    
 }

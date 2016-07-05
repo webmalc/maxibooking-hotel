@@ -48,7 +48,63 @@ class OrderManager
         $this->validator = $container->get('validator');
     }
 
+    /**
+     * @param Package $package
+     * @param \DateTime $date
+     * @return Package
+     * @throws Exception
+     */
+    public function relocatePackage(Package $package, \DateTime $date): Package
+    {
+        $start = clone $package->getBegin();
+        $end = clone $package->getEnd();
+        $start->modify('+1 day');
+        $end->modify('-1 day');
 
+        if (!$package->getAccommodation()) {
+            throw new Exception('controller.packageController.relocation_accommodation_error');
+        }
+        
+        if ($date > $end || $date < $start) {
+            throw new Exception('controller.packageController.relocation_dates_error');
+        }
+
+
+        $newPackage = clone $package;
+        $newPackage
+            ->setBegin($date)
+            ->setEnd($package->getEnd())
+            ->setPackagePrice(0)
+            ->setTotalOverwrite(0)
+            ->setPrice(0)
+            ->setNumberWithPrefix($package->getNumberWithPrefix() . '_переезд')
+            ->setServicesPrice(0)
+            ->clearServices()
+            ->setAccommodation(null)
+        ;
+
+        $package->setEnd($date);
+        $this->dm->persist($package);
+        $this->dm->flush();
+
+        $this->dm->persist($newPackage);
+        $cacheEnd = $newPackage->getEnd();
+        $this->dm->flush();
+
+        
+        $this->container->get('mbh.room.cache')->recalculate(
+            $newPackage->getBegin(), $cacheEnd->modify('-1 day'), $newPackage->getRoomType(), $newPackage->getTariff(), false
+        );
+
+        return $newPackage;
+    }
+
+
+    /**
+     * @param Package $old
+     * @param Package $new
+     * @return Package|string
+     */
     public function updatePackage(Package $old, Package $new)
     {
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
@@ -421,8 +477,7 @@ class OrderManager
                     ->setPersons((int)$data['infants'])
                     ->setService($service)
                     ->setPackage($package)
-                    ->setPrice($service->getPrice())
-                ;
+                    ->setPrice($service->getPrice());
                 $package->addService($infantService);
                 $this->dm->persist($package);
                 $this->dm->persist($infantService);
@@ -479,7 +534,6 @@ class OrderManager
 
 /**
  * Class PackageCreationException
-
  */
 class PackageCreationException extends Exception
 {
