@@ -58,6 +58,8 @@ var docReadyTourists = function () {
 
     var $guestForm = $('form[name=mbh_bundle_packagebundle_package_order_tourist_type]');
     var fillGuestForm = function (data) {
+        $guestForm.find('.guestPhone').hide();
+        $guestForm.find('.guestEmail').hide();
         $guestForm.find('.guestLastName').val(data.lastName);
         $guestForm.find('.guestFirstName').val(data.firstName);
         $guestForm.find('.guestPatronymic').val(data.patronymic);
@@ -69,6 +71,8 @@ var docReadyTourists = function () {
     var $guestSelect = $guestForm.find('.findGuest');
     $guestSelect.change(function () {
         if (!$(this).val()) {
+            $guestForm.find('.guestPhone').show();
+            $guestForm.find('.guestEmail').show();
             return null;
         }
         $.getJSON(Routing.generate('json_tourist', {'id': $(this).val()}), fillGuestForm);
