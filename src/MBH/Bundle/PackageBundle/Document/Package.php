@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Zend\Stdlib\JsonSerializable;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use MBH\Bundle\BaseBundle\Annotations as MBH;
 
 /**
  * @ODM\Document(collection="Packages", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageRepository")
@@ -73,6 +74,7 @@ class Package extends Base implements JsonSerializable
     
     /** 
      * @ODM\ReferenceMany(targetDocument="Tourist", inversedBy="packages")
+     * @MBH\Versioned()
      */
     protected $tourists;
     
