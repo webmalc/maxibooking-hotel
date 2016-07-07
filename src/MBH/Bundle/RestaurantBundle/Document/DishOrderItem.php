@@ -17,6 +17,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -65,7 +66,9 @@ class DishOrderItem extends Base
     protected $dishes;
 
     /**
-     * @ODM\EmbedOne(targetDocument="")
+     * @var Package $order
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PackageBundle\Document\Package")
+     * @Gedmo\Versioned
      */
     protected $order;
 
@@ -79,7 +82,7 @@ class DishOrderItem extends Base
     protected $isFreezed = false;
 
     /**
-     * @ODM\EmbedOne(targetDocument="Table")
+     * @ODM\ReferenceOne(targetDocument="Table")
      * @Gedmo\Versioned
      */
     protected $table;

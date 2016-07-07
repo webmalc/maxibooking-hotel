@@ -36,6 +36,13 @@ class IngredientType extends AbstractType
                 'help' => 'restaurant.ingredient.form.title.help',
                 'group' => 'Общая информация'
             ])
+            ->add('is_enabled', CheckboxType::class, [
+                'label' => 'restaurant.ingredient.form.is_enable.label',
+                'required' => false,
+                'value' => true,
+                'help' => 'restaurant.ingredient.form.is_enable.help',
+                'group' => 'Общая информация'
+            ])
             ->add('price', TextType::class, [
                 'label' => 'restaurant.ingredient.form.price.label',
                 'required' => false,
@@ -69,13 +76,7 @@ class IngredientType extends AbstractType
                     'disabled' => true
                 ]
             ])*/
-            ->add('is_enabled', CheckboxType::class, [
-                'label' => 'restaurant.ingredient.form.is_enable.label',
-                'required' => false,
-                'value' => true,
-                'help' => 'restaurant.ingredient.form.is_enable.help',
-                'group' => 'Доступность'
-            ])
+
         ;
     }
 

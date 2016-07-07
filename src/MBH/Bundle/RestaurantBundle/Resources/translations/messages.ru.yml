@@ -60,8 +60,8 @@ restaurant:
         placeholder:
         help:             Процент получаемый на выходе после обработки
       is_enable:
-        label:            Наличие
-        help:             Доступен ли ингредиент
+        label:            Показать
+        help:             Показывать ли ингредиент в списке выбора
 
   dishmenu:
     title:                Меню блюд
@@ -165,9 +165,33 @@ restaurant:
         label:            Список блюд
         placeholder:
         help:
+      order:
+        label:            Плательщик
   table:
     common:
+      title:              Столики
+    newaction:
+      small_title:        добавление столика
+    actions:
+      list:
+        small_title:      Список столиков
+      edit:               редактирование столика
+      add:                Добавить столик
     table:
       name:               Название
+      isEnable:           Активен
+      doing:              Действия
+    form:
+      fullTitle:
+        label:            Название
+        help:             Название столика
+        placeholder:      Столик1
+      title:
+        label:            Внутреннее название
+        help:             Название для использования внутри MaxiBooking
+        placeholder:      Столик возле окна
+      is_enable:
+        label:            Активен
+        help:             Активен ли столик
 
 

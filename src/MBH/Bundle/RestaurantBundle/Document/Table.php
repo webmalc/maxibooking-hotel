@@ -21,7 +21,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 
 /**
- * @ODM\Document(collection="tables")
+ * @ODM\Document(collection="Tables")
  * @Gedmo\Loggable()
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="fullTitle", message="validator.document.ingredient.notunique")

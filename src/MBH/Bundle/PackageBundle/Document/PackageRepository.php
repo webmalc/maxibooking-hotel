@@ -755,4 +755,33 @@ class PackageRepository extends DocumentRepository
 
         return $IDs;
     }
+
+    public function findByOrderOrRoom(string $term)
+    {
+        $queryRoom = $this->getDocumentManager()->getRepository('MBHHotelBundle:Room')->createQueryBuilder();
+        $queryRoom
+            ->addOr(
+                $queryRoom->expr()->field('fullTitle')->equals(new \MongoRegex('/.*' . $term . '.*/i'))
+            )
+            ->addOr(
+                $queryRoom->expr()->field('title')->equals(new \MongoRegex('/.*' . $term . '.*/i'))
+            );
+
+        $rooms = $queryRoom->getQuery()->execute();
+        $roomIds = [];
+        $method = 'getId';
+        foreach ($rooms as $object) {
+            $roomIds[] = (is_object($object) && method_exists($object, $method)) ? $object->$method() : (string)$object;
+        }
+
+        $queryPackage = $this->createQueryBuilder();
+        $queryPackage
+            ->addOr($queryPackage->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*' . $term . '.*/i')))
+            ->addOr($queryPackage->expr()->field('accommodation.id')->in($roomIds))
+            ->addAnd($queryPackage->expr()->field('departureTime')->exists(false))
+            ->addAnd($queryPackage->expr()->field('end')->gte(new \DateTime('midnight')))
+            ;
+
+        return $queryPackage->getQuery()->execute();
+    }
 }

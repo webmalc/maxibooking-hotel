@@ -10,3 +10,4 @@ services:
       arguments: ['@request_stack']
       tags:
           - { name: form.type, alias: mbh_bundle_restaurantbundle_dishorder_dishitemembedded_type }
+

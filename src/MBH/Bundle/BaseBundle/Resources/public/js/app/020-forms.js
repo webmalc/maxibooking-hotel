@@ -508,6 +508,48 @@ var docReadyForms = function () {
             });
     }());
 
+    //order select
+    (function (){
+        var orderSelect = $('.order-select');
+
+        if (orderSelect.length !== 1) {
+            return;
+        }
+
+        select2Text(orderSelect)
+            .select2({
+                minimumInputLength: 1,
+                allowClear: true,
+                placeholder: 'Выберите бронь',
+                ajax: {
+                    url: Routing.generate('getPackageJsonSearch'),
+                    dataType: 'json',
+                    data: function (params) {
+                        return {
+                            query: params.term // search term
+                        };
+                    },
+                    results: function (data) {
+                        return {results: data};
+                    }
+                },
+                initSelection: function (element, callback) {
+                    var id = $(element).val();
+                    if (id !== "") {
+                        $.ajax(Routing.generate('getPackageJsonById',
+                            {
+                                id: id
+                            }), {dataType: "json"})
+                            .done(function (data) {
+                            callback(data);
+                        });
+                    }
+                },
+                dropdownCssClass: "bigdrop"
+            });
+    })();
+
+
     //remember inputs
     (function () {
         var inputs = $('.input-remember'),

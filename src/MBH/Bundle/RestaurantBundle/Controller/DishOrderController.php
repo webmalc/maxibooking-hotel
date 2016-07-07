@@ -11,6 +11,7 @@ namespace MBH\Bundle\RestaurantBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderItem;
 use MBH\Bundle\RestaurantBundle\Form\DishOrder\DishOrderItemType;
@@ -19,6 +20,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,7 +71,7 @@ class DishOrderController extends BaseController implements CheckHotelController
 
         $dishes = $this->dm->getRepository('MBHRestaurantBundle:DishMenuItem')->findAll();
 
-        $form = $this->createForm(new DishOrderItemType(), $order);
+        $form = $this->createForm(new DishOrderItemType($this->dm), $order);
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()) {
@@ -109,7 +111,7 @@ class DishOrderController extends BaseController implements CheckHotelController
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new DishOrderItemType(), $order);
+        $form = $this->createForm(new DishOrderItemType($this->dm), $order);
         $form->handleRequest($request);
 
         $dishes = $this->dm->getRepository('MBHRestaurantBundle:DishMenuItem')->findAll();
@@ -162,6 +164,7 @@ class DishOrderController extends BaseController implements CheckHotelController
         return $this->redirectToRoute('restaurant_dishorder_list');
     }
 
+
     /**
      * @Route("/{id}/showfreezed", name="restaurant_dishorder_showfreezed")
      * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_VIEW')")
@@ -171,4 +174,6 @@ class DishOrderController extends BaseController implements CheckHotelController
     {
         return [];
     }
+
+
 }

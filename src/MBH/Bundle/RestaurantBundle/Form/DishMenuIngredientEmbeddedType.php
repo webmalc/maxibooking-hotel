@@ -27,7 +27,7 @@ class DishMenuIngredientEmbeddedType extends AbstractType
                 'help' => 'Количество',
                 'attr' => [
                     'class' => 'amount amount-spinner',
-                    'placeholder' => 'restaurant.item.form.amount.placeholder'
+                    'placeholder' => 'restaurant.dishmenu.item.form.amount.placeholder'
                 ],
             ])
             ->add('ingredient', DocumentType::class, [

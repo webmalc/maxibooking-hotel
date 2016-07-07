@@ -87,6 +87,8 @@ class Package extends Base implements JsonSerializable
      * @var int
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="numberWithPrefix")
+     * @ODM\Index()
+     *
      */
     protected $numberWithPrefix;
 
@@ -829,7 +831,21 @@ class Package extends Base implements JsonSerializable
 
     public function __toString()
     {
-        return $this->getNumberWithPrefix();
+        return $this->getTitle();
+    }
+
+    public function getTitle(bool $accommodation = false, bool $payer = false)
+    {
+        $title = $this->getNumberWithPrefix();
+        if ($accommodation && $this->getAccommodation()) {
+            $title .=' Номер: '.$this->getAccommodation()->getName().'. ';
+        }
+        /** @var Tourist|Organization $name */
+        if ($payer && $name = $this->getOrder()->getPayer()) {
+            $title .= ' Плательщик: '.$name.'. ';
+        }
+        return $title;
+
     }
 
     /**

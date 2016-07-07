@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuItem;
 use MBH\Bundle\RestaurantBundle\Document\Ingredient;
+use MBH\Bundle\RestaurantBundle\Document\Table;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -74,6 +75,34 @@ class RestaurantSubscriber implements EventSubscriber
                 }
 
                 $message = 'Невозможно удалить ингредиент ' . $doc->getName() . ' так как он используется в блюдах: ' . $dishlist;
+                throw new DeleteException($message);
+            }
+        }
+
+        if ($doc instanceof Table) {
+            $query = $args->getDocumentManager()->getRepository('MBHRestaurantBundle:DishOrderItem')
+                ->createQueryBuilder()
+                ->field('table.$id')->equals(new \MongoId($doc->getId()))
+                ->getQuery();
+
+            if ($query->count()) {
+                $router = $this->container->get('router');
+                $route = $router->generate('restaurant_table_edit', ['id' => $doc->getId()]);
+                $message = 'Невозможно удалить столик. Вы всегда можете его скрыть в <a href="'.$route.'"> меню редактирования'.'</a>';
+                throw new DeleteException($message);
+            }
+        }
+
+        if ($doc instanceof DishMenuItem) {
+            $query = $args->getDocumentManager()->getRepository('MBHRestaurantBundle:DishOrderItem')
+                ->createQueryBuilder()
+                ->field('dishes.dishMenuItem.$id')->equals(new \MongoId($doc->getId()))
+                ->getQuery();
+
+            if ($query->count()) {
+                $router = $this->container->get('router');
+                $route = $router->generate('restaurant_dishmenu_item_edit', ['id' => $doc->getId()]);
+                $message = 'Невозможно удалить блюдо, т.к. оно фигурирует в заказах. Вы всегда можете его скрыть в <a href="'.$route.'"> меню редактирования'.'</a>';
                 throw new DeleteException($message);
             }
         }
