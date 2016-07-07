@@ -20,6 +20,44 @@
                 <div class="bg-gray color-palette alert">
                     <i class="fa fa-bed"> </i> {{ 'package.accommodation.placement'|trans({}, 'MBHPackageBundle') }} {{ package.accommodation.name(true, true) }}
                     , {{ 'package.accommodation.guests'|trans({}, 'MBHPackageBundle') }} {{ package.isCheckIn ? '' : 'не ' }} {{ 'package.accommodation.stopped'|trans({}, 'MBHPackageBundle') }}
+                    {% if is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
+
+                            <button data-toggle="modal" data-target="#package-relocation-modal"
+                               class="btn btn-primary btn-xs" title="{{ 'package.action.relocation'|trans({}, 'MBHPackageBundle') }}" data-toggle="tooltip">
+                                <i class="fa fa-suitcase"></i>
+                            </button>
+
+                        <div class="modal fade" id="package-relocation-modal">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Переселить гостей?</h4>
+                                    </div>
+                                    <form class="form-inline" id="package-relocation-form" data-package-id="{{ package.id }}">
+                                    <div class="modal-body">
+                                        <p></p>
+                                            <div class="form-group">
+                                                <label class="control-label" >Дата переезда</label>
+                                                <input class="form-control datepicker margin-left-sm"
+                                                       required="required" name="date" data-begin="{{ package.begin|date_modify("+1 day")|date('d.m.Y') }}"
+                                                       data-end="{{ package.end|date_modify("-1 day")|date('d.m.Y') }}"
+                                                       type="text" id="package-relocation-date"
+                                                       value="">
+                                            </div>
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-ban"></i> Отмена</button>
+                                        <button type="submit" id="package-relocation-go" class="btn btn-primary">Да</button>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% endif %}
+
                     {% if package.deletedAt is empty and is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL')) %}
                         <div class="pull-right">
                             <a href="{{ path('package_accommodation_delete', { 'id': package.id }) }}"

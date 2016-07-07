@@ -5,10 +5,8 @@
   "description": "The \"Symfony Standard Edition\" distribution",
   "minimum-stability": "dev",
   "autoload": {
-    "psr-0": {
-      "": "src/",
-      "SymfonyStandard": "app/"
-    }
+    "psr-4": { "": "src/" },
+    "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
   },
   "require": {
     "php": ">=5.3.3",
@@ -42,7 +40,8 @@
     "doctrine/doctrine-fixtures-bundle": "^2.2@dev",
     "myallocator/myallocator-php-sdk": "dev-master",
     "leafo/scssphp": "^0.6.3",
-    "alcaeus/mongo-php-adapter": "^1.0"
+    "alcaeus/mongo-php-adapter": "^1.0",
+    "leaseweb/memcache-bundle": "^2.1"
   },
   "require-dev": {
     "sensio/generator-bundle": "~2.3"

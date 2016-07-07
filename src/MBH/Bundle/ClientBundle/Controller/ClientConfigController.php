@@ -32,7 +32,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      */
     public function indexAction()
     {
-        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $form = $this->createForm(new ClientConfigType(), $entity);
 
         return [
@@ -51,7 +51,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      */
     public function saveAction(Request $request)
     {
-        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        $entity = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
 
         if (!$entity) {
             $entity = new ClientConfig();

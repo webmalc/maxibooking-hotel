@@ -114,12 +114,15 @@ class OrderSubscriber implements EventSubscriber
                 }
             }
 
-            /* calc order total */
             if ($entity instanceof Package) {
                 $order = $entity->getOrder()->calcPrice();
                 $dm->persist($order);
                 $meta = $dm->getClassMetadata(get_class($order));
                 $uow->recomputeSingleDocumentChangeSet($meta, $order);
+                
+                if (isset($uow->getDocumentChangeSet($entity)['accommodation'])) {
+                    $this->container->get('mbh.cache')->clear('accommodation_rooms');
+                }
             }
 
         }
@@ -148,6 +151,7 @@ class OrderSubscriber implements EventSubscriber
                 $this->container->get('mbh.room.cache')->recalculate(
                     $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff(), false
                 );
+                $this->container->get('mbh.cache')->clear('accommodation_rooms');
             }
             $entity->setPrice(0);
             $dm->persist($entity);

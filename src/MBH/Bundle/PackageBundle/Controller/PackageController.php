@@ -2,7 +2,9 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
+use Gedmo\Loggable\Document\LogEntry;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
@@ -26,6 +28,7 @@ use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
@@ -453,6 +456,27 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
+        /*$reader = new \Doctrine\Common\Annotations\AnnotationReader();
+        $reflection = new \ReflectionClass($package);
+        foreach ($reflection->getProperties() as $property) {
+            if ($reader->getPropertyAnnotation($property, 'MBH\Bundle\BaseBundle\Annotations\Versioned')) {
+                dump($property);
+            }
+        }
+
+        exit();
+
+        /*$log = new LogEntry();
+        $log->setAction('create');
+        $log->setData(['text' => 'test value']);
+        $log->setLoggedAt(new \DateTime());
+        $log->setObjectId($package->getId());
+        $log->setObjectClass(get_class($package));
+        $log->setVersion(1);
+        $log->setUsername($this->getUser()->getUsername());
+        $this->dm->persist($log);
+        $this->dm->flush();*/
+
         $form = $this->createForm(new OrderTouristType(), null, ['guest' => false]);
 
         $authorizationChecker = $this->container->get('security.authorization_checker');
@@ -697,6 +721,29 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         return $this->redirectToRoute('package_accommodation', ['id' => $package->getId()]);
+    }
+
+
+    /**
+     * Package relocation (new accommodation)
+     *
+     * @Route("/{id}/relocation/{date}", name="package_relocation", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_PACKAGE_ACCOMMODATION') and (is_granted('EDIT', package) or is_granted('ROLE_PACKAGE_EDIT_ALL'))")
+     * @param Package $package
+     * @param \DateTime $date
+     * @return Response
+     */
+    public function relocationAction(Package $package, \DateTime $date)
+    {
+        try {
+            $redirectPackage = $this->get('mbh.order_manager')->relocatePackage($package, $date);
+            $this->addFlash('success', 'controller.packageController.relocation_success');
+        } catch (Exception $e) {
+            $this->addFlash('danger', $e->getMessage());
+            $redirectPackage = $package;
+        }
+        return $this->redirectToRoute('package_accommodation', ['id' => $redirectPackage->getId()]);
     }
 
     /**

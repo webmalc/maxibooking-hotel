@@ -206,6 +206,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         $dm->flush();
 
         $this->get('mbh.channelmanager')->updateRestrictionsInBackground();
+        $this->get('mbh.cache')->clear();
 
         $request->getSession()->getFlashBag()
             ->set('success', 'Изменения успешно сохранены.')
@@ -275,6 +276,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             );
 
             $this->get('mbh.channelmanager')->updateRestrictionsInBackground();
+            $this->get('mbh.cache')->clear();
 
             if ($request->get('save') !== null) {
                 return $this->redirect($this->generateUrl('restriction_generator'));

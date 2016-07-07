@@ -272,7 +272,7 @@ class Builder extends ContainerAware
         $menu['hotels']->addChild('hotelsRoomTypes', ['route' => 'room_type', 'label' => 'Номерной фонд'])
             ->setAttributes(['icon' => 'fa fa-bed']);
 
-        $config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->findOneBy([]);
+        $config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         if ($config && $config->getUseRoomTypeCategory()) {
             $menu['hotels']->addChild('room_type_category', ['route' => 'room_type_category', 'label' => 'Группы номеров'])
                 ->setAttributes(['icon' => 'fa fa-bed']);

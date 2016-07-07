@@ -3,6 +3,8 @@
 namespace MBH\Bundle\PriceBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use Lsw\MemcacheBundle\Cache\MemcacheInterface;
+use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 
 class PriceCacheRepository extends DocumentRepository
@@ -63,6 +65,7 @@ class PriceCacheRepository extends DocumentRepository
      * @param array $tariffs
      * @param boolean $grouped
      * @param boolean $categories
+     * @param Cache $memcached
      * @return array
      */
     public function fetch(
@@ -72,8 +75,16 @@ class PriceCacheRepository extends DocumentRepository
         array $roomTypes = [],
         array $tariffs = [],
         $grouped = false,
-        $categories = false
+        $categories = false,
+        Cache $memcached = null
     ) {
+        if ($memcached) {
+            $cache = $memcached->get('price_caches_fetch', func_get_args());
+            if ($cache !== false) {
+                return $cache;
+            }
+        }
+
         $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs, $categories)->getQuery()->execute();
 
         if (!$grouped) {
@@ -83,6 +94,10 @@ class PriceCacheRepository extends DocumentRepository
         $method = $categories ? 'getRoomTypeCategory' : 'getRoomType';
         foreach ($caches as $cache) {
             $result[$cache->$method()->getId()][$cache->getTariff()->getId()][$cache->getDate()->format('d.m.Y')] = $cache;
+        }
+
+        if ($memcached) {
+            $memcached->set($result, 'price_caches_fetch', func_get_args());
         }
 
         return $result;

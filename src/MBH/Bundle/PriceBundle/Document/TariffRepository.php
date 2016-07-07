@@ -8,6 +8,18 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 class TariffRepository extends DocumentRepository
 {
 
+    public function getMergingTariffs()
+    {
+        $result = $this->createQueryBuilder()
+            ->field('defaultForMerging')->equals(true)
+            ->field('isDefault')->equals(false)
+            ->getQuery()
+            ->execute()
+        ;
+        
+        return $result;
+    }
+
     /**
      * Get Tariffs with > 1 package
      * @return array

@@ -91,6 +91,7 @@ package.actions.guests_check_out: Гости выехали
 package.actions.accommodation: Размещение
 package.actions.search: Поиск
 package.actions.delete: Удаление
+package.action.relocation: Переселение
 
 package.actions.docs: Генерация документов
 package.actions.confirmation: Подтверждение

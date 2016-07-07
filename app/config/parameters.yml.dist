@@ -47,5 +47,10 @@ parameters:
   online_form_sites: ['http://example.com', 'http://example.com']
   online_form_result_url: 'http://example.com/results/'
 
+  #Cache
+  mbh_cache:
+    is_enabled: true
+    prefix: mbh
+
   mbh_modules:
     tasks: true

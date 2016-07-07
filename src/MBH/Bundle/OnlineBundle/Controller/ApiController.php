@@ -7,8 +7,6 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\SearchQuery;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
@@ -17,10 +15,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Translation\Translator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
 /**
  * @Route("/api")
@@ -53,19 +51,27 @@ class ApiController extends Controller
             throw $this->createNotFoundException();
         }
 
-        if (!in_array($type, ['begin', 'updatedAt', 'end'])) {
-            $type = 'begin';
+        if (!in_array($type, ['begin', 'updatedAt', 'end', 'live'])) {
+            $type = 'live';
         }
 
         $this->dm->getFilterCollection()->disable('softdeleteable');
 
         $qb = $this->dm->getRepository('MBHPackageBundle:Package')
             ->createQueryBuilder()
-            ->field($type)->gte($begin)
-            ->field($type)->lte($end)
             ->field('roomType.id')->in($this->get('mbh.helper')->toIds($hotel->getRoomTypes()))
             ->sort('updatedAt', 'desc');
         ;
+
+        if ($type == 'live') {
+            $qb
+                ->field('begin')->lte($end)
+                ->field('end')->gte($begin);
+        } else {
+            $qb
+                ->field($type)->gte($begin)
+                ->field($type)->lte($end);
+        }
         
         return [
             'packages' => $qb->getQuery()->execute()
@@ -76,6 +82,7 @@ class ApiController extends Controller
      * Online form js
      * @Route("/form/{id}", name="online_form_get", defaults={"_format"="js", "id"=null})
      * @Method("GET")
+     * @Cache(expires="tomorrow", public=true)
      * @Template("")
      */
     public function getFormAction($id = null)
@@ -306,7 +313,7 @@ class ApiController extends Controller
         usort($results, function ($prev, $next) {
 
             $getPrice = function (SearchResult $result) {
-                if ($result->getTariff()->getIsDefault() && isset(array_values($result->getPrices())[0])) {
+                if (isset(array_values($result->getPrices())[0])) {
                     return array_values($result->getPrices())[0];
                 }
                 return null;

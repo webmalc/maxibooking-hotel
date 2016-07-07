@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -15,6 +16,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Zend\Stdlib\JsonSerializable;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use MBH\Bundle\BaseBundle\Annotations as MBH;
 
 /**
  * @ODM\Document(collection="Packages", repositoryClass="MBH\Bundle\PackageBundle\Document\PackageRepository")
@@ -72,6 +74,7 @@ class Package extends Base implements JsonSerializable
     
     /** 
      * @ODM\ReferenceMany(targetDocument="Tourist", inversedBy="packages")
+     * @MBH\Versioned()
      */
     protected $tourists;
     
@@ -393,10 +396,10 @@ class Package extends Base implements JsonSerializable
     /**
      * Set accommodation
      *
-     * @param \MBH\Bundle\HotelBundle\Document\Room $accommodation
+     * @param $accommodation
      * @return self
      */
-    public function setAccommodation(\MBH\Bundle\HotelBundle\Document\Room $accommodation)
+    public function setAccommodation($accommodation)
     {
         $this->accommodation = $accommodation;
         return $this;
@@ -1486,5 +1489,10 @@ class Package extends Base implements JsonSerializable
         return $this;
     }
 
-
+    public function clearServices()
+    {
+        $this->services = new ArrayCollection();
+        
+        return $this;
+    }    
 }

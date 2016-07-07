@@ -160,6 +160,9 @@ controller.touristController.tourist_was_found_in_unwelcome: 'Турист бы�
 controller.touristController.record_edited_success: 'Запись успешно отредактирована.'
 controller.packageController.record_edited_fail: 'Ошибка при обновлении брони. Нет доступных номеров.'
 controller.packageController.record_edited_fail_accommodation: 'Ошибка при обновлении брони. Номер недоступен для размещения.'
+controller.packageController.relocation_success: 'Создана новая бронь для переселения. Теперь можно выбрать новый номер размещения гостей'
+controller.packageController.relocation_dates_error: 'Ошибка переселения. Некорректная дата переселения'
+controller.packageController.relocation_accommodation_error: 'Ошибка переселения. Нет размещения'
 
 # TaskType Controller
 controller.taskTypeController.record_created_success: 'Запись успешно создана.'
