@@ -54,9 +54,10 @@ class VersionedSubscriber implements EventSubscriber
                 if ($reader->getPropertyAnnotation($property, 'MBH\Bundle\BaseBundle\Annotations\Versioned')) {
 
                     $method = 'get' . ucwords($property->getName());
-                    $count = $doc->$method()->count();
-
-                    $data = array_merge($data, [$property->getName() => $count]);
+                    if (method_exists($doc, $method) && !empty($doc->$method())) {
+                        $count = $doc->$method()->count();
+                        $data = array_merge($data, [$property->getName() => $count]);
+                    }
                 }
             }
 
