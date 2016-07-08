@@ -14,6 +14,7 @@ use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderItem;
+use MBH\Bundle\RestaurantBundle\Form\DishOrder\DIshOrderFilterType;
 use MBH\Bundle\RestaurantBundle\Form\DishOrder\DishOrderItemType;
 use MBH\Bundle\RestaurantBundle\Form\FilterType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -44,8 +45,11 @@ class DishOrderController extends BaseController implements CheckHotelController
             ->getQuery()
             ->execute();
 
+        $form = $this->createForm(new DIshOrderFilterType());
+        
         return [
-            'entities' => $entities
+            'entities' => $entities,
+            'form' => $form->createView()
         ];
     }
 
@@ -217,7 +221,7 @@ class DishOrderController extends BaseController implements CheckHotelController
      * Lists all entities as json.
      *
      * @Route("/json", name="restaurant_json", defaults={"_format"="json"}, options={"expose"=true})
-     * @Method("GET")
+     * @Method("POST")
      * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_VIEW')")
      * @Template()
      * @param Request $request
@@ -225,7 +229,11 @@ class DishOrderController extends BaseController implements CheckHotelController
      */
     public function jsonAction(Request $request)
     {
-        return [];
+
+        $form = $this->createForm(new FilterType());
+        $form->handleRequest($request);
+
+        return ['sdf', 'asdf','sdf','asdf','sadf'];
     }
 
 }
