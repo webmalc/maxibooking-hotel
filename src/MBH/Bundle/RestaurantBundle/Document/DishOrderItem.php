@@ -27,6 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class DishOrderItem extends Base
 {
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -90,6 +91,22 @@ class DishOrderItem extends Base
     public function __construct()
     {
         $this->dishes = new ArrayCollection();
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 
 
@@ -187,21 +204,10 @@ class DishOrderItem extends Base
         }
         return number_format($price,2);
     }
-    
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getPayer()
     {
-        return $this->id;
+        return $this->order->getTitle(true,true);
     }
 
-    /**
-     * @param int $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
 }

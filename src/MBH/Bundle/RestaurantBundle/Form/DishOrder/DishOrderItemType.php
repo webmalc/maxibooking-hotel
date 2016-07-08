@@ -15,7 +15,7 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderItem;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -83,8 +83,10 @@ class DishOrderItemType extends AbstractType
                 'mapped' => false,
                 'group' => 'Подробности'
             ])
-            ->add('isFreezed', ChoiceType::class,[
-                    
+            ->add('isFreezed', CheckboxType::class,[
+                'label' => 'restaurant.dishorder.form.isfreezed.label',
+                'required' => false,
+                'group' => 'Оплата'
                 ])
             ->addEventListener(
                 FormEvents::PRE_SET_DATA,

@@ -92,5 +92,10 @@ class DishOrderItemEmbedded
         return $this->price;
     }
 
+    public function getDishItemName()
+    {
+        return $this->dishMenuItem->getName();
+    }
+
 
 }

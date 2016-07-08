@@ -129,6 +129,7 @@ restaurant:
         dishIngredients:
           label:          Ингредиенты блюда
   dishorder:
+    title:                Заказы
     common:
       title:              заказы
       addsuccess:         заказ успешно создан
@@ -140,13 +141,20 @@ restaurant:
       price:              Цена
       freezed:            Оплачен
       doing:              Действия
+      content:            Состав
+      payer:              Плательщик
     actions:
       list:
         small_title:      добавление заказа
+      showfreeze:
+        small_title:      Просмотр заказа
       add:                создать заказ
       edit:               редактирование заказа
-      delete:
-      freezed:
+      delete:             удалить заказ
+      freezed:            рассчитать
+      isfreezed:          оплачено
+      pay:                вы подтверждаете оплату заказа
+      confirm:            подтвердить
     form:
       id:
         label:            Номер заказа
@@ -167,9 +175,13 @@ restaurant:
         help:
       order:
         label:            Плательщик
+      isfreezed:
+        label:            оплата
   table:
     common:
       title:              Столики
+      editsuccess:        Столик успешно отредактирован
+      noitems:            Нет столиков в списке
     newaction:
       small_title:        добавление столика
     actions:

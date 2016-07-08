@@ -4,6 +4,7 @@
 
 {% block content %}
 <div class="box-tools pull-rigth">
+    <div class="btn-list spacer-bottom text-right">
     <div class="btn">
         {% if is_granted('ROLE_RESTAURANT_TABLE_NEW') %}
             <a href="{{ path('restaurant_table_new') }}" class="btn btn-sm btn-default" data-toggle="tooltip"
@@ -11,7 +12,10 @@
                         class="fa fa-plus"></i> {{ 'restaurant.table.actions.add'|trans|capitalize }}</a>
         {% endif %}
     </div>
+    </div>
 </div>
+
+<form method="get" role="form" class="are-you-sure form-inline" action="{{ path('restaurant_table_quicksave') }}">
 
 {% if entities.count %}
 <div class="box-body">
@@ -31,7 +35,8 @@
                 <td><i class="fa fa-cutlery"></i></td>
                 <td>{{ entry.name }}</td>
                 <td>
-                    <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }}>
+                    <input type="hidden" name="entries[{{ entry.id }}][flag]" value="1">
+                    <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
                 </td>
                 <td>
                     <div class='btn-list text-center'>
@@ -62,7 +67,22 @@
         <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'restaurant.table.common.noitems'|trans|capitalize }}. <a href="{{ path('restaurant_table_new') }}">{{ 'restaurant.table.actions.add'|trans|capitalize }}?</a></div>
     {% endif %}
 
+    <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav">
+                {% if is_granted('ROLE_RESTAURANT_TABLE_EDIT') %}
+                    <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> {{ 'restaurant.common.save'|trans|capitalize }}</button></li>
+                {% endif %}
+                {% if is_granted('ROLE_RESTAURANT_TABLE_NEW') %}
+                    <li><button onclick="location.href = '{{ path('restaurant_table_new') }}'" type="button" class="btn btn-default navbar-btn"><i class="fa fa-plus"></i> {{ 'restaurant.table.actions.add'|trans|capitalize }}</button></li>
+                {% endif %}
+            </ul>
+
+        </div>
+    </div>
+
 </div> <!-- /.box-body -->
 
+</form>
 {% endblock %}
 

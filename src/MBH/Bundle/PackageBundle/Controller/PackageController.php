@@ -943,7 +943,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @param null $id
      * @return JsonResponse
      * @throws \Doctrine\ODM\MongoDB\LockException
-     * @Route("/getPackageJsonById/{id}/{room}/{payername}", name="getPackageJsonById", options={"expose"=true})
+     * @Route("/getPackageJsonById/{id}", name="getPackageJsonById", options={"expose"=true})
      */
     public function getPackageJsonByIdAction($id = null)
     {

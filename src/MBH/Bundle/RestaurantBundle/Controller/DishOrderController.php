@@ -15,6 +15,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderItem;
 use MBH\Bundle\RestaurantBundle\Form\DishOrder\DishOrderItemType;
+use MBH\Bundle\RestaurantBundle\Form\FilterType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -24,6 +25,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /** @Route("dishorder") */
 
@@ -38,9 +40,10 @@ class DishOrderController extends BaseController implements CheckHotelController
     {
         $entities = $this->dm->getRepository('MBHRestaurantBundle:DishOrderItem')->createQueryBuilder('q')
             ->field('hotel.id')->equals($this->hotel->getId())
-            ->sort('id', 'ascX')
+            ->sort('id', 'asc')
             ->getQuery()
             ->execute();
+
         return [
             'entities' => $entities
         ];
@@ -111,6 +114,10 @@ class DishOrderController extends BaseController implements CheckHotelController
             throw $this->createNotFoundException();
         }
 
+        if ($order->isIsFreezed()) {
+            $this->denyAccessUnlessGranted('ROLE_RESTAURANT_ORDER_MANAGER_FREEZED_EDIT');
+        }
+
         $form = $this->createForm(new DishOrderItemType($this->dm), $order);
         $form->handleRequest($request);
 
@@ -153,10 +160,19 @@ class DishOrderController extends BaseController implements CheckHotelController
             if (!$this->container->get('mbh.hotel.selector')->checkPermissions($order->getHotel())) {
                 throw $this->createNotFoundException();
             }
+
+            if ($order->isIsFreezed()) {
+                $this->denyAccessUnlessGranted('ROLE_RESTAURANT_ORDER_MANAGER_FREEZED_EDIT');
+            }
+
             $this->dm->remove($order);
             $this->dm->flush($order);
 
             $request->getSession()->getFlashBag()->set('success', 'Запись успешно удалена.');
+            //TODO: Как тут поступить с исключением AccessDenied, которое может произойти
+        /*} catch(AccessDeniedException $e) {
+            $request->getSession()->getFlashBag()->set('danger', $e->getMessage());*/
+
         } catch (DeleteException $e) {
             $request->getSession()->getFlashBag()->set('danger', $e->getMessage());
         }
@@ -169,11 +185,47 @@ class DishOrderController extends BaseController implements CheckHotelController
      * @Route("/{id}/showfreezed", name="restaurant_dishorder_showfreezed")
      * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_VIEW')")
      * @Template()
+     * @param DishOrderItem $order
+     * @return array
      */
-    public function showFreezedOrderAction()
+    public function showFreezedOrderAction(DishOrderItem $order)
+    {
+        return [
+            'order' => $order
+        ];
+    }
+
+    /**
+     * @Route("/{id}/freeze", name="restaurant_dishorder_freeze")
+     * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_PAY')")
+     * @ParamConverter(class="MBHRestaurantBundle:DishOrderItem")
+     * @param DishOrderItem $order
+     * @return RedirectResponse
+     */
+    public function freezOrderAction(DishOrderItem $order)
+    {
+        $order->setIsFreezed(true);
+
+        $dm = $this->dm;
+        $dm->persist($order);
+        $dm->flush();
+
+        return $this->redirectToRoute('restaurant_dishorder_list');
+    }
+
+    /**
+     * Lists all entities as json.
+     *
+     * @Route("/json", name="restaurant_json", defaults={"_format"="json"}, options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_VIEW')")
+     * @Template()
+     * @param Request $request
+     * @return array
+     */
+    public function jsonAction(Request $request)
     {
         return [];
     }
-
 
 }

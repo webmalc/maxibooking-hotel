@@ -149,5 +149,52 @@ class TableController extends BaseController
         return $this->redirectToRoute('restaurant_table_list');
     }
 
+    /**
+     * save entries prices
+     *
+     * @Route("/quicksave", name="restaurant_table_quicksave")
+     * @Method("GET")
+     * @Security("is_granted('ROLE_RESTAURANT_TABLE_EDIT')")
+     *
+     */
+    public function quickSaveAction(Request $request)
+    {
+        $entries = $request->get('entries');
+
+        $tableRepository = $this->dm->getRepository('MBHRestaurantBundle:Table');
+
+        $success = true;
+
+        foreach ($entries as $id => $data) {
+            $entity = $tableRepository->find($id);
+            $isEnabled = $data['is_enabled'] ?? false;
+
+            if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+                continue;
+            }
+
+            $entity->setIsEnabled((boolean)$isEnabled);
+
+            $validator = $this->get('validator');
+            $errors = $validator->validate($entity);
+            if (count($errors) > 0) {
+                $success = false;
+                continue;
+            }
+
+            $this->dm->persist($entity);
+            $this->dm->flush();
+        };
+
+        $flashBag = $request->getSession()->getFlashBag();
+
+        $success ?
+            $flashBag->set('success', 'Столики успешно отредактированы.'):
+            $flashBag->set('danger', 'Внимание, не все параметры сохранены успешно');
+
+
+        return $this->redirectToRoute('restaurant_table_list');
+    }
+
 
 }
