@@ -12,6 +12,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Annotations as MBH;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -81,6 +82,7 @@ class IngredientCategory extends Base
 
     /**
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\Ingredient", mappedBy="category", cascade={"remove"} )
+     * @MBH\Versioned()
      */
     protected $ingredients;
 

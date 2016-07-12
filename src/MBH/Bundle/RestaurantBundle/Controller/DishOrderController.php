@@ -10,9 +10,11 @@ namespace MBH\Bundle\RestaurantBundle\Controller;
 
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use MBH\Bundle\RestaurantBundle\Document\DishOrderCriteria;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderItem;
 use MBH\Bundle\RestaurantBundle\Form\DishOrder\DIshOrderFilterType;
 use MBH\Bundle\RestaurantBundle\Form\DishOrder\DishOrderItemType;
@@ -221,7 +223,7 @@ class DishOrderController extends BaseController implements CheckHotelController
      * Lists all entities as json.
      *
      * @Route("/json", name="restaurant_json", defaults={"_format"="json"}, options={"expose"=true})
-     * @Method("POST")
+
      * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_VIEW')")
      * @Template()
      * @param Request $request
@@ -230,10 +232,31 @@ class DishOrderController extends BaseController implements CheckHotelController
     public function jsonAction(Request $request)
     {
 
-        $form = $this->createForm(new FilterType());
-        $form->handleRequest($request);
+        $tableParams = ClientDataTableParams::createFromRequest($request);
 
-        return ['sdf', 'asdf','sdf','asdf','sadf'];
+        $formRequestSubmit = (array) $request->query->get('form');
+//        $formRequestSubmit = (array) $request->request->get('form');
+        $formRequestSubmit['search'] = $tableParams->getSearch();
+        $form = $this->createForm(new DIshOrderFilterType(), new DishOrderCriteria());
+        $form->submit($formRequestSubmit);
+//        if (!$form->isValid()) {
+//            return new JsonResponse(['error' => $form->getErrors()[0]->getMessage()]);
+//        }
+
+        /** @var DishOrderCriteria $criteria */
+        $criteria = $form->getData();
+
+        /** @var  $dishOrderRepository  */
+        $dishOrderRepository = $this->dm->getRepository('MBHRestaurantBundle:DishOrderItem');
+
+        $dishorders = $dishOrderRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength(), $this->hotel);
+        
+        return [
+            'dishorders' => $dishorders,
+            'draw' => $request->get('draw'),
+            'total' => count($dishorders->toArray()),
+            'recordsFiltered' => count($dishorders)
+        ];
     }
 
 }

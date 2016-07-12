@@ -11,6 +11,7 @@ namespace MBH\Bundle\RestaurantBundle\Document;
 
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -47,11 +48,12 @@ class Ingredient extends Base
 
 
     /**
-     * @Gedmo\Versioned()
-     * @ODM\ReferenceOne()
+     * @var IngredientCategory $category
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\RestaurantBundle\Document\IngredientCategory", inversedBy="ingredients")
      * @Assert\NotNull()
      */
     protected $category;
+
 
 
     /**
@@ -118,7 +120,13 @@ class Ingredient extends Base
     protected $calcType;
 
 
-    
+
+    public function getHotel(): Hotel
+    {
+
+        return $this->category->getHotel();
+    }
+
     /**
      * @return string
      */
@@ -218,11 +226,6 @@ class Ingredient extends Base
     }
 
 
-    public function getHotel()
-    {
-        return $this->getCategory()->getHotel();
-    }
-
     public function getCalcTypes()
     {
         return [
@@ -239,4 +242,6 @@ class Ingredient extends Base
         $costPrice = (float) ($this->price*100/$this->output);
         return number_format($costPrice,2);
     }
+
+    
 }

@@ -16,6 +16,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 
 /**
  * Class IngredientController
@@ -58,6 +59,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
     public function savePricesAction(Request $request)
     {
         $entries = $request->get('entries');
+        $hotel = $this->hotel;
         $ingredientRepository = $this->dm->getRepository('MBHRestaurantBundle:Ingredient');
 
         $success = true;
@@ -67,12 +69,14 @@ class IngredientController extends BaseController implements CheckHotelControlle
             $price = (float)$data['price'];
             $isEnabled = $data['is_enabled'] ?? false;
 
-            if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+            //TODO: Разобрать почему не возвращает hotel из сущности и нужна ли эта проверка вообще?
+            if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
                 continue;
             }
 
             $entity->setPrice($price);
             $entity->setIsEnabled((boolean)$isEnabled);
+            $entity->setHotel($hotel);
 
             $validator = $this->get('validator');
             $errors = $validator->validate($entity);
@@ -85,6 +89,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
             $this->dm->flush();
         };
 
+        /** @var FlashBag $flashBag */
         $flashBag = $request->getSession()->getFlashBag();
 
         $success ?
@@ -228,7 +233,8 @@ class IngredientController extends BaseController implements CheckHotelControlle
      */
     public function newIngredientAction(IngredientCategory $entity)
     {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        $hotel = $entity->getHotel();
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
             throw $this->createNotFoundException();
         }
         
@@ -254,6 +260,9 @@ class IngredientController extends BaseController implements CheckHotelControlle
      * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_NEW')")
      * @Template("MBHRestaurantBundle:Ingredient:newIngredient.html.twig")
      * @ParamConverter(class="MBHRestaurantBundle:IngredientCategory")
+     * @param Request $request
+     * @param IngredientCategory $entity
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function createIngredientAction(Request $request, IngredientCategory $entity)
     {
@@ -295,6 +304,8 @@ class IngredientController extends BaseController implements CheckHotelControlle
      * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT')")
      * @Template()
      * @ParamConverter(class="MBHRestaurantBundle:Ingredient")
+     * @param Ingredient $ingredient
+     * @return array
      */
     public function editIngredientAction(Ingredient $ingredient)
     {
@@ -322,6 +333,9 @@ class IngredientController extends BaseController implements CheckHotelControlle
      * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT')")
      * @Template("MBHRestaurantBundle:Ingredient:editIngredient.html.twig")
      * @ParamConverter(class="MBHRestaurantBundle:Ingredient")
+     * @param Request $request
+     * @param Ingredient $ingredient
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function updateIngredientAction(Request $request, Ingredient $ingredient)
     {
@@ -361,6 +375,9 @@ class IngredientController extends BaseController implements CheckHotelControlle
      * @Method("GET")
      * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_DELETE')")
      * @ParamConverter(class="MBHRestaurantBundle:Ingredient")
+     * @param Request $request
+     * @param Ingredient $ingredient
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteIngredientAction(Request $request, Ingredient $ingredient)
     {

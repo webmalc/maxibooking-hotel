@@ -21,7 +21,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ODM\Document(collection="DishOrderItem")
+ * @ODM\Document(collection="DishOrderItem", repositoryClass="DishOrderItemRepository")
  * @Gedmo\Loggable()
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
@@ -55,7 +55,7 @@ class DishOrderItem extends Base
     /**
      * @var Hotel
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="dishMenuCategories")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
      * @Assert\NotNull(message="Не выбран отель")
      */
     protected $hotel;
@@ -202,7 +202,7 @@ class DishOrderItem extends Base
         foreach ($this->getDishes() as $dish) {
             $price += $dish->getPrice();
         }
-        return number_format($price,2);
+        return $price;
     }
 
     public function getPayer()

@@ -17,7 +17,7 @@
                 {{ form_widget(form.money_end) }}
             </div>
             <div class="form-group">
-                &nbsp;{{ form_widget(form.is_freeze) }}
+                &nbsp;{{ form_widget(form.is_freezed) }}
                 {{ form_widget(form._token) }}
             </div>
             {{ form_end(form, {render_rest: false}) }}
@@ -46,6 +46,7 @@
                 <th class="td-xs"></th>
                 <th class="td-xs">{{ 'restaurant.dishorder.table.number'|trans }}</th>
                 <th class="td-xs">{{ 'restaurant.dishorder.table.table'|trans }}</th>
+                <th class="td-xs">{{ 'restaurant.dishorder.table.time'|trans }}</th>
                 <th class="td-sm">{{ 'restaurant.dishorder.table.price'|trans }}</th>
                 <th class="td-sm">{{ 'restaurant.dishorder.table.freezed'|trans }}</th>
                 <th class="td-lg text-center">{{ 'restaurant.dishorder.table.doing'|trans }}</th>
@@ -53,14 +54,7 @@
             </thead>
 
             <tbody>
-            <tr>
-                <td>d</td>
-                <td>d</td>
-                <td>d</td>
-                <td>d</td>
-                <td>d</td>
-                <td>d</td>
-            </tr>
+
             {#{% for entry in entities %}#}
                 {#<tr>#}
                     {#<td><i class="fa fa-cutlery"></i></td>#}

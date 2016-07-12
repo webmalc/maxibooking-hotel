@@ -11,3 +11,8 @@ services:
       tags:
           - { name: form.type, alias: mbh_bundle_restaurantbundle_dishorder_dishitemembedded_type }
 
+  mbh__restaurant.form.dish_menu_ingredient_embedded_type:
+      class: MBH\Bundle\RestaurantBundle\Form\DishMenuIngredientEmbeddedType
+      arguments: ['@service_container']
+      tags:
+          - { name: form.type, alias: mbh_bundle_restaurantbundle_dishmenu_ingredientembedded_type }
