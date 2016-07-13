@@ -11,6 +11,9 @@ namespace MBH\Bundle\RestaurantBundle\Form\DishOrder;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\BaseBundle\Service\HotelSelector;
+use MBH\Bundle\RestaurantBundle\Document\DishMenuItemRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -22,20 +25,26 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class DishOrderItemEmmbeddedType extends AbstractType
 {
     private $requestStack;
+    private $selector;
+    private $helper;
 
     private $current;
 
     /**
      * DishOrderItemEmmbeddedType constructor.
-     * @param $request
+     * @param RequestStack $request
+     * @param HotelSelector $selector
      */
-    public function __construct(RequestStack $request)
+    public function __construct(RequestStack $request, HotelSelector $selector, Helper $helper)
     {
         $this->requestStack = $request;
+        $this->selector = $selector;
+        $this->helper = $helper;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $selector = $this->selector;
         $builder
             ->add('amount', TextType::class, [
                 'help' => 'Количество',
@@ -46,10 +55,10 @@ class DishOrderItemEmmbeddedType extends AbstractType
             ])
             ->add('dishMenuItem', DocumentType::class, [
                 'class' => 'MBH\Bundle\RestaurantBundle\Document\DishMenuItem',
-                'query_builder' => function (DocumentRepository $repository) {
-                    return $repository->createQueryBuilder()
-                        ->field('isEnabled')
-                        ->equals(true);
+                'query_builder' => function (DocumentRepository $repository){
+                    /** @var DishMenuItemRepository $repository */
+                    return $repository->qbFindByHotelByCategoryId($this->helper, $this->selector->getSelected())
+                        ->field('isEnabled')->equals(true);
                 },
                 'attr' => [
                     'class' => 'plain-html'
@@ -71,7 +80,7 @@ class DishOrderItemEmmbeddedType extends AbstractType
         ;
     }
     //Фиксируем цену при создании заказа вызовом метода setPrice()
-    //Так же проверяем не изменился ли в коллекции элемент, он сохраняется в методе onPostSetData
+    //Так же проверяем не изменился ли в коллекции элемент, он сохраняется в свойство $this->current методе onPostSetData
     public function onPostSubmitData(FormEvent $event)
     {
         $data = $event->getData();

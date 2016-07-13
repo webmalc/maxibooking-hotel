@@ -28,7 +28,7 @@
         {% if is_granted('ROLE_RESTAURANT_ORDER_MANAGER_NEW') %}
             <div class="btn-list spacer-bottom text-right">
                 <div class="btn">
-                    <a href="{{ path('restaurant_dishorder_new') }}" class="btn btn-sm btn-default"
+                    <a href="{{ path('restaurant_dishorder_new') }}" class="btn btn-sm btn-success"
                        data-toggle="tooltip"
                        data-placement="bottom" title="{{ 'restaurant.dishorder.actions.add'|trans|capitalize }}">
                         <i class="fa fa-plus"></i> {{ 'restaurant.dishorder.actions.add'|trans|capitalize }}</a>
@@ -55,70 +55,9 @@
 
             <tbody>
 
-            {#{% for entry in entities %}#}
-                {#<tr>#}
-                    {#<td><i class="fa fa-cutlery"></i></td>#}
-                    {#<td>{{ entry.id }}</td>#}
-                    {#<td>{{ entry.table }}</td>#}
-                    {#<td>{{ entry.price }}</td>#}
-                    {#<td>#}
-                        {#<input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isfreezed ? 'checked' }}>#}
-                        {#{% if entry.isfreezed %}#}
-                            {#<a href="{{ path('restaurant_dishorder_showfreezed', {'id': entry.id}) }}" class="btn btn-success btn-sm">{{ 'restaurant.dishorder.actions.isfreezed'|trans|capitalize }}</a>#}
-                        {#{% else %}#}
-                            {#{% if is_granted('ROLE_RESTAURANT_ORDER_MANAGER_PAY') %}#}
-                                {#<a href='{{ path('restaurant_dishorder_freeze', {'id': entry.id }) }}'#}
-                                   {#class='btn btn-danger btn-sm delete-link'#}
-                                   {#data-text='{{ "restaurant.dishorder.actions.pay"|trans|capitalize }}{{ entry.id }} ?'#}
-                                   {#data-button="{{ 'restaurant.dishorder.actions.confirm'|trans|capitalize }}"#}
-                                   {#data-button-icon="fa-money"#}
-                                   {#title='{{ 'restaurant.dishorder.actions.freezed'|trans|capitalize }}'#}
-                                   {#data-toggle='tooltip'>#}
-                                    {#<i class='fa fa-money'></i> {{ 'restaurant.dishorder.actions.freezed'|trans|capitalize }}#}
-                                {#</a>#}
-                            {#{% endif %}#}
-                        {#{% endif %}#}
-                    {#</td>#}
-                    {#<td>#}
-                        {#<div class='btn-list text-center'>#}
-                            {#{% if ( not entry.isfreezed and is_granted('ROLE_RESTAURANT_ORDER_MANAGER_EDIT') )#}
-                            {#or (entry.isfreezed and is_granted('ROLE_RESTAURANT_ORDER_MANAGER_FREEZED_EDIT')) %}#}
-                                {#<a href='{{ path('restaurant_dishorder_edit', {'id': entry.id }) }}'#}
-                                   {#class='btn btn-success btn-xs'#}
-                                   {#title='{{ 'restaurant.dishorder.actions.edit'|trans|capitalize }}'#}
-                                   {#data-toggle='tooltip'>#}
-                                    {#<i class='fa fa-pencil-square-o'></i>#}
-                                {#</a>#}
-                            {#{% else %}#}
-                                {#<a href="#" class="btn btn-success btn-xs disabled"><i#}
-                                            {#class='fa fa-pencil-square-o'></i></a>#}
-                            {#{% endif %}#}
-                            {#{% if ( not entry.isfreezed and is_granted('ROLE_RESTAURANT_ORDER_MANAGER_DELETE') )#}
-                            {#or (entry.isfreezed and is_granted('ROLE_RESTAURANT_ORDER_MANAGER_FREEZED_DELETE')) %}#}
-                                {#<a href='{{ path('restaurant_dishorder_delete', {'id': entry.id }) }}'#}
-                                   {#class='btn btn-danger btn-xs delete-link '#}
-                                   {#title='{{ 'restaurant.dishorder.actions.delete'|trans|capitalize }}'#}
-                                   {#data-toggle='tooltip'>#}
-                                    {#<i class='fa fa-trash-o'></i>#}
-                                {#</a>#}
-                            {#{% else %}#}
-                                {#<a href="#" class="btn btn-danger btn-xs disabled">#}
-                                    {#<i class='fa fa-trash-o'></i></a>#}
-                            {#{% endif %}#}
-                        {#</div>#}
-                    {#</td>#}
-                {#</tr>#}
-            {#{% endfor %}#}
 
             </tbody>
         </table>
-
-    {#{% else %}#}
-        {#<div class="alert alert-warning"><i#}
-                    {#class="fa fa-exclamation-circle"></i> {{ 'restaurant.dishorder.common.noitems'|trans|capitalize }}.#}
-            {#<a href="{{ path('restaurant_dishorder_new') }}">{{ 'restaurant.dishorder.actions.add'|trans|capitalize }}#}
-                {#?</a></div>#}
-    {#{% endif %}#}
 
     </div> <!-- /.box-body -->
 {% endblock %}

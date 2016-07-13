@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderItem;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -25,17 +26,18 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DishOrderItemType extends AbstractType
 {
-    private $dm;
+    private $container;
 
 
-    public function __construct(DocumentManager $dm)
+    public function __construct(ContainerInterface $container)
     {
-        $this->dm = $dm;
+        $this->container = $container;
     }
 
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $selector = $this->container->get('mbh.hotel.selector');
         $builder
             ->add('id', TextType::class, [
                 'label' => 'restaurant.dishorder.form.id.label',
@@ -46,10 +48,11 @@ class DishOrderItemType extends AbstractType
             ->add('table', DocumentType::class, [
                 'label' => 'restaurant.dishorder.form.table.label',
                 'class' => 'MBH\Bundle\RestaurantBundle\Document\Table',
-                'query_builder' => function (DocumentRepository $repository) {
+                'query_builder' => function (DocumentRepository $repository) use ($selector) {
+                    $hotelId = $selector->getSelected()->getId();
                     return $repository->createQueryBuilder()
-                        ->field('isEnabled')
-                        ->equals(true);
+                        ->field('hotel.id')->equals($hotelId)
+                        ->field('isEnabled')->equals(true);
                 },
                 'choice_label' => 'name',
                 'required' => false,
@@ -95,7 +98,9 @@ class DishOrderItemType extends AbstractType
                 ]
             )
            ;
-        $builder->get('order')->addViewTransformer(new EntityToIdTransformer($this->dm, 'MBHPackageBundle:Package'));
+
+        $dm = $this->container->get('doctrine.odm.mongodb.document_manager');
+        $builder->get('order')->addViewTransformer(new EntityToIdTransformer($dm, 'MBHPackageBundle:Package'));
     }
 
     public function onPreSetData(FormEvent $event)

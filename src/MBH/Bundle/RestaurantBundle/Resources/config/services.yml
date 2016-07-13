@@ -7,7 +7,7 @@ services:
 
   mbh__restaurant.form_dish_order.dish_order_item_emmbedded_type:
       class: MBH\Bundle\RestaurantBundle\Form\DishOrder\DishOrderItemEmmbeddedType
-      arguments: ['@request_stack']
+      arguments: ['@request_stack', '@mbh.hotel.selector', '@mbh.helper']
       tags:
           - { name: form.type, alias: mbh_bundle_restaurantbundle_dishorder_dishitemembedded_type }
 
@@ -16,3 +16,9 @@ services:
       arguments: ['@service_container']
       tags:
           - { name: form.type, alias: mbh_bundle_restaurantbundle_dishmenu_ingredientembedded_type }
+
+  mbh__restaurant.form_dish_order.dish_order_item_type:
+      class: MBH\Bundle\RestaurantBundle\Form\DishOrder\DishOrderItemType
+      arguments: ['@service_container']
+      tags:
+          - { name: form.type, alias: mbh_bundle_restaurantbundle_dishorder_dishorderitem_type }

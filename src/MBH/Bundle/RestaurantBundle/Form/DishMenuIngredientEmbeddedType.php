@@ -12,6 +12,7 @@ namespace MBH\Bundle\RestaurantBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
+use MBH\Bundle\RestaurantBundle\Document\IngredientRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -39,7 +40,7 @@ class DishMenuIngredientEmbeddedType extends AbstractType
     {
         $hotelselector = $this->container->get('mbh.hotel.selector');
         $helper = $this->container->get('mbh.helper');
-        
+
         $builder
             ->add('amount', TextType::class, [
                 'help' => 'Количество',
@@ -51,10 +52,10 @@ class DishMenuIngredientEmbeddedType extends AbstractType
             ->add('ingredient', DocumentType::class, [
                 'class' => 'MBH\Bundle\RestaurantBundle\Document\Ingredient',
                 'query_builder' => function (DocumentRepository $repository) use ($hotelselector, $helper){
-                    $qb =$repository->getDocumentManager()
-                        ->getRepository('MBHRestaurantBundle:Ingredient')
-                        ->qbFindByHotelByCategoryId($helper, $hotelselector->getSelected());
-                    return $qb->field('isEnabled')->equals(true);
+                    /** @var IngredientRepository $repository */
+                      return $repository
+                          ->qbFindByHotelByCategoryId($helper, $hotelselector->getSelected())
+                          ->field('isEnabled')->equals(true);
                 },
                 'attr' => [
                     'class' => 'plain-html'

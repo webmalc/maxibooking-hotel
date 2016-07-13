@@ -205,9 +205,14 @@ class DishOrderItem extends Base
         return $price;
     }
 
-    public function getPayer()
+    public function getPayer(): string
     {
-        return $this->order->getTitle(true,true);
+        if ($this->order) {
+            return $this->order->getTitle(true,true);
+        } else {
+            return 'restaurant.dishorder.payer.noname';
+        }
+
     }
 
 }

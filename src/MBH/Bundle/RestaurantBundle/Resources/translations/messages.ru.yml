@@ -129,6 +129,8 @@ restaurant:
         dishIngredients:
           label:          Ингредиенты блюда
   dishorder:
+    payer:
+      noname:             нет привязки к брони
     title:                Заказы
     common:
       title:              заказы

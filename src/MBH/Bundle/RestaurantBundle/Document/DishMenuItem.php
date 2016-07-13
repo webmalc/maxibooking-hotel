@@ -22,7 +22,7 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 
 /**
- * @ODM\Document(collection="DishMenuItem")
+ * @ODM\Document(collection="DishMenuItem", repositoryClass="MBH\Bundle\RestaurantBundle\Document\DishMenuItemRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields="fullTitle", message="validator.document.dishMenuItem.notunique")

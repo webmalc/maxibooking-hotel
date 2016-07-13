@@ -9,12 +9,7 @@
 namespace MBH\Bundle\RestaurantBundle\Document;
 
 
-use Doctrine\ODM\MongoDB\DocumentRepository;
-use Doctrine\ODM\MongoDB\Query\Builder;
-use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-
-class IngredientRepository extends DocumentRepository
+class IngredientRepository extends AbstractRepository
 {
     public function findIsEnabled()
     {
@@ -24,20 +19,13 @@ class IngredientRepository extends DocumentRepository
             ->execute();
     }
 
-
     /**
-     * @param Helper $helper
-     * @param Hotel $hotel
-     * @return Builder
+     * @return mixed
      */
-    public function qbFindByHotelByCategoryId(Helper $helper, Hotel $hotel)
+    protected function getOwnCategoryName()
     {
-        $dm = $this->getDocumentManager()->getRepository('MBHRestaurantBundle:IngredientCategory');
-        $categories = $dm->findBy([
-            'hotel.id' => $hotel->getId()
-        ]);
-
-        return $this->createQueryBuilder()
-            ->field('category.id')->in($helper->toIds($categories));
+        return 'MBHRestaurantBundle:IngredientCategory';
     }
+
+
 }
