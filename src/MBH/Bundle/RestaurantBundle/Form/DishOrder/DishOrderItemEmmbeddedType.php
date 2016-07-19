@@ -24,10 +24,21 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DishOrderItemEmmbeddedType extends AbstractType
 {
+    /**
+     * @var RequestStack
+     */
     private $requestStack;
+    /**
+     * @var HotelSelector
+     */
     private $selector;
+    /**
+     * @var Helper
+     */
     private $helper;
-
+    /**
+     * @var
+     */
     private $current;
 
     /**
@@ -44,10 +55,9 @@ class DishOrderItemEmmbeddedType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $selector = $this->selector;
         $builder
             ->add('amount', TextType::class, [
-                'help' => 'Количество',
+                'help' => 'restaurant.amount',
                 'attr' => [
                     'class' => 'amount int-amount-spinner',
                     'placeholder' => 'restaurant.dishorder.form.amount.placeholder'

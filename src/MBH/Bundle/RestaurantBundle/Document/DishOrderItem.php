@@ -56,7 +56,7 @@ class DishOrderItem extends Base
      * @var Hotel
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="validator.document.dishorderitem.hotel")
      */
     protected $hotel;
     
@@ -198,7 +198,7 @@ class DishOrderItem extends Base
     public function getPrice()
     {
         $price = 0;
-        /* @var \MBH\Bundle\RestaurantBundle\Document\DishOrderItemEmbedded $dish */
+        /* @var DishOrderItemEmbedded $dish */
         foreach ($this->getDishes() as $dish) {
             $price += $dish->getPrice();
         }

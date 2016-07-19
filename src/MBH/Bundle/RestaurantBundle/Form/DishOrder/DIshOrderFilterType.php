@@ -43,18 +43,6 @@ class DIshOrderFilterType extends AbstractType
                     'class' => 'form-control'
                 ]
             ])
-            ->add('money_begin', TextType::class, [
-                'required' => false,
-                'attr' => [
-                    'class' => 'input-xs form-control'
-                ]
-            ])
-            ->add('money_end', TextType::class, [
-                'required' => false,
-                'attr' => [
-                    'class' => 'input-xs form-control'
-                ]
-            ])
             ->add('search', TextType::class,[
                 'required' => false
             ])

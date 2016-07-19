@@ -18,14 +18,12 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 
 /**
  * @ODM\Document(collection="DishMenuCategory")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="fullTitle", message="validator.document.dishMenuCategory.notunique")
  */
 class DishMenuCategory extends Base
 {
@@ -67,19 +65,18 @@ class DishMenuCategory extends Base
      * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="validator.document.hotel.min_name",
+     *      minMessage="validator.document.dishMenuCategory.min_name",
      *      max=100,
-     *      maxMessage="validator.document.hotel.min_name"
+     *      maxMessage="validator.document.dishMenuCategory.max_name"
      * )
      */
     protected $title;
     
-    //TODO: перевод для месаджей не забыть добавить
     /**
      * @var Hotel
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="dishMenuCategories")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="validator.document.dishMenuCategory.hotel")
      */
     protected $hotel;
 

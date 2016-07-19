@@ -32,6 +32,12 @@ abstract class AbstractRepository extends DocumentRepository
             ->field('category.id')->in($helper->toIds($categories));
     }
 
+    public function findByHotelByCategoryId(Helper $helper, Hotel $hotel)
+    {
+        $qb = $this->qbFindByHotelByCategoryId($helper, $hotel);
+        return $qb->getQuery()->execute();
+    }
+
     abstract protected function getOwnCategoryName();
 
 }

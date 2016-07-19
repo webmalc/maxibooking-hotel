@@ -7,6 +7,7 @@
  */
 
 namespace MBH\Bundle\RestaurantBundle\Document;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
@@ -20,11 +21,13 @@ class DishOrderCriteria
 
     /**
      * @var \DateTime
+     * @Assert\Date()
      */
     public $begin;
 
     /**
      * @var \DateTime
+     * @Assert\Date()
      */
     public $end;
 
@@ -46,7 +49,9 @@ class DishOrderCriteria
     public $search;
 
     /**
+     *
      * @return \DateTime
+     *
      */
     public function getBegin()
     {

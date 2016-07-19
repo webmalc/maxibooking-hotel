@@ -18,14 +18,12 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 
 /**
  * @ODM\Document(collection="DishMenuItem", repositoryClass="MBH\Bundle\RestaurantBundle\Document\DishMenuItemRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="fullTitle", message="validator.document.dishMenuItem.notunique")
  */
 class DishMenuItem extends Base
 {
@@ -61,9 +59,9 @@ class DishMenuItem extends Base
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое называние",
+     *      minMessage="validator.document.dishmenuitem.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное название"
+     *      maxMessage="validator.document.dishmenuitem.max_name"
      * )
      */
     protected $fullTitle = '';
@@ -74,9 +72,9 @@ class DishMenuItem extends Base
      * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="validator.document.dishmenuitem.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.dishmenuitem.max_name"
      * )
      */
     protected $title = '';
@@ -88,7 +86,7 @@ class DishMenuItem extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Цена не может быть меньше нуля"
+     *      minMessage="validator.document.dishmenuitem.null_price"
      * )
      */
     protected $price = 0;
@@ -100,7 +98,7 @@ class DishMenuItem extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Наценка не может быть меньше нуля"
+     *      minMessage="validator.document.dishmenuitem.null_margom"
      * )
      */
     protected $margin = 30;
@@ -122,9 +120,9 @@ class DishMenuItem extends Base
      * @ODM\Field(type="string", name="description")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое описание",
+     *      minMessage="validator.document.dishmenuitem.min_desc",
      *      max=300,
-     *      maxMessage="Слишком длинное описание"
+     *      maxMessage="validator.document.dishmenuitem.max_desc"
      * )
      */
     protected $description;

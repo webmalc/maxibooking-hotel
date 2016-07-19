@@ -10,7 +10,7 @@ $(document).ready(function () {
         serverSide: true,
         ordering: false,
         ajax: {
-            method: "GET",
+            method: "POST",
             url: Routing.generate('restaurant_json'),
             data: function (requestData) {
                 requestData.form = {
@@ -32,12 +32,5 @@ $(document).ready(function () {
     $dishOrderForm.find('input, select').on('change', function () {
         $dishOrderTable.dataTable().fnDraw();
     });
-
-
-    // console.log('Дальше вешаем на событие');
-    // $dishOrderForm.find('input,select').on('change', function (e) {
-    //     console.log('Событие произошло' + e);
-    //     $dishOrderTable.dataTable().fnDraw();
-    // });
 
 });

@@ -17,14 +17,12 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 
 /**
  * @ODM\Document(collection="Tables")
  * @Gedmo\Loggable()
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="fullTitle", message="validator.document.ingredient.notunique")
  */
 class Table extends Base
 {
@@ -50,7 +48,7 @@ class Table extends Base
      * @var Hotel
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="validator.document.table.hotel")
      */
     protected $hotel;
 
@@ -60,10 +58,10 @@ class Table extends Base
      * @ODM\Field(type="string", name="fullTitle")
      * @Assert\NotNull()
      * @Assert\Length(
-     *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      min=1,
+     *      minMessage="validator.document.table.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.table.max_name"
      * )
      */
     protected $fullTitle;
@@ -73,10 +71,10 @@ class Table extends Base
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="title")
      * @Assert\Length(
-     *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      min=1,
+     *      minMessage="validator.document.table.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.table.max_name"
      * )
      */
     protected $title;

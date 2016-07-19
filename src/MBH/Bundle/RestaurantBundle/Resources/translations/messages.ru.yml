@@ -1,4 +1,11 @@
 restaurant:
+
+  amount:                 Количество
+  group:                  Основная информация
+  collectorder:           Составление заказа
+  descr:                  Подробности
+  pay:                    Оплата
+
   common:
     title:                ингредиенты
     small_title:          список

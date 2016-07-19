@@ -11,7 +11,6 @@ namespace MBH\Bundle\RestaurantBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\RestaurantBundle\Document\IngredientRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\AbstractType;

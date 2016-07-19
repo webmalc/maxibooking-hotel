@@ -1,0 +1,2 @@
+0
+a:2:{i:0;O:49:"Doctrine\ODM\MongoDB\Mapping\Annotations\Document":7:{s:2:"db";N;s:10:"collection";s:18:"vega_document_type";s:15:"repositoryClass";s:58:"\MBH\Bundle\VegaBundle\Document\VegaDocumentTypeRepository";s:7:"indexes";a:0:{}s:14:"requireIndexes";b:0;s:9:"slaveOkay";N;s:5:"value";N;}i:1;O:33:"Gedmo\Mapping\Annotation\Loggable":2:{s:13:"logEntryClass";N;s:5:"value";N;}}

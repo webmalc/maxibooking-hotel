@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Controller;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -14,7 +15,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class BaseController extends Controller
 {
     /**
-     * @var \Doctrine\ODM\MongoDB\DocumentManager
+     * @var DocumentManager $dm
      */
     protected $dm;
 

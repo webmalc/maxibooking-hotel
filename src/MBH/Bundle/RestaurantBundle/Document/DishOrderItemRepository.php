@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by Zavalyuk Alexandr (Zalex).
- * email: zalex@zalex.com.ua
- * Date: 11.07.16
- * Time: 12:57
- */
+
 
 namespace MBH\Bundle\RestaurantBundle\Document;
 
@@ -24,7 +19,7 @@ class DishOrderItemRepository extends DocumentRepository
         $queryBuilder
             ->skip($offset)
             ->limit($limit)
-        ;
+            ->sort('id', 'desc');
 
         $orderItems = $queryBuilder->getQuery()->execute();
         return $orderItems;
@@ -39,14 +34,12 @@ class DishOrderItemRepository extends DocumentRepository
     {
         $queryBuilder = $this->createQueryBuilder();
 
-//        if ($criteria->search) {
-//            $fullNameRegex = new \MongoRegex('/.*' . $criteria->search . '.*/ui');
-//            if(is_numeric($criteria->search)) {
-//                $queryBuilder->field('id')->equals($fullNameRegex);
-//            } else {
-//                $queryBuilder->field('fullName')->equals($fullNameRegex);
-//            }
-//        }
+        if ($criteria->search) {
+
+            if (is_numeric($criteria->search)) {
+                $queryBuilder->field('id')->equals($criteria->search);
+            }
+        }
 
         if ($criteria->begin) {
             $queryBuilder->field('createdAt')->gte($criteria->begin);
@@ -57,14 +50,7 @@ class DishOrderItemRepository extends DocumentRepository
         if ($criteria->isFreezed === true || $criteria->isFreezed === false) {
             $queryBuilder->field('isFreezed')->equals($criteria->isFreezed);
         }
-        //TODO: Решить вопрос - как быть и что делать ?
-        /*if ($criteria->moneyBegin) {
-            $queryBuilder->
-            $queryBuilder->field('price')->gte($criteria->moneyBegin);
-        }
-        if ($criteria->moneyEnd) {
-            $queryBuilder->field('price')->lte($criteria->moneyEnd);
-        }*/
+
 
         return $queryBuilder;
     }

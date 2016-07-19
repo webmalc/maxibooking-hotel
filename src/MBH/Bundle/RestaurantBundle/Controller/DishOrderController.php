@@ -9,10 +9,12 @@
 namespace MBH\Bundle\RestaurantBundle\Controller;
 
 
+use Doctrine\ODM\MongoDB\Cursor;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use MBH\Bundle\RestaurantBundle\Document\DishMenuItemRepository;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderCriteria;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderItem;
 use MBH\Bundle\RestaurantBundle\Form\DishOrder\DIshOrderFilterType;
@@ -22,9 +24,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\Form;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /** @Route("dishorder") */
 
@@ -67,14 +70,17 @@ class DishOrderController extends BaseController implements CheckHotelController
      * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_NEW')")
      * @Template()
      * @param Request $request
-     * @return Response|RedirectResponse
+     * @return array|RedirectResponse
      */
     public function newOrderAction(Request $request)
     {
         $order = new DishOrderItem();
         $order->setHotel($this->hotel);
 
-        $dishes = $this->dm->getRepository('MBHRestaurantBundle:DishMenuItem')->findAll();
+        /** @var DishMenuItemRepository $dishesrepos */
+        $dishesrepos = $this->dm->getRepository('MBHRestaurantBundle:DishMenuItem');
+        $dishes = $dishesrepos->findByHotelByCategoryId($this->helper, $order->getHotel());
+
 
         $form = $this->createForm(DishOrderItemType::class, $order);
         $form->handleRequest($request);
@@ -108,7 +114,7 @@ class DishOrderController extends BaseController implements CheckHotelController
      * @ParamConverter(class="MBHRestaurantBundle:DishOrderItem")
      * @param Request $request
      * @param DishOrderItem $order
-     * @return RedirectResponse
+     * @return array|RedirectResponse
      */
     public function editOrderAction(Request $request, DishOrderItem $order)
     {
@@ -150,7 +156,6 @@ class DishOrderController extends BaseController implements CheckHotelController
     /**
      * @Route("/{id}/delete", name="restaurant_dishorder_delete")
      * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_DELETE')")
-     * @Template()
      * @ParamConverter(class="MBHRestaurantBundle:DishOrderItem")
      * @param Request $request
      * @param DishOrderItem $order
@@ -219,32 +224,32 @@ class DishOrderController extends BaseController implements CheckHotelController
      * Lists all entities as json.
      *
      * @Route("/json", name="restaurant_json", defaults={"_format"="json"}, options={"expose"=true})
-
      * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_VIEW')")
      * @Template()
      * @param Request $request
-     * @return array
+     * @return array|JsonResponse
      */
     public function jsonAction(Request $request)
     {
 
         $tableParams = ClientDataTableParams::createFromRequest($request);
 
-        $formRequestSubmit = (array) $request->query->get('form');
-//        $formRequestSubmit = (array) $request->request->get('form');
+        $formRequestSubmit = (array) $request->request->get('form');
         $formRequestSubmit['search'] = $tableParams->getSearch();
-        $form = $this->createForm(new DIshOrderFilterType(), new DishOrderCriteria());
+        /** @var Form $form */
+        $form = $this->createForm(DIshOrderFilterType::class, new DishOrderCriteria());
         $form->submit($formRequestSubmit);
-//        if (!$form->isValid()) {
-//            return new JsonResponse(['error' => $form->getErrors()[0]->getMessage()]);
-//        }
+
+        if (!$form->isValid()) {
+            return new JsonResponse(['error' => $form->getErrors()[0]->getMessage()]);
+        }
 
         /** @var DishOrderCriteria $criteria */
         $criteria = $form->getData();
 
         /** @var  $dishOrderRepository  */
         $dishOrderRepository = $this->dm->getRepository('MBHRestaurantBundle:DishOrderItem');
-
+        /* @var Cursor $dishorders*/
         $dishorders = $dishOrderRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength(), $this->hotel);
         
         return [

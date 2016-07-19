@@ -1,0 +1,2 @@
+0
+a:2:{i:0;O:46:"Doctrine\ODM\MongoDB\Mapping\Annotations\Field":5:{s:4:"name";N;s:4:"type";s:5:"float";s:8:"nullable";b:0;s:7:"options";a:0:{}s:5:"value";N;}i:1;O:45:"Symfony\Component\Validator\Constraints\Range":7:{s:10:"minMessage";s:41:"This value should be {{ limit }} or more.";s:10:"maxMessage";s:41:"This value should be {{ limit }} or less.";s:14:"invalidMessage";s:36:"This value should be a valid number.";s:3:"min";i:0;s:3:"max";N;s:7:"payload";N;s:6:"groups";a:1:{i:0;s:7:"Default";}}}

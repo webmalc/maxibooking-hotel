@@ -975,9 +975,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$request->get('query')) {
             return new JsonResponse([]);
         }
-        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByOrderOrRoom($request->get('query'));
+        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByOrderOrRoom($request->get('query'), $this->helper);
         if (!$packages) {
-            return new JsonResponse(['results' => [[]] ]);
+            return new JsonResponse([
+                'results' => [[]]
+            ]);
         }
         foreach ($packages as $item) {
             /** @var Package $item */

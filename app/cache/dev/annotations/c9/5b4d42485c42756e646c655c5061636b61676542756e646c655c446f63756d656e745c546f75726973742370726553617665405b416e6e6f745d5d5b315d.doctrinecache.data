@@ -1,0 +1,2 @@
+0
+a:2:{i:0;O:51:"Doctrine\ODM\MongoDB\Mapping\Annotations\PrePersist":1:{s:5:"value";N;}i:1;O:50:"Doctrine\ODM\MongoDB\Mapping\Annotations\PreUpdate":1:{s:5:"value";N;}}

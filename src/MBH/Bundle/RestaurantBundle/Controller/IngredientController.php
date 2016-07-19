@@ -15,7 +15,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 
 /**
@@ -76,7 +75,6 @@ class IngredientController extends BaseController implements CheckHotelControlle
 
             $entity->setPrice($price);
             $entity->setIsEnabled((boolean)$isEnabled);
-            $entity->setHotel($hotel);
 
             $validator = $this->get('validator');
             $errors = $validator->validate($entity);
@@ -97,7 +95,9 @@ class IngredientController extends BaseController implements CheckHotelControlle
             $flashBag->set('danger', 'Внимание, не все параметры сохранены успешно');
 
 
-        return $this->redirectToRoute('restaurant_ingredient_category');
+        $activetab = $request->get('activetab')?:null;
+
+        return $this->redirectToRoute('restaurant_ingredient_category',  ['tab' => substr($activetab,1)]);
     }
     
     
@@ -127,7 +127,7 @@ class IngredientController extends BaseController implements CheckHotelControlle
      * @Method("POST")
      * @Security("is_granted('ROLE_RESTAURANT_CATEGORY_NEW')")
      * @Template("@MBHRestaurant/Ingredient/newCategory.html.twig")
-     * @return Response
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function createCategoryAction(Request $request)
     {

@@ -6,9 +6,6 @@
  * Time: 14:39
  */
 
-//TODO: Уточнить "кто" именно внедряется контейнер для классов с интерфейсом ContainerAwareInterface
-//Об этом тут.
-//http://symfony.com/doc/master/bundles/DoctrineFixturesBundle/index.html#using-the-container-in-the-fixtures
 namespace MBH\Bundle\RestaurantBundle\DataFixtures\MongoDB;
 
 

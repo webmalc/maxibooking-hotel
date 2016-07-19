@@ -115,7 +115,16 @@
             {% endfor %}
         </div>
 
-
+        <input name="activetab" type="hidden" value="" id="activetab">
     </form>
 
 {% endblock content %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2'
+    '@MBHRestaurantBundle/Resources/public/js/006-quicksave-form-tab-sent.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

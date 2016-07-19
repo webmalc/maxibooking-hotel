@@ -2,6 +2,7 @@
  * Created by zalex on 05.07.16.
  */
 /*global dishes, $, console, document, select2 */
+
 $(function () {
     'use strict';
     var $price = $('#mbh_bundle_restaurantbundle_dishorder_dishorderitem_type_price'),
@@ -18,7 +19,7 @@ $(function () {
             return total;
         },
 
-        showPrice = function(price) {
+        showPrice = function (price) {
             $price.val(price).number(true, 2);
         },
 
@@ -26,8 +27,12 @@ $(function () {
             var $dish = $(dish),
                 dishId = $dish.val(),
                 dishPriceField = $dish.parent().siblings().find('small'),
-                dishData = dishes[dishId],
-                html = $.number(dishData.price, 2) + ' ';
+                dishData = dishes[dishId];
+            if (typeof (dishData) == 'undefined') {
+                console.info('Нет блюд!');
+                return false;
+            }
+            var html = $.number(dishData.price, 2) + ' ';
             dishPriceField.empty().append(html).hide().fadeIn(300);
         },
 

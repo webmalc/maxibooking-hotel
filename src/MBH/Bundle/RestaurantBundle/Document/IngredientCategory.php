@@ -19,12 +19,10 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 /**
  * @ODM\Document(collection="IngredientCategories")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="fullTitle", message="validator.document.ingredientcategory.notunique")
  */
 
 class IngredientCategory extends Base
@@ -66,9 +64,9 @@ class IngredientCategory extends Base
      * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="validator.document.hotel.min_name",
+     *      minMessage="validator.document.ingredientcategory.min_name",
      *      max=100,
-     *      maxMessage="validator.document.hotel.min_name"
+     *      maxMessage="validator.document.ingredientcategory.max_name"
      * )
      */
     protected $title;
@@ -76,7 +74,7 @@ class IngredientCategory extends Base
     /**
      * @Gedmo\Versioned
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="ingredientCategories")
-     * @Assert\NotNull(message="Не выбран отель")
+     * @Assert\NotNull(message="validator.document.ingredientcategory.hotel")
      */
     protected $hotel;
 
@@ -105,7 +103,7 @@ class IngredientCategory extends Base
     }
 
     /**
-     * @return PersistentCollection
+     * @return PersistentCollection|ArrayCollection
      */
     public function getIngredients()
     {

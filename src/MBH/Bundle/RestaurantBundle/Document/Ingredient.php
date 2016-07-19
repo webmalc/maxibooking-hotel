@@ -17,13 +17,11 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 
 /**
  * @ODM\Document(collection="Ingredients", repositoryClass="MBH\Bundle\RestaurantBundle\Document\IngredientRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @MongoDBUnique(fields="fullTitle", message="validator.document.ingredient.notunique")
  */
 class Ingredient extends Base
 {
@@ -63,9 +61,9 @@ class Ingredient extends Base
      * @Assert\NotNull()
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="validator.document.ingredient.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.ingredient.max_name"
      * )
      */
     protected $fullTitle;
@@ -76,9 +74,9 @@ class Ingredient extends Base
      * @ODM\Field(type="string", name="title")
      * @Assert\Length(
      *      min=2,
-     *      minMessage="Слишком короткое имя",
+     *      minMessage="validator.document.ingredient.min_name",
      *      max=100,
-     *      maxMessage="Слишком длинное имя"
+     *      maxMessage="validator.document.ingredient.max_name"
      * )
      */
     protected $title;
@@ -90,7 +88,7 @@ class Ingredient extends Base
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=0,
-     *      minMessage="Цена не может быть меньше нуля"
+     *      minMessage="validator.document.ingredient.null_price"
      * )
      */
     protected $price = 0;
@@ -103,8 +101,8 @@ class Ingredient extends Base
      * @Assert\Range(
      *      min=1,
      *      max=100,
-     *      minMessage="Выход продукта не может быть 0%",
-     *      maxMessage="Выход продукта не может быть больше 100%"
+     *      minMessage="validator.document.ingredient.null_output",
+     *      maxMessage="validator.document.ingredient.full_output"
      *
      * )
      */

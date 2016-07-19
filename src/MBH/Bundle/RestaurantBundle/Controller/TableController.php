@@ -48,7 +48,7 @@ class TableController extends BaseController
      * @Security("is_granted('ROLE_RESTAURANT_TABLE_NEW')")
      * @Template()
      * @param Request $request
-     * @return Response|RedirectResponse
+     * @return array|RedirectResponse
      */
     public function newTableAction(Request $request)
     {
@@ -89,7 +89,7 @@ class TableController extends BaseController
      * @ParamConverter(class="MBHRestaurantBundle:Table")
      * @param Request $request
      * @param Table $table
-     * @return RedirectResponse
+     * @return array|RedirectResponse
      */
     public function editTableAction(Request $request, Table $table)
     {

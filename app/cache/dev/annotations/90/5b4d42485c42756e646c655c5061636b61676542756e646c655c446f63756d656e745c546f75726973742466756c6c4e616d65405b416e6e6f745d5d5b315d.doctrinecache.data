@@ -1,0 +1,2 @@
+0
+a:3:{i:0;O:34:"Gedmo\Mapping\Annotation\Versioned":1:{s:5:"value";N;}i:1;O:46:"Doctrine\ODM\MongoDB\Mapping\Annotations\Field":5:{s:4:"name";s:8:"fullName";s:4:"type";s:6:"string";s:8:"nullable";b:0;s:7:"options";a:0:{}s:5:"value";N;}i:2;O:46:"Doctrine\ODM\MongoDB\Mapping\Annotations\Index":11:{s:4:"keys";a:0:{}s:4:"name";N;s:8:"dropDups";N;s:10:"background";N;s:4:"safe";N;s:18:"expireAfterSeconds";N;s:5:"order";N;s:6:"unique";b:0;s:6:"sparse";b:0;s:7:"options";a:0:{}s:5:"value";N;}}

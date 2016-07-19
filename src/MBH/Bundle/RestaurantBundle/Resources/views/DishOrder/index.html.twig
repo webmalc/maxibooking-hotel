@@ -5,22 +5,30 @@
 {% block content %}
     {% embed '@MBHBase/Partials/embed_filter.html.twig' with {'id': 'dishorder-table-filter-widget'}  %}
         {% block content %}
-            {{ form_start(form) }}
-            <div class="form-group">
-                <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
-                {{ form_widget(form.begin) }} —
-                {{ form_widget(form.end) }}
-            </div>
-            <div class="form-group">
-                <label><i class="fa fa-money" title="Цены" data-toggle="tooltip"></i></label>
-                {{ form_widget(form.money_begin) }}—
-                {{ form_widget(form.money_end) }}
-            </div>
-            <div class="form-group">
-                &nbsp;{{ form_widget(form.is_freezed) }}
-                {{ form_widget(form._token) }}
-            </div>
-            {{ form_end(form, {render_rest: false}) }}
+            {% if form is defined %}
+                {{ form_start(form) }}
+
+                {% if form.begin is defined %}
+                    <div class="form-group">
+                        <label><i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i></label>
+                        {{ form_widget(form.begin) }} —
+                        {{ form_widget(form.end) }}
+                    </div>
+                {% endif %}
+                {% if form.money_begin is defined %}
+                    <div class="form-group">
+                        <label><i class="fa fa-money" title="Цены" data-toggle="tooltip"></i></label>
+                        {{ form_widget(form.money_begin) }}—
+                        {{ form_widget(form.money_end) }}
+                    </div>
+                {% endif %}
+                <div class="form-group">
+                    <label><i class="fa fa-money" title="Оплачен" data-toggle="tooltip"></i></label>
+                    &nbsp;{{ form_widget(form.is_freezed) }}
+                    {{ form_widget(form._token) }}
+                </div>
+                {{ form_end(form, {render_rest: false}) }}
+            {% endif %}
         {% endblock %}
     {% endembed %}
     <div class="box-tools pull-rigth">

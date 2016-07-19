@@ -16,7 +16,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class DishMenuController
@@ -52,7 +51,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
      * @Route("/newcategory", name="restaurant_dishmenu_category_new")
      * @Security("is_granted('ROLE_RESTAURANT_DISHMENU_CATEGORY_NEW')")
      * @Template()
-     * @return Response
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function newCategoryAction(Request $request)
     {
@@ -249,7 +248,8 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
      * @Route("/quicksave", name="restaurant_dishmenu_save_prices")
      * @Method("POST")
      * @Security("is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT')")
-     *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function savePricesAction(Request $request)
     {
@@ -287,8 +287,8 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
             $flashBag->set('success', 'Цены успешно сохранены.'):
             $flashBag->set('danger', 'Внимание, не все параметры сохранены успешно');
 
-
-        return $this->redirectToRoute('restaurant_dishmenu_category');
+        $activetab = $request->get('activetab')?:null;
+        return $this->redirectToRoute('restaurant_dishmenu_category', ['tab' => substr($activetab,1)]);
     }
 
 

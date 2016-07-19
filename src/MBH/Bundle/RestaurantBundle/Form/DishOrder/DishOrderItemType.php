@@ -43,7 +43,7 @@ class DishOrderItemType extends AbstractType
                 'label' => 'restaurant.dishorder.form.id.label',
                 'read_only' => true,
                 'required' => false,
-                'group' => 'Основная информация'
+                'group' => 'restaurant.group'
             ])
             ->add('table', DocumentType::class, [
                 'label' => 'restaurant.dishorder.form.table.label',
@@ -58,7 +58,7 @@ class DishOrderItemType extends AbstractType
                 'required' => false,
                 'attr' => ['placeholder' => 'restaurant.dishorder.form.table.placeholder', 'class' => 'plain-html'],
                 'help' => 'restaurant.dishorder.form.table.help',
-                'group' => 'Основная информация'
+                'group' => 'restaurant.group'
             ])
             ->add('dishes', CollectionType::class, [
                 'entry_type' => DishOrderItemEmmbeddedType::class,
@@ -66,7 +66,7 @@ class DishOrderItemType extends AbstractType
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false,
-                'group' => 'Составление заказа'
+                'group' => 'restaurant.collectorder'
             ])
             ->add('order', TextType::class, [
                 'label' => 'restaurant.dishorder.form.order.label',
@@ -74,7 +74,7 @@ class DishOrderItemType extends AbstractType
                     'class' => 'order-select'
                 ],
                 'required' => false,
-                'group' => 'Подробности'
+                'group' => 'restaurant.descr'
 
 
             ])
@@ -84,12 +84,12 @@ class DishOrderItemType extends AbstractType
                 'required' => false,
                 'disabled' => true,
                 'mapped' => false,
-                'group' => 'Подробности'
+                'group' => 'restaurant.descr'
             ])
             ->add('isFreezed', CheckboxType::class,[
                 'label' => 'restaurant.dishorder.form.isfreezed.label',
                 'required' => false,
-                'group' => 'Оплата'
+                'group' => 'restauarnt.pay'
                 ])
             ->addEventListener(
                 FormEvents::PRE_SET_DATA,
