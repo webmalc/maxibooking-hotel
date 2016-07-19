@@ -1,2 +1,0 @@
-0
-a:2:{i:0;O:57:"Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument":2:{s:7:"indexes";a:0:{}s:5:"value";N;}i:1;O:62:"Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks":1:{s:5:"value";N;}}

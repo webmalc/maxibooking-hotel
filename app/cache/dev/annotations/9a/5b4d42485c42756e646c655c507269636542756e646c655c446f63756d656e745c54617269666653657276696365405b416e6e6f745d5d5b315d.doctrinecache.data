@@ -1,2 +1,0 @@
-0
-a:3:{i:0;O:33:"Gedmo\Mapping\Annotation\Loggable":2:{s:13:"logEntryClass";N;s:5:"value";N;}i:1;O:57:"Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument":2:{s:7:"indexes";a:0:{}s:5:"value";N;}i:2;O:33:"Gedmo\Mapping\Annotation\Loggable":2:{s:13:"logEntryClass";N;s:5:"value";N;}}

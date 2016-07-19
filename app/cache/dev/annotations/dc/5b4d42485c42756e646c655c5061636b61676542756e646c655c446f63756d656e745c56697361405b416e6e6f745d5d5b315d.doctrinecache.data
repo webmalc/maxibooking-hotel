@@ -1,2 +1,0 @@
-0
-a:3:{i:0;O:57:"Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument":2:{s:7:"indexes";a:0:{}s:5:"value";N;}i:1;O:33:"Gedmo\Mapping\Annotation\Loggable":2:{s:13:"logEntryClass";N;s:5:"value";N;}i:2;O:49:"MBH\Bundle\BaseBundle\Validator\Constraints\Range":5:{s:7:"message";s:67:"The filed "%firstProperty%" should be more than "%secondProperty%".";s:13:"firstProperty";s:11:"arrivalTime";s:14:"secondProperty";s:13:"departureTime";s:7:"payload";N;s:6:"groups";a:1:{i:0;s:7:"Default";}}}

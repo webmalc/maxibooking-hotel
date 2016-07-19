@@ -1,2 +1,0 @@
-0
-a:2:{i:0;O:38:"Gedmo\Mapping\Annotation\Timestampable":3:{s:2:"on";s:6:"update";s:5:"field";N;s:5:"value";N;}i:1;O:45:"Doctrine\ODM\MongoDB\Mapping\Annotations\Date":5:{s:4:"type";s:4:"date";s:4:"name";N;s:8:"nullable";b:0;s:7:"options";a:0:{}s:5:"value";N;}}

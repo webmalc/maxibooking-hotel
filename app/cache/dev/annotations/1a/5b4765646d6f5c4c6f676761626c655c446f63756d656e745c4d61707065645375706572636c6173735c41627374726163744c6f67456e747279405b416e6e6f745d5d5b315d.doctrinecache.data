@@ -1,2 +1,0 @@
-0
-a:1:{i:0;O:57:"Doctrine\ODM\MongoDB\Mapping\Annotations\MappedSuperclass":2:{s:15:"repositoryClass";N;s:5:"value";N;}}

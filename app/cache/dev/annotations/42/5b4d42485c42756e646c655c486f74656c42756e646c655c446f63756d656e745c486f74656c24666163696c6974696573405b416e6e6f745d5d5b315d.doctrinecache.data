@@ -1,2 +1,0 @@
-0
-a:2:{i:0;O:34:"Gedmo\Mapping\Annotation\Versioned":1:{s:5:"value";N;}i:1;O:51:"Doctrine\ODM\MongoDB\Mapping\Annotations\Collection":5:{s:4:"type";s:10:"collection";s:4:"name";N;s:8:"nullable";b:0;s:7:"options";a:0:{}s:5:"value";N;}}
