@@ -33,7 +33,7 @@ class DishMenuItemType extends AbstractType
                 'required' => true,
                 'attr' => ['placeholder' => 'restaurant.dishmenu.item.form.fullTitle.placeholder'],
                 'help' => 'restaurant.dishmenu.item.form.fullTitle.help',
-                'group' => 'Общая информация'
+                'group' => 'restaurant.group'
 
             ])
             ->add('title', TextType::class, [
@@ -41,35 +41,35 @@ class DishMenuItemType extends AbstractType
                 'required' => false,
                 'attr' => ['placeholder' => 'restaurant.dishmenu.item.form.title.placeholder'],
                 'help' => 'restaurant.dishmenu.item.form.title.help',
-                'group' => 'Общая информация'
+                'group' => 'restaurant.group'
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'restaurant.dishmenu.item.form.description.label',
                 'required' => false,
                 'attr' => ['placeholder' => 'restaurant.dishmenu.item.form.description.placeholder'],
                 'help' => 'restaurant.dishmenu.item.form.description.help',
-                'group' => 'Общая информация'
+                'group' => 'restaurant.group'
             ])
             ->add('is_enabled', CheckboxType::class, [
                 'label' => 'restaurant.ingredient.form.is_enable.label',
                 'required' => false,
                 'value' => true,
                 'help' => 'restaurant.ingredient.form.is_enable.help',
-                'group' => 'Общая информация'
+                'group' => 'restaurant.group'
             ])
             ->add('price', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.price.label',
                 'required' => false,
                 'attr' => ['class' => 'price-spinner price'],
                 'help' => 'restaurant.dishmenu.item.form.price.help',
-                'group' => 'Формирование цены'
+                'group' => 'restaurant.collectprice'
             ])
             ->add('costPrice', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.costprice.label',
                 'required' => false,
                 'attr' => ['class' => 'costprice price-spinner', 'disabled'=>true],
                 'help' => 'restaurant.dishmenu.item.form.costprice.help',
-                'group' => 'Формирование цены'
+                'group' => 'restaurant.collectprice'
             ])
             ->add('margin', TextType::class, [
                 'label' => 'restaurant.dishmenu.item.form.margin.label',
@@ -78,7 +78,7 @@ class DishMenuItemType extends AbstractType
                     'class' => 'percent-margin'
                 ],
                 'disabled' => true,
-                'group' => 'Формирование цены'
+                'group' => 'restaurant.collectprice'
             ])
             ->add('is_margin', CheckboxType::class, [
                 'label' => 'Маржа',
@@ -86,7 +86,7 @@ class DishMenuItemType extends AbstractType
                 'attr' => [
                     'class' => 'is_margin'
                 ],
-                'group' => 'Формирование цены'
+                'group' => 'restaurant.collectprice'
             ])
 
             ->add('dishIngredients', CollectionType::class, [
@@ -96,7 +96,7 @@ class DishMenuItemType extends AbstractType
                 'allow_delete' => true,
                 'by_reference' => true,
                 'required' => false,
-                'group' => 'Состав блюда'
+                'group' => 'restaurant.dishconsist'
             ])
             ->addEventListener(
                 FormEvents::PRE_SET_DATA,

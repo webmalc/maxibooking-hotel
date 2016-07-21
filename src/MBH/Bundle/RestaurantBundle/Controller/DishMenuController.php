@@ -4,7 +4,6 @@ namespace MBH\Bundle\RestaurantBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuItem;
 use MBH\Bundle\RestaurantBundle\Document\Ingredient;
@@ -28,6 +27,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
      * List all  category
      *
      * @Route("/", name="restaurant_dishmenu_category")
+     * @Route("/", name="restaurant_dishmenu_item")
      * @Security("is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_VIEW')")
      * @Template()
      */
@@ -40,8 +40,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
             ->execute();
 
         return [
-            'entities' => $entities,
-            'config' => $this->container->getParameter('mbh.units')
+            'entities' => $entities
         ];
     }
 
@@ -71,83 +70,76 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
         }
         
         return [
-            'entity' => $entity,
             'form' => $form->createView()
         ];
     }
 
     /**
-     * Displays a form to edit an existing entity.
-     *
      * @Route("/{id}/edit", name="restaurant_dishmenu_category_edit")
-     * @Method({"GET", "POST"})
+     * @Method("POST")
      * @Security("is_granted('ROLE_RESTAURANT_DISHMENU_CATEGORY_EDIT')")
      * @Template()
      * @ParamConverter(class="MBHRestaurantBundle:DishMenuCategory")
      * @param Request $request
-     * @param DishMenuCategory $entity
+     * @param DishMenuCategory $category
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function editCategoryAction(Request $request, DishMenuCategory $entity)
+    public function editCategoryAction(Request $request, DishMenuCategory $category)
     {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($category->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $form = $this->createForm(new DishMenuCategoryForm(), $entity);
+        $form = $this->createForm(new DishMenuCategoryForm(), $category);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->dm->persist($entity);
+            $this->dm->persist($category);
             $this->dm->flush();
 
             $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
 
-            return $this->afterSaveRedirect('restaurant_dishmenu_category', $entity->getId(), ['tab' => $entity->getId()]);
+            return $this->afterSaveRedirect('restaurant_dishmenu_category', $category->getId(), ['tab' => $category->getId()]);
         }
 
         return [
-            'entity' => $entity,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'logs' => $this->logs($category)
         ];
     }
 
     /**
-     * Delete entity.
-     * @param DishMenuCategory $category
      * @Route("/{id}/delete", name="restaurant_dishmenu_category_delete")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_RESTAURANT_CATEGORY_DELETE')")
+     * @param $id
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @Security("is_granted('ROLE_RESTAURANT_CATEGORY_DELETE')")
      */
 
-    public function deleteCategoryAction(DishMenuCategory $category)
+    public function deleteCategoryAction($id)
     {
-        return $this->deleteEntity($category->getId(), 'MBHRestaurantBundle:DishMenuCategory', 'restaurant_dishmenu_category');
+        return $this->deleteEntity($id, 'MBHRestaurantBundle:DishMenuCategory', 'restaurant_dishmenu_category');
     }
 
 
     /**
      * @Route("/{id}/new/dishmenuitem", name="restaurant_dishmenu_item_new")
-     * @Security("is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_NEW')")
      * @Template()
      * @ParamConverter("entity", class="MBHRestaurantBundle:DishMenuCategory")
      * @param Request $request
-     * @param DishMenuCategory $entity
+     * @param DishMenuCategory $category
      * @return array
+     * @Security("is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_NEW')")
      */
-    public function newItemAction(Request $request,DishMenuCategory $entity)
+    public function newItemAction(Request $request,DishMenuCategory $category)
     {
-        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+        if (!$this->container->get('mbh.hotel.selector')->checkPermissions($category->getHotel())) {
             throw $this->createNotFoundException();
         }
 
-        $ingredients = $this->dm->getRepository('MBHRestaurantBundle:Ingredient')->findAll();
+        $ingredients = $this->dm->getRepository('MBHRestaurantBundle:Ingredient')->findByHotelByCategoryId($this->helper, $this->hotel);
 
         $item = new DishMenuItem();
-        $item->setCategory($entity);
-        
+        $item->setCategory($category);
 
         $form = $this->createForm(new DishMenuItemForm(), $item);
         $form->handleRequest($request);
@@ -158,15 +150,13 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
 
             $request->getSession()->getFlashBag()->set('success', 'Запись успешно создана.');
 
-            return $this->isSavedRequest() ?
-                $this->redirectToRoute('restaurant_dishmenu_item_edit', ['id' => $item->getId()]) :
-                $this->redirectToRoute('restaurant_dishmenu_category', ['tab' => $entity->getId()]);
+            return $this->afterSaveRedirect('restaurant_dishmenu_item', $item->getId(), ['tab' => $category->getId()]);
         }
 
         return [
-            'entry' => $item,
-            'entity' => $entity,
             'form' => $form->createView(),
+            'entry' => $item,
+            'entity' => $category,
             'ingredients' => $ingredients
         ];
     }
@@ -189,13 +179,13 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
             throw $this->createNotFoundException();
         }
 
-        $ingredients = $this->dm->getRepository('MBHRestaurantBundle:Ingredient')->findAll();
+        $ingredients = $this->dm->getRepository('MBHRestaurantBundle:Ingredient')->findByHotelByCategoryId($this->helper, $this->hotel);
 
         $form = $this->createForm(new DishMenuItemForm(), $item);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
+
             $this->dm->persist($item);
             $this->dm->flush();
             $request->getSession()->getFlashBag()->set('success', 'Запись успешно отредактирована.');
@@ -208,9 +198,9 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
         }
 
         return [
+            'form' => $form->createView(),
             'entry' => $item,
             'entity' => $item->getCategory(),
-            'form' => $form->createView(),
             'logs' => $this->logs($item),
             'ingredients' => $ingredients
         ];
@@ -221,25 +211,12 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
      * @Route("/{id}/delete/dishmenuitem", name="restaurant_dishmenu_item_delete")
      * @Security("is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_DELETE')")
      * @ParamConverter(class="MBHRestaurantBundle:DishMenuItem")
-     * @param Request $request
-     * @param DishMenuItem $item
+     * @param DishMenuItem $dishMenuItem
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function deleteItemAction(Request $request, DishMenuItem $item)
+    public function deleteItemAction(DishMenuItem $dishMenuItem)
     {
-        try {
-            if (!$this->container->get('mbh.hotel.selector')->checkPermissions($item->getHotel())) {
-                throw $this->createNotFoundException();
-            }
-            $this->dm->remove($item);
-            $this->dm->flush($item);
-
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно удалена.');
-        } catch (DeleteException $e) {
-            $request->getSession()->getFlashBag()->set('danger', $e->getMessage());
-        }
-
-        return $this->redirectToRoute('restaurant_dishmenu_category', ['tab' => $item->getCategory()->getId()]);
+        return $this->deleteEntity($dishMenuItem->getId(), 'MBHRestaurantBundle:DishMenuItem', 'restaurant_dishmenu_item', ['tab' => $dishMenuItem->getCategory()->getId() ]);
     }
 
     /**

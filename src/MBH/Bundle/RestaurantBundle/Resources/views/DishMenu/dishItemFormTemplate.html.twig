@@ -1,5 +1,8 @@
 {% form_theme form.dishIngredients '@MBHRestaurant/Form/ingredientCollection.html.twig'  %}
+
 {{ form_start(form, {'action': path( path , {'id': entry.id}), 'method': method|default('POST'), 'attr': {'class': 'form-horizontal'}}) }}
+
 {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entry, 'delete_route': 'restaurant_dishmenu_item_delete', 'delete_role':'ROLE_RESTAURANT_DISHMENU_ITEM_DELETE' } %}
+
 {{ form(form) }}
 {{ form_end(form) }}

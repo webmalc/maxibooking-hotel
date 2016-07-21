@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: zalex
@@ -14,7 +15,6 @@ use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
-use MBH\Bundle\RestaurantBundle\Document\DishMenuItemRepository;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderCriteria;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderItem;
 use MBH\Bundle\RestaurantBundle\Form\DishOrder\DIshOrderFilterType;
@@ -34,35 +34,17 @@ use Symfony\Component\HttpFoundation\Request;
 class DishOrderController extends BaseController implements CheckHotelControllerInterface
 {
     /**
-     * @Route("/", name="restaurant_dishorder_list")
+     * @Route("/", name="restaurant_dishorder")
      * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_VIEW')")
      * @Template()
      */
     public function indexAction()
     {
-        $entities = $this->dm->getRepository('MBHRestaurantBundle:DishOrderItem')->createQueryBuilder('q')
-            ->field('hotel.id')->equals($this->hotel->getId())
-            ->sort('id', 'asc')
-            ->getQuery()
-            ->execute();
-
-        $form = $this->createForm(new DIshOrderFilterType());
+        $form = $this->createForm(DIshOrderFilterType::class);
         
         return [
-            'entities' => $entities,
-            'form' => $form->createView()
+           'form' => $form->createView()
         ];
-    }
-
-    /**
-     * @Route("/quicksave", name="restaurant_dishorder_quicksave")
-     * @Method("POST")
-     * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_EDIT')")
-     *
-     */
-    public function quickSaveOrderAction(Request $request)
-    {
-        return [];
     }
 
     /**
@@ -77,10 +59,7 @@ class DishOrderController extends BaseController implements CheckHotelController
         $order = new DishOrderItem();
         $order->setHotel($this->hotel);
 
-        /** @var DishMenuItemRepository $dishesrepos */
-        $dishesrepos = $this->dm->getRepository('MBHRestaurantBundle:DishMenuItem');
-        $dishes = $dishesrepos->findByHotelByCategoryId($this->helper, $order->getHotel());
-
+        $dishes = $this->dm->getRepository('MBHRestaurantBundle:DishMenuItem')->findByHotelByCategoryId($this->helper, $order->getHotel());
 
         $form = $this->createForm(DishOrderItemType::class, $order);
         $form->handleRequest($request);
@@ -94,14 +73,11 @@ class DishOrderController extends BaseController implements CheckHotelController
                 'restaurant.dishorder.common.addsuccess'
             );
 
-            return $this->isSavedRequest() ?
-                $this->redirectToRoute('restaurant_dishorder_edit', ['id' => $order->getId()]) :
-                $this->redirectToRoute('restaurant_dishorder_list');
+            return $this->afterSaveRedirect('restaurant_dishorder', $order->getId());
         }
         
         return [
             'form' => $form->createView(),
-            'order' => $order,
             'dishes' => $dishes
         ];
     }
@@ -129,7 +105,7 @@ class DishOrderController extends BaseController implements CheckHotelController
         $form = $this->createForm(DishOrderItemType::class, $order);
         $form->handleRequest($request);
 
-        $dishes = $this->dm->getRepository('MBHRestaurantBundle:DishMenuItem')->findAll();
+        $dishes = $this->dm->getRepository('MBHRestaurantBundle:DishMenuItem')->findByHotelByCategoryId($this->helper, $order->getHotel());
 
         if ($form->isValid() && $form->isSubmitted()) {
             $this->dm->persist($order);
@@ -140,9 +116,7 @@ class DishOrderController extends BaseController implements CheckHotelController
                 'restaurant.dishorder.common.editsuccess'
             );
 
-            return $this->isSavedRequest() ?
-                $this->redirectToRoute('restaurant_dishorder_edit', ['id' => $order->getId()]) :
-                $this->redirectToRoute('restaurant_dishorder_list');
+            return $this->afterSaveRedirect('restaurant_dishorder', $order->getId());
         }
 
         return [
@@ -156,35 +130,12 @@ class DishOrderController extends BaseController implements CheckHotelController
     /**
      * @Route("/{id}/delete", name="restaurant_dishorder_delete")
      * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_DELETE')")
-     * @ParamConverter(class="MBHRestaurantBundle:DishOrderItem")
-     * @param Request $request
-     * @param DishOrderItem $order
+     * @param $id int
      * @return array|RedirectResponse
      */
-    public function deleteOrderAction(Request $request, DishOrderItem $order)
+    public function deleteOrderAction($id)
     {
-        try {
-            if (!$this->container->get('mbh.hotel.selector')->checkPermissions($order->getHotel())) {
-                throw $this->createNotFoundException();
-            }
-
-            if ($order->isIsFreezed()) {
-                $this->denyAccessUnlessGranted('ROLE_RESTAURANT_ORDER_MANAGER_FREEZED_EDIT');
-            }
-
-            $this->dm->remove($order);
-            $this->dm->flush($order);
-
-            $request->getSession()->getFlashBag()->set('success', 'Запись успешно удалена.');
-            //TODO: Как тут поступить с исключением AccessDenied, которое может произойти
-        /*} catch(AccessDeniedException $e) {
-            $request->getSession()->getFlashBag()->set('danger', $e->getMessage());*/
-
-        } catch (DeleteException $e) {
-            $request->getSession()->getFlashBag()->set('danger', $e->getMessage());
-        }
-
-        return $this->redirectToRoute('restaurant_dishorder_list');
+        return $this->deleteEntity($id, 'MBHRestaurantBundle:DishOrderItem', 'restaurant_dishorder');
     }
 
 
@@ -217,7 +168,7 @@ class DishOrderController extends BaseController implements CheckHotelController
         $dm->persist($order);
         $dm->flush();
 
-        return $this->redirectToRoute('restaurant_dishorder_list');
+        return $this->redirectToRoute('restaurant_dishorder');
     }
 
     /**

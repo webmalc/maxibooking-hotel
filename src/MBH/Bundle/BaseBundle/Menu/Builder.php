@@ -135,7 +135,7 @@ class Builder extends ContainerAware
         $menu->addChild('warehouse_record', ['route' => 'warehouse_record', 'label' => 'Склад'])->setAttributes(['icon' => 'fa fa-book']);
 
         //restaurant
-        $menu->addChild('restaurant', ['route' => 'restaurant_dishorder_list', 'label' => 'Ресторан'])->setAttributes(['icon' => 'fa fa-cutlery']);
+        $menu->addChild('restaurant', ['route' => 'restaurant_dishorder', 'label' => 'Ресторан'])->setAttributes(['icon' => 'fa fa-cutlery']);
 
         // report
         $menu->addChild('reports', ['route' => '_welcome', 'label' => 'Отчеты'])
@@ -285,7 +285,7 @@ class Builder extends ContainerAware
             ->setAttributes(['icon'=> 'fa fa-cutlery']);
         $menu['restaurant']->addChild('dishmenu', ['route'=>'restaurant_dishmenu_category', 'label' => 'Меню блюд'])
             ->setAttributes(['icon'=> 'fa fa-cutlery']);
-        $menu['restaurant']->addChild('tables', ['route'=>'restaurant_table_list', 'label' => 'Управление столиками'])
+        $menu['restaurant']->addChild('tables', ['route'=>'restaurant_table', 'label' => 'Управление столиками'])
             ->setAttributes(['icon'=> 'fa fa-cutlery']);
 
 

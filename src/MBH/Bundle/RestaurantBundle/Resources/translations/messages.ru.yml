@@ -1,10 +1,13 @@
 restaurant:
 
   amount:                 Количество
-  group:                  Основная информация
+  group:                  Общая информация
   collectorder:           Составление заказа
   descr:                  Подробности
   pay:                    Оплата
+  collectprice:           Формирование цены
+  dishconsist:            Состав блюда
+  namelabel:                   Название
 
   common:
     title:                ингредиенты
@@ -191,6 +194,7 @@ restaurant:
     common:
       title:              Столики
       editsuccess:        Столик успешно отредактирован
+      addsuccess:         Столик успешно добавлен
       noitems:            Нет столиков в списке
     newaction:
       small_title:        добавление столика
@@ -199,6 +203,7 @@ restaurant:
         small_title:      Список столиков
       edit:               редактирование столика
       add:                Добавить столик
+      delete:             Удалить столик
     table:
       name:               Название
       isEnable:           Активен

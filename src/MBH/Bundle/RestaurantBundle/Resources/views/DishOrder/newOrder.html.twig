@@ -6,7 +6,8 @@
 {% block content %}
     {% form_theme form.dishes '@MBHRestaurant/Form/dishItemCollection.html.twig'  %}
     {{ form_start(form, {'action': path('restaurant_dishorder_new'), 'method': method|default('POST'), 'attr':{'class':'form-horizontal'}}) }}
-    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': order, 'delete_route': 'restaurant_dishorder_delete', 'delete_role':'ROLE_RESTAURANT_ORDER_MANAGER_DELETE' } %}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+
     {{ form(form) }}
     {{ form_end(form) }}
     {% block editAction %}

@@ -50,7 +50,7 @@
                         {% if is_granted('ROLE_RESTAURANT_TABLE_DELETE') %}
                             <a href='{{ path('restaurant_table_delete', {'id': entry.id }) }}'
                                class='btn btn-danger btn-xs delete-link '
-                               title='{{ 'restaurant.dishmenu.item.action.delete'|trans|capitalize }}'
+                               title='{{ 'restaurant.table.actions.delete'|trans|capitalize }}'
                                data-toggle='tooltip'>
                                 <i class='fa fa-trash-o'></i>
                             </a>

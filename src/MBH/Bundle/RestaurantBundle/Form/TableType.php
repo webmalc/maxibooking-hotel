@@ -25,7 +25,7 @@ class TableType extends AbstractType
                 'required' => true,
                 'attr' => ['placeholder' => 'restaurant.table.form.fullTitle.placeholder'],
                 'help' => 'restaurant.table.form.fullTitle.help',
-                'group' => 'Общая информация'
+                'group' => 'restaurant.group'
 
             ])
             ->add('title', TextType::class, [
@@ -33,14 +33,14 @@ class TableType extends AbstractType
                 'required' => false,
                 'attr' => ['placeholder' => 'restaurant.table.form.title.placeholder'],
                 'help' => 'restaurant.table.form.title.help',
-                'group' => 'Общая информация'
+                'group' => 'restaurant.group'
             ])
             ->add('isEnabled', CheckboxType::class, [
                 'label' => 'restaurant.table.form.is_enable.label',
                 'required' => false,
                 'value' => true,
                 'help' => 'restaurant.table.form.is_enable.help',
-                'group' => 'Общая информация'
+                'group' => 'restaurant.group'
             ])
         ;
     }
