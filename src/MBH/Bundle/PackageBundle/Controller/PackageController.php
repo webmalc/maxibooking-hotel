@@ -889,7 +889,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * @Route("/{id}/unlock", name="package_unlock")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PACKAGE_UNLOCK')")
      * @ParamConverter("package", class="MBHPackageBundle:Package")
      */
     public function unlockAction(Package $package)
@@ -904,7 +904,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
     /**
      * @Route("/{id}/lock", name="package_lock")
      * @Method("GET")
-     * @Security("is_granted('ROLE_ADMIN')")
+     * @Security("is_granted('ROLE_PACKAGE_UNLOCK')")
      * @ParamConverter("package", class="MBHPackageBundle:Package")
      */
     public function lockAction(Package $package)
