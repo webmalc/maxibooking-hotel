@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
-use Gedmo\Loggable\Document\LogEntry;
+
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -455,26 +455,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
-        /*$reader = new \Doctrine\Common\Annotations\AnnotationReader();
-        $reflection = new \ReflectionClass($package);
-        foreach ($reflection->getProperties() as $property) {
-            if ($reader->getPropertyAnnotation($property, 'MBH\Bundle\BaseBundle\Annotations\Versioned')) {
-                dump($property);
-            }
-        }
-
-        exit();
-
-        /*$log = new LogEntry();
-        $log->setAction('create');
-        $log->setData(['text' => 'test value']);
-        $log->setLoggedAt(new \DateTime());
-        $log->setObjectId($package->getId());
-        $log->setObjectClass(get_class($package));
-        $log->setVersion(1);
-        $log->setUsername($this->getUser()->getUsername());
-        $this->dm->persist($log);
-        $this->dm->flush();*/
 
         $form = $this->createForm(new OrderTouristType(), null, ['guest' => false]);
 
