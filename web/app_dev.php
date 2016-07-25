@@ -16,13 +16,8 @@ use Symfony\Component\Debug\Debug;
     exit('You are not allowed to access this file. Check '.basename(__FILE__).' for more information.');
 }*/
 
-if (!isset($_COOKIE['XDEBUG_SESSION'])) {
-    $loader = require_once __DIR__.'/../app/autoload.php';
-} else {
-    $loader = require_once __DIR__.'/../var/bootstrap.php.cache';
-}
 
-
+$loader = require_once __DIR__.'/../var/bootstrap.php.cache';
 Debug::enable();
 
 require_once __DIR__.'/../app/AppKernel.php';
