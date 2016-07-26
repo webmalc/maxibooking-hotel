@@ -4,6 +4,7 @@ imports:
     - { resource: version.yml }
     - { resource: mbh.yml }
     - { resource: roles.yml }
+    - { resource: mbh_restaurant_ctypes.xml }
 
 framework:
     serializer:

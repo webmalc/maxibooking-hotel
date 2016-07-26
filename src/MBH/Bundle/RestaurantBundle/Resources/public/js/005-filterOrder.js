@@ -8,7 +8,7 @@ $(document).ready(function () {
     $dishOrderTable.dataTable({
         processing: true,
         serverSide: true,
-        ordering: false,
+        ordering: true,
         ajax: {
             method: "POST",
             url: Routing.generate('restaurant_json'),
@@ -23,7 +23,16 @@ $(document).ready(function () {
                 };
                 return requestData;
             }
-        }
+        },
+        columns: [
+            {"orderable": false},
+            {"name": 'id'},
+            {"orderable": false},
+            {"name": 'createdAt'},
+            {"orderable": false},
+            {"name": 'isFreezed'},
+            {"orderable": false}
+        ]
 
     });
 

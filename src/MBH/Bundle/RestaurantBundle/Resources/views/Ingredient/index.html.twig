@@ -39,54 +39,42 @@
                     </div>
 
                     {% if entity.ingredients.count %}
-                        <table class="table table-actions table-striped table-hover table-condensed">
+                        <table class="table table-actions table-striped table-hover table-condensed table-icons">
                             <thead>
                             <tr>
                                 <th class="td-xs"></th>
-                                <th class="td-md">Название</th>
-                                <th class="td-md">{{ 'restaurant.ingredient.price'|trans|capitalize }}</th>
-                                <th class="td-md">{{ 'restaurant.ingredient.output'|trans|capitalize }}</th>
-                                <th class="td-md">{{ 'restaurant.ingredient.costprice'|trans|capitalize }}</th>
-                                <th class="td-sm">{{ 'restaurant.ingredient.units'|trans|capitalize }}</th>
-                                <th class="td-sm">{{ 'restaurant.ingredient.active'|trans|capitalize }}</th>
-                                <th class="td-md">{{ 'restaurant.common.doing'|trans|capitalize }}</th>
+                                <th>Название</th>
+                                <th class="td-md text-center">{{ 'restaurant.ingredient.price'|trans|capitalize }}</th>
+                                <th class="td-sm text-center">{{ 'restaurant.ingredient.output'|trans|capitalize }}</th>
+                                <th class="td-sm">{{ 'restaurant.ingredient.costprice'|trans|capitalize }}</th>
+                                <th class="td-sm text-center">{{ 'restaurant.ingredient.units'|trans|capitalize }}</th>
+                                <th class="td-md text-center">{{ 'restaurant.ingredient.active'|trans|capitalize }}</th>
+                                <th class="td-sm text-center">{{ 'restaurant.common.doing'|trans|capitalize }}</th>
 
                             </tr>
                             </thead>
                             <tbody>
                             {% for entry in entity.ingredients %}
                                 <tr>
-                                    <td><i class="fa fa-cutlery"></i></td>
-                                    <td><a href='{{ path('restaurant_ingredient_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system is defined and entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
+                                    <td class="table-icon text-center"><i class="fa fa-cutlery"></i></td>
                                     <td>
-                                        <span class="hidden">{{ entry.price }}</span>
+                                        {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entry, 'route': 'restaurant_ingredient'} %}{% endembed %}
+                                    </td>
+                                    <td>
                                         <input name="entries[{{ entry.id }}][price]" class="form-control spinner-0f price-spinner input-sm" type="text" value="{{ entry.price }}">
                                     </td>
                                     <td class="text-center">
-                                        <span class="hidden">{{ entry.output }}</span>
-                                        <input name="entries[{{ entry.id }}][output]" class="form-control  fix-percent-spinner input-sm" type="text"  value="{{ entry.output }} " disabled>
+                                        {{ entry.output }}%
                                     </td>
                                     <td class="text-center">
-                                        <span class="hidden">{{ entry.costprice }}</span>
-                                        <input name="entries[{{ entry.id }}][output]" class="form-control  price-spinner input-sm" type="text"  value="{{ entry.costprice }}"  disabled>
+                                        {{ entry.costprice|number_format(2,'.',',') }} <i class="{{ currency().icon }}"></i>
                                     </td>
                                     <td class="text-center">{{ ('unit.'~entry.calcType)|trans}}</td>
                                     <td class="text-center">
                                         <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
                                     </td>
-                                    <td class="text-center">
-                                        <div class='btn-list'>
-                                            {% if is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT') %}
-                                                <a href='{{ path('restaurant_ingredient_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='{{ 'restaurant.ingredient.edit'|trans|capitalize }}' data-toggle='tooltip'>
-                                                    <i class='fa fa-pencil-square-o'></i>
-                                                </a>
-                                            {% endif %}
-                                            {% if is_granted('ROLE_RESTAURANT_INGREDIENT_DELETE') %}
-                                                <a href='{{ path('restaurant_ingredient_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'restaurant.ingredient.delete'|trans|capitalize }}' data-toggle='tooltip'>
-                                                    <i class='fa fa-trash-o'></i>
-                                                </a>
-                                            {% endif %}
-                                        </div>
+                                    <td class="table-actions-td text-center">
+                                        {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entry, 'route': 'restaurant_ingredient'} %}{% endembed %}
                                     </td>
                                 </tr>
                             {% endfor %}

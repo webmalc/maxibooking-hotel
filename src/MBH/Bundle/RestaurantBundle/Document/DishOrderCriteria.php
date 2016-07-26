@@ -129,5 +129,12 @@ class DishOrderCriteria
     {
         $this->moneyEnd = $moneyEnd;
     }
-    
+
+    public function endWholeDay()
+    {
+        if ($this->end instanceof \DateTime) {
+            $end = clone $this->end;
+            return $end->modify("tomorrow -1 minute");
+        }
+    }
 }

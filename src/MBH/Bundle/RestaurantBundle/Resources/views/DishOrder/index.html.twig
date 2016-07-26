@@ -33,7 +33,7 @@
     {% endembed %}
     <div class="box-tools pull-rigth">
 
-        {% if is_granted('ROLE_RESTAURANT_ORDER_MANAGER_NEW') %}
+        {% if is_granted('ROLE_RESTAURANT_DISHORDER_NEW') %}
             <div class="btn-list spacer-bottom text-right">
                 <div class="btn">
                     <a href="{{ path('restaurant_dishorder_new') }}" class="btn btn-sm btn-success"
@@ -48,16 +48,16 @@
 
         <div class="box-body">
         <table id="dishorder-table"
-               class="table table-actions not-auto-datatable table-striped table-hover table-condensed text-center">
+               class="table table-actions not-auto-datatable table-striped table-hover table-condensed table-icons">
             <thead>
             <tr>
                 <th class="td-xs"></th>
-                <th class="td-xs">{{ 'restaurant.dishorder.table.number'|trans }}</th>
+                <th>{{ 'restaurant.dishorder.table.number'|trans }}</th>
                 <th class="td-xs">{{ 'restaurant.dishorder.table.table'|trans }}</th>
                 <th class="td-xs">{{ 'restaurant.dishorder.table.time'|trans }}</th>
                 <th class="td-sm">{{ 'restaurant.dishorder.table.price'|trans }}</th>
-                <th class="td-sm">{{ 'restaurant.dishorder.table.freezed'|trans }}</th>
-                <th class="td-lg text-center">{{ 'restaurant.dishorder.table.doing'|trans }}</th>
+                <th class="td-md text-center">{{ 'restaurant.dishorder.table.freezed'|trans }}</th>
+                <th class="td-sm text-center">{{ 'restaurant.dishorder.table.doing'|trans }}</th>
             </tr>
             </thead>
 

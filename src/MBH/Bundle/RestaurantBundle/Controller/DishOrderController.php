@@ -14,9 +14,9 @@ use Doctrine\ODM\MongoDB\Cursor;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderCriteria;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderItem;
+use MBH\Bundle\RestaurantBundle\Document\DishOrderItemRepository;
 use MBH\Bundle\RestaurantBundle\Form\DishOrder\DIshOrderFilterType;
 use MBH\Bundle\RestaurantBundle\Form\DishOrder\DishOrderItemType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -35,7 +35,7 @@ class DishOrderController extends BaseController implements CheckHotelController
 {
     /**
      * @Route("/", name="restaurant_dishorder")
-     * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_VIEW')")
+     * @Security("is_granted('ROLE_RESTAURANT_DISHORDER_VIEW')")
      * @Template()
      */
     public function indexAction()
@@ -49,7 +49,7 @@ class DishOrderController extends BaseController implements CheckHotelController
 
     /**
      * @Route("/new", name="restaurant_dishorder_new")
-     * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_NEW')")
+     * @Security("is_granted('ROLE_RESTAURANT_DISHORDER_NEW')")
      * @Template()
      * @param Request $request
      * @return array|RedirectResponse
@@ -85,7 +85,7 @@ class DishOrderController extends BaseController implements CheckHotelController
     /**
      * @Route("/{id}/edit", name="restaurant_dishorder_edit")
      * @Method({"GET","POST"})
-     * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_EDIT')")
+     * @Security("is_granted('ROLE_RESTAURANT_DISHORDER_EDIT')")
      * @Template()
      * @ParamConverter(class="MBHRestaurantBundle:DishOrderItem")
      * @param Request $request
@@ -99,7 +99,7 @@ class DishOrderController extends BaseController implements CheckHotelController
         }
 
         if ($order->isIsFreezed()) {
-            $this->denyAccessUnlessGranted('ROLE_RESTAURANT_ORDER_MANAGER_FREEZED_EDIT');
+            $this->denyAccessUnlessGranted('ROLE_RESTAURANT_DISHORDER_FREEZED_EDIT');
         }
 
         $form = $this->createForm(DishOrderItemType::class, $order);
@@ -129,7 +129,7 @@ class DishOrderController extends BaseController implements CheckHotelController
 
     /**
      * @Route("/{id}/delete", name="restaurant_dishorder_delete")
-     * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_DELETE')")
+     * @Security("is_granted('ROLE_RESTAURANT_DISHORDER_DELETE')")
      * @param $id int
      * @return array|RedirectResponse
      */
@@ -141,7 +141,7 @@ class DishOrderController extends BaseController implements CheckHotelController
 
     /**
      * @Route("/{id}/showfreezed", name="restaurant_dishorder_showfreezed")
-     * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_VIEW')")
+     * @Security("is_granted('ROLE_RESTAURANT_DISHORDER_VIEW')")
      * @Template()
      * @param DishOrderItem $order
      * @return array
@@ -155,7 +155,7 @@ class DishOrderController extends BaseController implements CheckHotelController
 
     /**
      * @Route("/{id}/freeze", name="restaurant_dishorder_freeze")
-     * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_PAY')")
+     * @Security("is_granted('ROLE_RESTAURANT_DISHORDER_PAY')")
      * @ParamConverter(class="MBHRestaurantBundle:DishOrderItem")
      * @param DishOrderItem $order
      * @return RedirectResponse
@@ -175,7 +175,7 @@ class DishOrderController extends BaseController implements CheckHotelController
      * Lists all entities as json.
      *
      * @Route("/json", name="restaurant_json", defaults={"_format"="json"}, options={"expose"=true})
-     * @Security("is_granted('ROLE_RESTAURANT_ORDER_MANAGER_VIEW')")
+     * @Security("is_granted('ROLE_RESTAURANT_DISHORDER_VIEW')")
      * @Template()
      * @param Request $request
      * @return array|JsonResponse
@@ -198,10 +198,10 @@ class DishOrderController extends BaseController implements CheckHotelController
         /** @var DishOrderCriteria $criteria */
         $criteria = $form->getData();
 
-        /** @var  $dishOrderRepository  */
+        /** @var  DishOrderItemRepository $dishOrderRepository  */
         $dishOrderRepository = $this->dm->getRepository('MBHRestaurantBundle:DishOrderItem');
         /* @var Cursor $dishorders*/
-        $dishorders = $dishOrderRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength(), $this->hotel);
+        $dishorders = $dishOrderRepository->findByQueryCriteria($criteria, $tableParams->getStart(), $tableParams->getLength(), $tableParams->getFirstSort(), $this->hotel);
         
         return [
             'dishorders' => $dishorders,

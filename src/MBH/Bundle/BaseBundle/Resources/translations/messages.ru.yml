@@ -183,9 +183,8 @@ form.quick_links: Быстрые ссылки
 to: до
 from: c
 
-unit:
-  per_kg:     кг.
-  per_piece:  шт.
-  per_grm:    гр.
-  per_l:      л.
-  per_ml:     мл.
+per_kg:     кг.
+per_piece:  шт.
+per_grm:    гр.
+per_l:      л.
+per_ml:     мл.

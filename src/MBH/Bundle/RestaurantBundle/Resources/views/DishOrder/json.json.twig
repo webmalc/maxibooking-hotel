@@ -5,22 +5,23 @@
     "data": [
         {% for order in dishorders %}
 
-        {% if ( not order.isfreezed and is_granted('ROLE_RESTAURANT_ORDER_MANAGER_EDIT') ) or (order.isfreezed and is_granted('ROLE_RESTAURANT_ORDER_MANAGER_FREEZED_EDIT')) %}
+        {% if ( not order.isfreezed and is_granted('ROLE_RESTAURANT_DISHORDER_EDIT') ) or (order.isfreezed and is_granted('ROLE_RESTAURANT_DISHORDER_FREEZED_EDIT')) %}
             {% set editbutton = "<a href='" ~ path('restaurant_dishorder_edit', {'id': order.id }) ~ "' class='btn btn-success btn-xs' title='"~('restaurant.dishorder.actions.edit')|trans|capitalize~"' data-toggle='tooltip'><i class='fa fa-pencil-square-o'></i></a>" %}
         {% else %}
             {% set editbutton = "<a href='#' class='btn btn-success btn-xs disabled'><i class='fa fa-pencil-square-o'></i></a>" %}
         {% endif %}
 
-        {% if ( not order.isfreezed and is_granted('ROLE_RESTAURANT_ORDER_MANAGER_DELETE') ) or (order.isfreezed and is_granted('ROLE_RESTAURANT_ORDER_MANAGER_FREEZED_DELETE')) %}
+        {% if ( not order.isfreezed and is_granted('ROLE_RESTAURANT_DISHORDER_DELETE') ) or (order.isfreezed and is_granted('ROLE_RESTAURANT_DISHORDER_FREEZED_DELETE')) %}
             {% set deletebutton = "<a href='"~path('restaurant_dishorder_delete', {'id': order.id})~"' data-toggle='tooltip' class='btn btn-danger btn-xs delete-link'  title='"~('restaurant.dishorder.actions.delete'|trans|capitalize)~"'><i class='fa fa-trash-o'></i></a>" %}
         {% else %}
             {% set deletebutton = "<a href='#' class='btn btn-danger btn-xs disabled'><i class='fa fa-trash-o'></i></a>" %}
         {% endif %}
 
         {% if order.isfreezed %}
-            {% set freezedbutton = "<a href='" ~ path('restaurant_dishorder_showfreezed', {'id': order.id}) ~ "' class='btn btn-success btn-sm'>"~'restaurant.dishorder.actions.isfreezed'|trans|capitalize~"</a>" %}
+            {% set freezedbutton = "<a href='" ~ path('restaurant_dishorder_showfreezed', {'id': order.id}) ~ "' class='btn btn-success btn-sm'><i class='fa fa-money'></i> "~'restaurant.dishorder.actions.isfreezed'|trans|capitalize~"</a>" %}
+
         {% else %}
-            {% if is_granted('ROLE_RESTAURANT_ORDER_MANAGER_PAY') %}
+            {% if is_granted('ROLE_RESTAURANT_DISHORDER_PAY') %}
                 {% set freezedbutton = "<a href='"~ path('restaurant_dishorder_freeze', {'id': order.id }) ~ "' class='btn btn-danger btn-sm delete-link' data-text='"~ 'restaurant.dishorder.actions.pay'|trans|capitalize ~ " " ~ order.id ~" ?' data-button='"~'restaurant.dishorder.actions.confirm'|trans|capitalize~"' data-button-icon='fa-money' title='"~'restaurant.dishorder.actions.freezed'|trans|capitalize ~"' data-toggle='tooltip'><i class='fa fa-money'></i>"~" "~'restaurant.dishorder.actions.freezed'|trans|capitalize~"</a>" %}
             {% else %}
                 {% set freezebutton = "" %}
@@ -29,11 +30,11 @@
 
         [
             "<div class='text-center'><i class='fa fa-cutlery'></i></div>",
-            "{{ order.id }}",
+            "{% if order.isfreezed %}{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': order, 'route': 'restaurant_dishorder', 'edit_route': 'restaurant_dishorder_showfreezed' } %}{% endembed %}{% else %}{% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': order, 'route': 'restaurant_dishorder'} %}{% endembed %}{% endif %}",
             "{{ order.table }}",
-            "{{ order.createdAt|date("d.m") }}",
+            "{{ order.createdAt|date_modify("midnight")|date("d.m") }}",
             "{{ order.price|number_format(2,'.',',') }}",
-            "{{ freezedbutton|raw }}",
+            "<div class='text-center'>{{ freezedbutton|raw }}</div>",
             "<div class='btn-list text-center'>{{ editbutton|raw }}{{ deletebutton|raw }}</div>"
         ]
         {% if loop.index != total %},{% endif %}

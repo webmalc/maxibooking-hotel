@@ -5,7 +5,7 @@
 
 {% block content %}
     {{ form_start(form, {'action': path('restaurant_table_edit', {'id' : table.id}), 'method': method|default('POST'), 'attr':{'class':'form-horizontal'}}) }}
-    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': table, 'delete_route': 'restaurant_table_delete', 'delete_role':'ROLE_RESTAURANT_ORDER_MANAGER_DELETE' } %}
+    {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': table, 'delete_route': 'restaurant_table_delete', 'delete_role':'ROLE_RESTAURANT_DISHORDER_DELETE' } %}
     {{ form(form) }}
     {{ form_end(form) }}
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': table, 'logs': logs, 'delete_route': 'restaurant_table_delete' } %}

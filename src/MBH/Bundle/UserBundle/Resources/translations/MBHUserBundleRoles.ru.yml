@@ -263,15 +263,15 @@ ROLE_RESTAURANT_DISHMENU_ITEM_VIEW: Просмотр блюд
 ROLE_RESTAURANT_DISHMENU_ITEM_NEW: Добавление блюд
 ROLE_RESTAURANT_DISHMENU_ITEM_EDIT: Редактирование блюд
 ROLE_RESTAURANT_DISHMENU_ITEM_DELETE: Удаление блюд
-ROLE_RESTAURANT_ORDER_MANAGER: Ресторан - менеджмент заказов
-ROLE_RESTAURANT_ORDER_MANAGER_VIEW: Просмотр заказов
-ROLE_RESTAURANT_ORDER_MANAGER_NEW: ДОбавление заказа
-ROLE_RESTAURANT_ORDER_MANAGER_EDIT: Редактирование заказа
-ROLE_RESTAURANT_ORDER_MANAGER_DELETE: Удаление заказа
-ROLE_RESTAURANT_ORDER_MANAGER_FREEZED: Ресторан - управление оплаченными заказами
-ROLE_RESTAURANT_ORDER_MANAGER_FREEZED_EDIT: Редактировать уже оплаченный заказ
-ROLE_RESTAURANT_ORDER_MANAGER_FREEZED_DELETE: Удалить уже оплаченный заказ
-ROLE_RESTAURANT_ORDER_MANAGER_PAY: Фиксирование факта оплаты
+ROLE_RESTAURANT_DISHORDER: Ресторан - менеджмент заказов
+ROLE_RESTAURANT_DISHORDER_VIEW: Просмотр заказов
+ROLE_RESTAURANT_DISHORDER_NEW: Добавление заказа
+ROLE_RESTAURANT_DISHORDER_EDIT: Редактирование заказа
+ROLE_RESTAURANT_DISHORDER_DELETE: Удаление заказа
+ROLE_RESTAURANT_DISHORDER_FREEZED: Ресторан - управление оплаченными заказами
+ROLE_RESTAURANT_DISHORDER_FREEZED_EDIT: Редактировать уже оплаченный заказ
+ROLE_RESTAURANT_DISHORDER_FREEZED_DELETE: Удалить уже оплаченный заказ
+ROLE_RESTAURANT_DISHORDER_PAY: Фиксирование факта оплаты
 ROLE_RESTAURANT_TABLE: Ресторан - управление столиками
 ROLE_RESTAURANT_TABLE_VIEW: Просмотр столиков
 ROLE_RESTAURANT_TABLE_NEW: Добавить столик

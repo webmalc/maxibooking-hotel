@@ -39,54 +39,42 @@
                     </div>
 
                     {% if entity.dishMenuItems.count %}
-                        <table class="table table-actions table-striped table-hover table-condensed">
+                        <table class="table table-actions table-striped table-hover table-condensed table-icons">
                             <thead>
                             <tr>
                                 <th class="td-xs"></th>
-                                <th class="td-md">{{ 'restaurant.namelabel'|trans }}</th>
-                                <th class="td-sm">{{ 'restaurant.dishmenu.item.form.price.label'|trans|capitalize }}</th>
-                                <th class="td-sm">{{ 'restaurant.dishmenu.item.form.costprice.label'|trans|capitalize }}</th>
-                                <th class="td-lg">{{ 'restaurant.dishmenu.item.form.description.label'|trans|capitalize }}</th>
-                                <th class="td-sm">{{ 'restaurant.dishmenu.item.active'|trans|capitalize }}</th>
-                                <th class="td-md">{{ 'restaurant.common.doing'|trans|capitalize }}</th>
+                                <th>{{ 'restaurant.namelabel'|trans }}</th>
+                                <th class="td-md text-center">{{ 'restaurant.dishmenu.item.form.price.label'|trans|capitalize }}</th>
+                                <th class="td-md text-center">{{ 'restaurant.dishmenu.item.form.costprice.label'|trans|capitalize }}</th>
+                                <th class="td-md text-center">{{ 'restaurant.dishmenu.item.form.description.label'|trans|capitalize }}</th>
+                                <th class="td-md text-center">{{ 'restaurant.dishmenu.item.active'|trans|capitalize }}</th>
+                                <th class="td-sm text-center">{{ 'restaurant.common.doing'|trans|capitalize }}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for entry in entity.dishMenuItems %}
                                 <tr>
                                     <td><i class="fa fa-cutlery"></i></td>
-                                    <td><a href='{{ path('restaurant_dishmenu_item_edit', {'id': entry.id }) }}'>{{ entry.name }}</a>&nbsp;{% if entry.system is defined and entry.system %}<small class="transparent"><i class="fa fa-lock"></i></small>{%endif %}</td>
+                                    <td>
+                                        {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entry, 'route': 'restaurant_dishmenu_item'} %}{% endembed %}
+                                    </td>
                                     <td>
                                         {% if entry.isMargin %}
-                                            <span class="hidden">{{ entry.margin }}</span>
                                             <input name="entries[{{ entry.id }}][marginprice]" class="form-control input-sm price-spinner" type="text" value="{{ entry.marginPrice }}" disabled>
                                         {% else %}
-                                            <span class="hidden">{{ entry.price }}</span>
                                             <input name="entries[{{ entry.id }}][price]" class="form-control input-sm price-spinner" type="text" value="{{ entry.price }}">
                                         {% endif %}
 
                                     </td>
                                     <td class="text-center">
-                                        <span class="hidden">{{ entry.costprice}}</span>
-                                        <input class="form-control input-sm price-spinner" type="text"  value="{{ entry.costprice}}" disabled>
+                                        {{ entry.costprice|number_format(2,'.',',') }} <i class="{{ currency().icon }}"></i>
                                     </td>
                                     <td class="text-center">{{ entry.description }}</td>
                                     <td class="text-center">
                                         <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
                                     </td>
-                                    <td class="text-center">
-                                        <div class='btn-list'>
-                                            {% if is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_EDIT') %}
-                                                <a href='{{ path('restaurant_dishmenu_item_edit', {'id': entry.id }) }}' class='btn btn-success btn-xs' title='{{ 'restaurant.dishmenu.item.action.edit'|trans|capitalize }}' data-toggle='tooltip'>
-                                                    <i class='fa fa-pencil-square-o'></i>
-                                                </a>
-                                            {% endif %}
-                                            {% if is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_DELETE') %}
-                                                <a href='{{ path('restaurant_dishmenu_item_delete', {'id': entry.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'restaurant.dishmenu.item.action.delete'|trans|capitalize }}' data-toggle='tooltip'>
-                                                    <i class='fa fa-trash-o'></i>
-                                                </a>
-                                            {% endif %}
-                                        </div>
+                                    <td class="table-actions-td text-center">
+                                        {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entry, 'route': 'restaurant_dishmenu_item'} %}{% endembed %}
                                     </td>
                                 </tr>
                             {% endfor %}

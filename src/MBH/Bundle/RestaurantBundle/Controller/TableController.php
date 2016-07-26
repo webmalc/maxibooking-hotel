@@ -102,7 +102,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
                 'restaurant.table.common.editsuccess'
             );
 
-            $this->afterSaveRedirect('restaurant_table', $table->getId());
+            return $this->afterSaveRedirect('restaurant_table', $table->getId());
         }
 
         return [

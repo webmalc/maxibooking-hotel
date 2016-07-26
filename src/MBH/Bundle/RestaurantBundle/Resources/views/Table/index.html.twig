@@ -19,44 +19,27 @@
 
 {% if entities.count %}
 <div class="box-body">
-    <table class="table table-actions table-striped table-hover table-condensed text-center">
+    <table class="table table-actions table-striped table-hover table-condensed table-icons">
         <thead>
         <tr>
             <th class="td-xs"></th>
-            <th class="td-md">{{ 'restaurant.table.table.name'|trans }}</th>
-            <th class="td-xs">{{ 'restaurant.table.table.isEnable'|trans }}</th>
-            <th class="td-lg text-center">{{ 'restaurant.table.table.doing'|trans }}</th>
+            <th>{{ 'restaurant.table.table.name'|trans }}</th>
+            <th class="td-md text-center">{{ 'restaurant.table.table.isEnable'|trans }}</th>
+            <th class="td-sm text-center">{{ 'restaurant.table.table.doing'|trans }}</th>
         </tr>
         </thead>
 
         <tbody>
         {% for entry in entities %}
             <tr>
-                <td><i class="fa fa-cutlery"></i></td>
-                <td>{{ entry.name }}</td>
+                <td class="table-icon text-center"><i class="fa fa-cutlery"></i></td>
                 <td>
-                    <input type="hidden" name="entries[{{ entry.id }}][flag]" value="1">
+                    {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entry, 'route': 'restaurant_table'} %}{% endembed %}
+                </td>
+                <td class="text-center">
                     <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
                 </td>
-                <td>
-                    <div class='btn-list text-center'>
-                        {% if is_granted('ROLE_RESTAURANT_TABLE_EDIT') %}
-                            <a href='{{ path('restaurant_table_edit', {'id': entry.id }) }}'
-                               class='btn btn-success btn-xs'
-                               title='{{ 'restaurant.table.actions.edit'|trans|capitalize }}' data-toggle='tooltip'>
-                                <i class='fa fa-pencil-square-o'></i>
-                            </a>
-                        {% endif %}
-                        {% if is_granted('ROLE_RESTAURANT_TABLE_DELETE') %}
-                            <a href='{{ path('restaurant_table_delete', {'id': entry.id }) }}'
-                               class='btn btn-danger btn-xs delete-link '
-                               title='{{ 'restaurant.table.actions.delete'|trans|capitalize }}'
-                               data-toggle='tooltip'>
-                                <i class='fa fa-trash-o'></i>
-                            </a>
-                        {% endif %}
-                    </div>
-                </td>
+
             </tr>
         {% endfor %}
 
@@ -80,7 +63,6 @@
 
         </div>
     </div>
-
 </div> <!-- /.box-body -->
 
 </form>

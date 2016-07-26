@@ -26,6 +26,14 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 class Ingredient extends Base
 {
 
+    const calcTypes = [
+        'per_kg',
+        'per_piece',
+        'per_grm',
+        'per_l',
+        'per_ml'
+    ];
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -226,19 +234,13 @@ class Ingredient extends Base
 
     public function getCalcTypes()
     {
-        return [
-            "per_kg",
-            "per_grm",
-            "per_ml",
-            "per_l",
-            "per_piece"
-        ];
+        return self::calcTypes;
     }
 
     public function getCostPrice()
     {
         $costPrice = (float) ($this->price*100/$this->output);
-        return number_format($costPrice,2);
+        return $costPrice;
     }
 
     

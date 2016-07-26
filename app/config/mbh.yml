@@ -351,10 +351,4 @@ parameters:
         in: "Приход"
         out: "Расход"
 
-    #Ресторан
-    mbh.units:
-        per_kg: unit.per_kg
-        per_piece: unit.per_piece
-        per_grm: unit.per_grm
-        per_l: unit.per_l
-        per_ml: unit.per_ml
+
