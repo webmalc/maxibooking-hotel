@@ -15,6 +15,7 @@ class RegistrationCardTemplateGenerator extends DefaultTemplateGenerator
     protected function prepareParams(array $formData)
     {
         $params = parent::prepareParams($formData);
+        $container = $this->container;
 
         $tourists = $formData['package']->getTourists(); //guests
         if(count($tourists) == 0) {
@@ -23,6 +24,8 @@ class RegistrationCardTemplateGenerator extends DefaultTemplateGenerator
         }
 
         $params['tourists'] = $tourists;
+        $params['arrivalTimeDefault'] = $container->getParameter('mbh_package_arrival_time');
+        $params['departureTimeDefault'] = $container->getParameter('mbh_package_departure_time');
         return $params;
     }
 }
