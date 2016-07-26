@@ -38,7 +38,8 @@ class VersionedSubscriber implements EventSubscriber
         $dm = $args->getDocumentManager();
         $uow = $dm->getUnitOfWork();
         $reader = new AnnotationReader();
-        $username = $this->container->get('security.token_storage')->getToken()->getUser()->getUsername();
+        $token = $this->container->get('security.token_storage')->getToken();
+        $username = $token ? $token->getUsername() : 'anon';
 
         $docs = array_merge(
             $uow->getScheduledDocumentUpdates(),

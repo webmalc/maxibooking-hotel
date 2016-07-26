@@ -21,7 +21,7 @@
             <ul class="nav navbar-nav">
                 {% if entity.isLocked %}
                     <li>
-                        {% if app.security.granted('ROLE_ADMIN') %}
+                        {% if app.security.granted('ROLE_PACKAGE_UNLOCK') %}
                             <button type="button" onclick="javascript:window.location.href = '{{ path('package_unlock', {'id': entity.id}) }}'" class="btn btn-success navbar-btn">
                                 <i class="fa fa-unlock"></i>
                                 {{ 'package.actions.unlock'|trans({}, 'MBHPackageBundle') }}

@@ -158,6 +158,7 @@ ROLE_ORDER_EDIT: Редактирование информации заказа
 ROLE_PACKAGE_EDIT: Редактирование информации брони
 ROLE_ORDER_PAYER: Плательщик заказа
 ROLE_PACKAGE_GUESTS: Гости брони
+ROLE_PACKAGE_UNLOCK: Разблокировка брони
 ROLE_PACKAGE_SERVICES: Услуги брони
 ROLE_PACKAGE_ACCOMMODATION: Размещение брони
 ROLE_ORDER_DOCUMENTS: Документы заказа
