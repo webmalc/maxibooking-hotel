@@ -69,7 +69,7 @@
                                     <td class="text-center">
                                         {{ entry.costprice|number_format(2,'.',',') }} <i class="{{ currency().icon }}"></i>
                                     </td>
-                                    <td class="text-center">{{ ('unit.'~entry.calcType)|trans}}</td>
+                                    <td class="text-center">{{ entry.calcType|trans}}</td>
                                     <td class="text-center">
                                         <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
                                     </td>

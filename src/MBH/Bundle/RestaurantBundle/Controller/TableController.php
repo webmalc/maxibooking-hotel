@@ -124,7 +124,7 @@ class TableController extends BaseController implements CheckHotelControllerInte
     }
 
     /**
-     * @Route("/quicksave", name="restaurant_table_quicksave")
+     * @Route("/quicksave", name="restaurant_table_save")
      * @Method("GET")
      * @Security("is_granted('ROLE_RESTAURANT_TABLE_EDIT')")
      * @param Request $request
@@ -138,32 +138,35 @@ class TableController extends BaseController implements CheckHotelControllerInte
 
         $success = true;
 
-        foreach ($entries as $id => $data) {
-            $entity = $tableRepository->find($id);
-            $isEnabled = $data['is_enabled'] ?? false;
+        if ($entries) {
+            foreach ($entries as $id => $data) {
+                $entity = $tableRepository->find($id);
+                $isEnabled = $data['is_enabled'] ?? false;
 
-            if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
-                continue;
-            }
+                if (!$entity || !$this->container->get('mbh.hotel.selector')->checkPermissions($entity->getHotel())) {
+                    continue;
+                }
 
-            $entity->setIsEnabled((boolean)$isEnabled);
+                $entity->setIsEnabled((boolean)$isEnabled);
 
-            $validator = $this->get('validator');
-            $errors = $validator->validate($entity);
-            if (count($errors) > 0) {
-                $success = false;
-                continue;
-            }
+                $validator = $this->get('validator');
+                $errors = $validator->validate($entity);
+                if (count($errors) > 0) {
+                    $success = false;
+                    continue;
+                }
 
-            $this->dm->persist($entity);
-            $this->dm->flush();
-        };
+                $this->dm->persist($entity);
+                $this->dm->flush();
+            };
 
-        $flashBag = $request->getSession()->getFlashBag();
+            $flashBag = $request->getSession()->getFlashBag();
 
-        $success ?
-            $flashBag->set('success', 'Столики успешно отредактированы.'):
-            $flashBag->set('danger', 'Внимание, не все параметры сохранены успешно');
+            $success ?
+                $flashBag->set('success', 'Столики успешно отредактированы.'):
+                $flashBag->set('danger', 'Внимание, не все параметры сохранены успешно');
+        }
+
 
         return $this->redirectToRoute('restaurant_table');
     }

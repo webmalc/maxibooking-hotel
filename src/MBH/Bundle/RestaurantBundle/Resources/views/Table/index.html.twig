@@ -15,7 +15,7 @@
     </div>
 </div>
 
-<form method="get" role="form" class="are-you-sure form-inline" action="{{ path('restaurant_table_quicksave') }}">
+<form method="get" role="form" class="are-you-sure form-inline" action="{{ path('restaurant_table_save') }}">
 
 {% if entities.count %}
 <div class="box-body">
@@ -37,6 +37,8 @@
                     {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entry, 'route': 'restaurant_table'} %}{% endembed %}
                 </td>
                 <td class="text-center">
+                    {#Заглушка, чтоб обязательно передавались все столики#}
+                    <input type="hidden" name="entries[{{ entry.id }}][foo]">
                     <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
                 </td>
                 <td class="table-actions-td text-center">
