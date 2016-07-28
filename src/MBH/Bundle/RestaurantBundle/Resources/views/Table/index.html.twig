@@ -39,6 +39,9 @@
                 <td class="text-center">
                     <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
                 </td>
+                <td class="table-actions-td text-center">
+                    {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entry, 'route': 'restaurant_table'} %}{% endembed %}
+                </td>
 
             </tr>
         {% endfor %}
