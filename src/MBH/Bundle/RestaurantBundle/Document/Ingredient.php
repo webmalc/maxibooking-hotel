@@ -26,7 +26,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 class Ingredient extends Base
 {
 
-    const calcTypes = [
+    const CALC_TYPES = [
         'per_kg',
         'per_piece',
         'per_grm',
@@ -234,7 +234,7 @@ class Ingredient extends Base
 
     public function getCalcTypes()
     {
-        return self::calcTypes;
+        return self::CALC_TYPES;
     }
 
     public function getCostPrice()

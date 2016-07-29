@@ -14,7 +14,7 @@
                             <div class='dish-ingredient-list-name'>
                                 <div>{{ form_widget(dishIngredient.ingredient) }} </div>
                                 <span class="help-block">
-                                    <small class="currentprice">{{ dishIngredient.vars.value.ingredient.costprice ~ currency()['text'] }}{{ ('unit.'~ dishIngredient.vars.value.ingredient.calcType)| trans }}</small>
+                                    <small class="currentprice">{{ dishIngredient.vars.value.ingredient.costprice ~ currency()['text'] }}{{ (dishIngredient.vars.value.ingredient.calcType)| trans }}</small>
                                 </span>
                             </div>
                             <i class="fa fa-times"></i>

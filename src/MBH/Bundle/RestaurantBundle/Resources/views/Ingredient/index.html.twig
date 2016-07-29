@@ -46,7 +46,7 @@
                                 <th>Название</th>
                                 <th class="td-md text-center">{{ 'restaurant.ingredient.price'|trans|capitalize }}</th>
                                 <th class="td-sm text-center">{{ 'restaurant.ingredient.output'|trans|capitalize }}</th>
-                                <th class="td-sm">{{ 'restaurant.ingredient.costprice'|trans|capitalize }}</th>
+                                <th class="td-md text-right">{{ 'restaurant.ingredient.costprice'|trans|capitalize }} <i class="{{ currency().icon }}"></i></th>
                                 <th class="td-sm text-center">{{ 'restaurant.ingredient.units'|trans|capitalize }}</th>
                                 <th class="td-md text-center">{{ 'restaurant.ingredient.active'|trans|capitalize }}</th>
                                 <th class="td-sm text-center">{{ 'restaurant.common.doing'|trans|capitalize }}</th>
@@ -66,8 +66,8 @@
                                     <td class="text-center">
                                         {{ entry.output }}%
                                     </td>
-                                    <td class="text-center">
-                                        {{ entry.costprice|number_format(2,'.',',') }} <i class="{{ currency().icon }}"></i>
+                                    <td class="text-right">
+                                        {{ entry.costprice|number_format(2,'.',',') }}
                                     </td>
                                     <td class="text-center">{{ entry.calcType|trans}}</td>
                                     <td class="text-center">
@@ -87,7 +87,7 @@
                     <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
                         <div class="container-fluid">
                             <ul class="nav navbar-nav">
-                                {% if is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT') %}
+                                {% if is_granted('ROLE_RESTAURANT_INGREDIENT_EDIT') and entity.ingredients.count %}
                                     <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> {{ 'restaurant.common.save'|trans|capitalize }}</button></li>
                                 {% endif %}
                                 {% if is_granted('ROLE_RESTAURANT_CATEGORY_NEW') %}

@@ -41,13 +41,13 @@ restaurant:
     costprice:            себестоимость
     output:               выход
     units:                ед.изм
-    addincat:             создать ингредиент в категории
+    addincat:             добавить ингредиент в категорию
     add:                  добавить ингредиент
     active:               наличие
     edit:                 редактирование ингредиента
     delete:               удаление ингредиента
     newaction:
-      small_title:        создание ингредиента в категории
+      small_title:        добавление ингредиента в категорию
     form:
       fullTitle:
         label:            Название
@@ -99,11 +99,12 @@ restaurant:
           label:          Внутреннее название
           placeholder:    введите название
           help:           Название для использования внутри MaxiBooking
+
     item:
       title:
       small_title:        добавление блюда в категорию
       edit_small_title:   редактирование блюда в категории
-      active:             активно
+      active:             наличие
       action:
         new:              добавить новое блюдо
         edit:             редактировать блюдо
@@ -134,19 +135,23 @@ restaurant:
           help:           Описание блюда
         margin:
           label:          Процент маржи
+          disabled:       Установлена маржа, цена формируется автоматически.
         amount:
           placeholder:    Количество ингредиента
         dishIngredients:
           label:          Ингредиенты блюда
+        is_enable:
+          label:            Показать
+          help:             Показывать ли блюдо в списке формирования заказа
   dishorder:
     payer:
       noname:             нет привязки к брони
     title:                Заказы
     common:
-      title:              заказы
-      addsuccess:         заказ успешно создан
-      editsuccess:        заказ успешно отредактирован
-      noitems:            заказов нет
+      title:              Заказы
+      addsuccess:         Заказ успешно создан
+      editsuccess:        Ззаказ успешно отредактирован
+      noitems:            Заказов нет
     table:
       number:             № Заказа
       table:              Столик
@@ -157,6 +162,7 @@ restaurant:
       payer:              Плательщик
       time:               Дата
     actions:
+      tolist:             К списку
       list:
         small_title:      добавление заказа
       showfreeze:
@@ -189,7 +195,7 @@ restaurant:
       order:
         label:            Плательщик
       isfreezed:
-        label:            оплата
+        label:            Оплата
   table:
     common:
       title:              Столики
@@ -221,4 +227,10 @@ restaurant:
         label:            Активен
         help:             Активен ли столик
 
+  exceptions:
+    delete:
+      ingredient:
+      table:
+      dishmenuitem:
+      ingredientcategory: Невозможно удалить категорию, т.к. она не пуста!
 

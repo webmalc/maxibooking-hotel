@@ -3,7 +3,7 @@
         {% for ingredient in ingredients %}
         '{{ ingredient.id }}' : {
             'price':{{ ingredient.price }},
-            'units': '{{ ('unit.'~ingredient.calcType)|trans() }}',
+            'units': '{{ (ingredient.calcType)|trans() }}',
             'currency': '{{ currency()['text'] }}',
             'costprice': '{{ ingredient.costPrice }}'
         },

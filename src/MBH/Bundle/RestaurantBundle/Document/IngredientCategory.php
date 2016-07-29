@@ -8,6 +8,7 @@
 
 namespace MBH\Bundle\RestaurantBundle\Document;
 
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
@@ -23,6 +24,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
  * @ODM\Document(collection="IngredientCategories")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ * @MongoDBUnique(fields={"fullTitle","hotel"}, message="validator.document.category.unique")
  */
 
 class IngredientCategory extends Base

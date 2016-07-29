@@ -51,10 +51,10 @@ class DishMenuItemType extends AbstractType
                 'group' => 'restaurant.group'
             ])
             ->add('is_enabled', CheckboxType::class, [
-                'label' => 'restaurant.ingredient.form.is_enable.label',
+                'label' => 'restaurant.dishmenu.item.form.is_enable.label',
                 'required' => false,
                 'value' => true,
-                'help' => 'restaurant.ingredient.form.is_enable.help',
+                'help' => 'restaurant.dishmenu.item.form.is_enable.help',
                 'group' => 'restaurant.group'
             ])
             ->add('price', TextType::class, [

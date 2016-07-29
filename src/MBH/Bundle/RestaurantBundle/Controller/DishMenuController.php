@@ -76,7 +76,6 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
 
     /**
      * @Route("/{id}/edit", name="restaurant_dishmenu_category_edit")
-     * @Method("POST")
      * @Security("is_granted('ROLE_RESTAURANT_DISHMENU_CATEGORY_EDIT')")
      * @Template()
      * @ParamConverter(class="MBHRestaurantBundle:DishMenuCategory")
@@ -103,6 +102,7 @@ class DishMenuController extends BaseController implements CheckHotelControllerI
         }
 
         return [
+            'entity' => $category,
             'form' => $form->createView(),
             'logs' => $this->logs($category)
         ];

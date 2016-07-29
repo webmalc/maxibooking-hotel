@@ -10,7 +10,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 
 class DishOrderItemRepository extends DocumentRepository
 {
-    public function findByQueryCriteria(DishOrderCriteria $criteria, $offset = 0, $limit = 10, $sort = ['id', -1], Hotel $hotel = null)
+    public function findByQueryCriteria(DishOrderCriteria $criteria, $offset = 0, $limit = 10, $sort = ['id', -1 ], Hotel $hotel = null)
     {
         $queryBuilder = $this->queryCriteriaToBuilder($criteria);
         if ($hotel) {
@@ -18,9 +18,10 @@ class DishOrderItemRepository extends DocumentRepository
         }
         $queryBuilder
             ->skip($offset)
-            ->limit($limit)
-            ->sort($sort[0], $sort[1])
-        ;
+            ->limit($limit);
+        if ($sort) {
+            $queryBuilder->sort($sort[0], $sort[1]);
+        }
 
         $orderItems = $queryBuilder->getQuery()->execute();
         return $orderItems;

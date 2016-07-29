@@ -20,6 +20,7 @@ class IngredientType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+
         $builder
             ->add('fullTitle', TextType::class, [
                 'label' => 'restaurant.ingredient.form.fullTitle.label',
@@ -56,7 +57,7 @@ class IngredientType extends AbstractType
                 'required' => true,
                 'empty_value' => '',
                 'multiple' => false,
-                'choices' => $options['calcTypes'],
+                'choices' => array_combine($options['calcTypes'],$options['calcTypes']),
                 'help' => 'restaurant.ingredient.form.calcType.help',
                 'group' => 'restaurant.collectprice'
             ])

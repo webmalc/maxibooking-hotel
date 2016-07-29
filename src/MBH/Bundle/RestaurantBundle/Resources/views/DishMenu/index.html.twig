@@ -45,8 +45,8 @@
                                 <th class="td-xs"></th>
                                 <th>{{ 'restaurant.namelabel'|trans }}</th>
                                 <th class="td-md text-center">{{ 'restaurant.dishmenu.item.form.price.label'|trans|capitalize }}</th>
-                                <th class="td-md text-center">{{ 'restaurant.dishmenu.item.form.costprice.label'|trans|capitalize }}</th>
-                                <th class="td-md text-center">{{ 'restaurant.dishmenu.item.form.description.label'|trans|capitalize }}</th>
+                                <th class="td-md text-center">{{ 'restaurant.dishmenu.item.form.costprice.label'|trans|capitalize }} <i class="{{ currency().icon }}"></i></th>
+                                {#<th class="td-md text-center">{{ 'restaurant.dishmenu.item.form.description.label'|trans|capitalize }}</th>#}
                                 <th class="td-md text-center">{{ 'restaurant.dishmenu.item.active'|trans|capitalize }}</th>
                                 <th class="td-sm text-center">{{ 'restaurant.common.doing'|trans|capitalize }}</th>
                             </tr>
@@ -60,16 +60,16 @@
                                     </td>
                                     <td>
                                         {% if entry.isMargin %}
-                                            <input name="entries[{{ entry.id }}][marginprice]" class="form-control input-sm price-spinner" type="text" value="{{ entry.marginPrice }}" disabled>
+                                            <input name="entries[{{ entry.id }}][marginprice]" data-toggle="tooltip" title="{{ 'restaurant.dishmenu.item.form.margin.disabled'|trans }}" class="form-control input-sm price-spinner" type="text" value="{{ entry.marginPrice }}" disabled>
                                         {% else %}
                                             <input name="entries[{{ entry.id }}][price]" class="form-control input-sm price-spinner" type="text" value="{{ entry.price }}">
                                         {% endif %}
 
                                     </td>
-                                    <td class="text-center">
-                                        {{ entry.costprice|number_format(2,'.',',') }} <i class="{{ currency().icon }}"></i>
+                                    <td class="text-right">
+                                        {{ entry.costprice|number_format(2,'.',',') }}
                                     </td>
-                                    <td class="text-center">{{ entry.description }}</td>
+                                    {#<td class="text-center">{{ entry.description }}</td>#}
                                     <td class="text-center">
                                         <input class="checkbox-mini" name="entries[{{ entry.id }}][is_enabled]" type="checkbox" {{ entry.isEnabled ? 'checked' }} value="1">
                                     </td>
@@ -87,7 +87,7 @@
                     <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
                         <div class="container-fluid">
                             <ul class="nav navbar-nav">
-                                {% if is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_EDIT') %}
+                                {% if is_granted('ROLE_RESTAURANT_DISHMENU_ITEM_EDIT') and  entity.dishMenuItems.count %}
                                     <li><button type="submit" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> {{ 'restaurant.common.save'|trans|capitalize }}</button></li>
                                 {% endif %}
                                 {% if is_granted('ROLE_RESTAURANT_DISHMENU_CATEGORY_NEW') %}

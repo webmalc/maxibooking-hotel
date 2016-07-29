@@ -19,6 +19,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -89,7 +90,7 @@ class DishOrderItemType extends AbstractType
             ->add('isFreezed', CheckboxType::class,[
                 'label' => 'restaurant.dishorder.form.isfreezed.label',
                 'required' => false,
-                'group' => 'restauarnt.pay'
+                'group' => 'restaurant.pay'
                 ])
             ->addEventListener(
                 FormEvents::PRE_SET_DATA,
@@ -107,9 +108,10 @@ class DishOrderItemType extends AbstractType
     {
         /** @var DishOrderItem $order */
         $order = $event->getData();
-        $form = $event->getForm();
-        $idOptions = $form->get('id')->getConfig()->getOptions();
         if (!$order->getId()) {
+            /** @var Form $form */
+            $form = $event->getForm();
+            $idOptions = $form->get('id')->getConfig()->getOptions();
             $idOptions = array_replace($idOptions, [
                 'mapped' => false,
                 'attr' => [

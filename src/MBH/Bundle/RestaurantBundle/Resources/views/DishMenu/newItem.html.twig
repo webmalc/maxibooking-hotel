@@ -4,7 +4,12 @@
 {% set layout = 'box' %}
 
 {% block content %}
-    {% include '@MBHRestaurant/DishMenu/dishItemFormTemplate.html.twig' with {'path': 'restaurant_dishmenu_item_new'} %}
+    {% embed '@MBHRestaurant/DishMenu/dishItemFormTemplate.html.twig' with {'path': 'restaurant_dishmenu_item_new'} %}
+        {% block actions %}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+        {% endblock %}
+    {% endembed %}
+
 {% endblock %}
 
 {% block scripts %}

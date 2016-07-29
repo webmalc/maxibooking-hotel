@@ -12,8 +12,10 @@ namespace MBH\Bundle\RestaurantBundle\EventListener;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuItem;
 use MBH\Bundle\RestaurantBundle\Document\Ingredient;
+use MBH\Bundle\RestaurantBundle\Document\IngredientCategory;
 use MBH\Bundle\RestaurantBundle\Document\Table;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -49,6 +51,8 @@ class RestaurantSubscriber implements EventSubscriber
         ];
     }
 
+
+    
     /**
      * @param LifecycleEventArgs $args
      * @throws DeleteException
@@ -103,9 +107,17 @@ class RestaurantSubscriber implements EventSubscriber
                 $router = $this->container->get('router');
                 $route = $router->generate('restaurant_dishmenu_item_edit', ['id' => $doc->getId()]);
                 $message = 'Невозможно удалить блюдо, т.к. оно фигурирует в заказах. Вы всегда можете его скрыть в <a href="'.$route.'"> меню редактирования'.'</a>';
+//                $message = 'Невозможно удалить блюдо, т.к. оно фигурирует в заказах. Вы всегда можете его скрыть в <a href="'.$route.'"> меню редактирования'.'</a>';
                 throw new DeleteException($message);
             }
         }
+        if ($doc instanceof IngredientCategory) {
+            if ($doc->getIngredients()->count()) {
+                $message = 'restaurant.exceptions.delete.ingredientcategory';
+                throw new DeleteException($message);
+            }
+        }
+
     }
 
 }

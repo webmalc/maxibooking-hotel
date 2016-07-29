@@ -27,3 +27,5 @@ validator.document.ingredient.full_output: Выход продукта не мо
 validator.document.table.hotel: Поле "отель" не должно быть пустым
 validator.document.table.min_name: Имя стола должно быть менее одного символа
 validator.document.table.max_name: Превышено допустимое количество символов
+
+validator.document.category.unique: Такая категория уже существует

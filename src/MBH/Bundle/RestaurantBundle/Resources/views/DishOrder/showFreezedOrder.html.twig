@@ -10,7 +10,7 @@
             <tr>
                 <th class="td-xs"></th>
                 <th class="td-xs">{{ 'restaurant.dishorder.table.number'|trans }}</th>
-                <th class="td-xs">{{ 'restaurant.dishorder.table.price'|trans }}</th>
+                <th class="td-xs">{{ 'restaurant.dishorder.table.price'|trans }} <i class="{{ currency().icon }}"></i></th>
                 <th class="td-md">{{ 'restaurant.dishorder.table.content'|trans }}</th>
                 <th class="td-xs">{{ 'restaurant.dishorder.table.freezed'|trans }}</th>
                 <th class="td-xs">{{ 'restaurant.dishorder.table.payer'|trans }}</th>
@@ -44,5 +44,7 @@
             </tbody>
         </table>
     </div>
-    <div class="box-footer"></div>
+    <div class="box-footer">
+        <a href='{{ path('restaurant_dishorder') }}' class='btn btn-default btn-md' title='{{ 'restaurant.dishorder.actions.tolist'|trans }}' data-toggle='tooltip'><i class='fa fa-list-alt'></i> {{ 'restaurant.dishorder.actions.tolist'|trans }}</a>
+    </div>
 {% endblock %}
