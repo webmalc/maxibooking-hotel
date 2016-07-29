@@ -9,6 +9,7 @@ src/MBH/Bundle/OnlineBundle/Resources/views/Api/*
 src/MBH/Bundle/BaseBundle/Resources/views/Mailer/*
 src/MBH/Bundle/BaseBundle/Resources/translations/individual.ru.yml
 src/MBH/Bundle/BaseBundle/Resources/translations/individual.en.yml
+src/MBH/Bundle/PackageBundle/Resources/views/Documents/pdfTemplates/*
 var/logs/
 var/logs/*
 var/cache/
