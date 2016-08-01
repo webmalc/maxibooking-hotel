@@ -22,7 +22,7 @@ class GroupsData implements FixtureInterface, ContainerAwareInterface
                 'ROLE_MANAGER', 'ROLE_OVERVIEW', 'ROLE_PRICE_CACHE', 'ROLE_RESTRICTION', 'ROLE_ROOM_CACHE',
                 'ROLE_SERVICE', 'ROLE_SERVICE_CATEGORY', 'ROLE_TARIFF', 'ROLE_CHANNEL_MANAGER',
                 'ROLE_ONLINE_FORM', 'ROLE_POLLS', 'ROLE_REPORTS', 'ROLE_PACKAGE', 'ROLE_SOURCE', 'ROLE_PROMOTION',
-                'ROLE_ROOM_TYPE_CATEGORY', 'ROLE_WORK_SHIFT'
+                'ROLE_ROOM_TYPE_CATEGORY', 'ROLE_WORK_SHIFT', 'ROLE_RESTAURANT_MAIN_MANAGER'
             ]
         ],
         'analytics' => [
@@ -120,10 +120,16 @@ class GroupsData implements FixtureInterface, ContainerAwareInterface
                 'ROLE_STAFF'
             ]
         ],
-        'restaurant' => [
-            'title' => 'Ресторан',
+        'restaurant_senior' => [
+            'title' => 'Ресторан старший менеджер',
             'roles' => [
-                'ROLE_RESTAURANT'
+                'ROLE_RESTAURANT_SENIOR_MANAGER'
+            ]
+        ],
+        'restaurant_junior' => [
+            'title' => 'Ресторан менеджер',
+            'roles' => [
+                'ROLE_RESTAURANT_MANAGER'
             ]
         ],
         'warehouse' => [

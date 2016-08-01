@@ -16,8 +16,8 @@ $(document).ready(function () {
                 requestData.form = {
                     begin: $dishOrderForm.find("#restaurant_dishorder_filter_type_begin").val(),
                     end: $dishOrderForm.find("#restaurant_dishorder_filter_type_end").val(),
-                    money_begin: $dishOrderForm.find("#restaurant_dishorder_filter_type_money_begin").val(),
-                    money_end: $dishOrderForm.find("#restaurant_dishorder_filter_type_money_end").val(),
+                    // money_begin: $dishOrderForm.find("#restaurant_dishorder_filter_type_money_begin").val(),
+                    // money_end: $dishOrderForm.find("#restaurant_dishorder_filter_type_money_end").val(),
                     is_freezed: $dishOrderForm.find("#restaurant_dishorder_filter_type_is_freezed").val(),
                     _token: $dishOrderForm.find("#restaurant_dishorder_filter_type__token").val()
                 };
@@ -27,9 +27,12 @@ $(document).ready(function () {
         columns: [
             {"orderable": false},
             {"name": 'id'},
-            {"orderable": false},
+            {"orderable": false, "className": "text-center"},
             {"name": 'createdAt'},
-            {"orderable": false},
+            {
+                "orderable": false,
+                "className": "text-right"
+            },
             {"name": 'isFreezed'},
             {"orderable": false}
         ]

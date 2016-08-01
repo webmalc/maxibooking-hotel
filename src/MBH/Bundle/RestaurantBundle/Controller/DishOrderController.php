@@ -132,12 +132,17 @@ class DishOrderController extends BaseController implements CheckHotelController
     /**
      * @Route("/{id}/delete", name="restaurant_dishorder_delete")
      * @Security("is_granted('ROLE_RESTAURANT_DISHORDER_DELETE')")
-     * @param $id int
+     * @param DishOrderItem $dishOrderItem
      * @return array|RedirectResponse
+     * @internal param int $id
+     * @ParamConverter(class="MBHRestaurantBundle:DishOrderItem")
      */
-    public function deleteOrderAction($id)
+    public function deleteOrderAction(DishOrderItem $dishOrderItem)
     {
-        return $this->deleteEntity($id, 'MBHRestaurantBundle:DishOrderItem', 'restaurant_dishorder');
+        if ($dishOrderItem->isIsFreezed() && !$this->isGranted('ROLE_RESTAURANT_DISHORDER_FREEZED_DELETE')) {
+            return $this->redirectToRoute('restaurant_dishorder');
+        }
+        return $this->deleteEntity($dishOrderItem->getId(), 'MBHRestaurantBundle:DishOrderItem', 'restaurant_dishorder');
     }
 
 

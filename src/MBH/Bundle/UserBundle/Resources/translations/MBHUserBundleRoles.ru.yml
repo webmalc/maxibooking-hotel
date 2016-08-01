@@ -244,7 +244,8 @@ ROLE_WAREHOUSE_INVOICE_EDIT: Редактирование накладной
 ROLE_WAREHOUSE_INVOICE_DELETE: Удаление накладной
 ROLE_WAREHOUSE: Склад
 
-ROLE_RESTAURANT: Ресторан
+ROLE_RESTAURANT_SENIOR_MANAGER: Ресторан - старший менеджер
+ROLE_RESTAURANT_MANAGER: Ресторан - менеджер
 ROLE_RESTAURANT_CATEGORY: Ресторан - категории ингредиентов
 ROLE_RESTAURANT_INGREDIENT: Ресторан - ингредиенты
 ROLE_RESTAURANT_CATEGORY_NEW: Создание категорий ингредиентов
