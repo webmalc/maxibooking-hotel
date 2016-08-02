@@ -60,8 +60,10 @@ class Search implements SearchInterface
         $this->now = new \DateTime('midnight');
         $this->manager = $container->get('mbh.hotel.room_type_manager');
         $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        $this->memcached = $memcached = $this->container->get('mbh.cache');
+        $this->memcached = $this->container->get('mbh.cache');
+        $this->memcached = null;
         $this->hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+        $this->c = 0;
     }
 
     /**
@@ -70,6 +72,8 @@ class Search implements SearchInterface
      */
     public function search(SearchQuery $query)
     {
+        $this->c +=1;
+
         $results = $groupedCaches = $deletedCaches = $cachesMin = $tariffMin = [];
 
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_FORCE_BOOKING')) {
@@ -116,7 +120,8 @@ class Search implements SearchInterface
 
         //roomCache with tariffs
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-            $query->begin, $end, $query->tariff ? $query->tariff->getHotel() : null, $query->roomTypes
+            $query->begin, $end, $query->tariff ? $query->tariff->getHotel() : null,
+            $query->roomTypes, false, false, $this->memcached
         );
 
         //group caches
@@ -372,7 +377,7 @@ class Search implements SearchInterface
                 }
                 
                 //prices
-                $prices = $calc->calcPrices(
+                /*$prices = $calc->calcPrices(
                     $roomType, $tariff, $query->begin, $end,
                     $tourists['adults'], $tourists['children'], $promotion, $this->manager->useCategories
                 );
@@ -388,7 +393,7 @@ class Search implements SearchInterface
                 }
                 if (empty($result->getPrices())) {
                     continue;
-                }
+                }*/
 
                 //check windows
                 /*if (!$this->checkWindows($result)) {
@@ -412,8 +417,8 @@ class Search implements SearchInterface
                 }
             }
         }
-        
-        return array_values($results);;
+        dump($this->c);
+        return array_values($results);
     }
 
     public function checkWindows(SearchResult $result)

@@ -4,16 +4,26 @@ namespace MBH\Bundle\PackageBundle\Lib;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class SearchQuery
 {
     /**
-     * @var \DateTime 
+     * @var bool
+     */
+    public $memcached = true;
+
+    /**
+     * @var \DateTime
+     * @Assert\NotNull(message="form.searchType.check_in_date_not_filled")
+     * @Assert\Date()
      */
     public $begin;
     
     /**
-     * @var \DateTime 
+     * @var \DateTime
+     * @Assert\NotNull(message="orm.searchType.check_out_date_not_filled")
+     * @Assert\Date()
      */
     public $end;
 
@@ -29,11 +39,23 @@ class SearchQuery
     
     /**
      * @var int
+     * @Assert\NotNull(message="form.searchType.adults_amount_not_filled")
+     * @Assert\Range(
+     *     min = 0,
+     *     max = 10,
+     *     minMessage = "form.searchType.adults_amount_less_zero"
+     * )
      */
     public $adults;
     
     /**
      * @var int
+     * @Assert\NotNull(message="orm.searchType.children_amount_not_filled")
+     * @Assert\Range(
+     *     min = 0,
+     *     max = 6,
+     *     minMessage = "form.searchType.children_amount_less_zero"
+     * )
      */
     public $children;
 
@@ -93,6 +115,18 @@ class SearchQuery
      * @var mixed
      */
     public $tariff;
+
+    /**
+     * Additional days for search
+     * @var int
+     * @Assert\Range(
+     *     min = 0,
+     *     max = 15,
+     *     maxMessage = "form.searchType.range_validator",
+     *     minMessage = "form.searchType.range_validator"
+     * )
+     */
+    public $range = 0;
 
     /**
      * @var RoomTypes ids

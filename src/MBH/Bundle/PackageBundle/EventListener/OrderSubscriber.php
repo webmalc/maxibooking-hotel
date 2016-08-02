@@ -123,6 +123,7 @@ class OrderSubscriber implements EventSubscriber
                 if (isset($uow->getDocumentChangeSet($entity)['accommodation'])) {
                     $this->container->get('mbh.cache')->clear('accommodation_rooms');
                 }
+                $this->container->get('mbh.cache')->clear('room_cache_fetch');
             }
 
         }
@@ -152,6 +153,7 @@ class OrderSubscriber implements EventSubscriber
                     $package->getBegin(), $end->modify('-1 day'), $package->getRoomType(), $package->getTariff(), false
                 );
                 $this->container->get('mbh.cache')->clear('accommodation_rooms');
+                $this->container->get('mbh.cache')->clear('room_cache_fetch');
             }
             $entity->setPrice(0);
             $dm->persist($entity);

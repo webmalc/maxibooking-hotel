@@ -101,6 +101,7 @@ form.searchType.forceBooking: Игнорировать условия и огр�
 form.searchType.children_ages: Возраст детей
 form.searchType.children_amount_less_zero: Количество детей не может быть меньше нуля
 form.searchType.children_amount_not_filled: Не заполнено количество детей
+form.searchType.range: Дополнительные дни поиска
 form.touristType.surname: Фамилия
 form.touristType.general_info: Общая информация
 form.touristType.placeholder_surname: Иванов
