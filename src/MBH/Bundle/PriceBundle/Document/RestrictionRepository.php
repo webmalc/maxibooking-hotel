@@ -172,7 +172,10 @@ class RestrictionRepository extends DocumentRepository
         $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs)->getQuery()->execute();
 
         if (!$grouped) {
-            $memcached->set(iterator_to_array($caches), 'restrictions_fetch', func_get_args());
+            if ($memcached) {
+                $memcached->set(iterator_to_array($caches), 'restrictions_fetch', func_get_args());
+            }
+
             return $caches;
         }
         $result = [];

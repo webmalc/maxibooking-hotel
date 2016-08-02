@@ -42,7 +42,7 @@ class Cache
         $memcached->addServer('localhost', 11211);
 
         $prefix = $this->globalPrefix . '_' . $prefix ?? $this->globalPrefix;
-        $keys = array_filter($memcached->getAllKeys(), function ($val) use ($prefix) {
+        $keys = array_filter($memcached->getAllKeys() ? $memcached->getAllKeys() : [], function ($val) use ($prefix) {
             $length = strlen($prefix);
             return (substr($val, 0, $length) === $prefix);
         });
