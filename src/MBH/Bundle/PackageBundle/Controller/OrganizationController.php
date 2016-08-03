@@ -148,11 +148,14 @@ class OrganizationController extends Controller
      */
     public function editAction(Organization $organization, Request $request)
     {
+        $imageUrl = $organization->getStamp() ? $this->generateUrl('stamp', ['id' => $organization->getId()]) : null;
+
         $form = $this->createForm(new OrganizationType($this->dm), $organization, [
             'typeList' => $this->container->getParameter('mbh.organization.types'),
             'id' => $organization->getId(),
             'type' => $organization->getType(),
-            'scenario' => OrganizationType::SCENARIO_EDIT
+            'scenario' => OrganizationType::SCENARIO_EDIT,
+            'imageUrl' => $imageUrl
         ]);
 
         if ($request->isMethod('PUT')) {
@@ -166,7 +169,7 @@ class OrganizationController extends Controller
                 $size = new \Imagine\Image\Box(400, 200);
                 $mode = \Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
                 if($stamp = $organization->getStamp() and $stamp instanceof UploadedFile) {
-                    $image = $imagine->open($stamp->getPathname())->thumbnail($size, $mode)->save($stamp->getPathname(), [
+                    $imagine->open($stamp->getPathname())->thumbnail($size, $mode)->save($stamp->getPathname(), [
                         'format' => $stamp->getClientOriginalExtension()
                     ]);
 

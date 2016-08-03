@@ -49,6 +49,12 @@ class OrganizationType extends AbstractType
             ]);
         }
 
+        if($options['imageUrl']) {
+            $logoHelp = '<br><a href="'.$options['imageUrl'].'" class="fancybox">Просмотреть изображение</a>';
+        } else {
+            $logoHelp = '';
+        }
+
         $personalGroup = 'form.organizationType.group.personal';
         $addGroup = 'form.organizationType.group.add';
         $registerGroup = 'form.organizationType.group.registration';
@@ -285,7 +291,7 @@ class OrganizationType extends AbstractType
                         'minHeight' => 200,*/
                     ])
                 ],
-                'help' => 'Скан печати для генерации документов (400x200 пикселей)'
+                'help' => 'Скан печати для генерации документов (400x200 пикселей)' . $logoHelp
             ]);
         }
     }
@@ -298,6 +304,7 @@ class OrganizationType extends AbstractType
             'type' => null,
             'scenario' => self::SCENARIO_NEW,
             'isFull' => true,
+            'imageUrl' => null
         ]);
     }
 

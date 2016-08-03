@@ -158,6 +158,7 @@ class OrderManager
         $query->forceRoomTypes = true;
         $query->setPromotion($new->getPromotion() ? $new->getPromotion() : false);
         $query->forceBooking = $new->getIsForceBooking();
+        $query->memcached = false;
 
         $results = $this->container->get('mbh.package.search')->search($query);
 
@@ -320,6 +321,7 @@ class OrderManager
         $query->accommodations = (boolean)$data['accommodation'];
         $query->forceRoomTypes = true;
         $query->forceBooking = !empty($data['forceBooking']);
+        $query->memcached = false;
 
         $results = $this->container->get('mbh.package.search')->search($query);
 

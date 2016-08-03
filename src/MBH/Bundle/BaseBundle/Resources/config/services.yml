@@ -185,7 +185,7 @@ services:
 
     mbh.cache:
             class: MBH\Bundle\BaseBundle\Service\Cache
-            arguments: ['%mbh_cache%', '@memcache.default']
+            arguments: ['%mbh_cache%']
 
     #mbh.menu.voter.request:
     #    class: MBH\Bundle\BaseBundle\Menu\RequestContentIdentityVoter

@@ -60,8 +60,8 @@ class Search implements SearchInterface
         $this->now = new \DateTime('midnight');
         $this->manager = $container->get('mbh.hotel.room_type_manager');
         $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        $this->memcached = $memcached = $this->container->get('mbh.cache');
         $this->hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
+        $this->memcached = $this->container->get('mbh.cache');
     }
 
     /**
@@ -117,7 +117,8 @@ class Search implements SearchInterface
 
         //roomCache with tariffs
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
-            $query->begin, $end, $query->tariff ? $query->tariff->getHotel() : null, $query->roomTypes
+            $query->begin, $end, $query->tariff ? $query->tariff->getHotel() : null,
+            $query->roomTypes, false, false, $this->memcached
         );
 
         //group caches
@@ -199,7 +200,7 @@ class Search implements SearchInterface
             }
 
             $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
-                $query->begin, $query->end, null, $query->roomTypes, [], false, $this->memcached
+                $query->begin, $query->end, null, $query->roomTypes, [$restrictionsTariff->getId()], false, $this->memcached
             );
 
             foreach ($restrictions as $restriction) {
@@ -413,8 +414,7 @@ class Search implements SearchInterface
                 }
             }
         }
-        
-        return array_values($results);;
+        return array_values($results);
     }
 
     public function checkWindows(SearchResult $result)
@@ -479,8 +479,6 @@ class Search implements SearchInterface
             if ($date < $result->getEnd() && $date >= $result->getBegin()) {
                 $packages += 1;
             }
-
-            dump($packages);
         }
         return true;
     }

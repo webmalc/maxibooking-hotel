@@ -22,15 +22,16 @@ class Cache
     private $isEnabled;
 
     /**
-     * @var MemcacheInterface
+     * @var \Memcached
      */
-    private $memcache;
+    private $memcached;
 
-    public function __construct(array $params, MemcacheInterface $memcache)
+    public function __construct(array $params)
     {
         $this->globalPrefix = $params['prefix'];
         $this->isEnabled = $params['is_enabled'];
-        $this->memcache = $memcache;
+        $this->memcached = new \Memcached();
+        $this->memcached->addServer('localhost', 11211);;
     }
 
     /**
@@ -38,17 +39,16 @@ class Cache
      */
     public function clear(string $prefix = null)
     {
-        $memcached = new \Memcached();
-        $memcached->addServer('localhost', 11211);
+        $memcached = $this->memcached;
 
         $prefix = $this->globalPrefix . '_' . $prefix ?? $this->globalPrefix;
-        $keys = array_filter($memcached->getAllKeys(), function ($val) use ($prefix) {
+        $keys = array_filter($memcached->getAllKeys() ? $memcached->getAllKeys() : [], function ($val) use ($prefix) {
             $length = strlen($prefix);
             return (substr($val, 0, $length) === $prefix);
         });
 
         array_walk($keys, function ($val) {
-            $this->memcache->delete($val);
+            $this->memcached->delete($val);
         });
     }
 
@@ -95,7 +95,7 @@ class Cache
             return $this;
         }
 
-        $this->memcache->set($this->generateKey($prefix, $keys), $value, 0, self::LIFETIME);
+        $this->memcached->set($this->generateKey($prefix, $keys), $value, self::LIFETIME);
 
         return $this;
     }
@@ -111,6 +111,6 @@ class Cache
             return false;
         }
 
-        return $this->memcache->get($this->generateKey($prefix, $keys));
+        return $this->memcached->get($this->generateKey($prefix, $keys));
     }
 }
