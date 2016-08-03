@@ -98,7 +98,7 @@ class SearchType extends AbstractType
                 'required' => false,
                 'mapped' => true,
                 'error_bubbling' => true,
-                'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 15],
+                'attr' => ['class' => 'input-xxs only-int not-null', 'min' => 0, 'max' => 10],
             ))
             ->add('adults', 'integer', [
                 'label' => 'form.searchType.adults',

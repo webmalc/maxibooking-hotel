@@ -90,7 +90,6 @@ class RestrictionRepository extends DocumentRepository
             $qb->field('hotel.id')->equals($hotel->getId());
         }
         // begin & end
-        // begin & end
         if (!empty($begin)) {
             $qb->field('date')->gte($begin);
         }

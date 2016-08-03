@@ -121,7 +121,7 @@ class SearchQuery
      * @var int
      * @Assert\Range(
      *     min = 0,
-     *     max = 15,
+     *     max = 10,
      *     maxMessage = "form.searchType.range_validator",
      *     minMessage = "form.searchType.range_validator"
      * )
