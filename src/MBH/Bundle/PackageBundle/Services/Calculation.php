@@ -173,12 +173,16 @@ class Calculation
             } else {
                 $ids = [$mergingTariff->getId()];
             }
-            $mergingTariffsPrices += $this->dm->getRepository('MBHPriceBundle:PriceCache')
+            $mergingTariff = $this->dm->getRepository('MBHPriceBundle:PriceCache')
                 ->fetch(
                     $begin, $end, $hotel, [$roomTypeId],
                     $ids,
                     true, $this->manager->useCategories, $memcached
                 );
+
+            if ($mergingTariff) {
+                $mergingTariffsPrices += $mergingTariff;
+            }
         }
 
         if (!isset($priceCaches[$roomTypeId][$tariffId])) {

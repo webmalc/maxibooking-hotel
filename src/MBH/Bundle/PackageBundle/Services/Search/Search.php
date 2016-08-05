@@ -117,7 +117,7 @@ class Search implements SearchInterface
         //roomCache with tariffs
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
             $query->begin, $end, $query->tariff ? $query->tariff->getHotel() : null,
-            $query->roomTypes, false, false, $this->memcached
+            $query->roomTypes, false, false/*, $this->memcached*/
         );
 
         //group caches
@@ -199,7 +199,7 @@ class Search implements SearchInterface
             }
 
             $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
-                $query->begin, $query->end, null, $query->roomTypes, [$restrictionsTariff->getId()], false, $this->memcached
+                $query->begin, $query->end, null, $query->roomTypes, $restrictionsTariff ? [$restrictionsTariff->getId()] : [], false, $this->memcached
             );
 
             foreach ($restrictions as $restriction) {
@@ -247,6 +247,7 @@ class Search implements SearchInterface
                 if ($restriction->getClosedOnArrival() && $restriction->getDate()->format('d.m.Y') == $query->begin->format('d.m.Y')) {
                     $delete = true;
                 }
+
                 //closed
                 if ($restriction->getClosed()) {
                     $delete = true;
