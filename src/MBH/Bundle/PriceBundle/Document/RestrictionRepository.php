@@ -90,7 +90,6 @@ class RestrictionRepository extends DocumentRepository
             $qb->field('hotel.id')->equals($hotel->getId());
         }
         // begin & end
-        // begin & end
         if (!empty($begin)) {
             $qb->field('date')->gte($begin);
         }
@@ -172,7 +171,10 @@ class RestrictionRepository extends DocumentRepository
         $caches = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs)->getQuery()->execute();
 
         if (!$grouped) {
-            $memcached->set(iterator_to_array($caches), 'restrictions_fetch', func_get_args());
+            if ($memcached) {
+                $memcached->set(iterator_to_array($caches), 'restrictions_fetch', func_get_args());
+            }
+
             return $caches;
         }
         $result = [];

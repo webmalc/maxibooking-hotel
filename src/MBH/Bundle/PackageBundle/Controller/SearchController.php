@@ -45,7 +45,10 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
      */
     public function indexAction(Request $request)
     {
-        $form = $this->createForm(new SearchType(), [], [
+        $query = new SearchQuery();
+        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $query->range = $clientConfig ? $clientConfig->getSearchDates() : 0;
+        $form = $this->createForm(new SearchType(), $query, [
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,
             'hotel' => $this->hotel,
@@ -81,7 +84,9 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
      */
     public function resultsAction(Request $request)
     {
-        $form = $this->createForm(new SearchType(), [], [
+        $query = new SearchQuery();
+        $query->accommodations = true;
+        $form = $this->createForm(new SearchType(), $query, [
             'security' => $this->container->get('mbh.hotel.selector'),
             'dm' => $this->dm,
             'hotel' => $this->hotel,
@@ -93,24 +98,13 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
             $form->submit($request);
 
             if ($form->isValid()) {
-                $data = $form->getData();
-
-                //Set query
-                $query = new SearchQuery();
-                $query->begin = $data['begin'];
-                $query->end = $data['end'];
-                $query->adults = (int)$data['adults'];
-                $query->children = (int)$data['children'];
-                $query->room = $data['room'];
-                $query->accommodations = true;
-                $query->forceBooking = $data['forceBooking'];
-
-                !empty($request->get('s')['children_age']) ? $childrenAges = $request->get('s')['children_age'] : $childrenAges = [];
-                $query->setChildrenAges($childrenAges);
+                $query->setChildrenAges(
+                    !empty($request->get('s')['children_age']) ? $request->get('s')['children_age'] : []
+                );
 
                 $hotelRepository = $this->dm->getRepository('MBHHotelBundle:Hotel');
 				
-                foreach ($data['roomType'] as $id) {
+                foreach ($form['roomType']->getData() as $id) {
                     if (mb_stripos($id, 'allrooms_') !== false) {
                         $hotel = $hotelRepository->find(str_replace('allrooms_', '', $id));
 
@@ -126,15 +120,19 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                 }
 
                 $groupedResult = $this->get('mbh.package.search')
-                    ->setAdditionalDates()
+                    ->setAdditionalDates($query->range)
                     ->setWithTariffs()
                     ->search($query);
-            };
+            } else {
+                $errors = $form->getErrors();
+                $groupedResult = [];
+            }
         }
 
         return [
             'results' => $groupedResult,
             'query' => $query,
+            'errors' => isset($errors) ? $errors : null,
             'facilities' => $this->get('mbh.facility_repository')->getAll(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons')
         ];

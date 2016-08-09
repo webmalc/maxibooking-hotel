@@ -61,7 +61,7 @@ class ClientConfig extends Base
      * @ODM\Integer()
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
-     * @Assert\Range(min=0, max=20)
+     * @Assert\Range(min=0, max=10)
      */
     protected $searchDates = 0;
 

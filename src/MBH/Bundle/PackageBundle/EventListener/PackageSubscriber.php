@@ -215,6 +215,7 @@ class PackageSubscriber implements EventSubscriber
             }
 
             $this->container->get('mbh.cache')->clear('accommodation_rooms');
+            $this->container->get('mbh.cache')->clear('room_cache_fetch');
         }
         return;
     }
