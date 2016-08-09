@@ -1,6 +1,6 @@
 {% extends 'MBHRestaurantBundle:DishOrder:layout.html.twig' %}
 
-{% set small_title = 'restaurant.dishorder.actions.edit'|trans %}
+{% set small_title = 'restaurant.dishorder.actions.edit'|trans ~ ' #'~order.id|default('') %}
 {%  set layout = 'box' %}
 
 {% block content %}

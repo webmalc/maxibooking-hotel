@@ -44,7 +44,7 @@ class IngredientsCategoryData implements FixtureInterface
         return [
             'Овощи',
             'Фрукты',
-            'Зелень',
+            'Напитки',
         ];
     }
 }

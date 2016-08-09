@@ -57,7 +57,7 @@ class DishOrderItemEmmbeddedType extends AbstractType
     {
         $builder
             ->add('amount', TextType::class, [
-                'help' => 'restaurant.amount',
+                'help' => 'restaurant.dishorder.form.amount.help',
                 'attr' => [
                     'class' => 'amount int-amount-spinner',
                     'placeholder' => 'restaurant.dishorder.form.amount.placeholder'

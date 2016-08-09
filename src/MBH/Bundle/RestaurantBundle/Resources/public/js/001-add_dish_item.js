@@ -1,18 +1,15 @@
-/* global document, $ */
-/**
- *
- * Created by zalex on 24.06.16.
- */
+/* global $, jQUERY, document */
+
 $(function () {
-    "use strict"
+    "use strict";
 // tariff service
-    var $addDishItemButton = $('.dish-item-ingredients a'),
+    var $addDishItemButton = $('.dish-item-ingredients a.add'),
         prototype = $addDishItemButton.data('prototype'),
         $servicesList = $('.dish-item-ingredients ul'),
         serviceIndex = $servicesList.find('li').length;
     prototype = '<li>' + prototype + '</li>';
 
-    $servicesList.on('click', '.fa-times', function () {
+    $servicesList.on('click', 'a.delete', function () {
         $(this).closest('li').remove();
         $(document).trigger('prototypeRemoved');
     });

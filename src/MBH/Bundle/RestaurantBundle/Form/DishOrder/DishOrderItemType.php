@@ -10,7 +10,6 @@ namespace MBH\Bundle\RestaurantBundle\Form\DishOrder;
 
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\DataTransformer\EntityToIdTransformer;
 use MBH\Bundle\RestaurantBundle\Document\DishOrderItem;
@@ -22,7 +21,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DishOrderItemType extends AbstractType
@@ -40,12 +38,12 @@ class DishOrderItemType extends AbstractType
     {
         $selector = $this->container->get('mbh.hotel.selector');
         $builder
-            ->add('id', TextType::class, [
+            /*->add('id', TextType::class, [
                 'label' => 'restaurant.dishorder.form.id.label',
                 'read_only' => true,
                 'required' => false,
                 'group' => 'restaurant.group'
-            ])
+            ])*/
             ->add('table', DocumentType::class, [
                 'label' => 'restaurant.dishorder.form.table.label',
                 'class' => 'MBH\Bundle\RestaurantBundle\Document\Table',
@@ -57,12 +55,13 @@ class DishOrderItemType extends AbstractType
                 },
                 'choice_label' => 'name',
                 'required' => false,
-                'attr' => ['placeholder' => 'restaurant.dishorder.form.table.placeholder', 'class' => 'plain-html'],
+                'attr' => ['placeholder' => 'restaurant.dishorder.form.table.placeholder'],
                 'help' => 'restaurant.dishorder.form.table.help',
                 'group' => 'restaurant.group'
             ])
             ->add('dishes', CollectionType::class, [
                 'entry_type' => DishOrderItemEmmbeddedType::class,
+                'required' => false,
                 'label' => 'restaurant.dishorder.form.dishes.label',
                 'allow_add' => true,
                 'allow_delete' => true,
@@ -74,12 +73,12 @@ class DishOrderItemType extends AbstractType
                 'attr' => [
                     'class' => 'order-select'
                 ],
+                'help' => 'restaurant.dishorder.form.order.help',
                 'required' => false,
                 'group' => 'restaurant.descr'
 
 
             ])
-            /* mappded  я здесь указываю для того чтобы вызывался метод getPrice  убираю его в PreSubmit чтоб не вызывать метод setPrice */
             ->add('price', TextType::class,[
                 'label' => 'restaurant.dishorder.form.price.label',
                 'required' => false,
@@ -92,12 +91,12 @@ class DishOrderItemType extends AbstractType
                 'required' => false,
                 'group' => 'restaurant.pay'
                 ])
-            ->addEventListener(
+            /*->addEventListener(
                 FormEvents::PRE_SET_DATA,
                 [
                     $this, 'onPreSetData'
                 ]
-            )
+            )*/
            ;
 
         $dm = $this->container->get('doctrine.odm.mongodb.document_manager');

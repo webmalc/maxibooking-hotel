@@ -62,6 +62,8 @@ class DishOrderItem extends Base
     
     /**
      * @ODM\EmbedMany(targetDocument="DishOrderItemEmbedded" )
+     * @Assert\NotBlank()
+     * @Assert\NotNull()
      *
      */
     protected $dishes;

@@ -2,14 +2,14 @@
 {% block form_row %}
     <div class="dish-item-ingredients form-group form-inline">
         {{ form_label(form) }}
-        <div class="col-sm-6">
+        <div class="col-sm-10">
             <ul>
                 {% if form|length %}
                     {% for dishItem in form %}
                         <li>
                             <div class='dish-ingredient-amount'>
                                 <div> {{ form_widget(dishItem.amount) }} </div>
-                                <small>{{ dishItem.amount.vars.help }}</small>
+                                <small>{{ dishItem.amount.vars.help|trans({},'messages') }}</small>
                             </div>
                             <div class='dish-ingredient-list-name'>
                                 <div>{{ form_widget(dishItem.dishMenuItem) }} </div>
@@ -17,7 +17,7 @@
                                     <small class="currentprice"></small>
                                 </span>
                             </div>
-                            <i class="fa fa-times"></i>
+                            <div>&nbsp;&nbsp;<a class="delete btn btn-xs btn-danger"><i class="fa fa-times"></i> {{ 'crud.delete'|trans }}</a></div>
                         </li>
                     {% endfor %}
                 {% endif %}
@@ -33,8 +33,8 @@
                         <small class='currentprice'></small>
                     </span>
                 </div>
-                {{ '<i class="fa fa-times"></i> '|e }}"
-               class="btn btn-xs btn-success"><i class="fa fa-plus"></i> {{ 'crud.add'|trans }}</a>
+                {{ ('<div>&nbsp;&nbsp;<a class="delete btn btn-xs btn-danger"><i class="fa fa-times"></i>'~'crud.delete'|trans~'</a></div>')|e }}"
+               class="add btn btn-xs btn-success"><i class="fa fa-plus"></i> {{ 'crud.add'|trans }}</a>
         </div>
     </div>
 {% endblock %}

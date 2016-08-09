@@ -1,48 +1,62 @@
 {% extends "MBHRestaurantBundle:DishOrder:layout.html.twig" %}
-{% set small_title = 'restaurant.dishorder.actions.showfreeze.small_title'|trans %}
+{% set small_title = 'restaurant.dishorder.actions.showfreeze.small_title'|trans ~ ' #' ~ order.id %}
 {% set layout = "box" %}
 
 {% block content %}
     <div class="box-header"></div>
     <div class="box-body">
-        <table class="table table-striped not-auto-datatable table-condensed text-center">
-            <thead>
-            <tr>
-                <th class="td-xs"></th>
-                <th class="td-xs">{{ 'restaurant.dishorder.table.number'|trans }}</th>
-                <th class="td-xs">{{ 'restaurant.dishorder.table.price'|trans }} <i class="{{ currency().icon }}"></i></th>
-                <th class="td-md">{{ 'restaurant.dishorder.table.content'|trans }}</th>
-                <th class="td-xs">{{ 'restaurant.dishorder.table.freezed'|trans }}</th>
-                <th class="td-xs">{{ 'restaurant.dishorder.table.payer'|trans }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td><i class="fa fa-cutlery"></i></td>
-                <td>{{ order.id }}</td>
-                <td>{{ order.price }}</td>
-                <td>
-                    {% for dish in order.dishes %}
+        <div>{{ 'restaurant.dishorder.table.number'|trans }}: {{ order.id }} </div>
+        <div>{{ 'restaurant.dishorder.table.price'|trans }}: {{ order.price|number_format('2') ~ currency().text }}</div>
+        <div>{{ 'restaurant.dishorder.table.content'|trans }}:
+            {% for dish in order.dishes %}
+            <div class="dish">
+                <small class="label bg-green badge-sidebar-right badge-sidebar-margin">{{ dish.amount }}</small>
+                {{ dish.dishitemname }}
+                <span>{{ dish.fixedprice|number_format(2)~currency().text }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        <div>{{ 'restaurant.dishorder.table.freezed'|trans }}: <button class="btn btn-default btn-xs">{{ 'restaurant.dishorder.status.payed'|trans }}</button></div>
+        <div>{{ 'restaurant.dishorder.table.payer'|trans }}: {{ order.payer|trans|capitalize }}</div>
 
-                        <div class="dish">
-                            <small class="label bg-green badge-sidebar-right badge-sidebar-margin">{{ dish.amount }}</small>
-                            {{ dish.dishitemname }}
-                            <span>{{ dish.fixedprice }}</span>
-                        </div>
-                    {% endfor %}
-                </td>
-                <td>
-                    {% if order.isFreezed %}
-                        <button class="btn btn-success">Оплачен</button>
-                    {% endif %}
-                </td>
-                <td>
-                    {{ order.payer|trans|capitalize }}
-                </td>
+        {#<table class="table table-striped not-auto-datatable table-condensed text-center">#}
+            {#<thead>#}
+            {#<tr>#}
+                {#<th class="td-xs"></th>#}
+                {#<th class="td-xs">{{ 'restaurant.dishorder.table.number'|trans }}</th>#}
+                {#<th class="td-xs">{{ 'restaurant.dishorder.table.price'|trans }} <i class="{{ currency().icon }}"></i></th>#}
+                {#<th class="td-md">{{ 'restaurant.dishorder.table.content'|trans }}</th>#}
+                {#<th class="td-xs">{{ 'restaurant.dishorder.table.freezed'|trans }}</th>#}
+                {#<th class="td-xs">{{ 'restaurant.dishorder.table.payer'|trans }}</th>#}
+            {#</tr>#}
+            {#</thead>#}
+            {#<tbody>#}
+            {#<tr>#}
+                {#<td><i class="fa fa-cutlery"></i></td>#}
+                {#<td>{{ order.id }}</td>#}
+                {#<td style="text-align: right;">{{ order.price|number_format('2') }}</td>#}
+                {#<td>#}
+                    {#{% for dish in order.dishes %}#}
 
-            </tr>
-            </tbody>
-        </table>
+                        {#<div class="dish">#}
+                            {#<small class="label bg-green badge-sidebar-right badge-sidebar-margin">{{ dish.amount }}</small>#}
+                            {#{{ dish.dishitemname }}#}
+                            {#<span>{{ dish.fixedprice|number_format(2) }}</span>#}
+                        {#</div>#}
+                    {#{% endfor %}#}
+                {#</td>#}
+                {#<td>#}
+                    {#{% if order.isFreezed %}#}
+                        {#<button class="btn btn-default btn-xs">Оплачен</button>#}
+                    {#{% endif %}#}
+                {#</td>#}
+                {#<td>#}
+                    {#{{ order.payer|trans|capitalize }}#}
+                {#</td>#}
+
+            {#</tr>#}
+            {#</tbody>#}
+        {#</table>#}
     </div>
     <div class="box-footer">
         <a href='{{ path('restaurant_dishorder') }}' class='btn btn-default btn-md' title='{{ 'restaurant.dishorder.actions.tolist'|trans }}' data-toggle='tooltip'><i class='fa fa-list-alt'></i> {{ 'restaurant.dishorder.actions.tolist'|trans }}</a>

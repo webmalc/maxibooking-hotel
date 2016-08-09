@@ -137,6 +137,7 @@ restaurant:
           label:          Процент маржи
           disabled:       Установлена маржа, цена формируется автоматически.
         amount:
+          help:           Количество
           placeholder:    Количество ингредиента
         dishIngredients:
           label:          Ингредиенты блюда
@@ -144,6 +145,8 @@ restaurant:
           label:            Показать
           help:             Показывать ли блюдо в списке формирования заказа
   dishorder:
+    status:
+      payed:            Оплачен
     payer:
       noname:             нет привязки к брони
     title:                Заказы
@@ -187,6 +190,7 @@ restaurant:
         placeholder:      Стоимость заказа считается автоматически
         help:             Поле вывода стоимости заказа
       amount:
+        help:             Количество
         placeholder:      Количество блюд
       dishes:
         label:            Список блюд
@@ -194,6 +198,7 @@ restaurant:
         help:
       order:
         label:            Плательщик
+        help:             Введите имя брони или комнаты
       isfreezed:
         label:            Оплата
   table:

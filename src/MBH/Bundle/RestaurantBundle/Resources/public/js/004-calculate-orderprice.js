@@ -28,8 +28,8 @@ $(function () {
                 dishId = $dish.val(),
                 dishPriceField = $dish.parent().siblings().find('small'),
                 dishData = dishes[dishId];
-            if (typeof (dishData) == 'undefined') {
-                console.info('Нет блюд!');
+            if (dishData === 'undefined') {
+
                 return false;
             }
             var html = $.number(dishData.price, 2) + ' ';

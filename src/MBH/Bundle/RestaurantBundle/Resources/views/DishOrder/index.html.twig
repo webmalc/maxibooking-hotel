@@ -33,16 +33,6 @@
     {% endembed %}
     <div class="box-tools pull-rigth">
 
-        {% if is_granted('ROLE_RESTAURANT_DISHORDER_NEW') %}
-            <div class="btn-list spacer-bottom text-right">
-                <div class="btn">
-                    <a href="{{ path('restaurant_dishorder_new') }}" class="btn btn-sm btn-success"
-                       data-toggle="tooltip"
-                       data-placement="bottom" title="{{ 'restaurant.dishorder.actions.add'|trans|capitalize }}">
-                        <i class="fa fa-plus"></i> {{ 'restaurant.dishorder.actions.add'|trans|capitalize }}</a>
-                </div>
-            </div>
-        {% endif %}
 
     </div>
 
@@ -66,8 +56,8 @@
 
             </tbody>
         </table>
-
-    </div> <!-- /.box-body -->
+        </div> <!-- /.box-body -->
+    {% include 'MBHBaseBundle:Actions:list.html.twig' with {'route': 'restaurant_dishorder_new', 'role': 'RESTAURANT_DISHORDER'} %}
 {% endblock %}
 
 
