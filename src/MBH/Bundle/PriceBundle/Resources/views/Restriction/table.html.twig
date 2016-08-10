@@ -30,15 +30,15 @@
                 </tr>
 
                 {% set categories = {
-                    'minStayArrival': 'Мин. длина брони (заезд)',
-                    'maxStayArrival': 'Макс. длина брони (заезд)',
-                    'minStay': 'Мин. длина брони (сквозное)',
-                    'maxStay': 'Макс. длина брони (сквозное)',
-                    'minBeforeArrival': 'Мин. дней до заезда',
-                    'maxBeforeArrival': 'Макс. дней до заезда',
-                    'closedOnArrival': 'Нет заезда',
-                    'closedOnDeparture': 'Нет выезда',
-                    'closed': 'Закрыто',
+                    'minStayArrival': 'price.views.restriction.table.minstayArrival'|trans({},'MBHPriceBundle'),
+                    'maxStayArrival': 'price.views.restriction.table.maxStayArrival'|trans({},'MBHPriceBundle'),
+                    'minStay': 'price.views.restriction.table.minStay'|trans({},'MBHPriceBundle'),
+                    'maxStay': 'price.views.restriction.table.maxStay'|trans({},'MBHPriceBundle'),
+                    'minBeforeArrival': 'price.views.restriction.table.minBeforeArrival'|trans({},'MBHPriceBundle'),
+                    'maxBeforeArrival': 'price.views.restriction.table.maxBeforeArrival'|trans({},'MBHPriceBundle'),
+                    'closedOnArrival': 'price.views.restriction.table.closedOnArrival'|trans({},'MBHPriceBundle'),
+                    'closedOnDeparture': 'price.views.restriction.table.closedOnDeparture'|trans({},'MBHPriceBundle'),
+                    'closed': 'price.views.restriction.table.closed'|trans({},'MBHPriceBundle'),
                 } %}
 
                 {% for categoryId, category in categories %}

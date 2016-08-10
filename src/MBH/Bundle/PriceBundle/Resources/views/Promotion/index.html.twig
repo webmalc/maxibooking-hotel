@@ -6,11 +6,11 @@
     <thead>
         <tr>
             <th class="td-xxs"></th>
-            <th>Название</th>
-            <th class="text-center td-md">Индивидуальная</th>
-            <th class="td-md">Скидка</th>
-            <th class="td-sm"><i class="fa fa-male" data-toggle="tooltip" title="Взрослые бесплатно"></i></th>
-            <th class="td-sm"><i class="fa fa-child" data-toggle="tooltip" title="Дети бесплатно"></i></th>
+            <th>{{ 'price.views.promotion.index.name'|trans({},'MBHPriceBundle') }}</th>
+            <th class="text-center td-md">{{ 'price.views.promotion.index.individual'|trans({},'MBHPriceBundle') }}</th>
+            <th class="td-md">{{ 'price.views.promotion.index.discount'|trans({},'MBHPriceBundle') }}</th>
+            <th class="td-sm"><i class="fa fa-male" data-toggle="tooltip" title="{{ 'price.views.promotion.index.adults'|trans({},'MBHPriceBundle') }}"></i></th>
+            <th class="td-sm"><i class="fa fa-child" data-toggle="tooltip" title="{{ 'price.views.promotion.index.children'|trans({},'MBHPriceBundle') }}"></i></th>
             <th class="td-sm"></th>
         </tr>
     </thead>
@@ -23,7 +23,7 @@
             </td>
             <td class="text-center">
                 {% if promotion.isIndividual %}
-                    <span class="label label-success">Да</span>
+                    <span class="label label-success">{{ 'price.views.promotion.index.yes'|trans({},'MBHPriceBundle') }}</span>
                 {% endif %}
             </td>
             <td>
@@ -41,12 +41,12 @@
             <td class="text-center">
                 <div class='btn-list'>
                     {% if app.security.granted('ROLE_PROMOTION_EDIT') %}
-                        <a href='{{ path('promotion_edit', {'id': promotion.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
+                        <a href='{{ path('promotion_edit', {'id': promotion.id }) }}' class='btn btn-success btn-xs' title='{{ 'price.views.promotion.index.edit'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'>
                             <i class='fa fa-pencil-square-o'></i>
                         </a>
                     {% endif %}
                     {% if app.security.granted('ROLE_PROMOTION_DELETE') %}
-                        <a href='{{ path('promotion_delete', {'id': promotion.id }) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
+                        <a href='{{ path('promotion_delete', {'id': promotion.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'price.views.promotion.index.delete'|trans({},'MBHPriceBundle') }}' data-toggle='tooltip'>
                             <i class='fa fa-trash-o'></i>
                         </a>
                     {% endif %}
