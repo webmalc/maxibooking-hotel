@@ -9,6 +9,7 @@
 namespace MBH\Bundle\BaseBundle\Command;
 
 
+use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Bundle\FrameworkBundle\Translation\TranslationLoader;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -28,6 +29,7 @@ use Symfony\Component\Translation\Catalogue\OperationInterface;
 use Symfony\Component\Translation\Catalogue\TargetOperation;
 use Symfony\Component\Translation\Extractor\ChainExtractor;
 use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Component\Translation\Writer\TranslationWriter;
 
 class TranslatorCommand extends ContainerAwareCommand
 {
@@ -51,7 +53,6 @@ EOF
     {
         $fs = new Filesystem();
         $finder = new Finder();
-
         $writer = $this->getContainer()->get('translation.writer');
 
         /** @var Kernel $kernel */
@@ -85,8 +86,11 @@ EOF
         $pattern = '/([А-Яа-яЁё]+\s*)+/u';
         $res = [];
 
+
+
         /** @var SplFileInfo $file */
         foreach ($files as $file) {
+            $changed = false;
             $contents = $file->getContents();
             $arrlines = explode("\n", $contents);
             foreach ($arrlines as &$line) {
@@ -102,6 +106,7 @@ EOF
                     $resultLine = str_replace($originalText, $toPattern, $line);
                     $output->writeln('Результирующая строка '. $resultLine);
                     if ($helper->ask($input, $output, $question)) {
+                        $changed = true;
                         $line = $resultLine;
                         $res[] = [
                             'orig' => $originalText,
@@ -109,44 +114,28 @@ EOF
 //                            'pathinfile' => 'Тут сформировать путь до перевода',
 //                            'translate' => 'А тут сам перевод'
                         ];
+                        $messages[$fullTranslatePath] =$originalText;
                     };
 
                 }
 
             }
-
-            $newfile = implode('\n', $arrlines);
-            continue;
+            if ($changed) {
+                $output->writeln('Dump File '.$file->getPathname());
+                $newfile = implode("\n", $arrlines);
+//                $fs->dumpFile($file->getPathname(), $newfile );
+            }
 
         }
 
-
-
-
-        return 0;
-        exit;
         $translationsPath = $rootPath.'/Resources/translations';
-
-        $output->writeln(sprintf('Generating "<info>%s</info>" translation files for "<info>%s</info>"', 'ru', $currentName));
-        // load any messages from templates
-        $extractedCatalogue = new MessageCatalogue('ru');
-        $output->writeln('Parsing templates');
-
-        /** @var ChainExtractor $extractor */
-        $extractor = $this->getContainer()->get('translation.extractor');
-        $extractor->setPrefix('');
-        $extractor->extract($rootPath.'/Resources/views/', $extractedCatalogue);
-
-        $currentCatalog = new MessageCatalogue('ru');
-
-
         /** @var TranslationLoader $loader */
+        $catalogue = new MessageCatalogue('ru');
         $loader = $this->getContainer()->get('translation.loader');
-        $loader->loadMessages($translationsPath, $currentCatalog);
-
-//        $operation = $input->getOption('clean')
-//            ? new DiffOperation($currentCatalogue, $extractedCatalogue)
-//            : new MergeOperation($currentCatalogue, $extractedCatalogue);
+        $loader->loadMessages($translationsPath, $catalogue);
+        $catalogue->add($messages);
+        /** @var TranslationWriter $writer */
+        $writer->writeTranslations($catalogue, 'yml', ['path' => $translationsPath, 'default_locale' => $this->getContainer()->getParameter('kernel.default_locale') ] );
 
         return 0;
 
