@@ -11,10 +11,12 @@ namespace MBH\Bundle\BaseBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Bundle\FrameworkBundle\Translation\TranslationLoader;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -60,6 +62,7 @@ EOF
         try {
             /** @var Bundle $foundBundle */
             $foundBundle = $kernel->getBundle($input->getArgument('bundle'));
+            $domainName = str_replace('MBH', '', $foundBundle->getName()).'_test';
             $rootPath = $foundBundle->getPath();
             $currentName = $foundBundle->getName();
         } catch (\InvalidArgumentException $e) {
@@ -72,22 +75,54 @@ EOF
         }
 
 
+        /** @var QuestionHelper $helper */
+        $helper = $this->getHelper('question');
+        $question = new ConfirmationQuestion('Применить изменения?');
+
+        /** @var \Transliterator $transliterator */
+        $transliterator = \Transliterator::create('Russian-Latin/BGN');
         $files = $finder->files()->name('*.twig')->in($rootPath);
         $pattern = '/([А-Яа-яЁё]+\s*)+/u';
         $res = [];
+
         /** @var SplFileInfo $file */
         foreach ($files as $file) {
             $contents = $file->getContents();
             $arrlines = explode("\n", $contents);
-            foreach ($arrlines as $line) {
+            foreach ($arrlines as &$line) {
                 preg_match($pattern, $line, $matches );
                 if ($matches) {
-                    $res[] = [$matches, $file->getPathname()];
+                    $output->writeln('Файл'. $file->getPathname());
+                    $output->writeln('Исходная строка '. $line);
+                    $originalText = $matches[0];
+                    $output->writeln('Найден текст '. $originalText);
+                    $translitText = $transliterator->transliterate(str_replace(' ', '', $originalText));
+                    $fullTranslatePath = strtolower(str_replace('/', '.', $file->getRelativePath())) . '.' . strtolower($translitText);
+                    $toPattern = '{{ \''.$fullTranslatePath.'\'| trans }}';
+                    $resultLine = str_replace($originalText, $toPattern, $line);
+                    $output->writeln('Результирующая строка '. $resultLine);
+                    if ($helper->ask($input, $output, $question)) {
+                        $line = $resultLine;
+                        $res[] = [
+                            'orig' => $originalText,
+                            'pathInDomain' => $fullTranslatePath,
+//                            'pathinfile' => 'Тут сформировать путь до перевода',
+//                            'translate' => 'А тут сам перевод'
+                        ];
+                    };
+
                 }
 
             }
 
+            $newfile = implode('\n', $arrlines);
+            continue;
+
         }
+
+
+
+
         return 0;
         exit;
         $translationsPath = $rootPath.'/Resources/translations';
