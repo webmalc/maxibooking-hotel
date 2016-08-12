@@ -1,241 +1,168 @@
-restaurant:
-
-  amount:                 Количество
-  group:                  Общая информация
-  collectorder:           Составление заказа
-  descr:                  Подробности
-  pay:                    Оплата
-  collectprice:           Формирование цены
-  dishconsist:            Состав блюда
-  namelabel:                   Название
-
-  common:
-    title:                ингредиенты
-    small_title:          список
-    edit:                 редактировать
-    add:                  добавить
-    delete:               удалить
-    save:                 сохранить изменения
-    doing:                действия
-  category:
-    new:                  создать новую категорию
-    edit:                 редактировать категорию
-    delete:               удалить категорию
-    noingredients:        в этой категории нет ни одного ингредиента
-    form:
-      fullTitle:
-        label:            Название
-        placeholder:      Хлебобулочные изделия
-        help:             Имя категории ингредиентов
-      title:
-        label:            Внутреннее название
-        placeholder:
-        help:             Название для использования внутри MaxiBooking
-    newaction:
-      title:              создание категории ингредиентов
-    editaction:
-      title:              редактирование категории ингредиентов
-
-  ingredient:
-    price:                цена
-    costprice:            себестоимость
-    output:               выход
-    units:                ед.изм
-    addincat:             добавить ингредиент в категорию
-    add:                  добавить ингредиент
-    active:               наличие
-    edit:                 редактирование ингредиента
-    delete:               удаление ингредиента
-    newaction:
-      small_title:        добавление ингредиента в категорию
-    form:
-      fullTitle:
-        label:            Название
-        placeholder:      Введите название
-        help:             Название ингредиента
-      title:
-        label:            Внутреннее название
-        placeholder:      Введите внутреннее название
-        help:             Название для использования внутри MaxiBooking
-      price:
-        label:            Цена
-        placeholder:
-        help:             Установите цену для ингредиента
-      calcType:
-        label:            Единица измерения
-        placeholder:
-        help:             Выберите единицу измерения ингредиента
-      output:
-        label:            Процент выхода продукции
-        placeholder:
-        help:             Процент получаемый на выходе после обработки
-      is_enable:
-        label:            Показать
-        help:             Показывать ли ингредиент в списке выбора
-
-  dishmenu:
-    title:                Меню блюд
-    small_title:          список
-    common:
-      add:
-      edit:               редактировать
-      delete:             удалить
-    category:
-      noitems:            в этой категории нет ни одного блюда
-      action:
-        new:              Новая категория блюд
-        edit:             редактировать категорию блюд
-        delete:           удалить категорию блюд
-      helper:
-        new:
-        edit:
-        delete:
-      form:
-        fullTitle:
-          label:          Название
-          placeholder:    Введите название
-          help:           Имя категории блюд
-        title:
-          label:          Внутреннее название
-          placeholder:    введите название
-          help:           Название для использования внутри MaxiBooking
-
-    item:
-      title:
-      small_title:        добавление блюда в категорию
-      edit_small_title:   редактирование блюда в категории
-      active:             наличие
-      action:
-        new:              добавить новое блюдо
-        edit:             редактировать блюдо
-        delete:           удалить блюдо
-      helper:
-        new:              создать блюдо в категории
-        edit:
-        delete:
-      form:
-        fullTitle:
-          label:          Название
-          placeholder:    Введите название блюда
-          help:           Название блюда
-        title:
-          label:          Внутреннее название
-          placeholder:    Введите внутреннее название блюда
-          help:           Название для использования внутри MaxiBooking
-        price:
-          label:          Цена
-          placeholder:
-          help:           Установите цену для блюда
-        costprice:
-          label:          Себестоимость
-          help:           Себестоимость блюда
-        description:
-          label:          Описание
-          placeholder:    Введите описание блюда
-          help:           Описание блюда
-        margin:
-          label:          Процент маржи
-          disabled:       Установлена маржа, цена формируется автоматически.
-        amount:
-          help:           Количество
-          placeholder:    Количество ингредиента
-        dishIngredients:
-          label:          Ингредиенты блюда
-        is_enable:
-          label:            Показать
-          help:             Показывать ли блюдо в списке формирования заказа
-  dishorder:
-    status:
-      payed:            Оплачен
-    payer:
-      noname:             нет привязки к брони
-    title:                Заказы
-    common:
-      title:              Заказы
-      addsuccess:         Заказ успешно создан
-      editsuccess:        Ззаказ успешно отредактирован
-      noitems:            Заказов нет
-    table:
-      number:             № Заказа
-      table:              Столик
-      price:              Цена
-      freezed:            Оплачен
-      doing:              Действия
-      content:            Состав
-      payer:              Плательщик
-      time:               Дата
-    actions:
-      tolist:             К списку
-      list:
-        small_title:      добавление заказа
-      showfreeze:
-        small_title:      Просмотр заказа
-      add:                создать заказ
-      edit:               редактирование заказа
-      delete:             удалить заказ
-      freezed:            рассчитать
-      isfreezed:          оплачен
-      pay:                вы подтверждаете оплату заказа
-      confirm:            подтвердить
-    form:
-      id:
-        label:            Номер заказа
-        noidplaceholder:  Номер заказа будет доступен после создания
-      table:
-        label:            Столик заказа
-        placeholder:      Введите номер столика заказа
-        help:             Поле выбора номера столика заказа
-      price:
-        label:            Стоимость заказа
-        placeholder:      Стоимость заказа считается автоматически
-        help:             Поле вывода стоимости заказа
-      amount:
-        help:             Количество
-        placeholder:      Количество блюд
-      dishes:
-        label:            Список блюд
-        placeholder:
-        help:
-      order:
-        label:            Плательщик
-        help:             Введите имя брони или комнаты
-      isfreezed:
-        label:            Оплата
-  table:
-    common:
-      title:              Столики
-      editsuccess:        Столик успешно отредактирован
-      addsuccess:         Столик успешно добавлен
-      noitems:            Нет столиков в списке
-    newaction:
-      small_title:        добавление столика
-    actions:
-      list:
-        small_title:      Список столиков
-      edit:               редактирование столика
-      add:                Добавить столик
-      delete:             Удалить столик
-    table:
-      name:               Название
-      isEnable:           Активен
-      doing:              Действия
-    form:
-      fullTitle:
-        label:            Название
-        help:             Название столика
-        placeholder:      Столик1
-      title:
-        label:            Внутреннее название
-        help:             Название для использования внутри MaxiBooking
-        placeholder:      Столик возле окна
-      is_enable:
-        label:            Активен
-        help:             Активен ли столик
-
-  exceptions:
-    delete:
-      ingredient:
-      table:
-      dishmenuitem:
-      ingredientcategory: Невозможно удалить категорию, т.к. она не пуста!
-
+restaurant.amount: Количество
+restaurant.group: 'Общая информация'
+restaurant.collectorder: 'Составление заказа'
+restaurant.descr: Подробности
+restaurant.pay: Оплата
+restaurant.collectprice: 'Формирование цены'
+restaurant.dishconsist: 'Состав блюда'
+restaurant.namelabel: Название
+restaurant.common.title: ингредиенты
+restaurant.common.small_title: список
+restaurant.common.edit: редактировать
+restaurant.common.add: добавить
+restaurant.common.delete: удалить
+restaurant.common.save: 'сохранить изменения'
+restaurant.common.doing: действия
+restaurant.category.new: 'создать новую категорию'
+restaurant.category.edit: 'редактировать категорию'
+restaurant.category.delete: 'удалить категорию'
+restaurant.category.noingredients: 'в этой категории нет ни одного ингредиента'
+restaurant.category.form.fullTitle.label: Название
+restaurant.category.form.fullTitle.placeholder: 'Хлебобулочные изделия'
+restaurant.category.form.fullTitle.help: 'Имя категории ингредиентов'
+restaurant.category.form.title.label: 'Внутреннее название'
+restaurant.category.form.title.placeholder: null
+restaurant.category.form.title.help: 'Название для использования внутри MaxiBooking'
+restaurant.category.newaction.title: 'создание категории ингредиентов'
+restaurant.category.editaction.title: 'редактирование категории ингредиентов'
+restaurant.ingredient.price: цена
+restaurant.ingredient.costprice: себестоимость
+restaurant.ingredient.output: выход
+restaurant.ingredient.units: ед.изм
+restaurant.ingredient.addincat: 'добавить ингредиент в категорию'
+restaurant.ingredient.add: 'добавить ингредиент'
+restaurant.ingredient.active: наличие
+restaurant.ingredient.edit: 'редактирование ингредиента'
+restaurant.ingredient.delete: 'удаление ингредиента'
+restaurant.ingredient.newaction.small_title: 'добавление ингредиента в категорию'
+restaurant.ingredient.form.fullTitle.label: Название
+restaurant.ingredient.form.fullTitle.placeholder: 'Введите название'
+restaurant.ingredient.form.fullTitle.help: 'Название ингредиента'
+restaurant.ingredient.form.title.label: 'Внутреннее название'
+restaurant.ingredient.form.title.placeholder: 'Введите внутреннее название'
+restaurant.ingredient.form.title.help: 'Название для использования внутри MaxiBooking'
+restaurant.ingredient.form.price.label: Цена
+restaurant.ingredient.form.price.placeholder: null
+restaurant.ingredient.form.price.help: 'Установите цену для ингредиента'
+restaurant.ingredient.form.calcType.label: 'Единица измерения'
+restaurant.ingredient.form.calcType.placeholder: null
+restaurant.ingredient.form.calcType.help: 'Выберите единицу измерения ингредиента'
+restaurant.ingredient.form.output.label: 'Процент выхода продукции'
+restaurant.ingredient.form.output.placeholder: null
+restaurant.ingredient.form.output.help: 'Процент получаемый на выходе после обработки'
+restaurant.ingredient.form.is_enable.label: Показать
+restaurant.ingredient.form.is_enable.help: 'Показывать ли ингредиент в списке выбора'
+restaurant.dishmenu.title: 'Меню блюд'
+restaurant.dishmenu.small_title: список
+restaurant.dishmenu.common.add: null
+restaurant.dishmenu.common.edit: редактировать
+restaurant.dishmenu.common.delete: удалить
+restaurant.dishmenu.category.noitems: 'в этой категории нет ни одного блюда'
+restaurant.dishmenu.category.action.new: 'Новая категория блюд'
+restaurant.dishmenu.category.action.edit: 'редактировать категорию блюд'
+restaurant.dishmenu.category.action.delete: 'удалить категорию блюд'
+restaurant.dishmenu.category.helper.new: null
+restaurant.dishmenu.category.helper.edit: null
+restaurant.dishmenu.category.helper.delete: null
+restaurant.dishmenu.category.form.fullTitle.label: Название
+restaurant.dishmenu.category.form.fullTitle.placeholder: 'Введите название'
+restaurant.dishmenu.category.form.fullTitle.help: 'Имя категории блюд'
+restaurant.dishmenu.category.form.title.label: 'Внутреннее название'
+restaurant.dishmenu.category.form.title.placeholder: 'введите название'
+restaurant.dishmenu.category.form.title.help: 'Название для использования внутри MaxiBooking'
+restaurant.dishmenu.item.title: null
+restaurant.dishmenu.item.small_title: 'добавление блюда в категорию'
+restaurant.dishmenu.item.edit_small_title: 'редактирование блюда в категории'
+restaurant.dishmenu.item.active: наличие
+restaurant.dishmenu.item.action.new: 'добавить новое блюдо'
+restaurant.dishmenu.item.action.edit: 'редактировать блюдо'
+restaurant.dishmenu.item.action.delete: 'удалить блюдо'
+restaurant.dishmenu.item.helper.new: 'создать блюдо в категории'
+restaurant.dishmenu.item.helper.edit: null
+restaurant.dishmenu.item.helper.delete: null
+restaurant.dishmenu.item.form.fullTitle.label: Название
+restaurant.dishmenu.item.form.fullTitle.placeholder: 'Введите название блюда'
+restaurant.dishmenu.item.form.fullTitle.help: 'Название блюда'
+restaurant.dishmenu.item.form.title.label: 'Внутреннее название'
+restaurant.dishmenu.item.form.title.placeholder: 'Введите внутреннее название блюда'
+restaurant.dishmenu.item.form.title.help: 'Название для использования внутри MaxiBooking'
+restaurant.dishmenu.item.form.price.label: Цена
+restaurant.dishmenu.item.form.price.placeholder: null
+restaurant.dishmenu.item.form.price.help: 'Установите цену для блюда'
+restaurant.dishmenu.item.form.costprice.label: Себестоимость
+restaurant.dishmenu.item.form.costprice.help: 'Себестоимость блюда'
+restaurant.dishmenu.item.form.description.label: Описание
+restaurant.dishmenu.item.form.description.placeholder: 'Введите описание блюда'
+restaurant.dishmenu.item.form.description.help: 'Описание блюда'
+restaurant.dishmenu.item.form.margin.label: 'Процент маржи'
+restaurant.dishmenu.item.form.margin.disabled: 'Установлена маржа, цена формируется автоматически.'
+restaurant.dishmenu.item.form.amount.help: Количество
+restaurant.dishmenu.item.form.amount.placeholder: 'Количество ингредиента'
+restaurant.dishmenu.item.form.dishIngredients.label: 'Ингредиенты блюда'
+restaurant.dishmenu.item.form.is_enable.label: Показать
+restaurant.dishmenu.item.form.is_enable.help: 'Показывать ли блюдо в списке формирования заказа'
+restaurant.dishorder.status.payed: Оплачен
+restaurant.dishorder.payer.noname: 'нет привязки к брони'
+restaurant.dishorder.title: Заказы
+restaurant.dishorder.common.title: Заказы
+restaurant.dishorder.common.addsuccess: 'Заказ успешно создан'
+restaurant.dishorder.common.editsuccess: 'Ззаказ успешно отредактирован'
+restaurant.dishorder.common.noitems: 'Заказов нет'
+restaurant.dishorder.table.number: '№ Заказа'
+restaurant.dishorder.table.table: Столик
+restaurant.dishorder.table.price: Цена
+restaurant.dishorder.table.freezed: Оплачен
+restaurant.dishorder.table.doing: Действия
+restaurant.dishorder.table.content: Состав
+restaurant.dishorder.table.payer: Плательщик
+restaurant.dishorder.table.time: Дата
+restaurant.dishorder.actions.tolist: 'К списку'
+restaurant.dishorder.actions.list.small_title: 'добавление заказа'
+restaurant.dishorder.actions.showfreeze.small_title: 'Просмотр заказа'
+restaurant.dishorder.actions.add: 'создать заказ'
+restaurant.dishorder.actions.edit: 'редактирование заказа'
+restaurant.dishorder.actions.delete: 'удалить заказ'
+restaurant.dishorder.actions.freezed: рассчитать
+restaurant.dishorder.actions.isfreezed: оплачен
+restaurant.dishorder.actions.pay: 'вы подтверждаете оплату заказа'
+restaurant.dishorder.actions.confirm: подтвердить
+restaurant.dishorder.form.id.label: 'Номер заказа'
+restaurant.dishorder.form.id.noidplaceholder: 'Номер заказа будет доступен после создания'
+restaurant.dishorder.form.table.label: 'Столик заказа'
+restaurant.dishorder.form.table.placeholder: 'Введите номер столика заказа'
+restaurant.dishorder.form.table.help: 'Поле выбора номера столика заказа'
+restaurant.dishorder.form.price.label: 'Стоимость заказа'
+restaurant.dishorder.form.price.placeholder: 'Стоимость заказа считается автоматически'
+restaurant.dishorder.form.price.help: 'Поле вывода стоимости заказа'
+restaurant.dishorder.form.amount.help: Количество
+restaurant.dishorder.form.amount.placeholder: 'Количество блюд'
+restaurant.dishorder.form.dishes.label: 'Список блюд'
+restaurant.dishorder.form.dishes.placeholder: null
+restaurant.dishorder.form.dishes.help: null
+restaurant.dishorder.form.order.label: Плательщик
+restaurant.dishorder.form.order.help: 'Введите имя брони или комнаты'
+restaurant.dishorder.form.isfreezed.label: Оплата
+restaurant.table.common.title: Столики
+restaurant.table.common.editsuccess: 'Столик успешно отредактирован'
+restaurant.table.common.addsuccess: 'Столик успешно добавлен'
+restaurant.table.common.noitems: 'Нет столиков в списке'
+restaurant.table.newaction.small_title: 'добавление столика'
+restaurant.table.actions.list.small_title: 'Список столиков'
+restaurant.table.actions.edit: 'редактирование столика'
+restaurant.table.actions.add: 'Добавить столик'
+restaurant.table.actions.delete: 'Удалить столик'
+restaurant.table.table.name: Название
+restaurant.table.table.isEnable: Активен
+restaurant.table.table.doing: Действия
+restaurant.table.form.fullTitle.label: Название
+restaurant.table.form.fullTitle.help: 'Название столика'
+restaurant.table.form.fullTitle.placeholder: Столик1
+restaurant.table.form.title.label: 'Внутреннее название'
+restaurant.table.form.title.help: 'Название для использования внутри MaxiBooking'
+restaurant.table.form.title.placeholder: 'Столик возле окна'
+restaurant.table.form.is_enable.label: Активен
+restaurant.table.form.is_enable.help: 'Активен ли столик'
+restaurant.exceptions.delete.ingredient: null
+restaurant.exceptions.delete.table: null
+restaurant.exceptions.delete.dishmenuitem: null
+restaurant.exceptions.delete.ingredientcategory: 'Невозможно удалить категорию, т.к. она не пуста!'

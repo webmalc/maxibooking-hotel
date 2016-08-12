@@ -9,6 +9,8 @@
 namespace MBH\Bundle\BaseBundle\Command;
 
 
+use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
+use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\FormTranslateConverter;
 use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\RuTranslateException;
 use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\TwigTranslateConverter;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -50,14 +52,32 @@ EOF
             $bundle = $kernel->getBundle($input->getArgument('bundle'));
         } catch (\InvalidArgumentException $e) {
             $output->writeln($e->getMessage());
+            throw new InvalidArgumentException('Невозможно найти бандл с именем '. $input->getArgument('bundle'));
         }
 
         $helper = $this->getHelper('question');
-        $converter = new TwigTranslateConverter($bundle, $input, $output, $this->getContainer());
-        try {
-            $converter->convert($helper);
-        } catch (RuTranslateException $e) {
-            $output->writeln($e->getMessage());
+        switch ($input->getOption('type')) {
+            case 'twig':
+                $converter = new TwigTranslateConverter($bundle, $input, $output, $this->getContainer());
+                break;
+            case 'form':
+                $converter = new FormTranslateConverter($bundle, $input, $output, $this->getContainer());
+                break;
+            default:
+                throw new InvalidArgumentException('Wrong type (twig/form) only');
+                break;
+        }
+
+        switch ($input->getArgument('action')) {
+            case 'show':
+                $converter->findEntry();
+                break;
+            case 'convert':
+                $converter->convert($helper);
+                break;
+            default:
+                throw new InvalidArgumentException('Wrong action, (show/convert) only ');
+                break;
         }
 
     }
