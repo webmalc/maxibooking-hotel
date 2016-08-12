@@ -1,18 +1,25 @@
+mbhcashbundle.view.cash.edit.dokumentzakaza: 'Документ заказа '
+mbhcashbundle.view.cash.jsonbuttons.data: Дата
+mbhcashbundle.view.cash.index.ostatokpokasse: 'Остаток по кассе'
+mbhcashbundle.view.cash.index.sozdatʹ: Создать
+mbhcashbundle.view.cash.index.eksportv: 'Экспорт в '
+mbhcashbundle.view.cash.index.vygruzitʹbeznal: 'Выгрузить безнал'
+mbhcashbundle.view.cash.index.vygruzitʹvsë: 'Выгрузить всё'
+mbhcashbundle.view.cash.jsonbyday.json.twig.dok: док
 form.cashDocumentType.payer: Плательщик
 form.cashDocumentType.organization: Организация
 form.cashDocumentType.tourist: Клиент
 form.cashDocumentType.article: Статья
-form.cashDocumentType.placeholder_fio: Иванов Иван Иванович
+form.cashDocumentType.placeholder_fio: 'Иванов Иван Иванович'
 form.cashDocumentType.sum: Сумма
-form.cashDocumentType.payment_way: Способ оплаты
-form.cashDocumentType.document_date: Дата документа
-form.cashDocumentType.paid_date: Дата оплаты
-form.cashDocumentType.operation_type: Вид операции
+form.cashDocumentType.payment_way: 'Способ оплаты'
+form.cashDocumentType.document_date: 'Дата документа'
+form.cashDocumentType.paid_date: 'Дата оплаты'
+form.cashDocumentType.operation_type: 'Вид операции'
 form.cashDocumentType.number: Номер
 form.cashDocumentType.comment: Комментарий
-form.cashDocumentType.is_paid: Оплачен?
+form.cashDocumentType.is_paid: 'Оплачен?'
 controller.cashController.edit_record_success: 'Запись успешно отредактирована.'
 controller.cashController.payment_confirmed_success: 'Платеж успешно подтвержден'
-
-cashDocumentCriteria.type.order: По заказам
-cashDocumentCriteria.type.other: Без заказов
+cashDocumentCriteria.type.order: 'По заказам'
+cashDocumentCriteria.type.other: 'Без заказов'
