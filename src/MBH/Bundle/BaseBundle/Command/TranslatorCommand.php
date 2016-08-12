@@ -11,7 +11,6 @@ namespace MBH\Bundle\BaseBundle\Command;
 
 use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
 use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\FormTranslateConverter;
-use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\RuTranslateException;
 use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\TwigTranslateConverter;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -20,6 +19,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Translation\MessageCatalogue;
 
 class TranslatorCommand extends ContainerAwareCommand
 {
@@ -30,7 +30,8 @@ class TranslatorCommand extends ContainerAwareCommand
             ->setDefinition(array(
                 new InputArgument('action', InputArgument::REQUIRED, 'show or convert'),
                 new InputArgument('bundle', InputArgument::REQUIRED, 'The bundle name '),
-                new InputOption('type', null, InputOption::VALUE_REQUIRED, 'twig or form')
+                new InputOption('type', null, InputOption::VALUE_REQUIRED, 'twig or form'),
+                new InputOption('force', null, InputOption::VALUE_NONE, 'force convert', null)
 
             ))
             ->setDescription('Show/convert no translated twig or forms')
@@ -42,6 +43,17 @@ EOF
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+
+//        $kernel = $this->getContainer()->get('kernel');
+//        $bundle = $kernel->getBundle($input->getArgument('bundle'));
+//        $rootPath = $bundle->getPath();
+//        $translationPath = $rootPath . '/Resources/translations';
+//        $extractCatalogue = new MessageCatalogue('ru');
+//        $extractor = $this->getContainer()->get('translation.extractor');
+//        $extractor->extract($rootPath . '/Resources/views/', $extractCatalogue);
+//        return 0;
+
+
         /** @var Kernel $kernel */
         $kernel = $this->getContainer()->get('kernel');
         if (null === $input->getArgument('bundle') or null === $input->getArgument('action')) {
