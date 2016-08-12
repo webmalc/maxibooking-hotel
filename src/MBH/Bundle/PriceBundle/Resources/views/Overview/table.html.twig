@@ -28,10 +28,10 @@
                 </tr>
 
                 {% set categories = {
-                    'rooms': 'Номера в продаже',
-                    'tariff_rooms': 'Квоты по тарифам',
-                    'prices': 'Цены',
-                    'restrictions': 'Условия и ограничения',
+                    'rooms': 'mbhpricebundle.view.overview.table.nomeravprodazhe'|trans,
+                    'tariff_rooms': 'mbhpricebundle.view.overview.table.kvotypotarifam'|trans,
+                    'prices': 'mbhpricebundle.view.overview.table.tseny'|trans,
+                    'restrictions': 'mbhpricebundle.view.overview.table.usloviyaiogranicheniya'|trans,
                 }%}
 
                 {% for categoryId, category in categories %}

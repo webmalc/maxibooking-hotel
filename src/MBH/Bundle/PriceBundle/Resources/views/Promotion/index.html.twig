@@ -6,11 +6,11 @@
     <thead>
         <tr>
             <th class="td-xxs"></th>
-            <th>Название</th>
-            <th class="text-center td-md">Индивидуальная</th>
-            <th class="td-md">Скидка</th>
-            <th class="td-sm"><i class="fa fa-male" data-toggle="tooltip" title="Взрослые бесплатно"></i></th>
-            <th class="td-sm"><i class="fa fa-child" data-toggle="tooltip" title="Дети бесплатно"></i></th>
+            <th>{{ 'mbhpricebundle.view.promotion.index.nazvaniye'|trans }} </th>
+            <th class="text-center td-md">{{ 'mbhpricebundle.view.promotion.index.individualʹnaya'|trans }} </th>
+            <th class="td-md">{{ 'mbhpricebundle.view.promotion.index.skidka'|trans }} </th>
+            <th class="td-sm"><i class="fa fa-male" data-toggle="tooltip" title="{{ 'mbhpricebundle.view.promotion.index.vzroslyyebesplatno'|trans }} "></i></th>
+            <th class="td-sm"><i class="fa fa-child" data-toggle="tooltip" title="{{ 'mbhpricebundle.view.promotion.index.detibesplatno'|trans }} "></i></th>
             <th class="td-sm"></th>
         </tr>
     </thead>
@@ -23,7 +23,7 @@
             </td>
             <td class="text-center">
                 {% if promotion.isIndividual %}
-                    <span class="label label-success">Да</span>
+                    <span class="label label-success">{{ 'mbhpricebundle.view.promotion.index.da'|trans }} </span>
                 {% endif %}
             </td>
             <td>
@@ -41,12 +41,12 @@
             <td class="text-center">
                 <div class='btn-list'>
                     {% if app.security.granted('ROLE_PROMOTION_EDIT') %}
-                        <a href='{{ path('promotion_edit', {'id': promotion.id }) }}' class='btn btn-success btn-xs' title='Редактирование записи' data-toggle='tooltip'>
+                        <a href='{{ path('promotion_edit', {'id': promotion.id }) }}' class='btn btn-success btn-xs' title='{{ 'mbhpricebundle.view.promotion.index.redaktirovaniyezapisi'|trans }} ' data-toggle='tooltip'>
                             <i class='fa fa-pencil-square-o'></i>
                         </a>
                     {% endif %}
                     {% if app.security.granted('ROLE_PROMOTION_DELETE') %}
-                        <a href='{{ path('promotion_delete', {'id': promotion.id }) }}' class='btn btn-danger btn-xs delete-link ' title='Удаление записи' data-toggle='tooltip'>
+                        <a href='{{ path('promotion_delete', {'id': promotion.id }) }}' class='btn btn-danger btn-xs delete-link ' title='{{ 'mbhpricebundle.view.promotion.index.udaleniyezapisi'|trans }} ' data-toggle='tooltip'>
                             <i class='fa fa-trash-o'></i>
                         </a>
                     {% endif %}

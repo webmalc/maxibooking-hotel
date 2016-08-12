@@ -1,6 +1,6 @@
 {% extends 'MBHPriceBundle:PriceCache:layout.html.twig' %}
 
-{% set small_title = "обзор" %}
+{% set small_title = 'mbhpricebundle.view.pricecache.index.obzor'|trans %}
 {% set layout = 'box' %}
 
 {% block content %}
@@ -8,7 +8,7 @@
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'price-cache-overview-filter-widget' } %}
         <form id="price-cache-overview-filter" class="form-inline filter-form remember" role="form">
             <div class="input">
-                <i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp
+                <i class="fa fa-calendar" title='{{ 'mbhpricebundle.view.pricecache.index.daty'|trans }} ' data-toggle='tooltip'></i>&nbsp
                 <input type="text" id="price-cache-overview-filter-begin" class="datepicker price-cache-overview-filter begin-datepicker mbh-daterangepicker  not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date('d.m.Y') : app.request.get('begin') }}">
             </div>
             <div class="input hidden">
@@ -17,7 +17,7 @@
             </div>
 
             <div class="input">
-                <i class="fa fa-bed" title='Тип номера' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="Тип номера" id="price-cache-overview-filter-roomType" class="price-cache-overview-filter form-control input-sm">
+                <i class="fa fa-bed" title='{{ 'mbhpricebundle.view.pricecache.index.tipnomera'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpricebundle.view.pricecache.index.tipnomera'|trans }} " id="price-cache-overview-filter-roomType" class="price-cache-overview-filter form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypes %}
                         <option value="{{ roomType.id }}" {% if roomType.id in app.request.get('roomTypes') and roomTypes|length != app.request.get('roomTypes')|length %}selected{% endif %}>{{ roomType.name }}</option>
@@ -26,7 +26,7 @@
             </div>
 
             <div class="input">
-                <i class="fa fa-sliders" title='Тариф' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="Тариф" id="price-cache-overview-filter-tariff" class="price-cache-overview-filter form-control input-sm">
+                <i class="fa fa-sliders" title='{{ 'mbhpricebundle.view.pricecache.index.tarif'|trans }} ' data-toggle='tooltip'></i>&nbsp  <select multiple data-placeholder="{{ 'mbhpricebundle.view.pricecache.index.tarif'|trans }} " id="price-cache-overview-filter-tariff" class="price-cache-overview-filter form-control input-sm">
                         <option></option>
                         {% for tariff in tariffs %}
                             <option value="{{ tariff.id }}" {% if (tariff.id in app.request.get('tariffs') and tariffs|length != app.request.get('tariffs')|length) or (app.request.get('tariffs') is empty and tariff.isDefault) %}selected{% endif %}>{{ tariff.name }}</option>
@@ -43,9 +43,9 @@
                 <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
                     <div class="container-fluid">
                         <ul class="nav navbar-nav">
-                            <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> Сохранить</button></li>
-                            <li><button type="button" onclick="location.href = '{{ path('price_cache_generator') }}'" class="btn btn-primary navbar-btn"><i class="fa fa-magic"></i> Генератор цен</button></li>
-                            <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> Отмена</button></li>
+                            <li><button type="submit" name="save_close" class="btn btn-success navbar-btn"><i class="fa fa-check-square-o"></i> {{ 'mbhpricebundle.view.pricecache.index.sokhranitʹ'|trans }} </button></li>
+                            <li><button type="button" onclick="location.href = '{{ path('price_cache_generator') }}'" class="btn btn-primary navbar-btn"><i class="fa fa-magic"></i> {{ 'mbhpricebundle.view.pricecache.index.generatortsen'|trans }} </button></li>
+                            <li><button type="button" onclick="location.href = '{{ title_url|default(path('_welcome'))}}'" class="btn btn-default navbar-btn"><i class="fa fa-ban"></i> {{ 'mbhpricebundle.view.pricecache.index.otmena'|trans }} </button></li>
                         </ul>
                     </div>
                 </div>
