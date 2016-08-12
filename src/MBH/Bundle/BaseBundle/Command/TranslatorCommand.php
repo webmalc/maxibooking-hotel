@@ -10,6 +10,7 @@ namespace MBH\Bundle\BaseBundle\Command;
 
 
 use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
+use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\DocumentTranslateConverter;
 use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\FormTranslateConverter;
 use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\TwigTranslateConverter;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -75,8 +76,11 @@ EOF
             case 'form':
                 $converter = new FormTranslateConverter($bundle, $input, $output, $this->getContainer());
                 break;
+            case 'doc':
+                $converter = new DocumentTranslateConverter($bundle, $input, $output, $this->getContainer());
+                break;
             default:
-                throw new InvalidArgumentException('Wrong type (twig/form) only');
+                throw new InvalidArgumentException('Wrong type (twig/form/doc) only');
                 break;
         }
 

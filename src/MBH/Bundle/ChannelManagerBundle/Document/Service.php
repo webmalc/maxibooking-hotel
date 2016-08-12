@@ -27,7 +27,7 @@ class Service
     /**
      * Set service
      *
-     * @param MBH\Bundle\PriceBundle\Document\Service $service
+     * @param \MBH\Bundle\PriceBundle\Document\Service $service
      * @return self
      */
     public function setService(\MBH\Bundle\PriceBundle\Document\Service $service)
