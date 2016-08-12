@@ -18,37 +18,67 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 
+/**
+ * Class AbstractTranslateConverter
+ * @package MBH\Bundle\BaseBundle\Lib\RuTranslateConverter
+ */
 abstract class AbstractTranslateConverter
 {
 
+    /**
+     *
+     */
     const TRANSLATE_FOLDER = '/Resources/translations';
 
+    /**
+     *
+     */
     const RU_PATTERN = '/([А-Яа-яЁё]+\s*)+/u';
 
+    /**
+     * @var BundleInterface
+     */
     protected $bundle;
 
-    private $output;
+    /**
+     * @var OutputInterface
+     */
+    protected $output;
 
-    private $container;
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
 
-    private $input;
+    /**
+     * @var Input|InputInterface
+     */
+    protected $input;
 
-    private $helper;
+    /**
+     * @var
+     */
+    protected $helper;
 
-    private $question;
+    /**
+     * @var
+     */
+    protected $question;
 
+    /**
+     * @var MessageCatalogue
+     */
     protected $catalogue;
 
     /**
      * AbstractTranslateConverter constructor.
      * @param BundleInterface $bundle
+     * @param Input|InputInterface $input
      * @param OutputInterface $output
-     * @param Input $input
      * @param ContainerInterface $container
      */
     public function __construct(BundleInterface $bundle, InputInterface $input, OutputInterface $output, ContainerInterface $container)
@@ -61,76 +91,41 @@ abstract class AbstractTranslateConverter
     }
 
     /**
-     * @param Helper|null $helper
+     * @param null|Helper|QuestionHelper $helper
      */
     public function convert(QuestionHelper $helper)
     {
         $this->helper = $helper;
-        $this->question = new ConfirmationQuestion('Применить изменения?');
+        $this->question = new ConfirmationQuestion('Применить изменения? ', false);
         $this->execute(false);
     }
 
+    /**
+     *
+     */
     public function findEntry()
     {
         $this->execute();
     }
 
-    private function execute($emulate = true)
-    {
-        $finder = new Finder();
-        $pathPatterns = $this->getPathPatterns();
-        $files = $finder->files()->name($pathPatterns['filesPattern'])->in($pathPatterns['directory']);
 
-        foreach ($files as $file) {
-            $changed = false;
-            $contents = $file->getContents();
-            $lines = explode("\n", $contents);
-
-            foreach ($lines as &$line) {
-                preg_match(self::RU_PATTERN, $line, $mathes);
-                if ($mathes) {
-                    $matchedOrigText = $mathes[0];
-                    $messageId = $this->getTransIdPattern($file,  $matchedOrigText);
-                    $convertPattern = $this->getConvertPattern($messageId);
-                    $resultLine = str_replace($matchedOrigText, $convertPattern, $line);
-                    $this
-                        ->addMessage('Текущий файл ' . $file->getPathname())
-                        ->addMessage('Исходная строка ' . $line)
-                        ->addMessage('Найден текст ' . $matchedOrigText)
-                        ->addMessage('Результирующая строка ' . $resultLine);
-                    if (!$emulate && $this->helper && $this->helper->ask($this->input, $this->output,$this->question)) {
-                        $changed = true;
-                        $line = $resultLine;
-                        $this->addMessage('Внесены изменения');
-                        $this->catalogue->add([$messageId=>$matchedOrigText], $this->domainChecker());
-                    }
-                }
-
-                if ($changed) {
-                    $newfile = implode("\n", $lines);
-                    $this->saveChangesToFile($file->getPathname(), $newfile);
-                }
-
-            }
-
-
-        }
-        $this->saveTranslationMessages();
-        $this->addMessage('Done without errors');
-    }
-
+    /**
+     * @param string $message
+     * @return $this
+     */
     protected function addMessage(string $message)
     {
-        $this->output->writeln('<info>'.$message.'</info>');
+        $this->output->writeln('<info>' . $message . '</info>');
         /*Сообщение в лог*/
         return $this;
     }
 
+    /**
+     * @param string $domain
+     * @return bool
+     */
     protected function saveTranslationMessages(string $domain = 'messages'): bool
     {
-        if (!$messages = $this->messages) {
-            return false;
-        };
 
         $messagesPath = $this->bundle->getPath() . '/Resources/translations';
 
@@ -144,16 +139,23 @@ abstract class AbstractTranslateConverter
         return true;
     }
 
+    /**
+     * @return string
+     */
     protected function domainChecker()
     {
         return 'messages';
     }
 
-    protected function saveChangesToFile($lines, $filename)
+    /**
+     * @param $lines
+     * @param $filename
+     * @throws RuTranslateException
+     */
+    protected function saveChangesToFile($filename, $lines)
     {
         $fs = new Filesystem();
         try {
-            true;
             $fs->dumpFile($filename, $lines);
         } catch (IOException $e) {
             throw new RuTranslateException('Проблема с записью файлов ' . $e->getMessage());
@@ -161,12 +163,29 @@ abstract class AbstractTranslateConverter
     }
 
 
-
+    /**
+     * @return array
+     */
     abstract protected function getPathPatterns(): array;
 
+    /**
+     * @param string $string
+     * @return mixed
+     */
     abstract protected function getConvertPattern(string $string);
 
-    abstract protected function getTransIdPattern(SplFileInfo $file, string $matchedOrigText): string ;
+    /**
+     * @param SplFileInfo $file
+     * @param string $matchedOrigText
+     * @return string
+     */
+    abstract protected function getTransIdPattern(SplFileInfo $file, string $matchedOrigText): string;
+
+    /**
+     * @param bool $emulate
+     * @return mixed
+     */
+    abstract protected function execute($emulate = true);
 
 
 }
