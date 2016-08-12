@@ -15,7 +15,7 @@
 
 			{{ form_start(form, {attr: {class: 'form-inline filter-form remember', id: 'records-filter-form'}}) }}
 				<div class="input">
-					<i class="fa fa-calendar" title='Даты' data-toggle='tooltip'></i>&nbsp;
+					<i class="fa fa-calendar" title='{{ 'mbhwarehousebundle.view.record.index.daty'|trans }} ' data-toggle='tooltip'></i>&nbsp;
 					{{ form_widget(form.recordDateFrom) }} —
 					{{ form_widget(form.recordDateTo) }}
 				</div>

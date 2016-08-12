@@ -1,6 +1,6 @@
 {% extends 'MBHPriceBundle:Tariff:layout.html.twig' %}
 
-{% set small_title = "редактирование <" ~ tariff.name ~ ">"%}
+{% set small_title = 'mbhpricebundle.view.tariff.editservices.redaktirovaniye'|trans ~ " <" ~ tariff.name ~ ">"%}
 {% set layout = 'tabs' %}
 
 {% block content %}
@@ -32,7 +32,7 @@
                     form_widget(form.defaultServices.vars.prototype.nights) ~
                     form_widget(form.defaultServices.vars.prototype.persons)
                 )|e }}{{ '<i class="fa fa-times"></i> '|e }}
-                " class="btn btn-xs btn-success"><i class="fa fa-plus"></i> Добавить</a>
+                " class="btn btn-xs btn-success"><i class="fa fa-plus"></i> {{ 'mbhpricebundle.view.tariff.editservices.dobavitʹ'|trans }} </a>
                 </div>
             </div>
             {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': tariff, 'delete_route': tariff.isDefault ? null : 'tariff_delete' } %}

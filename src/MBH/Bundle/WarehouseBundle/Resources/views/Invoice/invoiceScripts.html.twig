@@ -93,7 +93,7 @@
 			var amount = $(this).val();			
 			var qtty = $("input[name*='qtty']", $p).val() * 1;
 			if (! qtty) {
-				alert('Ошибка. Количество не может быть нулевым!');
+				alert('{{ 'mbhwarehousebundle.view.invoice.invoicescripts.oshibka'|trans }}!');
 				$(this).val('');
 				return;
 			}

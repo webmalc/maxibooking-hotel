@@ -1,6 +1,6 @@
 {% extends 'MBHPriceBundle:Tariff:layout.html.twig' %}
 
-{% set small_title = "список" %}
+{% set small_title = 'mbhpricebundle.view.tariff.index.spisok'|trans %}
 {% set layout = 'box' %}
 
 {% block content %}
@@ -9,13 +9,13 @@
         <thead>
         <tr>
             <th class="td-xs"></th>
-            <th>Название</th>
-            <th>База</th>
-            <th class="td-xs text-center">Ребенок</th>
-            <th class="td-xs text-center">Инфант</th>
-            <th class="td-md text-center">Сроки</th>
-            <th class="td-sm text-center">Основной</th>
-            <th class="td-sm text-center">Онлайн</th>
+            <th>{{ 'mbhpricebundle.view.tariff.index.nazvaniye'|trans }} </th>
+            <th>{{ 'mbhpricebundle.view.tariff.index.baza'|trans }} </th>
+            <th class="td-xs text-center">{{ 'mbhpricebundle.view.tariff.index.rebenok'|trans }} </th>
+            <th class="td-xs text-center">{{ 'mbhpricebundle.view.tariff.index.infant'|trans }} </th>
+            <th class="td-md text-center">{{ 'mbhpricebundle.view.tariff.index.sroki'|trans }} </th>
+            <th class="td-sm text-center">{{ 'mbhpricebundle.view.tariff.index.osnovnoy'|trans }} </th>
+            <th class="td-sm text-center">{{ 'mbhpricebundle.view.tariff.index.onlayn'|trans }} </th>
             <th class="td-sm"></th>
         </tr>
         </thead>
@@ -40,23 +40,23 @@
                 </td>
                 <td class="text-center">
                     {% if entity.isDefault %}
-                        <span class="label label-success">Да</span>
+                        <span class="label label-success">{{ 'mbhpricebundle.view.tariff.index.da'|trans }} </span>
                     {% else %}
-                        <span class="label label-default">Нет</span>
+                        <span class="label label-default">{{ 'mbhpricebundle.view.tariff.index.net'|trans }} </span>
                     {% endif %}
                 </td>
                 <td class="text-center">
                     {% if entity.isOnline %}
-                        <span class="label label-success">Да</span>
+                        <span class="label label-success">{{ 'mbhpricebundle.view.tariff.index.da'|trans }} </span>
                     {% else %}
-                        <span class="label label-default">Нет</span>
+                        <span class="label label-default">{{ 'mbhpricebundle.view.tariff.index.net'|trans }} </span>
                     {% endif %}
                 </td>
                 <td class="table-actions-td text-right">
                     {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'tariff', 'copy': entity.parent is empty } %}
                         {% block additional_buttons %}
                             {% if entity.parent is empty and is_granted('ROLE_TARIFF_NEW') %}
-                                <a href='{{ path('tariff_extend', { 'id': entity.id }) }}' class='btn btn-default btn-xs' title='Создать дочерний тариф' data-toggle='tooltip'>
+                                <a href='{{ path('tariff_extend', { 'id': entity.id }) }}' class='btn btn-default btn-xs' title='{{ 'mbhpricebundle.view.tariff.index.sozdatʹdocherniytarif'|trans }} ' data-toggle='tooltip'>
                                     <i class='fa fa-arrow-circle-right'></i>
                                 </a>
                             {% endif %}

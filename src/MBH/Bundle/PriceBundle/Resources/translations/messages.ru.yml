@@ -1,28 +1,141 @@
-form:
-    promotionType:
-        label:
-            title: Внутреннее название
-            fullTitle: Название
-            isIndividual: Индивидуальная
-            isPercentDiscount: В процентах
-            discount: Скидка
-            comment: Комментарий
-            freeChildrenQuantity: Количество детей бесплатно
-            freeAdultsQuantity: Количество взрослых бесплатно
-            add_condition: Доп. условие
-            condition: Условие
-            condition_quantity: Количество
-            childrenDiscount: Скидка на ребёнка
-        group:
-            main: Основная информация
-            conditions: Условия и ограничения
-        choice_label:
-            condition:
-                min_accommodation: Минимальная длина брони
-                max_accommodation: Максимальная длина брони
-                min_tourists: Минимальное количество гостей
-                max_tourists: Максимальное количество гостей
-                max_adults: Максимальное количество взрослых
-                min_adults: Минимальное количество взрослых
-                max_children: Максимальное количество детей
-                min_children: Минимальное количество детей
+mbhpricebundle.view.roomcache.table.ostalosʹ: Осталось
+mbhpricebundle.view.pricecache.table.tsenazacheloveka: 'Цена за человека'
+mbhpricebundle.view.pricecache.table.tsenaOdnoMestnogo: 'Цена 1-местного размещения'
+mbhpricebundle.view.pricecache.table.tsenazadetskoyedop: 'Цена за детское доп. место'
+mbhpricebundle.view.service.index.redaktirovatʹ: Редактировать
+mbhpricebundle.view.service.index.dobavitʹuslugu: 'Добавить услугу'
+mbhpricebundle.view.service.index.udalitʹ: Удалить
+mbhpricebundle.view.roomcache.table.kvotypotarifam: 'Квоты по тарифам '
+mbhpricebundle.view.roomcache.table.zabronirovano: 'Забронировано в'
+mbhpricebundle.view.overview.index.obzor: обзор
+mbhpricebundle.view.overview.index.daty: Даты
+mbhpricebundle.view.overview.index.tipnomera: 'Тип номера'
+mbhpricebundle.view.overview.index.tarif: Тариф
+mbhpricebundle.view.overview.layout.nomeraitseny: 'Номера и цены'
+mbhpricebundle.view.overview.table.nomeravprodazhe: 'Номера в продаже'
+mbhpricebundle.view.overview.table.kvotypotarifam: 'Квоты по тарифам'
+mbhpricebundle.view.overview.table.tseny: Цены
+mbhpricebundle.view.overview.table.usloviyaiogranicheniya: 'Условия и ограничения'
+mbhpricebundle.view.restriction.index.obzor: обзор
+mbhpricebundle.view.restriction.index.daty: Даты
+mbhpricebundle.view.restriction.index.tipnomera: 'Тип номера'
+mbhpricebundle.view.restriction.index.tarif: Тариф
+mbhpricebundle.view.restriction.index.sokhranitʹ: Сохранить
+mbhpricebundle.view.restriction.index.generatorusloviyiogranicheniy: 'Генератор условий и ограничений'
+mbhpricebundle.view.restriction.index.otmena: Отмена
+mbhpricebundle.view.restriction.layout.usloviyaiogranicheniya: 'Условия и ограничения'
+mbhpricebundle.view.restriction.generator.generator: генератор
+mbhpricebundle.view.restriction.table.mindlinabroni: 'Мин. длина брони (заезд)'
+mbhpricebundle.view.restriction.table.mindlinabroniSkvoznoe: 'Мин. длина брони (сквозное)'
+mbhpricebundle.view.restriction.table.maxdlinabroniSkvoznoe: 'Макс. длина брони (сквозное)'
+mbhpricebundle.view.restriction.table.minDneyDoZaezda: 'Мин. дней до заезда'
+mbhpricebundle.view.restriction.table.maxDneyDoZaezda: 'Макс. дней до заезда'
+mbhpricebundle.view.restriction.table.maksDlinaBroniZaezd: 'Макс. длина брони (заезд)'
+mbhpricebundle.view.restriction.table.netzayezda: 'Нет заезда'
+mbhpricebundle.view.restriction.table.netvyyezda: 'Нет выезда'
+mbhpricebundle.view.restriction.table.zakryto: Закрыто
+mbhpricebundle.view.pricecache.index.obzor: обзор
+mbhpricebundle.view.pricecache.index.daty: Даты
+mbhpricebundle.view.pricecache.index.tipnomera: 'Тип номера'
+mbhpricebundle.view.pricecache.index.tarif: Тариф
+mbhpricebundle.view.pricecache.index.sokhranitʹ: Сохранить
+mbhpricebundle.view.pricecache.index.generatortsen: 'Генератор цен'
+mbhpricebundle.view.pricecache.index.otmena: Отмена
+mbhpricebundle.view.pricecache.layout.tseny: Цены
+mbhpricebundle.view.pricecache.generator.generator: генератор
+mbhpricebundle.view.pricecache.table.tsena: Цена
+mbhpricebundle.view.pricecache.table.tsenazadetskoyeosn: 'Цена за детское осн. место'
+mbhpricebundle.view.pricecache.table.tsenazavzrosloyedop: 'Цена за взрослое доп. место'
+mbhpricebundle.view.service.index.spisok: список
+mbhpricebundle.view.service.index.novayakategoriyauslug: 'Новая категория услуг'
+mbhpricebundle.view.service.index.redaktirovatʹkategoriyuuslug: 'Редактировать категорию услуг '
+mbhpricebundle.view.service.index.sozdatʹusluguvkategorii: 'Создать услугу в категории '
+mbhpricebundle.view.service.index.udalitʹkategoriyuuslug: 'Удалить категорию услуг '
+mbhpricebundle.view.service.index.nazvaniye: Название
+mbhpricebundle.view.service.index.tsena: Цена
+mbhpricebundle.view.service.index.tiprascheta: 'Тип расчета'
+mbhpricebundle.view.service.index.data: Дата
+mbhpricebundle.view.service.index.vklyuchena: Включена
+mbhpricebundle.view.service.index.usluganeispolʹzuyetsya: 'Услуга не используется'
+mbhpricebundle.view.service.index.shtuka: Штука
+mbhpricebundle.view.service.index.redaktirovaniyezapisi: 'Редактирование записи'
+mbhpricebundle.view.service.index.udaleniyezapisi: 'Удаление записи'
+mbhpricebundle.view.service.index.vetoykategoriinetniodnoyuslugi: 'В этой категории нет ни одной услуги'
+mbhpricebundle.view.service.index.sokhranitʹizmeneniya: 'Сохранить изменения'
+mbhpricebundle.view.service.index.dobavitʹnovuyukategoriyu: 'Добавить новую категорию'
+mbhpricebundle.view.service.newentry.sozdaniyeuslugivkategorii: 'создание услуги в категории '
+mbhpricebundle.view.service.editentry.redaktirovaniyeuslugivkategorii: 'редактирование услуги в категории '
+mbhpricebundle.view.service.layout.uslugi: Услуги
+mbhpricebundle.view.service.new.sozdaniyekategoriiuslug: 'создание категории услуг'
+mbhpricebundle.view.service.edit.redaktirovaniyekategoriiuslug: 'редактирование категории услуг '
+mbhpricebundle.view.tariff.editinheritance.redaktirovaniye: 'редактирование '
+mbhpricebundle.view.tariff.editpromotions.redaktirovaniye: 'редактирование '
+mbhpricebundle.view.tariff.index.spisok: список
+mbhpricebundle.view.tariff.index.nazvaniye: Название
+mbhpricebundle.view.tariff.index.baza: База
+mbhpricebundle.view.tariff.index.rebenok: Ребенок
+mbhpricebundle.view.tariff.index.infant: Инфант
+mbhpricebundle.view.tariff.index.sroki: Сроки
+mbhpricebundle.view.tariff.index.osnovnoy: Основной
+mbhpricebundle.view.tariff.index.onlayn: Онлайн
+mbhpricebundle.view.tariff.index.da: Да
+mbhpricebundle.view.tariff.index.net: Нет
+mbhpricebundle.view.tariff.index.sozdatʹdocherniytarif: 'Создать дочерний тариф'
+mbhpricebundle.view.tariff.layout.tarify: Тарифы
+mbhpricebundle.view.tariff.editservices.redaktirovaniye: 'редактирование '
+mbhpricebundle.view.tariff.editservices.dobavitʹ: Добавить
+mbhpricebundle.view.tariff.new.sozdaniye: Создание
+mbhpricebundle.view.tariff.edit.redaktirovaniye: 'редактирование '
+mbhpricebundle.view.tariff.edittabs.obshchayainformatsiya: 'Общая информация'
+mbhpricebundle.view.tariff.edittabs.aktsii: Акции
+mbhpricebundle.view.tariff.edittabs.uslugi: Услуги
+mbhpricebundle.view.tariff.edittabs.nasledovaniye: Наследование
+mbhpricebundle.view.promotion.index.nazvaniye: Название
+mbhpricebundle.view.promotion.index.individualʹnaya: Индивидуальная
+mbhpricebundle.view.promotion.index.skidka: Скидка
+mbhpricebundle.view.promotion.index.vzroslyyebesplatno: 'Взрослые бесплатно'
+mbhpricebundle.view.promotion.index.detibesplatno: 'Дети бесплатно'
+mbhpricebundle.view.promotion.index.da: Да
+mbhpricebundle.view.promotion.index.redaktirovaniyezapisi: 'Редактирование записи'
+mbhpricebundle.view.promotion.index.udaleniyezapisi: 'Удаление записи'
+mbhpricebundle.view.promotion.layout.aktsii: Акции
+mbhpricebundle.view.promotion.new.sozdaniyeaktsii: 'создание акции'
+mbhpricebundle.view.promotion.edit.redaktirovaniyeaktsii: 'редактирование акции'
+mbhpricebundle.view.roomcache.index.obzor: обзор
+mbhpricebundle.view.roomcache.index.daty: Даты
+mbhpricebundle.view.roomcache.index.tipnomera: 'Тип номера'
+mbhpricebundle.view.roomcache.index.kvotypotarifam: 'Квоты по тарифам'
+mbhpricebundle.view.roomcache.index.grafik: График
+mbhpricebundle.view.roomcache.index.sokhranitʹ: Сохранить
+mbhpricebundle.view.roomcache.index.generatornalichiyamest: 'Генератор наличия мест'
+mbhpricebundle.view.roomcache.index.otmena: Отмена
+mbhpricebundle.view.roomcache.layout.nomeravprodazhe: 'Номера в продаже'
+mbhpricebundle.view.roomcache.generator.generator: генератор
+mbhpricebundle.view.roomcache.graph.zabronirovano: забронировано
+mbhpricebundle.view.roomcache.graph.ostalosʹ: осталось
+mbhpricebundle.view.roomcache.graph.netdannykh: 'нет данных'
+mbhpricebundle.view.roomcache.table.nomeravprodazhe: 'Номера в продаже'
+mbhpricebundle.view.roomcache.table.vprodazhe: 'В продаже'
+mbhpricebundle.view.roomcache.table.zakryto: Закрыто
+form.promotionType.label.title: 'Внутреннее название'
+form.promotionType.label.fullTitle: Название
+form.promotionType.label.isIndividual: Индивидуальная
+form.promotionType.label.isPercentDiscount: 'В процентах'
+form.promotionType.label.discount: Скидка
+form.promotionType.label.comment: Комментарий
+form.promotionType.label.freeChildrenQuantity: 'Количество детей бесплатно'
+form.promotionType.label.freeAdultsQuantity: 'Количество взрослых бесплатно'
+form.promotionType.label.add_condition: 'Доп. условие'
+form.promotionType.label.condition: Условие
+form.promotionType.label.condition_quantity: Количество
+form.promotionType.label.childrenDiscount: 'Скидка на ребёнка'
+form.promotionType.group.main: 'Основная информация'
+form.promotionType.group.conditions: 'Условия и ограничения'
+form.promotionType.choice_label.condition.min_accommodation: 'Минимальная длина брони'
+form.promotionType.choice_label.condition.max_accommodation: 'Максимальная длина брони'
+form.promotionType.choice_label.condition.min_tourists: 'Минимальное количество гостей'
+form.promotionType.choice_label.condition.max_tourists: 'Максимальное количество гостей'
+form.promotionType.choice_label.condition.max_adults: 'Максимальное количество взрослых'
+form.promotionType.choice_label.condition.min_adults: 'Минимальное количество взрослых'
+form.promotionType.choice_label.condition.max_children: 'Максимальное количество детей'
+form.promotionType.choice_label.condition.min_children: 'Минимальное количество детей'

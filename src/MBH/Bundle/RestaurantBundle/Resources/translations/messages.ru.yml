@@ -1,3 +1,9 @@
+mbhrestaurantbundle.view.dishorder.index.daty: Даты
+mbhrestaurantbundle.view.dishorder.index.tseny: Цены
+mbhrestaurantbundle.view.dishorder.index.oplachen: Оплачен
+mbhrestaurantbundle.view.form.amount.dobavitʹ: Добавить
+mbhrestaurantbundle.view.ingredient.index.nazvaniye: Название
+mbhrestaurantbundle.view.ingredient.editingredient.redaktirovaniyeingrediyentavkategorii: 'редактирование ингредиента в категории '
 restaurant.amount: Количество
 restaurant.group: 'Общая информация'
 restaurant.collectorder: 'Составление заказа'
