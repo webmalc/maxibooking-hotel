@@ -64,7 +64,10 @@ class TwigTranslateConverter extends AbstractTranslateConverter
 
 
         }
-        $this->saveTranslationMessages();
+        if (!$emulate) {
+            $this->saveTranslationMessages();
+        }
+
         $this->addMessage('Done without errors');
     }
 
