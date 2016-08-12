@@ -1,21 +1,21 @@
 <div class="input">
-    &nbsp;<i class="fa fa-clock-o" data-toggle="tooltip" data-placement="top" title="Период"></i>&nbsp;
-    <select class="datepicker-period-select" data-placeholder="Период" placeholder="Период">
+    &nbsp;<i class="fa fa-clock-o" data-toggle="tooltip" data-placement="top" title="{{ 'mbhbasebundle.view.partials.datepickerperiodselect.period'|trans }} "></i>&nbsp;
+    <select class="datepicker-period-select" data-placeholder="{{ 'mbhbasebundle.view.partials.datepickerperiodselect.period'|trans }} " placeholder="{{ 'mbhbasebundle.view.partials.datepickerperiodselect.period'|trans }} ">
         <option></option>
         <option value="{{ 'now'|date_modify('-1 day')|date('d.m.Y') }}-{{ 'now'|date_modify('-1 day')|date('d.m.Y') }}">
-            вчера
+            {{ 'mbhbasebundle.view.partials.datepickerperiodselect.vchera'|trans }} 
         </option>
         <option value="{{ 'now'|date('d.m.Y') }}-{{ 'now'|date('d.m.Y') }}">
-            сегодня
+            {{ 'mbhbasebundle.view.partials.datepickerperiodselect.segodnya'|trans }} 
         </option>
         <option value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}-{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}">
-            завтра
+            {{ 'mbhbasebundle.view.partials.datepickerperiodselect.zavtra'|trans }} 
         </option>
         <option value="{{ 'now'|date_modify('-7 days')|date('d.m.Y') }}-{{ 'now'|date('d.m.Y') }}">
-            неделя
+            {{ 'mbhbasebundle.view.partials.datepickerperiodselect.nedelya'|trans }} 
         </option>
         <option value="{{ 'now'|date_modify('-1 month')|date('d.m.Y') }}-{{ 'now'|date('d.m.Y') }}">
-            месяц
+            {{ 'mbhbasebundle.view.partials.datepickerperiodselect.mesyats'|trans }} 
         </option>
     </select>
 </div>

@@ -1,5 +1,5 @@
-validator.tooshortname: Слишком короткое имя
-validator.toolongname: Слишком длинное имя
-validator.tooshorttitle: Слишком короткое наименование
-validator.toolongtitle: Слишком длинное наименование
-validator.negativeprice: Цена не может быть меньше нуля
+validator.tooshortname: 'Слишком короткое имя'
+validator.toolongname: 'Слишком длинное имя'
+validator.tooshorttitle: 'Слишком короткое наименование'
+validator.toolongtitle: 'Слишком длинное наименование'
+validator.negativeprice: 'Цена не может быть меньше нуля'
