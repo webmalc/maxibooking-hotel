@@ -1,6 +1,6 @@
 {% extends 'MBHWarehouseBundle:Invoice:layout.html.twig' %}
 
-{% set small_title = 'Список товарных накладных' %}
+{% set small_title = '{{ 'mbhwarehousebundle.view.invoice.index.spisoktovarnykhnakladnykh'|trans }} ' %}
 {% set layout = "box" %}
 
 {% block content %}
@@ -15,12 +15,12 @@
         <thead>
         <tr>
             <th class="td-xs"></th>
-            <th class="td-sm">Операция</th>
-            <th class="td-sm">Дата</th>
-            <th class="td-sm">Номер</th>
-            <th class="td-xs">Организация</th>
-            <th class="td-md">Отель</th>
-            <th class="td-md text-right">Amount</th>
+            <th class="td-sm">{{ 'mbhwarehousebundle.view.invoice.index.operatsiya'|trans }} </th>
+            <th class="td-sm">{{ 'mbhwarehousebundle.view.invoice.index.data'|trans }} </th>
+            <th class="td-sm">{{ 'mbhwarehousebundle.view.invoice.index.nomer'|trans }} </th>
+            <th class="td-xs">{{ 'mbhwarehousebundle.view.invoice.index.organizatsiya'|trans }} </th>
+            <th class="td-md">{{ 'mbhwarehousebundle.view.invoice.index.otelʹ'|trans }} </th>
+            <th class="td-md text-right">{{ 'mbhwarehousebundle.view.invoice.index.amount'|trans }}</th>
             <th class="td-sm"></th>
         </tr>
 		</thead>
