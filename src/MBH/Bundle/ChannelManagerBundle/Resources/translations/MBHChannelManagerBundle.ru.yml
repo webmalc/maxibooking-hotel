@@ -1,24 +1,24 @@
-views.booking.index.settings: "настройки"
-views.booking.index.booking_com_sync: "Синхронизироваться с Booking.com"
+views.booking.index.settings: настройки
+views.booking.index.booking_com_sync: 'Синхронизироваться с Booking.com'
 views.booking.index.save: Сохранить
 views.booking.index.cancel: Отмена
-views.booking.room.settings: "настройки"
-views.booking.room.room_type: Тип номера
-views.booking.room.booking_com_sync: "Синхронизироваться с Booking.com"
+views.booking.room.settings: настройки
+views.booking.room.room_type: 'Тип номера'
+views.booking.room.booking_com_sync: 'Синхронизироваться с Booking.com'
 views.booking.service.service: Сервис
 views.booking.service.code: Код
 views.booking.service.cancel: Отмена
 views.booking.tariff.cancel: Отмена
-views.channnelmanager.settings: "настройки"
+views.channnelmanager.settings: настройки
 views.oktogo.room.save: Сохранить
-views.oktogo.room.get_room_ids_from_oktogo: "Получить ID номеров из Oktogo.ru"
+views.oktogo.room.get_room_ids_from_oktogo: 'Получить ID номеров из Oktogo.ru'
 views.oktogo.tariff.save: Сохранить
-views.vashotel.layout.you_hotel_ru: "ВашОтель.RU"
+views.vashotel.layout.you_hotel_ru: ВашОтель.RU
 views.vashotel.room.save: Сохранить
-views.vashotel.room.get_room_ids_from_your_hotel_ru: "Получить ID номеров из ВашОтель.RU"
+views.vashotel.room.get_room_ids_from_your_hotel_ru: 'Получить ID номеров из ВашОтель.RU'
 views.vashotel.room.cancel: Отмена
 views.vashotel.tariff.save: Сохранить
-views.vashotel.tariff.get_tariff_ids: "Получить ID тарифов из ВашОтель.RU"
+views.vashotel.tariff.get_tariff_ids: 'Получить ID тарифов из ВашОтель.RU'
 views.vashotel.tariff.cancel: Отмена
 views.vashotel.service.service: Сервис
 views.vashotel.service.code: Код
@@ -28,41 +28,33 @@ views.tabs.main_settings: ' Основные настройки'
 views.tabs.room_types: ' Типы номеров'
 views.tabs.tariffs: ' Тарифы'
 views.tabs.services: ' Услуги'
-views.tabs.must_fill_main_settings: "Необходимо заполнить основные настройки!"
-views.ostrovok.layout.ostrovok: "Ostrovok"
-
-
-#channelManager
+views.tabs.must_fill_main_settings: 'Необходимо заполнить основные настройки!'
+views.ostrovok.layout.ostrovok: Ostrovok
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
-
-channelManager.booking.notification.subject.new: Новый заказ Booking.com
-channelManager.booking.notification.subject.edit: Изменен заказ Booking.com
-channelManager.booking.notification.subject.delete: Удален заказ Booking.com
-channelManager.booking.notification.new: Новый заказ %order% из booking.com. Номера броней: %packages%
-channelManager.booking.notification.edit: Изменен заказ %order% из booking.com. Номера броней: %packages%
-channelManager.booking.notification.delete: Удален заказ %order% из booking.com. Номера броней: %packages%
-channelManager.booking.notification.error.subject: Ошибка Booking.com
-channelManager.booking.notification.error: Ошибка при обработке заказа Booking.com. Информация: %info%
-
-channelManager.myallocator.notification.subject.new: Новый заказ Myallocator.com
-channelManager.myallocator.notification.subject.edit: Изменен заказ Myallocator.com
-channelManager.myallocator.notification.subject.delete: Удален заказ Myallocator.com
-channelManager.myallocator.notification.new: Новый заказ %order% из Myallocator.com. Номера броней: %packages%
-channelManager.myallocator.notification.edit: Изменен заказ %order% из Myallocator.com. Номера броней: %packages%
-channelManager.myallocator.notification.delete: Удален заказ %order% из Myallocator.com. Номера броней: %packages%
-channelManager.myallocator.notification.error.subject: Ошибка Myallocator.com
-channelManager.myallocator.notification.error: Ошибка при обработке заказа Myallocator.com. Информация: %info%
-
-channelManager.vashotel.notification.subject.new: Новый заказ Vashotel.ru
-channelManager.vashotel.notification.subject.edit: Изменен заказ Vashotel.ru
-channelManager.vashotel.notification.subject.delete: Удален заказ Vashotel.ru
-channelManager.vashotel.notification.new: Новый заказ %order% из ВашОтель.RU. Номера броней: %packages%
-channelManager.vashotel.notification.edit: Изменен заказ %order% из ВашОтель.RU. Номера броней: %packages%
-channelManager.vashotel.notification.delete: Удален заказ %order% из ВашОтель.RU. Номера броней: %packages%
-channelManager.vashotel.notification.error.subject: Ошибка Vashotel.ru
-channelManager.vashotel.notification.error: Ошибка при обработке заказа Vashotel.ru. Информация: %info%
-
-channelManager.booking.notification.bottom: Внимание! Требуется ручная обработка ситуации.
-
-channelmanager.empty.config: Канал channelmanager`а не работает, т.к. не синхронизированы отель, типы номеров, тарифы или услуги
+channelManager.booking.notification.subject.new: 'Новый заказ Booking.com'
+channelManager.booking.notification.subject.edit: 'Изменен заказ Booking.com'
+channelManager.booking.notification.subject.delete: 'Удален заказ Booking.com'
+channelManager.booking.notification.new: 'Новый заказ %order% из booking.com. Номера броней: %packages%'
+channelManager.booking.notification.edit: 'Изменен заказ %order% из booking.com. Номера броней: %packages%'
+channelManager.booking.notification.delete: 'Удален заказ %order% из booking.com. Номера броней: %packages%'
+channelManager.booking.notification.error.subject: 'Ошибка Booking.com'
+channelManager.booking.notification.error: 'Ошибка при обработке заказа Booking.com. Информация: %info%'
+channelManager.myallocator.notification.subject.new: 'Новый заказ Myallocator.com'
+channelManager.myallocator.notification.subject.edit: 'Изменен заказ Myallocator.com'
+channelManager.myallocator.notification.subject.delete: 'Удален заказ Myallocator.com'
+channelManager.myallocator.notification.new: 'Новый заказ %order% из Myallocator.com. Номера броней: %packages%'
+channelManager.myallocator.notification.edit: 'Изменен заказ %order% из Myallocator.com. Номера броней: %packages%'
+channelManager.myallocator.notification.delete: 'Удален заказ %order% из Myallocator.com. Номера броней: %packages%'
+channelManager.myallocator.notification.error.subject: 'Ошибка Myallocator.com'
+channelManager.myallocator.notification.error: 'Ошибка при обработке заказа Myallocator.com. Информация: %info%'
+channelManager.vashotel.notification.subject.new: 'Новый заказ Vashotel.ru'
+channelManager.vashotel.notification.subject.edit: 'Изменен заказ Vashotel.ru'
+channelManager.vashotel.notification.subject.delete: 'Удален заказ Vashotel.ru'
+channelManager.vashotel.notification.new: 'Новый заказ %order% из ВашОтель.RU. Номера броней: %packages%'
+channelManager.vashotel.notification.edit: 'Изменен заказ %order% из ВашОтель.RU. Номера броней: %packages%'
+channelManager.vashotel.notification.delete: 'Удален заказ %order% из ВашОтель.RU. Номера броней: %packages%'
+channelManager.vashotel.notification.error.subject: 'Ошибка Vashotel.ru'
+channelManager.vashotel.notification.error: 'Ошибка при обработке заказа Vashotel.ru. Информация: %info%'
+channelManager.booking.notification.bottom: 'Внимание! Требуется ручная обработка ситуации.'
+channelmanager.empty.config: 'Канал channelmanager`а не работает, т.к. не синхронизированы отель, типы номеров, тарифы или услуги'
 views.channelmanager.actions.sync: Синхронизировать

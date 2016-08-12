@@ -12,14 +12,14 @@
 
             {% if config is empty %}
                 <div class="alert alert-warning">
-                    <i class="fa fa-exclamation-circle"></i> Необходимо сначала заполнить основные настройки.
+                    <i class="fa fa-exclamation-circle"></i> {{ 'mbhchannelmanagerbundle.view.myallocator.tariff.neobkhodimosnachalazapolnitʹosnovnyyenastroyki'|trans }} .
                 </div>
             {% endif %}
 
             {% if config.token is empty %}
                 <div class="alert alert-warning">
                     <i class="fa fa-exclamation-circle"></i>
-                    Необходимо сначала привязать channelmanager`а к MaxiBooking в вкладке "Основные настройки".
+                    {{ 'mbhchannelmanagerbundle.view.myallocator.tariff.neobkhodimosnachalaprivyazatʹ'|trans }}.
                 </div>
             {% endif %}
 

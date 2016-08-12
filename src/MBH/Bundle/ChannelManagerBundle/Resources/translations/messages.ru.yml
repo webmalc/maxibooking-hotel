@@ -1,35 +1,55 @@
-form.bookingType.is_included: Включен?
-form.bookingType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+mbhchannelmanagerbundle.view.myallocator.index.s: 'Channelmanager успешно привязан к MaxiBooking'
+mbhchannelmanagerbundle.view.myallocator.tariff.ak: 'а к '
+mbhchannelmanagerbundle.view.oktogo.tariff.sinkhronizirovatʹ: Синхронизировать
+mbhchannelmanagerbundle.view.myallocator.room.neobkhodimosnachalaprivyazatʹ: 'Необходимо сначала привязать channelmanager`а к MaxiBooking в вкладке "Основные настройки"'
+mbhchannelmanagerbundle.view.channelmanager.pushlink.uvedomleniy: уведомлений
+mbhchannelmanagerbundle.view.oktogo.tariff.tarifoviz: 'тарифов из '
+mbhchannelmanagerbundle.view.myallocator.layout.dopolnitelʹnyyekanaly: 'Дополнительные каналы'
+mbhchannelmanagerbundle.view.myallocator.index.udalitʹpolʹzovatelya: 'Удалить пользователя'
+mbhchannelmanagerbundle.view.myallocator.index.vyberitesootvestvuyushchiyotelʹnaformenizhedlyaassotsiatsiis: 'Выберите соотвествующий отель на форме ниже для ассоциации с MaxiBooking'
+mbhchannelmanagerbundle.view.myallocator.index.vveditelogiiparolʹotkabinetadlyapervichnoyprivyazki: 'Введите логи и пароль от кабинета для первичной привязки channelmanager`а к MaxiBooking'
+mbhchannelmanagerbundle.view.myallocator.tariff.neobkhodimosnachalazapolnitʹosnovnyyenastroyki: 'Необходимо сначала заполнить основные настройки'
+mbhchannelmanagerbundle.view.myallocator.tariff.neobkhodimosnachalaprivyazatʹ: 'Необходимо сначала привязать channelmanager`а к MaxiBooking в вкладке "Основные настройки"'
+mbhchannelmanagerbundle.view.myallocator.room.neobkhodimosnachalazapolnitʹosnovnyyenastroyki: 'Необходимо сначала заполнить основные настройки'
+mbhchannelmanagerbundle.view.channelmanager.pushlink.ssylkadlya: 'Ссылка для '
+mbhchannelmanagerbundle.view.channelmanager.logs.logi: логи
+mbhchannelmanagerbundle.view.channelmanager.logs.ochistitʹ: Очистить
+mbhchannelmanagerbundle.view.channelmanager.logs.netzapiseyvfaylelogov: 'Нет записей в файле логов'
+mbhchannelmanagerbundle.view.oktogo.tariff.poluchitʹ: 'Получить '
+mbhchannelmanagerbundle.view.oktogo.tariff.otmena: Отмена
+mbhchannelmanagerbundle.view.oktogo.room.otmena: Отмена
+form.bookingType.is_included: 'Включен?'
+form.bookingType.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
 form.bookingType.login: Логин
-form.bookingType.booking_api_com_access_login: Логин (username) для доступа к API Booking.com
+form.bookingType.booking_api_com_access_login: 'Логин (username) для доступа к API Booking.com'
 form.bookingType.password: Пароль
-form.bookingType.booking_api_com_password_access: Пароль (password) для доступа к API Booking.com
-form.bookingType.hotel_id: ID отеля
+form.bookingType.booking_api_com_password_access: 'Пароль (password) для доступа к API Booking.com'
+form.bookingType.hotel_id: 'ID отеля'
 form.bookingType.currency: Валюта
-form.bookingType.currency_help: Валюта конвертации цен
-form.bookingType.currencyDefaultRatio: Курс по умолчанию
-form.bookingType.currencyDefaultRatio_help: Курс, используемый при недоступности курса ЦБ РФ
-form.bookingType.hotel_id_in_booking_com: ID отеля в Booking.com
-form.oktogoType.is_included: Включен?
-form.oktogoType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.bookingType.currency_help: 'Валюта конвертации цен'
+form.bookingType.currencyDefaultRatio: 'Курс по умолчанию'
+form.bookingType.currencyDefaultRatio_help: 'Курс, используемый при недоступности курса ЦБ РФ'
+form.bookingType.hotel_id_in_booking_com: 'ID отеля в Booking.com'
+form.oktogoType.is_included: 'Включен?'
+form.oktogoType.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
 form.oktogoType.login: Логин
-form.oktogoType.oktogo_api_login_access: Логин для доступа к API Oktogo.ru
+form.oktogoType.oktogo_api_login_access: 'Логин для доступа к API Oktogo.ru'
 form.oktogoType.password: Пароль
-form.oktogoType.oktogo_api_password_access: Пароль для доступа к API Oktogo.ru
-form.oktogoType.username: Имя пользователя
-form.oktogoType.oktogo_ru_username: Имя пользователя в Oktogo.ru
-form.roomType.room_type_id: ID типа номера
-form.roomType.in_service_settings: в настройках сервиса
-form.tariffType.tariff_id: ID тарифа
-form.tariffType.in_service_settings: в настройках сервиса
-form.vashotelType.in_included: Включен?
-form.vashotelType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
-form.vashotelType.api_key: Ключ API
-form.vashotelType.vashotel_ru_settings_key: Ключ, который задается в настройках гостиницы ВашОтель.RU
-form.vashotelType.hotel_id: ID отеля
-form.vashotelType.vashotel_ru_settings_hotel_id: ID отеля в настройках ВашОтель.RU
-form.vashotelType.breakfast: Завтрак?
-form.vashotelType.r0_or_BB: Какой тип питания использовать RO или BB?
+form.oktogoType.oktogo_api_password_access: 'Пароль для доступа к API Oktogo.ru'
+form.oktogoType.username: 'Имя пользователя'
+form.oktogoType.oktogo_ru_username: 'Имя пользователя в Oktogo.ru'
+form.roomType.room_type_id: 'ID типа номера'
+form.roomType.in_service_settings: 'в настройках сервиса'
+form.tariffType.tariff_id: 'ID тарифа'
+form.tariffType.in_service_settings: 'в настройках сервиса'
+form.vashotelType.in_included: 'Включен?'
+form.vashotelType.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
+form.vashotelType.api_key: 'Ключ API'
+form.vashotelType.vashotel_ru_settings_key: 'Ключ, который задается в настройках гостиницы ВашОтель.RU'
+form.vashotelType.hotel_id: 'ID отеля'
+form.vashotelType.vashotel_ru_settings_hotel_id: 'ID отеля в настройках ВашОтель.RU'
+form.vashotelType.breakfast: 'Завтрак?'
+form.vashotelType.r0_or_BB: 'Какой тип питания использовать RO или BB?'
 controller.bookingController.settings_saved_success: 'Настройки успешно сохранены.'
 controller.ostrovokController.settings_saved_success: 'Настройки успешно сохранены.'
 controller.channelManagerController.sync_end: 'Синхронизация окончена.'
@@ -39,29 +59,23 @@ controller.oktogoController.sync_error: 'Во время синхронизац�
 controller.oktogoController.tariffs_sync_success: 'Тарифы успешно синхронизированы.'
 controller.vashotelController.rooms_sync_success: 'Номера успешно синхронизированы.'
 controller.vashotelController.sync_error: 'Во время синхронизации произошла ошибка. Попробуйте еще раз.'
-controller.vashotelController.rooms_sync_success: 'Тарифы успешно синхронизированы.'
 controller.vashotelController.settings_saved_success: 'Настройки успешно сохранены.'
 services.channelManager.sync_error_check_interaction_settings: ': ошибка синхронизации! Проверьте настройки взаимодействия и при повторении этой ошибки обратитесь в службу поддержки MaxiBooking.'
 roomtype.placeholder: 'тип номера соответствия номеру в канале'
 tarifftype.placeholder: 'тариф соответствия тарифу в канале'
-form.ostrovokType.in_included: Включен?
-form.ostrovokType.hotel_id: ID отеля
-form.ostrovokType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
-form.ostrovokType.ostrovok_ru_settings_hotel_id:  ID отеля в настройках Ostrovok.ru
-
-
-#myAllocator
+form.ostrovokType.in_included: 'Включен?'
+form.ostrovokType.hotel_id: 'ID отеля'
+form.ostrovokType.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
+form.ostrovokType.ostrovok_ru_settings_hotel_id: 'ID отеля в настройках Ostrovok.ru'
 form.myallocatorType.username: Логин
-form.myallocatorType.username_desc: Логин для доступа в личный кабинет. Не будет сохранен.
+form.myallocatorType.username_desc: 'Логин для доступа в личный кабинет. Не будет сохранен.'
 form.myallocatorType.password: Пароль
-form.myallocatorType.password_desc: Пароль для доступа в личный кабинет. Не будет сохранен.
-form.myallocatorType.isEnabled: Включен?
-form.myallocatorType.should_we_use_in_channel_manager: Использовать ли в Channel manager?
+form.myallocatorType.password_desc: 'Пароль для доступа в личный кабинет. Не будет сохранен.'
+form.myallocatorType.isEnabled: 'Включен?'
+form.myallocatorType.should_we_use_in_channel_manager: 'Использовать ли в Channel manager?'
 form.myallocatorType.hotels: Отели
-controller.myallocatorController.settings_saved_success: Настройки успешно сохранены
-controller.myallocatorController.invalid_credentials: Неверные логин/пароль для от личного кабинета
-
-
-form.roomTypeTasks.checkIn: При заселении
-form.roomTypeTasks.checkOut: При выезде
-form.roomTypeTasks.daily: Каждые n дней проживания
+controller.myallocatorController.settings_saved_success: 'Настройки успешно сохранены'
+controller.myallocatorController.invalid_credentials: 'Неверные логин/пароль для от личного кабинета'
+form.roomTypeTasks.checkIn: 'При заселении'
+form.roomTypeTasks.checkOut: 'При выезде'
+form.roomTypeTasks.daily: 'Каждые n дней проживания'
