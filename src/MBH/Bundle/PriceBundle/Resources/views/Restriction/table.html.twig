@@ -30,15 +30,15 @@
                 </tr>
 
                 {% set categories = {
-                    'minStayArrival': 'Мин. длина брони (заезд)',
-                    'maxStayArrival': 'Макс. длина брони (заезд)',
-                    'minStay': 'Мин. длина брони (сквозное)',
-                    'maxStay': 'Макс. длина брони (сквозное)',
-                    'minBeforeArrival': 'Мин. дней до заезда',
-                    'maxBeforeArrival': 'Макс. дней до заезда',
-                    'closedOnArrival': 'Нет заезда',
-                    'closedOnDeparture': 'Нет выезда',
-                    'closed': 'Закрыто',
+                    'minStayArrival': 'mbhpricebundle.view.restriction.table.mindlinabroni'|trans,
+                    'maxStayArrival': 'mbhpricebundle.view.restriction.table.maksDlinaBroniZaezd'|trans,
+                    'minStay': 'mbhpricebundle.view.restriction.table.mindlinabroniSkvoznoe'|trans,
+                    'maxStay': 'mbhpricebundle.view.restriction.table.maxdlinabroniSkvoznoe'|trans,
+                    'minBeforeArrival': 'mbhpricebundle.view.restriction.table.minDneyDoZaezda'|trans,
+                    'maxBeforeArrival': 'mbhpricebundle.view.restriction.table.maxDneyDoZaezda'|trans,
+                    'closedOnArrival': 'mbhpricebundle.view.restriction.table.netzayezda'|trans,
+                    'closedOnDeparture':'mbhpricebundle.view.restriction.table.netvyyezda'|trans,
+                    'closed':'mbhpricebundle.view.restriction.table.zakryto'|trans,
                 } %}
 
                 {% for categoryId, category in categories %}

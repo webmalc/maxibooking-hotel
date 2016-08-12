@@ -18,9 +18,9 @@
             {{ form_end(form) }}
 
             <div class="bg-gray color-palette alert">
-                URL для уведомлений: {{ url('online_form_check_order') }}</br>
-                URL успешной оплаты: {{ url('api_success_url') }}</br>
-                URL неуспешной оплаты: {{ url('api_fail_url') }}
+                URL {{ 'mbhclientbundle.view.clientconfig.paymentsystem.dlyauvedomleniy'|trans }} : {{ url('online_form_check_order') }}</br>
+                URL {{ 'mbhclientbundle.view.clientconfig.paymentsystem.uspeshnoyoplaty'|trans }} : {{ url('api_success_url') }}</br>
+                URL {{ 'mbhclientbundle.view.clientconfig.paymentsystem.neuspeshnoyoplaty'|trans }} : {{ url('api_fail_url') }}
             </div>
 
             {% if entity %}

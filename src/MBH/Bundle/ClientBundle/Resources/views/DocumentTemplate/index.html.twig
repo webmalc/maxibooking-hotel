@@ -1,6 +1,6 @@
 {% extends 'MBHClientBundle:DocumentTemplate:layout.html.twig' %}
 
-{% set small_title = "список" %}
+{% set small_title = "{{ 'mbhclientbundle.view.documenttemplate.index.spisok'|trans }} " %}
 {% set layout = "box" %}
 
 {% block content %}
@@ -9,9 +9,9 @@
         <thead>
         <tr>
             <th class="td-xs"></th>
-            <th>Название</th>
-            <th>Отель</th>
-            <th>Организация</th>
+            <th>{{ 'mbhclientbundle.view.documenttemplate.index.nazvaniye'|trans }} </th>
+            <th>{{ 'mbhclientbundle.view.documenttemplate.index.otelʹ'|trans }} </th>
+            <th>{{ 'mbhclientbundle.view.documenttemplate.index.organizatsiya'|trans }} </th>
             <th class="td-sm"></th>
         </tr>
         </thead>
@@ -22,7 +22,8 @@
                 <td>
                     {% embed 'MBHBaseBundle:Actions:entry_link.html.twig' with {'entity': entity, 'route': 'document_templates'}%}{% endembed %}
                 </td>
-                <td>{{ entity.hotel ? entity.hotel : 'Все отели' }}</td>
+                {% set allhotellss = 'mbhclientbundle.view.documenttemplate.index.vseoteli'|trans %}
+                <td>{{ entity.hotel ? entity.hotel : 'allhotellss' }}</td>
                 <td>{{ entity.organization }}</td>
                 <td class="table-actions-td text-center">
                     {% embed 'MBHBaseBundle:Actions:entry_actions.html.twig'

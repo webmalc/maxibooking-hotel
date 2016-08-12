@@ -6,13 +6,13 @@
 
         <div class="alert alert-primary text-center">
             <div>
-                <i class="fa fa-spinner fa-spin"></i> Ваша смена заблокирована и ожидает сдачи.
+                <i class="fa fa-spinner fa-spin"></i> {{ 'mbhuserbundle.view.workshift.wait.vashasmenazablokirovanaiozhidayetsdachi'|trans }} .
             </div>
             <div>
-                Длительность: {{ workShift.duration.format('%h ч. %i мин.') }}
+                {{ 'mbhuserbundle.view.workshift.wait.dlitelʹnostʹ'|trans }} : {{ workShift.duration.format('%h ч. %i мин.') }}
             </div>
             <div>
-                Касса: {{ workShift.cashIncomeTotal|number_format(2) }} руб.
+                {{ 'mbhuserbundle.view.workshift.wait.kassa'|trans }} : {{ workShift.cashIncomeTotal|number_format(2) }} {{ 'mbhuserbundle.view.workshift.wait.rub'|trans }} .
             </div>
         </div>
 
@@ -26,9 +26,9 @@
 
             <div class="text-center">
                 <div class="btn-group">
-                    <a href="{{ path('work_shift_start', {id: workShift.id}) }}" class="btn btn-info btn-lg"><i class="fa fa-clock-o"> Возобновить</i></a>
-                    <!--<a href="#" class="btn btn-info btn-lg"><i class="fa fa-report"> Отчёт</i></a>-->
-                    <a href="{{ path('fos_user_security_logout') }}" class="btn btn-default btn-lg"><i class="fa fa-sign-out"></i> Выйти</a>
+                    <a href="{{ path('work_shift_start', {id: workShift.id}) }}" class="btn btn-info btn-lg"><i class="fa fa-clock-o"> {{ 'mbhuserbundle.view.workshift.wait.vozobnovitʹ'|trans }} </i></a>
+                    <!--<a href="#" class="btn btn-info btn-lg"><i class="fa fa-report"> {{ 'mbhuserbundle.view.workshift.wait.otchet'|trans }} </i></a>-->
+                    <a href="{{ path('fos_user_security_logout') }}" class="btn btn-default btn-lg"><i class="fa fa-sign-out"></i> {{ 'mbhuserbundle.view.workshift.wait.vyyti'|trans }} </a>
                 </div>
             </div>
             <div class="login-box-body">

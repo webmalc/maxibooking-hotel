@@ -10,11 +10,11 @@
 
             {% if tariff is null %}
                 <tr class="mbh-grid-header1 info">
-                    <td colspan="{{ period|length + 1 }}"><strong>Номера в продаже</strong></td>
+                    <td colspan="{{ period|length + 1 }}"><strong>{{ 'mbhpricebundle.view.roomcache.table.nomeravprodazhe'|trans }} </strong></td>
                 </tr>
             {% else %}
                 <tr class="mbh-grid-header1 info">
-                    <td colspan="{{ period|length + 1 }}"><strong>Квоты по тарифам - {{ tariff }}</strong></td>
+                    <td colspan="{{ period|length + 1 }}"><strong>{{ 'mbhpricebundle.view.roomcache.table.kvotypotarifam'|trans }} - {{ tariff }}</strong></td>
                 </tr>
             {% endif %}
 
@@ -24,7 +24,7 @@
 
                 <tr class="mbh-grid-header2 warning">
                     <td colspan="{{ period|length + 1 }}"><strong>{{ roomType }}</strong>&nbsp;-&nbsp;
-                        <small>{{ tariff is null ? 'Номера в продаже' : 'Квоты по тарифам - ' ~ tariff }}</small>
+                        <small>{{ tariff is null ? 'mbhpricebundle.view.roomcache.table.nomeravprodazhe'|trans : 'mbhpricebundle.view.roomcache.table.kvotypotarifam'|trans ~ ' - ' ~ tariff }}</small>
                     </td>
                 </tr>
 
@@ -35,9 +35,9 @@
                     {% endfor %}
                 </tr>
 
-                {% set cats = {'totalRooms': 'В продаже', 'packagesCount': 'Забронировано', 'packagesCountPercent': 'Забронировано в %', 'leftRooms': 'Осталось'} %}
+                {% set cats = {'totalRooms': 'mbhpricebundle.view.roomcache.table.vprodazhe'|trans, 'packagesCount':  'mbhpricebundle.view.roomcache.table.zabronirovano'|trans, 'packagesCountPercent': 'mbhpricebundle.view.roomcache.table.zabronirovano'|trans ~ ' %', 'leftRooms': 'mbhpricebundle.view.roomcache.table.ostalosʹ'|trans } %}
                 {% if tariff is null and false %}
-                    {% set cats = cats|merge({'isClosed': 'Закрыто'}) %}
+                    {% set cats = cats|merge({'isClosed': 'mbhpricebundle.view.roomcache.table.zakryto'|trans}) %}
                 {% endif %}
 
                 {% for categoryId, category in cats %}

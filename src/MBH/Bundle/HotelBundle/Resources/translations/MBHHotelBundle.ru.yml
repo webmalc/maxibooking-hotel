@@ -1,21 +1,20 @@
 views.tasktype.index.name: Название
-views.tasktype.index.default_role: Исполнители по умолчанию
+views.tasktype.index.default_role: 'Исполнители по умолчанию'
 views.tasktype.index.created: Создан
 views.task.index.status: Cтатус
-views.task.index.tasktype: Тип задачи
+views.task.index.tasktype: 'Тип задачи'
 views.task.index.task: Задачи
 views.task.index.priority: Приоритет
 views.task.index.performer: Исполнитель
 views.task.index.group: Группа
-views.task.index.isDeleted: Удаленные?
+views.task.index.isDeleted: 'Удаленные?'
 views.task.index.deleted: Удалена
-views.task.index.roomType: Тип комнаты
+views.task.index.roomType: 'Тип комнаты'
 views.task.index.room: Комната
-views.task.index.users:   Исполнитель
-views.task.index.assign:   Назначена
-views.task.index.guest:    Клиент
+views.task.index.users: Исполнитель
+views.task.index.assign: Назначена
+views.task.index.guest: Клиент
 views.task.index.role: Роли
-views.task.index.group: Группа
 views.task.index.groups: Группы
 views.task.index.createAt: Создано
 views.task.index.dates: Даты
@@ -24,29 +23,22 @@ views.task.index.period: Статус
 views.task.index.createdAt: Создано
 views.task.index.createdBy: Создал
 views.task.index.description: Комментарий
-views.task.index.number: Номер комнаты
+views.task.index.number: 'Номер комнаты'
 views.task.index.type: Тип
 views.task.index.updateAt: Обновлено
-views.task.index.isDeleted: Удаленные?
-
-views.task.index.confirm_in_process: Взять задачу на выполнение?
-views.task.index.confirm_closed: Закрыть задачу?
-
-views.task.index.waited: Ждут выполнения
-views.task.index.in_process: Задачи в работе
-views.task.index.info: Информация о задаче
+views.task.index.confirm_in_process: 'Взять задачу на выполнение?'
+views.task.index.confirm_closed: 'Закрыть задачу?'
+views.task.index.waited: 'Ждут выполнения'
+views.task.index.in_process: 'Задачи в работе'
+views.task.index.info: 'Информация о задаче'
 views.task.index.cancel: Отмена
-
 views.task.index.view: Просмотр
 views.task.index.close: Завершить
-views.task.index.take_in_process: В работу
-views.task.index.tasks_empaty: Нет задач
-
-
-views.task.index.detail.role: Группа пользователей
+views.task.index.take_in_process: 'В работу'
+views.task.index.tasks_empaty: 'Нет задач'
+views.task.index.detail.role: 'Группа пользователей'
 views.task.index.detail.type: Задача
 views.task.index.detail.performer: Исполнитель
-#views.task.index.detail.number: Номер комнаты
 views.task.index.detail.room: Комната
 views.task.index.detail.priority: Приоритет
 views.task.index.detail.status: Статус
@@ -54,108 +46,89 @@ views.task.index.detail.date: Дата
 views.task.index.detail.createdAt: Создано
 views.task.index.detail.createdBy: Создал
 views.task.index.detail.description: Комментарий
-
 views.task.priority.low: Низкий
 views.task.priority.average: Средний
-views.task.priority.high : Высокий
-
+views.task.priority.high: Высокий
 views.filter.placeholder.status: Статус
-views.filter.placeholder.status: Обновлено
 views.filter.placeholder.priority: Приоритет
-
-views.hotel.edit.editing_number: "редактирование #"
-views.hotel.extended.editing_number: "редактирование #"
+views.hotel.edit.editing_number: 'редактирование #'
+views.hotel.extended.editing_number: 'редактирование #'
 views.hotel.extended.close: Закрыть
-views.hotel.extended.how_to_know_hotel_coordinates: Как узнать координаты отеля?
-views.hotel.extended.google_maps: Google maps
-views.hotel.extended.help_is_on_site: справка на сайте
-views.hotel.extended.go_to_site: Перейти на сайт
-views.hotel.extended.find_hotel_on_map: Найти отель на карте. Можно воспользоваться поисковой строкой для поиска по адресу отеля.
-views.hotel.extended.left_click_on_hotel_on_map: Нажать левую кнопку на расположении отеля на карте. После этого под поисковой строкой появится окно с названием местности и координатами выбранной точки.
-views.hotel.extended.copy_coordinates_like_this: Скопировать координаты (пример: 55.751948, 37.617456). Первая цифра - широта, вторая - долгота.
-views.hotel.extended.yandex_maps: Yandex maps
-views.hotel.extended.right_click_on_hotel_on_map: Нажать правую кнопку на расположении отеля на карте и выбрать пункт меню "Что здесь". После этого слева от карты появится вкладка с координатами выбранной точки.
-views.hotel.extended.yandex_copy_coordinates_like_this: Скопировать координаты в скобках(пример: Широта: 55°45′7.24″N (55.752012) Долгота: 37°37′3″E (37.617501)).
+views.hotel.extended.how_to_know_hotel_coordinates: 'Как узнать координаты отеля?'
+views.hotel.extended.google_maps: 'Google maps'
+views.hotel.extended.help_is_on_site: 'справка на сайте'
+views.hotel.extended.go_to_site: 'Перейти на сайт'
+views.hotel.extended.find_hotel_on_map: 'Найти отель на карте. Можно воспользоваться поисковой строкой для поиска по адресу отеля.'
+views.hotel.extended.left_click_on_hotel_on_map: 'Нажать левую кнопку на расположении отеля на карте. После этого под поисковой строкой появится окно с названием местности и координатами выбранной точки.'
+views.hotel.extended.copy_coordinates_like_this: 'Скопировать координаты (пример: 55.751948, 37.617456). Первая цифра - широта, вторая - долгота.'
+views.hotel.extended.yandex_maps: 'Yandex maps'
+views.hotel.extended.right_click_on_hotel_on_map: 'Нажать правую кнопку на расположении отеля на карте и выбрать пункт меню "Что здесь". После этого слева от карты появится вкладка с координатами выбранной точки.'
+views.hotel.extended.yandex_copy_coordinates_like_this: 'Скопировать координаты в скобках(пример: Широта: 55°45′7.24″N (55.752012) Долгота: 37°37′3″E (37.617501)).'
 views.hotel.index.name: Название
 views.hotel.index.prefix: Префикс
-views.hotel.index.sale_dates: Дни продажи
+views.hotel.index.sale_dates: 'Дни продажи'
 views.hotel.index.chosen_by_default: Основной
-views.hotel.index.edit_record: "Редактирование записи"
-views.hotel.index.delete_record: "Удаление записи"
-views.hotel.layout.hotels: "Отели"
-views.hotel.notFound.no_hotel_created: У вас не создано ни одного отеля!
-views.hotel.notFound.create_new_hotel_to_continue: Создайте новый отель для продолжения работы.
-views.hotel.notFound.create_hotel: Создать отель
-views.hotel.notFound.you_have_no_permissions: У вас нет прав для работы с отелем!
-views.hotel.notFound.ask_admin: Обратитесь к администратору для получения разрешения.
+views.hotel.index.edit_record: 'Редактирование записи'
+views.hotel.index.delete_record: 'Удаление записи'
+views.hotel.layout.hotels: Отели
+views.hotel.notFound.no_hotel_created: 'У вас не создано ни одного отеля!'
+views.hotel.notFound.create_new_hotel_to_continue: 'Создайте новый отель для продолжения работы.'
+views.hotel.notFound.create_hotel: 'Создать отель'
+views.hotel.notFound.you_have_no_permissions: 'У вас нет прав для работы с отелем!'
+views.hotel.notFound.ask_admin: 'Обратитесь к администратору для получения разрешения.'
 views.hotel.tabs.main_info: 'Основная информация'
 views.hotel.tabs.additional_settings: 'Дополнительные настройки'
 views.hotel.tabs.birthplace: 'Место рождения'
 views.hotel.tabs.document_relation: 'Удостоверение личности'
-views.hotel.tabs.address: 'Адрес'
-views.hotel.tabs.visa: 'Виза'
+views.hotel.tabs.address: Адрес
+views.hotel.tabs.visa: Виза
 views.hotel.tabs.unwelcome: 'Черный список'
-views.hotel.tabs.main_info_required: "Необходимо заполнить основную информацию!"
-
-# RoomType
-views.roomType.edit.edit_room_type: "редактирование типа номера #"
-views.roomType.editRoom.edit_room_type: "редактирование номера для типа номера <"
-views.roomType.editRoom.edit_room_for_room_type: "редактирование номера для типа номера"
-views.roomType.editRoom.edit_bed_for_room_type: "редактирование койко-места для типа номера"
+views.hotel.tabs.main_info_required: 'Необходимо заполнить основную информацию!'
+views.roomType.edit.edit_room_type: 'редактирование типа номера #'
+views.roomType.editRoom.edit_room_type: 'редактирование номера для типа номера <'
+views.roomType.editRoom.edit_room_for_room_type: 'редактирование номера для типа номера'
+views.roomType.editRoom.edit_bed_for_room_type: 'редактирование койко-места для типа номера'
 views.roomType.editRoom.delete: Удалить
-views.roomType.generateRooms.beds_generation_for_room_type: "генерация койко-мест для типа номера "
-views.roomType.generateRooms.rooms_generation_for_room_type: "генерация номеров для типа номера "
-views.roomType.generateRooms.generate_rooms: Сгенерировать номера
+views.roomType.generateRooms.beds_generation_for_room_type: 'генерация койко-мест для типа номера '
+views.roomType.generateRooms.rooms_generation_for_room_type: 'генерация номеров для типа номера '
+views.roomType.generateRooms.generate_rooms: 'Сгенерировать номера'
 views.roomType.generateRooms.cancel: Отмена
 views.roomType.generateRooms.delete: Удалить
-views.roomType.index.new_room_type: Новый тип номера
-views.roomType.index.edit_room_type: "Редактировать тип номера <%name%>"
+views.roomType.index.new_room_type: 'Новый тип номера'
+views.roomType.index.edit_room_type: 'Редактировать тип номера <%name%>'
 views.roomType.index.edit: Редактировать
-views.roomType.index.create_rooms_for_room_type: "Создать номера для типа номера <%name%>"
+views.roomType.index.create_rooms_for_room_type: 'Создать номера для типа номера <%name%>'
 views.roomType.index.add: Добавить
-views.roomType.index.bed: 'койко-место'
-views.roomType.index.room: 'номер'
-views.roomType.index.generate_rooms_for_room_type: "Сгенерировать номера для типа номера <%name%>"
+views.roomType.index.bed: койко-место
+views.roomType.index.room: номер
+views.roomType.index.generate_rooms_for_room_type: 'Сгенерировать номера для типа номера <%name%>'
 views.roomType.index.generate: Сгенерировать
-views.roomType.index.delete_room_type: "Удалить тип номера <%name%>"
+views.roomType.index.delete_room_type: 'Удалить тип номера <%name%>'
 views.roomType.index.delete: Удалить
-views.roomType.index.room_fund: Номерной фонд
+views.roomType.index.room_fund: 'Номерной фонд'
 views.roomType.index.beds: Койко-места
 views.roomType.index.name: Название
 views.roomType.index.housing: Корпус
 views.roomType.index.floor: Этаж
 views.roomType.index.status: Статус
-views.roomType.layout.rooms: "Номера"
-views.roomType.layout.create_room_type: "cоздание типа номера"
-views.roomType.newRoom.create_bed_for_room_type: "создание койко-места для типа номера "
-views.roomType.newRoom.create_room_for_room_type: "создание номера для типа номера "
+views.roomType.layout.rooms: Номера
+views.roomType.layout.create_room_type: 'cоздание типа номера'
+views.roomType.newRoom.create_bed_for_room_type: 'создание койко-места для типа номера '
+views.roomType.newRoom.create_room_for_room_type: 'создание номера для типа номера '
 views.roomType.roomListButtons.edit_record: 'Редактирование записи'
 views.roomType.roomListButtons.delete_record: 'Удаление записи'
 views.roomType.help.empty_facilities: 'Используются удобства из типа номера'
-
 views.hotel.index.confirm_delete: 'Вы действительно хотите удалить отель "%hotelname%"?'
-views.task.layout.tasks: "Задачи"
-
-views:
-    roomTypeCaterory:
-        layout:
-            index: Группы номеров
-
-# Housing
+views.task.layout.tasks: Задачи
 views.corpus.name: Имя
-views.corpus.internal_name: Внутреннее имя
+views.corpus.internal_name: 'Внутреннее имя'
 views.corpus.city: Город
-views.corpus.settlement: Населенный пункт
+views.corpus.settlement: 'Населенный пункт'
 views.corpus.address: Адрес
 views.corpus.street: Улица
 views.corpus.house: Дом
 views.corpus.flat: Квартира
 views.corpus.corpus: Копрус
 views.corpus: Корпус
-
-
 view.create_task_type_categoty: 'Новая категория'
-
-
-
-
+views.roomTypeCaterory.layout.index: 'Группы номеров'

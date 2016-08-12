@@ -9,7 +9,8 @@
 
     {{ form_start(form, {'action': path('user_profile_update'), 'method': 'PUT', 'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
-    {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': 'Сменить пароль'} %}
+    {% set changepsswd = 'mbhuserbundle.view.profile.profile.smenitʹparolʹ'|trans %}
+    {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, 'save_text': changepsswd} %}
     {{ form_end(form) }}
 
 {% endblock %}

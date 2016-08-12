@@ -25,16 +25,16 @@
                         <div style="text-align: center;margin-top: 5px;">
                             {% if not image.isMain %}
                                 <a href="{{ path('room_type_image_make_main', {'id': entity.id, 'imageId' : image.getId}) }}"
-                                   class="btn btn-success btn-xs" data-toggle="tooltip" data-original-title="Cделать главной">
+                                   class="btn btn-success btn-xs" data-toggle="tooltip" data-original-title="{{ 'mbhhotelbundle.view.roomtype.editimages.delatʹglavnoy'|trans }} ">
                                     <i class="fa fa-check"></i>
                                 </a>
                             {% else %}
-                                <span class="btn btn-info btn-xs disabled"><i class="fa fa-check" alt="Главная фотография"></i></span>
+                                <span class="btn btn-info btn-xs disabled"><i class="fa fa-check" alt="{{ 'mbhhotelbundle.view.roomtype.editimages.glavnayafotografiya'|trans }} "></i></span>
                             {% endif %}
                             <a href="{{ path('room_type_image_delete', {'id': entity.id, 'imageId' : image.getId}) }}"
                                class="btn btn-danger btn-xs delete-link" data-toggle="tooltip"
                                style="margin-left: 5px;"
-                               data-original-title="Удалить картинку"><i class="fa fa-trash-o"></i>
+                               data-original-title="{{ 'mbhhotelbundle.view.roomtype.editimages.udalitʹkartinku'|trans }} "><i class="fa fa-trash-o"></i>
                             </a>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 {% extends 'MBHHotelBundle:RoomType:layout.html.twig' %}
 
-{% set small_title = "список" %}
+{% set small_title =  'mbhhotelbundle.view.roomtype.index.spisok'|trans %}
 {% set layout = "tabs" %}
 
 {% block content %}
@@ -14,7 +14,8 @@
                     {% if not entity.isEnabled %}<del class="text-danger">{% endif %}
                         {{ entity.name }}
                         {% if client_config() and client_config().useRoomTypeCategory %}
-                            <br><small>{{ entity.category ? entity.category : 'группа не указана' }}</small>
+                            {% set groups = 'mbhhotelbundle.view.roomtype.index.gruppaneukazana'|trans %}
+                            <br><small>{{ entity.category ? entity.category : 'groups' }}</small>
                         {% endif %}
                     {% if not entity.isEnabled %}</del>{% endif %}
                 </a>

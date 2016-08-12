@@ -108,8 +108,8 @@
     {% endif %}
 
     <div style="padding:10px 0;margin:5px 0 20px;">
-        <!--<div style="width:50%;float:left;text-align:center;font-family:Tahoma,Arial;color:#333;font-size:14px;"><b>Способ
-                оплаты:</b> Наличными в отеле
+        <!--<div style="width:50%;float:left;text-align:center;font-family:Tahoma,Arial;color:#333;font-size:14px;"><b>{{ 'mbhbasebundle.view.mailer.order.sposob'|trans }} 
+                {{ 'mbhbasebundle.view.mailer.order.oplaty'|trans }} :</b> {{ 'mbhbasebundle.view.mailer.order.nalichnymivotele'|trans }} 
         </div>-->
         <div style="width:100%;text-align:right;font-family:Tahoma,Arial;color:#333;font-size:14px;"><b>{{ 'mailer.order.amount'|trans(transParams) }}:</b>
             {{ order.price|number_format(2) }}

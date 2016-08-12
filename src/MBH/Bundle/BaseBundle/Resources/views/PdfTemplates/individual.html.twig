@@ -12,18 +12,18 @@
     <table class="document" border="1" style="text-align: center" cellpadding="1" cellspacing="0">
         {% for i in 1..2 %}
         <tr>
-            <td rowspan="6" class="type">Извещение</td>
+            <td rowspan="6" class="type">{{ 'mbhbasebundle.view.pdftemplates.individual.izveshcheniye'|trans }} </td>
         </tr>
 
         <tr>
             <td colspan="3" class="title">
-                <strong>ИНН {{ myOrganization.inn }} КПП {{ myOrganization.kpp }}</strong></br>
+                <strong>{{ 'mbhbasebundle.view.pdftemplates.individual.inn'|trans }} {{ myOrganization.inn }} {{ 'mbhbasebundle.view.pdftemplates.individual.kpp'|trans }} {{ myOrganization.kpp }}</strong></br>
                 <strong>{{ myOrganization.name }}</strong></br>
                 <strong>{{ myOrganization.bank }}</strong></br>
-                Расчетный счет № <strong>{{ myOrganization.checkingAccount }}</strong> БИК: <strong>{{ myOrganization.bankBik }}</strong>
+                {{ 'mbhbasebundle.view.pdftemplates.individual.raschetnyyschet'|trans }} № <strong>{{ myOrganization.checkingAccount }}</strong> {{ 'mbhbasebundle.view.pdftemplates.individual.bik'|trans }} : <strong>{{ myOrganization.bankBik }}</strong>
             </td>
         <tr>
-            <td colspan="3">Корр.счёт: <strong>{{ myOrganization.correspondentAccount }}</strong></td>
+            <td colspan="3">{{ 'mbhbasebundle.view.pdftemplates.individual.korr'|trans }} .{{ 'mbhbasebundle.view.pdftemplates.individual.schët'|trans }} : <strong>{{ myOrganization.correspondentAccount }}</strong></td>
         </tr>
 
         <tr>
@@ -33,24 +33,24 @@
         <tr>
         <tr>
             <td colspan="3">
-                <div class="fio-title">Фамилия И. О., адрес плательщика</div>
+                <div class="fio-title">{{ 'mbhbasebundle.view.pdftemplates.individual.familiyai'|trans }} , {{ 'mbhbasebundle.view.pdftemplates.individual.adresplatelʹshchika'|trans }} </div>
             </td>
         <tr>
 
         <tr>
 
         <tr>
-            <td rowspan="5">Кассир</td>
+            <td rowspan="5">{{ 'mbhbasebundle.view.pdftemplates.individual.kassir'|trans }} </td>
         </tr>
         <tr>
-            <td class="info">Вид платежа</td>
-            <td>Дата</td>
-            <td>Сумма</td>
+            <td class="info">{{ 'mbhbasebundle.view.pdftemplates.individual.vidplatezha'|trans }} </td>
+            <td>{{ 'mbhbasebundle.view.pdftemplates.individual.data'|trans }} </td>
+            <td>{{ 'mbhbasebundle.view.pdftemplates.individual.summa'|trans }} </td>
         </tr>
         <tr>
             <td class="info">
                 <strong style="float: left">
-                    Услуги отеля по счету №{{ cashDocument.number }}. Заказ №{{ cashDocument.order.id }} от {{ cashDocument.documentDate|date('d.m.Y') }} г.
+                    {{ 'mbhbasebundle.view.pdftemplates.individual.uslugiotelyaposchetu'|trans }} №{{ cashDocument.number }}. {{ 'mbhbasebundle.view.pdftemplates.individual.zakaz'|trans }} №{{ cashDocument.order.id }} {{ 'mbhbasebundle.view.pdftemplates.individual.ot'|trans }} {{ cashDocument.documentDate|date('d.m.Y') }} г.
                 </strong>
             </td>
             <td>{{ cashDocument.documentDate|date('d.m.Y') }}</td>
@@ -58,13 +58,13 @@
         </tr>
         <tr>
             <td rowspan="2" class="info">
-                <span style="float: left">Плательщик:</span>
+                <span style="float: left">{{ 'mbhbasebundle.view.pdftemplates.individual.platelʹshchik'|trans }} :</span>
             </td>
-            <td>Пеня</td>
+            <td>{{ 'mbhbasebundle.view.pdftemplates.individual.penya'|trans }} </td>
             <td>0</td>
         </tr>
         <tr>
-            <td>Всего</td>
+            <td>{{ 'mbhbasebundle.view.pdftemplates.individual.vsego'|trans }} </td>
             <td>{{ cashDocument.total }}</td>
         </tr>
         {% endfor %}
