@@ -22,7 +22,7 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 
 
-abstract class AbstractTranslateConverter
+abstract class AbstractTranslateConverter implements RuTranslateInterface
 {
 
 
@@ -31,6 +31,7 @@ abstract class AbstractTranslateConverter
 //    const RU_PATTERN = '/([А-Яа-яЁё]+,?.?\??\-?\s*)+/u';
     const RU_PATTERN = '/([А-Яа-яЁё]+\s*[\-\.\?\,]?\s*)+/u';
 
+    const TYPE = "AbstractParser";
 
     protected $bundle;
 
@@ -79,7 +80,12 @@ abstract class AbstractTranslateConverter
 
     protected function execute($emulate = true)
     {
-        foreach ($this->getFiles() as $file) {
+        $files = $this->getFiles();
+        if (!$files) {
+            $this->addMessage('Пропускаем, нет директории '.static::FOLDER.' в текущем бандле ', $this->bundle->getName());
+            return true;
+        }
+        foreach ($files as $file) {
 
             $changed = false;
             $contents = $file->getContents();
@@ -93,6 +99,7 @@ abstract class AbstractTranslateConverter
                     $convertPattern = $this->getConvertPattern($messageId);
                     $resultLine = str_replace($matchedOrigText, $convertPattern, $line);
                     $this
+                        ->addMessage('Текущий тип', static::TYPE)
                         ->addMessage('Текущий файл', $file->getPathname())
                         ->addMessage('Исходная строка', $line)
                         ->addMessage('Найден текст ', $matchedOrigText)
@@ -111,6 +118,7 @@ abstract class AbstractTranslateConverter
                 if ($changed) {
                     $newfile = implode("\n", $lines);
                     $this->saveChangesToFile($file->getPathname(), $newfile);
+                    $this->addMessage('Произведена запись в файл '. $file->getPathname());
                 }
 
             }
@@ -118,10 +126,14 @@ abstract class AbstractTranslateConverter
 
         }
         if (!$emulate) {
-            $this->saveTranslationMessages();
+            try {
+                $this->saveTranslationMessages();
+            } catch (RuTranslateException $e) {
+                $this->addMessage($e->getMessage());
+            }
+
         }
 
-        $this->addMessage('Done without errors');
     }
 
 
@@ -180,16 +192,25 @@ abstract class AbstractTranslateConverter
         $fs = new Filesystem();
         try {
             $fs->dumpFile($filename, $lines);
+        }
+            catch (\InvalidArgumentException $e) {
+            throw new RuTranslateException('Проблема с записью файлов ' . $e->getMessage());
+
         } catch (IOException $e) {
+
             throw new RuTranslateException('Проблема с записью файлов ' . $e->getMessage());
         }
     }
 
-    protected function getFiles(): Finder
+    protected function getFiles()
     {
+        $fs = new Filesystem();
         $finder = new Finder();
         $pathPatterns = $this->getPathPatterns();
-        return $finder->files()->name($pathPatterns['filesPattern'])->in($pathPatterns['directory']);
+        if ($fs->exists($pathPatterns['directory'])) {
+            return $finder->files()->name($pathPatterns['filesPattern'])->in($pathPatterns['directory']);
+        }
+        return false;
     }
 
 

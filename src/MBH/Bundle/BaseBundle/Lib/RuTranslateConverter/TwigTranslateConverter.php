@@ -21,6 +21,8 @@ class TwigTranslateConverter extends AbstractTranslateConverter
 
     const FOLDER = '/Resources/views';
 
+    const TYPE = "TwigParser";
+
     /**
      * @param $string
      * @return mixed

@@ -15,6 +15,7 @@ class DocumentTranslateConverter extends AbstractTranslateConverter
 
     const FOLDER = '/Document';
 
+    const TYPE = "DocParser";
 
     /**
      * @param string $string

@@ -16,6 +16,9 @@ class FormTranslateConverter extends AbstractTranslateConverter
 
     const FOLDER = '/Form';
 
+    const TYPE = "FormParser";
+
+
 
     /**
      * @param string $string

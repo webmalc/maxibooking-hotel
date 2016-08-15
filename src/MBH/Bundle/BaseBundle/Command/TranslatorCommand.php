@@ -10,6 +10,7 @@ namespace MBH\Bundle\BaseBundle\Command;
 
 
 use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
+use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\AllTraslateShower;
 use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\DocumentTranslateConverter;
 use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\FormTranslateConverter;
 use MBH\Bundle\BaseBundle\Lib\RuTranslateConverter\TwigTranslateConverter;
@@ -29,10 +30,9 @@ class TranslatorCommand extends ContainerAwareCommand
         $this
             ->setName('mbh:translation:guessermbh')
             ->setDefinition(array(
-                new InputArgument('action', InputArgument::REQUIRED, 'show or convert'),
-                new InputArgument('bundle', InputArgument::REQUIRED, 'The bundle name '),
-                new InputOption('type', null, InputOption::VALUE_REQUIRED, 'twig or form'),
-                new InputOption('force', null, InputOption::VALUE_NONE, 'force convert', null)
+                new InputArgument('action', InputArgument::OPTIONAL, 'show or convert', 'show'),
+                new InputOption('type', null, InputOption::VALUE_OPTIONAL, 'twig/form/doc/all', 'all'),
+                new InputOption('bundle', null, InputOption::VALUE_OPTIONAL, 'The bundle name '),
 
             ))
             ->setDescription('Show/convert no translated twig or forms')
@@ -44,46 +44,22 @@ EOF
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
-//        $kernel = $this->getContainer()->get('kernel');
-//        $bundle = $kernel->getBundle($input->getArgument('bundle'));
-//        $rootPath = $bundle->getPath();
-//        $translationPath = $rootPath . '/Resources/translations';
-//        $extractCatalogue = new MessageCatalogue('ru');
-//        $extractor = $this->getContainer()->get('translation.extractor');
-//        $extractor->extract($rootPath . '/Resources/views/', $extractCatalogue);
-//        return 0;
-
-
         /** @var Kernel $kernel */
         $kernel = $this->getContainer()->get('kernel');
-        if (null === $input->getArgument('bundle') or null === $input->getArgument('action')) {
-            return 1;
+        $bundle = null;
+        if (null !== $input->getOption('bundle')) {
+            try {
+                /** @var Bundle $foundBundle */
+                $bundle = $kernel->getBundle($input->getOption('bundle'));
+            } catch (\InvalidArgumentException $e) {
+                $output->writeln($e->getMessage());
+                throw new InvalidArgumentException('Невозможно найти бандл с именем '. $input->getArgument('bundle'));
+            }
         }
-        try {
-            /** @var Bundle $foundBundle */
-            $bundle = $kernel->getBundle($input->getArgument('bundle'));
-        } catch (\InvalidArgumentException $e) {
-            $output->writeln($e->getMessage());
-            throw new InvalidArgumentException('Невозможно найти бандл с именем '. $input->getArgument('bundle'));
-        }
+
+        $converter = new AllTraslateShower($input, $output, $this->getContainer(), $bundle);
 
         $helper = $this->getHelper('question');
-        switch ($input->getOption('type')) {
-            case 'twig':
-                $converter = new TwigTranslateConverter($bundle, $input, $output, $this->getContainer());
-                break;
-            case 'form':
-                $converter = new FormTranslateConverter($bundle, $input, $output, $this->getContainer());
-                break;
-            case 'doc':
-                $converter = new DocumentTranslateConverter($bundle, $input, $output, $this->getContainer());
-                break;
-            default:
-                throw new InvalidArgumentException('Wrong type (twig/form/doc) only');
-                break;
-        }
-
         switch ($input->getArgument('action')) {
             case 'show':
                 $converter->findEntry();
