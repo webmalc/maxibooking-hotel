@@ -8,10 +8,10 @@
         <thead>
         <tr>
             <th class="td-xs"></th>
-            <th>Отели</th>
-            <th>Типы номеров</th>
-            <th>Гости</th>
-            <th>Включена</th>
+            <th>{{ 'mbhonlinebundle.view.form.index.oteli'|trans }} </th>
+            <th>{{ 'mbhonlinebundle.view.form.index.tipynomerov'|trans }} </th>
+            <th>{{ 'mbhonlinebundle.view.form.index.gosti'|trans }} </th>
+            <th>{{ 'mbhonlinebundle.view.form.index.vklyuchena'|trans }} </th>
             <th class="td-sm"></th>
         </tr>
         </thead>
@@ -23,24 +23,24 @@
                     {% if doc.hotels|length %}
                         {{ doc.hotels|join(', ') }}
                     {% else %}
-                        Все отели
+                        {{ 'mbhonlinebundle.view.form.index.vseoteli'|trans }} 
                     {% endif %}
                 </td>
                 <td>
                     {% if doc.roomTypes %}
-                        <span class="label label-success">Да</span>
+                        <span class="label label-success">{{ 'mbhonlinebundle.view.form.index.da'|trans }} </span>
                     {% endif %}
                 </td>
                 <td>
                     {% if doc.tourists %}
-                        <span class="label label-success">Да</span>
+                        <span class="label label-success">{{ 'mbhonlinebundle.view.form.index.da'|trans }} </span>
                     {% endif %}
                 </td>
                 <td>
                     {% if not doc.enabled %}
-                        <span class="label label-danger">Нет</span>
+                        <span class="label label-danger">{{ 'mbhonlinebundle.view.form.index.net'|trans }} </span>
                     {% else %}
-                        <span class="label label-success">Да</span>
+                        <span class="label label-success">{{ 'mbhonlinebundle.view.form.index.da'|trans }} </span>
                     {% endif %}
                 </td>
                 <td class="table-actions-td text-center">

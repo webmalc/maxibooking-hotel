@@ -12,7 +12,7 @@
         {% set organization = hotel.organization.name %}
     {% endif %}
 {% else %}
-    {% set organization = 'Система управления отелем' %}
+    {% set organization = 'mbhonlinebundle.view.poll.list.sistemaupravleniyaotelem'|trans %}
 {% endif %}
 
 <!DOCTYPE html>
@@ -58,7 +58,7 @@
         <div id="messages" style="margin-left: 20px; margin-right: 20px;">
             {% if app.session.flashbag.keys()|length == 0 and complete %}
                 <div class="alert alert-danger">
-                    Отзыв по этому заказу уже оставлен!
+                    {{ 'mbhonlinebundle.view.poll.list.otzyvpoetomuzakazuuzheostavlen'|trans }} !
                 </div>
             {% endif %}
 
@@ -77,10 +77,10 @@
         {% if complete is empty %}
 
         <div style="padding:25px 25px 50px;min-height:300px;">
-            <p>Мы были рады принимать вас и надеемся, что ваше пребывание в нашем отеле было комфортным и приятным.</p>
+            <p>{{ 'mbhonlinebundle.view.poll.list.mybyliradyprinimatʹvasinadeyemsya'|trans }}</p>
 
-            <p>Пожалуйста, заполните небольшую анкету гостя, ваша оценка поможет нам развиваться и улучшать наш сервис.
-                Мы будем рады видеть Вас снова!</p>
+            <p>{{ 'mbhonlinebundle.view.poll.list.pozhaluystatwo'|trans }}
+                {{ 'mbhonlinebundle.view.poll.list.mybudemradyvidetʹvassnova'|trans }} !</p>
 
             <form action="{{ path('online_poll_list', {'id': order.id, 'payerId': order.payer.id}) }}" id="mb-rank-form" method="POST">
 
@@ -90,7 +90,7 @@
 
                     {% if not cat or cat != question.category %}
                         {% set cat = question.category %}
-                        <h4 class="header_thin">Пожалуйста, оцените {{ question.category|trans() }}</h4>
+                        <h4 class="header_thin">{{ 'mbhonlinebundle.view.poll.list.pozhaluysta'|trans }} {{ question.category|trans() }}</h4>
                     {% endif %}
 
                     <div class="row">
@@ -107,12 +107,12 @@
                     <hr>
                 {% endfor %}
 
-                <h4 class="header_thin">Ваш отзыв или пожелание</h4>
+                <h4 class="header_thin">{{ 'mbhonlinebundle.view.poll.list.vashotzyvilipozhelaniye'|trans }} </h4>
 
                 <div class="row">
                     <div class="col-sm-4">
-                        Ваш отзыв, предложения или пожелания<br><br>
-                        <small>(необязательно)</small>
+                        {{ 'mbhonlinebundle.view.poll.list.vashotzyv'|trans }} <br><br>
+                        <small>({{ 'mbhonlinebundle.view.poll.list.neobyazatelʹno'|trans }} )</small>
                     </div>
                     <div class="col-sm-8">
                         <textarea class="mb-textarea mb-rank-result" id="mb-rank-result-note"
@@ -123,7 +123,7 @@
                 <br>
 
                 <div class="mb-pp-button-overlay" align="center">
-                    <button type="button" class="btn btn-lg btn-success btn-block mb-rank-submit">ОТПРАВИТЬ</button>
+                    <button type="button" class="btn btn-lg btn-success btn-block mb-rank-submit">{{ 'mbhonlinebundle.view.poll.list.otpravitʹ'|trans }} </button>
                 </div>
             </form>
 
@@ -132,8 +132,8 @@
     </div>
     <div class="mb-pp-mline mb-pp-mlinebottom"></div>
     <div style="text-align:right;min-width:400px;clear:both;margin:20px 25px 40px;">
-        <small>Основано на технологиях MAXIBOOKING LLC</small>
-        <a href="http://maxi-booking.ru/" title="Основано на технологиях MaxiBooking" target="_blank"><img
+        <small>{{ 'mbhonlinebundle.view.poll.list.osnovanonatekhnologiyakh'|trans }}</small>
+        <a href="http://maxi-booking.ru/" title="{{ 'mbhonlinebundle.view.poll.list.osnovanonatekhnologiyakh'|trans }} MaxiBooking" target="_blank"><img
                     src="{{ asset('/bundles/mbhbase/images/maxibooking.png') }}" alt="MaxiBooking" width="105px"
                     height="23px" align="absmiddle"
                     style="margin-left:12px;"></a></div>

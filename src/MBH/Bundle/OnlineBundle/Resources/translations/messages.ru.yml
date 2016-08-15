@@ -1,19 +1,67 @@
-form.formType.is_turned_on: Включена?
+mbhonlinebundle.view.api.getresults.js.twig.chelovek: человек
+mbhonlinebundle.view.api.getuserform.ivan: Иван
+mbhonlinebundle.view.api.getpaymenttype.proizoshlaoshibkavovremyabronirovaniya: 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
+mbhonlinebundle.view.api.getresults.js.twig.podozhdite: Подождите
+mbhonlinebundle.view.api.getresults.js.twig.nevybranydatyzayezdaivyyezda: 'Не выбраны даты заезда и выезда'
+mbhonlinebundle.view.api.getresults.js.twig.cheloveka: человека
+mbhonlinebundle.view.api.getresults.js.twig.tsenaza: 'цена за '
+mbhonlinebundle.view.api.orders.xml.twig.tipnomera: 'тип номера'
+mbhonlinebundle.view.api.orders.xml.twig.komnata: комната
+mbhonlinebundle.view.api.orders.xml.twig.etazh: этаж
+mbhonlinebundle.view.api.orders.xml.twig.korpus: корпус
+mbhonlinebundle.view.api.orders.xml.twig.dataivremyazaseleniya: 'дата и время заселения'
+mbhonlinebundle.view.api.orders.xml.twig.dataivremyavyyezda: 'дата и время выезда'
+mbhonlinebundle.view.api.notification.novyyebroniizonlayn: 'Новые брони из онлайн-формы:'
+mbhonlinebundle.view.poll.config.kodgolosovaniyadlyavstavkinasayt: 'Код голосования для вставки на сайт'
+mbhonlinebundle.view.poll.list.sistemaupravleniyaotelem: 'Система управления отелем'
+mbhonlinebundle.view.poll.list.otzyvpoetomuzakazuuzheostavlen: 'Отзыв по этому заказу уже оставлен'
+mbhonlinebundle.view.poll.list.mybyliradyprinimatʹvasinadeyemsya: 'Мы были рады принимать вас и надеемся , что ваше пребывание в нашем отеле было комфортным и приятным.'
+mbhonlinebundle.view.poll.list.pozhaluystatwo: 'Пожалуйста , заполните небольшую анкету гостя, ваша оценка поможет нам развиваться и улучшать наш сервис.'
+mbhonlinebundle.view.poll.list.pozhaluysta: 'Пожалуйста, оцените'
+mbhonlinebundle.view.poll.list.mybudemradyvidetʹvassnova: 'Мы будем рады видеть Вас снова'
+mbhonlinebundle.view.poll.list.vashotzyvilipozhelaniye: 'Ваш отзыв или пожелание'
+mbhonlinebundle.view.poll.list.vashotzyv: 'Ваш отзыв, предложения или пожелания'
+mbhonlinebundle.view.poll.list.neobyazatelʹno: необязательно
+mbhonlinebundle.view.poll.list.otpravitʹ: ОТПРАВИТЬ
+mbhonlinebundle.view.poll.list.osnovanonatekhnologiyakh: 'Основано на технологиях MAXIBOOKING LLC'
+mbhonlinebundle.view.form.index.oteli: Отели
+mbhonlinebundle.view.form.index.tipynomerov: 'Типы номеров'
+mbhonlinebundle.view.form.index.gosti: Гости
+mbhonlinebundle.view.form.index.vklyuchena: Включена
+mbhonlinebundle.view.form.index.vseoteli: 'Все отели'
+mbhonlinebundle.view.form.index.da: Да
+mbhonlinebundle.view.form.index.net: Нет
+mbhonlinebundle.view.invite.index.kodgolosovaniyadlyavstavkinasayt: 'Код голосования для вставки на сайт'
+mbhonlinebundle.view.invite.form.informatsiyaogostyakhivize: 'Информация о гостях и визе'
+mbhonlinebundle.view.invite.form.mestaposeshcheniya: 'Места посещения'
+mbhonlinebundle.view.invite.form.oplatazayavki: 'Оплата заявки'
+mbhonlinebundle.view.invite.form.polucheniyepriglasheniya: 'Получение приглашения'
+mbhonlinebundle.view.invite.form.datypoyezdki: 'Даты поездки'
+mbhonlinebundle.view.invite.form.dney: '6 дней'
+mbhonlinebundle.view.invite.form.tipvizy: 'Тип визы'
+mbhonlinebundle.view.invite.form.svedeniyaopersonakh: 'Сведения о персонах'
+mbhonlinebundle.view.invite.form.persona: персона
+mbhonlinebundle.view.invite.form.dobavitʹ: Добавить
+mbhonlinebundle.view.invite.form.marshrutpoyezdki: 'Маршрут поездки'
+mbhonlinebundle.view.invite.form.gorod: город
+mbhonlinebundle.view.invite.form.nazad: Назад
+mbhonlinebundle.view.invite.form.prodolzhitʹ: Продолжить
+mbhonlinebundle.view.invite.form.vkladka: вкладка
+form.formType.is_turned_on: 'Включена?'
 form.formType.hotels: Отели
-form.formType.hotels_desc: Отели используемые в онлайн форме
-form.formType.hotels_placeholder: Все отели
+form.formType.hotels_desc: 'Отели используемые в онлайн форме'
+form.formType.hotels_placeholder: 'Все отели'
 form.formType.parameters: Параметры
-form.formType.use_online_form: Использовать ли онлайн форму?
-form.formType.room_types: Типы номеров?
-form.formType.parameters: Параметры
-form.formType.should_we_use_room_type_field_in_online_form: Использовать ли поле "Тип номера" в онлайн форме?
-form.formType.are_there_guests: Гости?
-form.formType.should_we_use_guests_amount_field_in_online_form: Использовать ли поле "Количестов гостей" в онлайн форме?
-form.formType.should_we_use_nights_field: Поле "ночи"?
-form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: Использовать ли поле дату заезда и количестов ночей или дату заезда/выезда?
+form.formType.use_online_form: 'Использовать ли онлайн форму?'
+form.formType.room_types: 'Типы номеров?'
+form.formType.should_we_use_room_type_field_in_online_form: 'Использовать ли поле "Тип номера" в онлайн форме?'
+form.formType.are_there_guests: 'Гости?'
+form.formType.should_we_use_guests_amount_field_in_online_form: 'Использовать ли поле "Количестов гостей" в онлайн форме?'
+form.formType.should_we_use_nights_field: 'Поле "ночи"?'
+form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: 'Использовать ли поле дату заезда и количестов ночей или дату заезда/выезда?'
 form.formType.payment: Оплата
-form.formType.payment_type: Типы оплаты
-form.formType.reservation_payment_types_with_online_form: Типы оплаты при бронировании с помощью онлайн формы
+form.formType.payment_type: 'Типы оплаты'
+form.formType.reservation_payment_types_with_online_form: 'Типы оплаты при бронировании с помощью онлайн формы'
 controller.apiController.reservation_error_occured_refresh_page_and_try_again: 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
 controller.apiController.reservations_made_success: 'Номера успешно забронированы.'
 controller.apiController.your_reservations_numbers: 'Номера ваших броней'
@@ -23,12 +71,9 @@ controller.apiController.thank_you: 'Большое спасибо. '
 controller.apiController.we_will_call_you_back_soon: ' Мы свяжемся с Вами в ближайшее время.<br>'
 controller.apiController.your_order_number: 'Номер вашего заказа: '
 controller.formController.settings_saved_success: 'Настройки успешно сохранены.'
-
 form.inviteType.type.single: 'Однократная (600 руб.)'
 form.inviteType.type.twice: 'Двукратная (900 руб.)'
-
-payment_types:
-  in_hotel: 'Оплата при заселении'
-  online_full: 'Онлайн оплата (100%)'
-  online_first_day: 'Онлайн оплата (одни сутки)'
-  online_half: 'Онлайн оплата (50%)'
+payment_types.in_hotel: 'Оплата при заселении'
+payment_types.online_full: 'Онлайн оплата (100%)'
+payment_types.online_first_day: 'Онлайн оплата (одни сутки)'
+payment_types.online_half: 'Онлайн оплата (50%)'

@@ -36,12 +36,12 @@
             </services>
 
             <!-- Размещение
-                roomtype - тип номера;
-                room - комната;
-                floor - этаж;
-                building - корпус;
-                begin - дата и время заселения;
-                end - дата и время выезда;
+                roomtype - {{ 'mbhonlinebundle.view.api.orders.xml.twig.tipnomera'|trans }} ;
+                room - {{ 'mbhonlinebundle.view.api.orders.xml.twig.komnata'|trans }} ;
+                floor - {{ 'mbhonlinebundle.view.api.orders.xml.twig.etazh'|trans }} ;
+                building - {{ 'mbhonlinebundle.view.api.orders.xml.twig.korpus'|trans }} ;
+                begin - {{ 'mbhonlinebundle.view.api.orders.xml.twig.dataivremyazaseleniya'|trans }} ;
+                end - {{ 'mbhonlinebundle.view.api.orders.xml.twig.dataivremyavyyezda'|trans }} ;
             -->
             {% if package.accommodation %}
                 {% set accommodation = package.accommodation %}
