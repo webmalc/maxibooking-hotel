@@ -28,7 +28,7 @@ abstract class AbstractTranslateConverter
 
     const TRANSLATE_FOLDER = '/Resources/translations';
 
-    const RU_PATTERN = '/([А-Яа-яЁё]+,?\??\s*)+/u';
+    const RU_PATTERN = '/([А-Яа-яЁё]+,?.?\??\s*)+/u';
 
 
     protected $bundle;

@@ -20,22 +20,22 @@ class TariffInheritanceType extends AbstractType
 
         $builder
             ->add('inheritPrices', 'checkbox', [
-                'label' => 'Цены',
+                'label' => 'mbhpricebundle.form.tariffinheritancetype.tseny',
                 'group' => $group,
                 'required' => false,
-                'help' => 'Наследовать ли цены от родительского тарифа'
+                'help' => 'mbhpricebundle.form.tariffinheritancetype.nasledovatʹlitsenyotroditelʹskogotarifa'
             ])
             ->add('inheritRestrictions', 'checkbox', [
-                'label' => 'Условия и ограничения',
+                'label' => 'mbhpricebundle.form.tariffinheritancetype.usloviyaiogranicheniya',
                 'group' => $group,
                 'required' => false,
-                'help' => 'Наследовать ли условия и ограничения от родительского тарифа'
+                'help' => 'mbhpricebundle.form.tariffinheritancetype.nasledovatʹliusloviyaiogranicheniyaotroditelʹskogotarifa'
             ])
             ->add('inheritRooms', 'checkbox', [
-                'label' => 'Квоты',
+                'label' => 'mbhpricebundle.form.tariffinheritancetype.kvoty',
                 'group' => $group,
                 'required' => false,
-                'help' => 'Наследовать ли квоты номеров от родительского тариф'
+                'help' => 'mbhpricebundle.form.tariffinheritancetype.nasledovatʹlikvotynomerovotroditelʹskogotarif'
             ])
         ;
     }

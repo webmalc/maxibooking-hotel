@@ -13,20 +13,20 @@ class ServiceCategoryType extends AbstractType
     {
         $builder
                 ->add('fullTitle', 'text', [
-                    'label' => 'Название',
+                    'label' => 'mbhpricebundle.form.servicecategorytype.nazvaniye',
                     'required' => true,
-                    'attr' => ['placeholder' => 'Основные услуги']
+                    'attr' => ['placeholder' => 'mbhpricebundle.form.servicecategorytype.osnovnyyeuslugi']
                 ])
                 ->add('title', 'text', [
-                    'label' => 'Внутреннее название',
+                    'label' => 'mbhpricebundle.form.servicecategorytype.vnutrenneyenazvaniye',
                     'required' => false,
                     'attr' => ['placeholder' => 'Основные услуги - лето ' . date('Y')],
                     'help' => 'Название для использования внутри MaxiBooking'
                 ])
                 ->add('description', 'textarea', [
-                    'label' => 'Описание',
+                    'label' => 'mbhpricebundle.form.servicecategorytype.opisaniye',
                     'required' => false,
-                    'help' => 'Описание категории услуг для онлайн бронирования'
+                    'help' => 'mbhpricebundle.form.servicecategorytype.opisaniyekategoriiuslugdlyaonlaynbronirovaniya'
                 ])
         ;
     }

@@ -15,13 +15,13 @@ class ServiceType extends AbstractType
     {
         $builder
             ->add('fullTitle', 'text', [
-                'label' => 'Название',
+                'label' => 'mbhpricebundle.form.servicetype.nazvaniye',
                 'required' => true,
                 'group' => 'Общая информация',
-                'attr' => ['placeholder' => 'Сейф']
+                'attr' => ['placeholder' => 'mbhpricebundle.form.servicetype.seyf']
             ])
             ->add('title', 'text', [
-                'label' => 'Внутреннее название',
+                'label' => 'mbhpricebundle.form.servicetype.vnutrenneyenazvaniye',
                 'group' => 'Общая информация',
                 'required' => false,
                 'attr' => ['placeholder' => 'Сейф - лето ' . date('Y')],
@@ -31,16 +31,16 @@ class ServiceType extends AbstractType
                 'label' => 'form.roomTypeType.international_title',
                 'required' => false,
                 'group' => 'Общая информация',
-                //'help' => 'Международное название'
+                //'help' => 'mbhpricebundle.form.servicetype.mezhdunarodnoyenazvaniye'
             ])
             ->add('description', 'textarea', [
-                'label' => 'Описание',
+                'label' => 'mbhpricebundle.form.servicetype.opisaniye',
                 'required' => false,
                 'group' => 'Общая информация',
-                'help' => 'Описание услуги для онлайн бронирования'
+                'help' => 'mbhpricebundle.form.servicetype.opisaniyeuslugidlyaonlaynbronirovaniya'
             ])
             ->add('calcType', 'choice', [
-                'label' => 'Тип расчета',
+                'label' => 'mbhpricebundle.form.servicetype.tiprascheta',
                 'group' => 'Общая информация',
                 'required' => true,
                 'empty_value' => '',
@@ -48,38 +48,38 @@ class ServiceType extends AbstractType
                 'choices' => $options['calcTypes'],
             ])
             ->add('price', 'text', [
-                'label' => 'Цена',
+                'label' => 'mbhpricebundle.form.servicetype.tsena',
                 'group' => 'Общая информация',
                 'required' => false,
-                'attr' => ['placeholder' => 'Услуга не используется', 'class' => 'spinner price-spinner'],
+                'attr' => ['placeholder' => 'mbhpricebundle.form.servicetype.usluganeispolʹzuyetsya', 'class' => 'spinner price-spinner'],
             ])
             ->add('date', 'checkbox', [
-                'label' => 'Дата?',
+                'label' => 'mbhpricebundle.form.servicetype.data?',
                 'group' => 'Настройки',
                 'value' => true,
                 'required' => false,
-                'help' => 'Использовать ли дату при добавлении услуги к брони?'
+                'help' => 'mbhpricebundle.form.servicetype.ispolʹzovatʹlidatupridobavleniiuslugikbroni?'
             ])
             ->add('time', 'checkbox', [
-                'label' => 'Время?',
+                'label' => 'mbhpricebundle.form.servicetype.vremya?',
                 'group' => 'Настройки',
                 'value' => true,
                 'required' => false,
-                'help' => 'Использовать ли время при добавлении услуги к брони?'
+                'help' => 'mbhpricebundle.form.servicetype.ispolʹzovatʹlivremyapridobavleniiuslugikbroni?'
             ])
             ->add('isOnline', 'checkbox', [
-                'label' => 'Онлайн?',
+                'label' => 'mbhpricebundle.form.servicetype.onlayn?',
                 'value' => true,
                 'group' => 'Настройки',
                 'required' => false,
-                'help' => 'Использовать ли услугу в онлайн бронировании?'
+                'help' => 'mbhpricebundle.form.servicetype.ispolʹzovatʹliusluguvonlaynbronirovanii?'
             ])
             ->add('isEnabled', 'checkbox', [
-                'label' => 'Включена?',
+                'label' => 'mbhpricebundle.form.servicetype.vklyuchena?',
                 'group' => 'Настройки',
                 'value' => true,
                 'required' => false,
-                'help' => 'Доступна ли услуга для продажи?'
+                'help' => 'mbhpricebundle.form.servicetype.dostupnaliuslugadlyaprodazhi?'
             ]);
     }
 
